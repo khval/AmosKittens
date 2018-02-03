@@ -1,0 +1,26 @@
+
+if exists ram:amos2ascii
+	delete ram:amos2ascii all
+endif
+
+if exists ram:amos2ascii.lha
+	delete ram:amos2ascii.lha 
+endif
+
+makedir ram:amos2ascii
+makedir ram:amos2ascii/libs
+makedir ram:amos2ascii/c
+
+copy libs:AmosExtension.library ram:amos2ascii/libs
+copy amos2ascii.exe ram:amos2ascii/c/amos2ascii
+copy Readme.md ram:amos2ascii/readme.txt
+copy LICENSE ram:amos2ascii/LICENSE.txt
+
+copy ENVARC:Sys/def_ascii.info ram:amos2ascii/readme.txt.info
+copy ENVARC:Sys/def_ascii.info ram:amos2ascii/LICENSE.txt.info
+copy ENVARC:Sys/def_drawer.info ram:amos2ascii.info
+copy ENVARC:Sys/def_drawer.info ram:amos2ascii/libs.info
+copy ENVARC:Sys/def_drawer.info ram:amos2ascii/c.info
+
+lha -r a ram:amos2ascii.lha ram:amos2ascii
+lha a ram:amos2ascii.lha ram:amos2ascii.info
