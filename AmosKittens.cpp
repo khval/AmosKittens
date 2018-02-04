@@ -10,38 +10,114 @@
 int stack = 0;
 int cmdStack = 0;
 int last_token = 0;
+int last_var = 0;
 
 
- struct kittyString strStack[100];
+
+struct kittyString strStack[100];
+struct globalVar globalVars[1000];	// 0 is not used.
+
+int global_var_count = 0;
+
  int numStack[100];
- struct glueCommands cmdTmp[100];
+ struct glueCommands cmdTmp[100];	
 
-char *cmdNewLine(nativeCommand *cmd, char *ptr)
+void dumpGlobal()
 {
+	int n;
+
+	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
+	{
+		if (globalVars[n].varName == NULL) return;
+		printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
+
+	}
+}
+
+
+int findVar( char *name )
+{
+	int n;
+
+	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+
+		if (strcasecmp( globalVars[n].varName, name)==0)
+		{
+			return n;
+		}
+	}
+	return 0;
+}
+
+char *nextCmd(nativeCommand *cmd, char *ptr)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (cmdStack)
 	{
-		cmdTmp[--cmdStack].cmd();
+		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 	return ptr;
 }
 
-void _print( void)
+char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
-	int n;
-	printf("PRINT: ");
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	for (n=0;n<=stack;n++)
+	if (cmdStack)
 	{
-		if (strStack[n].str) printf("%s", strStack[n].str);
-		if (n<=stack) printf("    ");
+		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
-	printf("\n");
+	return ptr;
 }
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
 	cmdNormal( _print, ptr );
 	return ptr;
+}
+
+char *cmdVar(nativeCommand *cmd, char *ptr)
+{
+	char *tmp;
+	struct reference *ref = (struct reference *) ptr;
+
+	last_var = 0;
+	if (ref -> ref == 0)
+	{
+		int found = 0;
+
+		tmp = (char *) malloc( ref->length + 2 );
+		if (tmp)
+		{
+			tmp[ ref->length -2 ] =0;
+			tmp[ ref->length -1 ] =0;
+
+			memcpy(tmp, ptr + sizeof(struct reference), ref->length );
+			sprintf(tmp + strlen(tmp),"%s", ref -> flags & 2 ? "$" : 0 );
+
+			found = findVar(tmp);
+			if (found)
+			{
+				free(tmp);
+				ref -> ref = found;
+			}
+			else
+			{
+				global_var_count ++;
+				ref -> ref = global_var_count;
+				globalVars[global_var_count].varName = tmp;
+				globalVars[global_var_count].var.str = strdup("");
+				globalVars[global_var_count].var.len = 0;
+			}
+
+			last_var = ref -> ref;
+		}
+	}
+
+	return ptr + ref -> length ;
 }
 
 char *cmdQuote(nativeCommand *cmd, char *ptr)
@@ -60,7 +136,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
-		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
+		 if (strStack[stack-1].flag == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
 	return ptr + length2;
@@ -70,8 +146,10 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 struct nativeCommand Symbol[]=
 {
 	{0x0000,	"", 2,	cmdNewLine},
+	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x0476, "Print",0,cmdPrint },
 	{0x0026,"\"",2, cmdQuote },
+	{0x0054,":", 0, nextCmd },
 	{0x005C,",", 0, nextArg},
 	{0x0064,";", 0, addStr},
 	{0x0074,"(", 0, subCalc},
@@ -90,6 +168,7 @@ char *executeToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
 	int size = sizeof(Symbol)/sizeof(struct nativeCommand);
+	char *ret;
 
 	for (cmd = Symbol ; cmd < Symbol + size ; cmd++ )
 	{
@@ -98,7 +177,9 @@ char *executeToken( char *ptr, unsigned short token )
 			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag, token);
 	
-			return cmd -> fn( cmd, ptr ) + cmd -> size;
+			ret = cmd -> fn( cmd, ptr ) ;
+			if (ret) ret += cmd -> size;
+			return ret;
 		}
 	}
 
@@ -110,34 +191,27 @@ char *executeToken( char *ptr, unsigned short token )
 
 void _str(const char *str)
 {
-	printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
-
+								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
 	strStack[stack].str = strdup( str );
 	strStack[stack].len = strlen( strStack[stack].str );
 	strStack[stack].flag = state_none;
 
 	if (cmdStack) if (stack)
 	{
-		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
+		 if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
-		
+								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
 }
 
 void _castNumToStr( int num )
 {
 	char tmp[100];
-
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
-
+								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
 	sprintf(tmp,"%d",num);
 	strStack[stack].str = strdup( tmp );
 	strStack[stack].len = strlen( strStack[stack].str );
 	strStack[stack].flag = state_none;
-
-	if (cmdStack) if (stack)
-	{
-		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
-	}
+	if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 }
 
 void paramiter_testing()
@@ -211,6 +285,7 @@ void code_reader( char *start, int tokenlength )
 	}
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 }
 
 int main()
@@ -227,7 +302,9 @@ int main()
 	stack = 0;
 	cmdStack = 0;
 
-	fd = fopen("amos-test/print.amos","r");
+	memset(globalVars,0,sizeof(globalVars));
+
+	fd = fopen("amos-test/var.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -247,6 +324,8 @@ int main()
 	}
 
 	printf("--------------------------\n");
+
+	dumpGlobal();
 
 	for (n=0; n<=stack;n++)
 	{

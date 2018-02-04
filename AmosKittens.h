@@ -24,9 +24,10 @@ struct nativeCommand
 
 struct glueCommands
 {
-	void (*cmd) ( void );
+	void (*cmd) ( struct glueCommands *data );
 	char *tokenBuffer;
 	int flag;
+	int lastVar;
 };
 
 struct kittyString
@@ -36,16 +37,24 @@ struct kittyString
 	int flag;
 };
 
+struct globalVar
+{
+	struct kittyString var;
+	char *varName;
+};
+
 #define cmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_first;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdStack++; \
 
 #define cmdParm( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_para;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdStack++; \
 
 

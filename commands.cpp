@@ -5,7 +5,24 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 
-void _addStr( void )
+extern int last_var;
+extern struct globalVar globalVars[];
+
+void _print( struct glueCommands *data )
+{
+	int n;
+	printf("PRINT: ");
+
+	for (n=0;n<=stack;n++)
+	{
+		if (strStack[n].str) printf("%s", strStack[n].str);
+		if (n<=stack) printf("    ");
+	}
+	printf("\n");
+}
+
+
+void _addStr( struct glueCommands *data )
 {
 	int len = 0;
 	char *tmp;
@@ -39,7 +56,7 @@ void _addStr( void )
 	strStack[stack+1].str = NULL;
 }
 
-void _subStr( void )
+void _subStr( struct glueCommands *data )
 {
 	char *find;
  	int find_len;
@@ -74,11 +91,24 @@ void _subStr( void )
 	strStack[stack+1].str = NULL;
 }
 
-void _addNum( void )
+void _addNum( struct glueCommands *data )
 {
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
 
 	numStack[stack] += numStack[stack+1];
+}
+
+void _setVar( struct glueCommands *data )
+{
+	printf("data: lastVar %d\n", data -> lastVar);
+
+	if (data -> lastVar)
+	{
+		if (globalVars[data -> lastVar].var.str) free(globalVars[data -> lastVar].var.str);
+
+		globalVars[data -> lastVar].var.str = strdup(strStack[stack].str);
+		globalVars[data -> lastVar].var.len = strStack[stack].len;
+	}
 }
 
 //--------------------------------------------------------
@@ -118,7 +148,7 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			strStack[stack-1] = strStack[stack];
 			stack --;
-			if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd();
+			if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
 	return tokenBuffer;
@@ -140,7 +170,9 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	cmdParm(_setVar, tokenBuffer);
+	printf("%20s:%d\n",__FUNCTION__,__LINE__);
+
+	cmdNormal(_setVar, tokenBuffer);
 	return tokenBuffer;
 }
 
