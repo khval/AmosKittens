@@ -18,11 +18,29 @@ int last_token = 0;
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
+	if (cmdStack)
+	{
+		cmdTmp[--cmdStack].cmd();
+	}
 	return ptr;
+}
+
+void _print( void)
+{
+	int n;
+	printf("PRINT: ");
+
+	for (n=0;n<=stack;n++)
+	{
+		if (strStack[n].str) printf("%s", strStack[n].str);
+		if (n<=stack) printf("    ");
+	}
+	printf("\n");
 }
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
+	cmdNormal( _print, ptr );
 	return ptr;
 }
 
@@ -42,7 +60,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
-		 if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd();
+		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
 	}
 
 	return ptr + length2;
@@ -92,27 +110,34 @@ char *executeToken( char *ptr, unsigned short token )
 
 void _str(const char *str)
 {
-								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+	printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+
 	strStack[stack].str = strdup( str );
 	strStack[stack].len = strlen( strStack[stack].str );
 	strStack[stack].flag = state_none;
 
 	if (cmdStack) if (stack)
 	{
-		 if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd();
+		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
 	}
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+		
 }
 
 void _castNumToStr( int num )
 {
 	char tmp[100];
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+
+	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+
 	sprintf(tmp,"%d",num);
 	strStack[stack].str = strdup( tmp );
 	strStack[stack].len = strlen( strStack[stack].str );
 	strStack[stack].flag = state_none;
-	if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd();
+
+	if (cmdStack) if (stack)
+	{
+		 if ((strStack[stack-1].flag == state_none) && (cmdTmp[ cmdStack - 1].flag == cmd_para )) cmdTmp[--cmdStack].cmd();
+	}
 }
 
 void paramiter_testing()
@@ -186,7 +211,6 @@ void code_reader( char *start, int tokenlength )
 	}
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 }
 
 int main()
@@ -196,6 +220,7 @@ int main()
 	int amos_filesize;
 	char amosid[17];
 	char *data;
+	int n;
 
 	amosid[16] = 0;	// /0 string.
 
@@ -223,13 +248,16 @@ int main()
 
 	printf("--------------------------\n");
 
-	if (strStack[stack].str)
+	for (n=0; n<=stack;n++)
 	{
-		printf("'%s' stack is %d cmd stack is %d\n", strStack[stack].str, stack, cmdStack);
-	}
-	else
-	{
-		printf("nothing\n");
+		if (strStack[n].str)
+		{
+			printf("'%s' stack is %d cmd stack is %d\n", strStack[n].str, stack, cmdStack);
+		}
+		else
+		{
+			printf("no string found\n");
+		}
 	}
 
 	return 0;

@@ -8,6 +8,12 @@ enum
 	state_subData
 };
 
+enum
+{
+	cmd_first = 0,
+	cmd_para
+};
+
 struct nativeCommand
 {
 	int id;
@@ -20,6 +26,7 @@ struct glueCommands
 {
 	void (*cmd) ( void );
 	char *tokenBuffer;
+	int flag;
 };
 
 struct kittyString
@@ -28,6 +35,19 @@ struct kittyString
 	char *str;
 	int flag;
 };
+
+#define cmdNormal( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_first;	\
+	cmdStack++; \
+
+#define cmdParm( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_para;	\
+	cmdStack++; \
+
 
 extern BOOL equal_symbol;
 extern struct nativeCommand NativeCommand[];

@@ -45,10 +45,6 @@ void _subStr( void )
  	int find_len;
 	char *d,*s;
 
-
-//	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
-
-
 	if (stack==0) 
 	{
 		printf("can't do this :-(\n");
@@ -90,18 +86,13 @@ void _addNum( void )
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
-
 	stack++;
 	return tokenBuffer;
 }
 
 char *addStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
-
-	cmdTmp[cmdStack].cmd = _addStr;
-	cmdTmp[cmdStack].tokenBuffer = tokenBuffer;
-	cmdStack++;
+	cmdParm( _addStr, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
@@ -121,7 +112,6 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
 
-
 	if (stack > 0)
 	{
 		if (strStack[stack-1].flag == state_subData)
@@ -136,28 +126,21 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	cmdTmp[cmdStack].cmd = _addStr;
-	cmdTmp[cmdStack].tokenBuffer = tokenBuffer;
-	cmdStack++;
+	cmdParm( _addStr, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
 
 char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-
-	cmdTmp[cmdStack].cmd = _subStr;
-	cmdTmp[cmdStack].tokenBuffer = tokenBuffer;
-	cmdStack++;
+	cmdParm(_subStr,tokenBuffer);
 	stack++;
 	return tokenBuffer;
 }
 
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	cmdTmp[cmdStack].cmd = _setVar;
-//	cmdTmp[cmdStack].tokenBuffer = tokenBuffer;
-//	cmdStack++;
+//	cmdParm(_setVar, tokenBuffer);
 	return tokenBuffer;
 }
 
