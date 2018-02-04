@@ -12,7 +12,7 @@ int cmdStack = 0;
 int last_token = 0;
 int last_var = 0;
 
-
+void _str(const char *str);
 
 struct kittyString strStack[100];
 struct globalVar globalVars[1000];	// 0 is not used.
@@ -117,6 +117,11 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
+	if (ref -> ref)
+	{
+		_str(globalVars[ref -> ref].var.str);
+	}
+
 	return ptr + ref -> length ;
 }
 
@@ -192,6 +197,9 @@ char *executeToken( char *ptr, unsigned short token )
 void _str(const char *str)
 {
 								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+
+	if (strStack[stack].str) free(strStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+
 	strStack[stack].str = strdup( str );
 	strStack[stack].len = strlen( strStack[stack].str );
 	strStack[stack].flag = state_none;
