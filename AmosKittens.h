@@ -30,16 +30,23 @@ struct glueCommands
 	int lastVar;
 };
 
-struct kittyString
+struct kittyData
 {
-	int len;
+	union		// we don't need to wast space.
+	{
+		int len;
+		int value;
+	};
+	
 	char *str;
-	int flag;
+	double decimal;
+	int state;
+	int type;
 };
 
 struct globalVar
 {
-	struct kittyString var;
+	struct kittyData var;
 	char *varName;
 };
 
@@ -64,7 +71,7 @@ extern int findNativeCommand(unsigned short lastToken,unsigned short token);
 extern BOOL findSymbol(unsigned short token);
 extern int commandCnt;
 
-extern struct kittyString strStack[];
+extern struct kittyData kittyStack[];
 extern int numStack[];
 extern struct glueCommands cmdTmp[];
 

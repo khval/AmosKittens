@@ -15,7 +15,7 @@ void _print( struct glueCommands *data )
 
 	for (n=0;n<=stack;n++)
 	{
-		if (strStack[n].str) printf("%s", strStack[n].str);
+		if (kittyStack[n].str) printf("%s", kittyStack[n].str);
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
@@ -28,7 +28,7 @@ void _addStr( struct glueCommands *data )
 	char *tmp;
 	char *_new;
 
-//	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
@@ -37,23 +37,23 @@ void _addStr( struct glueCommands *data )
 	}
 
 	stack --;
-	len = strStack[stack].len + strStack[stack+1].len;
+	len = kittyStack[stack].len + kittyStack[stack+1].len;
 
 	_new = (char *) malloc(len+1);
 	if (_new)
 	{
 		_new[0] = 0;
-		strcpy(_new, strStack[stack].str);
-		strcpy(_new+strStack[stack].len,strStack[stack+1].str);
-		if (strStack[stack].str) free( strStack[stack].str );
-		strStack[stack].str = _new;
-		strStack[stack].len = len;
+		strcpy(_new, kittyStack[stack].str);
+		strcpy(_new+kittyStack[stack].len,kittyStack[stack+1].str);
+		if (kittyStack[stack].str) free( kittyStack[stack].str );
+		kittyStack[stack].str = _new;
+		kittyStack[stack].len = len;
 
 	}
 
 	// delete string from above.
-	if (strStack[stack+1].str) free( strStack[stack+1].str );
-	strStack[stack+1].str = NULL;
+	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
+	kittyStack[stack+1].str = NULL;
 }
 
 void _subStr( struct glueCommands *data )
@@ -70,10 +70,10 @@ void _subStr( struct glueCommands *data )
 
 	stack--;
 
-	find = strStack[stack+1].str;
- 	find_len = strStack[stack+1].len;
+	find = kittyStack[stack+1].str;
+ 	find_len = kittyStack[stack+1].len;
 
-	s=d= strStack[stack].str;
+	s=d= kittyStack[stack].str;
 
 //	printf("%s - %s\n",s, find);
 
@@ -84,16 +84,16 @@ void _subStr( struct glueCommands *data )
 	}
 	*d = 0;
 
-	strStack[stack].len = d - strStack[stack].str;
+	kittyStack[stack].len = d - kittyStack[stack].str;
 
 	// delete string from above.
-	if (strStack[stack+1].str) free( strStack[stack+1].str );
-	strStack[stack+1].str = NULL;
+	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
+	kittyStack[stack+1].str = NULL;
 }
 
 void _addNum( struct glueCommands *data )
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	numStack[stack] += numStack[stack+1];
 }
@@ -106,8 +106,8 @@ void _setVar( struct glueCommands *data )
 	{
 		if (globalVars[data -> lastVar].var.str) free(globalVars[data -> lastVar].var.str);
 
-		globalVars[data -> lastVar].var.str = strdup(strStack[stack].str);
-		globalVars[data -> lastVar].var.len = strStack[stack].len;
+		globalVars[data -> lastVar].var.str = strdup(kittyStack[stack].str);
+		globalVars[data -> lastVar].var.len = kittyStack[stack].len;
 	}
 }
 
@@ -115,7 +115,7 @@ void _setVar( struct glueCommands *data )
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stack++;
 	return tokenBuffer;
 }
@@ -129,10 +129,10 @@ char *addStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	strStack[stack].str = NULL;
-	strStack[stack].flag = state_subData;
+	kittyStack[stack].str = NULL;
+	kittyStack[stack].state = state_subData;
 
 	stack++;
 	return tokenBuffer;
@@ -140,15 +140,15 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack > 0)
 	{
-		if (strStack[stack-1].flag == state_subData)
+		if (kittyStack[stack-1].state == state_subData)
 		{
-			strStack[stack-1] = strStack[stack];
+			kittyStack[stack-1] = kittyStack[stack];
 			stack --;
-			if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
 	return tokenBuffer;

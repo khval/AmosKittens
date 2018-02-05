@@ -14,7 +14,7 @@ int last_var = 0;
 
 void _str(const char *str);
 
-struct kittyString strStack[100];
+struct kittyData kittyStack[100];
 struct globalVar globalVars[1000];	// 0 is not used.
 
 int global_var_count = 0;
@@ -133,15 +133,15 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	length2 += (length & 1);		// align to 2 bytes
 
-	strStack[stack].str = strndup( ptr + 2, length );
-	strStack[stack].len = strlen( strStack[stack].str );
-	strStack[stack].flag = state_none;
+	kittyStack[stack].str = strndup( ptr + 2, length );
+	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].state = state_none;
 
-	printf("%s\n", strStack[stack].str);
+	printf("%s\n", kittyStack[stack].str);
 
 	if (cmdStack) if (stack)
 	{
-		 if (strStack[stack-1].flag == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
 	return ptr + length2;
@@ -180,7 +180,7 @@ char *executeToken( char *ptr, unsigned short token )
 		if (token == cmd->id ) 
 		{
 			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag, token);
+						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 	
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -189,37 +189,41 @@ char *executeToken( char *ptr, unsigned short token )
 	}
 
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag, token);	
+					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 
 	return NULL;
 }
 
 void _str(const char *str)
 {
-								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	if (strStack[stack].str) free(strStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 
-	strStack[stack].str = strdup( str );
-	strStack[stack].len = strlen( strStack[stack].str );
-	strStack[stack].flag = state_none;
+	kittyStack[stack].str = strdup( str );
+	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].state = state_none;
 
 	if (cmdStack) if (stack)
 	{
-		 if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 }
 
 void _castNumToStr( int num )
 {
 	char tmp[100];
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, strStack[stack].flag);
+								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	sprintf(tmp,"%d",num);
-	strStack[stack].str = strdup( tmp );
-	strStack[stack].len = strlen( strStack[stack].str );
-	strStack[stack].flag = state_none;
-	if (cmdStack) if (stack) if (strStack[stack-1].flag == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	kittyStack[stack].str = strdup( tmp );
+	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].state = state_none;
+
+	if (cmdStack) if (stack)
+	{
+		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
 }
 
 void paramiter_testing()
@@ -252,9 +256,9 @@ void paramiter_testing()
 
 	printf("--------------------------\n");
 
-	if (strStack[stack].str)
+	if (kittyStack[stack].str)
 	{
-		printf("'%s' stack is %d cmd stack is %d\n", strStack[stack].str, stack, cmdStack);
+		printf("'%s' stack is %d cmd stack is %d\n", kittyStack[stack].str, stack, cmdStack);
 	}
 	else
 	{
@@ -337,9 +341,9 @@ int main()
 
 	for (n=0; n<=stack;n++)
 	{
-		if (strStack[n].str)
+		if (kittyStack[n].str)
 		{
-			printf("'%s' stack is %d cmd stack is %d\n", strStack[n].str, stack, cmdStack);
+			printf("'%s' stack is %d cmd stack is %d\n", kittyStack[n].str, stack, cmdStack);
 		}
 		else
 		{
