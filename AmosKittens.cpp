@@ -184,7 +184,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
-		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
 	return ptr + length2;
@@ -200,7 +200,11 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
-		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+//		printf("**** kittyStack[stack-1].state %d\n",kittyStack[stack-1].state);
+//		printf("**** cmdTmp[cmdStack-1].flag %d\n",cmdTmp[cmdStack].flag);
+
+
+		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
 	return ptr;
@@ -213,7 +217,7 @@ struct nativeCommand Symbol[]=
 	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x0476, "Print",0,cmdPrint },
 	{0x0026,"\"",2, cmdQuote },
-	{0x003E,"",0,cmdNumber },
+	{0x003E,"",4,cmdNumber },
 	{0x0054,":", 0, nextCmd },
 	{0x005C,",", 0, nextArg},
 	{0x0064,";", 0, addData},
