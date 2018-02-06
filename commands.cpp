@@ -231,7 +231,7 @@ void _addNum( struct glueCommands *data )
 
 void _setVar( struct glueCommands *data )
 {
-	printf("data: lastVar %d\n", data -> lastVar);
+	printf("%20s:%08d data: lastVar %d\n",__FUNCTION__,__LINE__, data -> lastVar);
 
 	if (data -> lastVar)
 	{
@@ -334,7 +334,6 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	cmdParm( _mulData, tokenBuffer );
 	stack++;
-	cmdStack++;
 	return tokenBuffer;
 }
 
@@ -344,6 +343,5 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	cmdParm( _divData, tokenBuffer );
 	stack++;
-	cmdStack++;
 	return tokenBuffer;
 }
