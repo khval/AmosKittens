@@ -13,6 +13,7 @@ int last_token = 0;
 int last_var = 0;
 
 void _str(const char *str);
+void _num( int num );
 
 struct kittyData kittyStack[100];
 struct globalVar globalVars[1000];	// 0 is not used.
@@ -29,8 +30,21 @@ void dumpGlobal()
 	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
 	{
 		if (globalVars[n].varName == NULL) return;
-		printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
 
+		printf("%d\n",globalVars[n].var.type);
+
+		switch (globalVars[n].var.type)
+		{
+			case 0:
+				printf("%s=%d\n", globalVars[n].varName, globalVars[n].var.value );
+				break;
+			case 1:
+				printf("%s=%f\n", globalVars[n].varName, globalVars[n].var.decimal );
+				break;
+			case 2:
+				printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
+				break;
+		}
 	}
 }
 
@@ -79,15 +93,21 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+const char *types[]={"","#","$",""};
+
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	char *tmp;
 	struct reference *ref = (struct reference *) ptr;
 
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	last_var = 0;
 	if (ref -> ref == 0)
 	{
 		int found = 0;
+
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 		tmp = (char *) malloc( ref->length + 2 );
 		if (tmp)
@@ -95,32 +115,54 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			tmp[ ref->length -2 ] =0;
 			tmp[ ref->length -1 ] =0;
 
+				printf("%s:%d --- length %d \n",__FUNCTION__,__LINE__, ref -> length);
+
 			memcpy(tmp, ptr + sizeof(struct reference), ref->length );
-			sprintf(tmp + strlen(tmp),"%s", ref -> flags & 2 ? "$" : 0 );
+			sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
+
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 			found = findVar(tmp);
 			if (found)
 			{
-				free(tmp);
+				free(tmp);		//  don't need tmp
 				ref -> ref = found;
 			}
 			else
 			{
 				global_var_count ++;
 				ref -> ref = global_var_count;
-				globalVars[global_var_count].varName = tmp;
+				globalVars[global_var_count].varName = tmp;	// tmp is alloced and used here.
 				globalVars[global_var_count].var.str = strdup("");
 				globalVars[global_var_count].var.len = 0;
 			}
 
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 			last_var = ref -> ref;
+
+			// we should not free tmp, see code above.
 		}
 	}
 
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (ref -> ref)
 	{
-		_str(globalVars[ref -> ref].var.str);
+		switch (ref -> flags & 3)
+		{
+			case 0:
+					_num(globalVars[ref -> ref].var.value);
+					break;
+			case 1:
+					break;
+			case 2:
+					_str(globalVars[ref -> ref].var.str);
+					break;
+		}
 	}
+
+				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	return ptr + ref -> length ;
 }
@@ -147,6 +189,21 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	return ptr + length2;
 }
 
+char *cmdNumber(nativeCommand *cmd, char *ptr)
+{
+	kittyStack[stack].value = *((int *) ptr);
+	kittyStack[stack].state = state_none;
+
+	printf("%d\n", kittyStack[stack].value);
+
+	if (cmdStack) if (stack)
+	{
+		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
+
+	return ptr;
+}
+
 
 struct nativeCommand Symbol[]=
 {
@@ -154,9 +211,10 @@ struct nativeCommand Symbol[]=
 	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x0476, "Print",0,cmdPrint },
 	{0x0026,"\"",2, cmdQuote },
+	{0x003E,"",0,cmdNumber },
 	{0x0054,":", 0, nextCmd },
 	{0x005C,",", 0, nextArg},
-	{0x0064,";", 0, addStr},
+	{0x0064,";", 0, addData},
 	{0x0074,"(", 0, subCalc},
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
@@ -192,6 +250,24 @@ char *executeToken( char *ptr, unsigned short token )
 					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 
 	return NULL;
+}
+
+
+void _num( int num )
+{
+								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+
+	kittyStack[stack].str = NULL;
+	kittyStack[stack].value = num;
+	kittyStack[stack].state = state_none;
+
+	if (cmdStack) if (stack)
+	{
+		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
+								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 }
 
 void _str(const char *str)
@@ -316,7 +392,8 @@ int main()
 
 	memset(globalVars,0,sizeof(globalVars));
 
-	fd = fopen("amos-test/var.amos","r");
+//	fd = fopen("amos-test/var.amos","r");
+	fd = fopen("amos-test/var_num.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
