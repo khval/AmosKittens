@@ -15,7 +15,22 @@ void _print( struct glueCommands *data )
 
 	for (n=0;n<=stack;n++)
 	{
-		if (kittyStack[n].str) printf("%s", kittyStack[n].str);
+//		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
+
+		switch (kittyStack[n].type)
+		{
+			case 0:
+				printf("%d", kittyStack[n].value);
+				break;
+			case 1:
+				printf("%f", kittyStack[n].decimal);
+				break;
+			case 2:
+				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
+				break;
+
+		}
+
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
