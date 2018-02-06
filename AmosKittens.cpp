@@ -178,6 +178,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].str = strndup( ptr + 2, length );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = 2;
 
 	printf("%s\n", kittyStack[stack].str);
 
@@ -193,6 +194,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	kittyStack[stack].value = *((int *) ptr);
 	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = 0;
 
 	printf("%d\n", kittyStack[stack].value);
 
@@ -262,6 +264,7 @@ void _num( int num )
 	kittyStack[stack].str = NULL;
 	kittyStack[stack].value = num;
 	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = 0;
 
 	if (cmdStack) if (stack)
 	{
@@ -279,6 +282,7 @@ void _str(const char *str)
 	kittyStack[stack].str = strdup( str );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = 2;
 
 	if (cmdStack) if (stack)
 	{
@@ -295,6 +299,7 @@ void _castNumToStr( int num )
 	kittyStack[stack].str = strdup( tmp );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = 2;
 
 	if (cmdStack) if (stack)
 	{
