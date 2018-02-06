@@ -196,7 +196,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 0;
 
-	printf("%d\n", kittyStack[stack].value);
+	printf("Stack[%d].value=%d\n",stack,kittyStack[stack].value);
 
 	if (cmdStack) if (stack)
 	{
@@ -223,9 +223,9 @@ struct nativeCommand Symbol[]=
 	{0x008C,"]", 0, NULL },
 	{0xFFC0,"+",0, addData},
 	{0xFFCA,"-", 0, subData},
-	{0xFFA2,"=", 0, setVar },
-	{0xFFE2,"*", 0, mulVar },
-	{0xFFEC,"/", 0, divVar}
+	{0xFFA2,"=", 0, setVar},
+	{0xFFE2,"*", 0, mulData},
+	{0xFFEC,"/", 0, divData}
 
 };
 
@@ -398,7 +398,8 @@ int main()
 	memset(globalVars,0,sizeof(globalVars));
 
 //	fd = fopen("amos-test/var.amos","r");
-	fd = fopen("amos-test/var_num.amos","r");
+//	fd = fopen("amos-test/var_num.amos","r");
+	fd = fopen("amos-test/math.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
