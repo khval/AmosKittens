@@ -9,7 +9,7 @@
 
 int stack = 0;
 int cmdStack = 0;
-int last_token = 0;
+unsigned short last_token = 0;
 int last_var = 0;
 
 void _str(const char *str);
@@ -192,11 +192,36 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
+	unsigned short next_token = *((short *) (ptr+4) );
+
+
+	printf("Stack[%d].value=%d --- last token %04x, next token %04x\n",stack,kittyStack[stack].value, (unsigned short) last_token, next_token);
+
+
+	// check if - or + comes before * or /
+
+	if (
+		((last_token==0xFFC0) || (last_token==0xFFCA))
+	&&
+		((next_token==0xFFE2) || (next_token == 0xFFEC))
+	) {
+
+		printf("---hidden ( symbol \n");
+
+		// hidden ( condition.
+		kittyStack[stack].str = NULL;
+		kittyStack[stack].state = state_hidden_subData;
+		stack++;
+	}
+
+
 	kittyStack[stack].value = *((int *) ptr);
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 0;
 
-	printf("Stack[%d].value=%d\n",stack,kittyStack[stack].value);
+
+	// check it last command was * or /. and next command is not a * or /
+
 
 	if (cmdStack) if (stack)
 	{
@@ -205,6 +230,28 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 
 		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
+
+	if (
+		((last_token==0xFFE2) || (last_token == 0xFFEC))
+	&&
+		((next_token!=0xFFE2) && (next_token != 0xFFEC))
+	) {
+
+		printf("---hidden ( symbol maybe ? \n");
+
+		// it maybe a hidden ) condition.
+		if (stack > 0)
+		{
+			if (kittyStack[stack-1].state == state_hidden_subData)
+			{
+				printf("---hidden ) symbol yes it is\n");
+
+				kittyStack[stack-1] = kittyStack[stack];
+				stack --;
+				if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			}
+		}
 	}
 
 	return ptr;

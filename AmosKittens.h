@@ -5,7 +5,8 @@
 enum 
 {
 	state_none = 0,
-	state_subData
+	state_subData,
+	state_hidden_subData 
 };
 
 enum
