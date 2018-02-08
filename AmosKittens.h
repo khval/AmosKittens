@@ -15,6 +15,15 @@ enum
 	cmd_para
 };
 
+enum
+{
+	type_int = 0,
+	type_float,
+	type_string,
+	type_file,
+	type_array = 8		// I'm sure AMOS don't use this, but we do.
+};
+
 struct nativeCommand
 {
 	int id;
@@ -29,6 +38,7 @@ struct glueCommands
 	char *tokenBuffer;
 	int flag;
 	int lastVar;
+	int stack;
 };
 
 struct kittyData
@@ -37,9 +47,17 @@ struct kittyData
 	{
 		int len;
 		int value;
+		int count;
 	};
 	
-	char *str;
+	union
+	{
+		char *str;
+		char **str_array;
+		int *int_array;
+		double *float_array;		
+	};
+
 	double decimal;
 	int state;
 	int type;
@@ -56,6 +74,7 @@ struct globalVar
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_first;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
 #define cmdParm( fn, buf )				\
@@ -63,6 +82,7 @@ struct globalVar
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_para;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
 
