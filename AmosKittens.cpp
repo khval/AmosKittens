@@ -12,6 +12,8 @@ int cmdStack = 0;
 unsigned short last_token = 0;
 int last_var = 0;
 
+BOOL allocMode = FALSE;
+
 void _str(const char *str);
 void _num( int num );
 
@@ -26,6 +28,7 @@ int global_var_count = 0;
 void dumpGlobal()
 {
 	int n;
+	int i;
 
 	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
 	{
@@ -35,14 +38,31 @@ void dumpGlobal()
 
 		switch (globalVars[n].var.type)
 		{
-			case 0:
+			case type_int:
 				printf("%s=%d\n", globalVars[n].varName, globalVars[n].var.value );
 				break;
-			case 1:
+			case type_float:
 				printf("%s=%f\n", globalVars[n].varName, globalVars[n].var.decimal );
 				break;
-			case 2:
+			case type_string:
 				printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
+				break;
+			case type_int | type_array:
+
+				printf("%s(%d)=",
+						globalVars[n].varName,
+						globalVars[n].var.count);
+
+				for (i=0; i<globalVars[n].var.count; i++)
+				{
+					printf("%d,",globalVars[n].var.int_array[i]);
+				}
+				printf("\n");
+
+				break;
+			case type_float | type_array:
+				break;
+			case type_string | type_array:
 				break;
 		}
 	}
@@ -90,6 +110,84 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
 	cmdNormal( _print, ptr );
+	return ptr;
+}
+
+void dump_stack()
+{
+	int n;
+
+	for (n=0; n<=stack;n++)
+	{
+		printf("stack[%d]=",n);
+
+		switch( kittyStack[n].type )
+		{		
+			case type_int:
+				printf("%d\n",kittyStack[n].value);
+				break;
+			case type_float:
+				printf("%f\n",kittyStack[n].decimal);
+				break;
+			case type_string:
+				if (kittyStack[n].str)
+				{
+					printf("'%s' stack is %d cmd stack is %d\n", kittyStack[n].str, stack, cmdStack);
+				}
+				else
+				{
+					printf("no string found\n");
+				}
+				break;
+		}
+	}
+}
+
+void _alloc_mode_off( glueCommands *self )
+{
+	int n;
+	int var;
+	int count;
+
+	allocMode = FALSE;
+
+	printf("self.stack = %d\n",self -> stack);
+
+	printf("****\n");
+
+	// skip the var token +2
+
+	var = *((unsigned short *) (self -> tokenBuffer + 2));
+
+	dump_stack();
+
+	count = (self -> stack+1<=stack) ? kittyStack[self -> stack+1].value : 0;
+
+	for (n= self -> stack+2; n<=stack;n++) count *= kittyStack[n].value;
+
+	globalVars[var].var.count = count;
+	switch (globalVars[var].var.type)
+	{
+		case type_int:
+				globalVars[var].var.int_array = (int *) malloc( count * sizeof(int) ) ;
+				break;
+		case type_float:
+				globalVars[var].var.float_array = (double *) malloc( count * sizeof(double) ) ;
+				break;
+		case type_string:
+				globalVars[var].var.str_array = (char **) malloc( count * sizeof(char *) ) ;
+				break;
+	}
+
+	globalVars[var].var.type |= type_array; 	
+
+	getchar();
+}
+
+char *cmdDim(nativeCommand *cmd, char *ptr)
+{
+	allocMode = TRUE;
+	cmdNormal( _alloc_mode_off, ptr );
 	return ptr;
 }
 
@@ -262,7 +360,6 @@ struct nativeCommand Symbol[]=
 {
 	{0x0000,	"", 2,	cmdNewLine},
 	{0x0006, "", sizeof(struct reference),cmdVar},
-	{0x0476, "Print",0,cmdPrint },
 	{0x0026,"\"",2, cmdQuote },
 	{0x003E,"",4,cmdNumber },
 	{0x0054,":", 0, nextCmd },
@@ -272,6 +369,8 @@ struct nativeCommand Symbol[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
+	{0x0476, "Print",0,cmdPrint },
+	{0x0640, "Dim",0,cmdDim },
 	{0xFFC0,"+",0, addData},
 	{0xFFCA,"-", 0, subData},
 	{0xFFA2,"=", 0, setVar},
@@ -450,7 +549,8 @@ int main()
 
 //	fd = fopen("amos-test/var.amos","r");
 //	fd = fopen("amos-test/var_num.amos","r");
-	fd = fopen("amos-test/math.amos","r");
+//	fd = fopen("amos-test/math.amos","r");
+	fd = fopen("amos-test/dim.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -472,18 +572,7 @@ int main()
 	printf("--------------------------\n");
 
 	dumpGlobal();
-
-	for (n=0; n<=stack;n++)
-	{
-		if (kittyStack[n].str)
-		{
-			printf("'%s' stack is %d cmd stack is %d\n", kittyStack[n].str, stack, cmdStack);
-		}
-		else
-		{
-			printf("no string found\n");
-		}
-	}
+	dump_stack();
 
 	return 0;
 }
