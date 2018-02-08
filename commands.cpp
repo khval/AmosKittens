@@ -324,6 +324,11 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%d\n",__FUNCTION__,__LINE__);
 
+	if (cmdStack) if (stack)
+	{
+		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
+
 	cmdNormal(_setVar, tokenBuffer);
 	return tokenBuffer;
 }
