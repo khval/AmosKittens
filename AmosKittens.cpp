@@ -93,6 +93,9 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	{
 		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
+
+	allocMode = FALSE;
+
 	return ptr;
 }
 
@@ -143,11 +146,33 @@ void dump_stack()
 	}
 }
 
+void _array_index_var( glueCommands *self )
+{
+	int tmp_cells;
+	int varNum;
+	struct kittyData *var;
+	printf("------ array index ----\n");
+
+	printf("self.stack = %d\n",self -> stack);
+
+	tmp_cells = stack - self -> stack;
+
+	dump_stack();
+
+	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
+
+	var = &globalVars[varNum].var;
+	stack -=  tmp_cells;		// should use garbage collector here ;-) memory leaks works to for now.
+
+	getchar();
+}
+
 void _alloc_mode_off( glueCommands *self )
 {
 	int n;
-	int var;
+	int varNum;
 	int count;
+	struct kittyData *var;
 
 	allocMode = FALSE;
 
@@ -157,29 +182,44 @@ void _alloc_mode_off( glueCommands *self )
 
 	// skip the var token +2
 
-	var = *((unsigned short *) (self -> tokenBuffer + 2));
+	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
+
+	var = &globalVars[varNum].var;
 
 	dump_stack();
 
-	count = (self -> stack+1<=stack) ? kittyStack[self -> stack+1].value : 0;
+	var -> cells = stack - self -> stack;
 
-	for (n= self -> stack+2; n<=stack;n++) count *= kittyStack[n].value;
+	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
+	for (n= 0; n<var -> cells;n++) 
+	{
+		var -> sizeTab[n] = kittyStack[n + var -> cells ].value;
+	}
 
-	globalVars[var].var.count = count;
-	switch (globalVars[var].var.type)
+	var -> count = var -> cells ?  var -> sizeTab[0] : 0 ;
+	for (n= 1; n<var -> cells;n++) var -> count *= kittyStack[n].value;
+
+	switch (var -> type)
 	{
 		case type_int:
-				globalVars[var].var.int_array = (int *) malloc( count * sizeof(int) ) ;
+				var -> int_array = (int *) malloc( var -> count * sizeof(int) ) ;
 				break;
 		case type_float:
-				globalVars[var].var.float_array = (double *) malloc( count * sizeof(double) ) ;
+				var -> float_array = (double *) malloc( var -> count * sizeof(double) ) ;
 				break;
 		case type_string:
-				globalVars[var].var.str_array = (char **) malloc( count * sizeof(char *) ) ;
+				var -> str_array = (char **) malloc( var -> count * sizeof(char *) ) ;
 				break;
 	}
 
-	globalVars[var].var.type |= type_array; 	
+	printf("name %s, cells %d, size %d\n", 
+		globalVars[varNum].varName, 
+		var -> cells,
+		var -> count );
+
+	var -> type |= type_array; 	
+
+	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
 
 	getchar();
 }
@@ -198,14 +238,17 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	char *tmp;
 	struct reference *ref = (struct reference *) ptr;
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
+
+	printf("next token %04x\n", next_token);
+
 
 	last_var = 0;
 	if (ref -> ref == 0)
 	{
 		int found = 0;
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 		tmp = (char *) malloc( ref->length + 2 );
 		if (tmp)
@@ -218,7 +261,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			memcpy(tmp, ptr + sizeof(struct reference), ref->length );
 			sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 			found = findVar(tmp);
 			if (found)
@@ -243,24 +285,36 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (ref -> ref)
+	if (next_token == 0x0074)	// ( symbol
 	{
-		switch (ref -> flags & 3)
+		printf("found a array, hurray :)\n");
+
+		if (allocMode == FALSE)
 		{
-			case 0:
+
+			cmdIndex( _array_index_var, ptr );
+		}
+	}
+	else
+	{
+		if (ref -> ref)
+		{
+			switch (ref -> flags & 3)
+			{
+				case 0:
 					_num(globalVars[ref -> ref].var.value);
 					break;
-			case 1:
+				case 1:
 					break;
-			case 2:
+				case 2:
 					_str(globalVars[ref -> ref].var.str);
 					break;
+			}
 		}
 	}
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 
 	return ptr + ref -> length ;
 }
