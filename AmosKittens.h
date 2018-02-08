@@ -12,6 +12,7 @@ enum
 enum
 {
 	cmd_first = 0,
+	cmd_index, 
 	cmd_para
 };
 
@@ -58,6 +59,9 @@ struct kittyData
 		double *float_array;		
 	};
 
+	int cells;
+	int *sizeTab;
+
 	double decimal;
 	int state;
 	int type;
@@ -73,6 +77,14 @@ struct globalVar
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_first;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdStack++; \
+
+#define cmdIndex( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_index;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
