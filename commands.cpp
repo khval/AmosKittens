@@ -235,24 +235,35 @@ void _setVar( struct glueCommands *data )
 
 	if (data -> lastVar)
 	{
-		if (globalVars[data -> lastVar].var.str) 
+
+		if ( (globalVars[data -> lastVar].var.type & type_array) != type_array )
 		{
-			free(globalVars[data -> lastVar].var.str);
-			globalVars[data -> lastVar].var.str = NULL;
+			if (globalVars[data -> lastVar].var.str) 
+			{
+				free(globalVars[data -> lastVar].var.str);
+				globalVars[data -> lastVar].var.str = NULL;
+			}
 		}
 
-		switch (kittyStack[stack].type & 3)
+		if (kittyStack[stack].type == (globalVars[data -> lastVar].var.type & 7) )
 		{
-			case 0:
+			switch (globalVars[data -> lastVar].var.type)
+			{
+				case 0:
 					globalVars[data -> lastVar].var.value = kittyStack[stack].value;
 					break;
-			case 1:
+				case 1:
 					globalVars[data -> lastVar].var.decimal = kittyStack[stack].decimal;
 					break;
-			case 2:
+				case 2:
 					globalVars[data -> lastVar].var.str = strdup(kittyStack[stack].str);
 					globalVars[data -> lastVar].var.len = kittyStack[stack].len;
 					break;
+			}
+		}
+		else
+		{
+			printf("Mismatch error\n");
 		}
 	}
 }
