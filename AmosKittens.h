@@ -59,6 +59,7 @@ struct kittyData
 		double *float_array;		
 	};
 
+	int index;
 	int cells;
 	int *sizeTab;
 
