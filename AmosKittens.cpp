@@ -150,6 +150,10 @@ void _array_index_var( glueCommands *self )
 {
 	int tmp_cells;
 	int varNum;
+	int n = 0;
+	int mul;
+	int index;
+
 	struct kittyData *var;
 	printf("------ array index ----\n");
 
@@ -159,9 +163,35 @@ void _array_index_var( glueCommands *self )
 
 	dump_stack();
 
-	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
+	varNum = self -> lastVar;
+
+//	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
+
+	printf("buffer %08x, varNum %04x\n",self -> tokenBuffer, varNum);
 
 	var = &globalVars[varNum].var;
+
+
+	for (n=0; n<var -> cells;n++) printf("data %d\n", var -> sizeTab[n] );
+
+	index = 0;
+	mul  = 1;
+
+	for (n = self -> stack+1;n<=stack; n++ )
+	{
+		printf("**stack[%d]=%d\n",n, kittyStack[n].value);
+
+		index += (mul * kittyStack[n].value);
+
+		printf("%d\n",n-1- self -> stack);
+
+		mul *= var -> sizeTab[n- self -> stack -1];
+
+		printf("mul %d\n", mul);
+	}
+
+	printf("index: %d\n",index);
+
 	stack -=  tmp_cells;		// should use garbage collector here ;-) memory leaks works to for now.
 
 	getchar();
@@ -169,6 +199,7 @@ void _array_index_var( glueCommands *self )
 
 void _alloc_mode_off( glueCommands *self )
 {
+	int size = 0;
 	int n;
 	int varNum;
 	int count;
@@ -184,6 +215,8 @@ void _alloc_mode_off( glueCommands *self )
 
 	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
 
+	printf("varNum %d\n",varNum);
+
 	var = &globalVars[varNum].var;
 
 	dump_stack();
@@ -191,31 +224,39 @@ void _alloc_mode_off( glueCommands *self )
 	var -> cells = stack - self -> stack;
 
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
-	for (n= 0; n<var -> cells;n++) 
+
+
+	for (n= 0; n<var -> cells; n++ ) 
 	{
-		var -> sizeTab[n] = kittyStack[n + var -> cells ].value;
+		var -> sizeTab[n] = kittyStack[self -> stack + 1 +  n].value;
 	}
 
-	var -> count = var -> cells ?  var -> sizeTab[0] : 0 ;
-	for (n= 1; n<var -> cells;n++) var -> count *= kittyStack[n].value;
+	var -> count = 1 ;
+	for (n= 0; n<var -> cells;n++) var -> count *= var -> sizeTab[n];
 
 	switch (var -> type)
 	{
 		case type_int:
-				var -> int_array = (int *) malloc( var -> count * sizeof(int) ) ;
+				size = var -> count * sizeof(int);
+				var -> int_array = (int *) malloc( size ) ;
 				break;
 		case type_float:
-				var -> float_array = (double *) malloc( var -> count * sizeof(double) ) ;
+				size = var -> count * sizeof(double);
+				var -> float_array = (double *) malloc( size ) ;
 				break;
 		case type_string:
-				var -> str_array = (char **) malloc( var -> count * sizeof(char *) ) ;
+				size = var -> count * sizeof(char *);
+				var -> str_array = (char **) malloc( size ) ;
 				break;
 	}
 
-	printf("name %s, cells %d, size %d\n", 
+	memset( var -> str, 0, size );	// str is a union :-)
+
+	printf("name %s, cells %d, size %d, sizeTab %08x\n", 
 		globalVars[varNum].varName, 
 		var -> cells,
-		var -> count );
+		var -> count,
+		var ->sizeTab );
 
 	var -> type |= type_array; 	
 
