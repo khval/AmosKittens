@@ -155,46 +155,53 @@ void _array_index_var( glueCommands *self )
 	int index;
 
 	struct kittyData *var;
-	printf("------ array index ----\n");
-
-	printf("self.stack = %d\n",self -> stack);
 
 	tmp_cells = stack - self -> stack;
-
-	dump_stack();
 
 	varNum = self -> lastVar;
 
 //	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
-
-	printf("buffer %08x, varNum %04x\n",self -> tokenBuffer, varNum);
+//	printf("buffer %08x, varNum %04x\n",self -> tokenBuffer, varNum);
 
 	var = &globalVars[varNum].var;
 
-
 	for (n=0; n<var -> cells;n++) printf("data %d\n", var -> sizeTab[n] );
 
-	index = 0;
-	mul  = 1;
-
+	index = 0; mul  = 1;
 	for (n = self -> stack+1;n<=stack; n++ )
 	{
-		printf("**stack[%d]=%d\n",n, kittyStack[n].value);
-
 		index += (mul * kittyStack[n].value);
-
-		printf("%d\n",n-1- self -> stack);
-
 		mul *= var -> sizeTab[n- self -> stack -1];
-
-		printf("mul %d\n", mul);
 	}
 
-	printf("index: %d\n",index);
-
+	var -> index = index;
 	stack -=  tmp_cells;		// should use garbage collector here ;-) memory leaks works to for now.
 
-	getchar();
+
+	if ((index >= 0)  && (index<var->count))
+	{
+		// we going over write it.
+		if (kittyStack[n].str) free(kittyStack[n].str);
+		kittyStack[n].str = NULL;
+
+		// change stack
+		switch (var -> type & 7)
+		{
+			case type_int:
+				kittyStack[stack].type = (var -> type & 7);
+				kittyStack[stack].value = var -> int_array[index];
+				break;
+			case type_float:
+				kittyStack[stack].type = (var -> type & 7);
+				kittyStack[stack].decimal = var -> float_array[index];
+				break;
+			case type_string:
+				kittyStack[stack].type = (var -> type & 7);
+				kittyStack[stack].str = strdup(var -> str_array[index]);
+				kittyStack[stack].len = strlen(kittyStack[stack].str);
+				break;
+		}
+	}
 }
 
 void _alloc_mode_off( glueCommands *self )
