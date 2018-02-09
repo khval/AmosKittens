@@ -231,33 +231,38 @@ void _addNum( struct glueCommands *data )
 
 void _setVar( struct glueCommands *data )
 {
+	struct kittyData *var;
+
 	printf("%20s:%08d data: lastVar %d\n",__FUNCTION__,__LINE__, data -> lastVar);
+
+	var = &globalVars[data -> lastVar].var;
 
 	if (data -> lastVar)
 	{
-
-		if ( (globalVars[data -> lastVar].var.type & type_array) != type_array )
-		{
-			if (globalVars[data -> lastVar].var.str) 
-			{
-				free(globalVars[data -> lastVar].var.str);
-				globalVars[data -> lastVar].var.str = NULL;
-			}
-		}
-
 		if (kittyStack[stack].type == (globalVars[data -> lastVar].var.type & 7) )
 		{
 			switch (globalVars[data -> lastVar].var.type)
 			{
-				case 0:
-					globalVars[data -> lastVar].var.value = kittyStack[stack].value;
+				case type_int:
+					var->value = kittyStack[stack].value;
 					break;
-				case 1:
-					globalVars[data -> lastVar].var.decimal = kittyStack[stack].decimal;
+				case type_float:
+					var->decimal = kittyStack[stack].decimal;
 					break;
-				case 2:
-					globalVars[data -> lastVar].var.str = strdup(kittyStack[stack].str);
-					globalVars[data -> lastVar].var.len = kittyStack[stack].len;
+				case type_string:
+					if (var->str) free(var->str);
+					var->str = strdup(kittyStack[stack].str);
+					var->len = kittyStack[stack].len;
+					break;
+				case type_int | type_array:
+					var->int_array[var -> index] = kittyStack[stack].value;
+					break;
+				case type_float | type_array:
+					var->float_array[var -> index] = kittyStack[stack].decimal;
+					break;
+				case type_string | type_array:
+					if (var->str_array[var -> index] ) free(var->str_array[var->index]);
+					var->str_array[var -> index] = strdup(kittyStack[stack].str);	
 					break;
 			}
 		}
