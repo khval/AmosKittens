@@ -87,26 +87,20 @@ int findVar( char *name )
 
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (cmdStack)
-	{
-		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-
+	if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	allocMode = FALSE;
-
 	return ptr;
 }
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	allocMode = FALSE;
 
-	if (cmdStack)
-	{
-		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
+	printf("-- ENTER FOR NEXT AMOS LINE --\n");
+	getchar();
+
 	return ptr;
 }
 
@@ -114,6 +108,20 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
 	cmdNormal( _print, ptr );
 	return ptr;
+}
+
+void dump_prog_stack()
+{
+	int n;
+
+	for (n=0; n<cmdStack;n++)
+	{
+		printf("cmdTmp[%d].cmd = %08x\n", n, cmdTmp[n].cmd);
+		printf("cmdTmp[%d].tokenBuffer = %08x\n", n, cmdTmp[n].tokenBuffer);
+		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
+		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
+		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
+	}
 }
 
 void dump_stack()
@@ -161,11 +169,12 @@ void _array_index_var( glueCommands *self )
 	varNum = self -> lastVar;
 
 //	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
-//	printf("buffer %08x, varNum %04x\n",self -> tokenBuffer, varNum);
+
+	dump_stack();
+
+	printf("%s: %08x, varNum %04x\n",__FUNCTION__, self -> tokenBuffer, varNum);
 
 	var = &globalVars[varNum].var;
-
-	for (n=0; n<var -> cells;n++) printf("data %d\n", var -> sizeTab[n] );
 
 	index = 0; mul  = 1;
 	for (n = self -> stack+1;n<=stack; n++ )
@@ -176,7 +185,6 @@ void _array_index_var( glueCommands *self )
 
 	var -> index = index;
 	stack -=  tmp_cells;		// should use garbage collector here ;-) memory leaks works to for now.
-
 
 	if ((index >= 0)  && (index<var->count))
 	{
@@ -214,28 +222,15 @@ void _alloc_mode_off( glueCommands *self )
 
 	allocMode = FALSE;
 
-	printf("self.stack = %d\n",self -> stack);
-
-	printf("****\n");
-
-	// skip the var token +2
-
 	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
-
-	printf("varNum %d\n",varNum);
-
 	var = &globalVars[varNum].var;
 
-	dump_stack();
-
 	var -> cells = stack - self -> stack;
-
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
-
 
 	for (n= 0; n<var -> cells; n++ ) 
 	{
-		var -> sizeTab[n] = kittyStack[self -> stack + 1 +  n].value;
+		var -> sizeTab[n] = kittyStack[self -> stack + 1 +  n].value + 1;
 	}
 
 	var -> count = 1 ;
@@ -259,17 +254,11 @@ void _alloc_mode_off( glueCommands *self )
 
 	memset( var -> str, 0, size );	// str is a union :-)
 
-	printf("name %s, cells %d, size %d, sizeTab %08x\n", 
-		globalVars[varNum].varName, 
-		var -> cells,
-		var -> count,
-		var ->sizeTab );
+//	printf("name %s, cells %d, size %d, sizeTab %08x\n", globalVars[varNum].varName, 	var -> cells,var -> count,var ->sizeTab );
 
 	var -> type |= type_array; 	
 
 	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
-
-	getchar();
 }
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
@@ -285,12 +274,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	char *tmp;
 	struct reference *ref = (struct reference *) ptr;
-
-
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
-
-	printf("next token %04x\n", next_token);
-
 
 	last_var = 0;
 	if (ref -> ref == 0)
@@ -303,8 +287,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		{
 			tmp[ ref->length -2 ] =0;
 			tmp[ ref->length -1 ] =0;
-
-				printf("%s:%d --- length %d \n",__FUNCTION__,__LINE__, ref -> length);
 
 			memcpy(tmp, ptr + sizeof(struct reference), ref->length );
 			sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
@@ -325,8 +307,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 				globalVars[global_var_count].var.len = 0;
 			}
 
-				printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 			last_var = ref -> ref;
 
 			// we should not free tmp, see code above.
@@ -336,11 +316,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (next_token == 0x0074)	// ( symbol
 	{
-		printf("found a array, hurray :)\n");
-
 		if (allocMode == FALSE)
 		{
-
 			cmdIndex( _array_index_var, ptr );
 		}
 	}
@@ -394,10 +371,6 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
-
-	printf("Stack[%d].value=%d --- last token %04x, next token %04x\n",stack,kittyStack[stack].value, (unsigned short) last_token, next_token);
-
-
 	// check if - or + comes before * or /
 
 	if (
@@ -414,21 +387,14 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		stack++;
 	}
 
-
 	kittyStack[stack].value = *((int *) ptr);
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 0;
 
-
 	// check it last command was * or /. and next command is not a * or /
-
 
 	if (cmdStack) if (stack)
 	{
-//		printf("**** kittyStack[stack-1].state %d\n",kittyStack[stack-1].state);
-//		printf("**** cmdTmp[cmdStack-1].flag %d\n",cmdTmp[cmdStack].flag);
-
-
 		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
@@ -491,9 +457,10 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
+
 			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-	
+
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
 			return ret;
@@ -614,13 +581,9 @@ void code_reader( char *start, int tokenlength )
 	int token = 0;
 	last_token = 0;
 	
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	ptr = start;
 	while ( ptr = token_reader(  start, ptr,  last_token, token, tokenlength ) )
 	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 		if (ptr == NULL) break;
 
 		last_token = token;
@@ -628,9 +591,6 @@ void code_reader( char *start, int tokenlength )
 		ptr += 2;	// next token.
 		
 	}
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 }
 
 int main()
@@ -671,10 +631,19 @@ int main()
 		fclose(fd);
 	}
 
-	printf("--------------------------\n");
+	printf("--- End of program status ---\n");
+
+	printf("\n--- var dump ---\n");
 
 	dumpGlobal();
+
+	printf("\n--- value stack dump ---\n");
+
 	dump_stack();
+
+	printf("\n--- program stack dump ---\n");
+
+	dump_prog_stack();
 
 	return 0;
 }
