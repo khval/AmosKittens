@@ -5,16 +5,22 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 #include "debug.h"
+#include <string>
+#include <iostream>
 
 extern int last_var;
 extern struct globalVar globalVars[];
+extern unsigned short last_token;
+extern int tokenMode;
+
+using namespace std;
 
 void _print( struct glueCommands *data )
 {
 	int n;
 	printf("PRINT: ");
 
-	for (n=0;n<=stack;n++)
+	for (n=data->stack;n<=stack;n++)
 	{
 //		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
 
@@ -41,11 +47,12 @@ void _input( struct glueCommands *data )
 {
 	int n;
 
+	printf("last_token: %04x\n",last_token);
 	dump_stack();
 
 	printf("INPUT: ");
 
-	for (n=0;n<=stack;n++)
+	for (n=data->stack;n<=stack;n++)
 	{
 //		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
 
@@ -70,6 +77,7 @@ void _input( struct glueCommands *data )
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
 {
+	tokenMode = mode_input;
 	cmdNormal( _input, ptr );
 	return ptr;
 }
@@ -312,9 +320,27 @@ printf("set int array\n");
 		}
 		else
 		{
+
+			printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
+				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar].var.type & 7));
+
 			printf("Mismatch error\n");
 		}
 	}
+}
+
+void _setVarReverse( struct glueCommands *data )
+{
+	printf("%20s:%08d data: lastVar %d\n",__FUNCTION__,__LINE__, data -> lastVar);
+
+	// if variable is string it will have stored its data on the stack.
+
+	if (kittyStack[stack].str) free(kittyStack[stack].str);
+	kittyStack[stack].str = NULL;
+	stack --;
+
+	data->lastVar = last_var;	// we did know then, but now we know,
+	_setVar( data );
 }
 
 //--------------------------------------------------------
@@ -359,6 +385,33 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	return tokenBuffer;
 }
+
+extern void _str(const char *str);
+
+char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	std::string input;
+
+	switch (tokenMode)
+	{
+ 		case mode_standard:
+			cmdParm( _addData, tokenBuffer );
+			stack++;
+			break;
+		case mode_input:
+			if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			getline(cin, input);
+			_str( (const char *) input.c_str() );
+			stack++;
+					 
+			cmdParm( _setVarReverse, tokenBuffer );
+			break;
+	}
+
+	return tokenBuffer;
+}
+
 
 char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 {
