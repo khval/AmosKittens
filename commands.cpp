@@ -245,6 +245,9 @@ void _setVar( struct glueCommands *data )
 			{
 				case type_int:
 					var->value = kittyStack[stack].value;
+
+printf("set int\n");
+
 					break;
 				case type_float:
 					var->decimal = kittyStack[stack].decimal;
@@ -256,6 +259,9 @@ void _setVar( struct glueCommands *data )
 					break;
 				case type_int | type_array:
 					var->int_array[var -> index] = kittyStack[stack].value;
+
+printf("set int array\n");
+
 					break;
 				case type_float | type_array:
 					var->float_array[var -> index] = kittyStack[stack].decimal;
@@ -277,13 +283,15 @@ void _setVar( struct glueCommands *data )
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stack++;
 	return tokenBuffer;
 }
 
 char *addStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
 	cmdParm( _addStr, tokenBuffer );
 	stack++;
 	return tokenBuffer;
@@ -291,8 +299,6 @@ char *addStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 	kittyStack[stack].str = NULL;
 	kittyStack[stack].state = state_subData;
 
@@ -302,7 +308,7 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	if (stack > 0)
 	{
@@ -318,8 +324,7 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	cmdParm( _addData, tokenBuffer );
 	stack++;
@@ -328,8 +333,7 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	cmdParm(_subData,tokenBuffer);
 	stack++;
@@ -338,12 +342,7 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%20s:%d\n",__FUNCTION__,__LINE__);
-
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	cmdNormal(_setVar, tokenBuffer);
 	return tokenBuffer;
@@ -351,7 +350,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%20s:%d\n",__FUNCTION__,__LINE__);
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	cmdParm( _mulData, tokenBuffer );
 	stack++;
@@ -360,7 +359,7 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%20s:%d\n",__FUNCTION__,__LINE__);
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	cmdParm( _divData, tokenBuffer );
 	stack++;
