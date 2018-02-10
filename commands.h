@@ -11,6 +11,8 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer);
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer);
 char *addData(struct nativeCommand *cmd, char *tokenBuffer);
 char *subData(struct nativeCommand *cmd, char *tokenBuffer);
+char *breakData(struct nativeCommand *cmd, char *tokenBuffer);
+
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer);
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer);
 char *divData(struct nativeCommand *cmd, char *tokenBuffer);
