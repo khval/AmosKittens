@@ -2,6 +2,13 @@
 #ifndef __amoskittens_h__
 #define __amoskittens_h__
 
+enum
+{
+	mode_standard,
+	mode_alloc,
+	mode_input
+};
+
 enum 
 {
 	state_none = 0,
