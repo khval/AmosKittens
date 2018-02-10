@@ -15,6 +15,8 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer);
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer);
 char *divData(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
+
 // not used outside of commands.cpp, normally but just for testing.
 void _addStr( struct glueCommands *data );
 void _print( struct glueCommands *data );

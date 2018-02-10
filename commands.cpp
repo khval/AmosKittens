@@ -4,6 +4,7 @@
 #include <string.h>
 #include <proto/exec.h>
 #include "amosKittens.h"
+#include "debug.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -34,6 +35,43 @@ void _print( struct glueCommands *data )
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
+}
+
+void _input( struct glueCommands *data )
+{
+	int n;
+
+	dump_stack();
+
+	printf("INPUT: ");
+
+	for (n=0;n<=stack;n++)
+	{
+//		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
+
+		switch (kittyStack[n].type)
+		{
+			case 0:
+				printf("%d", kittyStack[n].value);
+				break;
+			case 1:
+				printf("%f", kittyStack[n].decimal);
+				break;
+			case 2:
+				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
+				break;
+
+		}
+
+		if (n<=stack) printf("    ");
+	}
+	printf("\n");
+}
+
+char *cmdInput(nativeCommand *cmd, char *ptr)
+{
+	cmdNormal( _input, ptr );
+	return ptr;
 }
 
 void _addStr( struct glueCommands *data )
