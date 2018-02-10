@@ -13,7 +13,7 @@ int cmdStack = 0;
 unsigned short last_token = 0;
 int last_var = 0;
 
-BOOL allocMode = FALSE;
+int tokenMode = mode_standard;
 
 void _str(const char *str);
 void _num( int num );
@@ -45,7 +45,7 @@ int findVar( char *name )
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	allocMode = FALSE;
+	tokenMode = mode_standard;
 	return ptr;
 }
 
@@ -53,7 +53,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	allocMode = FALSE;
+	tokenMode = mode_standard;
 
 	printf("-- ENTER FOR NEXT AMOS LINE --\n");
 	getchar();
@@ -135,7 +135,7 @@ void _alloc_mode_off( glueCommands *self )
 	int count;
 	struct kittyData *var;
 
-	allocMode = FALSE;
+	tokenMode = mode_standard;	
 
 	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
 	var = &globalVars[varNum].var;
@@ -178,7 +178,7 @@ void _alloc_mode_off( glueCommands *self )
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
 {
-	allocMode = TRUE;
+	tokenMode = mode_alloc;
 	cmdNormal( _alloc_mode_off, ptr );
 	return ptr;
 }
@@ -190,6 +190,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	char *tmp;
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
+	struct kittyData *var;
 
 	last_var = 0;
 	if (ref -> ref == 0)
@@ -217,9 +218,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			{
 				global_var_count ++;
 				ref -> ref = global_var_count;
+
 				globalVars[global_var_count].varName = tmp;	// tmp is alloced and used here.
-				globalVars[global_var_count].var.str = strdup("");
-				globalVars[global_var_count].var.len = 0;
+
+				var = &globalVars[global_var_count].var;
+				var->type = ref -> flags & 3;
+				var->len = 0;
+				if (var -> type == type_string) var->str = strdup("");
 			}
 
 			last_var = ref -> ref;
@@ -231,7 +236,9 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (next_token == 0x0074)	// ( symbol
 	{
-		if (allocMode == FALSE)
+		printf("#going this path\n");
+
+		if (tokenMode != mode_alloc)
 		{
 			cmdIndex( _array_index_var, ptr );
 		}
@@ -347,7 +354,7 @@ struct nativeCommand Symbol[]=
 	{0x003E,"",4,cmdNumber },
 	{0x0054,":", 0, nextCmd },
 	{0x005C,",", 0, nextArg},
-	{0x0064,";", 0, addData},
+	{0x0064,";", 0, breakData},
 	{0x0074,"(", 0, subCalc},
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
@@ -417,7 +424,7 @@ void _str(const char *str)
 	kittyStack[stack].str = strdup( str );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = 2;
+	kittyStack[stack].type = type_string;
 
 	if (cmdStack) if (stack)
 	{
