@@ -6,6 +6,7 @@
 #include <proto/dos.h>
 #include "amosKittens.h"
 #include "commands.h"
+#include "debug.h"
 
 int stack = 0;
 int cmdStack = 0;
@@ -24,50 +25,6 @@ int global_var_count = 0;
 
  int numStack[100];
  struct glueCommands cmdTmp[100];	
-
-void dumpGlobal()
-{
-	int n;
-	int i;
-
-	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
-	{
-		if (globalVars[n].varName == NULL) return;
-
-		printf("%d\n",globalVars[n].var.type);
-
-		switch (globalVars[n].var.type)
-		{
-			case type_int:
-				printf("%s=%d\n", globalVars[n].varName, globalVars[n].var.value );
-				break;
-			case type_float:
-				printf("%s=%f\n", globalVars[n].varName, globalVars[n].var.decimal );
-				break;
-			case type_string:
-				printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
-				break;
-			case type_int | type_array:
-
-				printf("%s(%d)=",
-						globalVars[n].varName,
-						globalVars[n].var.count);
-
-				for (i=0; i<globalVars[n].var.count; i++)
-				{
-					printf("%d,",globalVars[n].var.int_array[i]);
-				}
-				printf("\n");
-
-				break;
-			case type_float | type_array:
-				break;
-			case type_string | type_array:
-				break;
-		}
-	}
-}
-
 
 int findVar( char *name )
 {
@@ -110,49 +67,7 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-void dump_prog_stack()
-{
-	int n;
 
-	for (n=0; n<cmdStack;n++)
-	{
-		printf("cmdTmp[%d].cmd = %08x\n", n, cmdTmp[n].cmd);
-		printf("cmdTmp[%d].tokenBuffer = %08x\n", n, cmdTmp[n].tokenBuffer);
-		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
-		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
-		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
-	}
-}
-
-void dump_stack()
-{
-	int n;
-
-	for (n=0; n<=stack;n++)
-	{
-		printf("stack[%d]=",n);
-
-		switch( kittyStack[n].type )
-		{		
-			case type_int:
-				printf("%d\n",kittyStack[n].value);
-				break;
-			case type_float:
-				printf("%f\n",kittyStack[n].decimal);
-				break;
-			case type_string:
-				if (kittyStack[n].str)
-				{
-					printf("'%s' stack is %d cmd stack is %d\n", kittyStack[n].str, stack, cmdStack);
-				}
-				else
-				{
-					printf("no string found\n");
-				}
-				break;
-		}
-	}
-}
 
 void _array_index_var( glueCommands *self )
 {
@@ -438,6 +353,7 @@ struct nativeCommand Symbol[]=
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
 	{0x0476, "Print",0,cmdPrint },
+	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
 	{0xFFC0,"+",0, addData},
 	{0xFFCA,"-", 0, subData},
@@ -612,7 +528,8 @@ int main()
 //	fd = fopen("amos-test/var.amos","r");
 //	fd = fopen("amos-test/var_num.amos","r");
 //	fd = fopen("amos-test/math.amos","r");
-	fd = fopen("amos-test/dim.amos","r");
+//	fd = fopen("amos-test/dim.amos","r");
+	fd = fopen("amos-test/input.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
