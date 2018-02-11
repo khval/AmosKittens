@@ -6,7 +6,8 @@ enum
 {
 	mode_standard,
 	mode_alloc,
-	mode_input
+	mode_input,
+	mode_goto
 };
 
 enum 
@@ -42,7 +43,7 @@ struct nativeCommand
 
 struct glueCommands
 {
-	void (*cmd) ( struct glueCommands *data );
+	char *(*cmd) ( struct glueCommands *data );	// can return token location
 	char *tokenBuffer;
 	int flag;
 	int lastVar;
@@ -73,6 +74,12 @@ struct kittyData
 	double decimal;
 	int state;
 	int type;
+};
+
+struct label
+{
+	char *tokenLocation;
+	char *name;
 };
 
 struct globalVar
