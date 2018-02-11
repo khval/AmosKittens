@@ -19,9 +19,11 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer);
+
 // not used outside of commands.cpp, normally but just for testing.
-void _addStr( struct glueCommands *data );
-void _print( struct glueCommands *data );
+char *_addStr( struct glueCommands *data );
+char *_print( struct glueCommands *data );
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 
