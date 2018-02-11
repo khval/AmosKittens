@@ -7,6 +7,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "debug.h"
+#include <vector>
 
 int stack = 0;
 int cmdStack = 0;
@@ -20,6 +21,9 @@ void _num( int num );
 
 struct kittyData kittyStack[100];
 struct globalVar globalVars[1000];	// 0 is not used.
+
+// hepe table, we looking up it up a one dim list too slow.
+std::vector<char *> labels[256];
 
 int global_var_count = 0;
 
@@ -266,6 +270,28 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	return ptr + ref -> length ;
 }
 
+int QuoteByteLength(char *ptr)
+{
+	unsigned short length = *((unsigned short *) ptr);
+	length += (length & 1);		// align to 2 bytes
+
+	printf("length %d\n",length);
+
+	return length;
+}
+
+int StringByteLength(char *ptr)
+{
+	struct reference *ref = (struct reference *) ptr;
+	unsigned short length = ref -> length;
+	length += (length & 1);		// align to 2 bytes
+
+	printf("length %d\n",length);
+
+	return length;
+}
+
+
 char *cmdQuote(nativeCommand *cmd, char *ptr)
 {
 	unsigned short length = *((unsigned short *) ptr);
@@ -274,12 +300,15 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	length2 += (length & 1);		// align to 2 bytes
 
+
+	printf("length %d\n",length2);
+
 	kittyStack[stack].str = strndup( ptr + 2, length );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
 
-	printf("%s\n", kittyStack[stack].str);
+//	printf("%s\n", kittyStack[stack].str);
 
 	if (cmdStack) if (stack)
 	{
@@ -396,6 +425,40 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
+char *nextToken_pass1( char *ptr, unsigned short token )
+{
+	struct nativeCommand *cmd;
+	int size = sizeof(Symbol)/sizeof(struct nativeCommand);
+	char *ret;
+	unsigned short length;
+
+	for (cmd = Symbol ; cmd < Symbol + size ; cmd++ )
+	{
+		if (token == cmd->id ) 
+		{
+			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
+
+			ret = ptr;
+
+			switch (token)
+			{
+				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
+				case 0x0006:	ret += StringByteLength(ptr); break;	// skip strings.
+			}
+
+			ret += cmd -> size;
+			return ret;
+		}
+	}
+
+	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
+
+	return NULL;
+}
+
+
 
 void _num( int num )
 {
@@ -489,6 +552,16 @@ void paramiter_testing()
 	}
 }
 
+
+char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
+{
+	ptr = nextToken_pass1( ptr, token );
+
+	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
+
+	return ptr;
+}
+
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
 	ptr = executeToken( ptr, token );
@@ -496,6 +569,25 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
 
 	return ptr;
+}
+
+
+void pass1_reader( char *start, int tokenlength )
+{
+	char *ptr;
+	int token = 0;
+	last_token = 0;
+	
+	ptr = start;
+	while ( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) )
+	{
+		if (ptr == NULL) break;
+
+		last_token = token;
+		token = *((short *) ptr);
+		ptr += 2;	// next token.
+		
+	}
 }
 
 void code_reader( char *start, int tokenlength )
@@ -549,6 +641,11 @@ int main()
 		if (data)
 		{
 			fread(data,amos_filesize,1,fd);
+
+			// snifff the tokens find labels, vars, functions and so on.
+			pass1_reader( data, tokenlength );
+
+			//  execute the code.
 			code_reader( data, tokenlength );
 		}
 
