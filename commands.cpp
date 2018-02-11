@@ -47,15 +47,8 @@ void _input( struct glueCommands *data )
 {
 	int n;
 
-	printf("last_token: %04x\n",last_token);
-	dump_stack();
-
-	printf("INPUT: ");
-
 	for (n=data->stack;n<=stack;n++)
 	{
-//		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
-
 		switch (kittyStack[n].type)
 		{
 			case 0:
@@ -69,10 +62,7 @@ void _input( struct glueCommands *data )
 				break;
 
 		}
-
-		if (n<=stack) printf("    ");
 	}
-	printf("\n");
 }
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
