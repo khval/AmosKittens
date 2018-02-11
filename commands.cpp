@@ -15,7 +15,9 @@ extern int tokenMode;
 
 using namespace std;
 
-void _print( struct glueCommands *data )
+extern char *findLabel( char *name );
+
+char *_print( struct glueCommands *data )
 {
 	int n;
 	printf("PRINT: ");
@@ -41,9 +43,10 @@ void _print( struct glueCommands *data )
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
+	return NULL;
 }
 
-void _input( struct glueCommands *data )
+char *_input( struct glueCommands *data )
 {
 	int n;
 
@@ -63,6 +66,16 @@ void _input( struct glueCommands *data )
 
 		}
 	}
+	return NULL;
+}
+
+char *_goto( struct glueCommands *data )
+{
+	char *labelName = kittyStack[data->stack].str;
+
+	printf("%s\n",labelName);
+
+	return findLabel( labelName );
 }
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
@@ -72,7 +85,7 @@ char *cmdInput(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-void _addStr( struct glueCommands *data )
+char *_addStr( struct glueCommands *data )
 {
 	int len = 0;
 	char *tmp;
@@ -95,16 +108,17 @@ void _addStr( struct glueCommands *data )
 	// delete string from above.
 	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
 	kittyStack[stack+1].str = NULL;
+	return NULL;
 }
 
-void _addData( struct glueCommands *data )
+char *_addData( struct glueCommands *data )
 {
 //	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
 		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return;
+		return NULL;
 	}
 
 	stack --;
@@ -112,7 +126,7 @@ void _addData( struct glueCommands *data )
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
 		printf("mismatch error\n");
-		return;
+		return NULL;
 	}
 
 	switch (kittyStack[stack].type & 3)
@@ -126,9 +140,10 @@ void _addData( struct glueCommands *data )
 		case 2:	_addStr( data );
 				break;
 	}
+	return NULL;
 }
 
-void _subStr( struct glueCommands *data )
+char *_subStr( struct glueCommands *data )
 {
 	char *find;
  	int find_len;
@@ -137,7 +152,7 @@ void _subStr( struct glueCommands *data )
 	if (stack==0) 
 	{
 		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return;
+		return NULL;
 	}
 
 	stack--;
@@ -161,16 +176,18 @@ void _subStr( struct glueCommands *data )
 	// delete string from above.
 	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
 	kittyStack[stack+1].str = NULL;
+
+	return NULL;
 }
 
-void _subData( struct glueCommands *data )
+char *_subData( struct glueCommands *data )
 {
 //	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
 		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return;
+		return NULL;
 	}
 
 	stack --;
@@ -178,7 +195,7 @@ void _subData( struct glueCommands *data )
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
 		printf("mismatch error\n");
-		return;
+		return NULL;
 	}
 
 	switch (kittyStack[stack].type & 3)
@@ -192,16 +209,18 @@ void _subData( struct glueCommands *data )
 		case 2:	_subStr( data );
 				break;
 	}
+
+	return NULL;
 }
 
-void _mulData( struct glueCommands *data )
+char *_mulData( struct glueCommands *data )
 {
 //	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
 		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return;
+		return NULL;
 	}
 
 	stack --;
@@ -209,7 +228,7 @@ void _mulData( struct glueCommands *data )
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
 		printf("mismatch error\n");
-		return;
+		return NULL;
 	}
 
 	switch (kittyStack[stack].type & 3)
@@ -223,17 +242,17 @@ void _mulData( struct glueCommands *data )
 		case 2:	printf("mismatch error\n");
 				break;
 	}
+	return NULL;
 }
 
-
-void _divData( struct glueCommands *data )
+char *_divData( struct glueCommands *data )
 {
 //	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
 		printf("can't do this :-(\n");
-		return;
+		return NULL;
 	}
 
 	stack --;
@@ -241,7 +260,7 @@ void _divData( struct glueCommands *data )
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
 		printf("mismatch error\n");
-		return;
+		return NULL;
 	}
 
 	switch (kittyStack[stack].type & 3)
@@ -255,6 +274,7 @@ void _divData( struct glueCommands *data )
 		case 2:	printf("mismatch error\n");
 				break;
 	}
+	return NULL;
 }
 
 
@@ -265,7 +285,7 @@ void _addNum( struct glueCommands *data )
 	numStack[stack] += numStack[stack+1];
 }
 
-void _setVar( struct glueCommands *data )
+char *_setVar( struct glueCommands *data )
 {
 	struct kittyData *var;
 
@@ -317,9 +337,10 @@ printf("set int array\n");
 			printf("Mismatch error\n");
 		}
 	}
+	return NULL;
 }
 
-void _setVarReverse( struct glueCommands *data )
+char *_setVarReverse( struct glueCommands *data )
 {
 	printf("%20s:%08d data: lastVar %d\n",__FUNCTION__,__LINE__, data -> lastVar);
 
@@ -330,7 +351,7 @@ void _setVarReverse( struct glueCommands *data )
 	stack --;
 
 	data->lastVar = last_var;	// we did know then, but now we know,
-	_setVar( data );
+	return _setVar( data );
 }
 
 //--------------------------------------------------------
@@ -446,3 +467,13 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 	stack++;
 	return tokenBuffer;
 }
+
+char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	tokenMode = mode_goto;
+
+	return tokenBuffer;
+}
+

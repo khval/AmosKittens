@@ -20,12 +20,14 @@ void _str(const char *str);
 void _num( int num );
 
 struct kittyData kittyStack[100];
-struct globalVar globalVars[1000];	// 0 is not used.
 
-// hepe table, we looking up it up a one dim list too slow.
-std::vector<char *> labels[256];
+struct globalVar globalVars[1000];	// 0 is not used.
+int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
+
+std::vector<struct label> labels;	// 0 is not used.
 
 int global_var_count = 0;
+int labels_count = 0;
 
  int numStack[100];
  struct glueCommands cmdTmp[100];	
@@ -35,16 +37,33 @@ extern char *nextToken_pass1( char *ptr, unsigned short token );
 
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
+	char *ret = NULL;
+
 	if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	tokenMode = mode_standard;
+
+	if (ret)
+	{
+		printf("whooo\n");
+
+		ptr = ret - 2;
+	}
+
 	return ptr;
 }
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
-	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	if (cmdStack)	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	char *ret = NULL;
+	if (cmdStack)	ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	tokenMode = mode_standard;
+
+	if (ret)
+	{
+		printf("whooo\n");
+
+		ptr = ret - 2;
+	}
 
 	printf("-- ENTER FOR NEXT AMOS LINE --\n");
 	getchar();
@@ -60,7 +79,7 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 
 
 
-void _array_index_var( glueCommands *self )
+char *_array_index_var( glueCommands *self )
 {
 	int tmp_cells;
 	int varNum;
@@ -116,9 +135,10 @@ void _array_index_var( glueCommands *self )
 				break;
 		}
 	}
+	return NULL;
 }
 
-void _alloc_mode_off( glueCommands *self )
+char *_alloc_mode_off( glueCommands *self )
 {
 	int size = 0;
 	int n;
@@ -165,6 +185,7 @@ void _alloc_mode_off( glueCommands *self )
 	var -> type |= type_array; 	
 
 	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
+	return NULL;
 }
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
@@ -174,11 +195,52 @@ char *cmdDim(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+// nothing to do here, just jump over label name.
+char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
+{
+	struct reference *ref = (struct reference *) ptr;
+	return ptr + ref -> length ;
+}
+
+extern char *findLabel( char *name );
+
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	struct kittyData *var;
+
+	if (tokenMode == mode_goto)
+	{
+		if (ref -> flags == 0)
+		{
+			char *name = strndup( ptr + sizeof(struct reference), ref->length );
+			char *newLocation;
+
+			if (name)
+			{
+				newLocation = findLabel(name);
+				if (newLocation)
+				{
+					if (ref->length>=4)
+					{
+						ref -> flags = 255;
+						*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference) - 2 ;
+					}
+
+					free(name);
+					return newLocation - sizeof(struct reference) - 2 ;
+				}
+				free(name);
+			}
+		} else if ( ref -> flags = 255 )	// accelerated, we don't give fuck about name of anyway.
+		{
+			return *((char **) (ptr + sizeof(struct reference))) ;
+		}
+
+//		cmdNormal( _goto, ptr );	
+		stack++;
+	}
 
 	last_var = ref -> ref;
 
@@ -209,6 +271,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
+	if (cmdStack) if (stack)
+	{
+		char *newTokenLoc = NULL;
+		if (kittyStack[stack-1].state == state_none) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		if (newTokenLoc) return newTokenLoc - sizeof(struct reference) - 2;
+	}
+
 	return ptr + ref -> length ;
 }
 
@@ -230,7 +299,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
 
-//	printf("%s\n", kittyStack[stack].str);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack) if (stack)
 	{
@@ -301,6 +370,7 @@ struct nativeCommand nativeCommands[]=
 {
 	{0x0000,	"", 2,	cmdNewLine},
 	{0x0006, "", sizeof(struct reference),cmdVar},
+	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0026,"\"",2, cmdQuote },
 	{0x003E,"",4,cmdNumber },
 	{0x0054,":", 0, nextCmd },
@@ -310,6 +380,7 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
+	{0x02a8,"Goto",0,cmdGoto },
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
@@ -360,12 +431,6 @@ void _num( int num )
 	kittyStack[stack].value = num;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 0;
-
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 }
 
 void _str(const char *str)
@@ -378,12 +443,6 @@ void _str(const char *str)
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
-
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 }
 
 void _castNumToStr( int num )
@@ -518,7 +577,8 @@ int main()
 //	fd = fopen("amos-test/var_num.amos","r");
 //	fd = fopen("amos-test/math.amos","r");
 //	fd = fopen("amos-test/dim.amos","r");
-	fd = fopen("amos-test/input.amos","r");
+//	fd = fopen("amos-test/input.amos","r");
+	fd = fopen("amos-test/goto.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -555,6 +615,10 @@ int main()
 	printf("\n--- program stack dump ---\n");
 
 	dump_prog_stack();
+
+	printf("\n--- label dump ---\n");
+
+	dumpLabels();
 
 	return 0;
 }
