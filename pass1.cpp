@@ -13,15 +13,17 @@ const char *types[]={"","#","$",""};
 
 extern struct globalVar globalVars[1000];	// 0 is not used.
 extern int global_var_count;
+extern int globalVarsSize;
 extern int nativeCommandsSize;
 extern struct nativeCommand nativeCommands[];
 
+extern std::vector<struct label> labels;
 
 int findVar( char *name )
 {
 	int n;
 
-	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
+	for (n=1;n<global_var_count;n++)
 	{
 		if (globalVars[n].varName == NULL) return 0;
 
@@ -31,6 +33,20 @@ int findVar( char *name )
 		}
 	}
 	return 0;
+}
+
+char *findLabel( char *name )
+{
+	int n;
+
+	for (n=0;n<labels.size();n++)
+	{
+		if (strcasecmp( labels[n].name, name)==0)
+		{
+			return labels[n].tokenLocation;
+		}
+	}
+	return NULL;
 }
 
 int QuoteByteLength(char *ptr)
@@ -93,6 +109,40 @@ void pass1var(char *ptr)
 	}
 }
 
+void pass1label(char *ptr)
+{
+	char *tmpName;
+	char *at;
+	struct reference *ref = (struct reference *) ptr;
+	struct kittyData *var;
+
+	tmpName = strndup( ptr + sizeof(struct reference), ref->length + 2 );
+	if (tmpName)
+	{
+		printf("%s\n",tmpName);
+
+		at = findLabel(tmpName);
+		if (at)
+		{
+			free(tmpName);		//  don't need tmp
+			ref -> ref = 1;		// don't care, we have the address in lookup table
+		}
+		else
+		{
+			label tmp;
+
+			tmp.name = tmpName;
+			tmp.tokenLocation = ptr;
+
+			labels.push_back(tmp);
+			ref -> ref = labels.size();
+		}
+
+		// we should not free tmp, see code above.
+	}
+}
+
+
 char *nextToken_pass1( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -110,11 +160,15 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 			switch (token)
 			{
-				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
-
 				case 0x0006:	pass1var(  ptr );
 							ret += ReferenceByteLength(ptr); 
 							break;
+
+				case 0x000c:	pass1label( ptr );
+							ret += ReferenceByteLength(ptr); 
+							break;
+
+				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 			}
 
 			ret += cmd -> size;
