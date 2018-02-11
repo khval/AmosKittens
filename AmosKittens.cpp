@@ -30,21 +30,8 @@ int global_var_count = 0;
  int numStack[100];
  struct glueCommands cmdTmp[100];	
 
-int findVar( char *name )
-{
-	int n;
+extern char *nextToken_pass1( char *ptr, unsigned short token );
 
-	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
-	{
-		if (globalVars[n].varName == NULL) return 0;
-
-		if (strcasecmp( globalVars[n].varName, name)==0)
-		{
-			return n;
-		}
-	}
-	return 0;
-}
 
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
@@ -187,56 +174,13 @@ char *cmdDim(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-const char *types[]={"","#","$",""};
-
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
-	char *tmp;
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	struct kittyData *var;
 
-	last_var = 0;
-	if (ref -> ref == 0)
-	{
-		int found = 0;
-
-
-		tmp = (char *) malloc( ref->length + 2 );
-		if (tmp)
-		{
-			tmp[ ref->length -2 ] =0;
-			tmp[ ref->length -1 ] =0;
-
-			memcpy(tmp, ptr + sizeof(struct reference), ref->length );
-			sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
-
-
-			found = findVar(tmp);
-			if (found)
-			{
-				free(tmp);		//  don't need tmp
-				ref -> ref = found;
-			}
-			else
-			{
-				global_var_count ++;
-				ref -> ref = global_var_count;
-
-				globalVars[global_var_count].varName = tmp;	// tmp is alloced and used here.
-
-				var = &globalVars[global_var_count].var;
-				var->type = ref -> flags & 3;
-				var->len = 0;
-				if (var -> type == type_string) var->str = strdup("");
-			}
-
-			last_var = ref -> ref;
-
-			// we should not free tmp, see code above.
-		}
-	}
-
+	last_var = ref -> ref;
 
 	if (next_token == 0x0074)	// ( symbol
 	{
@@ -265,31 +209,9 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
-
-
 	return ptr + ref -> length ;
 }
 
-int QuoteByteLength(char *ptr)
-{
-	unsigned short length = *((unsigned short *) ptr);
-	length += (length & 1);		// align to 2 bytes
-
-	printf("length %d\n",length);
-
-	return length;
-}
-
-int StringByteLength(char *ptr)
-{
-	struct reference *ref = (struct reference *) ptr;
-	unsigned short length = ref -> length;
-	length += (length & 1);		// align to 2 bytes
-
-	printf("length %d\n",length);
-
-	return length;
-}
 
 
 char *cmdQuote(nativeCommand *cmd, char *ptr)
@@ -375,7 +297,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 }
 
 
-struct nativeCommand Symbol[]=
+struct nativeCommand nativeCommands[]=
 {
 	{0x0000,	"", 2,	cmdNewLine},
 	{0x0006, "", sizeof(struct reference),cmdVar},
@@ -399,17 +321,17 @@ struct nativeCommand Symbol[]=
 
 };
 
+int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
+
 char *executeToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
-	int size = sizeof(Symbol)/sizeof(struct nativeCommand);
 	char *ret;
 
-	for (cmd = Symbol ; cmd < Symbol + size ; cmd++ )
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
 		{
-
 			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
@@ -425,38 +347,6 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
-char *nextToken_pass1( char *ptr, unsigned short token )
-{
-	struct nativeCommand *cmd;
-	int size = sizeof(Symbol)/sizeof(struct nativeCommand);
-	char *ret;
-	unsigned short length;
-
-	for (cmd = Symbol ; cmd < Symbol + size ; cmd++ )
-	{
-		if (token == cmd->id ) 
-		{
-			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-
-			ret = ptr;
-
-			switch (token)
-			{
-				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
-				case 0x0006:	ret += StringByteLength(ptr); break;	// skip strings.
-			}
-
-			ret += cmd -> size;
-			return ret;
-		}
-	}
-
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-
-	return NULL;
-}
 
 
 

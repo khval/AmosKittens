@@ -13,7 +13,7 @@ VERSION = 1
 warnings = -wall -Wuninitialized
 
 
-main_objects = commands.cpp debug.cpp
+main_objects = commands.cpp debug.cpp pass1.cpp
 main_SRCS = AmosKittens.cpp
 
 objects = $(main_objects:.cpp=.o)
