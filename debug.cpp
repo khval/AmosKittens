@@ -5,8 +5,21 @@
 #include <proto/dos.h>
 #include "amosKittens.h"
 #include "commands.h"
+#include <vector>
 
 extern struct globalVar globalVars[1000];
+extern std::vector<struct label> labels;
+
+void dumpLabels()
+{
+	int n;
+
+	for (n=0;n<labels.size();n++)
+	{
+		printf("%d: tokenLocation: %08x, Name: %s\n" ,n, labels[n].tokenLocation, labels[n].name);
+
+	}
+}
 
 void dumpGlobal()
 {
