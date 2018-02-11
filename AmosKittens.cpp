@@ -225,15 +225,15 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					if (ref->length>=4)
 					{
 						ref -> flags = 255;
-						*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference) - 2 ;
+						*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
 					}
 
 					free(name);
-					return newLocation - sizeof(struct reference) - 2 ;
+					return newLocation - sizeof(struct reference)  ;
 				}
 				free(name);
 			}
-		} else if ( ref -> flags = 255 )	// accelerated, we don't give fuck about name of anyway.
+		} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
 		{
 			return *((char **) (ptr + sizeof(struct reference))) ;
 		}
