@@ -115,8 +115,9 @@ void pass1label(char *ptr)
 	char *at;
 	struct reference *ref = (struct reference *) ptr;
 	struct kittyData *var;
+	char *next;
 
-	tmpName = strndup( ptr + sizeof(struct reference), ref->length + 2 );
+	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
 	{
 		printf("%s\n",tmpName);
@@ -130,9 +131,13 @@ void pass1label(char *ptr)
 		else
 		{
 			label tmp;
+			next = ptr + sizeof(struct reference) + ref->length;
+
+			// skip all new lines..
+			while ( (*(unsigned short *) next) == 0x0000 ) next += 4;	// token and newline code
 
 			tmp.name = tmpName;
-			tmp.tokenLocation = ptr;
+			tmp.tokenLocation = next ;
 
 			labels.push_back(tmp);
 			ref -> ref = labels.size();
