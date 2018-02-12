@@ -69,6 +69,17 @@ char *_input( struct glueCommands *data )
 	return NULL;
 }
 
+char *_if( struct glueCommands *data )
+{
+	int offset = *((unsigned short *) data -> tokenBuffer);
+
+	printf("JUMP TO %08x\n",data->tokenBuffer+(offset*2));
+
+	if (offset) return data->tokenBuffer+(offset*2);
+
+	return NULL;
+}
+
 char *_goto( struct glueCommands *data )
 {
 	char *labelName = kittyStack[data->stack].str;
@@ -450,6 +461,12 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	cmdNormal(_if, tokenBuffer);
+	return tokenBuffer;
+}
+
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -471,9 +488,8 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
 	tokenMode = mode_goto;
-
 	return tokenBuffer;
 }
+
 
