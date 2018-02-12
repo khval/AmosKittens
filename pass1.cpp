@@ -19,6 +19,29 @@ extern struct nativeCommand nativeCommands[];
 
 extern std::vector<struct label> labels;
 
+enum
+{
+	nested_if,
+	nested_then
+};
+
+struct nested
+{
+	int cmd;
+	char *ptr;
+};
+
+struct nested nested_command[ 1000 ];
+int nested_count = 0;
+
+#define addNest( enum_cmd ) \
+	nested_command[ nested_count ].cmd = enum_cmd; \
+	nested_command[ nested_count ].ptr = ptr; \
+	nested_count++; 
+
+
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 );
+
 int findVar( char *name )
 {
 	int n;
@@ -148,6 +171,64 @@ void pass1label(char *ptr)
 }
 
 
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 )
+{
+	struct nativeCommand *cmd;
+	unsigned short current_token = *((unsigned short *) ptr);
+	int token_size;
+	
+	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) )
+	{
+		token_size = 2;
+
+		for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+		{
+			if (token == cmd->id ) { token_size += cmd -> size; break; }
+		}
+
+		switch (token)
+		{
+			case 0x0006:	token_size += ReferenceByteLength(ptr); break;
+			case 0x000C:	token_size += ReferenceByteLength(ptr); break;
+			case 0x0012:	token_size += ReferenceByteLength(ptr); break;
+			case 0x0018:	token_size += ReferenceByteLength(ptr); break;
+			case 0x0026:	token_size += QuoteByteLength(ptr); break;
+			case 0x002E:	token_size += QuoteByteLength(ptr); break;
+		}
+
+		ptr += token_size;
+	}	
+
+	if ( current_token == token)
+	{
+		return ptr;
+	}
+
+	return 0;
+}
+
+void eol( char *ptr )
+{
+	
+
+	if (nested_count>0)
+	{
+		switch (nested_command[ nested_count -1 ].cmd )
+		{
+			// IF can end at EOL if then is not there. (command THEN should replace nested_if )
+
+			case nested_if:
+
+				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
+
+
+	*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
+							nested_count --;
+							break;
+		}
+	}
+}
+
 char *nextToken_pass1( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -165,6 +246,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 			switch (token)
 			{
+				case 0x0000:	eol( ptr );	break;
+
 				case 0x0006:	pass1var(  ptr );
 							ret += ReferenceByteLength(ptr); 
 							break;
@@ -172,6 +255,16 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x000c:	pass1label( ptr );
 							ret += ReferenceByteLength(ptr); 
 							break;
+
+				case 0x02BE:	addNest( nested_if );
+							break;
+
+				case 0x02C6:	if (nested_count>0) 	// command THEN
+								if (nested_command[ nested_count -1 ].cmd == nested_if )
+									nested_command[ nested_count -1 ].cmd = nested_then;
+							break;
+
+
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 			}
