@@ -22,7 +22,8 @@ extern std::vector<struct label> labels;
 enum
 {
 	nested_if,
-	nested_then
+	nested_then,
+	nested_else
 };
 
 struct nested
@@ -209,8 +210,6 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 void eol( char *ptr )
 {
-	
-
 	if (nested_count>0)
 	{
 		switch (nested_command[ nested_count -1 ].cmd )
@@ -218,13 +217,38 @@ void eol( char *ptr )
 			// IF can end at EOL if then is not there. (command THEN should replace nested_if )
 
 			case nested_if:
+				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
+				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
+				nested_count --;
+				break;
+		}
+	}
+}
+
+void pass1_end_if( char *ptr )
+{
+	printf("we are here\n");
+
+	if (nested_count>0)
+	{
+
+		printf("%d\n",nested_command[ nested_count -1 ].cmd);
+
+		switch (nested_command[ nested_count -1 ].cmd )
+		{
+			case nested_then:
+			case nested_else:
 
 				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
 
 
-	*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
-							nested_count --;
-							break;
+				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
+				nested_count --;
+				break;
+
+			default:
+
+				printf("Error: End If, with out Else or Then\n");
 		}
 	}
 }
@@ -264,6 +288,13 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 									nested_command[ nested_count -1 ].cmd = nested_then;
 							break;
 
+				case 0x02D0:	
+							printf("we are here\n");
+							addNest( nested_else );
+							break;
+
+				case 0x02DA:	pass1_end_if( ptr );
+ 							break;
 
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.

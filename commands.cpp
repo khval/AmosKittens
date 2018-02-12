@@ -72,13 +72,10 @@ char *_input( struct glueCommands *data )
 char *_if( struct glueCommands *data )
 {
 	int offset = *((unsigned short *) data -> tokenBuffer);
-
-	printf("JUMP TO %08x\n",data->tokenBuffer+(offset*2));
-
 	if (offset) return data->tokenBuffer+(offset*2);
-
 	return NULL;
 }
+
 
 char *_goto( struct glueCommands *data )
 {
@@ -464,6 +461,23 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	cmdNormal(_if, tokenBuffer);
+	return tokenBuffer;
+}
+
+char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	int offset = *((unsigned short *)  tokenBuffer);
+	if (offset) return tokenBuffer+(offset*2);
+	return tokenBuffer;
+}
+
+char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
+{
 	return tokenBuffer;
 }
 

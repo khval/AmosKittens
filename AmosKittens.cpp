@@ -371,6 +371,9 @@ struct nativeCommand nativeCommands[]=
 	{0x008C,"]", 0, NULL },
 	{0x02a8,"Goto",0,cmdGoto },
 	{0x02BE,"If",2, cmdIf },
+	{0x02C6,"Then",0,cmdThen },
+	{0x02D0,"Else",2,cmdElse },
+	{0x02DA,"End If",0,cmdEndIf },
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
@@ -568,7 +571,8 @@ int main()
 //	fd = fopen("amos-test/dim.amos","r");
 //	fd = fopen("amos-test/input.amos","r");
 //	fd = fopen("amos-test/goto.amos","r");
-	fd = fopen("amos-test/if.amos","r");
+//	fd = fopen("amos-test/if.amos","r");
+	fd = fopen("amos-test/goto2.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

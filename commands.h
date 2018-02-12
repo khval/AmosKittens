@@ -18,7 +18,11 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer);
 char *divData(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
+
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer);
 
