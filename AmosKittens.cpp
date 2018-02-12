@@ -39,32 +39,21 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
 
-	if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	tokenMode = mode_standard;
 
-	if (ret)
-	{
-		printf("whooo\n");
-
-		ptr = ret - 2;
-	}
-
+	if (ret) ptr = ret - 2;
 	return ptr;
 }
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
-	if (cmdStack)	ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	tokenMode = mode_standard;
 
-	if (ret)
-	{
-		printf("whooo\n");
-
-		ptr = ret - 2;
-	}
-
+	if (ret) ptr = ret - 2;
+	
 	printf("-- ENTER FOR NEXT AMOS LINE --\n");
 	getchar();
 
@@ -381,6 +370,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
 	{0x02a8,"Goto",0,cmdGoto },
+	{0x02BE,"If",2, cmdIf },
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
@@ -389,7 +379,6 @@ struct nativeCommand nativeCommands[]=
 	{0xFFA2,"=", 0, setVar},
 	{0xFFE2,"*", 0, mulData},
 	{0xFFEC,"/", 0, divData}
-
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -403,8 +392,8 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
-			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
+			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -412,8 +401,8 @@ char *executeToken( char *ptr, unsigned short token )
 		}
 	}
 
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
+	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 
 	return NULL;
 }
@@ -578,7 +567,8 @@ int main()
 //	fd = fopen("amos-test/math.amos","r");
 //	fd = fopen("amos-test/dim.amos","r");
 //	fd = fopen("amos-test/input.amos","r");
-	fd = fopen("amos-test/goto.amos","r");
+//	fd = fopen("amos-test/goto.amos","r");
+	fd = fopen("amos-test/if.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
