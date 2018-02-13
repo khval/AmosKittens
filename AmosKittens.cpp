@@ -29,7 +29,6 @@ std::vector<struct label> labels;	// 0 is not used.
 int global_var_count = 0;
 int labels_count = 0;
 
- int numStack[100];
  struct glueCommands cmdTmp[100];	
 
 extern char *nextToken_pass1( char *ptr, unsigned short token );

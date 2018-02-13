@@ -112,6 +112,7 @@ struct globalVar
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
+extern void _num( int num );
 
 extern BOOL equal_symbol;
 extern struct nativeCommand NativeCommand[];
@@ -120,7 +121,6 @@ extern BOOL findSymbol(unsigned short token);
 extern int commandCnt;
 
 extern struct kittyData kittyStack[];
-extern int numStack[];
 extern struct glueCommands cmdTmp[];
 
 extern int stack;
