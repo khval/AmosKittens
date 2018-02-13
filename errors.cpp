@@ -1,4 +1,25 @@
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include "amosKittens.h"
+#include "errors.h"
+
+int kittyErrorCode = 0;
+
+extern struct error errorsTestTime[];
+
+// return error code.
+
+char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	_num( kittyErrorCode );
+	return tokenBuffer;
+}
+
+
 struct error errorsTestTime[]= {
 	{ 1,"Bad structure"},
 	{ 2,"User function not defined"},
@@ -54,7 +75,7 @@ struct error errorsTestTime[]= {
 	{ 52,"Cannot load equate file"},
 	{ 53,"Bad format in equate file"},
 	{ 54,"Equate not of the right type"},
-	{ 0,$FF } };
+	{ 0,NULL } };
 
 
 struct error errorsRunTime[]= {
@@ -280,4 +301,4 @@ struct error errorsRunTime[]= {
 // Misc
 // ~~~~
 	{ 200,"Cannot open powerpacker.library (v35)"},
-	{ 0,$ff }};
+	{ 0,NULL }};
