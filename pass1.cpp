@@ -226,22 +226,17 @@ void eol( char *ptr )
 	}
 }
 
-void pass1_end_if( char *ptr )
+void pass1_else_or_end_if( char *ptr )
 {
-	printf("we are here\n");
-
 	if (nested_count>0)
 	{
-
-		printf("%d\n",nested_command[ nested_count -1 ].cmd);
-
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
 			case nested_then:
 			case nested_else:
 
-				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
-
+				printf("write to %08x-------%08x\n",(short *) (nested_command[ nested_count -1 ].ptr),
+					(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2);
 
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
 				nested_count --;
@@ -264,8 +259,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
-			printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
+			printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
 			ret = ptr;
 
@@ -281,20 +276,37 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
-				case 0x02BE:	addNest( nested_if );
+				case 0x02BE:	
+							printf("IF\n");
+							addNest( nested_if );
 							break;
 
-				case 0x02C6:	if (nested_count>0) 	// command THEN
+				case 0x02C6:	
+							printf("THEN\n");
+							if (nested_count>0) 	// command THEN
 								if (nested_command[ nested_count -1 ].cmd == nested_if )
 									nested_command[ nested_count -1 ].cmd = nested_then;
 							break;
 
 				case 0x02D0:	
-							printf("we are here\n");
+							printf("ELSE\n");
+							if (nested_count>0) 	// command THEN
+								if (nested_command[ nested_count -1 ].cmd == nested_then )
+								{
+									pass1_else_or_end_if(ptr+2);
+								}
+
+							printf("nested_count %d\n",nested_count);
+
 							addNest( nested_else );
+
+							printf("nested_count %d\n",nested_count);
+
 							break;
 
-				case 0x02DA:	pass1_end_if( ptr );
+				case 0x02DA:	
+							printf("ENDIF\n");
+							pass1_else_or_end_if( ptr+2 );
  							break;
 
 
