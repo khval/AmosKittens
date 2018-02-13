@@ -1,4 +1,13 @@
 
+struct error
+{
+	int errorCode;
+	const char *errorText;
+};
+
+extern int kittyErrorCode;
+extern char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer);
+
 // Custom error numbers
 #define E_16C	0	// Only 16 colours allowed on non-AGA hires screen
 #define E_UOS	1	// Unable to open screen
@@ -78,4 +87,5 @@
 #define RETURN_OK			0   // No problems, success 
 #define RETURN_WARN			5   // A warning only 
 #define RETURN_ERROR		10  // Something wrong 
-#define RETURN_FAIL			20  // Complete or severe failure#define 
+#define RETURN_FAIL			20  // Complete or severe failure
+
