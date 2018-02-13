@@ -7,6 +7,7 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include "errors.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -285,13 +286,6 @@ char *_divData( struct glueCommands *data )
 	return NULL;
 }
 
-
-void _addNum( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	numStack[stack] += numStack[stack+1];
-}
 
 char *_setVar( struct glueCommands *data )
 {

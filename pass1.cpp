@@ -8,6 +8,7 @@
 #include "commands.h"
 #include "debug.h"
 #include <vector>
+#include "errors.h"
 
 const char *types[]={"","#","$",""};
 
