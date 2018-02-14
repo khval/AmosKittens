@@ -8,6 +8,8 @@
 #include "commands.h"
 #include "debug.h"
 #include <vector>
+#include "errors.h"
+#include "pass1.h"
 
 int stack = 0;
 int cmdStack = 0;
@@ -101,7 +103,7 @@ char *_array_index_var( glueCommands *self )
 
 	if ((index >= 0)  && (index<var->count))
 	{
-		// we going over write it.
+		// we over write it stack.
 		if (kittyStack[n].str) free(kittyStack[n].str);
 		kittyStack[n].str = NULL;
 
@@ -493,14 +495,6 @@ void paramiter_testing()
 }
 
 
-char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
-{
-	ptr = nextToken_pass1( ptr, token );
-
-	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
-
-	return ptr;
-}
 
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
@@ -509,25 +503,6 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
 
 	return ptr;
-}
-
-
-void pass1_reader( char *start, int tokenlength )
-{
-	char *ptr;
-	int token = 0;
-	last_token = 0;
-	
-	ptr = start;
-	while ( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) )
-	{
-		if (ptr == NULL) break;
-
-		last_token = token;
-		token = *((short *) ptr);
-		ptr += 2;	// next token.
-		
-	}
 }
 
 void code_reader( char *start, int tokenlength )
@@ -543,8 +518,7 @@ void code_reader( char *start, int tokenlength )
 
 		last_token = token;
 		token = *((short *) ptr);
-		ptr += 2;	// next token.
-		
+		ptr += 2;	// next token.		
 	}
 }
 
@@ -588,30 +562,38 @@ int main()
 			// snifff the tokens find labels, vars, functions and so on.
 			pass1_reader( data, tokenlength );
 
-			//  execute the code.
-			code_reader( data, tokenlength );
+			if (kittyError.code == 0)
+			{
+				//  execute the code.
+				code_reader( data, tokenlength );
+
+				if (kittyError.code != 0) printError( &kittyError, errorsRunTime );
+			}
+			else
+			{
+				printError( &kittyError, errorsTestTime );
+			}
 		}
 
 		fclose(fd);
 	}
 
-	printf("--- End of program status ---\n");
+	if (kittyError.code == 0)
+	{
+		printf("--- End of program status ---\n");
 
-	printf("\n--- var dump ---\n");
+		printf("\n--- var dump ---\n");
+		dumpGlobal();
 
-	dumpGlobal();
+		printf("\n--- value stack dump ---\n");
+		dump_stack();
 
-	printf("\n--- value stack dump ---\n");
+		printf("\n--- program stack dump ---\n");
+		dump_prog_stack();
 
-	dump_stack();
-
-	printf("\n--- program stack dump ---\n");
-
-	dump_prog_stack();
-
-	printf("\n--- label dump ---\n");
-
-	dumpLabels();
+		printf("\n--- label dump ---\n");
+		dumpLabels();
+	}
 
 	return 0;
 }

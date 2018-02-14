@@ -7,7 +7,7 @@
 #include "amosKittens.h"
 #include "errors.h"
 
-int kittyErrorCode = 0;
+struct errorAt kittyError = { 0, 0 };
 
 extern struct error errorsTestTime[];
 
@@ -15,10 +15,23 @@ extern struct error errorsTestTime[];
 
 char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	_num( kittyErrorCode );
+	_num( kittyError.code );
 	return tokenBuffer;
 }
 
+
+void printError( struct errorAt *thisError, struct error *tab )
+{
+	struct error *e;
+	
+	for (e=tab; e-> errorText; e++ )
+	{
+		if (thisError -> code == e->errorCode)
+		{
+			printf("ERROR: %s\nAt line number: %d\n\n",e->errorText, thisError->line);
+		}
+	}
+}
 
 struct error errorsTestTime[]= {
 	{ 1,"Bad structure"},

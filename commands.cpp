@@ -72,8 +72,19 @@ char *_input( struct glueCommands *data )
 
 char *_if( struct glueCommands *data )
 {
-	int offset = *((unsigned short *) data -> tokenBuffer);
-	if (offset) return data->tokenBuffer+(offset*2);
+	dump_stack();
+
+
+	if (kittyStack[data->stack].value != -1)
+	{
+		int offset = *((unsigned short *) data -> tokenBuffer);
+
+		if (offset) 
+		{
+			printf("IF is FALSE --  read from %08x jump to %08x - %04x\n" ,data->tokenBuffer ,data->tokenBuffer+(offset*2), offset);
+			return data->tokenBuffer+(offset*2);
+		}
+	}
 	return NULL;
 }
 
@@ -454,6 +465,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	_num(0);	// stack reset.
 	cmdNormal(_if, tokenBuffer);
 	return tokenBuffer;
 }

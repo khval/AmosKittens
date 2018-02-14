@@ -8,6 +8,7 @@
 #include "commands.h"
 #include "debug.h"
 #include <vector>
+#include "AmosKittens.h"
 #include "errors.h"
 
 const char *types[]={"","#","$",""};
@@ -19,6 +20,10 @@ extern int nativeCommandsSize;
 extern struct nativeCommand nativeCommands[];
 
 extern std::vector<struct label> labels;
+
+#define LAST_TOKEN_(name) ((nested_count>0) && (nested_command[ nested_count -1 ].cmd == nested_ ## name ))
+
+int currentLine = 0;
 
 enum
 {
@@ -266,7 +271,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 			switch (token)
 			{
-				case 0x0000:	eol( ptr );	break;
+				case 0x0000:	eol( ptr );
+							currentLine++;
+							break;
 
 				case 0x0006:	pass1var(  ptr );
 							ret += ReferenceByteLength(ptr); 
@@ -276,39 +283,34 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
-				case 0x02BE:	
-							printf("IF\n");
-							addNest( nested_if );
+				case 0x02BE:	addNest( nested_if );
 							break;
 
-				case 0x02C6:	
-							printf("THEN\n");
-							if (nested_count>0) 	// command THEN
-								if (nested_command[ nested_count -1 ].cmd == nested_if )
-									nested_command[ nested_count -1 ].cmd = nested_then;
+				case 0x02C6:	// THEN 
+							if LAST_TOKEN_(if)
+								nested_command[ nested_count -1 ].cmd = nested_then;
+							else
+								setError( 23 );
 							break;
 
-				case 0x02D0:	
-							printf("ELSE\n");
-							if (nested_count>0) 	// command THEN
-								if (nested_command[ nested_count -1 ].cmd == nested_then )
-								{
-									pass1_else_or_end_if(ptr+2);
-								}
-
-							printf("nested_count %d\n",nested_count);
-
-							addNest( nested_else );
-
-							printf("nested_count %d\n",nested_count);
-
+				case 0x02D0:	// ELSE
+							if LAST_TOKEN_(then)
+							{
+								pass1_else_or_end_if(ptr+2);
+								addNest( nested_else );
+							}
+							else
+								setError( 25 );		
 							break;
 
 				case 0x02DA:	
-							printf("ENDIF\n");
-							pass1_else_or_end_if( ptr+2 );
+							if ( LAST_TOKEN_(then) || LAST_TOKEN_(else) )
+							{
+								pass1_else_or_end_if( ptr+2 );
+							}
+							else
+								setError( 23 );
  							break;
-
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 			}
@@ -324,3 +326,43 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	return NULL;
 }
 
+char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
+{
+	ptr = nextToken_pass1( ptr, token );
+
+	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
+
+	return ptr;
+}
+
+void pass1_reader( char *start, int tokenlength )
+{
+	char *ptr;
+	int token = 0;
+	last_token = 0;
+	
+	ptr = start;
+	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) ) && ( kittyError.code == 0))
+	{
+		if (ptr == NULL) break;
+
+		last_token = token;
+		token = *((short *) ptr);
+		ptr += 2;	// next token.		
+	}
+
+	// if we did not count back to 0, then there most be some thing wrong.
+
+	if (nested_count)
+	{
+		switch (nested_command[ nested_count - 1 ].cmd )
+		{
+			case nested_if: setError(22); break;
+			case nested_then: setError(22); break;
+			case nested_else: setError(22); break;
+			default: setError(35); break;
+		}
+	}
+
+	nested_count = 0;
+}

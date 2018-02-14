@@ -125,6 +125,7 @@ extern struct glueCommands cmdTmp[];
 
 extern int stack;
 extern int cmdStack;
+extern unsigned short last_token;
 
 #endif
 

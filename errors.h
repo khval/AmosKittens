@@ -1,12 +1,24 @@
 
+struct errorAt
+{
+	int line;
+	int code;
+};
+
 struct error
 {
 	int errorCode;
 	const char *errorText;
 };
 
-extern int kittyErrorCode;
+extern struct error errorsTestTime[];
+extern struct error errorsRunTime[];
+
+#define setError( _code ) kittyError.code = _code; kittyError.line = currentLine;
+
+extern struct errorAt kittyError;
 extern char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer);
+extern void printError( struct errorAt *thisError, struct error *tab );
 
 // Custom error numbers
 #define E_16C	0	// Only 16 colours allowed on non-AGA hires screen
