@@ -10,12 +10,12 @@ This program is of no use to AMOS developers at the moment, but hopefully it wil
 Current status:
 ---------------
 This commands are supported.
-Dim,Print,Input,Goto,Then,Else,End If
+Dim,Print,Input,Goto,If,Then,Else,End If
 And some math operations works.
 
-Command "If" (does not check status)
-Error handling is kind of missing atm, 
-also program does not clean up after it self..
+Know bugs:
+----------
+Amos Kittens does not clean up after it self..
 
 Orginal source code can be found here:
 --------------------------------------
