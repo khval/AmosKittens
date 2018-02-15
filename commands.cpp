@@ -88,6 +88,12 @@ char *_if( struct glueCommands *data )
 	return NULL;
 }
 
+char *_do( struct glueCommands *data )
+{
+	printf("%s\n",__FUNCTION__);
+
+	return data -> tokenBuffer-2;
+}
 
 char *_goto( struct glueCommands *data )
 {
@@ -101,7 +107,7 @@ char *_goto( struct glueCommands *data )
 char *cmdInput(nativeCommand *cmd, char *ptr)
 {
 	tokenMode = mode_input;
-	cmdNormal( _input, ptr );
+	stackCmdNormal( _input, ptr );
 	return ptr;
 }
 
@@ -459,14 +465,14 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdNormal(_setVar, tokenBuffer);
+	stackCmdNormal(_setVar, tokenBuffer);
 	return tokenBuffer;
 }
 
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	_num(0);	// stack reset.
-	cmdNormal(_if, tokenBuffer);
+	stackCmdNormal(_if, tokenBuffer);
 	return tokenBuffer;
 }
 
@@ -512,4 +518,15 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdLoop( _do, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	return tokenBuffer;
+}
 

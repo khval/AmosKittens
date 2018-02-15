@@ -21,7 +21,8 @@ enum
 {
 	cmd_first = 0,
 	cmd_index, 
-	cmd_para
+	cmd_para,
+	cmd_loop
 };
 
 enum
@@ -88,7 +89,7 @@ struct globalVar
 	char *varName;
 };
 
-#define cmdNormal( fn, buf )				\
+#define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_first;	\
@@ -96,7 +97,15 @@ struct globalVar
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
-#define cmdIndex( fn, buf )				\
+#define stackCmdLoop( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_loop;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdStack++; \
+
+#define stackCmdIndex( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_index;	\

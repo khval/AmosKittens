@@ -50,7 +50,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
-	if (cmdStack) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].flag != cmd_loop ) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	tokenMode = mode_standard;
 
 	if (ret) ptr = ret - 2;
@@ -63,11 +63,9 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
-	cmdNormal( _print, ptr );
+	stackCmdNormal( _print, ptr );
 	return ptr;
 }
-
-
 
 char *_array_index_var( glueCommands *self )
 {
@@ -181,7 +179,7 @@ char *_alloc_mode_off( glueCommands *self )
 char *cmdDim(nativeCommand *cmd, char *ptr)
 {
 	tokenMode = mode_alloc;
-	cmdNormal( _alloc_mode_off, ptr );
+	stackCmdNormal( _alloc_mode_off, ptr );
 	return ptr;
 }
 
@@ -240,7 +238,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 		if (tokenMode != mode_alloc)
 		{
-			cmdIndex( _array_index_var, ptr );
+			stackCmdIndex( _array_index_var, ptr );
 		}
 	}
 	else
@@ -370,6 +368,8 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
+	{0x027E,"Do",2,cmdDo },
+	{0x0286,"Loop",0,cmdLoop },
 	{0x02a8,"Goto",0,cmdGoto },
 	{0x02BE,"If",2, cmdIf },
 	{0x02C6,"Then",0,cmdThen },
@@ -545,7 +545,8 @@ int main()
 //	fd = fopen("amos-test/input.amos","r");
 //	fd = fopen("amos-test/goto.amos","r");
 //	fd = fopen("amos-test/if.amos","r");
-	fd = fopen("amos-test/goto2.amos","r");
+//	fd = fopen("amos-test/goto2.amos","r");
+	fd = fopen("amos-test/do-loop.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
