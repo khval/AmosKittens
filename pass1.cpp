@@ -53,13 +53,15 @@ int findVar( char *name )
 {
 	int n;
 
-	for (n=1;n<global_var_count;n++)
+	for (n=0;n<global_var_count;n++)
 	{
+		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
+
 		if (globalVars[n].varName == NULL) return 0;
 
 		if (strcasecmp( globalVars[n].varName, name)==0)
 		{
-			return n;
+			return n+1;
 		}
 	}
 	return 0;
@@ -124,12 +126,14 @@ void pass1var(char *ptr)
 		}
 		else
 		{
+			printf("added ** VAR: %s **\n", tmp);
+
 			global_var_count ++;
 			ref -> ref = global_var_count;
 
-			globalVars[global_var_count].varName = tmp;	// tmp is alloced and used here.
+			globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
 
-			var = &globalVars[global_var_count].var;
+			var = &globalVars[global_var_count-1].var;
 			var->type = ref -> flags & 3;
 			var->len = 0;
 			if (var -> type == type_string) var->str = strdup("");
