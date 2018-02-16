@@ -90,9 +90,13 @@ char *_if( struct glueCommands *data )
 
 char *_do( struct glueCommands *data )
 {
-	printf("%s\n",__FUNCTION__);
-
 	return data -> tokenBuffer-2;
+}
+
+char *_repeat( struct glueCommands *data )
+{
+	if (kittyStack[stack].value == 0) return data -> tokenBuffer-2;
+	return 0;
 }
 
 char *_goto( struct glueCommands *data )
@@ -304,58 +308,84 @@ char *_divData( struct glueCommands *data )
 }
 
 
+char *_equal( struct glueCommands *data )
+{
+	printf("%s\n",__FUNCTION__);
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	{
+		printf("mismatch error\n");
+		return NULL;
+	}
+
+	printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value == kittyStack[stack+1].value) );
+
+	switch (kittyStack[stack].type & 3)
+	{
+		case 0:	_num( kittyStack[stack].value == kittyStack[stack+1].value) ;
+				break;
+		case 1:	_num (kittyStack[stack].decimal == kittyStack[stack+1].decimal);
+				break;
+//		case 2:	_equalStr( data );
+//				break;
+	}
+
+	return NULL;
+}
+
+
 char *_setVar( struct glueCommands *data )
 {
 	struct kittyData *var;
-
-	printf("%20s:%08d data: lastVar %d\n",__FUNCTION__,__LINE__, data -> lastVar);
-
-	var = &globalVars[data -> lastVar].var;
-
-	if (data -> lastVar)
+	var = &globalVars[data -> lastVar-1].var;
+	
+	if (kittyStack[stack].type == ( var -> type & 7) )
 	{
-		if (kittyStack[stack].type == (globalVars[data -> lastVar].var.type & 7) )
+		switch (globalVars[data -> lastVar].var.type)
 		{
-			switch (globalVars[data -> lastVar].var.type)
-			{
-				case type_int:
-					var->value = kittyStack[stack].value;
+			case type_int:
+				var->value = kittyStack[stack].value;
 
-printf("set int\n");
+printf("set %s = %d\n",  globalVars[data -> lastVar-1].varName , kittyStack[stack].value);
 
-					break;
-				case type_float:
-					var->decimal = kittyStack[stack].decimal;
-					break;
-				case type_string:
-					if (var->str) free(var->str);
-					var->str = strdup(kittyStack[stack].str);
-					var->len = kittyStack[stack].len;
-					break;
-				case type_int | type_array:
-					var->int_array[var -> index] = kittyStack[stack].value;
-
-printf("set int array\n");
-
-					break;
-				case type_float | type_array:
-					var->float_array[var -> index] = kittyStack[stack].decimal;
-					break;
-				case type_string | type_array:
-					if (var->str_array[var -> index] ) free(var->str_array[var->index]);
-					var->str_array[var -> index] = strdup(kittyStack[stack].str);	
-					break;
-			}
-		}
-		else
-		{
-
-			printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
-				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar].var.type & 7));
-
-			printf("Mismatch error\n");
+				break;
+			case type_float:
+				var->decimal = kittyStack[stack].decimal;
+				break;
+			case type_string:
+				if (var->str) free(var->str);
+				var->str = strdup(kittyStack[stack].str);
+				var->len = kittyStack[stack].len;
+				break;
+			case type_int | type_array:
+				var->int_array[var -> index] = kittyStack[stack].value;
+				break;
+			case type_float | type_array:
+				var->float_array[var -> index] = kittyStack[stack].decimal;
+				break;
+			case type_string | type_array:
+				if (var->str_array[var -> index] ) free(var->str_array[var->index]);
+				var->str_array[var -> index] = strdup(kittyStack[stack].str);	
+			break;
 		}
 	}
+	else
+	{
+
+		printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
+				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar-1].var.type & 7));
+
+		printf("Mismatch error\n");
+	}
+	
 	return NULL;
 }
 
@@ -465,7 +495,16 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	stackCmdNormal(_setVar, tokenBuffer);
+	if (tokenMode == mode_logical)
+	{
+		cmdParm(_equal, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		stackCmdNormal(_setVar, tokenBuffer);
+	}
+
 	return tokenBuffer;
 }
 
@@ -524,9 +563,26 @@ char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdLoop( _repeat, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	return tokenBuffer;
+}
+
+char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
+
+	tokenMode = mode_logical;
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _repeat ) cmdTmp[cmdStack-1].flag = cmd_first;
 	return tokenBuffer;
 }
 
