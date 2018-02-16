@@ -20,6 +20,7 @@ int tokenMode = mode_standard;
 
 void _str(const char *str);
 void _num( int num );
+void _decimal( double decimal );
 
 struct kittyData kittyStack[100];
 
@@ -50,7 +51,15 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
-	if (cmdStack) if (cmdTmp[cmdStack-1].flag != cmd_loop ) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	dump_prog_stack();
+
+	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
+	{
+		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		if (ret) break;
+	}
+
 	tokenMode = mode_standard;
 
 	if (ret) ptr = ret - 2;
@@ -245,15 +254,18 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	{
 		if (ref -> ref)
 		{
+			int idx = ref->ref-1;
+
 			switch (ref -> flags & 3)
 			{
 				case 0:
-					_num(globalVars[ref -> ref].var.value);
+					_num(globalVars[idx].var.value);
 					break;
 				case 1:
+					_decimal(globalVars[idx].var.value);
 					break;
 				case 2:
-					_str(globalVars[ref -> ref].var.str);
+					_str(globalVars[idx].var.str);
 					break;
 			}
 		}
@@ -368,6 +380,8 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
+	{0x0250,"Repeat", 2, cmdRepeat},
+	{0x025C,"Until",0,cmdUntil },
 	{0x027E,"Do",2,cmdDo },
 	{0x0286,"Loop",0,cmdLoop },
 	{0x02a8,"Goto",0,cmdGoto },
@@ -411,20 +425,26 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
-
-
-
 void _num( int num )
 {
-								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 
 	kittyStack[stack].str = NULL;
 	kittyStack[stack].value = num;
 	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = 0;
+	kittyStack[stack].type = type_int;
 }
+
+void _decimal( double decimal )
+{
+	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+
+	kittyStack[stack].str = NULL;
+	kittyStack[stack].decimal = decimal;
+	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = type_float;
+}
+
 
 void _str(const char *str)
 {
@@ -546,7 +566,8 @@ int main()
 //	fd = fopen("amos-test/goto.amos","r");
 //	fd = fopen("amos-test/if.amos","r");
 //	fd = fopen("amos-test/goto2.amos","r");
-	fd = fopen("amos-test/do-loop.amos","r");
+//	fd = fopen("amos-test/do-loop.amos","r");
+	fd = fopen("amos-test/repeat-until.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
