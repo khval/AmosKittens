@@ -29,6 +29,9 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer);
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );

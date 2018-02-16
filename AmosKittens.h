@@ -7,7 +7,8 @@ enum
 	mode_standard,
 	mode_alloc,
 	mode_input,
-	mode_goto
+	mode_goto,
+	mode_logical
 };
 
 enum 
