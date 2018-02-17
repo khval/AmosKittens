@@ -11,10 +11,10 @@ Current status:
 ---------------
 This commands are supported.
 
-Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until
+Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,false,true
 
 And some math operations works.
-only logcial equal is implented only, more logical opertations to come.
+only logcial equal and not equal is implented, more logical opertations to come.
 
 Know bugs:
 ----------
