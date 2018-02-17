@@ -36,6 +36,12 @@ int labels_count = 0;
 
 extern char *nextToken_pass1( char *ptr, unsigned short token );
 
+char *cmdRem(nativeCommand *cmd, char *ptr)
+{
+	int length = *((short *) ptr);
+	return ptr + length;
+}
+
 
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
@@ -380,8 +386,7 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
-	{0x123E,"TRUE",0,cmdTrue },
-	{0x1248,"False",0,cmdFalse },
+
 	{0x0250,"Repeat", 2, cmdRepeat},
 	{0x025C,"Until",0,cmdUntil },
 	{0x027E,"Do",2,cmdDo },
@@ -394,6 +399,11 @@ struct nativeCommand nativeCommands[]=
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
+	{0x064A, "Rem",2,cmdRem },
+
+	{0x123E,"TRUE",0,cmdTrue },
+	{0x1248,"False",0,cmdFalse },
+
 	{0xFFC0,"+",0, addData},
 	{0xFFCA,"-", 0, subData},
 	{0xFFA2,"=", 0, setVar},
@@ -571,7 +581,8 @@ int main()
 //	fd = fopen("amos-test/goto2.amos","r");
 //	fd = fopen("amos-test/do-loop.amos","r");
 //	fd = fopen("amos-test/repeat-until.amos","r");
-	fd = fopen("amos-test/legal-ilegal-if.amos","r");
+//	fd = fopen("amos-test/legal-ilegal-if.amos","r");
+	fd = fopen("amos-test/while-wend.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

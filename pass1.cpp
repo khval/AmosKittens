@@ -205,6 +205,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			case 0x0018:	token_size += ReferenceByteLength(ptr); break;
 			case 0x0026:	token_size += QuoteByteLength(ptr); break;
 			case 0x002E:	token_size += QuoteByteLength(ptr); break;
+			case 0x064A:	token_size += QuoteByteLength(ptr); break;
 		}
 
 		ptr += token_size;
@@ -287,6 +288,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
+				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
+				case 0x064A:	ret += QuoteByteLength(ptr); break;	// skip strings.
+
 				case 0x02BE:	addNest( nested_if );
 							break;
 
@@ -316,7 +320,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								setError( 23 );
  							break;
 
-				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
+
+
 			}
 
 			ret += cmd -> size;
