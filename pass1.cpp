@@ -224,9 +224,9 @@ void eol( char *ptr )
 	{
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
-			// IF can end at EOL if then is not there. (command THEN should replace nested_if )
+			// IF can end at EOL if then is there. (command THEN should replace nested_if )
 
-			case nested_if:
+			case nested_then:
 				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
 				nested_count --;
@@ -235,13 +235,13 @@ void eol( char *ptr )
 	}
 }
 
-void pass1_else_or_end_if( char *ptr )
+void pass1_if_or_else( char *ptr )
 {
 	if (nested_count>0)
 	{
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
-			case nested_then:
+			case nested_if:
 			case nested_else:
 
 				printf("write to %08x-------%08x\n",(short *) (nested_command[ nested_count -1 ].ptr),
@@ -298,9 +298,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x02D0:	// ELSE
-							if LAST_TOKEN_(then)
+							if LAST_TOKEN_(if)
 							{
-								pass1_else_or_end_if(ptr+2);
+								pass1_if_or_else(ptr+2);
 								addNest( nested_else );
 							}
 							else
@@ -308,9 +308,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x02DA:	
-							if ( LAST_TOKEN_(then) || LAST_TOKEN_(else) )
+							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else) )
 							{
-								pass1_else_or_end_if( ptr+2 );
+								pass1_if_or_else( ptr+2 );
 							}
 							else
 								setError( 23 );
