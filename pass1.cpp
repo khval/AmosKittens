@@ -29,7 +29,8 @@ enum
 {
 	nested_if,
 	nested_then,
-	nested_else
+	nested_else,
+	nested_while
 };
 
 struct nested
@@ -236,6 +237,20 @@ void eol( char *ptr )
 	}
 }
 
+void fix_token_short( int cmd, char *ptr )
+{
+	printf("%d:%d\n",__FUNCTION__,__LINE__);
+
+	if (nested_count>0)
+	{
+		if ( nested_command[ nested_count -1 ].cmd  == cmd )
+		{
+			*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
+			nested_count --;
+		}
+	}
+}
+
 void pass1_if_or_else( char *ptr )
 {
 	if (nested_count>0)
@@ -291,6 +306,15 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 				case 0x064A:	ret += QuoteByteLength(ptr); break;	// skip strings.
 
+				case 0x0268:	addNest( nested_while );
+							break;
+				// Wend
+				case 0x0274:	if LAST_TOKEN_(while)
+								fix_token_short( nested_while, ptr+2 );
+							else
+								setError( 30 );	
+							break;
+				// if
 				case 0x02BE:	addNest( nested_if );
 							break;
 
@@ -319,9 +343,6 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							else
 								setError( 23 );
  							break;
-
-
-
 			}
 
 			ret += cmd -> size;
@@ -366,6 +387,7 @@ void pass1_reader( char *start, int tokenlength )
 	{
 		switch (nested_command[ nested_count - 1 ].cmd )
 		{
+			case nested_while: setError(29); break;
 			case nested_if: setError(22); break;
 			case nested_then: setError(22); break;
 			case nested_else: setError(22); break;
