@@ -12,33 +12,29 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer);
 char *addData(struct nativeCommand *cmd, char *tokenBuffer);
 char *subData(struct nativeCommand *cmd, char *tokenBuffer);
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer);
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer);
 char *divData(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
+
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 

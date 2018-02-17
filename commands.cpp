@@ -72,9 +72,6 @@ char *_input( struct glueCommands *data )
 
 char *_if( struct glueCommands *data )
 {
-	dump_stack();
-
-
 	if (kittyStack[data->stack].value != -1)
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
@@ -87,6 +84,40 @@ char *_if( struct glueCommands *data )
 	}
 	return NULL;
 }
+
+char *_while( struct glueCommands *data )	// jumps back to the token.
+{
+	return data -> tokenBuffer-2;
+}
+
+char *_whileCheck( struct glueCommands *data )		
+{
+	int offset = 0;
+
+	dump_stack();
+	dump_prog_stack();
+
+	// two command should be stacked, while loop, and while check.
+	// while loop is removed from stack, if check is false
+	// and we jump over the wend
+
+	if (kittyStack[data->stack].value != -1)
+	{
+		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) 
+		{
+			cmdStack --;
+			offset = *((unsigned short *) cmdTmp[cmdStack].tokenBuffer);
+			if (offset) 
+			{
+				return data->tokenBuffer+(offset*2);
+			}
+		}
+	}
+	return NULL;
+}
+
+
+
 
 char *_do( struct glueCommands *data )
 {
@@ -624,6 +655,22 @@ char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	return tokenBuffer;
+}
+
+char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("--------------------------------------\n%s:%d\n",__FUNCTION__,__LINE__);
+
+	stackCmdLoop( _while, tokenBuffer );
+	stackCmdNormal( _whileCheck, tokenBuffer );
+	
+	return tokenBuffer;
+}
+
+char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	return tokenBuffer;
 }
 

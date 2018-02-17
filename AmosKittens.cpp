@@ -392,6 +392,8 @@ struct nativeCommand nativeCommands[]=
 	{0x027E,"Do",2,cmdDo },
 	{0x0286,"Loop",0,cmdLoop },
 	{0x02a8,"Goto",0,cmdGoto },
+	{0x0268,"While",2,cmdWhile },
+	{0x0274, "Wend",0,cmdWend },
 	{0x02BE,"If",2, cmdIf },
 	{0x02C6,"Then",0,cmdThen },
 	{0x02D0,"Else",2,cmdElse },
