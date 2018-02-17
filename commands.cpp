@@ -341,6 +341,40 @@ char *_equal( struct glueCommands *data )
 	return NULL;
 }
 
+char *_not_equal( struct glueCommands *data )
+{
+	printf("%s\n",__FUNCTION__);
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	{
+		printf("mismatch error\n");
+		return NULL;
+	}
+
+	printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value == kittyStack[stack+1].value) );
+
+	switch (kittyStack[stack].type & 3)
+	{
+		case 0:	_num( kittyStack[stack].value != kittyStack[stack+1].value) ;
+				break;
+		case 1:	_num (kittyStack[stack].decimal != kittyStack[stack+1].decimal);
+				break;
+//		case 2:	_not_equalStr( data );
+//				break;
+	}
+
+	return NULL;
+}
+
+
 
 char *_setVar( struct glueCommands *data )
 {
@@ -491,6 +525,23 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	if (tokenMode == mode_logical)
+	{
+		cmdParm(_not_equal, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -583,6 +634,18 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 	tokenMode = mode_logical;
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _repeat ) cmdTmp[cmdStack-1].flag = cmd_first;
+	return tokenBuffer;
+}
+
+char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	_num(-1);
+	return tokenBuffer;
+}
+
+char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	_num(0);
 	return tokenBuffer;
 }
 

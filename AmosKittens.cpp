@@ -380,6 +380,8 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
+	{0x123E,"TRUE",0,cmdTrue },
+	{0x1248,"False",0,cmdFalse },
 	{0x0250,"Repeat", 2, cmdRepeat},
 	{0x025C,"Until",0,cmdUntil },
 	{0x027E,"Do",2,cmdDo },
@@ -396,7 +398,8 @@ struct nativeCommand nativeCommands[]=
 	{0xFFCA,"-", 0, subData},
 	{0xFFA2,"=", 0, setVar},
 	{0xFFE2,"*", 0, mulData},
-	{0xFFEC,"/", 0, divData}
+	{0xFFEC,"/", 0, divData},
+	{0xFF66,"not equal",0,cmdNotEqual}
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -567,7 +570,8 @@ int main()
 //	fd = fopen("amos-test/if.amos","r");
 //	fd = fopen("amos-test/goto2.amos","r");
 //	fd = fopen("amos-test/do-loop.amos","r");
-	fd = fopen("amos-test/repeat-until.amos","r");
+//	fd = fopen("amos-test/repeat-until.amos","r");
+	fd = fopen("amos-test/legal-ilegal-if.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
