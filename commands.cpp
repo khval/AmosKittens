@@ -94,14 +94,13 @@ char *_whileCheck( struct glueCommands *data )
 {
 	int offset = 0;
 
-	dump_stack();
-	dump_prog_stack();
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	// two command should be stacked, while loop, and while check.
 	// while loop is removed from stack, if check is false
 	// and we jump over the wend
 
-	if (kittyStack[data->stack].value != -1)
+	if (kittyStack[data->stack].value == 0)
 	{
 		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) 
 		{
@@ -109,6 +108,8 @@ char *_whileCheck( struct glueCommands *data )
 			offset = *((unsigned short *) cmdTmp[cmdStack].tokenBuffer);
 			if (offset) 
 			{
+				printf("Jump over\n");
+
 				return data->tokenBuffer+(offset*2);
 			}
 		}
@@ -338,6 +339,74 @@ char *_divData( struct glueCommands *data )
 	return NULL;
 }
 
+char *_less( struct glueCommands *data )
+{
+	printf("%s:%d -- stack %d\n",__FUNCTION__,__LINE__, stack);
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	dump_stack();
+
+	stack --;
+
+	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	{
+		printf("mismatch error\n");
+		return NULL;
+	}
+
+	printf("(%d < %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value < kittyStack[stack+1].value) );
+
+	switch (kittyStack[stack].type & 3)
+	{
+		case 0:	_num( kittyStack[stack].value < kittyStack[stack+1].value) ;
+				break;
+		case 1:	_num (kittyStack[stack].decimal < kittyStack[stack+1].decimal);
+				break;
+//		case 2:	_equalStr( data );
+//				break;
+	}
+
+	return NULL;
+}
+
+char *_more( struct glueCommands *data )
+{
+	printf("%s\n",__FUNCTION__);
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	{
+		printf("mismatch error\n");
+		return NULL;
+	}
+
+	printf("(%d > %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value > kittyStack[stack+1].value) );
+
+	switch (kittyStack[stack].type & 3)
+	{
+		case 0:	_num( kittyStack[stack].value > kittyStack[stack+1].value) ;
+				break;
+		case 1:	_num (kittyStack[stack].decimal > kittyStack[stack+1].decimal);
+				break;
+//		case 2:	_equalStr( data );
+//				break;
+	}
+
+	return NULL;
+}
+
 
 char *_equal( struct glueCommands *data )
 {
@@ -390,7 +459,7 @@ char *_not_equal( struct glueCommands *data )
 		return NULL;
 	}
 
-	printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value == kittyStack[stack+1].value) );
+	printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value != kittyStack[stack+1].value) );
 
 	switch (kittyStack[stack].type & 3)
 	{
@@ -556,6 +625,46 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		cmdParm(_less, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
+
+char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		cmdParm(_more, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
+
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -645,7 +754,6 @@ char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdLoop( _repeat, tokenBuffer );
@@ -661,6 +769,8 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("--------------------------------------\n%s:%d\n",__FUNCTION__,__LINE__);
+
+	tokenMode = mode_logical;
 
 	stackCmdLoop( _while, tokenBuffer );
 	stackCmdNormal( _whileCheck, tokenBuffer );

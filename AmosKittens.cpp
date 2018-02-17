@@ -406,12 +406,14 @@ struct nativeCommand nativeCommands[]=
 	{0x123E,"TRUE",0,cmdTrue },
 	{0x1248,"False",0,cmdFalse },
 
-	{0xFFC0,"+",0, addData},
-	{0xFFCA,"-", 0, subData},
-	{0xFFA2,"=", 0, setVar},
-	{0xFFE2,"*", 0, mulData},
-	{0xFFEC,"/", 0, divData},
-	{0xFF66,"not equal",0,cmdNotEqual}
+	{0xFFAC,"<",0,cmdLess },
+	{0xFFAC,">",0,cmdMore },
+	{0xFFC0,"+",0, addData },
+	{0xFFCA,"-", 0, subData },
+	{0xFFA2,"=", 0, setVar },
+	{0xFFE2,"*", 0, mulData },
+	{0xFFEC,"/", 0, divData },
+	{0xFF66,"not equal",0,cmdNotEqual }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);

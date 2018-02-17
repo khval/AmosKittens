@@ -30,6 +30,8 @@ char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
