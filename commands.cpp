@@ -14,6 +14,7 @@ extern int last_var;
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
+extern int tokenlength;
 
 using namespace std;
 
@@ -55,6 +56,19 @@ char *_print( struct glueCommands *data )
 char *_for( struct glueCommands *data )
 {
 	return NULL;
+}
+
+char *_gosub( struct glueCommands *data )
+{
+	char *ptr = data -> tokenBuffer ;
+	ptr-=2;
+	if (NEXT_TOKEN( ptr ) == 0x0006)
+	{
+		struct reference *ref = (struct reference *) (ptr + 2);
+		ptr += (2 + sizeof(struct reference) + ref -> length) ;
+	}
+
+	return ptr ;
 }
 
 char *_step( struct glueCommands *data )
@@ -155,14 +169,6 @@ char *_repeat( struct glueCommands *data )
 	return 0;
 }
 
-char *_goto( struct glueCommands *data )
-{
-	char *labelName = kittyStack[data->stack].str;
-
-	printf("%s\n",labelName);
-
-	return findLabel( labelName );
-}
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
 {
@@ -772,7 +778,16 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	tokenMode = mode_goto;
+	jump_mode = jump_mode_goto;
+	return tokenBuffer;
+}
+
+char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	jump_mode = jump_mode_gosub;
 	return tokenBuffer;
 }
 
@@ -901,3 +916,20 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
+char *cmdEnd(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	return NULL;
+}
+
+char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	return tokenBuffer;
+}
+

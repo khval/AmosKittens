@@ -138,5 +138,9 @@ extern int stack;
 extern int cmdStack;
 extern unsigned short last_token;
 
+extern char *(*jump_mode) (struct reference *ref, char *ptr);
+extern char *jump_mode_goto (struct reference *ref, char *ptr);
+extern char *jump_mode_gosub (struct reference *ref, char *ptr);
+
 #endif
 

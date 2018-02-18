@@ -21,6 +21,8 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer);
@@ -32,6 +34,7 @@ char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdEnd(struct nativeCommand *cmd, char *tokenBuffer );
 
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer );
@@ -41,7 +44,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer );
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
-
+char *_gosub( struct glueCommands *data );
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 

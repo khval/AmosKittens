@@ -15,6 +15,9 @@ int stack = 0;
 int cmdStack = 0;
 unsigned short last_token = 0;
 int last_var = 0;
+int tokenlength;
+
+char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
 
@@ -207,42 +210,84 @@ char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
 
 extern char *findLabel( char *name );
 
+char *jump_mode_goto (struct reference *ref, char *ptr) 
+{
+	if (ref -> flags == 0)
+	{
+		char *name = strndup( ptr + sizeof(struct reference), ref->length );
+		char *newLocation;
+
+		if (name)
+		{
+			newLocation = findLabel(name);
+			if (newLocation)
+			{
+				if (ref->length>=4)
+				{
+					ref -> flags = 255;
+					*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
+				}
+
+				free(name);
+				return newLocation - sizeof(struct reference)  ;
+			}
+			free(name);
+		}
+	} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
+	{
+		return *((char **) (ptr + sizeof(struct reference))) ;
+	}
+
+	stack++;
+
+	return ptr;
+}
+
+char *jump_mode_gosub (struct reference *ref, char *ptr) 
+{
+	stackCmdLoop( _gosub, ptr );
+
+	if (ref -> flags == 0)
+	{
+		char *name = strndup( ptr + sizeof(struct reference), ref->length );
+		char *newLocation;
+
+		if (name)
+		{
+			newLocation = findLabel(name);
+			if (newLocation)
+			{
+				if (ref->length>=4)
+				{
+					ref -> flags = 255;
+					*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
+				}
+
+				free(name);
+				return newLocation - sizeof(struct reference)  ;
+			}
+			free(name);
+		}
+	} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
+	{
+		return *((char **) (ptr + sizeof(struct reference))) ;
+	}
+
+	stack++;
+
+	return ptr;
+}
+
+
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	struct kittyData *var;
 
-	if (tokenMode == mode_goto)
+	if (jump_mode)
 	{
-		if (ref -> flags == 0)
-		{
-			char *name = strndup( ptr + sizeof(struct reference), ref->length );
-			char *newLocation;
-
-			if (name)
-			{
-				newLocation = findLabel(name);
-				if (newLocation)
-				{
-					if (ref->length>=4)
-					{
-						ref -> flags = 255;
-						*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
-					}
-
-					free(name);
-					return newLocation - sizeof(struct reference)  ;
-				}
-				free(name);
-			}
-		} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
-		{
-			return *((char **) (ptr + sizeof(struct reference))) ;
-		}
-
-//		cmdNormal( _goto, ptr );	
-		stack++;
+		return jump_mode( ref, ptr );
 	}
 
 	last_var = ref -> ref;
@@ -377,30 +422,33 @@ struct nativeCommand nativeCommands[]=
 	{0x0000,	"", 2,	cmdNewLine},
 	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
-	{0x0026,"\"",2, cmdQuote },
-	{0x003E,"",4,cmdNumber },
-	{0x0054,":", 0, nextCmd },
-	{0x005C,",", 0, nextArg},
-	{0x0064,";", 0, breakData},
-	{0x0074,"(", 0, subCalc},
-	{0x007C,")", 0, subCalcEnd},
-	{0x0084,"[", 0, NULL },
-	{0x008C,"]", 0, NULL },
-	{0x0094,"To",0,cmdTo },
-	{0x023C,"For",2,cmdFor },
-	{0x0246,"Next",0,cmdNext },
-	{0x0356,"Step",0,cmdStep },
-	{0x0250,"Repeat", 2, cmdRepeat},
-	{0x025C,"Until",0,cmdUntil },
-	{0x027E,"Do",2,cmdDo },
-	{0x0286,"Loop",0,cmdLoop },
-	{0x02a8,"Goto",0,cmdGoto },
-	{0x0268,"While",2,cmdWhile },
+	{0x0026, "\"",2, cmdQuote },
+	{0x003E, "",4,cmdNumber },
+	{0x0054, ":", 0, nextCmd },
+	{0x005C, ",", 0, nextArg},
+	{0x0064, ";", 0, breakData},
+	{0x0074, "(", 0, subCalc},
+	{0x007C, ")", 0, subCalcEnd},
+	{0x0084, "[", 0, NULL },
+	{0x008C, "]", 0, NULL },
+	{0x0094, "To",0,cmdTo },
+	{0x023C, "For",2,cmdFor },
+	{0x0246, "Next",0,cmdNext },
+	{0x0356, "Step",0,cmdStep },
+	{0x0250, "Repeat", 2, cmdRepeat},
+	{0x025C, "Until",0,cmdUntil },
+	{0x027E, "Do",2,cmdDo },
+	{0x0286, "Loop",0,cmdLoop },
+	{0x02a8, "Goto",0,cmdGoto },
+	{0x02B2, "Gosub",0,cmdGosub },
+	{0x0268, "While",2,cmdWhile },
 	{0x0274, "Wend",0,cmdWend },
-	{0x02BE,"If",2, cmdIf },
-	{0x02C6,"Then",0,cmdThen },
-	{0x02D0,"Else",2,cmdElse },
-	{0x02DA,"End If",0,cmdEndIf },
+	{0x02BE, "If",2, cmdIf },
+	{0x02C6, "Then",0,cmdThen },
+	{0x02D0, "Else",2,cmdElse },
+	{0x02DA, "End If",0,cmdEndIf },
+	{0x0360, "Return",0,cmdReturn },
+	{0x03B6, "End",0,cmdEnd },
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x0640, "Dim",0,cmdDim },
@@ -465,11 +513,8 @@ void _decimal( double decimal )
 	kittyStack[stack].type = type_float;
 }
 
-
 void _str(const char *str)
 {
-								printf("\n'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 
 	kittyStack[stack].str = strdup( str );
@@ -481,7 +526,7 @@ void _str(const char *str)
 void _castNumToStr( int num )
 {
 	char tmp[100];
-								printf("'%20s:%08d stack is %d cmd stack is %d flag %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
 	sprintf(tmp,"%d",num);
 	kittyStack[stack].str = strdup( tmp );
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
@@ -493,48 +538,6 @@ void _castNumToStr( int num )
 		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 }
-
-void paramiter_testing()
-{
-	_str("Amos");
-	executeToken( NULL, 0x0064);
-	_str(" Profsonal");
-	executeToken( NULL, 0x0064 );
-	_str(" can run on X");
-
-	executeToken( NULL, 0x0064 );
-
-	_castNumToStr( 1000 );
-	executeToken( NULL, 0xFFCA );
-	_str("fsonal");
-
-	executeToken( NULL, 0xFFCA );	// -
-//	executeToken( NULL, 0xFFC0 );	// +
-
-	executeToken( NULL, 0x0074 );	// (
-	_str("X");						// "X"
-
-	executeToken( NULL, 0xFFC0 );	// +
-	_str("A1000");					// "A1000"
-
-	executeToken( NULL, 0xFFCA );	// -
-	_str("A");						// "A"
-
-	executeToken( NULL, 0x007C );	// )
-
-	printf("--------------------------\n");
-
-	if (kittyStack[stack].str)
-	{
-		printf("'%s' stack is %d cmd stack is %d\n", kittyStack[stack].str, stack, cmdStack);
-	}
-	else
-	{
-		printf("nothing\n");
-	}
-}
-
-
 
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
@@ -564,7 +567,7 @@ void code_reader( char *start, int tokenlength )
 
 int main()
 {
-	int tokenlength;
+
 	FILE *fd;
 	int amos_filesize;
 	char amosid[17];
@@ -590,7 +593,8 @@ int main()
 //	fd = fopen("amos-test/repeat-until.amos","r");
 //	fd = fopen("amos-test/legal-ilegal-if.amos","r");
 //	fd = fopen("amos-test/while-wend.amos","r");
-	fd = fopen("amos-test/for-to-step-next.amos","r");
+//	fd = fopen("amos-test/for-to-step-next.amos","r");
+	fd = fopen("amos-test/gosub-return.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
