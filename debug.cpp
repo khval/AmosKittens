@@ -9,6 +9,7 @@
 
 extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
+extern int global_var_count;
 
 void dumpLabels()
 {
@@ -21,16 +22,14 @@ void dumpLabels()
 	}
 }
 
-void dumpGlobal()
+void dump_global()
 {
 	int n;
 	int i;
 
-	for (n=1;n<sizeof(globalVars)/sizeof(struct globalVar);n++)
+	for (n=0;n<global_var_count;n++)
 	{
 		if (globalVars[n].varName == NULL) return;
-
-		printf("%d\n",globalVars[n].var.type);
 
 		switch (globalVars[n].var.type)
 		{
