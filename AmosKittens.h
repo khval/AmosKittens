@@ -49,6 +49,7 @@ struct glueCommands
 	char *tokenBuffer;
 	int flag;
 	int lastVar;
+	int step;
 	int stack;
 };
 
