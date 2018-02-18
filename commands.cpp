@@ -4,6 +4,7 @@
 #include <string.h>
 #include <proto/exec.h>
 #include "amosKittens.h"
+#include "commands.h"
 #include "debug.h"
 #include <string>
 #include <iostream>
@@ -15,6 +16,9 @@ extern unsigned short last_token;
 extern int tokenMode;
 
 using namespace std;
+
+#define NEXT_TOKEN(ptr) *((short *) ptr)
+#define NEXT_INT(ptr) *((int *) (ptr+2))
 
 extern char *findLabel( char *name );
 
@@ -44,6 +48,26 @@ char *_print( struct glueCommands *data )
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
+	return NULL;
+}
+
+// dummy not used, see code in cmdNext
+char *_for( struct glueCommands *data )
+{
+	return NULL;
+}
+
+char *_step( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+	{
+		cmdTmp[cmdStack-1].step = kittyStack[stack].value;
+	}
+
 	return NULL;
 }
 
@@ -481,6 +505,8 @@ char *_setVar( struct glueCommands *data )
 	struct kittyData *var;
 	var = &globalVars[data -> lastVar-1].var;
 	
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (kittyStack[stack].type == ( var -> type & 7) )
 	{
 		switch (globalVars[data -> lastVar].var.type)
@@ -684,6 +710,8 @@ char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	if (tokenMode == mode_logical)
@@ -806,3 +834,70 @@ char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _for, tokenBuffer );
+	cmdTmp[cmdStack-1].step = 1;		// set default counter step
+
+	return tokenBuffer;
+}
+
+char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
+{
+
+	dump_prog_stack();
+
+	if (cmdStack) 
+	{
+		if (cmdStack)
+		{
+			if (cmdTmp[cmdStack-1].flag != cmd_loop )	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		}
+
+		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
+		{
+			cmdTmp[cmdStack-1].tokenBuffer = tokenBuffer ;
+			cmdTmp[cmdStack-1].flag = cmd_loop;
+		}
+	}
+
+	return tokenBuffer;
+}
+
+char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	char *ptr = tokenBuffer ;
+
+	if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
+	{
+		struct reference *ref = (struct reference *) (ptr + 2);
+		int idx_var = ref -> ref -1;
+		
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+		{
+			ptr = cmdTmp[cmdStack-1].tokenBuffer;
+
+			if (NEXT_TOKEN(ptr) == 0x003E ) 
+			{
+				if (globalVars[idx_var].var.value < NEXT_INT(ptr)  )
+				{
+					globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
+					tokenBuffer = cmdTmp[cmdStack-1].tokenBuffer + 6;
+				}
+				else
+				{
+					cmdStack--;
+				}
+			}
+		}
+	}
+
+	return tokenBuffer;
+}

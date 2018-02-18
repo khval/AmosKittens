@@ -386,7 +386,10 @@ struct nativeCommand nativeCommands[]=
 	{0x007C,")", 0, subCalcEnd},
 	{0x0084,"[", 0, NULL },
 	{0x008C,"]", 0, NULL },
-
+	{0x0094,"To",0,cmdTo },
+	{0x023C,"For",2,cmdFor },
+	{0x0246,"Next",0,cmdNext },
+	{0x0356,"Step",0,cmdStep },
 	{0x0250,"Repeat", 2, cmdRepeat},
 	{0x025C,"Until",0,cmdUntil },
 	{0x027E,"Do",2,cmdDo },
@@ -404,7 +407,7 @@ struct nativeCommand nativeCommands[]=
 	{0x064A, "Rem",2,cmdRem },
 
 	{0x123E,"TRUE",0,cmdTrue },
-	{0x1248,"False",0,cmdFalse },
+	{0x1248,"FALSE",0,cmdFalse },
 
 	{0xFFAC,"<",0,cmdLess },
 	{0xFFAC,">",0,cmdMore },
@@ -586,7 +589,8 @@ int main()
 //	fd = fopen("amos-test/do-loop.amos","r");
 //	fd = fopen("amos-test/repeat-until.amos","r");
 //	fd = fopen("amos-test/legal-ilegal-if.amos","r");
-	fd = fopen("amos-test/while-wend.amos","r");
+//	fd = fopen("amos-test/while-wend.amos","r");
+	fd = fopen("amos-test/for-to-step-next.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -624,7 +628,7 @@ int main()
 		printf("--- End of program status ---\n");
 
 		printf("\n--- var dump ---\n");
-		dumpGlobal();
+		dump_global();
 
 		printf("\n--- value stack dump ---\n");
 		dump_stack();
