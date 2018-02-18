@@ -113,10 +113,10 @@ void pass1var(char *ptr)
 	tmp = (char *) malloc( ref->length + 2 );
 	if (tmp)
 	{
-		tmp[ ref->length -2 ] =0;
-		tmp[ ref->length -1 ] =0;
-
 		memcpy(tmp, ptr + sizeof(struct reference), ref->length );
+		tmp[ ref->length ] =0;
+		tmp[ ref->length + 1 ] =0;
+
 		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
 
 		found = findVar(tmp);
@@ -127,8 +127,6 @@ void pass1var(char *ptr)
 		}
 		else
 		{
-			printf("added ** VAR: %s **\n", tmp);
-
 			global_var_count ++;
 			ref -> ref = global_var_count;
 
