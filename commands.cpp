@@ -23,34 +23,6 @@ using namespace std;
 
 extern char *findLabel( char *name );
 
-char *_print( struct glueCommands *data )
-{
-	int n;
-	printf("PRINT: ");
-
-	for (n=data->stack;n<=stack;n++)
-	{
-//		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
-
-		switch (kittyStack[n].type)
-		{
-			case 0:
-				printf("%d", kittyStack[n].value);
-				break;
-			case 1:
-				printf("%f", kittyStack[n].decimal);
-				break;
-			case 2:
-				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
-				break;
-
-		}
-
-		if (n<=stack) printf("    ");
-	}
-	printf("\n");
-	return NULL;
-}
 
 // dummy not used, see code in cmdNext
 char *_for( struct glueCommands *data )
@@ -515,7 +487,7 @@ char *_setVar( struct glueCommands *data )
 
 	if (kittyStack[stack].type == ( var -> type & 7) )
 	{
-		switch (globalVars[data -> lastVar].var.type)
+		switch (var->type)
 		{
 			case type_int:
 				var->value = kittyStack[stack].value;
