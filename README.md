@@ -21,6 +21,10 @@ Logical opertations supported:
 
 equal, not equal, less, more, 
 
+String commands supported:
+--------------------------
+Left$, Mid$, Right$
+
 Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
