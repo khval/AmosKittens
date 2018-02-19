@@ -28,7 +28,7 @@ Left$, Mid$, Right$
 Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
-* Horrible stack handling, should clean up stack, after reading args, not just increment stack.
+* Horrible stack handling, should clean up stack, after reading args, not just decrement stack.
 * logcial operations don't compare strings.
 
 Not yet supported:
