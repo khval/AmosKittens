@@ -6,6 +6,7 @@
 #include <proto/dos.h>
 #include "amosKittens.h"
 #include "commands.h"
+#include "commandsString.h"
 #include "debug.h"
 #include <vector>
 #include "errors.h"
@@ -79,11 +80,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *cmdPrint(nativeCommand *cmd, char *ptr)
-{
-	stackCmdNormal( _print, ptr );
-	return ptr;
-}
 
 char *_array_index_var( glueCommands *self )
 {
@@ -451,6 +447,9 @@ struct nativeCommand nativeCommands[]=
 	{0x03B6, "End",0,cmdEnd },
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
+	{0x050E, "Mid$",0,cmdMid },
+	{0x0528, "Left$",0,cmdLeft },
+	{0x0536, "Right$",0,cmdRight },
 	{0x0640, "Dim",0,cmdDim },
 	{0x064A, "Rem",2,cmdRem },
 
@@ -594,7 +593,8 @@ int main()
 //	fd = fopen("amos-test/legal-ilegal-if.amos","r");
 //	fd = fopen("amos-test/while-wend.amos","r");
 //	fd = fopen("amos-test/for-to-step-next.amos","r");
-	fd = fopen("amos-test/gosub-return.amos","r");
+//	fd = fopen("amos-test/gosub-return.amos","r");
+	fd = fopen("amos-test/left-mid-right.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
