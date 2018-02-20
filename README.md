@@ -23,7 +23,7 @@ equal, not equal, less, more,
 
 String commands supported:
 --------------------------
-Left$, Mid$, Right$
+Left$(), Mid$(), Right$(), Instr()
 
 Known bugs:
 ----------
