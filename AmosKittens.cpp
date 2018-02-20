@@ -450,6 +450,7 @@ struct nativeCommand nativeCommands[]=
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
+	{0x05E4, "Instr",0,cmdInstr },
 	{0x0640, "Dim",0,cmdDim },
 	{0x064A, "Rem",2,cmdRem },
 
@@ -594,7 +595,8 @@ int main()
 //	fd = fopen("amos-test/while-wend.amos","r");
 //	fd = fopen("amos-test/for-to-step-next.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
-	fd = fopen("amos-test/left-mid-right.amos","r");
+//	fd = fopen("amos-test/left-mid-right.amos","r");
+	fd = fopen("amos-test/instr.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

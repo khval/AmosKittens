@@ -154,6 +154,36 @@ char *_right( struct glueCommands *data )
 	return NULL;
 }
 
+char *_instr( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	char *str,*find, *ret;
+	char *tmp = NULL;
+	int  _pos;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	dump_stack();
+
+	if (args == 2)
+	{
+		str = _stackString( data->stack + 1 );
+		find = _stackString( data->stack + 2 );
+
+		ret = strstr( str, find );
+
+		printf("%s,%s,%s\n",str,find,ret ? ret : "NULL");
+
+		_pos = ret ? (unsigned int) (ret - str) +1 : 0;
+	}	
+
+	stack -=args;
+
+	_num( _pos );
+
+	return NULL;
+}
+
 char *_hex( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
@@ -173,7 +203,6 @@ char *_bin( struct glueCommands *data )
 
 	return NULL;
 }
-
 
 char *cmdLeft(nativeCommand *cmd, char *ptr)
 {
@@ -202,6 +231,12 @@ char *cmdHex(nativeCommand *cmd, char *ptr)
 char *cmdBin(nativeCommand *cmd, char *ptr)
 {
 	stackCmdNormal( _right, ptr );
+	return ptr;
+}
+
+extern char *cmdInstr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdNormal( _instr, ptr );
 	return ptr;
 }
 

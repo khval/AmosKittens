@@ -11,3 +11,5 @@ extern char *cmdMid(nativeCommand *cmd, char *ptr);
 extern char *cmdRight(nativeCommand *cmd, char *ptr);
 extern char *cmdHex(nativeCommand *cmd, char *ptr);
 extern char *cmdBin(nativeCommand *cmd, char *ptr);
+extern char *cmdInstr(nativeCommand *cmd, char *ptr);
+
