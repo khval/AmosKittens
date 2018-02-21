@@ -29,7 +29,7 @@ Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
 * Horrible stack handling, should clean up stack, after reading args, not just decrement stack.
-* Should double chack double pointer numbers is stacks, string functions. (not freed so not problem yet.)
+* Should double check for, double use of pointer numbers is stacks, string functions. (not freed so not problem yet.)
 * logcial operations don't compare strings.
 
 Not yet supported:
