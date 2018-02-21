@@ -12,4 +12,7 @@ extern char *cmdRight(nativeCommand *cmd, char *ptr);
 extern char *cmdHex(nativeCommand *cmd, char *ptr);
 extern char *cmdBin(nativeCommand *cmd, char *ptr);
 extern char *cmdInstr(nativeCommand *cmd, char *ptr);
-
+extern char *cmdFlip(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdSpace(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdUpper(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdLower(struct nativeCommand *cmd, char *tokenBuffer );

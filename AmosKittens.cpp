@@ -22,7 +22,9 @@ char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
 
-void _str(const char *str);
+extern void setStackStr(const char *str);
+extern void setStackStrDup(const char *str);
+
 void _num( int num );
 void _decimal( double decimal );
 
@@ -312,7 +314,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					_decimal(globalVars[idx].var.value);
 					break;
 				case 2:
-					_str(globalVars[idx].var.str);
+					setStackStr(globalVars[idx].var.str);
 					break;
 			}
 		}
@@ -450,6 +452,12 @@ struct nativeCommand nativeCommands[]=
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
+
+	{0x0546, "Flip$",0,cmdFlip },
+	{0x055E, "Space$",0,cmdSpace },
+	{0x057C, "Upper$",0,cmdUpper },
+	{0x058A, "Lower$",0,cmdLower },
+
 	{0x05E4, "Instr",0,cmdInstr },
 	{0x0640, "Dim",0,cmdDim },
 	{0x064A, "Rem",2,cmdRem },
@@ -513,7 +521,7 @@ void _decimal( double decimal )
 	kittyStack[stack].type = type_float;
 }
 
-void _str(const char *str)
+void setStackStrDup(const char *str)
 {
 	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 
@@ -522,6 +530,17 @@ void _str(const char *str)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
+
+void setStackStr(const char *str)
+{
+	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+
+	kittyStack[stack].str = strdup( str );
+	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = type_string;
+}
+
 
 void _castNumToStr( int num )
 {
@@ -596,7 +615,8 @@ int main()
 //	fd = fopen("amos-test/for-to-step-next.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
 //	fd = fopen("amos-test/left-mid-right.amos","r");
-	fd = fopen("amos-test/instr.amos","r");
+//	fd = fopen("amos-test/instr.amos","r");
+	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
