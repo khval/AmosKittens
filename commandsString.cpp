@@ -15,8 +15,8 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 
-extern void setStackStr(const char *str);
-extern void setStackStrDup(const char *str);
+extern void setStackStr( char *str );
+extern void setStackStrDup( const char *str );
 
 using namespace std;
 
@@ -267,6 +267,8 @@ char *_upper( struct glueCommands *data )
 
 	printf("%s: args %d\n",__FUNCTION__,args);
 
+	dump_stack();
+
 	str = _stackString( data->stack + 1 );
 
 	if (str)
@@ -285,6 +287,8 @@ char *_lower( struct glueCommands *data )
 	char *str,*s;
 
 	printf("%s: args %d\n",__FUNCTION__,args);
+
+	dump_stack();
 
 	str = _stackString( data->stack + 1 );
 

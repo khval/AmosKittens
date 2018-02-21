@@ -16,8 +16,8 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern void setStackStr(const char *str);
-extern void setStackStrDup(const char *str);
+extern void setStackStr( char *str );
+extern void setStackStrDup( const char *str );
 
 using namespace std;
 
@@ -601,7 +601,7 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 		case mode_input:
 			if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 			getline(cin, input);
-			setStackStr( (const char *) input.c_str() );
+			setStackStrDup( input.c_str() );
 			stack++;
 					 
 			cmdParm( _setVarReverse, tokenBuffer );

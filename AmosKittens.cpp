@@ -22,7 +22,7 @@ char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
 
-extern void setStackStr(const char *str);
+extern void setStackStr( char *str );
 extern void setStackStrDup(const char *str);
 
 void _num( int num );
@@ -314,7 +314,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					_decimal(globalVars[idx].var.value);
 					break;
 				case 2:
-					setStackStr(globalVars[idx].var.str);
+					setStackStrDup(globalVars[idx].var.str);		// always copy.
 					break;
 			}
 		}
@@ -531,11 +531,14 @@ void setStackStrDup(const char *str)
 	kittyStack[stack].type = type_string;
 }
 
-void setStackStr(const char *str)
+void setStackStr( char *str)
 {
-	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+	if (str != kittyStack[stack].str)
+	{
+		if (kittyStack[stack].str) free(kittyStack[stack].str);	
+	}
 
-	kittyStack[stack].str = strdup( str );
+	kittyStack[stack].str = str ;
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
