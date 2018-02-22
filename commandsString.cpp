@@ -23,6 +23,14 @@ using namespace std;
 #define NEXT_TOKEN(ptr) *((short *) ptr)
 #define NEXT_INT(ptr) *((int *) (ptr+2))
 
+/*********
+
+string names like _xxx is read only (const char), and need to copied.
+string names like xxx is new and can saved on stack, with out being copied.
+
+*********/
+
+
 char *_stackString( int n )
 {
 	if (kittyStack[n].type == type_string)
@@ -238,6 +246,86 @@ char *_flip( struct glueCommands *data )
 	return NULL;
 }
 
+char *_string( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	int i,_len;
+	char *str;
+	char *_str;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	_str = _stackString( data->stack + 1 );
+	_len = _stackInt( data->stack + 2 );
+
+
+	printf(" _str %s, _len %d\n",_str,_len );
+
+	str = (char *) malloc(_len+1);
+
+	for (i=0;i<_len;i++) str[i]= (_str ? *_str : 0) ;
+	str[i]= 0;
+
+	stack -=args;
+
+	setStackStr(str);
+
+	return NULL;
+}
+
+char *_asc( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	char *_str;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	_str = _stackString( data->stack + 1 );
+
+	stack -=args;
+
+	_num( _str ? *_str : 0 );
+
+	return NULL;
+}
+
+char *_chr( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	char _str[2];
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	_str[0] = (char) _stackInt( data->stack + 1 );
+	_str[1] =0;
+
+	stack -=args;
+
+	setStackStrDup(_str);
+
+	return NULL;
+}
+
+char *_len( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	int len = 0;
+	char *_str;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	if (kittyStack[data->stack + 1].type == type_string)
+	{
+		len  = (kittyStack[data->stack + 1].len);
+	}
+
+	stack -=args;
+
+	_num( len );
+
+	return NULL;
+}
+
 char *_space( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
@@ -253,9 +341,9 @@ char *_space( struct glueCommands *data )
 	for (i=0;i<_len;i++) str[i]=' ';
 	str[i]= 0;
 
-	setStackStr(str);
-
 	stack -=args;
+
+	setStackStr(str);
 
 	return NULL;
 }
@@ -276,7 +364,7 @@ char *_upper( struct glueCommands *data )
 		for (s=str;*s;s++) if ((*s>='a')&&(*s<='z')) *s+=('A'-'a');
 	}
 
-	stack -=args;
+	stack -=args;	// should be only one arg, so this should be 0 ;-)
 
 	return NULL;
 }
@@ -297,7 +385,7 @@ char *_lower( struct glueCommands *data )
 		for (s=str;*s;s++) if ((*s>='A')&&(*s<='Z')) *s-=('A'-'a');
 	}
 
-	stack -=args;
+	stack -=args; // should be only one arg, so this should be 0 ;-)
 
 	return NULL;
 }
@@ -362,3 +450,26 @@ char *cmdLower(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdString(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _string, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdChr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _chr, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdAsc(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _asc, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _len, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}

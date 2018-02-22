@@ -453,10 +453,14 @@ struct nativeCommand nativeCommands[]=
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
 
+	{0x01dc, "Aac",0,cmdAsc },
 	{0x0546, "Flip$",0,cmdFlip },
+	{0x0552, "Chr$",0,cmdChr },
 	{0x055E, "Space$",0,cmdSpace },
+	{0x056C, "String$", 0,cmdString },
 	{0x057C, "Upper$",0,cmdUpper },
 	{0x058A, "Lower$",0,cmdLower },
+	{0x05DA, "Len",0,cmdLen },
 
 	{0x05E4, "Instr",0,cmdInstr },
 	{0x0640, "Dim",0,cmdDim },
@@ -619,7 +623,10 @@ int main()
 //	fd = fopen("amos-test/gosub-return.amos","r");
 //	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
-	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
+//	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
+
+	fd = fopen("AMOS-test/str-chr-asc-len.amos","r");
+
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
