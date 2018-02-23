@@ -18,7 +18,7 @@ And some math operations works:
 pulss, minus, muls, div.
 
 Logical opertations supported:
-
+------------------------------
 equal, not equal, less, more, 
 
 String commands supported:
@@ -33,18 +33,16 @@ Hex$, Bin$
 Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
-* Horrible stack handling, should clean up stack, after reading args, not just decrement stack.
-* Should double check for, double use of pointer numbers is stacks, string functions. (not freed so not problem yet.)
 * logcial operations don't compare strings.
 
 Not yet supported:
 ------------------
 lots of stuff.
-and, or, strings commands.
+and, or
 procedures
-gosub
 disk stuff.
 graphiCS stuff.
+Machine code commands (only two).
 
 Orginal source code can be found here:
 --------------------------------------
