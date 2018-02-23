@@ -24,7 +24,11 @@ equal, not equal, less, more,
 String commands supported:
 --------------------------
 Left$(), Mid$(), Right$(), Instr(), Flip$, 
-Space$, Upper$, Lower$, String$, Chr$, Asc, Len
+Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
+
+Machine Code command supported
+------------------------------
+Hex$, Bin$
 
 Known bugs:
 ----------
