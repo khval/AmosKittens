@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <proto/exec.h>
-#include "amosKittens.h"
-#include "commands.h"
 #include "debug.h"
 #include <string>
 #include <iostream>
+
+#include "stack.h"
+#include "amosKittens.h"
+#include "commands.h"
 #include "errors.h"
 
 extern int last_var;
@@ -568,6 +570,9 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 	kittyStack[stack].state = state_subData;
 
 	stack++;
+
+	if (kittyStack[stack].str) printf("%s::Unexpcted data %08x on new stack pos %d\n",__FUNCTION__, kittyStack[stack].str,stack);
+
 	return tokenBuffer;
 }
 
@@ -580,6 +585,7 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (kittyStack[stack-1].state == state_subData)
 		{
 			kittyStack[stack-1] = kittyStack[stack];
+			kittyStack[stack].str = NULL;
 			stack --;
 			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
