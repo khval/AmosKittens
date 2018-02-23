@@ -21,3 +21,7 @@ extern char *cmdString(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdChr(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdAsc(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer );
+
+extern char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
+

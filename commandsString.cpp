@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <proto/exec.h>
+#include <string>
+#include <iostream>
+
+#include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
 #include "debug.h"
-#include <string>
-#include <iostream>
 #include "errors.h"
 
 extern int last_var;
@@ -75,11 +77,16 @@ char *_print( struct glueCommands *data )
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
+
+	dump_stack();
+
 	return NULL;
 }
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
+	dump_stack();
+
 	stackCmdNormal( _print, ptr );
 	return ptr;
 }
@@ -100,7 +107,7 @@ char *_left( struct glueCommands *data )
 		printf("len %d\n", _len);
 	}	
 
-	stack -=args;
+	popStack(args);
 
 	if (tmp) setStackStr(tmp);
 
@@ -131,7 +138,7 @@ char *_mid( struct glueCommands *data )
 		printf("len %d\n", _len);
 	}	
 
-	stack -=args;
+	popStack(args);
 
 	if (tmp) setStackStr(tmp);
 
@@ -156,7 +163,7 @@ char *_right( struct glueCommands *data )
 		tmp = strdup(str + strlen(str) - _len );
 	}	
 
-	stack -=args;
+	popStack(args);
 
 	if (tmp) setStackStr(tmp);
 
@@ -186,9 +193,31 @@ char *_instr( struct glueCommands *data )
 		_pos = ret ? (unsigned int) (ret - str) +1 : 0;
 	}	
 
-	stack -=args;
+	popStack(args);
 
 	_num( _pos );
+
+	return NULL;
+}
+
+char *_str( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	int num;
+	char _str[30];
+
+	printf("%s: args %d stack %d\n",__FUNCTION__,args,stack);
+
+	num = _stackInt( data->stack + 1 );
+
+	_str[0]=0;
+	sprintf(_str,"%d",num);
+
+	popStack(args);
+
+	printf("%s %d\n",_str,stack);
+
+	setStackStrDup(_str);
 
 	return NULL;
 }
@@ -196,9 +225,17 @@ char *_instr( struct glueCommands *data )
 char *_hex( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
+	int num;
+	char _str[12];
+
 	printf("%s: args %d\n",__FUNCTION__,args);
 
-	stack -=args;
+	num = _stackInt( data->stack + 1 );
+	sprintf(_str,"$%X",num);
+
+	popStack(args);
+
+	setStackStrDup(_str);
 
 	return NULL;
 }
@@ -206,9 +243,34 @@ char *_hex( struct glueCommands *data )
 char *_bin( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
+	int num,len,n;
+	char *str,*p;
+
 	printf("%s: args %d\n",__FUNCTION__,args);
 
-	stack -=args;
+	len = 0;
+	num = _stackInt( data->stack + 1 );
+	for (n= num ; n!=0 ; n >>= 1 ) len++;
+
+	len = len ? len : len + 1;	// always one number in bin number.
+
+	str = (char *) malloc(len+2);	 //  '%' and '\0' symbols
+
+	if (str)
+	{
+		str[0]='%';
+		p = str+1;
+
+		for (n=len;n>0;n--)
+		{
+			*p++= (num & (1<<(n-1))) ? '1' : '0';
+		}
+		*p = 0;
+	}
+
+	popStack(args);
+
+	setStackStr(str);
 
 	return NULL;
 }
@@ -226,22 +288,15 @@ char *_flip( struct glueCommands *data )
 	if (str)
 	{
 		l = strlen(str);
-
-		printf("l %d\n",l);
-
 		for (i=0;i<l/2;i++)
 		{
 		 	t = str[i] ;
-
-			printf("%c ",t);
-
 			str[i] = str[l-1-i];
 			str[l-1-i] = t;
 		}
-		printf("\n");
 	}
 
-	stack -=args;
+	popStack(args);
 
 	return NULL;
 }
@@ -258,15 +313,12 @@ char *_string( struct glueCommands *data )
 	_str = _stackString( data->stack + 1 );
 	_len = _stackInt( data->stack + 2 );
 
-
-	printf(" _str %s, _len %d\n",_str,_len );
-
 	str = (char *) malloc(_len+1);
 
 	for (i=0;i<_len;i++) str[i]= (_str ? *_str : 0) ;
 	str[i]= 0;
 
-	stack -=args;
+	popStack(args);
 
 	setStackStr(str);
 
@@ -282,9 +334,27 @@ char *_asc( struct glueCommands *data )
 
 	_str = _stackString( data->stack + 1 );
 
-	stack -=args;
+	popStack(args);
 
 	_num( _str ? *_str : 0 );
+
+	return NULL;
+}
+
+char *_val( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	int num;
+	char *_str;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+
+	_str = _stackString( data->stack + 1 );
+	if (_str) sscanf(_str,"%d",&num);
+
+	popStack(args);
+
+	_num( num );
 
 	return NULL;
 }
@@ -299,7 +369,7 @@ char *_chr( struct glueCommands *data )
 	_str[0] = (char) _stackInt( data->stack + 1 );
 	_str[1] =0;
 
-	stack -=args;
+	popStack(args);
 
 	setStackStrDup(_str);
 
@@ -319,7 +389,7 @@ char *_len( struct glueCommands *data )
 		len  = (kittyStack[data->stack + 1].len);
 	}
 
-	stack -=args;
+	popStack(args);
 
 	_num( len );
 
@@ -341,7 +411,7 @@ char *_space( struct glueCommands *data )
 	for (i=0;i<_len;i++) str[i]=' ';
 	str[i]= 0;
 
-	stack -=args;
+	popStack(args);
 
 	setStackStr(str);
 
@@ -364,7 +434,7 @@ char *_upper( struct glueCommands *data )
 		for (s=str;*s;s++) if ((*s>='a')&&(*s<='z')) *s+=('A'-'a');
 	}
 
-	stack -=args;	// should be only one arg, so this should be 0 ;-)
+	popStack(args);	// should be only one arg, so this should be 0 ;-)
 
 	return NULL;
 }
@@ -385,7 +455,7 @@ char *_lower( struct glueCommands *data )
 		for (s=str;*s;s++) if ((*s>='A')&&(*s<='Z')) *s-=('A'-'a');
 	}
 
-	stack -=args; // should be only one arg, so this should be 0 ;-)
+	popStack(args); // should be only one arg, so this should be 0 ;-)
 
 	return NULL;
 }
@@ -410,13 +480,13 @@ char *cmdRight(nativeCommand *cmd, char *ptr)
 
 char *cmdHex(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _mid, ptr );
+	stackCmdNormal( _hex, ptr );
 	return ptr;
 }
 
 char *cmdBin(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _right, ptr );
+	stackCmdNormal( _bin, ptr );
 	return ptr;
 }
 
@@ -473,3 +543,21 @@ char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer )
 	stackCmdNormal( _len, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
+
+char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _val, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s: stack %d\n",__FUNCTION__,stack);
+
+	stackCmdNormal( _str, tokenBuffer );	// we need to store the step counter.
+
+	dump_stack();
+
+	return tokenBuffer;
+}
+
