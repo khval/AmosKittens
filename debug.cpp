@@ -96,7 +96,7 @@ void dump_stack()
 			case type_string:
 				if (kittyStack[n].str)
 				{
-					printf("'%s' stack is %d cmd stack is %d\n", kittyStack[n].str, stack, cmdStack);
+					printf("'%s' (0x%x)\n", kittyStack[n].str, kittyStack[n].str) ;
 				}
 				else
 				{
