@@ -4,6 +4,7 @@
 #include <string.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsString.h"
@@ -12,7 +13,6 @@
 #include "errors.h"
 #include "pass1.h"
 
-int stack = 0;
 int cmdStack = 0;
 unsigned short last_token = 0;
 int last_var = 0;
@@ -21,14 +21,8 @@ int tokenlength;
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
-
-extern void setStackStr( char *str );
-extern void setStackStrDup(const char *str);
-
 void _num( int num );
 void _decimal( double decimal );
-
-struct kittyData kittyStack[100];
 
 struct globalVar globalVars[1000];	// 0 is not used.
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
@@ -64,7 +58,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
 
-	dump_prog_stack();
+//	dump_prog_stack();
 
 	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
 	{
@@ -340,10 +334,12 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	length2 += (length & 1);		// align to 2 bytes
 
-
 	printf("length %d\n",length2);
 
 	kittyStack[stack].str = strndup( ptr + 2, length );
+
+	printf("%s::ALLOC %08x\n",__FUNCTION__, kittyStack[stack].str);
+
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
@@ -453,6 +449,11 @@ struct nativeCommand nativeCommands[]=
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
 
+	{0x05C4, "Hex$",0,cmdHex },
+	{0x05AE, "Bin$",0,cmdBin },
+	{0x05A4, "Val",0, cmdVal },
+	{0x0598, "Str$",0, cmdStr },
+
 	{0x01dc, "Aac",0,cmdAsc },
 	{0x0546, "Flip$",0,cmdFlip },
 	{0x0552, "Chr$",0,cmdChr },
@@ -486,6 +487,8 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
+	dump_stack();
+
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
@@ -505,50 +508,7 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
-void _num( int num )
-{
-	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-
-	kittyStack[stack].str = NULL;
-	kittyStack[stack].value = num;
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_int;
-}
-
-void _decimal( double decimal )
-{
-	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-
-	kittyStack[stack].str = NULL;
-	kittyStack[stack].decimal = decimal;
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_float;
-}
-
-void setStackStrDup(const char *str)
-{
-	if (kittyStack[stack].str) free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-
-	kittyStack[stack].str = strdup( str );
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_string;
-}
-
-void setStackStr( char *str)
-{
-	if (str != kittyStack[stack].str)
-	{
-		if (kittyStack[stack].str) free(kittyStack[stack].str);	
-	}
-
-	kittyStack[stack].str = str ;
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_string;
-}
-
-
+/*
 void _castNumToStr( int num )
 {
 	char tmp[100];
@@ -564,6 +524,7 @@ void _castNumToStr( int num )
 		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 }
+*/
 
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
@@ -624,9 +585,9 @@ int main()
 //	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
 //	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
+//	fd = fopen("AMOS-test/str-chr-asc-len.amos","r");
 
-	fd = fopen("AMOS-test/str-chr-asc-len.amos","r");
-
+	fd = fopen("AMOS-test/hex-bin-val-str.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -645,6 +606,8 @@ int main()
 
 			if (kittyError.code == 0)
 			{
+				dump_stack();
+
 				//  execute the code.
 				code_reader( data, tokenlength );
 
