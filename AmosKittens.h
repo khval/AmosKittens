@@ -123,6 +123,8 @@ struct globalVar
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
+extern int currentLine;
+
 extern void _num( int num );
 
 extern BOOL equal_symbol;

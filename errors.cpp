@@ -29,6 +29,7 @@ void printError( struct errorAt *thisError, struct error *tab )
 		if (thisError -> code == e->errorCode)
 		{
 			printf("ERROR: %s\nAt line number: %d\n\n",e->errorText, thisError->line);
+			break;
 		}
 	}
 }

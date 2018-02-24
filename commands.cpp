@@ -194,7 +194,7 @@ char *_addData( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -263,7 +263,7 @@ char *_subData( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -296,7 +296,7 @@ char *_mulData( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -308,7 +308,7 @@ char *_mulData( struct glueCommands *data )
 				break;
 		case 1:	kittyStack[stack].decimal *= kittyStack[stack+1].decimal;
 				break;
-		case 2:	printf("mismatch error\n");
+		case 2:	setError(ERROR_Type_mismatch);
 				break;
 	}
 	return NULL;
@@ -328,7 +328,7 @@ char *_divData( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -340,7 +340,7 @@ char *_divData( struct glueCommands *data )
 				break;
 		case 1:	kittyStack[stack].decimal /= kittyStack[stack+1].decimal;
 				break;
-		case 2:	printf("mismatch error\n");
+		case 2:	setError(ERROR_Type_mismatch);
 				break;
 	}
 	return NULL;
@@ -362,7 +362,7 @@ char *_less( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -395,7 +395,7 @@ char *_more( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -429,7 +429,7 @@ char *_equal( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -462,7 +462,7 @@ char *_not_equal( struct glueCommands *data )
 
 	if (kittyStack[stack].type != kittyStack[stack+1].type)
 	{
-		printf("mismatch error\n");
+		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
 
@@ -526,7 +526,7 @@ printf("set %s = %d\n",  globalVars[data -> lastVar-1].varName , kittyStack[stac
 		printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
 				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar-1].var.type & 7));
 
-		printf("Mismatch error\n");
+		setError(ERROR_Type_mismatch);
 	}
 	
 	return NULL;

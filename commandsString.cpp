@@ -71,7 +71,6 @@ char *_print( struct glueCommands *data )
 			case type_string:
 				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
 				break;
-
 		}
 
 		if (n<=stack) printf("    ");

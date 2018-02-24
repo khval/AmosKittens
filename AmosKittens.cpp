@@ -58,8 +58,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
 
-//	dump_prog_stack();
-
 	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
 	{
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -67,6 +65,8 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	}
 
 	tokenMode = mode_standard;
+	currentLine ++;
+
 
 	if (ret) ptr = ret - 2;
 	
@@ -541,10 +541,16 @@ void code_reader( char *start, int tokenlength )
 	int token = 0;
 	last_token = 0;
 	
+	currentLine = 0;
 	ptr = start;
 	while ( ptr = token_reader(  start, ptr,  last_token, token, tokenlength ) )
 	{
-		if (ptr == NULL) break;
+		// this basic for now, need to handel "on error " commands as well.
+
+		if ( kittyError.code != 0) break;
+
+
+		if ( ptr == NULL ) break;
 
 		last_token = token;
 		token = *((short *) ptr);
@@ -606,14 +612,13 @@ int main()
 
 			if (kittyError.code == 0)
 			{
-				dump_stack();
-
 				//  execute the code.
 				code_reader( data, tokenlength );
 
 				if (kittyError.code != 0) printError( &kittyError, errorsRunTime );
 			}
-			else
+
+			if (kittyError.code != 0)
 			{
 				printError( &kittyError, errorsTestTime );
 			}
