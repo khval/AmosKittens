@@ -42,7 +42,7 @@ void _num( int num )
 	kittyStack[stack].type = type_int;
 }
 
-void _decimal( double decimal )
+void setStackDecimal( double decimal )
 {
 	if (kittyStack[stack].str)
 	{
