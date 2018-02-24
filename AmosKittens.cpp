@@ -4,12 +4,14 @@
 #include <string.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <vector>
+#include <math.h>
+
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsString.h"
 #include "debug.h"
-#include <vector>
 #include "errors.h"
 #include "pass1.h"
 
@@ -22,7 +24,6 @@ char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
 void _num( int num );
-void _decimal( double decimal );
 
 struct globalVar globalVars[1000];	// 0 is not used.
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
@@ -276,9 +277,14 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	struct kittyData *var;
+	
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (jump_mode)
 	{
+
+		printf("jump_mode\n");
+
 		return jump_mode( ref, ptr );
 	}
 
@@ -301,13 +307,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 			switch (ref -> flags & 3)
 			{
-				case 0:
+				case type_int:
 					_num(globalVars[idx].var.value);
 					break;
-				case 1:
-					_decimal(globalVars[idx].var.value);
+				case type_float:
+					setStackDecimal(globalVars[idx].var.value);
 					break;
-				case 2:
+				case type_string:
 					setStackStrDup(globalVars[idx].var.str);		// always copy.
 					break;
 			}
@@ -316,6 +322,11 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
+		printf("some thing on the stack\n");
+
+		dump_prog_stack();
+
+
 		char *newTokenLoc = NULL;
 		if (kittyStack[stack-1].state == state_none) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		if (newTokenLoc) return newTokenLoc - sizeof(struct reference) - 2;
@@ -410,6 +421,32 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *cmdFloat(nativeCommand *cmd,char *ptr)
+{
+	unsigned int data = *((unsigned int *) ptr);
+	unsigned int number1 = data >> 8;
+	int e = (data & 31) ;
+	if (data & 32) e |= 0xFFFFFFE0;
+	int n;
+	double f = 0.0f;
+
+	for (n=23;n>-1;n--)
+	{
+		if ((1<<n)&number1)
+		{
+			f += 1.0f / (double) (1<<(23-n));
+		}
+	}
+
+	if (e>0)	f *= 1 <<e-1;
+	if (e==0)	f /= 2;
+	if (e<0)	f /= 1<<(-e+1);
+
+	setStackDecimal( round( f *1000 ) / 1000.0f  );
+
+	return ptr;
+}
+
 
 struct nativeCommand nativeCommands[]=
 {
@@ -418,6 +455,7 @@ struct nativeCommand nativeCommands[]=
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0026, "\"",2, cmdQuote },
 	{0x003E, "",4,cmdNumber },
+	{0x0046, "",4,cmdFloat },
 	{0x0054, ":", 0, nextCmd },
 	{0x005C, ",", 0, nextArg},
 	{0x0064, ";", 0, breakData},
@@ -560,7 +598,7 @@ void code_reader( char *start, int tokenlength )
 
 int main()
 {
-
+	BOOL runtime = FALSE;
 	FILE *fd;
 	int amos_filesize;
 	char amosid[17];
@@ -592,8 +630,8 @@ int main()
 //	fd = fopen("amos-test/instr.amos","r");
 //	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
 //	fd = fopen("AMOS-test/str-chr-asc-len.amos","r");
-
-	fd = fopen("AMOS-test/hex-bin-val-str.amos","r");
+//	fd = fopen("AMOS-test/hex-bin-val-str.amos","r");
+	fd = fopen("AMOS-test/casting_int_float.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -612,36 +650,40 @@ int main()
 
 			if (kittyError.code == 0)
 			{
+				runtime = TRUE;
+
 				//  execute the code.
 				code_reader( data, tokenlength );
-
-				if (kittyError.code != 0) printError( &kittyError, errorsRunTime );
 			}
 
 			if (kittyError.code != 0)
 			{
-				printError( &kittyError, errorsTestTime );
+				printError( &kittyError, runtime ? errorsRunTime : errorsTestTime );
 			}
 		}
 
 		fclose(fd);
+
+		if (kittyError.code == 0)
+		{
+			printf("--- End of program status ---\n");
+
+			printf("\n--- var dump ---\n");
+			dump_global();
+
+			printf("\n--- value stack dump ---\n");
+			dump_stack();
+
+			printf("\n--- program stack dump ---\n");
+			dump_prog_stack();
+
+			printf("\n--- label dump ---\n");
+			dumpLabels();
+		}
 	}
-
-	if (kittyError.code == 0)
+	else
 	{
-		printf("--- End of program status ---\n");
-
-		printf("\n--- var dump ---\n");
-		dump_global();
-
-		printf("\n--- value stack dump ---\n");
-		dump_stack();
-
-		printf("\n--- program stack dump ---\n");
-		dump_prog_stack();
-
-		printf("\n--- label dump ---\n");
-		dumpLabels();
+		printf("FILE not open\n");
 	}
 
 	return 0;
