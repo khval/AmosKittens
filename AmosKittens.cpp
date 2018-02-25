@@ -10,6 +10,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
+#include "commandsData.h"
 #include "commandsString.h"
 #include "debug.h"
 #include "errors.h"
@@ -76,7 +77,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	tokenMode = mode_standard;
 	currentLine ++;
-
 
 	if (ret) ptr = ret - 2;
 	
@@ -344,8 +344,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	return ptr + ref -> length ;
 }
 
-
-
 char *cmdQuote(nativeCommand *cmd, char *ptr)
 {
 	unsigned short length = *((unsigned short *) ptr);
@@ -374,57 +372,35 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	return ptr + length2;
 }
 
+
 char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
 	// check if - or + comes before *, / or ; symbols
 
-	if (
-		((last_token==0xFFC0) || (last_token==0xFFCA) || (last_token==0x0064) )
-	&&
-		((next_token==0xFFE2) || (next_token == 0xFFEC))
-	) {
-
+	if ( correct_order( last_token,  next_token ) == false )
+	{
 		printf("---hidden ( symbol \n");
 
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;
+		kittyStack[stack].value = 0;
 		kittyStack[stack].state = state_hidden_subData;
 		stack++;
 	}
 
 	kittyStack[stack].value = *((int *) ptr);
 	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = 0;
+	kittyStack[stack].type = type_int;
+
+	printf("const %d in stack %d\n", kittyStack[stack].value,stack);
 
 	// check it last command was * or /. and next command is not a * or /
 
 	if (cmdStack) if (stack)
 	{
 		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-
-	if (
-		((last_token==0xFFE2) || (last_token == 0xFFEC))
-	&&
-		((next_token!=0xFFE2) && (next_token != 0xFFEC))
-	) {
-
-		printf("---hidden ( symbol maybe ? \n");
-
-		// it maybe a hidden ) condition.
-		if (stack > 0)
-		{
-			if (kittyStack[stack-1].state == state_hidden_subData)
-			{
-				printf("---hidden ) symbol yes it is\n");
-
-				kittyStack[stack-1] = kittyStack[stack];
-				stack --;
-				if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-			}
-		}
 	}
 
 	return ptr;
@@ -434,8 +410,11 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
 	unsigned int data = *((unsigned int *) ptr);
 	unsigned int number1 = data >> 8;
+
 	int e = (data & 31) ;
+
 	if (data & 32) e |= 0xFFFFFFE0;
+
 	int n;
 	double f = 0.0f;
 
@@ -447,9 +426,15 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		}
 	}
 
+	printf("%f E %d ", f, e );
+
+
 	if (e>0)	f *= 1 <<e-1;
 	if (e==0)	f /= 2;
 	if (e<0)	f /= 1<<(-e+1);
+
+
+	getchar();
 
 	setStackDecimal( round( f *1000 ) / 1000.0f  );
 
@@ -524,6 +509,7 @@ struct nativeCommand nativeCommands[]=
 	{0xFFA2,"=", 0, setVar },
 	{0xFFE2,"*", 0, mulData },
 	{0xFFEC,"/", 0, divData },
+	{0xFFF6,"^", 0, powerData },
 	{0xFF66,"not equal",0,cmdNotEqual }
 };
 
@@ -638,9 +624,10 @@ int main()
 //	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
 //	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
-//	fd = fopen("AMOS-test/str-chr-asc-len.amos","r");
-//	fd = fopen("AMOS-test/hex-bin-val-str.amos","r");
-	fd = fopen("AMOS-test/casting_int_float.amos","r");
+//	fd = fopen("amos-test/str-chr-asc-len.amos","r");
+//	fd = fopen("amos-test/hex-bin-val-str.amos","r");
+//	fd = fopen("amos-test/casting_int_float.amos","r");
+	fd = fopen("amos-test/arithmetic.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
