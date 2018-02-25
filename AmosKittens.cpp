@@ -48,7 +48,16 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
 
-	if (cmdStack) ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	// we should empty stack, until first/normal command is not a parm command.
+
+	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
+	{
+		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+		if (cmdTmp[cmdStack].flag == cmd_first) break;
+		if (ret) break;
+	}
+
 	tokenMode = mode_standard;
 
 	if (ret) ptr = ret - 2;
@@ -311,7 +320,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					_num(globalVars[idx].var.value);
 					break;
 				case type_float:
-					setStackDecimal(globalVars[idx].var.value);
+					setStackDecimal(globalVars[idx].var.decimal);
 					break;
 				case type_string:
 					setStackStrDup(globalVars[idx].var.str);		// always copy.
@@ -369,10 +378,10 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
-	// check if - or + comes before * or /
+	// check if - or + comes before *, / or ; symbols
 
 	if (
-		((last_token==0xFFC0) || (last_token==0xFFCA))
+		((last_token==0xFFC0) || (last_token==0xFFCA) || (last_token==0x0064) )
 	&&
 		((next_token==0xFFE2) || (next_token == 0xFFEC))
 	) {
