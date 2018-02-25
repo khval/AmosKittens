@@ -2,6 +2,14 @@
 #ifndef __amoskittens_h__
 #define __amoskittens_h__
 
+#define token_semi	0x0064
+#define token_add		0xFFC0
+#define token_sub		0xFFCA
+#define token_mul		0xFFE2
+#define token_div		0xFFEC
+#define token_power	0xFFF6
+
+
 enum
 {
 	mode_standard,
