@@ -89,3 +89,37 @@ void setStackStr( char *str)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
+
+bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
+{
+	int new_size = item0 -> len + 20;
+	char *str;
+
+	if (item0 -> str == NULL) return false;
+
+	str = (char *) malloc ( new_size );
+	if (str)
+	{
+		sprintf(str,"%s %d", item0 -> str, item1 -> value);
+		setStackStr( str );
+		return true;
+	}
+	return false;
+}
+
+bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
+{
+	int new_size = item0 -> len + 100;
+	char *str;
+
+	if (item0 -> str == NULL) return false;
+
+	str = (char *) malloc ( new_size );
+	if (str)
+	{
+		sprintf(str,"%s %f", item0 -> str, item1 -> decimal);
+		setStackStr( str );
+		return true;
+	}
+	return false;
+}
