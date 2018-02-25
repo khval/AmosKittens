@@ -184,10 +184,12 @@ char *_addStr( struct glueCommands *data )
 
 char *_addData( struct glueCommands *data )
 {
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
-
+	bool success = FALSE;
 
 	if (stack==0) 
 	{
@@ -201,51 +203,56 @@ char *_addData( struct glueCommands *data )
 	item1 = kittyStack + stack+1;
 
 	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
 
 	// handel int / float casting.
 
-	if ((item0 -> type & 3== type_float) && (item1 -> type & 3== type_int))
+	if ((type0 == type_float) && ( type1 == type_int))
 	{
 		setStackDecimal( item0->decimal + (double) item0-> value );
 		return NULL;
 	}
-	else if ((item0 -> type & 3== type_int) && (item1 -> type & 3== type_float))
+	else if ((type0 == type_int) && (type1 == type_float))
 	{
 		setStackDecimal( (double) item0->value + item0->decimal );
 		return NULL;
 	}
-	else if (item0 -> type & 3== type_string) 
+	else if ( type0 == type_string) 
 	{
-		switch (item1 -> type & 3)
+		printf("here?\n");
+
+		switch (type1)
 		{
-			case 0:	stackStrAddValue( item0, item1 );
-					break;
+			case type_int:		
+				printf("here?\n");
 
-			case 1:	stackStrAddDecimal( item0, item1 );
-					break;
+				success = stackStrAddValue( item0, item1 ); break;
 
-			case 2:	_addStr( data );
-					break;
+			case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
+			case type_string:	success = _addStr( data ); break;
 		}
 	}
 
 
-/*
-	if (item0->type != item1->type)
-	{
+	printf("-- stop and check stack -- %d, %d \n",item0 -> type,item1 -> type);
 
+	dump_stack();
+	getchar();
+
+	if (success == FALSE)
+	{
 		printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
 		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
-*/
-
 
 	return NULL;
 }
 
 char *_subStr( struct glueCommands *data )
 {
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
 	char *find;
  	int find_len;
 	char *d,*s;
@@ -283,7 +290,7 @@ char *_subStr( struct glueCommands *data )
 
 char *_subData( struct glueCommands *data )
 {
-//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
@@ -316,7 +323,7 @@ char *_subData( struct glueCommands *data )
 
 char *_mulData( struct glueCommands *data )
 {
-//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
@@ -348,7 +355,7 @@ char *_mulData( struct glueCommands *data )
 
 char *_divData( struct glueCommands *data )
 {
-//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	if (stack==0) 
 	{
@@ -645,7 +652,11 @@ char *_setVar( struct glueCommands *data )
 
 		setError(ERROR_Type_mismatch);
 	}
+
+	printf("--- whats in the vars ---\n");
 	
+	dump_global();
+
 	return NULL;
 }
 
