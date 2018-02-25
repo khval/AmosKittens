@@ -10,6 +10,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
+#include "commandsData.h"
 #include "errors.h"
 
 extern int last_var;
@@ -177,211 +178,6 @@ char *_addStr( struct glueCommands *data )
 	// delete string from above.
 	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
 	kittyStack[stack+1].str = NULL;
-	return NULL;
-}
-
-
-
-char *_addData( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	struct kittyData *item0;
-	struct kittyData *item1;
-	int type0, type1;
-	bool success = FALSE;
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
-
-	type0 = item0 -> type & 3;
-	type1 = item1 -> type & 3;
-
-	// handel int / float casting.
-
-	if ((type0 == type_float) && ( type1 == type_int))
-	{
-		setStackDecimal( item0->decimal + (double) item1-> value );
-		return NULL;
-	}
-	else if ((type0 == type_int) && (type1 == type_float))
-	{
-		setStackDecimal( (double) item0->value + item1->decimal );
-		return NULL;
-	}
-	else if ( type0 == type_string) 
-	{
-		printf("here?\n");
-
-		switch (type1)
-		{
-			case type_int:		
-				printf("here?\n");
-
-				success = stackStrAddValue( item0, item1 ); break;
-
-			case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
-			case type_string:	success = _addStr( data ); break;
-		}
-	}
-
-
-	printf("-- stop and check stack -- %d, %d \n",item0 -> type,item1 -> type);
-
-	dump_stack();
-	getchar();
-
-	if (success == FALSE)
-	{
-		printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	return NULL;
-}
-
-char *_subStr( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	char *find;
- 	int find_len;
-	char *d,*s;
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack--;
-
-	find = kittyStack[stack+1].str;
- 	find_len = kittyStack[stack+1].len;
-
-	s=d= kittyStack[stack].str;
-
-//	printf("%s - %s\n",s, find);
-
-	for(;*s;s++)
-	{
-		if (strncmp(s,find,find_len)==0) s+=find_len;
-		if (*s) *d++=*s;
-	}
-	*d = 0;
-
-	kittyStack[stack].len = d - kittyStack[stack].str;
-
-	// delete string from above.
-	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
-	kittyStack[stack+1].str = NULL;
-
-	return NULL;
-}
-
-char *_subData( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
-	{
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:
-				printf("stack[%d].value=%d-%d\n", stack, kittyStack[stack].value, kittyStack[stack+1].value );
-				kittyStack[stack].value -= kittyStack[stack+1].value;
-				break;
-		case 1:	kittyStack[stack].decimal -= kittyStack[stack+1].decimal;
-				break;
-		case 2:	_subStr( data );
-				break;
-	}
-
-	return NULL;
-}
-
-char *_mulData( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
-	{
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:	
-				printf("stack[%d].value=%d*%d\n", stack, kittyStack[stack].value, kittyStack[stack+1].value );
-				kittyStack[stack].value *= kittyStack[stack+1].value;
-				break;
-		case 1:	kittyStack[stack].decimal *= kittyStack[stack+1].decimal;
-				break;
-		case 2:	setError(ERROR_Type_mismatch);
-				break;
-	}
-	return NULL;
-}
-
-char *_divData( struct glueCommands *data )
-{
-	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	if (stack==0) 
-	{
-		printf("can't do this :-(\n");
-		return NULL;
-	}
-
-	stack --;
-
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
-	{
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:	
-				printf("stack[%d].value=%d/%d\n", stack, kittyStack[stack].value, kittyStack[stack+1].value );
-				kittyStack[stack].value /= kittyStack[stack+1].value;
-				break;
-		case 1:	kittyStack[stack].decimal /= kittyStack[stack+1].decimal;
-				break;
-		case 2:	setError(ERROR_Type_mismatch);
-				break;
-	}
 	return NULL;
 }
 
@@ -749,25 +545,6 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-char *addData(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	cmdParm( _addData, tokenBuffer );
-	stack++;
-	return tokenBuffer;
-}
-
-char *subData(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	cmdParm(_subData,tokenBuffer);
-	stack++;
-	return tokenBuffer;
-}
-
 char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -787,7 +564,6 @@ char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -806,7 +582,6 @@ char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
-
 
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -868,23 +643,6 @@ char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	cmdParm( _mulData, tokenBuffer );
-	stack++;
-	return tokenBuffer;
-}
-
-char *divData(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	cmdParm( _divData, tokenBuffer );
-	stack++;
-	return tokenBuffer;
-}
 
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
