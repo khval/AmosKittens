@@ -209,12 +209,12 @@ char *_addData( struct glueCommands *data )
 
 	if ((type0 == type_float) && ( type1 == type_int))
 	{
-		setStackDecimal( item0->decimal + (double) item0-> value );
+		setStackDecimal( item0->decimal + (double) item1-> value );
 		return NULL;
 	}
 	else if ((type0 == type_int) && (type1 == type_float))
 	{
-		setStackDecimal( (double) item0->value + item0->decimal );
+		setStackDecimal( (double) item0->value + item1->decimal );
 		return NULL;
 	}
 	else if ( type0 == type_string) 
