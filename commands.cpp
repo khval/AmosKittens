@@ -180,9 +180,14 @@ char *_addStr( struct glueCommands *data )
 	return NULL;
 }
 
+
+
 char *_addData( struct glueCommands *data )
 {
-//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+
 
 	if (stack==0) 
 	{
@@ -192,23 +197,50 @@ char *_addData( struct glueCommands *data )
 
 	stack --;
 
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+
+	// handel int / float casting.
+
+	if ((item0 -> type & 3== type_float) && (item1 -> type & 3== type_int))
 	{
+		setStackDecimal( item0->decimal + (double) item0-> value );
+		return NULL;
+	}
+	else if ((item0 -> type & 3== type_int) && (item1 -> type & 3== type_float))
+	{
+		setStackDecimal( (double) item0->value + item0->decimal );
+		return NULL;
+	}
+	else if (item0 -> type & 3== type_string) 
+	{
+		switch (item1 -> type & 3)
+		{
+			case 0:	stackStrAddValue( item0, item1 );
+					break;
+
+			case 1:	stackStrAddDecimal( item0, item1 );
+					break;
+
+			case 2:	_addStr( data );
+					break;
+		}
+	}
+
+
+/*
+	if (item0->type != item1->type)
+	{
+
+		printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
 		setError(ERROR_Type_mismatch);
 		return NULL;
 	}
+*/
 
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:
-				printf("stack[%d].value=%d+%d\n", stack, kittyStack[stack].value, kittyStack[stack+1].value );
-				kittyStack[stack].value += kittyStack[stack+1].value;
-				break;
-		case 1:	kittyStack[stack].decimal += kittyStack[stack+1].decimal;
-				break;
-		case 2:	_addStr( data );
-				break;
-	}
+
 	return NULL;
 }
 
@@ -482,47 +514,132 @@ char *_not_equal( struct glueCommands *data )
 }
 
 
+BOOL setVarInt( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var->value = kittyStack[stack].value;
+			return TRUE;
+
+		case type_float:
+			var->value = (int) kittyStack[stack].decimal;
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL setVarDecimal( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var->decimal = (double) kittyStack[stack].value;
+			return TRUE;
+
+		case type_float:
+			var->decimal = kittyStack[stack].decimal;
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL setVarString( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_string:
+			if (var->str) free(var->str);
+			var->str = strdup(kittyStack[stack].str);
+			var->len = kittyStack[stack].len;
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL setVarIntArray( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var->int_array[var -> index] = kittyStack[stack].value;
+			return TRUE;
+
+		case type_float:
+			var->int_array[var -> index] = (int) kittyStack[stack].decimal;
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL setVarDecimalArray( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var->float_array[var -> index] = (double) kittyStack[stack].value;
+			return TRUE;
+
+		case type_float:
+			var->float_array[var -> index] = kittyStack[stack].decimal;
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL setVarStringArray( struct kittyData *var )
+{
+	switch (kittyStack[stack].type)
+	{
+		case type_string:
+			if (var->str_array[var -> index] ) free(var->str_array[var->index]);
+			var->str_array[var -> index] = strdup(kittyStack[stack].str);	
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 
 char *_setVar( struct glueCommands *data )
 {
+	BOOL success;
 	struct kittyData *var;
 	var = &globalVars[data -> lastVar-1].var;
 	
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (kittyStack[stack].type == ( var -> type & 7) )
+	success = FALSE;
+
+	switch (var->type)
 	{
-		switch (var->type)
-		{
-			case type_int:
-				var->value = kittyStack[stack].value;
-
-printf("set %s = %d\n",  globalVars[data -> lastVar-1].varName , kittyStack[stack].value);
-
-				break;
-			case type_float:
-				var->decimal = kittyStack[stack].decimal;
-				break;
-			case type_string:
-				if (var->str) free(var->str);
-				var->str = strdup(kittyStack[stack].str);
-				var->len = kittyStack[stack].len;
-				break;
-			case type_int | type_array:
-				var->int_array[var -> index] = kittyStack[stack].value;
-				break;
-			case type_float | type_array:
-				var->float_array[var -> index] = kittyStack[stack].decimal;
-				break;
-			case type_string | type_array:
-				if (var->str_array[var -> index] ) free(var->str_array[var->index]);
-				var->str_array[var -> index] = strdup(kittyStack[stack].str);	
+		case type_int:
+			success = setVarInt( var );
 			break;
-		}
+		case type_float:
+			success = setVarDecimal( var );
+			break;
+		case type_string:
+			success = setVarString( var );
+			break;
+		case type_int | type_array:
+			success = setVarIntArray( var );
+			break;
+		case type_float | type_array:
+			success = setVarDecimalArray( var );
+			break;
+		case type_string | type_array:
+			success = setVarStringArray( var );
+			break;
 	}
-	else
-	{
 
+	if (success == FALSE)
+	{
 		printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
 				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar-1].var.type & 7));
 
@@ -598,13 +715,17 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	std::string input;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	switch (tokenMode)
 	{
  		case mode_standard:
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 			cmdParm( _addData, tokenBuffer );
 			stack++;
 			break;
 		case mode_input:
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 			if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 			getline(cin, input);
 			setStackStrDup( input.c_str() );
