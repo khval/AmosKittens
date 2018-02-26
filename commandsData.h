@@ -6,6 +6,7 @@
 #include "amosKittens.h"
 
 bool correct_order( int last_token, int next_token );
+void correct_for_hidden_sub_data();
 
 char *powerData(struct nativeCommand *cmd, char *tokenBuffer);
 char *addData(struct nativeCommand *cmd, char *tokenBuffer);
