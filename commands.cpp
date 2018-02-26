@@ -661,6 +661,7 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	void *fn;
+	char *ret = NULL;
 
 	// empty the stack for what ever is inside the IF.
 
@@ -672,9 +673,18 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 
 	// execute the _if command.
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _if ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	printf("--\n");
+	dump_prog_stack();
+	printf("++\n");
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _if ) ret=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	if (ret) tokenBuffer = ret;
+
 
 	tokenMode = mode_standard;
+
+
 	return tokenBuffer;
 }
 
