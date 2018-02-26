@@ -32,28 +32,12 @@ string names like xxx is new and can saved on stack, with out being copied.
 
 *********/
 
-
-char *_stackString( int n )
-{
-	if (kittyStack[n].type == type_string)
-	{
-		return (kittyStack[n].str);
-	}
-	return NULL;
-}
-
-int _stackInt( int n )
-{
-	if (kittyStack[n].type == type_int)
-	{
-		return (kittyStack[n].value);
-	}
-	return 0;
-}
-
 char *_print( struct glueCommands *data )
 {
 	int n;
+
+	dump_prog_stack();
+
 	printf("PRINT: ");
 
 	for (n=data->stack;n<=stack;n++)
@@ -77,13 +61,15 @@ char *_print( struct glueCommands *data )
 	}
 	printf("\n");
 
-	dump_stack();
+
 
 	return NULL;
 }
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
+	printf("%s::%d\n",__FUNCTION__,__LINE__);
+
 	dump_stack();
 
 	stackCmdNormal( _print, ptr );
