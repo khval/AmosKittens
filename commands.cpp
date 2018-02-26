@@ -85,7 +85,11 @@ char *_input( struct glueCommands *data )
 
 char *_if( struct glueCommands *data )
 {
-	if (kittyStack[data->stack].value != -1)
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
 
@@ -152,35 +156,13 @@ char *cmdInput(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_addStr( struct glueCommands *data )
-{
-	int len = 0;
-	char *tmp;
-	char *_new;
-
-	len = kittyStack[stack].len + kittyStack[stack+1].len;
-
-	_new = (char *) malloc(len+1);
-	if (_new)
-	{
-		_new[0] = 0;
-		strcpy(_new, kittyStack[stack].str);
-		strcpy(_new+kittyStack[stack].len,kittyStack[stack+1].str);
-		if (kittyStack[stack].str) free( kittyStack[stack].str );
-		kittyStack[stack].str = _new;
-		kittyStack[stack].len = len;
-
-	}
-
-	// delete string from above.
-	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
-	kittyStack[stack+1].str = NULL;
-	return NULL;
-}
 
 char *_less( struct glueCommands *data )
 {
-	printf("%s:%d -- stack %d\n",__FUNCTION__,__LINE__, stack);
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
 
 	if (stack==0) 
 	{
@@ -188,26 +170,52 @@ char *_less( struct glueCommands *data )
 		return NULL;
 	}
 
-	dump_stack();
-
 	stack --;
 
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
 	{
-		setError(ERROR_Type_mismatch);
+		if (type1 == type_int)
+		{
+			_num( item0->decimal < (double) item1->value );
+		}
+		else if (type1 == type_float)
+		{
+			_num( item0->decimal < item1->decimal );
+		}
 		return NULL;
 	}
-
-	printf("(%d < %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value < kittyStack[stack+1].value) );
-
-	switch (kittyStack[stack].type & 3)
+	else if (type0 == type_int) 
 	{
-		case 0:	_num( kittyStack[stack].value < kittyStack[stack+1].value) ;
-				break;
-		case 1:	_num (kittyStack[stack].decimal < kittyStack[stack+1].decimal);
-				break;
-//		case 2:	_equalStr( data );
-//				break;
+		if (type1 == type_int)
+		{
+			_num( item0->value < item1->value );
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value < item1->decimal );
+		}
+		return NULL;
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+		success = stackLessStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
 	}
 
 	return NULL;
@@ -215,7 +223,10 @@ char *_less( struct glueCommands *data )
 
 char *_more( struct glueCommands *data )
 {
-	printf("%s\n",__FUNCTION__);
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
 
 	if (stack==0) 
 	{
@@ -225,22 +236,54 @@ char *_more( struct glueCommands *data )
 
 	stack --;
 
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
 	{
-		setError(ERROR_Type_mismatch);
+		if (type1 == type_int)
+		{
+			_num( item0->decimal > (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( item0->decimal > item1->decimal );
+			success = TRUE;
+		}
 		return NULL;
 	}
-
-	printf("(%d > %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value > kittyStack[stack+1].value) );
-
-	switch (kittyStack[stack].type & 3)
+	else if (type0 == type_int) 
 	{
-		case 0:	_num( kittyStack[stack].value > kittyStack[stack+1].value) ;
-				break;
-		case 1:	_num (kittyStack[stack].decimal > kittyStack[stack+1].decimal);
-				break;
-//		case 2:	_equalStr( data );
-//				break;
+		if (type1 == type_int)
+		{
+			_num( item0->value > item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value > item1->decimal );
+			success = TRUE;
+		}
+		return NULL;
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+		success = stackMoreStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
 	}
 
 	return NULL;
@@ -476,15 +519,6 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *addStr(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	cmdParm( _addStr, tokenBuffer );
-	stack++;
-	return tokenBuffer;
-}
-
 char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	kittyStack[stack].str = NULL;
@@ -620,11 +654,27 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	_num(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
+	tokenMode = mode_logical;
 	return tokenBuffer;
 }
 
 char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	void *fn;
+
+	// empty the stack for what ever is inside the IF.
+
+	while ((cmdStack)&&(stack))
+	{
+		if (cmdTmp[cmdStack-1].cmd == _if ) break;
+		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
+
+	// execute the _if command.
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _if ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	tokenMode = mode_standard;
 	return tokenBuffer;
 }
 
