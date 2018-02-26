@@ -25,6 +25,24 @@ void popStack(int n)
 	}
 }
 
+char *_stackString( int n )
+{
+	if (kittyStack[n].type == type_string)
+	{
+		return (kittyStack[n].str);
+	}
+	return NULL;
+}
+
+int _stackInt( int n )
+{
+	if (kittyStack[n].type == type_int)
+	{
+		return (kittyStack[n].value);
+	}
+	return 0;
+}
+
 void _num( int num )
 {
 	printf("set num stack[%d]\n",stack);

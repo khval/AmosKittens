@@ -9,6 +9,8 @@
 #define token_div		0xFFEC
 #define token_power	0xFFF6
 
+#define NEXT_TOKEN(ptr) *((short *) ptr)
+#define NEXT_INT(ptr) *((int *) (ptr+2))
 
 enum
 {

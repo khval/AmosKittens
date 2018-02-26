@@ -11,3 +11,6 @@ extern bool stackStrAddDecimal(struct kittyData *item0, struct kittyData *item1)
 
 extern void popStack(int n);
 
+extern int _stackInt( int n );
+extern char *_stackString( int n );
+
