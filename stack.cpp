@@ -141,3 +141,20 @@ bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 	}
 	return false;
 }
+
+bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	int new_size = item0 -> len + item1 -> len +1;
+	char *str;
+
+	if (item0 -> str == NULL) return false;
+
+	str = (char *) malloc ( new_size );
+	if (str)
+	{
+		sprintf(str,"%s%s", item0 -> str, item1 -> str);
+		setStackStr( str );
+		return true;
+	}
+	return false;
+}

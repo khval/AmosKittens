@@ -121,20 +121,23 @@ char *_addData( struct glueCommands *data )
 	}
 	else if ( type0 == type_string) 
 	{
+		printf("type0 == type_string\n");
+
 		switch (type1)
 		{
 			case type_int:		success = stackStrAddValue( item0, item1 ); break;
 			case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
-			case type_string:	success = _addStr( data ); break;
+			case type_string:	success = stackStrAddStr( item0, item1 ); break;
 		}
+
+		printf("we are here\n");
 	}
 
 	correct_for_hidden_sub_data();
 
-
 	if (success == FALSE)
 	{
-		printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		printf("%d != %d\n",type0, type1);
 		setError(ERROR_Type_mismatch);
 		return NULL;
 	}

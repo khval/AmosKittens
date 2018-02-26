@@ -8,6 +8,7 @@ extern void setStackStrDup(const char *str);
 
 extern bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1);
 extern bool stackStrAddDecimal(struct kittyData *item0, struct kittyData *item1);
+extern bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1);
 
 extern void popStack(int n);
 
