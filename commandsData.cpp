@@ -109,8 +109,6 @@ char *_addData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			printf(" = %d + %d\n", item0->value , item1->value );
-
 			_num( item0->value + item1->value );
 		}
 		else if (type1 == type_float)
@@ -129,8 +127,6 @@ char *_addData( struct glueCommands *data )
 			case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
 			case type_string:	success = stackStrAddStr( item0, item1 ); break;
 		}
-
-		printf("we are here\n");
 	}
 
 	correct_for_hidden_sub_data();
@@ -144,6 +140,7 @@ char *_addData( struct glueCommands *data )
 
 	return NULL;
 }
+
 
 char *_subStr( struct glueCommands *data )
 {
@@ -181,6 +178,7 @@ char *_subStr( struct glueCommands *data )
 
 	return NULL;
 }
+
 
 char *_subData( struct glueCommands *data )
 {
