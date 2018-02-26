@@ -12,6 +12,7 @@
 #include "commands.h"
 #include "commandsData.h"
 #include "commandsString.h"
+#include "commandsMath.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -331,13 +332,10 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (cmdStack) if (stack)
 	{
-		printf("some thing on the stack\n");
-
-		dump_prog_stack();
-
-
 		char *newTokenLoc = NULL;
-		if (kittyStack[stack-1].state == state_none) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+
+		if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		if (newTokenLoc) return newTokenLoc - sizeof(struct reference) - 2;
 	}
 
@@ -377,6 +375,11 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
+	printf("------------cmdNumber-------------------\n");
+
+	dump_prog_stack();
+
+
 	// check if - or + comes before *, / or ; symbols
 
 	if ( correct_order( last_token,  next_token ) == false )
@@ -402,6 +405,8 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	{
 		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
+
+	printf("------------ END OF Number ---------------\n");
 
 	return ptr;
 }
@@ -475,6 +480,11 @@ struct nativeCommand nativeCommands[]=
 	{0x02DA, "End If",0,cmdEndIf },
 	{0x0360, "Return",0,cmdReturn },
 	{0x03B6, "End",0,cmdEnd },
+
+	{0x0444, "Inc",0,incMath },
+	{0x044E, "Dec",0,decMath },
+	{0x0458, "Add",0,addMath },
+
 	{0x0476, "Print",0,cmdPrint },
 	{0x04D0, "Input",0,cmdInput },
 	{0x050E, "Mid$",0,cmdMid },
@@ -627,7 +637,9 @@ int main()
 //	fd = fopen("amos-test/str-chr-asc-len.amos","r");
 //	fd = fopen("amos-test/hex-bin-val-str.amos","r");
 //	fd = fopen("amos-test/casting_int_float.amos","r");
-	fd = fopen("amos-test/arithmetic.amos","r");
+//	fd = fopen("amos-test/arithmetic.amos","r");
+
+	fd = fopen("amos-test/inc-dec-add.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
