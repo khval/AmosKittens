@@ -29,6 +29,7 @@ enum
 {
 	nested_if,
 	nested_then,
+	nested_then_else,
 	nested_else,
 	nested_while
 };
@@ -227,6 +228,7 @@ void eol( char *ptr )
 			// IF can end at EOL if then is there. (command THEN should replace nested_if )
 
 			case nested_then:
+			case nested_then_else:
 				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
 				nested_count --;
@@ -329,11 +331,17 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								pass1_if_or_else(ptr+2);
 								addNest( nested_else );
 							}
+							else if LAST_TOKEN_(then)
+							{
+								pass1_if_or_else(ptr+2);
+								addNest( nested_then_else );
+							}
 							else
+
 								setError( 25 );		
 							break;
 
-				case 0x02DA:	
+				case 0x02DA:	// END IF
 							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else) )
 							{
 								pass1_if_or_else( ptr+2 );
@@ -388,6 +396,7 @@ void pass1_reader( char *start, int tokenlength )
 			case nested_while: setError(29); break;
 			case nested_if: setError(22); break;
 			case nested_then: setError(22); break;
+			case nested_then_else: 	setError(22); 	printf("pass1 test error, should have been deleted by EOL");break;
 			case nested_else: setError(22); break;
 			default: setError(35); break;
 		}
