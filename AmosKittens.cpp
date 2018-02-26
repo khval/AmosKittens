@@ -513,7 +513,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1248,"FALSE",0,cmdFalse },
 
 	{0xFFAC,"<",0,cmdLess },
-	{0xFFAC,">",0,cmdMore },
+	{0xFFB6,">",0,cmdMore },
 	{0xFFC0,"+",0, addData },
 	{0xFFCA,"-", 0, subData },
 	{0xFFA2,"=", 0, setVar },
@@ -638,8 +638,9 @@ int main()
 //	fd = fopen("amos-test/hex-bin-val-str.amos","r");
 //	fd = fopen("amos-test/casting_int_float.amos","r");
 //	fd = fopen("amos-test/arithmetic.amos","r");
+//	fd = fopen("amos-test/inc-dec-add.amos","r");
 
-	fd = fopen("amos-test/inc-dec-add.amos","r");
+	fd = fopen("amos-test/compare-strings.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
