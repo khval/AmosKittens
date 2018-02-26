@@ -258,6 +258,7 @@ void pass1_if_or_else( char *ptr )
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
 			case nested_if:
+			case nested_then:
 			case nested_else:
 
 				printf("write to %08x-------%08x\n",(short *) (nested_command[ nested_count -1 ].ptr),
@@ -269,7 +270,8 @@ void pass1_if_or_else( char *ptr )
 
 			default:
 
-				printf("Error: End If, with out Else or Then\n");
+//				printf("Error: End If, with out Else or Then\n");
+				setError( 25 );	
 		}
 	}
 }
@@ -337,8 +339,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								addNest( nested_then_else );
 							}
 							else
-
-								setError( 25 );		
+								setError( 25 );	
 							break;
 
 				case 0x02DA:	// END IF
