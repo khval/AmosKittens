@@ -6,6 +6,7 @@
 #include <proto/dos.h>
 #include "stack.h"
 #include "amosKittens.h"
+#include "debug.h"
 
 int stack = 0;
 struct kittyData kittyStack[100];
@@ -158,3 +159,39 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 	}
 	return false;
 }
+
+bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	printf("\n\n\n");
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	printf("%s\n", item0 -> str  ? item0 -> str  : "NULL");
+	printf("%s\n", item1 -> str  ? item1 -> str  : "NULL");
+
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	_num( strcmp( item0->str , item1->str ) > 0  );
+
+	dump_stack();
+
+	getchar();
+
+	return true;
+}
+
+bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	_num( strcmp( item0->str , item1->str ) < 0  );
+	return true;
+}
+
+bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	_num( strcmp( item0->str , item1->str ) == 0  );
+	return true;
+}
+
