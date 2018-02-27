@@ -42,6 +42,8 @@ enum
 	type_float,
 	type_string,
 	type_file,
+	type_proc,
+
 	type_array = 8		// I'm sure AMOS don't use this, but we do.
 };
 
@@ -77,7 +79,8 @@ struct kittyData
 		char *str;
 		char **str_array;
 		int *int_array;
-		double *float_array;		
+		double *float_array;	
+		char *tokenBufferPos;	
 	};
 
 	int index;
