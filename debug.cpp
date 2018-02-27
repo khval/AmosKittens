@@ -42,6 +42,9 @@ void dump_global()
 			case type_string:
 				printf("%s=\"%s\"\n", globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
 				break;
+			case type_proc:
+				printf("%s=proc at 0x%08x\n", globalVars[n].varName, globalVars[n].var.tokenBufferPos );
+				break;
 			case type_int | type_array:
 
 				printf("%s(%d)=",
