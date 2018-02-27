@@ -859,3 +859,24 @@ char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	struct procedure *proc = (struct procedure *) tokenBuffer;
+	return proc -> EndOfProc;
+}
+
+char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer )
+{
+// this is dummy does not do anything, silly thing 
+	return tokenBuffer;
+}
+
+char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+//	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _callProc ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	return tokenBuffer;
+}
+

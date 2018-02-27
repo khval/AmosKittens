@@ -433,7 +433,6 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 
 	printf("%f E %d ", f, e );
 
-
 	if (e>0)	f *= 1 <<e-1;
 	if (e==0)	f /= 2;
 	if (e<0)	f /= 1<<(-e+1);
@@ -479,6 +478,9 @@ struct nativeCommand nativeCommands[]=
 	{0x02D0, "Else",2,cmdElse },
 	{0x02DA, "End If",0,cmdEndIf },
 	{0x0360, "Return",0,cmdReturn },
+	{0x0376, "Procedure", sizeof(struct procedure), cmdProcedure },
+	{0x0386, "Proc",0, cmdProc },	
+	{0x0390, "End Proc", 0, cmdEndProc },
 	{0x03B6, "End",0,cmdEnd },
 
 	{0x0444, "Inc",0,incMath },
@@ -639,8 +641,9 @@ int main()
 //	fd = fopen("amos-test/casting_int_float.amos","r");
 //	fd = fopen("amos-test/arithmetic.amos","r");
 //	fd = fopen("amos-test/inc-dec-add.amos","r");
+//	fd = fopen("amos-test/compare-strings.amos","r");
+	fd = fopen("amos-test/procedure.amos","r");
 
-	fd = fopen("amos-test/compare-strings.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

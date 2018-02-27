@@ -36,6 +36,10 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
@@ -64,7 +68,7 @@ struct reference
 
 struct procedure
 {
-	unsigned int ProcLength;
+	char *EndOfProc;	// maybe not used like this in AMOS, but I don't case, does break anything
 	unsigned short seed;
 	char flags;
 	char seed2;

@@ -31,7 +31,8 @@ enum
 	nested_then,
 	nested_then_else,
 	nested_else,
-	nested_while
+	nested_while,
+	nested_proc
 };
 
 struct nested
@@ -203,6 +204,8 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			case 0x000C:	token_size += ReferenceByteLength(ptr); break;
 			case 0x0012:	token_size += ReferenceByteLength(ptr); break;
 			case 0x0018:	token_size += ReferenceByteLength(ptr); break;
+			case 0x0386:   token_size += ReferenceByteLength(ptr); break;
+
 			case 0x0026:	token_size += QuoteByteLength(ptr); break;
 			case 0x002E:	token_size += QuoteByteLength(ptr); break;
 			case 0x064A:	token_size += QuoteByteLength(ptr); break;
@@ -249,6 +252,12 @@ void fix_token_short( int cmd, char *ptr )
 			nested_count --;
 		}
 	}
+}
+
+void pass1_proc_end( char *ptr )
+{
+	((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr;
+	nested_count --;
 }
 
 void pass1_if_or_else( char *ptr )
@@ -350,6 +359,19 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							else
 								setError( 23 );
  							break;
+
+				case 0x0376: // Procedure
+							addNest( nested_proc )
+							break;
+
+				case 0x0390: // End Proc
+							if LAST_TOKEN_(proc) 
+							{
+								pass1_proc_end( ptr + 2 );
+							}
+							else
+								setError(11);
+							break;
 			}
 
 			ret += cmd -> size;
@@ -399,6 +421,7 @@ void pass1_reader( char *start, int tokenlength )
 			case nested_then: setError(22); break;
 			case nested_then_else: 	setError(22); 	printf("pass1 test error, should have been deleted by EOL");break;
 			case nested_else: setError(22); break;
+			case nested_proc: setError(17); break;
 			default: setError(35); break;
 		}
 	}
