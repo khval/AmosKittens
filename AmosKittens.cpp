@@ -290,6 +290,9 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+
+	printf("**************\n");
+
 	if (jump_mode)
 	{
 
@@ -311,11 +314,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
+		printf("we are here\n");
+
 		if (ref -> ref)
 		{
 			int idx = ref->ref-1;
 
-			switch (ref -> flags & 3)
+			switch (globalVars[idx].var.type & 7)
 			{
 				case type_int:
 					_num(globalVars[idx].var.value);
@@ -326,6 +331,12 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 				case type_string:
 					setStackStrDup(globalVars[idx].var.str);		// always copy.
 					break;
+				case type_proc:
+
+					printf("****\n");
+
+//					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
+					return globalVars[idx].var.tokenBufferPos +2;
 			}
 		}
 	}
@@ -333,7 +344,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	if (cmdStack) if (stack)
 	{
 		char *newTokenLoc = NULL;
-
 
 		if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		if (newTokenLoc) return newTokenLoc - sizeof(struct reference) - 2;
