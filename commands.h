@@ -44,6 +44,7 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
 char *_gosub( struct glueCommands *data );
+char *_procedure( struct glueCommands *data );
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 
@@ -68,7 +69,7 @@ struct reference
 
 struct procedure
 {
-	char *EndOfProc;	// maybe not used like this in AMOS, but I don't case, does break anything
+	char *EndOfProc;	// maybe not used like this in AMOS, but I don't care, does not break anything
 	unsigned short seed;
 	char flags;
 	char seed2;

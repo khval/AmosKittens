@@ -33,6 +33,12 @@ char *_for( struct glueCommands *data )
 	return NULL;
 }
 
+char *_procedure( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return NULL ;
+}
+
 char *_gosub( struct glueCommands *data )
 {
 	char *ptr = data -> tokenBuffer ;
