@@ -105,7 +105,7 @@ int ReferenceByteLength(char *ptr)
 	return length;
 }
 
-void pass1var(char *ptr)
+void pass1var(char *ptr, bool is_proc )
 {
 	char *tmp;
 	int found = 0;
@@ -126,6 +126,13 @@ void pass1var(char *ptr)
 		{
 			free(tmp);		//  don't need tmp
 			ref -> ref = found;
+		
+			if (is_proc)
+			{
+				var = &globalVars[found-1].var;
+				var -> type = type_proc;
+				var -> tokenBufferPos = ptr + sizeof(struct reference) ;
+			}
 		}
 		else
 		{
@@ -142,6 +149,14 @@ void pass1var(char *ptr)
 
 		// we should not free tmp, see code above.
 	}
+}
+
+void next_var_should_be_proc_type( char *ptr )
+{
+	short token = *((short *) ptr);
+//	struct reference *ref = (struct reference *) (ptr+2);
+
+	if (token == 0x0006) pass1var(  ptr+2, true );
 }
 
 void pass1label(char *ptr)
@@ -285,6 +300,8 @@ void pass1_if_or_else( char *ptr )
 	}
 }
 
+
+
 char *nextToken_pass1( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -306,7 +323,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							currentLine++;
 							break;
 
-				case 0x0006:	pass1var(  ptr );
+				case 0x0006:	pass1var(  ptr, false );
 							ret += ReferenceByteLength(ptr); 
 							break;
 
@@ -361,7 +378,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
  							break;
 
 				case 0x0376: // Procedure
-							addNest( nested_proc )
+							addNest( nested_proc );
+							next_var_should_be_proc_type( ptr + sizeof(struct procedure) );
 							break;
 
 				case 0x0390: // End Proc
