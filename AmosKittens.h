@@ -65,6 +65,12 @@ struct glueCommands
 	int stack;
 };
 
+struct proc 
+{
+	char *name;
+	int ref;
+};
+
 struct kittyData
 {
 	union		// we don't need to wast space.
@@ -86,6 +92,8 @@ struct kittyData
 	int index;
 	int cells;
 	int *sizeTab;
+
+	int proc;	// so vars can be attached to proc.
 
 	double decimal;
 	int state;
@@ -148,9 +156,12 @@ extern int commandCnt;
 
 extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
+extern struct proc procStack[];
 
 extern int stack;
 extern int cmdStack;
+extern int procStackCount;
+
 extern unsigned short last_token;
 
 extern char *(*jump_mode) (struct reference *ref, char *ptr);

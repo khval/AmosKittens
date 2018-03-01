@@ -18,6 +18,7 @@
 #include "pass1.h"
 
 int cmdStack = 0;
+int procStackCount = 0;
 unsigned short last_token = 0;
 int last_var = 0;
 int tokenlength;
@@ -27,6 +28,7 @@ char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 int tokenMode = mode_standard;
 void _num( int num );
 
+struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
@@ -652,7 +654,9 @@ int main()
 //	fd = fopen("amos-test/arithmetic.amos","r");
 //	fd = fopen("amos-test/inc-dec-add.amos","r");
 //	fd = fopen("amos-test/compare-strings.amos","r");
-	fd = fopen("amos-test/procedure.amos","r");
+//	fd = fopen("amos-test/procedure.amos","r");
+
+	fd = fopen("AMOS-test/procedure2.amos","r");
 
 	if (fd)
 	{

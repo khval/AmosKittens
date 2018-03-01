@@ -25,6 +25,8 @@ extern std::vector<struct label> labels;
 
 int currentLine = 0;
 
+int procCount = 0;
+
 enum
 {
 	nested_if,
@@ -70,6 +72,25 @@ int findVar( char *name )
 	return 0;
 }
 
+int findVarAbs( char *name, int _proc )
+{
+	int n;
+
+	for (n=0;n<global_var_count;n++)
+	{
+		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
+
+		if (globalVars[n].varName == NULL) return 0;
+
+		if ((strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.proc == _proc))
+		{
+			return n+1;
+		}
+	}
+	return 0;
+}
+
+
 char *findLabel( char *name )
 {
 	int n;
@@ -112,6 +133,8 @@ void pass1var(char *ptr, bool is_proc )
 	struct reference *ref = (struct reference *) ptr;
 	struct kittyData *var;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	tmp = (char *) malloc( ref->length + 2 );
 	if (tmp)
 	{
@@ -121,7 +144,9 @@ void pass1var(char *ptr, bool is_proc )
 
 		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
 
-		found = findVar(tmp);
+		printf("looking for %s %d\n", tmp, procCount);
+
+		found = findVarAbs(tmp, is_proc ? 0 : procCount);
 		if (found)
 		{
 			free(tmp);		//  don't need tmp
@@ -129,21 +154,29 @@ void pass1var(char *ptr, bool is_proc )
 		
 			if (is_proc)
 			{
+				printf("proc change %\n",found);
+
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + sizeof(struct reference) ;
+				var -> proc = is_proc ? 0 : procCount;
 			}
+			else printf("not changed\n");
 		}
 		else
 		{
 			global_var_count ++;
 			ref -> ref = global_var_count;
 
+			printf("added %d\n",global_var_count);
+
 			globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
 
 			var = &globalVars[global_var_count-1].var;
 			var->type = ref -> flags & 3;
 			var->len = 0;
+			var->proc = procCount;
+
 			if (var -> type == type_string) var->str = strdup("");
 		}
 
@@ -378,11 +411,14 @@ char *nextToken_pass1( char *ptr, unsigned short token )
  							break;
 
 				case 0x0376: // Procedure
+							procCount ++;
+							procStackCount++;
 							addNest( nested_proc );
 							next_var_should_be_proc_type( ptr + sizeof(struct procedure) );
 							break;
 
 				case 0x0390: // End Proc
+							procStackCount--;
 							if LAST_TOKEN_(proc) 
 							{
 								pass1_proc_end( ptr + 2 );
