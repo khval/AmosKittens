@@ -36,7 +36,7 @@ char *_for( struct glueCommands *data )
 char *_procedure( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	return NULL ;
+	return  data -> tokenBuffer ;
 }
 
 char *_gosub( struct glueCommands *data )
@@ -881,7 +881,7 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-//	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _callProc ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procedure ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	return tokenBuffer;
 }

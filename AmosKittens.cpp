@@ -335,7 +335,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 					printf("****\n");
 
-//					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
+					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
 					return globalVars[idx].var.tokenBufferPos +2;
 			}
 		}
