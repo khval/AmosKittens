@@ -42,12 +42,12 @@ char *_procedure( struct glueCommands *data )
 
 char *_procAndArgs( struct glueCommands *data )
 {
+	int oldStack;
 	struct reference *ref = (struct reference *) (data->tokenBuffer);
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	dump_stack();
-	getchar;
 
 	if (ref -> ref)
 	{
@@ -57,11 +57,25 @@ char *_procAndArgs( struct glueCommands *data )
 		{
 			case type_proc:
 
+				oldStack = data -> stack;
+
 				printf("****\n");
+
+				// I think we over write data here ;-)
 				stackCmdLoop( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
-				return globalVars[idx].var.tokenBufferPos +2;
+
+				cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
+
+				printf("Goto %08x\n", globalVars[idx].var.tokenBufferPos);
+
+				tokenMode = mode_store;
+				return globalVars[idx].var.tokenBufferPos  ;
 		}
 	}
+
+	printf("ref->ref %d\n",ref->ref);
+
+	getchar();
 
 	return  data -> tokenBuffer ;
 }
@@ -487,8 +501,10 @@ char *_setVar( struct glueCommands *data )
 	BOOL success;
 	struct kittyData *var;
 	var = &globalVars[data -> lastVar-1].var;
-	
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
+
+	dump_stack();
 
 	success = FALSE;
 
@@ -903,7 +919,8 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 	struct reference *ref = (struct reference *) (tokenBuffer);
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	getchar();
+
+	printf("stack is %d\n",stack);
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
 	tokenBuffer += ref -> length ;
@@ -926,6 +943,78 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procedure ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	return tokenBuffer;
+}
+
+
+char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procedure ) 
+	{
+		struct reference *ref;
+		struct glueCommands data;
+		char *ptr;
+		int args = 0;
+		int n;
+		unsigned short token;
+
+		args = stack - cmdTmp[cmdStack-1].stack +1;
+
+		printf ("Yes are now storing args\n");
+		printf ("args: %d\n",args);
+		getchar();
+
+		stack -= (args-1);
+	
+		n=0;
+		for (ptr = tokenBuffer; (*((unsigned short *) ptr) != 0x008C) &&(n<args) ;ptr+=2)
+		{
+			printf("**%d**\n",n);
+			token = *((unsigned short *) ptr);
+
+			switch ( token )
+			{
+				case 0x0006:	
+
+					ref = (struct reference *) (ptr+2);
+
+					data.lastVar = ref->ref;
+					_setVar( &data );
+
+					ptr += sizeof(struct reference ) + ref -> length;
+					n++;
+					stack ++;
+					break;
+
+				case 0x005C:
+					break;
+			}
+
+			ptr += 2;	 // next token
+		}
+
+		popStack( stack - cmdTmp[cmdStack-1].stack  );
+
+		printf("Stack is now %d\n", stack);
+
+		return ptr;
+
+	}
+
+	return tokenBuffer;
+}
+
+char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procAndArgs )
+	{
+		printf("\n\nargs: %d\n\n\n",stack - cmdTmp[cmdStack-1].stack + 1 );
+	}
 
 	return tokenBuffer;
 }
