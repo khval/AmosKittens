@@ -364,6 +364,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
+				case 0x0012:	ret += ReferenceByteLength(ptr); 
+							break;
+
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 				case 0x064A:	ret += QuoteByteLength(ptr); break;	// skip strings.
 
