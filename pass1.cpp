@@ -158,7 +158,7 @@ void pass1var(char *ptr, bool is_proc )
 
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
-				var -> tokenBufferPos = ptr + sizeof(struct reference) ;
+				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
 				var -> proc = is_proc ? 0 : procCount;
 			}
 			else printf("not changed\n");
@@ -173,7 +173,7 @@ void pass1var(char *ptr, bool is_proc )
 			globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
 
 			var = &globalVars[global_var_count-1].var;
-			var->type = ref -> flags & 3;
+			var->type = is_proc ? type_proc : ref -> flags & 7;
 			var->len = 0;
 			var->proc = procCount;
 
@@ -356,7 +356,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							currentLine++;
 							break;
 
-				case 0x0006:	pass1var(  ptr, false );
+				case 0x0006:	pass1var( ptr, false );
 							ret += ReferenceByteLength(ptr); 
 							break;
 
@@ -364,7 +364,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
-				case 0x0012:	ret += ReferenceByteLength(ptr); 
+				case 0x0012:	pass1var( ptr, false );	
+							ret += ReferenceByteLength(ptr); 
 							break;
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
