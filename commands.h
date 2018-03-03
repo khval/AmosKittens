@@ -37,6 +37,7 @@ char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer );
 
 char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
 

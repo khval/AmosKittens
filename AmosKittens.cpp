@@ -463,6 +463,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0000,	"", 2,	cmdNewLine},
 	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
+	{0x0012, "procedure with args",sizeof(struct reference),cmdProcAndArgs },
 	{0x0026, "\"",2, cmdQuote },
 	{0x003E, "",4,cmdNumber },
 	{0x0046, "",4,cmdFloat },
@@ -655,9 +656,8 @@ int main()
 //	fd = fopen("amos-test/inc-dec-add.amos","r");
 //	fd = fopen("amos-test/compare-strings.amos","r");
 //	fd = fopen("amos-test/procedure.amos","r");
-
-	fd = fopen("AMOS-test/procedure2.amos","r");
-
+//	fd = fopen("AMOS-test/procedure2.amos","r");
+	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

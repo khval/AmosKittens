@@ -39,6 +39,33 @@ char *_procedure( struct glueCommands *data )
 	return  data -> tokenBuffer ;
 }
 
+
+char *_procAndArgs( struct glueCommands *data )
+{
+	struct reference *ref = (struct reference *) (data->tokenBuffer);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+	getchar;
+
+	if (ref -> ref)
+	{
+		int idx = ref->ref-1;
+
+		switch (globalVars[idx].var.type & 7)
+		{
+			case type_proc:
+
+				printf("****\n");
+				stackCmdLoop( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
+				return globalVars[idx].var.tokenBufferPos +2;
+		}
+	}
+
+	return  data -> tokenBuffer ;
+}
+
 char *_gosub( struct glueCommands *data )
 {
 	char *ptr = data -> tokenBuffer ;
@@ -869,6 +896,23 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	struct procedure *proc = (struct procedure *) tokenBuffer;
 	return proc -> EndOfProc;
+}
+
+char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	struct reference *ref = (struct reference *) (tokenBuffer);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
+
+	stackCmdNormal( _procAndArgs, tokenBuffer );
+	tokenBuffer += ref -> length ;
+
+	dump_prog_stack();
+
+	getchar();
+
+	return tokenBuffer;
 }
 
 char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer )
