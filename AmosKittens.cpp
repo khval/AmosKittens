@@ -108,8 +108,6 @@ char *_array_index_var( glueCommands *self )
 
 	dump_stack();
 
-	printf("%s: %08x, varNum %04x\n",__FUNCTION__, self -> tokenBuffer, varNum);
-
 	var = &globalVars[varNum].var;
 
 	index = 0; mul  = 1;
@@ -292,14 +290,10 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-
-	printf("**************\n");
-
 	if (jump_mode)
 	{
 
 		printf("jump_mode\n");
-
 		return jump_mode( ref, ptr );
 	}
 
@@ -316,8 +310,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
-		printf("we are here\n");
-
 		if (ref -> ref)
 		{
 			int idx = ref->ref-1;
@@ -338,7 +330,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					printf("****\n");
 
 					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
-					return globalVars[idx].var.tokenBufferPos +2;
+					tokenMode = mode_store;
+					return globalVars[idx].var.tokenBufferPos +2;					
 			}
 		}
 	}
@@ -468,12 +461,12 @@ struct nativeCommand nativeCommands[]=
 	{0x003E, "",4,cmdNumber },
 	{0x0046, "",4,cmdFloat },
 	{0x0054, ":", 0, nextCmd },
-	{0x005C, ",", 0, nextArg},
-	{0x0064, ";", 0, breakData},
-	{0x0074, "(", 0, subCalc},
-	{0x007C, ")", 0, subCalcEnd},
-	{0x0084, "[", 0, NULL },
-	{0x008C, "]", 0, NULL },
+	{0x005C, ",", 0, nextArg },
+	{0x0064, ";", 0, breakData },
+	{0x0074, "(", 0, subCalc },
+	{0x007C, ")", 0, subCalcEnd },
+	{0x0084, "[", 0, cmdBracket },
+	{0x008C, "]", 0, cmdBracketEnd },
 	{0x0094, "To",0,cmdTo },
 	{0x023C, "For",2,cmdFor },
 	{0x0246, "Next",0,cmdNext },
@@ -545,7 +538,7 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
-	dump_stack();
+//	dump_stack();
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
