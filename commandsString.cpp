@@ -60,8 +60,8 @@ char *_print( struct glueCommands *data )
 		if (n<=stack) printf("    ");
 	}
 	printf("\n");
-
-
+	
+	popStack( stack - data->stack );
 
 	return NULL;
 }
