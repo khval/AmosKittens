@@ -148,6 +148,21 @@ int ReferenceByteLength(char *ptr)
 	return length;
 }
 
+void add_var_from_ref( struct reference *ref, char *tmp, bool is_proc )
+{
+	struct kittyData *var;
+
+	global_var_count ++;
+	ref -> ref = global_var_count;
+
+	globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
+
+	var = &globalVars[global_var_count-1].var;
+	var->type = is_proc ? type_proc : ref -> flags & 7;
+	var->len = 0;
+	if (var -> type == type_string) var->str = strdup("");
+}
+
 void pass1var(char *ptr, bool is_proc )
 {
 	char *tmp;
@@ -165,6 +180,10 @@ void pass1var(char *ptr, bool is_proc )
 		found = findVar(tmp, is_proc ? 0 : procCount);
 		if (found)
 		{
+
+			printf("we go that way\n");
+			getchar();
+
 			free(tmp);		//  don't need tmp
 			ref -> ref = found;
 		
@@ -182,20 +201,12 @@ void pass1var(char *ptr, bool is_proc )
 		}
 		else
 		{
-			global_var_count ++;
-			ref -> ref = global_var_count;
 
-			printf("added %d\n",global_var_count);
+			printf("we go this way\n");
+			getchar();
 
-			globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
-
-			var = &globalVars[global_var_count-1].var;
-			var->type = is_proc ? type_proc : ref -> flags & 7;
-			var->len = 0;
-
+			add_var_from_ref( ref, tmp, is_proc );
 			globalVars[global_var_count-1].proc = procCount;
-
-			if (var -> type == type_string) var->str = strdup("");
 		}
 
 		// we should not free tmp, see code above.
@@ -248,7 +259,6 @@ void pass1label(char *ptr)
 	}
 }
 
-
 char *pass1_shared( char *ptr )
 {
 	unsigned short token = *((unsigned short *) ptr);
@@ -259,10 +269,6 @@ char *pass1_shared( char *ptr )
 	// we only support two tokens as arguments for shared.
 
 	token = *((unsigned short *) ptr);
-
-	printf("token %04x\n", token);
-	getchar();
-
 
 	while ( (token != 0x0000) && (token != 0x0054) && ( kittyError.code == 0) )
 	{
@@ -298,6 +304,59 @@ char *pass1_shared( char *ptr )
 	}
 	return ptr;
 }
+
+char *pass1_global( char *ptr )
+{
+	unsigned short token = *((unsigned short *) ptr);
+	struct reference *ref;
+	char *tmp;
+	int var;
+
+	// we only support two tokens as arguments for shared.
+
+	token = *((unsigned short *) ptr);
+
+	while ( (token != 0x0000) && (token != 0x0054) && ( kittyError.code == 0) )
+	{
+		switch (token)
+		{
+			case 0x0006: 	ref = (struct reference *) (ptr+2);
+						tmp = dupRef( ref );
+
+						if (tmp)
+						{
+							var = findVarPublic(tmp);
+							if (var) 
+							{
+								free(tmp);
+								globalVars[var-1].isGlobal = TRUE;
+								ref->ref = var;
+							}
+							else
+							{
+								add_var_from_ref( ref, tmp, FALSE );
+								globalVars[global_var_count-1].isGlobal = TRUE;
+							}
+							// don't need to free tmp, we use or trow it away, see above
+						}
+
+						ptr += sizeof(struct reference *) + ref -> length;
+
+						break;
+			case 0x005C: break;
+
+			default: 
+						setError(1);
+		}
+
+		ptr+=2;	// next token
+		token = *((unsigned short *) ptr);
+		printf("token %04x\n", token);
+		getchar();
+	}
+	return ptr;
+}
+
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 )
 {
@@ -512,6 +571,16 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							if (procStackCount)
 							{
 								ret = pass1_shared( ptr );
+							}
+							else
+								setError(11);
+							break;
+
+				case 0x03AA:	// Global
+
+							if (procStackCount == 0)
+							{
+								ret = pass1_global( ptr );
 							}
 							else
 								setError(11);
