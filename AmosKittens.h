@@ -18,7 +18,8 @@ enum
 	mode_alloc,
 	mode_input,
 	mode_goto,
-	mode_logical
+	mode_logical,
+	mode_store
 };
 
 enum 
@@ -59,9 +60,10 @@ struct glueCommands
 {
 	char *(*cmd) ( struct glueCommands *data );	// can return token location
 	char *tokenBuffer;
+	char *tokenBuffer2;		// a place to store a 2en token buffer pos.
 	int flag;
 	int lastVar;
-	int step;
+	int step;		// specal to one command, think this can be union if more specals are needed.
 	int stack;
 };
 
