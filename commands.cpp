@@ -908,7 +908,10 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	struct procedure *proc = (struct procedure *) tokenBuffer;
-	return proc -> EndOfProc;
+
+	printf("Goto %08x\n",proc -> EndOfProc);
+
+	return proc -> EndOfProc - sizeof(struct procedure);
 }
 
 char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )

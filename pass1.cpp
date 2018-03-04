@@ -439,7 +439,7 @@ void fix_token_short( int cmd, char *ptr )
 
 void pass1_proc_end( char *ptr )
 {
-	((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr;
+	((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr-2;
 	nested_count --;
 }
 
@@ -560,7 +560,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							procStackCount--;
 							if LAST_TOKEN_(proc) 
 							{
-								pass1_proc_end( ptr + 2 );
+								pass1_proc_end( ptr );
 							}
 							else
 								setError(11);
