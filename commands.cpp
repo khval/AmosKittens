@@ -47,9 +47,7 @@ char *_procAndArgs( struct glueCommands *data )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-
-	if (ref -> ref)
+	if ((ref -> ref) && (data -> tokenBuffer2))
 	{
 		int idx = ref->ref-1;
 
@@ -62,7 +60,7 @@ char *_procAndArgs( struct glueCommands *data )
 				printf("****\n");
 
 				// I think we over write data here ;-)
-				stackCmdLoop( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
+				stackCmdLoop( _procedure, data -> tokenBuffer2);	//  data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
 
 				cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
 
@@ -96,8 +94,6 @@ char *_gosub( struct glueCommands *data )
 char *_step( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 
 	if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 	{
@@ -133,8 +129,6 @@ char *_input( struct glueCommands *data )
 char *_if( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
@@ -504,8 +498,6 @@ char *_setVar( struct glueCommands *data )
 
 	printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
 
-	dump_stack();
-
 	success = FALSE;
 
 	switch (var->type)
@@ -537,10 +529,6 @@ char *_setVar( struct glueCommands *data )
 
 		setError(ERROR_Type_mismatch);
 	}
-
-	printf("--- whats in the vars ---\n");
-	
-	dump_global();
 
 	return NULL;
 }
@@ -768,25 +756,31 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	stackCmdLoop( _do, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	stackCmdLoop( _repeat, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	return tokenBuffer;
 }
 
 char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("--------------------------------------\n%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	tokenMode = mode_logical;
 
@@ -798,12 +792,16 @@ char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	return tokenBuffer;
 }
 
 char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
 
 	tokenMode = mode_logical;
@@ -834,9 +832,6 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
-
-	dump_prog_stack();
-
 	if (cmdStack) 
 	{
 		if (cmdStack)
@@ -910,24 +905,20 @@ char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	struct procedure *proc = (struct procedure *) tokenBuffer;
 	return proc -> EndOfProc;
 }
 
 char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	struct reference *ref = (struct reference *) (tokenBuffer);
-
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("stack is %d\n",stack);
+	struct reference *ref = (struct reference *) (tokenBuffer);
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
 	tokenBuffer += ref -> length ;
-
-	dump_prog_stack();
-
-	getchar();
 
 	return tokenBuffer;
 }
@@ -963,16 +954,11 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 
 		args = stack - cmdTmp[cmdStack-1].stack +1;
 
-		printf ("Yes are now storing args\n");
-		printf ("args: %d\n",args);
-		getchar();
-
 		stack -= (args-1);
 	
 		n=0;
 		for (ptr = tokenBuffer; (*((unsigned short *) ptr) != 0x008C) &&(n<args) ;ptr+=2)
 		{
-			printf("**%d**\n",n);
 			token = *((unsigned short *) ptr);
 
 			switch ( token )
@@ -998,10 +984,7 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 
 		popStack( stack - cmdTmp[cmdStack-1].stack  );
 
-		printf("Stack is now %d\n", stack);
-
 		return ptr;
-
 	}
 
 	return tokenBuffer;
@@ -1013,7 +996,7 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procAndArgs )
 	{
-		printf("\n\nargs: %d\n\n\n",stack - cmdTmp[cmdStack-1].stack + 1 );
+		cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer;
 	}
 
 	return tokenBuffer;
