@@ -45,6 +45,7 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer );
 
 char *cmdShared(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );

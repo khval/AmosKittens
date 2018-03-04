@@ -331,8 +331,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					printf("****\n");
 
 					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
-					tokenMode = mode_store;
-					return globalVars[idx].var.tokenBufferPos +2;					
+					return globalVars[idx].var.tokenBufferPos ;					
 			}
 		}
 	}
@@ -478,7 +477,7 @@ struct nativeCommand nativeCommands[]=
 	{0x025C, "Until",0,cmdUntil },
 	{0x027E, "Do",2,cmdDo },
 	{0x0286, "Loop",0,cmdLoop },
-	{0x02a8, "Goto",0,cmdGoto },
+	{0x02A8, "Goto",0,cmdGoto },
 	{0x02B2, "Gosub",0,cmdGosub },
 	{0x0268, "While",2,cmdWhile },
 	{0x0274, "Wend",0,cmdWend },
@@ -491,6 +490,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0386, "Proc",0, cmdProc },	
 	{0x0390, "End Proc", 0, cmdEndProc },
 	{0x039E, "Shared", 0, cmdShared },
+	{0x03AA, "Global", 0, cmdGlobal },
 	{0x03B6, "End",0,cmdEnd },
 
 	{0x0444, "Inc",0,incMath },
@@ -548,19 +548,19 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
-/*
+
 			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-*/
+
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
 			return ret;
 		}
 	}
-/*
+
 	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-*/
+
 	return NULL;
 }
 
@@ -656,7 +656,8 @@ int main()
 //	fd = fopen("amos-test/procedure.amos","r");
 //	fd = fopen("AMOS-test/procedure2.amos","r");
 //	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
-	fd = fopen("amos-test/procedure-shared.amos","r");
+//	fd = fopen("amos-test/procedure-shared.amos","r");
+	fd = fopen("amos-test/procedure-global.amos","r");
 
 	if (fd)
 	{
