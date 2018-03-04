@@ -9,39 +9,43 @@ This program is of no use to AMOS developers at the moment, but hopefully it wil
 
 Current status:
 ---------------
-This commands are supported:
+
+* This commands are supported:
 
 Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
+Procedure,End Proc,Shared
 
-And some math operations works: 
+* And some math operations works: 
 
-pulss, minus, muls, div.
+pulss, minus, muls, div, power
 
-Logical opertations supported:
-------------------------------
+* Logical opertations supported:
+
 equal, not equal, less, more, 
 
-String commands supported:
---------------------------
+* String commands supported:
+
 Left$(), Mid$(), Right$(), Instr(), Flip$, 
 Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
 
-Machine Code command supported
-------------------------------
+* Machine Code command supported
+
 Hex$, Bin$
 
 Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
-* logcial operations don't compare strings.
+
+Warning:
+--------
+* Procedure stuff is new, and being worked don't expect it to work ;-)
 
 Not yet supported:
 ------------------
 lots of stuff.
-and, or
-procedures
+logical "and", "or", "xor"
 disk stuff.
-graphiCS stuff.
+graphics stuff.
 Machine code commands (only two).
 
 Orginal source code can be found here:
