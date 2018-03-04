@@ -10,27 +10,27 @@ This program is of no use to AMOS developers at the moment, but hopefully it wil
 Current status:
 ---------------
 
-* This commands are supported:
+This commands are supported:
 
-Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
+* Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
 Procedure,End Proc,Shared
 
-* And some math operations works: 
+And some math operations works: 
 
-pulss, minus, muls, div, power
+* pulss, minus, muls, div, power
 
-* Logical opertations supported:
+Logical opertations supported:
 
-equal, not equal, less, more, 
+* equal, not equal, less, more, 
 
-* String commands supported:
+String commands supported:
 
-Left$(), Mid$(), Right$(), Instr(), Flip$, 
+* Left$(), Mid$(), Right$(), Instr(), Flip$, 
 Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
 
-* Machine Code command supported
+Machine Code command supported
 
-Hex$, Bin$
+* Hex$, Bin$
 
 Known bugs:
 ----------
