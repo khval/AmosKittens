@@ -44,8 +44,7 @@ enum
 	type_string,
 	type_file,
 	type_proc,
-
-	type_array = 8		// I'm sure AMOS don't use this, but we do.
+	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
 };
 
 struct nativeCommand
@@ -94,9 +93,6 @@ struct kittyData
 	int index;
 	int cells;
 	int *sizeTab;
-
-	int proc;	// so vars can be attached to proc.
-
 	double decimal;
 	int state;
 	int type;
@@ -112,6 +108,9 @@ struct globalVar
 {
 	struct kittyData var;
 	char *varName;
+	int proc;	// so vars can be attached to proc.
+	int pass1_shared_to;	// pass1 should only use this, as it will change.
+	bool isGlobal;
 };
 
 #define stackCmdNormal( fn, buf )				\

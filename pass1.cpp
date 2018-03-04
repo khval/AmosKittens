@@ -54,7 +54,22 @@ int nested_count = 0;
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 );
 
-int findVar( char *name )
+char *dupRef( struct reference *ref )
+{
+	char *tmp = (char *) malloc( ref->length + 2 );
+	if (tmp)
+	{
+		memcpy(tmp, ((char *) ref) + sizeof(struct reference), ref->length );
+			tmp[ ref->length ] =0;
+			tmp[ ref->length + 1 ] =0;
+		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
+	}
+	return tmp;
+}
+
+// find Public variables not defined as global
+
+int findVarPublic( char *name )
 {
 	int n;
 
@@ -64,7 +79,9 @@ int findVar( char *name )
 
 		if (globalVars[n].varName == NULL) return 0;
 
-		if (strcasecmp( globalVars[n].varName, name)==0)
+		if ((strcasecmp( globalVars[n].varName, name)==0)
+			&& (globalVars[n].proc == 0)
+			&& (globalVars[n].isGlobal == FALSE))
 		{
 			return n+1;
 		}
@@ -72,7 +89,7 @@ int findVar( char *name )
 	return 0;
 }
 
-int findVarAbs( char *name, int _proc )
+int findVar( char *name, int _proc )
 {
 	int n;
 
@@ -82,7 +99,12 @@ int findVarAbs( char *name, int _proc )
 
 		if (globalVars[n].varName == NULL) return 0;
 
-		if ((strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.proc == _proc))
+		if ((strcasecmp( globalVars[n].varName, name)==0) && 
+			(
+				(globalVars[n].proc == _proc) || 
+				(globalVars[n].pass1_shared_to == _proc) ||
+				(globalVars[n].isGlobal)
+			))
 		{
 			return n+1;
 		}
@@ -135,18 +157,12 @@ void pass1var(char *ptr, bool is_proc )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	tmp = (char *) malloc( ref->length + 2 );
+	tmp = dupRef( ref );
 	if (tmp)
 	{
-		memcpy(tmp, ptr + sizeof(struct reference), ref->length );
-		tmp[ ref->length ] =0;
-		tmp[ ref->length + 1 ] =0;
-
-		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
-
 		printf("looking for %s %d\n", tmp, procCount);
 
-		found = findVarAbs(tmp, is_proc ? 0 : procCount);
+		found = findVar(tmp, is_proc ? 0 : procCount);
 		if (found)
 		{
 			free(tmp);		//  don't need tmp
@@ -159,7 +175,8 @@ void pass1var(char *ptr, bool is_proc )
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
-				var -> proc = is_proc ? 0 : procCount;
+
+				globalVars[found-1].proc = is_proc ? 0 : procCount;
 			}
 			else printf("not changed\n");
 		}
@@ -175,7 +192,8 @@ void pass1var(char *ptr, bool is_proc )
 			var = &globalVars[global_var_count-1].var;
 			var->type = is_proc ? type_proc : ref -> flags & 7;
 			var->len = 0;
-			var->proc = procCount;
+
+			globalVars[global_var_count-1].proc = procCount;
 
 			if (var -> type == type_string) var->str = strdup("");
 		}
@@ -231,35 +249,93 @@ void pass1label(char *ptr)
 }
 
 
+char *pass1_shared( char *ptr )
+{
+	unsigned short token = *((unsigned short *) ptr);
+	struct reference *ref;
+	char *tmp;
+	int var;
+
+	// we only support two tokens as arguments for shared.
+
+	token = *((unsigned short *) ptr);
+
+	printf("token %04x\n", token);
+	getchar();
+
+
+	while ( (token != 0x0000) && (token != 0x0054) && ( kittyError.code == 0) )
+	{
+		switch (token)
+		{
+			case 0x0006: 	ref = (struct reference *) (ptr+2);
+						tmp = dupRef( ref );
+
+						if (tmp)
+						{
+							var = findVarPublic(tmp);
+							if (var) 
+							{
+								globalVars[var-1].pass1_shared_to = procCount;
+								ref->ref = var;
+							}
+							free(tmp);
+						}
+
+						ptr += sizeof(struct reference *) + ref -> length;
+
+						break;
+			case 0x005C: break;
+
+			default: 
+						setError(1);
+		}
+
+		ptr+=2;	// next token
+		token = *((unsigned short *) ptr);
+		printf("token %04x\n", token);
+		getchar();
+	}
+	return ptr;
+}
+
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 )
 {
 	struct nativeCommand *cmd;
 	unsigned short current_token = *((unsigned short *) ptr);
 	int token_size;
 	
+	// loop until we find token, then exit, or find term token then exit.
+
 	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) )
 	{
-		token_size = 2;
-
-		for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+		token_size = 0;
+		switch (current_token)
 		{
-			if (token == cmd->id ) { token_size += cmd -> size; break; }
+			// skip varibales, labels and function, rems, where is text string as name or data.
+
+			case 0x0006:	token_size = ReferenceByteLength(ptr); break;
+			case 0x000C:	token_size = ReferenceByteLength(ptr); break;
+			case 0x0012:	token_size = ReferenceByteLength(ptr); break;
+			case 0x0018:	token_size = ReferenceByteLength(ptr); break;
+			case 0x0386:   token_size = ReferenceByteLength(ptr); break;
+			case 0x0026:	token_size = QuoteByteLength(ptr); break;
+			case 0x002E:	token_size = QuoteByteLength(ptr); break;
+			case 0x064A:	token_size = QuoteByteLength(ptr); break;
+
+			// skip other commands data
+
+			default:
+
+				for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+				{
+					if (current_token == cmd->id ) { token_size = cmd -> size; break; }
+				}
+				break;
 		}
 
-		switch (token)
-		{
-			case 0x0006:	token_size += ReferenceByteLength(ptr); break;
-			case 0x000C:	token_size += ReferenceByteLength(ptr); break;
-			case 0x0012:	token_size += ReferenceByteLength(ptr); break;
-			case 0x0018:	token_size += ReferenceByteLength(ptr); break;
-			case 0x0386:   token_size += ReferenceByteLength(ptr); break;
-
-			case 0x0026:	token_size += QuoteByteLength(ptr); break;
-			case 0x002E:	token_size += QuoteByteLength(ptr); break;
-			case 0x064A:	token_size += QuoteByteLength(ptr); break;
-		}
-
-		ptr += token_size;
+		ptr += (token_size + 2);
+		current_token = *((unsigned short *) ptr);
 	}	
 
 	if ( current_token == token)
@@ -426,6 +502,16 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							if LAST_TOKEN_(proc) 
 							{
 								pass1_proc_end( ptr + 2 );
+							}
+							else
+								setError(11);
+							break;
+
+				case 0x039E:	// Shared
+
+							if (procStackCount)
+							{
+								ret = pass1_shared( ptr );
 							}
 							else
 								setError(11);
