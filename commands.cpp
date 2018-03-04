@@ -1002,3 +1002,8 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdShared(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	// we should not need to do anything here, but maybe good idea to jump over few tokens.
+	return tokenBuffer;
+}

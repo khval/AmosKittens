@@ -82,10 +82,11 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	currentLine ++;
 
 	if (ret) ptr = ret - 2;
-	
+
+/*	
 	printf("-- ENTER FOR NEXT AMOS LINE --\n");
 	getchar();
-
+*/
 	return ptr;
 }
 
@@ -106,7 +107,7 @@ char *_array_index_var( glueCommands *self )
 
 //	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
 
-	dump_stack();
+//	dump_stack();
 
 	var = &globalVars[varNum].var;
 
@@ -380,10 +381,10 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
+/*
 	printf("------------cmdNumber-------------------\n");
-
 	dump_prog_stack();
-
+*/
 
 	// check if - or + comes before *, / or ; symbols
 
@@ -402,7 +403,9 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_int;
 
+/*
 	printf("const %d in stack %d\n", kittyStack[stack].value,stack);
+*/
 
 	// check it last command was * or /. and next command is not a * or /
 
@@ -411,7 +414,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
-	printf("------------ END OF Number ---------------\n");
+//	printf("------------ END OF Number ---------------\n");
 
 	return ptr;
 }
@@ -443,7 +446,7 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	if (e<0)	f /= 1<<(-e+1);
 
 
-	getchar();
+//	getchar();
 
 	setStackDecimal( round( f *1000 ) / 1000.0f  );
 
@@ -487,6 +490,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0376, "Procedure", sizeof(struct procedure), cmdProcedure },
 	{0x0386, "Proc",0, cmdProc },	
 	{0x0390, "End Proc", 0, cmdEndProc },
+	{0x039E, "Shared", 0, cmdShared },
 	{0x03B6, "End",0,cmdEnd },
 
 	{0x0444, "Inc",0,incMath },
@@ -544,18 +548,19 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
+/*
 			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-
+*/
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
 			return ret;
 		}
 	}
-
+/*
 	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-
+*/
 	return NULL;
 }
 
@@ -650,7 +655,9 @@ int main()
 //	fd = fopen("amos-test/compare-strings.amos","r");
 //	fd = fopen("amos-test/procedure.amos","r");
 //	fd = fopen("AMOS-test/procedure2.amos","r");
-	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
+//	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
+	fd = fopen("amos-test/procedure-shared.amos","r");
+
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
