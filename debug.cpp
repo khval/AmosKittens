@@ -34,26 +34,26 @@ void dump_global()
 		switch (globalVars[n].var.type)
 		{
 			case type_int:
-				printf("%d::%s=%d\n",globalVars[n].var.proc,  globalVars[n].varName, globalVars[n].var.value );
+				printf("%d::%s=%d\n",globalVars[n].proc,  globalVars[n].varName, globalVars[n].var.value );
 				break;
 			case type_float:
-				printf("%d::%s=%f\n",globalVars[n].var.proc,  globalVars[n].varName, globalVars[n].var.decimal );
+				printf("%d::%s=%f\n",globalVars[n].proc,  globalVars[n].varName, globalVars[n].var.decimal );
 				break;
 			case type_string:
-				printf("%d::%s=\"%s\"\n",globalVars[n].var.proc,  globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
+				printf("%d::%s=\"%s\"\n",globalVars[n].proc,  globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
 				break;
 			case type_proc:
-				printf("%d::%s=proc at 0x%08x\n",globalVars[n].var.proc,  globalVars[n].varName, globalVars[n].var.tokenBufferPos );
+				printf("%d::%s=proc at 0x%08x\n",globalVars[n].proc,  globalVars[n].varName, globalVars[n].var.tokenBufferPos );
 				break;
 			case type_int | type_array:
 
-				printf("%d::%s(%d)=",globalVars[n].var.proc, 
+				printf("%d::%s(%d)=",globalVars[n].proc, 
 						globalVars[n].varName,
 						globalVars[n].var.count);
 
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					printf("%d::%d,",globalVars[n].var.proc, globalVars[n].var.int_array[i]);
+					printf("%d::%d,",globalVars[n].proc, globalVars[n].var.int_array[i]);
 				}
 				printf("\n");
 
