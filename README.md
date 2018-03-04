@@ -13,7 +13,7 @@ Current status:
 This commands are supported:
 
 * Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
-Procedure,End Proc,Shared
+Procedure,End Proc,Shared,Global
 
 And some math operations works: 
 
