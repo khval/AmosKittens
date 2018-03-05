@@ -368,19 +368,22 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) )
 	{
+		printf("current_token %04x\n",current_token);
+		ptr += 2; // skip token id.
+
 		token_size = 0;
 		switch (current_token)
 		{
 			// skip varibales, labels and function, rems, where is text string as name or data.
 
-			case 0x0006:	token_size = ReferenceByteLength(ptr); break;
-			case 0x000C:	token_size = ReferenceByteLength(ptr); break;
-			case 0x0012:	token_size = ReferenceByteLength(ptr); break;
-			case 0x0018:	token_size = ReferenceByteLength(ptr); break;
-			case 0x0386:   token_size = ReferenceByteLength(ptr); break;
-			case 0x0026:	token_size = QuoteByteLength(ptr); break;
-			case 0x002E:	token_size = QuoteByteLength(ptr); break;
-			case 0x064A:	token_size = QuoteByteLength(ptr); break;
+			case 0x0006:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x000C:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x0012:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x0386:   token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x0026:	token_size = QuoteByteLength(ptr)+2; break;
+			case 0x002E:	token_size = QuoteByteLength(ptr)+2; break;
+			case 0x064A:	token_size = QuoteByteLength(ptr)+2; break;
 
 			// skip other commands data
 
@@ -393,7 +396,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 				break;
 		}
 
-		ptr += (token_size + 2);
+		ptr += token_size ;	// skip token data, we have skiped token before
 		current_token = *((unsigned short *) ptr);
 	}	
 
@@ -439,7 +442,25 @@ void fix_token_short( int cmd, char *ptr )
 
 void pass1_proc_end( char *ptr )
 {
-	((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr-2;
+	char *ret;
+
+	getchar();
+
+	if ( *((short *) ptr) == 0x0084 )
+	{
+		ret = FinderTokenInBuffer( ptr, 0x008C , 0x0000, 0x0000 );
+		if (ret)
+		{
+			((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ret;
+		}
+	}
+	else
+	{
+		((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr-2;
+	}
+
+	getchar();
+
 	nested_count --;
 }
 
