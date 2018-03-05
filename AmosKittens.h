@@ -169,5 +169,10 @@ extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
 extern char *jump_mode_gosub (struct reference *ref, char *ptr);
 
+
+extern char *var_param_str;
+extern int var_param_num;
+extern double var_param_decimal;
+
 #endif
 

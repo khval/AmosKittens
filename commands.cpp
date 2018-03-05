@@ -1016,3 +1016,10 @@ char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 	// we should not need to do anything here, but maybe good idea to jump over few tokens.
 	return tokenBuffer;
 }
+
+char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	setStackStrDup(var_param_str ? var_param_str : "" );
+	return tokenBuffer;
+}
+

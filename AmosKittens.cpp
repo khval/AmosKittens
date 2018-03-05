@@ -17,6 +17,10 @@
 #include "errors.h"
 #include "pass1.h"
 
+char *var_param_str = NULL;
+int var_param_num;
+double var_param_decimal;
+
 int cmdStack = 0;
 int procStackCount = 0;
 unsigned short last_token = 0;
@@ -492,6 +496,7 @@ struct nativeCommand nativeCommands[]=
 	{0x039E, "Shared", 0, cmdShared },
 	{0x03AA, "Global", 0, cmdGlobal },
 	{0x03B6, "End",0,cmdEnd },
+	{0x03D6, "Param$",0,cmdParamStr },
 
 	{0x0444, "Inc",0,incMath },
 	{0x044E, "Dec",0,decMath },
@@ -657,8 +662,9 @@ int main()
 //	fd = fopen("AMOS-test/procedure2.amos","r");
 //	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
 //	fd = fopen("amos-test/procedure-shared.amos","r");
-	fd = fopen("amos-test/procedure-global.amos","r");
+//	fd = fopen("amos-test/procedure-global.amos","r");
 
+	fd = fopen("amos-test/procedure_return_value.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
