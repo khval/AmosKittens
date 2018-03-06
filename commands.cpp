@@ -39,6 +39,26 @@ char *_procedure( struct glueCommands *data )
 	return  data -> tokenBuffer ;
 }
 
+char *_endProc( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var_param_num = kittyStack[stack].value;
+			break;
+		case type_float:
+			var_param_decimal = kittyStack[stack].decimal;
+			break;
+		case type_string:
+			if (var_param_str) free(var_param_str);
+			var_param_str = strdup(kittyStack[stack].str);
+			break;
+	}
+
+	return  data -> tokenBuffer ;
+}
 
 char *_procAndArgs( struct glueCommands *data )
 {
@@ -936,7 +956,23 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procedure ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack)
+	{
+		printf("%04x\n",NEXT_TOKEN(tokenBuffer));
+
+		if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
+		{
+			printf("yes we are here\n");
+
+			// changes function pointer only so that ']' don't think its end of proc by accident.
+			// we aslo push result of stack into Param.
+			if (cmdTmp[cmdStack-1].cmd == _procedure ) cmdTmp[cmdStack-1].cmd = _endProc;
+		}
+		else 	// End Proc
+		{
+			if (cmdTmp[cmdStack-1].cmd == _procedure ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		}
+	}
 
 	return tokenBuffer;
 }
@@ -954,6 +990,8 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 		int args = 0;
 		int n;
 		unsigned short token;
+
+		printf("go down this path ....\n");
 
 		args = stack - cmdTmp[cmdStack-1].stack +1;
 
@@ -1001,6 +1039,8 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer;
 	}
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _endProc ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	return tokenBuffer;
 }
