@@ -1075,3 +1075,20 @@ char *cmdParam(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	// flush loops, all other stuff
+
+	if (cmdStack)
+	{
+		while (cmdTmp[cmdStack-1].cmd != _procedure ) 
+		{
+			cmdStack--;
+			if (cmdStack==0) break;
+		}
+	}
+
+	return cmdEndProc( cmd, tokenBuffer );
+}

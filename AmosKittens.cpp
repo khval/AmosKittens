@@ -489,6 +489,7 @@ struct nativeCommand nativeCommands[]=
 	{0x02C6, "Then",0,cmdThen },
 	{0x02D0, "Else",2,cmdElse },
 	{0x02DA, "End If",0,cmdEndIf },
+	{0x033C, "Pop Proc",0,cmdPopProc },
 	{0x0360, "Return",0,cmdReturn },
 	{0x0376, "Procedure", sizeof(struct procedure), cmdProcedure },
 	{0x0386, "Proc",0, cmdProc },	
@@ -649,7 +650,8 @@ int main()
 //	fd = fopen("amos-test/procedure-shared.amos","r");
 //	fd = fopen("amos-test/procedure-global.amos","r");
 //	fd = fopen("amos-test/procedure_return_value.amos","r");
-	fd = fopen("amos-test/procedure_all_params.amos","r");
+//	fd = fopen("amos-test/procedure_all_params.amos","r");
+	fd = fopen("amos-test/procedure_pop_proc.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
