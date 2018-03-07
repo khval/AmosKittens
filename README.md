@@ -13,7 +13,7 @@ Current status:
 This commands are supported:
 
 * Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
-Procedure,End Proc,Shared,Global
+Procedure,End Proc,Shared,Global,Pop Proc,Param,Param#,Param$
 
 And some math operations works: 
 
@@ -35,10 +35,6 @@ Machine Code command supported
 Known bugs:
 ----------
 * Amos Kittens does not clean up after it self..
-
-Warning:
---------
-* Procedure stuff is new, and being worked don't expect it to work ;-)
 
 Not yet supported:
 ------------------
