@@ -13,6 +13,7 @@
 #include "commandsData.h"
 #include "commandsString.h"
 #include "commandsMath.h"
+#include "commandsBanks.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -541,7 +542,13 @@ struct nativeCommand nativeCommands[]=
 	{0xFFE2,"*", 0, mulData },
 	{0xFFEC,"/", 0, divData },
 	{0xFFF6,"^", 0, powerData },
-	{0xFF66,"not equal",0,cmdNotEqual }
+	{0xFF66,"not equal",0,cmdNotEqual },
+
+	{0x20F2,"",0,cmdReserveAsWork },
+	{0x210A,"",0,cmdReserveAsChipWork },
+	{0x2128,"",0, cmdReserveAsData },
+	{0x2140,"", 0, cmdReserveAsChipData },
+	{0x216A,"", 0, cmdListBank }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -651,7 +658,8 @@ int main()
 //	fd = fopen("amos-test/procedure-global.amos","r");
 //	fd = fopen("amos-test/procedure_return_value.amos","r");
 //	fd = fopen("amos-test/procedure_all_params.amos","r");
-	fd = fopen("amos-test/procedure_pop_proc.amos","r");
+//	fd = fopen("amos-test/procedure_pop_proc.amos","r");
+	fd = fopen("amos-test/reserve.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
