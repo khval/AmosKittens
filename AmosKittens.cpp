@@ -496,7 +496,10 @@ struct nativeCommand nativeCommands[]=
 	{0x039E, "Shared", 0, cmdShared },
 	{0x03AA, "Global", 0, cmdGlobal },
 	{0x03B6, "End",0,cmdEnd },
+
+	{0x03CA, "Param#",0,cmdParamFloat },
 	{0x03D6, "Param$",0,cmdParamStr },
+	{0x03E2, "Param",0,cmdParam },
 
 	{0x0444, "Inc",0,incMath },
 	{0x044E, "Dec",0,decMath },
@@ -568,24 +571,6 @@ char *executeToken( char *ptr, unsigned short token )
 
 	return NULL;
 }
-
-/*
-void _castNumToStr( int num )
-{
-	char tmp[100];
-
-	sprintf(tmp,"%d",num);
-	kittyStack[stack].str = strdup( tmp );
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = 2;
-
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-}
-*/
 
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
@@ -663,8 +648,8 @@ int main()
 //	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
 //	fd = fopen("amos-test/procedure-shared.amos","r");
 //	fd = fopen("amos-test/procedure-global.amos","r");
-
-	fd = fopen("amos-test/procedure_return_value.amos","r");
+//	fd = fopen("amos-test/procedure_return_value.amos","r");
+	fd = fopen("amos-test/procedure_all_params.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

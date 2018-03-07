@@ -205,8 +205,20 @@ void pass1var(char *ptr, bool is_proc )
 			printf("we go this way\n");
 			getchar();
 
-			add_var_from_ref( ref, tmp, is_proc );
-			globalVars[global_var_count-1].proc = procCount;
+			if (is_proc)
+			{
+				add_var_from_ref( ref, tmp, is_proc );
+				globalVars[global_var_count-1].proc = procCount;
+
+				var = &globalVars[global_var_count-1].var;
+				var -> type = type_proc;
+				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
+			}
+			else
+			{
+				add_var_from_ref( ref, tmp, is_proc );
+				globalVars[global_var_count-1].proc = procCount;
+			}
 		}
 
 		// we should not free tmp, see code above.

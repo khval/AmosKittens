@@ -1063,3 +1063,15 @@ char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdParamFloat(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	setStackDecimal( var_param_decimal );
+	return tokenBuffer;
+}
+
+char *cmdParam(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	_num( var_param_num );
+	return tokenBuffer;
+}
+

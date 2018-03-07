@@ -47,6 +47,8 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdShared(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdParam(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdParamFloat(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
