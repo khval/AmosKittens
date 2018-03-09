@@ -113,6 +113,13 @@ struct globalVar
 	bool isGlobal;
 };
 
+struct kittyBank 
+{
+	int type;
+	void *start;
+	int length;
+};
+
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
@@ -158,6 +165,7 @@ extern int commandCnt;
 extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
 extern struct proc procStack[];
+extern struct kittyBank kittyBanks[];
 
 extern int stack;
 extern int cmdStack;

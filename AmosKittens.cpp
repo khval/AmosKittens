@@ -35,6 +35,8 @@ void _num( int num );
 
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
+struct kittyBank kittyBanks[16];
+
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
 std::vector<struct label> labels;	// 0 is not used.
