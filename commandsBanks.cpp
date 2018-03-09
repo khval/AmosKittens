@@ -21,12 +21,20 @@ extern int tokenlength;
 char *_cmdReserveAsWork( struct glueCommands *data )
 {
 	int n;
-	n = _stackInt(stack-1);
-	kittyBanks[n-1].length = _stackInt(stack);
+	int args = stack - data->stack +1 ;
 
-	if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
-	kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
-	kittyBanks[n-1].type = 9;
+	if (args==2)
+	{
+		n = _stackInt(stack-1);
+
+		if ((n>0)&&(n<16))
+		{
+			kittyBanks[n-1].length = _stackInt(stack);
+			if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
+			kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
+			kittyBanks[n-1].type = 9;
+		}
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -35,12 +43,20 @@ char *_cmdReserveAsWork( struct glueCommands *data )
 char *_cmdReserveAsChipWork( struct glueCommands *data )
 {
 	int n;
-	n = _stackInt(stack-1);
-	kittyBanks[n-1].length = _stackInt(stack);
+	int args = stack - data->stack +1 ;
 
-	if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
-	kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
-	kittyBanks[n-1].type = 7;
+	if (args==2)
+	{
+		n = _stackInt(stack-1);
+
+		if ((n>0)&&(n<16))
+		{
+			kittyBanks[n-1].length = _stackInt(stack);
+			if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
+			kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
+			kittyBanks[n-1].type = 7;
+		}
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -49,12 +65,20 @@ char *_cmdReserveAsChipWork( struct glueCommands *data )
 char *_cmdReserveAsData( struct glueCommands *data )
 {
 	int n;
-	n = _stackInt(stack-1);
-	kittyBanks[n-1].length = _stackInt(stack);
+	int args = stack - data->stack +1 ;
 
-	if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
-	kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
-	kittyBanks[n-1].type = 10;
+	if (args==2)
+	{
+		n = _stackInt(stack-1);
+
+		if ((n>0)&&(n<16))
+		{
+			kittyBanks[n-1].length = _stackInt(stack);
+			if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
+			kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
+			kittyBanks[n-1].type = 10;
+		}
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -63,12 +87,20 @@ char *_cmdReserveAsData( struct glueCommands *data )
 char *_cmdReserveAsChipData( struct glueCommands *data )
 {
 	int n;
-	n = _stackInt(stack-1);
-	kittyBanks[n-1].length = _stackInt(stack);
+	int args = stack - data->stack +1 ;
 
-	if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
-	kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
-	kittyBanks[n-1].type = 8;
+	if (args==2)
+	{
+		n = _stackInt(stack-1);
+
+		if ((n>0)&&(n<16))
+		{
+			kittyBanks[n-1].length = _stackInt(stack);
+			if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
+			kittyBanks[n-1].start = malloc( kittyBanks[n-1].length );
+			kittyBanks[n-1].type = 8;
+		}
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
