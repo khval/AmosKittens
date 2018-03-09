@@ -9,7 +9,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
-#include "commandsData.h"
+#include "commandsBanks.h"
 #include "errors.h"
 
 extern int last_var;
@@ -17,6 +17,73 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
+
+
+char *_cmdErase( struct glueCommands *data )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==2)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_cmdStart( struct glueCommands *data )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==2)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_cmdLength( struct glueCommands *data )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==2)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *_cmdBload( struct glueCommands *data )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==2)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_cmdBsave( struct glueCommands *data )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==2)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
 
 char *_cmdReserveAsWork( struct glueCommands *data )
 {
@@ -164,6 +231,36 @@ char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 
 	printf("\n");
 
+	return tokenBuffer;
+}
+
+char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdErase, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdStart(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _cmdStart, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdLength(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _cmdLength, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdBload(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdBload, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdBsave, tokenBuffer );
 	return tokenBuffer;
 }
 

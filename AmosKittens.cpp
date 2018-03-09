@@ -550,7 +550,13 @@ struct nativeCommand nativeCommands[]=
 	{0x210A,"",0,cmdReserveAsChipWork },
 	{0x2128,"",0, cmdReserveAsData },
 	{0x2140,"", 0, cmdReserveAsChipData },
-	{0x216A,"", 0, cmdListBank }
+	{0x216A,"", 0, cmdListBank },
+
+	{0x215E, "", 0, cmdErase },
+	{0x0140, "Start", 0, cmdStart },
+	{0x014C, "Length", 0, cmdLength },
+	{0x180C, "Bload",0,cmdBload },
+	{0x181A, "Bsave", 0, cmdBsave },
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -661,7 +667,8 @@ int main()
 //	fd = fopen("amos-test/procedure_return_value.amos","r");
 //	fd = fopen("amos-test/procedure_all_params.amos","r");
 //	fd = fopen("amos-test/procedure_pop_proc.amos","r");
-	fd = fopen("amos-test/reserve.amos","r");
+//	fd = fopen("amos-test/reserve.amos","r");
+	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

@@ -10,3 +10,9 @@ extern char *cmdReserveAsData(nativeCommand *cmd, char *ptr);
 extern char *cmdReserveAsChipData(nativeCommand *cmd, char *ptr);
 extern char *cmdListBank(nativeCommand *cmd, char *ptr);
 
+extern char *cmdErase(nativeCommand *cmd, char *ptr);
+extern char *cmdStart(nativeCommand *cmd, char *ptr);
+extern char *cmdLength(nativeCommand *cmd, char *ptr);
+extern char *cmdBload(nativeCommand *cmd, char *ptr);
+extern char *cmdBsave(nativeCommand *cmd, char *ptr);
+
