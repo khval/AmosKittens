@@ -444,7 +444,7 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdParm( _addData, tokenBuffer );
+	stackCmdParm( _addData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
@@ -455,7 +455,7 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdParm(_subData,tokenBuffer);
+	stackCmdParm(_subData,tokenBuffer);
 	stack++;
 	return tokenBuffer;
 }
@@ -466,7 +466,7 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdParm( _mulData, tokenBuffer );
+	stackCmdParm( _mulData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
@@ -477,7 +477,7 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdParm( _divData, tokenBuffer );
+	stackCmdParm( _divData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
@@ -488,7 +488,7 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	cmdParm( _powerData, tokenBuffer );
+	stackCmdParm( _powerData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }

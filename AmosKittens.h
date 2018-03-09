@@ -144,7 +144,7 @@ struct kittyBank
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
-#define cmdParm( fn, buf )				\
+#define stackCmdParm( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_para;	\

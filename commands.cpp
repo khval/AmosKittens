@@ -616,7 +616,7 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 	{
  		case mode_standard:
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-			cmdParm( _addData, tokenBuffer );
+			stackCmdParm( _addData, tokenBuffer );
 			stack++;
 			break;
 		case mode_input:
@@ -626,7 +626,7 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 			setStackStrDup( input.c_str() );
 			stack++;
 					 
-			cmdParm( _setVarReverse, tokenBuffer );
+			stackCmdParm( _setVarReverse, tokenBuffer );
 			break;
 	}
 
@@ -641,7 +641,7 @@ char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		cmdParm(_less, tokenBuffer);
+		stackCmdParm(_less, tokenBuffer);
 		stack++;
 	}
 	else
@@ -660,7 +660,7 @@ char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (tokenMode == mode_logical)
 	{
-		cmdParm(_more, tokenBuffer);
+		stackCmdParm(_more, tokenBuffer);
 		stack++;
 	}
 	else
@@ -677,7 +677,7 @@ char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		cmdParm(_not_equal, tokenBuffer);
+		stackCmdParm(_not_equal, tokenBuffer);
 		stack++;
 	}
 	else
@@ -696,7 +696,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		cmdParm(_equal, tokenBuffer);
+		stackCmdParm(_equal, tokenBuffer);
 		stack++;
 	}
 	else

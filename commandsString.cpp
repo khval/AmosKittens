@@ -36,14 +36,10 @@ char *_print( struct glueCommands *data )
 {
 	int n;
 
-	dump_prog_stack();
-
 	printf("PRINT: ");
 
 	for (n=data->stack;n<=stack;n++)
 	{
-//		printf("stack %d, type: %d value %d\n",n, kittyStack[n].type, kittyStack[n].value);
-
 		switch (kittyStack[n].type)
 		{
 			case type_int:
@@ -447,91 +443,91 @@ char *_lower( struct glueCommands *data )
 
 char *cmdLeft(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _left, ptr );
+	stackCmdParm( _left, ptr );
 	return ptr;
 }
 
 char *cmdMid(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _mid, ptr );
+	stackCmdParm( _mid, ptr );
 	return ptr;
 }
 
 char *cmdRight(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _right, ptr );
+	stackCmdParm( _right, ptr );
 	return ptr;
 }
 
 char *cmdHex(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _hex, ptr );
+	stackCmdParm( _hex, ptr );
 	return ptr;
 }
 
 char *cmdBin(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _bin, ptr );
+	stackCmdParm( _bin, ptr );
 	return ptr;
 }
 
 extern char *cmdInstr(nativeCommand *cmd, char *ptr)
 {
-	stackCmdNormal( _instr, ptr );
+	stackCmdParm( _instr, ptr );
 	return ptr;
 }
 
 char *cmdFlip(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _flip, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _flip, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdSpace(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _space, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _space, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdUpper(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _upper, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _upper, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdLower(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _lower, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _lower, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdString(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _string, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _string, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdChr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _chr, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _chr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdAsc(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _asc, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _asc, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _len, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _len, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
 char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _val, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _val, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
@@ -539,7 +535,7 @@ char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s: stack %d\n",__FUNCTION__,stack);
 
-	stackCmdNormal( _str, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _str, tokenBuffer );	// we need to store the step counter.
 
 	dump_stack();
 
