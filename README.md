@@ -49,7 +49,7 @@ Not setting values in parameters, some going skip for now, will return to this a
 (some modern basic or JavaScript use command nothing or null for this, this is not supported, 
 atm, but should not be to hard to implement, it be just different type on the stack, and preset type before data is assigned)
 
-Page 47 in AMOS The Creator Manual, local data statements is not working Amos Pro, restore, data and read is covered many places in manual, I return to this later time, personally I think its redundant old way of doing things.
+Page 47 in AMOS The Creator Manual, local data statements is not working Amos Pro, restore, data and read is covered many places in the manual, I return to this later time, personally I think its redundant old way of doing things.
 
 Machine Code 
 ------------
