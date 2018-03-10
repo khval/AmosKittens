@@ -343,6 +343,17 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
+	if ( correct_order( last_token,  next_token ) == false )
+	{
+		printf("---hidden ( symbol \n");
+
+		// hidden ( condition.
+		kittyStack[stack].str = NULL;
+		kittyStack[stack].value = 0;
+		kittyStack[stack].state = state_hidden_subData;
+		stack++;
+	}
+
 	if (cmdStack) if (stack)
 	{
 		char *newTokenLoc = NULL;
@@ -358,12 +369,27 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 {
 	unsigned short length = *((unsigned short *) ptr);
 	unsigned short length2 = length;
+	unsigned short next_token;
 	char *txt;
+
+	// check if - or + comes before *, / or ; symbols
 
 	length2 += (length & 1);		// align to 2 bytes
 
-	printf("length %d\n",length2);
+	next_token = *((short *) (ptr+2+length2) );
 
+	if ( correct_order( last_token,  next_token ) == false )
+	{
+		printf("---hidden ( symbol \n");
+
+		// hidden ( condition.
+		kittyStack[stack].str = NULL;
+		kittyStack[stack].value = 0;
+		kittyStack[stack].state = state_hidden_subData;
+		stack++;
+	}
+
+	if (kittyStack[stack].str) free(kittyStack[stack].str);
 	kittyStack[stack].str = strndup( ptr + 2, length );
 
 	printf("%s::ALLOC %08x\n",__FUNCTION__, kittyStack[stack].str);
@@ -387,11 +413,6 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
-/*
-	printf("------------cmdNumber-------------------\n");
-	dump_prog_stack();
-*/
-
 	// check if - or + comes before *, / or ; symbols
 
 	if ( correct_order( last_token,  next_token ) == false )
@@ -409,9 +430,6 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_int;
 
-/*
-	printf("const %d in stack %d\n", kittyStack[stack].value,stack);
-*/
 
 	// check it last command was * or /. and next command is not a * or /
 
@@ -536,6 +554,8 @@ struct nativeCommand nativeCommands[]=
 	{0x123E,"TRUE",0,cmdTrue },
 	{0x1248,"FALSE",0,cmdFalse },
 
+	{0xFF4C,"or",0,orData },
+
 	{0xFFAC,"<",0,cmdLess },
 	{0xFFB6,">",0,cmdMore },
 	{0xFFC0,"+",0, addData },
@@ -545,6 +565,8 @@ struct nativeCommand nativeCommands[]=
 	{0xFFEC,"/", 0, divData },
 	{0xFFF6,"^", 0, powerData },
 	{0xFF66,"not equal",0,cmdNotEqual },
+
+
 
 	{0x20F2,"",0,cmdReserveAsWork },
 	{0x210A,"",0,cmdReserveAsChipWork },
@@ -668,7 +690,8 @@ int main()
 //	fd = fopen("amos-test/procedure_all_params.amos","r");
 //	fd = fopen("amos-test/procedure_pop_proc.amos","r");
 //	fd = fopen("amos-test/reserve.amos","r");
-	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
+//	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
+	fd = fopen("amos-test/sort.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
