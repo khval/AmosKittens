@@ -40,13 +40,14 @@ Command supported:
 Note: 
 -----
 Recursive procedures: is not supported, due way the local variables are implmented for now, locals was implmented quick and dirty..
-unlike AMOS Pro, Amos Kittens probably have something on stack after the function returns, so you most likely can use it as it was a "function".. but that is just side effect. 
+
+Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
 
 Commands "Save" and"Load" is not supported atm, will return to this when I start working on graphics.
 
 Not setting values in parameters, some going skip for now, will return to this at later time.
 (some modern basic or JavaScript use command nothing or null for this, this is not supported, 
-atm, but should not be to hard to implement, it be just different type on stack, and preset type before data is assigned)
+atm, but should not be to hard to implement, it be just different type on the stack, and preset type before data is assigned)
 
 Page 47 in AMOS The Creator Manual, local data statements is not working Amos Pro, restore, data and read is covered many places in manual, I return to this later time, personally I think its redundant old way of doing things.
 
