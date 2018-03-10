@@ -2,10 +2,13 @@
 
 About
 -----
-Simple AMOS interpreter.
+Simple AMOS interpreter for AmigaOS, 
+(more precisely being programmed on AmigaOS4.x, If you’re a MorphOS or AROS developer don't let that stop you, but please make directlry like OS/MorphOS or OS/AROS, where keep the modified versions of files.)
 
 This program is only uploaded to GITHUB, so developers who is interested in helping out can have look at it.
-This program is of no use to AMOS developers at the moment, but hopefully it will be in X months time.
+This program is of little use to AMOS developers at the moment, but hopefully it will be in X months time.
+
+Currently this interpreter dumps out a lot debug information, it will holt the program at critical places waiting for "ENTER" key to continue.
 
 Current status:
 ---------------
