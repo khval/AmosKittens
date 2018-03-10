@@ -2,10 +2,15 @@
 
 About
 -----
-Simple AMOS interpreter.
+Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project.
+
+Now its a simple AMOS interpreter for AmigaOS, 
+(more precisely being programmed on AmigaOS4.x, If you’re a MorphOS or AROS developer don't let that stop you, but please make directlry like OS/MorphOS or OS/AROS, where keep the modified versions of files, plase clone this porject on git so I can merge in changes I like)
 
 This program is only uploaded to GITHUB, so developers who is interested in helping out can have look at it.
-This program is of no use to AMOS developers at the moment, but hopefully it will be in X months time.
+This program is of little use to AMOS developers at the moment, but hopefully it will be in X months time.
+
+Currently this interpreter dumps out a lot debug information, it will holt the program at critical places waiting for "ENTER" key to continue.
 
 Current status:
 ---------------
@@ -13,22 +18,48 @@ Current status:
 This commands are supported:
 
 * Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
-Procedure,End Proc,Shared,Global,Pop Proc,Param,Param#,Param$
+
 
 And some math operations works: 
 
-* pulss, minus, muls, div, power
+* Pulss, Minus, Muls, Div, power, Inc, Dec, Add
 
 Logical opertations supported:
 
 * equal, not equal, less, more, 
 
-String commands supported:
+String
+------
 
-* Left$(), Mid$(), Right$(), Instr(), Flip$, 
-Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
+commands supported:
 
-Machine Code command supported
+* Left$(), Mid$(), Right$(), Instr(), Flip$, Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
+
+Basic Principles
+----------------
+
+Command supported:
+
+* Procedure, End Proc, Shared, Global, Pop Proc, Param, Param#, Param$, Reserve As Work, Reserve As Chip Work, Reserve As Data, Reserve As Chip Data, List Bank, Erase, Start, Length, BSave, BLoad
+
+Note: 
+-----
+Recursive procedures: is not supported, due way the local variables are implmented for now, locals was implmented quick and dirty..
+
+Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
+
+Commands "Save" and"Load" is not supported atm, will return to this when I start working on graphics.
+
+Not setting values in parameters, some going skip for now, will return to this at later time.
+(some modern basic or JavaScript use command nothing or null for this, this is not supported, 
+atm, but should not be to hard to implement, it be just different type on the stack, and preset type before data is assigned)
+
+Page 47 in AMOS The Creator Manual, local data statements is not working in Amos Pro, restore, data and read is covered many places in the manual, I return to this later time, personally I think its redundant old way of doing things.
+
+Machine Code 
+------------
+
+Command supported:
 
 * Hex$, Bin$
 
