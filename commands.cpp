@@ -284,6 +284,11 @@ char *_less( struct glueCommands *data )
 
 char *_more( struct glueCommands *data )
 {
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_global();
+	dump_stack();
+
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
@@ -699,6 +704,8 @@ char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
