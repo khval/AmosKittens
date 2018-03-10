@@ -105,18 +105,20 @@ char *_array_index_var( glueCommands *self )
 	int n = 0;
 	int mul;
 	int index;
-
 	struct kittyData *var;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
 
 	tmp_cells = stack - self -> stack;
 
 	varNum = self -> lastVar;
 
-//	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
+	if (varNum == 0) return NULL;
 
-//	dump_stack();
-
-	var = &globalVars[varNum].var;
+	var = &globalVars[varNum-1].var;
 
 	index = 0; mul  = 1;
 	for (n = self -> stack+1;n<=stack; n++ )
@@ -126,7 +128,8 @@ char *_array_index_var( glueCommands *self )
 	}
 
 	var -> index = index;
-	stack -=  tmp_cells;		// should use garbage collector here ;-) memory leaks works to for now.
+
+	popStack(tmp_cells);
 
 	if ((index >= 0)  && (index<var->count))
 	{
@@ -166,10 +169,18 @@ char *_alloc_mode_off( glueCommands *self )
 	tokenMode = mode_standard;	
 
 	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
-	var = &globalVars[varNum].var;
+
+	if (varNum == 0) return NULL;
+
+	var = &globalVars[varNum-1].var;
 
 	var -> cells = stack - self -> stack;
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
+
+	printf("DIM?\n");
+
+	dump_stack();
+	getchar();
 
 	for (n= 0; n<var -> cells; n++ ) 
 	{
