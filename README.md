@@ -17,7 +17,7 @@ This commands are supported:
 
 And some math operations works: 
 
-* pulss, minus, muls, div, power
+* Pulss, Minus, Muls, Div, power, Inc, Dec, Add
 
 Logical opertations supported:
 
