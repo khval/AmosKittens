@@ -13,5 +13,8 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer);
 char *subData(struct nativeCommand *cmd, char *tokenBuffer);
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer);
 char *divData(struct nativeCommand *cmd, char *tokenBuffer);
+char *orData(struct nativeCommand *cmd, char *tokenBuffer);
+char *andData(struct nativeCommand *cmd, char *tokenBuffer);
+char *xorData(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *_addData( struct glueCommands *data );

@@ -28,22 +28,80 @@ bool correct_order( int last_token, int next_token )
 	switch (last_token)
 	{
 		case token_semi:
-			if ((next_token == token_add)|| (next_token == token_sub)|| (next_token == token_mul)|| (next_token == token_div)||	(next_token == token_power)) return false;
+			if ((next_token == token_add)
+				|| (next_token == token_sub)
+				|| (next_token == token_mul)
+				|| (next_token == token_div)
+				|| (next_token == token_power)
+				|| (next_token == token_more_or_equal )
+				|| (next_token == token_less_or_equal	)
+				|| (next_token == token_less_or_equal2 )
+				|| (next_token == token_more_or_equal2 )
+				|| (next_token == token_not_equal )
+				|| (next_token == token_equal )
+				|| (next_token == token_more )
+				|| (next_token == token_less ) 
+				|| (next_token == token_or)
+//				|| (next_token == token_xor)		// don't know the token number yet.
+				|| (next_token == token_and)) return false;
+			break;
+
+		case token_or:
+//		case token_xor:
+		case token_and:
+			if ((next_token == token_add)
+				|| (next_token == token_sub)
+				|| (next_token == token_mul)
+				|| (next_token == token_div)
+				|| (next_token == token_power)
+				|| (next_token == token_more_or_equal )
+				|| (next_token == token_less_or_equal	)
+				|| (next_token == token_less_or_equal2 )
+				|| (next_token == token_more_or_equal2 )
+				|| (next_token == token_not_equal )
+				|| (next_token == token_equal )
+				|| (next_token == token_more )
+				|| (next_token == token_less )) return false;
+			break;
+
+		case token_more_or_equal:
+		case token_less_or_equal:
+		case token_less_or_equal2:
+		case token_more_or_equal2:
+		case token_not_equal:
+		case token_equal:
+		case token_more:
+		case token_less:
+
+			if ((next_token == token_add)
+				|| (next_token == token_sub)
+				|| (next_token == token_mul)
+				|| (next_token == token_div)
+				|| (next_token == token_power)) return false;
+			break;
 
 		case token_add:
-			if ((next_token == token_mul)|| (next_token == token_div)||(next_token == token_power)) return false;
+			if ((next_token == token_mul)
+				||(next_token == token_div)
+				||(next_token == token_power)) return false;
+			break;
 
 		case token_sub:
-			if ((next_token == token_mul)|| (next_token == token_div)||(next_token == token_power)) return false;
+			if ((next_token == token_mul)
+				|| (next_token == token_div)
+				||(next_token == token_power)) return false;
+			break;
 
 		case token_mul:
 			if (next_token == token_power) return false;
+			break;
 
 		case token_div	:
 			if (next_token == token_power) return false;
+			break;
 	}
 	
-	return ret;
+	return true;
 }
 
 void correct_for_hidden_sub_data()
@@ -65,6 +123,193 @@ void correct_for_hidden_sub_data()
 			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
+}
+
+
+char *_orData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( (item0->decimal != 0) || (item1->value != 0) );
+		}
+		else if (type1 == type_float)
+		{
+			_num( (item0->decimal != 0) || (item1->decimal != 0) );
+		}
+		return NULL;
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			_num( (item0->value != 0) ||  (item1->value != 0) );
+		}
+		else if (type1 == type_float)
+		{
+			_num(  (item0->value != 0 ) || (item1->decimal != 0) );
+		}
+		return NULL;
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+char *_andData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( (item0->decimal != 0) && (item1->value != 0) );
+		}
+		else if (type1 == type_float)
+		{
+			_num( (item0->decimal != 0) && (item1->decimal != 0) );
+		}
+		return NULL;
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			_num( (item0->value != 0) &&  (item1->value != 0) );
+		}
+		else if (type1 == type_float)
+		{
+			_num(  (item0->value != 0 ) && (item1->decimal != 0) );
+		}
+		return NULL;
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+char *_xorData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			setStackDecimal( item0->decimal + (double) item1->value );
+		}
+		else if (type1 == type_float)
+		{
+			setStackDecimal( item0->decimal + item1->decimal );
+		}
+		return NULL;
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->value + item1->value );
+		}
+		else if (type1 == type_float)
+		{
+			setStackDecimal( (double) item0->value + item1->decimal );
+		}
+		return NULL;
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
 }
 
 
@@ -489,6 +734,39 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	stackCmdParm( _powerData, tokenBuffer );
+	stack++;
+	return tokenBuffer;
+}
+
+char *orData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	stackCmdParm( _orData, tokenBuffer );
+	stack++;
+	return tokenBuffer;
+}
+
+char *andData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	stackCmdParm( _andData, tokenBuffer );
+	stack++;
+	return tokenBuffer;
+}
+
+char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	stackCmdParm( _xorData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }

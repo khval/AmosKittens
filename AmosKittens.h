@@ -8,6 +8,17 @@
 #define token_mul		0xFFE2
 #define token_div		0xFFEC
 #define token_power	0xFFF6
+#define token_or		0xFF4C
+#define token_and		0xFF58
+
+#define token_more_or_equal	0xFF8E
+#define token_less_or_equal		0xFF7A
+#define token_less_or_equal2	0xFF84
+#define token_more_or_equal2	0xFF98
+#define token_not_equal		0xFF66
+#define token_equal			0xFFA2
+#define token_more			0xFFB6
+#define token_less				0xFFAC
 
 #define NEXT_TOKEN(ptr) *((short *) ptr)
 #define NEXT_INT(ptr) *((int *) (ptr+2))
