@@ -59,14 +59,15 @@ void dump_global()
 				break;
 			case type_int | type_array:
 
-				printf("%d::%s%s(%d)=",globalVars[n].proc, 
+				printf("%d::%s%s(%d)=",
+					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
 
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					printf("%d::%d,",globalVars[n].proc, globalVars[n].var.int_array[i]);
+					printf("[%d]=%d ,",i, globalVars[n].var.int_array[i]);
 				}
 				printf("\n");
 
