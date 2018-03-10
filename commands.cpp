@@ -545,7 +545,10 @@ char *_setVar( struct glueCommands *data )
 	if (success == FALSE)
 	{
 		printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
-				stack, kittyStack[stack].type, data -> lastVar, (globalVars[data -> lastVar-1].var.type & 7));
+				stack, 
+				kittyStack[stack].type, 
+				data -> lastVar, 
+				var -> type & 7);
 
 		setError(ERROR_Type_mismatch);
 	}
@@ -611,28 +614,64 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void	input_mode( char *tokenBuffer )
+{
+	std::string input;
+	int num;
+	double des;
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+		int idx = ref->ref-1;
+
+		if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		getline(cin, input);
+
+		switch ( globalVars[idx].var.type & 7 )
+		{
+			case type_int:
+				sscanf( input.c_str(), "%d", &num );
+				_num( num );
+				break;
+
+			case type_float:
+
+				sscanf( input.c_str(), "%llf", &dec );
+				setStackDecimal( des );
+				break;
+
+			case type_string:
+				setStackStrDup( input.c_str() );
+				break;
+		}
+
+		stack++;
+				 
+		stackCmdParm( _setVarReverse, tokenBuffer );
+	}
+}
+
+
+
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	std::string input;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (tokenMode)
 	{
  		case mode_standard:
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 			stackCmdParm( _addData, tokenBuffer );
 			stack++;
 			break;
 		case mode_input:
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-			if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-			getline(cin, input);
-			setStackStrDup( input.c_str() );
-			stack++;
-					 
-			stackCmdParm( _setVarReverse, tokenBuffer );
+			input_mode( tokenBuffer );
 			break;
 	}
 
