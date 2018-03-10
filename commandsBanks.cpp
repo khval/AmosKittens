@@ -24,8 +24,20 @@ char *_cmdErase( struct glueCommands *data )
 	int n;
 	int args = stack - data->stack +1 ;
 
-	if (args==2)
+	if (args==1)
 	{
+		n = _stackInt(data->stack);
+
+		if ((n>0)&&(n<16))
+		{
+			if (kittyBanks[n-1].start)
+			{
+				free( kittyBanks[n-1].start );
+				kittyBanks[n-1].start = NULL;
+				kittyBanks[n-1].length = 0;
+				kittyBanks[n-1].type = 0;
+			}
+		} 
 	}
 
 	popStack( stack - data->stack );
@@ -36,12 +48,30 @@ char *_cmdStart( struct glueCommands *data )
 {
 	int n;
 	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
 
-	if (args==2)
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+
+
+	if (args==1)
 	{
+		n = _stackInt(data->stack);
+
+		printf("%d\n",n);
+
+		if ((n>0)&&(n<16))
+		{
+			ret = (int) kittyBanks[n-1].start;
+			success = true;
+		} 
 	}
 
+	if (success == false ) ret = 0;
+
 	popStack( stack - data->stack );
+	_num(ret);
 	return NULL;
 }
 
@@ -49,23 +79,72 @@ char *_cmdLength( struct glueCommands *data )
 {
 	int n;
 	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
 
-	if (args==2)
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
 	{
+		n = _stackInt(data->stack);
+		if ((n>0)&&(n<16))
+		{
+			ret = (int)  kittyBanks[n-1].length;
+			success = true;
+		} 
 	}
 
+	if (success == false ) ret = 0;
+
 	popStack( stack - data->stack );
+	_num(ret);
 	return NULL;
 }
 
 
 char *_cmdBload( struct glueCommands *data )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
+	FILE *fd;
+	int size;
+	char *adr = NULL;
+
+	dump_stack();
 
 	if (args==2)
 	{
+		fd = fopen( _stackString( stack - 1 ) , "r");
+		if (fd)
+		{
+			n = _stackInt(stack);
+
+			fseek(fd , 0, SEEK_END );			
+			size = ftell(fd);
+			fseek(fd, 0, SEEK_SET );
+
+			if (size)
+			{
+				if ((n>0)&&(n<16))
+				{
+					kittyBanks[n-1].length = size;
+					if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
+					kittyBanks[n-1].start = malloc( size );
+					kittyBanks[n-1].type = 9;	
+					adr = (char *)  kittyBanks[n-1].start;
+				}
+				else
+				{
+					char *adr = (char *) n;
+				}
+				
+				if (adr) fread( adr ,size,1, fd);
+			}
+
+			fclose(fd);
+		}
+
 	}
 
 	popStack( stack - data->stack );
@@ -74,12 +153,32 @@ char *_cmdBload( struct glueCommands *data )
 
 char *_cmdBsave( struct glueCommands *data )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
+	FILE *fd;
+	char *start, *to;
 
-	if (args==2)
+	dump_stack();
+
+	if (args==3)
 	{
+		fd = fopen( _stackString( stack - 2 ) , "w");
+
+		start = (char *) _stackInt(stack -1 );
+		to = (char *) _stackInt( stack );
+
+		if (fd)
+		{
+			if ((to-start)>0)
+			{
+				fwrite( start, to-start,1, fd );
+			}
+			fclose(fd);
+		}
 	}
+
+	getchar();
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -87,6 +186,7 @@ char *_cmdBsave( struct glueCommands *data )
 
 char *_cmdReserveAsWork( struct glueCommands *data )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
 
