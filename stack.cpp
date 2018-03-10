@@ -11,6 +11,24 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
+void flushCmdParaStack()
+{
+	// some math operation is blocking... can't flush at this time.
+	if (stack)	if (kittyStack[stack-1].state == state_none) return;
+
+	// flush all params.
+	if (cmdStack)
+	{
+		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
+		{
+			cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+			// some math operation is blocking... can't flush at this time.
+			if (stack)	if (kittyStack[stack-1].state == state_none) return;
+		}
+	}
+}
+
 void popStack(int n)
 {
 	while ((n>0)&&(stack>0))

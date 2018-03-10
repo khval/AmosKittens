@@ -571,7 +571,10 @@ char *_setVarReverse( struct glueCommands *data )
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	printf("'%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	flushCmdParaStack();
+
+	printf("stack++\n");
+
 	stack++;
 	return tokenBuffer;
 }
@@ -602,6 +605,9 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
+
+	flushCmdParaStack();
+
 	return tokenBuffer;
 }
 
@@ -852,20 +858,23 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	int flag;
+	bool is_for_to = false;
+
 	if (cmdStack) 
 	{
-		if (cmdStack)
-		{
-			if (cmdTmp[cmdStack-1].flag != cmd_loop )	cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-		}
+		flushCmdParaStack();
 
 		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
 		{
 			cmdTmp[cmdStack-1].tokenBuffer = tokenBuffer ;
 			cmdTmp[cmdStack-1].flag = cmd_loop;
+			is_for_to = true;
 		}
 	}
+
+	if (is_for_to == false) stack ++;
 
 	return tokenBuffer;
 }
