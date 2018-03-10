@@ -184,11 +184,11 @@ char *_alloc_mode_off( glueCommands *self )
 
 	for (n= 0; n<var -> cells; n++ ) 
 	{
-		var -> sizeTab[n] = kittyStack[self -> stack + 1 +  n].value + 1;
+		var -> sizeTab[n] = kittyStack[self -> stack + n].value + 1;
 	}
 
-	var -> count = 1 ;
-	for (n= 0; n<var -> cells;n++) var -> count *= var -> sizeTab[n];
+	var -> count =  kittyStack[stack].value ;
+	for (n= 1; n<var -> cells;n++) var -> count *= var -> sizeTab[n];
 
 	switch (var -> type)
 	{
@@ -213,6 +213,9 @@ char *_alloc_mode_off( glueCommands *self )
 	var -> type |= type_array; 	
 
 	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
+
+	dump_global();
+
 	return NULL;
 }
 
