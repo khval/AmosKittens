@@ -13,7 +13,7 @@ Current status:
 This commands are supported:
 
 * Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
-Procedure,End Proc,Shared,Global,Pop Proc,Param,Param#,Param$
+
 
 And some math operations works: 
 
@@ -23,12 +23,29 @@ Logical opertations supported:
 
 * equal, not equal, less, more, 
 
-String commands supported:
+String
+------
 
-* Left$(), Mid$(), Right$(), Instr(), Flip$, 
-Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
+commands supported:
 
-Machine Code command supported
+* Left$(), Mid$(), Right$(), Instr(), Flip$, Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
+
+Basic Principles
+----------------
+
+Command supported:
+
+* Procedure, End Proc, Shared, Global, Pop Proc, Param, Param#, Param$, Reserve As Work, Reserve As Chip Work, Reserve As Data, Reserve As Chip Data, List Bank, Erase, Start, Length, BSave, BLoad
+
+Note: 
+-----
+Recursive procedures: is not supported, due way the local variables are implmented for now, locals was implmented quick and dirty..
+unlike AMOS Pro, Amos Kittens probably have something on stack after the function returns, so you most likely can use it as it was a "function".. but that is just side effect. 
+
+Machine Code 
+------------
+
+Command supported:
 
 * Hex$, Bin$
 
