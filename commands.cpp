@@ -517,7 +517,6 @@ BOOL setVarStringArray( struct kittyData *var )
 	return FALSE;
 }
 
-
 char *_setVar( struct glueCommands *data )
 {
 	BOOL success;
@@ -568,8 +567,6 @@ char *_setVar( struct glueCommands *data )
 		setError(ERROR_Type_mismatch);
 	}
 
-
-
 	return NULL;
 }
 
@@ -593,8 +590,6 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack();
 
-	printf("stack++\n");
-
 	stack++;
 	return tokenBuffer;
 }
@@ -613,13 +608,8 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	dump_stack();
-//	printf("****** flush param ******\n");
-
 	flushCmdParaStack();
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-//	printf("-----------------------\n");
 
 	if (stack > 0)
 	{
@@ -673,8 +663,6 @@ void	input_mode( char *tokenBuffer )
 	}
 }
 
-
-
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
@@ -684,14 +672,11 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 	switch (tokenMode)
 	{
  		case mode_standard:
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 			stackCmdParm( _addData, tokenBuffer );
 			stack++;
 			break;
-		case mode_input:
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+		case mode_input:
 			input_mode( tokenBuffer );
 			break;
 	}
@@ -797,19 +782,10 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
-	// execute the _if command.
-
-	printf("--\n");
-	dump_prog_stack();
-	printf("++\n");
-
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _if ) ret=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	if (ret) tokenBuffer = ret;
-
-
 	tokenMode = mode_standard;
-
 
 	return tokenBuffer;
 }
