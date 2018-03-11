@@ -108,12 +108,8 @@ char *_array_index_var( glueCommands *self )
 	struct kittyData *var;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-	getchar();
-
 
 	tmp_cells = stack - self -> stack;
-
 
 	varNum = self -> lastVar;
 
@@ -315,6 +311,17 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if ( correct_order( last_token,  next_token ) == false )
+	{
+		printf("---hidden ( symbol \n");
+
+		// hidden ( condition.
+		kittyStack[stack].str = NULL;
+		kittyStack[stack].value = 0;
+		kittyStack[stack].state = state_hidden_subData;
+		stack++;
+	}
+
 	if (jump_mode)
 	{
 
@@ -343,6 +350,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			{
 				case type_int:
 					_num(globalVars[idx].var.value);
+
+printf("**START**\n");
+dump_stack();
+printf("**END**\n");
+
+					getchar();
+
 					break;
 				case type_float:
 					setStackDecimal(globalVars[idx].var.decimal);
@@ -360,16 +374,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
-	if ( correct_order( last_token,  next_token ) == false )
-	{
-		printf("---hidden ( symbol \n");
-
-		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
-	}
 
 	if (cmdStack) if (stack)
 	{
@@ -555,26 +559,26 @@ struct nativeCommand nativeCommands[]=
 	{0x05A4, "Val",0, cmdVal },
 	{0x0598, "Str$",0, cmdStr },
 
-	{0x01dc, "Aac",0,cmdAsc },
-	{0x0546, "Flip$",0,cmdFlip },
-	{0x0552, "Chr$",0,cmdChr },
-	{0x055E, "Space$",0,cmdSpace },
-	{0x056C, "String$", 0,cmdString },
-	{0x057C, "Upper$",0,cmdUpper },
-	{0x058A, "Lower$",0,cmdLower },
-	{0x05DA, "Len",0,cmdLen },
+	{0x01dc, "Aac",0, cmdAsc },
+	{0x0546, "Flip$",0, cmdFlip },
+	{0x0552, "Chr$",0, cmdChr },
+	{0x055E, "Space$",0, cmdSpace },
+	{0x056C, "String$", 0, cmdString },
+	{0x057C, "Upper$",0, cmdUpper },
+	{0x058A, "Lower$",0, cmdLower },
+	{0x05DA, "Len",0, cmdLen },
 
-	{0x05E4, "Instr",0,cmdInstr },
-	{0x0640, "Dim",0,cmdDim },
-	{0x064A, "Rem",2,cmdRem },
+	{0x05E4, "Instr",0, cmdInstr },
+	{0x0640, "Dim",0, cmdDim },
+	{0x064A, "Rem",2, cmdRem },
 
-	{0x123E,"TRUE",0,cmdTrue },
-	{0x1248,"FALSE",0,cmdFalse },
+	{0x123E,"TRUE",0, cmdTrue },
+	{0x1248,"FALSE",0, cmdFalse },
 
-	{0xFF4C,"or",0,orData },
+	{0xFF4C,"or",0, orData },
 
-	{0xFFAC,"<",0,cmdLess },
-	{0xFFB6,">",0,cmdMore },
+	{0xFFAC,"<",0, cmdLess },
+	{0xFFB6,">",0, cmdMore },
 	{0xFFC0,"+",0, addData },
 	{0xFFCA,"-", 0, subData },
 	{0xFFA2,"=", 0, setVar },
@@ -582,8 +586,6 @@ struct nativeCommand nativeCommands[]=
 	{0xFFEC,"/", 0, divData },
 	{0xFFF6,"^", 0, powerData },
 	{0xFF66,"not equal",0,cmdNotEqual },
-
-
 
 	{0x20F2,"",0,cmdReserveAsWork },
 	{0x210A,"",0,cmdReserveAsChipWork },
@@ -709,6 +711,8 @@ int main()
 //	fd = fopen("amos-test/reserve.amos","r");
 //	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
 	fd = fopen("amos-test/sort.amos","r");
+//	fd = fopen("amos-test/or.amos","r");
+//	fd = fopen("amos-test/logical1.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
