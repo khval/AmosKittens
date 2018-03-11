@@ -102,24 +102,32 @@ void dump_stack()
 	{
 		printf("stack[%d]=",n);
 
-		switch( kittyStack[n].type )
-		{		
-			case type_int:
-				printf("%d\n",kittyStack[n].value);
-				break;
-			case type_float:
-				printf("%f\n",kittyStack[n].decimal);
-				break;
-			case type_string:
-				if (kittyStack[n].str)
-				{
-					printf("'%s' (0x%x)\n", kittyStack[n].str, kittyStack[n].str) ;
-				}
-				else
-				{
-					printf("no string found\n");
-				}
-				break;
+		if (kittyStack[n].state == state_hidden_subData)
+		{
+			printf("[blocked]\n");
+		}
+		else
+		{
+
+			switch( kittyStack[n].type )
+			{		
+				case type_int:
+					printf("%d\n",kittyStack[n].value);
+					break;
+				case type_float:
+					printf("%f\n",kittyStack[n].decimal);
+					break;
+				case type_string:
+					if (kittyStack[n].str)
+					{
+						printf("'%s' (0x%x)\n", kittyStack[n].str, kittyStack[n].str) ;
+					}
+					else
+					{
+						printf("no string found\n");
+					}
+					break;
+			}
 		}
 	}
 }
