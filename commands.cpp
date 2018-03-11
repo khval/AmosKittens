@@ -604,7 +604,16 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	dump_stack();
+
+	printf("****** flush param ******\n");
+
+	flushCmdParaStack();
+
+
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("-----------------------\n");
 
 	if (stack > 0)
 	{
@@ -617,7 +626,7 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		}
 	}
 
-	flushCmdParaStack();
+
 
 	return tokenBuffer;
 }
