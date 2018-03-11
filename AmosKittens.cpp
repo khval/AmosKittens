@@ -114,9 +114,12 @@ char *_array_index_var( glueCommands *self )
 
 	tmp_cells = stack - self -> stack;
 
+
 	varNum = self -> lastVar;
 
 	if (varNum == 0) return NULL;
+
+	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
 
 	var = &globalVars[varNum-1].var;
 
@@ -187,7 +190,7 @@ char *_alloc_mode_off( glueCommands *self )
 		var -> sizeTab[n] = kittyStack[self -> stack + n].value + 1;
 	}
 
-	var -> count =  kittyStack[stack].value ;
+	var -> count =  kittyStack[stack].value +1 ;
 	for (n= 1; n<var -> cells;n++) var -> count *= var -> sizeTab[n];
 
 	switch (var -> type)
@@ -675,7 +678,7 @@ int main()
 //	fd = fopen("amos-test/var.amos","r");
 //	fd = fopen("amos-test/var_num.amos","r");
 //	fd = fopen("amos-test/math.amos","r");
-//	fd = fopen("amos-test/dim.amos","r");
+//	fd = fopen("amos-test/dim2.amos","r");
 //	fd = fopen("amos-test/input.amos","r");
 //	fd = fopen("amos-test/goto.amos","r");
 //	fd = fopen("amos-test/if.amos","r");
