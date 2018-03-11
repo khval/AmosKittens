@@ -249,6 +249,7 @@ char *_less( struct glueCommands *data )
 		}
 		else if (type1 == type_float)
 		{
+			printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal < item1->decimal);
 			_num( item0->decimal < item1->decimal );
 		}
 		return NULL;
@@ -319,6 +320,8 @@ char *_more( struct glueCommands *data )
 		}
 		else if (type1 == type_float)
 		{
+			printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal > item1->decimal);
+
 			_num( item0->decimal > item1->decimal );
 			success = TRUE;
 		}
@@ -330,6 +333,8 @@ char *_more( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
+			printf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
+
 			_num( item0->value > item1->value );
 			success = TRUE;
 		}
@@ -713,11 +718,15 @@ char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (tokenMode == mode_logical)
 	{
-		stackCmdParm(_more, tokenBuffer);
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		stack++;
+		stackCmdParm(_more, tokenBuffer);
 	}
 	else
 	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
 		printf("Syntax error\n");
 	}
 
