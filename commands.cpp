@@ -519,9 +519,12 @@ char *_setVar( struct glueCommands *data )
 {
 	BOOL success;
 	struct kittyData *var;
-	var = &globalVars[data -> lastVar-1].var;
 
 	printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
+
+	printf("SET var %s \n",globalVars[ data->lastVar-1].varName);
+
+	var = &globalVars[data -> lastVar-1].var;
 
 	success = FALSE;
 
