@@ -322,6 +322,8 @@ char *_more( struct glueCommands *data )
 			_num( item0->decimal > item1->decimal );
 			success = TRUE;
 		}
+
+		correct_for_hidden_sub_data();
 		return NULL;
 	}
 	else if (type0 == type_int) 
@@ -336,14 +338,15 @@ char *_more( struct glueCommands *data )
 			_num( (double) item0->value > item1->decimal );
 			success = TRUE;
 		}
+
+		correct_for_hidden_sub_data();
 		return NULL;
 	}
 	else if (( type0 == type_string) && (type1 == type_string))
 	{
 		success = stackMoreStr( item0, item1 ); 
+		correct_for_hidden_sub_data();
 	}
-
-	correct_for_hidden_sub_data();
 
 	if (success == FALSE)
 	{
@@ -522,6 +525,10 @@ char *_setVar( struct glueCommands *data )
 
 	printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
 
+	dump_prog_stack();
+
+	dump_stack();
+
 	printf("SET var %s \n",globalVars[ data->lastVar-1].varName);
 
 	var = &globalVars[data -> lastVar-1].var;
@@ -560,6 +567,8 @@ char *_setVar( struct glueCommands *data )
 
 		setError(ERROR_Type_mismatch);
 	}
+
+
 
 	return NULL;
 }
@@ -604,16 +613,13 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	dump_stack();
-
-	printf("****** flush param ******\n");
+//	dump_stack();
+//	printf("****** flush param ******\n");
 
 	flushCmdParaStack();
-
-
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	printf("-----------------------\n");
+//	printf("-----------------------\n");
 
 	if (stack > 0)
 	{
@@ -625,8 +631,6 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
-
-
 
 	return tokenBuffer;
 }
@@ -654,7 +658,7 @@ void	input_mode( char *tokenBuffer )
 
 			case type_float:
 
-				sscanf( input.c_str(), "%llf", &dec );
+				sscanf( input.c_str(), "%llf", &des );
 				setStackDecimal( des );
 				break;
 
@@ -766,6 +770,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	else
 	{
 		stackCmdNormal(_setVar, tokenBuffer);
+		tokenMode = mode_logical;		// first equal is set, next equal is logical
 	}
 
 	return tokenBuffer;
