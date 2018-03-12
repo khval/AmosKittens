@@ -91,10 +91,6 @@ char *_procAndArgs( struct glueCommands *data )
 		}
 	}
 
-	printf("ref->ref %d\n",ref->ref);
-
-	getchar();
-
 	return  data -> tokenBuffer ;
 }
 
@@ -529,10 +525,6 @@ char *_setVar( struct glueCommands *data )
 
 	printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
 
-	dump_prog_stack();
-
-	dump_stack();
-
 	printf("SET var %s \n",globalVars[ data->lastVar-1].varName);
 
 	var = &globalVars[data -> lastVar-1].var;
@@ -764,7 +756,11 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	else
 	{
 		stackCmdNormal(_setVar, tokenBuffer);
-		tokenMode = mode_logical;		// first equal is set, next equal is logical
+
+		if (tokenMode == mode_standard) tokenMode = mode_logical;		// first equal is set, next equal is logical
+
+		printf("last_var %d\n",last_var);
+
 	}
 
 	return tokenBuffer;
@@ -900,6 +896,10 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	stackCmdNormal( _for, tokenBuffer );
 	cmdTmp[cmdStack-1].step = 1;		// set default counter step
+	tokenMode = mode_for;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
 
 	return tokenBuffer;
 }
@@ -909,16 +909,22 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 	int flag;
 	bool is_for_to = false;
 
-	if (cmdStack) 
+	if (tokenMode == mode_for)
 	{
-		flushCmdParaStack();
+		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
-		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
+		if (cmdStack) if ( cmdTmp[cmdStack-1].cmd == _setVar ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+		if (cmdStack) 
 		{
-			cmdTmp[cmdStack-1].tokenBuffer = tokenBuffer ;
-			cmdTmp[cmdStack-1].flag = cmd_loop;
-			is_for_to = true;
+			// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
+
+			if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
+			{
+				cmdTmp[cmdStack-1].tokenBuffer = tokenBuffer ;
+				cmdTmp[cmdStack-1].flag = cmd_loop;
+				is_for_to = true;
+			}
 		}
 	}
 
