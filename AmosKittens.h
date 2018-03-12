@@ -25,12 +25,13 @@
 
 enum
 {
-	mode_standard,
-	mode_alloc,
-	mode_input,
-	mode_goto,
-	mode_logical,
-	mode_store
+	mode_standard,		// 0
+	mode_alloc,			// 1
+	mode_input,			// 2
+	mode_goto,			// 3
+	mode_logical,			// 4
+	mode_store,			// 5
+	mode_for				// 6
 };
 
 enum 
