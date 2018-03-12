@@ -542,3 +542,94 @@ char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+void	sort_int_array(	struct kittyData *var )
+{
+	bool sorted = FALSE;
+	int n,v;
+
+	do
+	{
+		sorted = false;
+		for (n=1; n< var -> count; n++)
+		{
+			if (var -> int_array[n-1] > var -> int_array[n] )
+			{
+				v = var -> int_array[n-1];
+				var -> int_array[n-1] = var -> int_array[n];
+				var -> int_array[n] = v;
+				sorted = true;
+			}
+		}
+	} while (sorted);
+}
+
+void	sort_float_array( struct kittyData *var )
+{
+	bool sorted = FALSE;
+	int n,v;
+
+	do
+	{
+		sorted = false;
+		for (n=1; n< var -> count; n++)
+		{
+			if (var -> float_array[n-1] > var -> float_array[n] )
+			{
+				v = var -> float_array[n-1];
+				var -> float_array[n-1] = var -> float_array[n];
+				var -> float_array[n] = v;
+				sorted = true;
+			}
+		}
+	} while (sorted);
+}
+
+void	sort_string_array( struct kittyData *var )
+{
+
+}
+
+
+// AMOS The Creator User Guide states that array has to be at index 0, 
+// so we don't need to read tokens after variable name,
+// we can process this direcly no callbacks.
+
+char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	unsigned short next_token = *((short *) (tokenBuffer));
+	struct reference *ref = (struct reference *) (tokenBuffer + 2);
+
+	if (next_token == 0x0006)
+	{
+		int idx = ref -> ref -1;
+
+		printf("yes we have a var\n");
+
+		if (globalVars[idx].var.type & type_array)	// is array
+		{
+			switch (globalVars[idx].var.type & 7)
+			{
+				case type_int:
+					sort_int_array(&globalVars[idx].var);
+					break;
+				case type_float:
+					sort_float_array(&globalVars[idx].var);
+					break;
+				case type_string:
+					sort_string_array(&globalVars[idx].var);	
+					break;
+			}
+		}		
+
+		tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
+	}
+
+
+	printf("%s: stack %d\n",__FUNCTION__,stack);
+
+	stackCmdParm( _str, tokenBuffer );	// we need to store the step counter.
+
+	dump_stack();
+
+	return tokenBuffer;
+}

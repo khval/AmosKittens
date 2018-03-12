@@ -350,13 +350,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			{
 				case type_int:
 					_num(globalVars[idx].var.value);
-
-printf("**START**\n");
-dump_stack();
-printf("**END**\n");
-
-					getchar();
-
 					break;
 				case type_float:
 					setStackDecimal(globalVars[idx].var.decimal);
@@ -365,9 +358,6 @@ printf("**END**\n");
 					setStackStrDup(globalVars[idx].var.str);		// always copy.
 					break;
 				case type_proc:
-
-					printf("****\n");
-
 					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
 					return globalVars[idx].var.tokenBufferPos ;					
 			}
@@ -558,6 +548,8 @@ struct nativeCommand nativeCommands[]=
 	{0x05AE, "Bin$",0,cmdBin },
 	{0x05A4, "Val",0, cmdVal },
 	{0x0598, "Str$",0, cmdStr },
+
+	{0x0658,"Sort",0,cmdSort },
 
 	{0x01dc, "Aac",0, cmdAsc },
 	{0x0546, "Flip$",0, cmdFlip },

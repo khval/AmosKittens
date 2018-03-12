@@ -25,3 +25,6 @@ extern char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
 
+extern char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer );
+
