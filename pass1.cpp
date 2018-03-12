@@ -180,10 +180,6 @@ void pass1var(char *ptr, bool is_proc )
 		found = findVar(tmp, is_proc ? 0 : procCount);
 		if (found)
 		{
-
-			printf("we go that way\n");
-			getchar();
-
 			free(tmp);		//  don't need tmp
 			ref -> ref = found;
 		
@@ -201,10 +197,6 @@ void pass1var(char *ptr, bool is_proc )
 		}
 		else
 		{
-
-			printf("we go this way\n");
-			getchar();
-
 			if (is_proc)
 			{
 				add_var_from_ref( ref, tmp, is_proc );
