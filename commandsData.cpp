@@ -106,25 +106,18 @@ bool correct_order( int last_token, int next_token )
 
 void correct_for_hidden_sub_data()
 {
-	printf("----------------------------------------\n");
-
-	dump_stack();
-
-	printf("----------------------------------------\n");
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (stack > 0)
 	{
 		while (kittyStack[stack-1].state == state_hidden_subData)
 		{
-			printf("END OF )\n");
-
 			kittyStack[stack-1] = kittyStack[stack];
 			stack --;
 			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
 }
-
 
 char *_orData( struct glueCommands *data )
 {
@@ -731,6 +724,8 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	
+	flushCmdParaStack();
 
 	stackCmdParm( _orData, tokenBuffer );
 	stack++;
@@ -741,6 +736,8 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
+	flushCmdParaStack();
+
 	stackCmdParm( _andData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
@@ -749,6 +746,8 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	flushCmdParaStack();
 
 	stackCmdParm( _xorData, tokenBuffer );
 	stack++;
