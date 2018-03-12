@@ -64,10 +64,6 @@ char *_print( struct glueCommands *data )
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
-	printf("%s::%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
-
 	stackCmdNormal( _print, ptr );
 	return ptr;
 }
