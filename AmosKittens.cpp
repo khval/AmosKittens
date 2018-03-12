@@ -681,7 +681,8 @@ int main()
 //	fd = fopen("amos-test/repeat-until.amos","r");
 //	fd = fopen("amos-test/legal-ilegal-if.amos","r");
 //	fd = fopen("amos-test/while-wend.amos","r");
-//	fd = fopen("amos-test/for-to-step-next.amos","r");
+	fd = fopen("amos-test/for-to-step-next.amos","r");
+//	fd = fopen("amos-test/for-to-next.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
 //	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
@@ -702,7 +703,7 @@ int main()
 //	fd = fopen("amos-test/procedure_pop_proc.amos","r");
 //	fd = fopen("amos-test/reserve.amos","r");
 //	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
-	fd = fopen("amos-test/sort.amos","r");
+//	fd = fopen("amos-test/sort.amos","r");
 //	fd = fopen("amos-test/or.amos","r");
 //	fd = fopen("amos-test/logical1.amos","r");
 	if (fd)
