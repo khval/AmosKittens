@@ -939,9 +939,41 @@ char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+extern char *executeToken( char *ptr, unsigned short token );
+
+int NEXT_INT( char *tokenBuffer , char **new_ptr )
+{
+	unsigned short token;
+	char *ptr = tokenBuffer;
+
+	token = *( (unsigned short *) ptr);
+	ptr +=2;
+
+	do 
+	{
+		ptr = executeToken( ptr, token );
+		
+		if (ptr == NULL) 
+		{
+			printf("NULL\n");
+			break;
+		}
+
+		last_token = token;
+		token = *( (short *) ptr);
+		ptr += 2;
+
+	} while ((token != 0) && (token != 0x0356 ));
+
+	*new_ptr = ptr - 2;
+
+	return _stackInt(stack);
+}
+
 char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	char *ptr = tokenBuffer ;
+	char *new_ptr = NULL;
 
 	if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
 	{
@@ -952,17 +984,14 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		{
 			ptr = cmdTmp[cmdStack-1].tokenBuffer;
 
-			if (NEXT_TOKEN(ptr) == 0x003E ) 
+			if (globalVars[idx_var].var.value < NEXT_INT(ptr, &new_ptr)  )
 			{
-				if (globalVars[idx_var].var.value < NEXT_INT(ptr)  )
-				{
-					globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
-					tokenBuffer = cmdTmp[cmdStack-1].tokenBuffer + 6;
-				}
-				else
-				{
-					cmdStack--;
-				}
+				globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
+				tokenBuffer = new_ptr;
+			}
+			else
+			{
+				cmdStack--;
 			}
 		}
 	}
