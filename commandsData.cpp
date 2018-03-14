@@ -104,6 +104,294 @@ bool correct_order( int last_token, int next_token )
 	return true;
 }
 
+
+char *_lessData( struct glueCommands *data )
+{
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->decimal < (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal < item1->decimal);
+			_num( item0->decimal < item1->decimal );
+			success = TRUE;
+		}
+		return NULL;
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->value < item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value < item1->decimal );
+			success = TRUE;
+		}
+		return NULL;
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+		success = stackLessStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+char *_lessOrEqualData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_global();
+	dump_stack();
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->decimal <= (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( item0->decimal <= item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			printf ("( %d <= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
+			_num( item0->value <= item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value <= item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+//		success = stackLessOrEqualStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+
+char *_moreData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_global();
+	dump_stack();
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->decimal > (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( item0->decimal > item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			printf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
+			_num( item0->value > item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value > item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+		success = stackMoreStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+char *_moreOrEqualData( struct glueCommands *data )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_global();
+	dump_stack();
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	// handel int / float casting.
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			_num( item0->decimal >= (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( item0->decimal >= item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			printf ("( %d >= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
+			_num( item0->value >= item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			_num( (double) item0->value >= item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+//		success = stackMoreOrEqualStr( item0, item1 ); 
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+
 void correct_for_hidden_sub_data()
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -216,7 +504,6 @@ char *_andData( struct glueCommands *data )
 		{
 			_num( (item0->decimal != 0) && (item1->decimal != 0) );
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
@@ -228,7 +515,6 @@ char *_andData( struct glueCommands *data )
 		{
 			_num(  (item0->value != 0 ) && (item1->decimal != 0) );
 		}
-		return NULL;
 	}
 
 	correct_for_hidden_sub_data();
@@ -273,24 +559,26 @@ char *_xorData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			setStackDecimal( item0->decimal + (double) item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( item0->decimal + item1->decimal );
+			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
 		if (type1 == type_int)
 		{
 			_num( item0->value + item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( (double) item0->value + item1->decimal );
+			success = TRUE;
 		}
-		return NULL;
 	}
 
 	correct_for_hidden_sub_data();
@@ -336,22 +624,25 @@ char *_addData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			setStackDecimal( item0->decimal + (double) item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( item0->decimal + item1->decimal );
+			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
 		if (type1 == type_int)
 		{
 			_num( item0->value + item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( (double) item0->value + item1->decimal );
+			success = TRUE;
 		}
 		return NULL;
 	}
@@ -446,12 +737,13 @@ char *_subData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			setStackDecimal( item0->decimal - (double) item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( item0->decimal - item1->decimal );
+			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
@@ -459,12 +751,13 @@ char *_subData( struct glueCommands *data )
 		{
 			printf(" = %d - %d\n", item0->value , item1->value );
 			_num( item0->value - item1->value );
+			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			setStackDecimal( (double) item0->value - item1->decimal );
+			success = TRUE;
 		}
-		return NULL;
 	}
 	else if ( type0 == type_string) 
 	{
@@ -521,7 +814,6 @@ char *_mulData( struct glueCommands *data )
 			setStackDecimal( item0->decimal * item1->decimal );
 			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
@@ -754,3 +1046,90 @@ char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *lessData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		stackCmdParm(_lessData, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
+char *moreData(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		stack++;
+		stackCmdParm(_moreData, tokenBuffer);
+	}
+	else
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
+char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		stackCmdParm(_lessOrEqualData, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+
+char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (tokenMode == mode_logical)
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		stack++;
+		stackCmdParm(_moreOrEqualData, tokenBuffer);
+	}
+	else
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+		printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
