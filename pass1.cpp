@@ -610,6 +610,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							else
 								setError(11);
 							break;
+
+				case 0x0404:	if (data_read_pointer == 0) data_read_pointer = ptr + 2;
+
 			}
 
 			ret += cmd -> size;

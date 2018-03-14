@@ -629,3 +629,8 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
+char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	return tokenBuffer;
+}

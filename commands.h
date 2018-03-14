@@ -52,6 +52,9 @@ char *cmdParam(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdParamFloat(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdData(struct nativeCommand *cmd, char *tokenBuffer );
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );

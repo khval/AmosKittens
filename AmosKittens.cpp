@@ -28,6 +28,8 @@ unsigned short last_token = 0;
 int last_var = 0;
 int tokenlength;
 
+char *data_read_pointer = NULL;
+
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
 int tokenMode = mode_standard;
@@ -534,6 +536,9 @@ struct nativeCommand nativeCommands[]=
 	{0x03D6, "Param$",0,cmdParamStr },
 	{0x03E2, "Param",0,cmdParam },
 
+	{0x0404,"data", 2, cmdData },
+	{0x040E,"read",0,cmdRead },
+
 	{0x0444, "Inc",0,incMath },
 	{0x044E, "Dec",0,decMath },
 	{0x0458, "Add",0,addMath },
@@ -564,13 +569,23 @@ struct nativeCommand nativeCommands[]=
 	{0x0640, "Dim",0, cmdDim },
 	{0x064A, "Rem",2, cmdRem },
 
+	{0x0662, "match",0,cmdMatch },
+
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
 
 	{0xFF4C,"or",0, orData },
+	{0xFF58,"or",0, andData },
 
-	{0xFFAC,"<",0, cmdLess },
-	{0xFFB6,">",0, cmdMore },
+	{0xFF7A,"<=",0,lessOrEqualData },
+	{0xFF84,"<=",0,lessOrEqualData },
+
+	{0xFF8E,"<=",0,moreOrEqualData },
+	{0xFF98,"<=",0,moreOrEqualData },
+
+	{0xFFAC,"<",0, lessData },
+	{0xFFB6,">",0, moreData },
+
 	{0xFFC0,"+",0, addData },
 	{0xFFCA,"-", 0, subData },
 	{0xFFA2,"=", 0, setVar },
@@ -590,6 +605,7 @@ struct nativeCommand nativeCommands[]=
 	{0x014C, "Length", 0, cmdLength },
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -681,8 +697,9 @@ int main()
 //	fd = fopen("amos-test/repeat-until.amos","r");
 //	fd = fopen("amos-test/legal-ilegal-if.amos","r");
 //	fd = fopen("amos-test/while-wend.amos","r");
-	fd = fopen("amos-test/for-to-step-next.amos","r");
+//	fd = fopen("amos-test/for-to-step-next.amos","r");
 //	fd = fopen("amos-test/for-to-next.amos","r");
+//	fd = fopen("amos-test/for-to-next2.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
 //	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
@@ -706,6 +723,7 @@ int main()
 //	fd = fopen("amos-test/sort.amos","r");
 //	fd = fopen("amos-test/or.amos","r");
 //	fd = fopen("amos-test/logical1.amos","r");
+	fd = fopen("amos-test/match.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

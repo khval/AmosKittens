@@ -214,151 +214,6 @@ char *cmdInput(nativeCommand *cmd, char *ptr)
 }
 
 
-char *_less( struct glueCommands *data )
-{
-	struct kittyData *item0;
-	struct kittyData *item1;
-	int type0, type1;
-	bool success = FALSE;
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
-
-	type0 = item0 -> type & 3;
-	type1 = item1 -> type & 3;
-
-	// handel int / float casting.
-
-	if (type0 == type_float) 
-	{
-		if (type1 == type_int)
-		{
-			_num( item0->decimal < (double) item1->value );
-		}
-		else if (type1 == type_float)
-		{
-			printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal < item1->decimal);
-			_num( item0->decimal < item1->decimal );
-		}
-		return NULL;
-	}
-	else if (type0 == type_int) 
-	{
-		if (type1 == type_int)
-		{
-			_num( item0->value < item1->value );
-		}
-		else if (type1 == type_float)
-		{
-			_num( (double) item0->value < item1->decimal );
-		}
-		return NULL;
-	}
-	else if (( type0 == type_string) && (type1 == type_string))
-	{
-		success = stackLessStr( item0, item1 ); 
-	}
-
-	correct_for_hidden_sub_data();
-
-	if (success == FALSE)
-	{
-		printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	return NULL;
-}
-
-char *_more( struct glueCommands *data )
-{
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	dump_global();
-	dump_stack();
-
-	struct kittyData *item0;
-	struct kittyData *item1;
-	int type0, type1;
-	bool success = FALSE;
-
-	if (stack==0) 
-	{
-		printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
-
-	type0 = item0 -> type & 3;
-	type1 = item1 -> type & 3;
-
-	// handel int / float casting.
-
-	if (type0 == type_float) 
-	{
-		if (type1 == type_int)
-		{
-			_num( item0->decimal > (double) item1->value );
-			success = TRUE;
-		}
-		else if (type1 == type_float)
-		{
-			printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal > item1->decimal);
-
-			_num( item0->decimal > item1->decimal );
-			success = TRUE;
-		}
-
-		correct_for_hidden_sub_data();
-		return NULL;
-	}
-	else if (type0 == type_int) 
-	{
-		if (type1 == type_int)
-		{
-			printf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
-
-			_num( item0->value > item1->value );
-			success = TRUE;
-		}
-		else if (type1 == type_float)
-		{
-			_num( (double) item0->value > item1->decimal );
-			success = TRUE;
-		}
-
-		correct_for_hidden_sub_data();
-		return NULL;
-	}
-	else if (( type0 == type_string) && (type1 == type_string))
-	{
-		success = stackMoreStr( item0, item1 ); 
-		correct_for_hidden_sub_data();
-	}
-
-	if (success == FALSE)
-	{
-		printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	return NULL;
-}
-
 
 char *_equal( struct glueCommands *data )
 {
@@ -681,49 +536,6 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_less, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		printf("Syntax error\n");
-	}
-
-	return tokenBuffer;
-}
-
-char *cmdMore(struct nativeCommand *cmd, char *tokenBuffer )
-{
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (tokenMode == mode_logical)
-	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-		stack++;
-		stackCmdParm(_more, tokenBuffer);
-	}
-	else
-	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-
-		printf("Syntax error\n");
-	}
-
-	return tokenBuffer;
-}
 
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1184,3 +996,19 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return cmdEndProc( cmd, tokenBuffer );
 }
+
+char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
+{
+
+	printf("%04x\n", *((short *) tokenBuffer) );
+
+	getchar();
+
+	return tokenBuffer;
+}
+
+char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	return tokenBuffer;
+}
+
