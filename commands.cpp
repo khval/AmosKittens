@@ -26,6 +26,7 @@ using namespace std;
 
 extern char *findLabel( char *name );
 
+void	input_mode( char *tokenBuffer );
 
 // dummy not used, see code in cmdNext
 char *_for( struct glueCommands *data )
@@ -123,6 +124,8 @@ char *_input( struct glueCommands *data )
 {
 	int n;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	for (n=data->stack;n<=stack;n++)
 	{
 		switch (kittyStack[n].type)
@@ -208,8 +211,18 @@ char *_repeat( struct glueCommands *data )
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
 {
-	tokenMode = mode_input;
-	stackCmdNormal( _input, ptr );
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN( ptr ) == 0x0006)
+	{
+		input_mode(ptr);
+	}
+	else
+	{
+		tokenMode = mode_input;
+		stackCmdNormal( _input, ptr );
+	}
+
 	return ptr;
 }
 
