@@ -656,6 +656,8 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	getchar();
+
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	return tokenBuffer;
 }
@@ -997,12 +999,95 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 	return cmdEndProc( cmd, tokenBuffer );
 }
 
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
+
+char *_cmdRead( struct glueCommands *data )
+{
+	short token;
+	unsigned short _len;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack  );
+
+
+	if (data_read_pointer)
+	{
+		token = *((short *) data_read_pointer);
+
+		switch (token)
+		{
+			case 0x003E: _num ( *((int *) (data_read_pointer + 2)) );
+						data_read_pointer +=6;
+						break;
+	
+			case 0x0026:	_len = *((unsigned short *) (data_read_pointer + 2));
+						_len = _len + (_len & 1);
+						if (kittyStack[stack].str) free(kittyStack[stack].str);
+						kittyStack[stack].str = strndup( data_read_pointer + 4, _len );
+						kittyStack[stack].len = strlen( kittyStack[stack].str );
+						data_read_pointer +=4 + _len;
+						break;
+
+			default:
+					printf("--- token %04x ---\n",token);
+					getchar();
+
+		}
+
+		token = *((short *) data_read_pointer);
+
+		if (token == 0x005C)
+		{
+			data_read_pointer +=2;
+			printf("Next item\n");
+		}
+		else if (token == 0x0000 )
+		{
+			data_read_pointer +=4;
+			printf("end of data\n");
+
+			data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x404, 0xFFFF, 0xFFFF,_file_end_ );	// this is really bad code.
+
+			if (data_read_pointer)
+			{
+				token = *((short *) data_read_pointer);
+				printf("--- token %04x ---\n",token);
+				if (token =0x0404) data_read_pointer+= 4; // it has data
+			}
+			else
+			{
+				printf("nothing to be found, sorry\n");
+			}
+
+			// we need to seek to next "data" command
+		}
+
+	}
+
+	stack ++;
+
+
+	printf("--------\n");
+
+	getchar();
+
+	_setVarReverse( data );
+
+	return NULL;
+}
+
+
 char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
 
-	printf("%04x\n", *((short *) tokenBuffer) );
+	dump_global();
+
+	printf("read %04x\n", *((short *) tokenBuffer) );
 
 	getchar();
+
+	stackCmdNormal( _cmdRead, tokenBuffer );
 
 	return tokenBuffer;
 }
