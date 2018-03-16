@@ -22,6 +22,9 @@ char *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
 
+char *_file_start_ = NULL;
+char *_file_end_ = NULL;
+
 int cmdStack = 0;
 int procStackCount = 0;
 unsigned short last_token = 0;
@@ -760,6 +763,9 @@ int main()
 			if (kittyError.code == 0)
 			{
 				runtime = TRUE;
+
+				_file_start_ = data;
+				_file_end_ = data + tokenlength;
 
 				//  execute the code.
 				code_reader( data, tokenlength );

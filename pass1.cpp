@@ -23,6 +23,8 @@ extern std::vector<struct label> labels;
 
 #define LAST_TOKEN_(name) ((nested_count>0) && (nested_command[ nested_count -1 ].cmd == nested_ ## name ))
 
+int ifCount = 0;
+int endIfCount = 0;
 int currentLine = 0;
 
 int procCount = 0;
@@ -52,7 +54,7 @@ int nested_count = 0;
 	nested_count++; 
 
 
-char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 );
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
 char *dupRef( struct reference *ref )
 {
@@ -362,7 +364,7 @@ char *pass1_global( char *ptr )
 }
 
 
-char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2 )
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ )
 {
 	struct nativeCommand *cmd;
 	unsigned short current_token = *((unsigned short *) ptr);
@@ -370,7 +372,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 	
 	// loop until we find token, then exit, or find term token then exit.
 
-	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) )
+	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) && ( ptr < _eof_ ) )
 	{
 		printf("current_token %04x\n",current_token);
 		ptr += 2; // skip token id.
@@ -452,7 +454,7 @@ void pass1_proc_end( char *ptr )
 
 	if ( *((short *) ptr) == 0x0084 )
 	{
-		ret = FinderTokenInBuffer( ptr, 0x008C , 0x0000, 0x0000 );
+		ret = FinderTokenInBuffer( ptr, 0x008C , 0x0000, 0x0000, _file_end_ );
 		if (ret)
 		{
 			((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ret;
@@ -541,6 +543,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 				// if
 				case 0x02BE:	addNest( nested_if );
+							ifCount ++;
+
 							break;
 
 				case 0x02C6:	// THEN 
@@ -566,6 +570,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x02DA:	// END IF
+
+							endIfCount ++;
+
 							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else) )
 							{
 								pass1_if_or_else( ptr+2 );
@@ -653,7 +660,9 @@ void pass1_reader( char *start, int tokenlength )
 
 	// if we did not count back to 0, then there most be some thing wrong.
 
-	if (nested_count)
+	printf("ifCount %d endIfCount %d\n", ifCount, endIfCount );
+
+	while (nested_count)
 	{
 		switch (nested_command[ nested_count - 1 ].cmd )
 		{
@@ -665,6 +674,7 @@ void pass1_reader( char *start, int tokenlength )
 			case nested_proc: setError(17); break;
 			default: setError(35); break;
 		}
+		nested_count --;
 	}
 
 	nested_count = 0;
