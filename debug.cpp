@@ -34,32 +34,32 @@ void dump_global()
 		switch (globalVars[n].var.type)
 		{
 			case type_int:
-				printf("%d::%s%s=%d\n",
+				printf("%d -- %d::%s%s=%d\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.value );
 				break;
 			case type_float:
-				printf("%d::%s%s=%d\n",
+				printf("%d -- %d::%s%s=%d\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.decimal );
 				break;
 			case type_string:
-				printf("%d::%s%s=%d\n",
+				printf("%d -- %d::%s%s=%s\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
 				break;
 			case type_proc:
-				printf("%d::%s%s[]=%04X\n",
+				printf("%d -- %d::%s%s[]=%04X\n",n,
 					globalVars[n].proc, "Proc ",
 					globalVars[n].varName, globalVars[n].var.tokenBufferPos );
 
 				break;
 			case type_int | type_array:
 
-				printf("%d::%s%s(%d)=",
+				printf("%d -- %d::%s%s(%d)=",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
@@ -73,8 +73,35 @@ void dump_global()
 
 				break;
 			case type_float | type_array:
+
+				printf("%d -- %d::%s%s(%d)=",n,
+					globalVars[n].proc, 
+					globalVars[n].isGlobal ? "Global " : "",
+					globalVars[n].varName,
+					globalVars[n].var.count);
+
+				for (i=0; i<globalVars[n].var.count; i++)
+				{
+					printf("[%d]=%0.2f ,",i, globalVars[n].var.float_array[i]);
+				}
+				printf("\n");
+
 				break;
 			case type_string | type_array:
+
+				printf("%d -- %d::%s%s(%d)=",n,
+					globalVars[n].proc, 
+					globalVars[n].isGlobal ? "Global " : "",
+					globalVars[n].varName,
+					globalVars[n].var.count);
+
+				for (i=0; i<globalVars[n].var.count; i++)
+				{
+					printf("[%d]=%s ,",i, globalVars[n].var.str_array[i]);
+				}
+				printf("\n");
+
+
 				break;
 		}
 	}
