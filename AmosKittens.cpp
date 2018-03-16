@@ -107,7 +107,7 @@ char *_array_index_var( glueCommands *self )
 	int n = 0;
 	int mul;
 	int index;
-	struct kittyData *var;
+	struct kittyData *var = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -119,43 +119,60 @@ char *_array_index_var( glueCommands *self )
 
 	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
 
-	var = &globalVars[varNum-1].var;
+	if (varNum) var = &globalVars[varNum-1].var;
 
-	index = 0; mul  = 1;
-	for (n = self -> stack+1;n<=stack; n++ )
+	if (var)
 	{
-		index += (mul * kittyStack[n].value);
-		mul *= var -> sizeTab[n- self -> stack -1];
-	}
-
-	var -> index = index;
-
-	popStack(tmp_cells);
-
-	if ((index >= 0)  && (index<var->count))
-	{
-		// we over write it stack.
-		if (kittyStack[n].str) free(kittyStack[n].str);
-		kittyStack[n].str = NULL;
-
-		// change stack
-		switch (var -> type & 7)
+		if ( (var -> type & type_array)  == 0)
 		{
-			case type_int:
-				kittyStack[stack].type = (var -> type & 7);
-				kittyStack[stack].value = var -> int_array[index];
-				break;
-			case type_float:
-				kittyStack[stack].type = (var -> type & 7);
-				kittyStack[stack].decimal = var -> float_array[index];
-				break;
-			case type_string:
-				kittyStack[stack].type = (var -> type & 7);
-				kittyStack[stack].str = strdup(var -> str_array[index]);
-				kittyStack[stack].len = strlen(kittyStack[stack].str);
-				break;
+			popStack(tmp_cells);
+			setError(27);		// var is not a array
+			return 0;
+		}
+
+		index = 0; mul  = 1;
+		for (n = self -> stack+1;n<=stack; n++ )
+		{
+			index += (mul * kittyStack[n].value);
+			mul *= var -> sizeTab[n- self -> stack -1];
+		}
+
+		var -> index = index;
+
+		popStack(tmp_cells);
+
+		if ((index >= 0)  && (index<var->count))
+		{
+			// we over write it stack.
+			if (kittyStack[n].str) free(kittyStack[n].str);
+			kittyStack[n].str = NULL;
+
+			// change stack
+			switch (var -> type & 7)
+			{
+				case type_int:
+
+					kittyStack[stack].type = (var -> type & 7);
+					kittyStack[stack].value = var -> int_array[index];
+					break;
+
+				case type_float:
+
+					kittyStack[stack].type = (var -> type & 7);
+					kittyStack[stack].decimal = var -> float_array[index];
+					break;
+
+				case type_string:
+
+					char *str = var -> str_array[index];
+					kittyStack[stack].type = (var -> type & 7);
+					kittyStack[stack].str = str ? strdup( str ) : strdup("") ;
+					kittyStack[stack].len = str ? strlen( str ) : 0 ;
+					break;
+			}
 		}
 	}
+
 	return NULL;
 }
 
