@@ -199,6 +199,10 @@ char *_whileCheck( struct glueCommands *data )
 
 char *_do( struct glueCommands *data )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
+
+
 	return data -> tokenBuffer-2;
 }
 
@@ -211,6 +215,8 @@ char *_repeat( struct glueCommands *data )
 
 char *cmdInput(nativeCommand *cmd, char *ptr)
 {
+	printf("----------- START -------------------\n");
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
@@ -222,6 +228,8 @@ char *cmdInput(nativeCommand *cmd, char *ptr)
 		tokenMode = mode_input;
 		stackCmdNormal( _input, ptr );
 	}
+
+	printf("-------------- END --------------------\n");
 
 	return ptr;
 }
@@ -501,7 +509,8 @@ void	input_mode( char *tokenBuffer )
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
 		int idx = ref->ref-1;
 
-		if (cmdStack) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		flushCmdParaStack();
+
 		getline(cin, input);
 
 		switch ( globalVars[idx].var.type & 7 )
@@ -651,9 +660,18 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
 {
+
+	printf("----------------\n");
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	stackCmdLoop( _do, tokenBuffer );
+
+	dump_prog_stack();
+
+	printf("---- PRESS ENTER -----\n");
+	getchar();
+
 	return tokenBuffer;
 }
 
@@ -669,9 +687,13 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	getchar();
+	dump_prog_stack();
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+
+	getchar();
+
 	return tokenBuffer;
 }
 
@@ -1080,11 +1102,6 @@ char *_cmdRead( struct glueCommands *data )
 
 	stack ++;
 
-
-	printf("--------\n");
-
-	getchar();
-
 	_setVarReverse( data );
 
 	return NULL;
@@ -1097,8 +1114,6 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 	dump_global();
 
 	printf("read %04x\n", *((short *) tokenBuffer) );
-
-	getchar();
 
 	stackCmdNormal( _cmdRead, tokenBuffer );
 
