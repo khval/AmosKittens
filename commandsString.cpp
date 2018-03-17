@@ -542,19 +542,21 @@ void	sort_int_array(	struct kittyData *var )
 {
 	bool sorted = FALSE;
 	int n,v;
+	int *i0,*i1;
 
 	do
 	{
 		sorted = false;
+		i0 = var -> int_array; i1 = i0+1;
 		for (n=1; n< var -> count; n++)
 		{
-			if (var -> int_array[n-1] > var -> int_array[n] )
+			if ( *i0 > *i1  )
 			{
-				v = var -> int_array[n-1];
-				var -> int_array[n-1] = var -> int_array[n];
-				var -> int_array[n] = v;
+				v = *i0; *i0 = *i1; *i1 = v;
 				sorted = true;
 			}
+
+			i0++; i1++;
 		}
 	} while (sorted);
 }
@@ -562,27 +564,52 @@ void	sort_int_array(	struct kittyData *var )
 void	sort_float_array( struct kittyData *var )
 {
 	bool sorted = FALSE;
-	int n,v;
+	int n;
+	double v;
+	double *f0;
+	double *f1;
 
 	do
 	{
 		sorted = false;
+		f0 = var -> float_array; f1 = f0+1;
 		for (n=1; n< var -> count; n++)
 		{
-			if (var -> float_array[n-1] > var -> float_array[n] )
+			if ( *f0 > *f1  )
 			{
-				v = var -> float_array[n-1];
-				var -> float_array[n-1] = var -> float_array[n];
-				var -> float_array[n] = v;
+				v = *f0; *f0 = *f1; *f1 = v;
 				sorted = true;
 			}
+
+			f0++; f1++;
 		}
 	} while (sorted);
 }
 
 void	sort_string_array( struct kittyData *var )
 {
+	bool sorted = FALSE;
+	int n;
+	char *v;
+	char **s0,**s1;
 
+	do
+	{
+		sorted = false;
+		s0 = var -> str_array; s1 = s0+1;
+		for (n=1; n< var -> count; n++)
+		{
+			if ( strcmp( (*s0 != NULL) ? *s0 : "" , (*s1 != NULL) ? *s1 : ""   ) > 0  )
+			{
+				v = *s0; 
+				*s0 = *s1; 
+				*s1 = v;
+
+				sorted = true;
+			}
+			s0++; s1++;
+		}
+	} while (sorted);
 }
 
 
@@ -599,7 +626,7 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		int idx = ref -> ref -1;
 
-		printf("yes we have a var\n");
+		printf("yes we have a var idx %d\n",idx);
 
 		if (globalVars[idx].var.type & type_array)	// is array
 		{
