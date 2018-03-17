@@ -68,6 +68,31 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+
+char *_cmdMatch( struct glueCommands *data )
+{
+	int args = stack - data->stack ;
+	char *str;
+	char *tmp = NULL;
+	int _len;
+
+	printf("%s: stack %d\n",__FUNCTION__,stack);
+
+	dump_stack();
+
+	if (args == 2)
+	{
+
+	}	
+
+	popStack(args);
+
+	_num(0);
+
+	return NULL;
+}
+
+
 char *_left( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
@@ -538,6 +563,114 @@ char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+void	_match_int( struct kittyData *array, int value )
+{
+	int n;
+	int closest = INT_MAX;
+	int new_delta;
+	int delta =INT_MAX;
+
+	for (n =0; n< array -> count; n++)
+	{
+		new_delta = abs(array -> int_array[n] - value) ;
+
+		if ( new_delta < delta )
+		{
+			if (new_delta == 0)
+			{
+				_num(0);
+				return;
+			}
+			else
+			{
+				delta = new_delta;
+				closest = n;
+			}
+		}
+	}
+
+	_num( -closest );
+}
+
+void _match_float( struct kittyData *array, double decimal )
+{
+	int n;
+	int closest = INT_MAX;
+	int new_delta;
+	double delta =INT_MAX;	// yes I know double supports larger numbers, but this should work here.
+
+	for (n =0; n< array -> count; n++)
+	{
+		new_delta = array -> float_array[n] - decimal ;
+		new_delta = new_delta < 0.0f ? -new_delta : new_delta;	// abs() but double.
+
+		if ( new_delta < delta )
+		{
+			if (new_delta == 0)
+			{
+				_num(0);
+				return;
+			}
+			else
+			{
+				delta = new_delta;
+				closest = n;
+			}
+		}
+	}
+
+	_num( -closest );
+}
+
+void _match_str( struct kittyData *array,  char *str )
+{
+	int n;
+	int closest = INT_MAX;
+	int new_delta;
+	int found_chars = 0;
+	int delta =INT_MAX;
+	int value;
+	int i;
+	int _l = strlen(str);
+	char c;
+	char *item;
+
+	for (n =0; n< array -> count; n++)
+	{
+		item = array -> str_array[n];
+
+		if (item)
+		{
+			found_chars = 0;
+
+			for ( i=0;i<_l;i++)
+			{
+				c = item[i];
+				if (c == 0) break;
+				if (c == str[i]) found_chars++;
+			}
+
+			new_delta = abs( max( _l , (int) strlen( item ) )  - found_chars ) ;
+
+			if ( new_delta < delta )
+			{
+				if (new_delta == 0)
+				{
+					_num( n );
+					return;
+				}
+				else
+				{
+					delta = new_delta;
+					closest = n;
+				}
+			}
+		}
+	}
+
+	_num( -closest );
+}
+
 void	sort_int_array(	struct kittyData *var )
 {
 	bool sorted = FALSE;
@@ -615,7 +748,7 @@ void	sort_string_array( struct kittyData *var )
 
 // AMOS The Creator User Guide states that array has to be at index 0, 
 // so we don't need to read tokens after variable name,
-// we can process this direcly no callbacks.
+// we can process this direcly no callbacks.|
 
 char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -648,16 +781,118 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 
-	printf("%s: stack %d\n",__FUNCTION__,stack);
-
 	stackCmdParm( _str, tokenBuffer );	// we need to store the step counter.
-
-	dump_stack();
 
 	return tokenBuffer;
 }
 
+#define badSyntax() { setError(120); return NULL; }
+
 char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	return tokenBuffer;
+	unsigned short next_token = *((short *) (tokenBuffer));
+	struct reference *ref = NULL;
+	int idx1,idx2;
+	struct kittyData *array_var = NULL;
+	struct kittyData *var = NULL;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x0074) badSyntax();	// (
+	tokenBuffer +=2;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// array
+	
+	ref = (struct reference *) (tokenBuffer + 2);
+	idx1 = ref -> ref -1;
+	array_var = &globalVars[idx1].var;
+	tokenBuffer += sizeof( struct reference) + ref -> length + 2;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("%04x\n",NEXT_TOKEN( tokenBuffer ));
+
+	dump_global();
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x0074) badSyntax();	// (
+	tokenBuffer +=2;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x003E) badSyntax();	// 0
+	tokenBuffer += 6;	
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x007C) badSyntax();	// )
+	tokenBuffer +=2;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x005C) badSyntax();	// ,
+	tokenBuffer +=2;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	// --- this part can be rewritten ---, callback on this part can make sense.
+	// just store the array for later...
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// var
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	ref = (struct reference *) (tokenBuffer + 2);
+	idx2 = ref -> ref -1;
+	var = &globalVars[idx2].var;
+	tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
+
+	if (NEXT_TOKEN( tokenBuffer ) != 0x007C) badSyntax();	// )
+	tokenBuffer +=2;
+
+	printf("array_var %08x\n",array_var);
+	printf("var %08x\n",var);
+
+	printf("%d, %d\n",idx1, idx2);
+
+	printf("%s\n", globalVars[idx1].varName );
+	printf("%s\n", globalVars[idx2].varName  );
+
+	tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
+
+	if ((array_var -> type & type_array) && ( (array_var -> type & 7) == var -> type ))
+	{
+		printf("we are here\n");
+
+		switch (var -> type )
+		{
+			case type_int:
+
+				printf("int\n");
+
+				_match_int( array_var, var -> value );
+				break;
+
+			case type_float:
+
+				printf("float\n");
+
+				_match_float( array_var, var -> decimal );
+				break;
+
+			case type_string:
+
+				printf("str\n");
+
+				_match_str( array_var, var -> str );
+				break;
+		}
+	}
+
+	return tokenBuffer-2;
 }
