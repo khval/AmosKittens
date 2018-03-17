@@ -69,6 +69,7 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 }
 
 
+/*
 char *_cmdMatch( struct glueCommands *data )
 {
 	int args = stack - data->stack ;
@@ -91,7 +92,7 @@ char *_cmdMatch( struct glueCommands *data )
 
 	return NULL;
 }
-
+*/
 
 char *_left( struct glueCommands *data )
 {
@@ -855,16 +856,6 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN( tokenBuffer ) != 0x007C) badSyntax();	// )
 	tokenBuffer +=2;
 
-	printf("array_var %08x\n",array_var);
-	printf("var %08x\n",var);
-
-	printf("%d, %d\n",idx1, idx2);
-
-	printf("%s\n", globalVars[idx1].varName );
-	printf("%s\n", globalVars[idx2].varName  );
-
-	tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
-
 	if ((array_var -> type & type_array) && ( (array_var -> type & 7) == var -> type ))
 	{
 		printf("we are here\n");
@@ -894,5 +885,5 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 
-	return tokenBuffer-2;
+	return tokenBuffer;
 }
