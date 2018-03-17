@@ -95,10 +95,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	if (ret) ptr = ret - 2;
 
-/*	
-	printf("-- ENTER FOR NEXT AMOS LINE --\n");
-	getchar();
-*/
 	return ptr;
 }
 
@@ -197,11 +193,6 @@ char *_alloc_mode_off( glueCommands *self )
 
 	var -> cells = stack - self -> stack;
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
-
-	printf("DIM?\n");
-
-	dump_stack();
-	getchar();
 
 	for (n= 0; n<var -> cells; n++ ) 
 	{
@@ -501,9 +492,6 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	if (e>0)	f *= 1 <<e-1;
 	if (e==0)	f /= 2;
 	if (e<0)	f /= 1<<(-e+1);
-
-
-//	getchar();
 
 	setStackDecimal( round( f *1000 ) / 1000.0f  );
 
