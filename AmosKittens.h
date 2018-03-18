@@ -20,7 +20,8 @@
 #define token_more			0xFFB6
 #define token_less				0xFFAC
 
-#define NEXT_TOKEN(ptr) *((short *) ptr)
+#define NEXT_TOKEN(ptr) *((unsigned short *) ptr)
+#define NEXT_INT(ptr) *((int *) (ptr+2))
 
 enum
 {

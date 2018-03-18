@@ -22,8 +22,6 @@ extern void setStackStrDup( const char *str );
 
 using namespace std;
 
-#define NEXT_TOKEN(ptr) *((short *) ptr)
-#define NEXT_INT(ptr) *((int *) (ptr+2))
 
 /*********
 
