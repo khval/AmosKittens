@@ -6,5 +6,5 @@
 #include "amosKittens.h"
 
 char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer);
-char *dir_str(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer);
 

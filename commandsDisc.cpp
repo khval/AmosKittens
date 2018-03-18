@@ -165,6 +165,33 @@ char *_cmdDir( struct glueCommands *data )
 	return  data -> tokenBuffer ;
 }
 
+
+char *_cmdDirStr( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	BPTR lock;
+	BPTR oldLock;
+	char *_str;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	_str = _stackString( stack );
+
+	if (_str)
+	{
+		lock = Lock( _str, SHARED_LOCK );
+		if (lock)
+		{
+			oldLock = SetCurrentDir( lock );
+			if (oldLock) UnLock (oldLock );
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdDir, tokenBuffer );
@@ -172,8 +199,30 @@ char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *dir_str(struct nativeCommand *cmd, char *tokenBuffer)
+char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("%08x - %08x\n", last_token, NEXT_TOKEN( tokenBuffer ) );
+
+	if (last_token == 0x0000) printf("last token 0x0000\n");
+	if (NEXT_TOKEN( tokenBuffer ) == 0xFFA2) printf("next token 0xFFA2\n");
+
+	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
+	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		stackCmdNormal( _cmdDirStr, tokenBuffer );
+	}
+	else
+	{
+		char buffer[4000];
+		int32 success = NameFromLock(GetCurrentDir(), buffer, sizeof(buffer) );
+
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+		setStackStrDup( success ? buffer : (char *) "" );
+	}
+
 	return tokenBuffer;
 }
 
