@@ -19,6 +19,60 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 
+char *_cmdParent( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdSetDir( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdDfree( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdKill( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdRename( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdFselStr( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdExist( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdDirFirstStr( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *_cmdDirNextStr( struct glueCommands *data )
+{
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
 bool pattern_match( char *name , const char *pattern )
 {
 	char *n;
@@ -226,3 +280,54 @@ char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdParent(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdParent, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdDfree, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdKill(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdKill, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdRename(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdRename, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdFselStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdFselStr, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdExist, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *cmdSetDir(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdSetDir, tokenBuffer );
+	return tokenBuffer;
+}

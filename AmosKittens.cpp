@@ -584,8 +584,12 @@ struct nativeCommand nativeCommands[]=
 	{0x1248,"FALSE",0, cmdFalse },
 
 	{0x175A,"Dir$",0,cmdDirStr },
-
 	{0x17AE,"Dir",0,cmdDir },
+	{0x1914,"Parent",0,cmdParent },
+	{0x17C4,"Set Dir",0,cmdSetDir },
+	{0x1864,"Dfree",0,cmdDfree },
+	{0x1930,"Dfree",0,cmdKill },
+	{0x1920,"Rename",0,cmdRename },
 
 	{0xFF4C,"or",0, orData },
 	{0xFF58,"or",0, andData },
@@ -738,7 +742,8 @@ int main()
 //	fd = fopen("amos-test/logical1.amos","r");
 //	fd = fopen("amos-test/match.amos","r");
 //	fd = fopen("amos-test/dir.amos","r");
-	fd = fopen("amos-test/dir_str.amos","r");
+//	fd = fopen("amos-test/dir_str.amos","r");
+	fd = fopen("amos-test/parent-set-dir.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
