@@ -19,11 +19,6 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 
-char *_cmdParent( struct glueCommands *data )
-{
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	return NULL;
-}
 
 char *_cmdSetDir( struct glueCommands *data )
 {
@@ -282,12 +277,53 @@ char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdParent(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdParent, tokenBuffer );
+	BPTR lock;
+	BPTR oldLock;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	lock = Lock( "/", SHARED_LOCK );
+	if (lock)
+	{
+		oldLock = SetCurrentDir( lock );
+		if (oldLock) UnLock (oldLock );
+	}
+
 	return tokenBuffer;
 }
 
 char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	struct InfoData data;
+
+
+	int32 success = GetDiskInfoTags( 
+					GDI_LockInput,GetCurrentDir(),
+					GDI_InfoData, &data,
+					TAG_END);
+
+	if (success)
+	{
+		unsigned int freeBlocks;
+
+
+		printf("num blocks %d\n", data.id_NumBlocks);
+		printf("used blocks %d\n", data.id_NumBlocksUsed);
+		printf("bytes per block %d\n", data.id_BytesPerBlock);
+
+
+		freeBlocks = data.id_NumBlocks - data.id_NumBlocksUsed;
+
+		// this does not support my disk as it has more then 4 GB free :-/
+		// ints are 32bit internaly in AMOS kittens, should bump it up to 64bit, internally.
+
+		_num( freeBlocks * data.id_BytesPerBlock ); 
+
+		// print the real size here... 
+		printf("free bytes %lld\n", (long long int) freeBlocks * (long long int) data.id_BytesPerBlock );
+
+	}
+
 	stackCmdNormal( _cmdDfree, tokenBuffer );
 	return tokenBuffer;
 }
