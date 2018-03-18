@@ -14,6 +14,7 @@
 #include "commandsString.h"
 #include "commandsMath.h"
 #include "commandsBanks.h"
+#include "commandsDisc.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -582,6 +583,8 @@ struct nativeCommand nativeCommands[]=
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
 
+	{0x17AE,"Dir",0,cmdDir },
+
 	{0xFF4C,"or",0, orData },
 	{0xFF58,"or",0, andData },
 
@@ -731,7 +734,8 @@ int main()
 //	fd = fopen("amos-test/sort.amos","r");
 //	fd = fopen("amos-test/or.amos","r");
 //	fd = fopen("amos-test/logical1.amos","r");
-	fd = fopen("amos-test/match.amos","r");
+//	fd = fopen("amos-test/match.amos","r");
+	fd = fopen("amos-test/dir.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

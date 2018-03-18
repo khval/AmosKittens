@@ -200,8 +200,6 @@ char *_whileCheck( struct glueCommands *data )
 char *_do( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	getchar();
-
 
 	return data -> tokenBuffer-2;
 }
@@ -667,10 +665,10 @@ char *cmdDo(struct nativeCommand *cmd, char *tokenBuffer)
 
 	stackCmdLoop( _do, tokenBuffer );
 
-	dump_prog_stack();
+//	dump_prog_stack();
 
-	printf("---- PRESS ENTER -----\n");
-	getchar();
+//	printf("---- PRESS ENTER -----\n");
+//	getchar();
 
 	return tokenBuffer;
 }
@@ -690,9 +688,6 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 	dump_prog_stack();
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-
-	getchar();
 
 	return tokenBuffer;
 }
