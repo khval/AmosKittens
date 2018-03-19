@@ -28,18 +28,49 @@ char *_cmdSetDir( struct glueCommands *data )
 
 char *_cmdDfree( struct glueCommands *data )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
 
 char *_cmdKill( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	char *_str;
+	int32 success = false;
+	_str = _stackString( stack );
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (_str) success = Delete(_str);
+
+	if (success == false)
+	{
+		setError(81);
+	}
+
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
 
 char *_cmdRename( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	int32 success = false;
+
+	if (args == 2)
+	{
+		char *oldName = _stackString( stack - 1 );
+		char *newName = _stackString( stack );
+		if ((oldName)&&(newName))	success = Rename(  oldName, newName );
+	}
+
+	if (success == false)
+	{
+		setError(81);
+	}
+
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
@@ -52,6 +83,25 @@ char *_cmdFselStr( struct glueCommands *data )
 
 char *_cmdExist( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	char *_str;
+	BPTR lock = 0;
+
+	_str = _stackString( stack );
+
+	if (args==1)
+	{
+		lock = Lock( _str, SHARED_LOCK );
+
+		if (lock)
+		{
+			UnLock( lock );
+			_num( true ); 
+		}
+	}
+
+	if (!lock) _num( false );
+
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
