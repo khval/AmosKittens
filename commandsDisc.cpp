@@ -7,6 +7,7 @@
 #include <proto/exec.h>
 #include <string>
 #include <iostream>
+#include <proto/asl.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -26,13 +27,6 @@ char *_cmdSetDir( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdDfree( struct glueCommands *data )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	return NULL;
-}
 
 char *_cmdKill( struct glueCommands *data )
 {
@@ -77,6 +71,52 @@ char *_cmdRename( struct glueCommands *data )
 
 char *_cmdFselStr( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	struct FileRequester	 *filereq;
+	char *ret = NULL;
+	char c;
+	int l;
+	bool success = false;
+
+	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
+	{
+
+		switch (args)
+		{
+			case 3:
+					success = AslRequestTags( (void *) filereq, 
+						ASLFR_DrawersOnly, FALSE,	
+						ASLFR_TitleText, "Jesus",
+						ASLFR_InitialFile, "default.file",
+						ASLFR_AcceptPattern, "this is ok",
+						TAG_DONE );
+					break;
+		}
+
+
+
+		if (success)
+		{
+			if ((filereq -> fr_File)&&(filereq -> fr_Drawer))
+			{
+				l = strlen(filereq -> fr_Drawer);
+
+				if (l>1)
+				{
+					c = filereq -> fr_Drawer[l-1];
+
+					if (ret = (char *) malloc( strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
+					{
+						sprintf( ret, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
+					}
+				}
+				else 	ret = strdup(filereq -> fr_File);
+			}
+		}
+		 FreeAslRequest( filereq );
+	}
+
+
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
@@ -356,7 +396,6 @@ char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		unsigned int freeBlocks;
 
-
 		printf("num blocks %d\n", data.id_NumBlocks);
 		printf("used blocks %d\n", data.id_NumBlocksUsed);
 		printf("bytes per block %d\n", data.id_BytesPerBlock);
@@ -374,7 +413,6 @@ char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
 
 	}
 
-	stackCmdNormal( _cmdDfree, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -404,11 +442,13 @@ char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	stackCmdNormal( _cmdDirFirstStr, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	stackCmdNormal( _cmdDirNextStr, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -417,3 +457,5 @@ char *cmdSetDir(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _cmdSetDir, tokenBuffer );
 	return tokenBuffer;
 }
+
+
