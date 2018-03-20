@@ -591,6 +591,11 @@ struct nativeCommand nativeCommands[]=
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1920,"Rename",0,cmdRename },
 
+	{0x196C,"Fsel$",0,cmdFselStr },
+	{0x174E,"Exist",0,cmdExist },
+	{0x172C,"Dir First$",0,cmdDirFirstStr },
+	{0x173E,"Dir Next$",0,cmdDirNextStr },
+
 	{0xFF4C,"or",0, orData },
 	{0xFF58,"or",0, andData },
 
@@ -743,7 +748,8 @@ int main()
 //	fd = fopen("amos-test/match.amos","r");
 //	fd = fopen("amos-test/dir.amos","r");
 //	fd = fopen("amos-test/dir_str.amos","r");
-	fd = fopen("amos-test/parent-set-dir.amos","r");
+//	fd = fopen("amos-test/parent-set-dir.amos","r");
+	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
