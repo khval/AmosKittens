@@ -339,8 +339,18 @@ BOOL setVarString( struct kittyData *var )
 	{
 		case type_string:
 			if (var->str) free(var->str);
-			var->str = strdup(kittyStack[stack].str);
-			var->len = kittyStack[stack].len;
+
+			if (kittyStack[stack].str)
+			{
+				var->str = strdup(kittyStack[stack].str);
+				var->len = kittyStack[stack].len;
+			}
+			else
+			{
+				var->str = NULL;
+				var->len = 0;
+			}
+
 			return TRUE;
 	}
 
@@ -784,6 +794,9 @@ char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 }
 
 extern char *executeToken( char *ptr, unsigned short token );
+
+#undef NEXT_INT
+
 
 int NEXT_INT( char *tokenBuffer , char **new_ptr )
 {

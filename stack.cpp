@@ -105,7 +105,7 @@ void setStackStrDup(const char *str)
 
 	printf("%s::ALLOC stack(%d) %08x\n",__FUNCTION__, stack, kittyStack[stack].str);
 
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].len = kittyStack[stack].str ? strlen( kittyStack[stack].str ) : 0;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
