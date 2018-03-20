@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
+#include "init.h"
 
 char *var_param_str = NULL;
 int var_param_num;
@@ -707,6 +708,9 @@ int main()
 
 	memset(globalVars,0,sizeof(globalVars));
 
+	if (init())
+	{
+
 //	fd = fopen("amos-test/var.amos","r");
 //	fd = fopen("amos-test/var_num.amos","r");
 //	fd = fopen("amos-test/math.amos","r");
@@ -806,6 +810,10 @@ int main()
 	{
 		printf("FILE not open\n");
 	}
+
+		closedown();
+	}
+	
 
 	return 0;
 }
