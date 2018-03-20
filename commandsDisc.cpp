@@ -23,7 +23,7 @@ extern int tokenMode;
 
 char *_cmdSetDir( struct glueCommands *data )
 {
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
 }
 
@@ -44,7 +44,7 @@ char *_cmdKill( struct glueCommands *data )
 		setError(81);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
 }
 
@@ -65,18 +65,21 @@ char *_cmdRename( struct glueCommands *data )
 		setError(81);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
 }
 
 char *_cmdFselStr( struct glueCommands *data )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	int args = stack - cmdTmp[cmdStack].stack ;
 	struct FileRequester	 *filereq;
 	char *ret = NULL;
 	char c;
 	int l;
 	bool success = false;
+	const char *_path_ = NULL;
+	const char *_default_ = NULL;
+	const char *_title_ = NULL;
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
@@ -84,16 +87,19 @@ char *_cmdFselStr( struct glueCommands *data )
 		switch (args)
 		{
 			case 3:
+					_path_ = _stackString( stack -2 );
+					_default_ = _stackString( stack -1 );
+					_title_ = _stackString( stack );
+
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
-						ASLFR_TitleText, "Jesus",
-						ASLFR_InitialFile, "default.file",
-						ASLFR_AcceptPattern, "this is ok",
+						ASLFR_TitleText, _title_,
+						ASLFR_InitialFile, _default_,
+						ASLFR_InitialPattern, _path_,
+						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
 					break;
 		}
-
-
 
 		if (success)
 		{
@@ -116,8 +122,9 @@ char *_cmdFselStr( struct glueCommands *data )
 		 FreeAslRequest( filereq );
 	}
 
-
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	if (ret) setStackStr(ret);		// we don't need to copy no dup.
+
 	return NULL;
 }
 
