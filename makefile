@@ -22,7 +22,8 @@ main_objects = commands.cpp \
 			pass1.cpp \
 			errors.cpp \
 			stack.cpp \
-			commandsDisc.cpp
+			commandsDisc.cpp \
+			init.cpp
 
 main_SRCS = AmosKittens.cpp
 
