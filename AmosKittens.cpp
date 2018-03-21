@@ -19,6 +19,7 @@
 #include "errors.h"
 #include "pass1.h"
 #include "init.h"
+#include "cleanup.h"
 
 char *var_param_str = NULL;
 int var_param_num;
@@ -791,25 +792,17 @@ int main()
 
 		if (kittyError.code == 0)
 		{
-			printf("--- End of program status ---\n");
-
-			printf("\n--- var dump ---\n");
-			dump_global();
-
-			printf("\n--- value stack dump ---\n");
-			dump_stack();
-
-			printf("\n--- program stack dump ---\n");
-			dump_prog_stack();
-
-			printf("\n--- label dump ---\n");
-			dumpLabels();
+			dump_end_of_program();
 		}
 	}
 	else
 	{
 		printf("FILE not open\n");
 	}
+
+		clean_up_vars();
+		clean_up_stack();
+		clean_up_special();	// we add other stuff to this one.
 
 		closedown();
 	}

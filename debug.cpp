@@ -159,3 +159,20 @@ void dump_stack()
 	}
 }
 
+void dump_end_of_program()
+{
+	printf("--- End of program status ---\n");
+
+	printf("\n--- var dump ---\n");
+	dump_global();
+
+	printf("\n--- value stack dump ---\n");
+	dump_stack();
+
+	printf("\n--- program stack dump ---\n");
+	dump_prog_stack();
+
+	printf("\n--- label dump ---\n");
+	dumpLabels();
+}
+
