@@ -20,6 +20,7 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 
+char *amos_to_amiga_pattern(const char *amosPattern);
 
 char *_cmdSetDir( struct glueCommands *data )
 {
@@ -74,6 +75,7 @@ char *_cmdFselStr( struct glueCommands *data )
 	int args = stack - cmdTmp[cmdStack].stack ;
 	struct FileRequester	 *filereq;
 	char *ret = NULL;
+	char *amigaPattern = NULL;
 	char c;
 	int l;
 	bool success = false;
@@ -91,11 +93,13 @@ char *_cmdFselStr( struct glueCommands *data )
 					_default_ = _stackString( stack -1 );
 					_title_ = _stackString( stack );
 
+					amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
 						ASLFR_TitleText, _title_,
 						ASLFR_InitialFile, _default_,
-						ASLFR_InitialPattern, _path_,
+						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
 					break;
@@ -124,6 +128,8 @@ char *_cmdFselStr( struct glueCommands *data )
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	if (ret) setStackStr(ret);		// we don't need to copy no dup.
+
+	if (amigaPattern) free(amigaPattern);
 
 	return NULL;
 }
@@ -164,6 +170,36 @@ char *_cmdDirNextStr( struct glueCommands *data )
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
+
+char *amos_to_amiga_pattern(const char *amosPattern)
+{
+	int _new_len = 0;
+	char *amigaPattern;
+	const char *s;
+	char *d;
+
+	for (s = amosPattern; *s ;  s++) _new_len += (*s == '*') ? 2 : 1;
+
+	amigaPattern = (char *) malloc(_new_len + 1); // need to terminate string +1
+
+	if (amigaPattern)
+	{
+		d = amigaPattern;
+
+		for (s = amosPattern; *s ;  s++) 
+		{
+			if (*s == '*')
+			{
+				*d++='#'; *d++='?';
+			}
+			else *d ++= *s;
+		}
+		*d = 0;
+	}
+	
+	return amigaPattern;
+}
+
 
 bool pattern_match( char *name , const char *pattern )
 {
