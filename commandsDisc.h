@@ -17,3 +17,4 @@ char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer);
 
+
