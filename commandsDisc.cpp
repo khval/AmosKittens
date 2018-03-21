@@ -20,6 +20,8 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 
+APTR contextDir = NULL;
+
 char *amos_to_amiga_pattern(const char *amosPattern);
 
 char *_cmdSetDir( struct glueCommands *data )
@@ -161,12 +163,149 @@ char *_cmdExist( struct glueCommands *data )
 
 char *_cmdDirFirstStr( struct glueCommands *data )
 {
+	char *_path;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
+
+	if (contextDir)
+	{
+		ReleaseDirContext(contextDir);
+		contextDir = NULL;
+	}
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
+
+	_path = _stackString( stack );
+	if (_path == NULL) return NULL;
+
+	printf("%s\n",_path);
+	getchar();
+
+	contextDir = ObtainDirContextTags(EX_StringNameInput, "", //_path,
+	                   EX_DoCurrentDir,TRUE, 
+	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
+
+
+	if( contextDir )
+	{
+		struct ExamineData *dat, *target;
+
+		if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
+		{
+			if( EXD_IS_LINK(dat) ) /* all links, must check these first ! */
+			{
+				if( EXD_IS_SOFTLINK(dat) )        /* a FFS style softlink */
+				{
+					CONST_STRPTR target_type = "unavailable"; /* default  */
+			                APTR oldwin = SetProcWindow((APTR)-1); 
+					target = ExamineObjectTags(EX_StringNameInput, dat->Name,TAG_END);
+					SetProcWindow(oldwin);
+
+					if( target )
+					{
+						if( EXD_IS_FILE(target) )
+						{
+							target_type = "file";
+						}
+						if( EXD_IS_DIRECTORY(target) )
+						{
+							target_type = "dir";
+						}
+						FreeDosObject(DOS_EXAMINEDATA,target);
+						/* Free target data when done */
+					}
+					Printf("softlink=%s points to %s and it's a %s\n", dat->Name,dat->Link,target_type);
+				}
+				else if( EXD_IS_FILE(dat) )       /* hardlink file */
+				{
+					Printf("file hardlink=%s points to %s\n", dat->Name, dat->Link);
+				}
+				else if( EXD_IS_DIRECTORY(dat) )  /* hardlink dir */
+				{
+					Printf("dir hardlink=%s points to %s\n", dat->Name, dat->Link);
+				}
+			}
+			else if( EXD_IS_FILE(dat) )           /* a plain file */
+			{
+				Printf("filename=%s\n", dat->Name);
+			}
+			else if ( EXD_IS_DIRECTORY(dat) )     /* a plain directory */
+			{
+				Printf("dirname=%s\n",  dat->Name);
+			}
+		}
+	} 
+	
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }
 
 char *_cmdDirNextStr( struct glueCommands *data )
 {
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	getchar();
+
+
+	if( contextDir )
+	{
+		struct ExamineData *dat, *target;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+		if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
+		{
+
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+			if( EXD_IS_LINK(dat) ) /* all links, must check these first ! */
+			{
+				if( EXD_IS_SOFTLINK(dat) )        /* a FFS style softlink */
+				{
+					CONST_STRPTR target_type = "unavailable"; /* default  */
+			                APTR oldwin = SetProcWindow((APTR)-1); 
+					target = ExamineObjectTags(EX_StringNameInput, dat->Name,TAG_END);
+					SetProcWindow(oldwin);
+
+					if( target )
+					{
+						if( EXD_IS_FILE(target) )
+						{
+							target_type = "file";
+						}
+						if( EXD_IS_DIRECTORY(target) )
+						{
+							target_type = "dir";
+						}
+						FreeDosObject(DOS_EXAMINEDATA,target);
+						/* Free target data when done */
+					}
+					Printf("softlink=%s points to %s and it's a %s\n", dat->Name,dat->Link,target_type);
+				}
+				else if( EXD_IS_FILE(dat) )       /* hardlink file */
+				{
+					Printf("file hardlink=%s points to %s\n", dat->Name, dat->Link);
+				}
+				else if( EXD_IS_DIRECTORY(dat) )  /* hardlink dir */
+				{
+					Printf("dir hardlink=%s points to %s\n", dat->Name, dat->Link);
+				}
+			}
+			else if( EXD_IS_FILE(dat) )           /* a plain file */
+			{
+				Printf("filename=%s\n", dat->Name);
+			}
+			else if ( EXD_IS_DIRECTORY(dat) )     /* a plain directory */
+			{
+				Printf("dirname=%s\n",  dat->Name);
+			}
+		}
+	}
+	
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
 }

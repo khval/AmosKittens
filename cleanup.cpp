@@ -62,6 +62,10 @@ void clean_up_stack()
 
 void clean_up_special()
 {
-
+	if (contextDir)
+	{
+		ReleaseDirContext(contextDir);
+		contextDir = NULL;
+	}
 }
 

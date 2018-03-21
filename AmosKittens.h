@@ -197,5 +197,7 @@ extern char *data_read_pointer;
 extern char *_file_start_;
 extern char *_file_end_;
 
+extern APTR contextDir;
+
 #endif
 
