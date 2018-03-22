@@ -44,6 +44,7 @@ void _num( int num );
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
+FILE *kittyFile[10];
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
@@ -554,7 +555,9 @@ struct nativeCommand nativeCommands[]=
 	{0x044E, "Dec",0,decMath },
 	{0x0458, "Add",0,addMath },
 
+	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,cmdPrint },
+
 	{0x04D0, "Input",0,cmdInput },
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
@@ -587,9 +590,12 @@ struct nativeCommand nativeCommands[]=
 
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17AE,"Dir",0,cmdDir },
-	{0x1914,"Parent",0,cmdParent },
 	{0x17C4,"Set Dir",0,cmdSetDir },
 	{0x1864,"Dfree",0,cmdDfree },
+	{0x18CC,"Open Out",0,cmdOpenOut },
+
+	{0x190C,"Close",0,cmdClose },
+	{0x1914,"Parent",0,cmdParent },
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1920,"Rename",0,cmdRename },
 
@@ -754,7 +760,8 @@ int main()
 //	fd = fopen("amos-test/dir.amos","r");
 //	fd = fopen("amos-test/dir_str.amos","r");
 //	fd = fopen("amos-test/parent-set-dir.amos","r");
-	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
+//	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
+	fd = fopen("amos-test/open-out.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -802,6 +809,7 @@ int main()
 
 		clean_up_vars();
 		clean_up_stack();
+		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
 
 		closedown();
