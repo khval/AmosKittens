@@ -199,5 +199,7 @@ extern char *_file_end_;
 
 extern APTR contextDir;
 
+extern FILE *kittyFile[10];
+
 #endif
 

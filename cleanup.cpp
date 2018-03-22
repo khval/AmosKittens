@@ -60,6 +60,16 @@ void clean_up_stack()
 	stack = 0;
 }
 
+void clean_up_files()
+{
+	int n;
+	for (n=0;n<10;n++)
+	{
+		if (kittyFile[n]) fclose(kittyFile[n]);
+		kittyFile[n] = NULL;
+	}
+}
+
 void clean_up_special()
 {
 	if (contextDir)
