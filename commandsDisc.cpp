@@ -30,6 +30,66 @@ char *_cmdSetDir( struct glueCommands *data )
 	return NULL;
 }
 
+char *_cmdPrintOut( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdOpenOut( struct glueCommands *data )
+{
+	char *_str;
+	int num;
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 2)
+	{
+		num = _stackInt( stack -1 ) -1;
+
+		if ((num>-1)&&(num<10))
+		{
+			if ( kittyFile[ num ] )
+			{
+				fclose( kittyFile[ num ] );
+				kittyFile[ num ] = NULL;
+			}
+
+			_str = _stackString( stack );
+			if (_str) kittyFile[ num ] = fopen( _str, "w" );
+		}
+	}
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdClose( struct glueCommands *data )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	int num;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		num = _stackInt( stack ) -1;
+
+		if ((num>-1)&&(num<10))
+		{
+			fclose( kittyFile[ num ] );
+			kittyFile[ num ] = NULL;
+		}
+	}
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
 
 char *_cmdKill( struct glueCommands *data )
 {
@@ -640,4 +700,20 @@ char *cmdSetDir(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdPrintOut, tokenBuffer );
+	return tokenBuffer;
+}
 
+char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdOpenOut, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdClose, tokenBuffer );
+	return tokenBuffer;
+}
