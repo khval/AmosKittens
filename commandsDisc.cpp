@@ -32,15 +32,43 @@ char *_cmdSetDir( struct glueCommands *data )
 
 char *_cmdPrintOut( struct glueCommands *data )
 {
+	int num,n;
+	FILE *fd;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
+	num = _stackInt( data -> stack ) -1;
 
+	if ((num>-1)&&(num<10))
+	{
+		fd =  kittyFile[ num ];
+
+		for (n=data->stack+1;n<=stack;n++)
+		{
+			switch (kittyStack[n].type)
+			{
+				case type_int:
+					fprintf(fd,"%d", kittyStack[n].value);
+					break;
+				case type_float:
+					fprintf(fd,"%f", kittyStack[n].decimal);
+					break;
+				case type_string:
+					if (kittyStack[n].str) fprintf(fd,"%s", kittyStack[n].str);
+					break;
+			}
+
+			if (n<=stack) fprintf(fd,"    ");
+		}
+
+		fprintf(fd, "\n");
+
+	}
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
 }
 
-char *_cmdOpenOut( struct glueCommands *data )
+char *_open_file_( struct glueCommands *data, const char *access )
 {
 	char *_str;
 	int num;
@@ -61,12 +89,27 @@ char *_cmdOpenOut( struct glueCommands *data )
 			}
 
 			_str = _stackString( stack );
-			if (_str) kittyFile[ num ] = fopen( _str, "w" );
+			if (_str) kittyFile[ num ] = fopen( _str, access );
 		}
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
+}
+
+char *_cmdOpenOut( struct glueCommands *data )
+{
+	return _open_file_( data, "w" );
+}
+
+char *_cmdOpenIn( struct glueCommands *data )
+{
+	return _open_file_( data, "r" );
+}
+
+char *_cmdAppend( struct glueCommands *data )
+{
+	return _open_file_( data, "a" );
 }
 
 char *_cmdClose( struct glueCommands *data )
@@ -709,6 +752,12 @@ char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdOpenOut, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdAppend(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdAppend, tokenBuffer );
 	return tokenBuffer;
 }
 

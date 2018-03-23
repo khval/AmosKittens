@@ -593,6 +593,7 @@ struct nativeCommand nativeCommands[]=
 	{0x17C4,"Set Dir",0,cmdSetDir },
 	{0x1864,"Dfree",0,cmdDfree },
 	{0x18CC,"Open Out",0,cmdOpenOut },
+	{0x18F0,"Append",0,cmdAppend },
 
 	{0x190C,"Close",0,cmdClose },
 	{0x1914,"Parent",0,cmdParent },
