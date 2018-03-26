@@ -201,5 +201,8 @@ extern APTR contextDir;
 
 extern FILE *kittyFile[10];
 
+extern void (*do_input) ( struct nativeCommand *cmd );
+extern struct glueCommands input_cmd_context;
+
 #endif
 

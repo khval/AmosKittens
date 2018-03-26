@@ -467,9 +467,14 @@ char *_setVarReverse( struct glueCommands *data )
 
 //--------------------------------------------------------
 
+
+
+
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack();
+	
+	if (do_input) do_input( cmd );	// read from keyboad or disk.
 
 	stack++;
 	return tokenBuffer;
