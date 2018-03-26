@@ -37,6 +37,7 @@ int tokenlength;
 char *data_read_pointer = NULL;
 
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
+void (*do_input) ( struct nativeCommand *cmd ) = NULL;
 
 int tokenMode = mode_standard;
 void _num( int num );
@@ -53,7 +54,8 @@ std::vector<struct label> labels;	// 0 is not used.
 int global_var_count = 0;
 int labels_count = 0;
 
- struct glueCommands cmdTmp[100];	
+struct glueCommands cmdTmp[100];	
+struct glueCommands input_cmd_context;
 
 extern char *nextToken_pass1( char *ptr, unsigned short token );
 
@@ -558,7 +560,7 @@ struct nativeCommand nativeCommands[]=
 	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,cmdPrint },
 
-	{0x04B2, "Input #",0,cmdInputIn }
+	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04D0, "Input",0,cmdInput },
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
@@ -747,8 +749,8 @@ int main()
 //	fd = fopen("amos-test/inc-dec-add.amos","r");
 //	fd = fopen("amos-test/compare-strings.amos","r");
 //	fd = fopen("amos-test/procedure.amos","r");
-//	fd = fopen("AMOS-test/procedure2.amos","r");
-//	fd = fopen("AMOS-test/procedure_with_paramiters_x.amos","r");
+//	fd = fopen("amos-test/procedure2.amos","r");
+//	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
 //	fd = fopen("amos-test/procedure-shared.amos","r");
 //	fd = fopen("amos-test/procedure-global.amos","r");
 //	fd = fopen("amos-test/procedure_return_value.amos","r");

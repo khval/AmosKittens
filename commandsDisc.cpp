@@ -22,6 +22,8 @@ extern int tokenMode;
 
 APTR contextDir = NULL;
 
+char *_cmdInputIn( struct glueCommands *data );
+
 char *amos_to_amiga_pattern(const char *amosPattern);
 
 char *_cmdSetDir( struct glueCommands *data )
@@ -749,6 +751,12 @@ char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdOpenIn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdOpenIn, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdOpenOut, tokenBuffer );
@@ -764,5 +772,93 @@ char *cmdAppend(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdClose, tokenBuffer );
+	return tokenBuffer;
+}
+
+void file_input( struct nativeCommand *cmd )
+{
+	int idx = 0;
+	bool valid = false;
+	FILE *fd;
+
+	dump_stack();
+
+	if (cmd == NULL)
+	{
+		valid = true;
+	}
+	else	// if file_input is called from ","
+	{
+		if (cmdStack > 0)
+		{
+			if (cmdTmp[cmdStack-1].cmd == _cmdInputIn) valid = true;
+		}
+	}
+
+	if (valid == false) return;
+
+	idx = last_var - 1;
+	if (idx>-1)
+	{
+		printf("last_var: %s\n",globalVars[idx].varName) ;
+		printf("index: %d\n", globalVars[idx].var.index );
+		printf("stack: %d\n", stack);
+		printf("file io: %d\n",input_cmd_context.lastVar);
+
+		fd = input_cmd_context.lastVar ? kittyFile[ input_cmd_context.lastVar -1 ] : NULL;
+
+		if (fd)
+		{
+			char buffer[10000];
+			int ret = fscanf( fd, "%[^,],", buffer );
+
+			printf("ret: %d\n",ret);
+
+			if (ret==1)
+			{
+				printf("%s",buffer);
+			}
+		}
+	}
+
+	getchar();
+}
+
+char *_cmdInputIn( struct glueCommands *data )
+{
+	getchar();
+
+	if (do_input) do_input( NULL );
+
+	do_input = NULL;
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+
+	return NULL;
+}
+
+char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
+	{
+		input_cmd_context.cmd = _cmdInputIn;
+		input_cmd_context.stack = stack;
+		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
+		input_cmd_context.tokenBuffer = tokenBuffer;
+		stackCmdNormal( _cmdInputIn, tokenBuffer );
+
+		do_input = file_input;
+
+		tokenBuffer += 6;
+
+		if (NEXT_TOKEN( tokenBuffer ) == 0x005C) tokenBuffer += 2;
+
+	}
+	else
+	{
+		setError(125);
+	}
+
+
 	return tokenBuffer;
 }
