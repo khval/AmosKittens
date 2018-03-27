@@ -775,13 +775,13 @@ char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern char *_setVar( struct glueCommands *data );
+
 void file_input( struct nativeCommand *cmd )
 {
 	int idx = 0;
 	bool valid = false;
 	FILE *fd;
-
-	dump_stack();
 
 	if (cmd == NULL)
 	{
@@ -800,28 +800,56 @@ void file_input( struct nativeCommand *cmd )
 	idx = last_var - 1;
 	if (idx>-1)
 	{
-		printf("last_var: %s\n",globalVars[idx].varName) ;
-		printf("index: %d\n", globalVars[idx].var.index );
-		printf("stack: %d\n", stack);
-		printf("file io: %d\n",input_cmd_context.lastVar);
-
-		fd = input_cmd_context.lastVar ? kittyFile[ input_cmd_context.lastVar -1 ] : NULL;
+		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
+		{
+			fd = kittyFile[ input_cmd_context.lastVar -1 ] ;
+		}
+		else
+		{
+			// set some error here..
+			return;
+		}
 
 		if (fd)
 		{
 			char buffer[10000];
-			int ret = fscanf( fd, "%[^,],", buffer );
+			int ret = 0;
+			int num = 0;
+			double decimal;
 
-			printf("ret: %d\n",ret);
-
-			if (ret==1)
+			switch ( globalVars[idx].var.type & 7 )
 			{
-				printf("%s",buffer);
+				case type_int:
+
+					ret = fscanf( fd, "%d", &num );
+					if (ret==1) _num( num );
+					break;
+
+				case type_float:
+
+					ret = fscanf( fd, "%lf", &decimal );
+					if (ret==1) setStackDecimal( decimal );
+					break;
+
+				case type_string:
+
+					ret = fscanf( fd, "%[^,],", buffer );
+					if (ret==1) setStackStrDup( buffer );
+					break;
+			}
+			
+			if (ret == 1)
+			{
+				struct glueCommands varData;
+				varData.lastVar = last_var;
+				_setVar( &varData );
+			}
+			else
+			{
+				// set some error here.
 			}
 		}
 	}
-
-	getchar();
 }
 
 char *_cmdInputIn( struct glueCommands *data )
