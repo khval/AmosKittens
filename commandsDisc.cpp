@@ -23,6 +23,7 @@ extern int tokenMode;
 APTR contextDir = NULL;
 
 char *_cmdInputIn( struct glueCommands *data );
+char *_cmdLineInput( struct glueCommands *data );
 
 char *amos_to_amiga_pattern(const char *amosPattern);
 
@@ -852,6 +853,134 @@ void file_input( struct nativeCommand *cmd )
 	}
 }
 
+#if defined(__AMIGAOS4__)
+
+int getline( char **line,size_t *len, FILE *fd )
+{
+	char c;
+	int written = 0;
+	int allocated = 100;
+	char *dest,*new_dest,*d;
+
+	*len = 0;
+
+	dest = (char *) malloc( allocated + 1);	// one byte for safety.
+	d = dest;
+
+	if (dest == 0) 
+	{
+		if (*line) free(*line);
+		*line = NULL;
+		return -1;
+	}
+
+	do
+	{
+		c = fgetc(fd);
+		if (feof(fd)) break;
+
+		*d++=c;
+		written = d-dest;
+		if (written == allocated )
+		{
+			allocated += 100;
+			new_dest = (char *) malloc( allocated + 1 );
+
+			if (new_dest)
+			{
+				memcpy(new_dest,dest, written );
+				free(dest)	;
+				dest = new_dest;
+				d = dest + written;
+			}
+			else	// failed to allocate mem...
+			{
+				free(dest);
+				if (*line) free(*line);
+				*line = NULL;
+				return -1;
+			}
+		}
+
+	} while (c != '\n');
+
+	*d = 0;
+
+	if (*line) free(*line);
+	*line = dest;
+	*len = written;
+
+	return written;
+}
+
+#endif
+
+
+void file_line_input( struct nativeCommand *cmd )
+{
+	int idx = 0;
+	bool valid = false;
+	FILE *fd;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmd == NULL)
+	{
+		valid = true;
+	}
+	else	// if file_input is called from ","
+	{
+		if (cmdStack > 0)
+		{
+			if (cmdTmp[cmdStack-1].cmd == _cmdLineInput) valid = true;
+		}
+	}
+
+	if (valid == false) return;
+
+	printf("****** idx ****** \n");
+
+	idx = last_var - 1;
+	if (idx>-1)
+	{
+
+		printf("name: %s\n",  globalVars[idx].varName );
+
+		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
+		{
+			fd = kittyFile[ input_cmd_context.lastVar -1 ] ;
+		}
+		else
+		{
+			// set some error here..
+			return;
+		}
+
+		if (fd)
+		{
+			char *line = NULL;
+			ssize_t read;
+			size_t len = 0;
+			int ret = 0;
+
+			getline( &line, &len, fd );
+
+			if (line) 
+			{
+				setStackStr( line );		
+				struct glueCommands varData;
+				varData.lastVar = last_var;
+				_setVar( &varData );
+			}
+			else
+			{
+				// set some error here.
+			}
+		}
+	}
+}
+
+
 char *_cmdInputIn( struct glueCommands *data )
 {
 	getchar();
@@ -864,6 +993,7 @@ char *_cmdInputIn( struct glueCommands *data )
 
 	return NULL;
 }
+
 
 char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -887,6 +1017,52 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 		setError(125);
 	}
 
+	return tokenBuffer;
+}
+
+
+char *_cmdLineInput( struct glueCommands *data )
+{
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	getchar();
+
+	if (do_input) do_input( NULL );
+
+	do_input = NULL;
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+
+	return NULL;
+}
+
+char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
+	{
+
+		input_cmd_context.cmd = _cmdLineInput;
+		input_cmd_context.stack = stack;
+		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
+		input_cmd_context.tokenBuffer = tokenBuffer;
+
+		stackCmdNormal( _cmdLineInput, tokenBuffer );
+
+		do_input = file_line_input;
+
+		tokenBuffer += 6;
+
+		if (NEXT_TOKEN( tokenBuffer ) == 0x005C) tokenBuffer += 2;
+
+	}
+	else
+	{
+		setError(125);
+	}
 
 	return tokenBuffer;
 }
+

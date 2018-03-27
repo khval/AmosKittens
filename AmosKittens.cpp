@@ -562,6 +562,9 @@ struct nativeCommand nativeCommands[]=
 
 	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04D0, "Input",0,cmdInput },
+
+	{0x04BE, "Line Input",0,cmdLineInput },
+
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
@@ -767,7 +770,8 @@ int main()
 //	fd = fopen("amos-test/parent-set-dir.amos","r");
 //	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
 //	fd = fopen("amos-test/open-out.amos","r");
-	fd = fopen("amos-test/open-in.amos","r");
+//	fd = fopen("amos-test/open-in.amos","r");
+	fd = fopen("amos-test/line_input.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
