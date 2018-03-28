@@ -938,21 +938,16 @@ void file_line_input( struct nativeCommand *cmd )
 
 	if (valid == false) return;
 
-	printf("****** idx ****** \n");
-
 	idx = last_var - 1;
 	if (idx>-1)
 	{
-
-		printf("name: %s\n",  globalVars[idx].varName );
-
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
 			fd = kittyFile[ input_cmd_context.lastVar -1 ] ;
 		}
 		else
 		{
-			// set some error here..
+			setError(23);	// "Illegal function call"
 			return;
 		}
 
@@ -974,8 +969,12 @@ void file_line_input( struct nativeCommand *cmd )
 			}
 			else
 			{
-				// set some error here.
+				setError(100);	// end of file
 			}
+		}
+		else
+		{
+			setError(79); // file not open
 		}
 	}
 }
@@ -1060,7 +1059,7 @@ char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	else
 	{
-		setError(125);
+		setError(23);
 	}
 
 	return tokenBuffer;
@@ -1068,9 +1067,48 @@ char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_cmdInputStrFile( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack;
+	int channel = 0;
+	int len = 0;
+	char *newstr;
+	FILE *fd;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-	getchar();
+
+	if (args == 2)
+	{
+		channel = _stackInt(stack - 1 );
+		len = _stackInt(stack );
+
+		if (( channel >0)&&( channel <11))
+		{
+			fd = kittyFile[ channel -1 ] ;
+
+			if (fd)
+			{
+				popStack( stack - cmdTmp[cmdStack].stack  );
+				
+				newstr = (char *) malloc(len +1);
+
+				if (newstr)	 if (fgets( newstr, len ,fd ))
+				{
+					popStack( stack - cmdTmp[cmdStack].stack  );
+					setStackStr(newstr);
+					return NULL;
+				}
+				else
+				{
+					free(newstr);
+				}
+				
+				// set some error here
+
+				return NULL;
+			}
+			else	setError(79); // file not open
+		}
+		else	setError(23);	// "Illegal function call"
+	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -1088,9 +1126,38 @@ char *_cmdSetInput( struct glueCommands *data )
 
 char *_cmdLof( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack;
+	int channel = 0;
+	FILE *fd;
+	int pos,len;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
-	getchar();
+
+	if (args == 1)
+	{
+		channel = _stackInt(stack);
+
+		if (( channel >0)&&( channel <11))
+		{
+			fd = kittyFile[ channel -1 ] ;
+
+			if (fd)
+			{
+				popStack( stack - cmdTmp[cmdStack].stack  );
+
+				pos = ftell( fd );
+				fseek( fd, 0, SEEK_END );
+				len = ftell(fd);
+				fseek( fd, pos, SEEK_SET );
+
+				_num( len );
+				return NULL;
+			}
+			else	setError(79); // file not open
+		}
+		else	setError(23);	// "Illegal function call"
+	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -1098,9 +1165,31 @@ char *_cmdLof( struct glueCommands *data )
 
 char *_cmdPof( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack;
+	int channel = 0;
+	FILE *fd;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
-	getchar();
+
+	if (args == 1)
+	{
+		channel = _stackInt(stack);
+
+		if (( channel >0)&&( channel <11))
+		{
+			fd = kittyFile[ channel -1 ] ;
+
+			if (fd)
+			{
+				popStack( stack - cmdTmp[cmdStack].stack  );
+				_num( ftell( fd ));
+				return NULL;
+			}
+			else	setError(79); // file not open
+		}
+		else	setError(23);	// "Illegal function call"
+	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -1108,9 +1197,32 @@ char *_cmdPof( struct glueCommands *data )
 
 char *_cmdEof( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack;	
+	int channel = 0;
+	FILE *fd;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-	getchar();
+
+	if (args == 1)
+	{
+		channel = _stackInt(stack);
+
+		printf("channel: %d\n",channel);
+
+		if (( channel >0)&&( channel <11))
+		{
+			fd = kittyFile[ channel -1 ] ;
+
+			if (fd)
+			{
+				popStack( stack - cmdTmp[cmdStack].stack  );
+				_num( feof( fd ));
+				return NULL;
+			}
+			else	setError(79); // file not open
+		}
+		else	setError(23);	// "Illegal function call"
+	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
