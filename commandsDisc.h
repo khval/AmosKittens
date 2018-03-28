@@ -25,5 +25,9 @@ char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdAppend(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer);
 
-
+char *cmdInputStrFile(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdSetInput(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdLof(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdPof(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer);
 

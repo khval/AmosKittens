@@ -1066,3 +1066,89 @@ char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_cmdInputStrFile( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdSetInput( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdLof( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdPof( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdEof( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+
+char *cmdInputStrFile(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdInputStrFile, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdSetInput(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdSetInput, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdLof(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdLof, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdPof(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdPof, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdEof, tokenBuffer );
+	return tokenBuffer;
+}
+

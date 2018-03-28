@@ -460,15 +460,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_int;
 
-
-	// check it last command was * or /. and next command is not a * or /
-
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
-
-//	printf("------------ END OF Number ---------------\n");
+	flushCmdParaStack();
 
 	return ptr;
 }
@@ -593,6 +585,12 @@ struct nativeCommand nativeCommands[]=
 
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
+
+	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },
+	{0x16F2,"Set input", 0, cmdSetInput },
+	{0x187C,"Lof(f)", 0, cmdLof },
+	{0x1886,"Eof(f)", 0, cmdEof },
+	{0x1890,"Pof(f)", 0, cmdPof },
 
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17AE,"Dir",0,cmdDir },
@@ -771,7 +769,8 @@ int main()
 //	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
 //	fd = fopen("amos-test/open-out.amos","r");
 //	fd = fopen("amos-test/open-in.amos","r");
-	fd = fopen("amos-test/line_input.amos","r");
+//	fd = fopen("amos-test/line_input.amos","r");
+	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
