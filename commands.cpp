@@ -496,17 +496,9 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack();
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	if (stack > 0)
-	{
-		if (kittyStack[stack-1].state == state_subData)
-		{
-			kittyStack[stack-1] = kittyStack[stack];
-			kittyStack[stack].str = NULL;
-			stack --;
-			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-		}
-	}
+	flushCmdParaStack();
+	unLockPara();
+	flushCmdParaStack();
 
 	return tokenBuffer;
 }
