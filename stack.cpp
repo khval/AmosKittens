@@ -11,20 +11,59 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
+void unLockPara()
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmdStack)
+	{
+		struct glueCommands *cmd;
+		int state;
+
+		cmd = &cmdTmp[cmdStack-1];
+
+		if (cmd -> flag == cmd_para)
+		{
+			state = kittyStack[cmd -> stack].state;
+
+			if ( state == state_subData ) 
+			{
+				kittyStack[cmd -> stack].state = state_none;
+			}
+		}
+	}
+}
+
 void flushCmdParaStack()
 {
 	// some math operation is blocking... can't flush at this time.
-	if (stack)	if (kittyStack[stack-1].state == state_none) return;
+	if (stack)	if (kittyStack[stack-1].state != state_none) return;
 
 	// flush all params.
 	if (cmdStack)
 	{
+		struct glueCommands *cmd;
+		int state;
+
 		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
 		{
-			cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			cmd = &cmdTmp[cmdStack-1];
+			state = kittyStack[cmd -> stack].state;
+
+			if ( state == state_none ) 
+			{
+				cmd -> cmd(&cmdTmp[cmdStack]);
+				cmdStack--;
+			}
+			else 
+			{
+				printf("not ready to execute this command.\n");
+				printf("first agrument on stack has type %d\n",state);
+				break;
+			}
 
 			// some math operation is blocking... can't flush at this time.
-			if (stack)	if (kittyStack[stack-1].state == state_none) return;
+			if (stack)	if (kittyStack[stack-1].state != state_none) return;
 		}
 	}
 }

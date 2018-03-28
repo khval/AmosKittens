@@ -17,6 +17,7 @@ extern bool stackEqualStr(struct kittyData *item0, struct kittyData *item1);
 
 extern void popStack(int n);
 
+void unLockPara();
 void flushCmdParaStack();
 
 extern int _stackInt( int n );
