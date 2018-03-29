@@ -594,8 +594,8 @@ struct nativeCommand nativeCommands[]=
 
 	{0x18A8,"open random f,name", 0, cmdOpenRandom },
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
-	{0x23AC,"Get f,n", 0, cmdGet },
-	{0x23B8,"Put f,n", 0, cmdPut },
+	{0x23B8,"Get f,n", 0, cmdGet },
+	{0x23AC,"Put f,n", 0, cmdPut },
 	{0x01E6,"At",0,cmdAt },
 
 	{0x175A,"Dir$",0,cmdDirStr },
