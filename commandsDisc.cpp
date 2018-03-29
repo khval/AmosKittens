@@ -12,6 +12,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsDisc.h"
+#include "commands.h"
 #include "debug.h"
 #include "errors.h"
 
@@ -121,6 +122,11 @@ char *_cmdOpenIn( struct glueCommands *data )
 char *_cmdAppend( struct glueCommands *data )
 {
 	return _open_file_( data, "a" );
+}
+
+char *_cmdOpenRandom( struct glueCommands *data )
+{
+	return _open_file_( data, "a+" );
 }
 
 char *_cmdClose( struct glueCommands *data )
@@ -1008,6 +1014,8 @@ char *_cmdInputIn( struct glueCommands *data )
 }
 
 
+
+
 char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
@@ -1279,15 +1287,6 @@ char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
-char *_cmdOpenRandom( struct glueCommands *data )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-	getchar();
-
-	popStack( stack - cmdTmp[cmdStack].stack  );
-	return NULL;
-}
 
 char *_cmdGet( struct glueCommands *data )
 {
@@ -1321,6 +1320,8 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 	int count = 0;
 	int channel = 0;
 	unsigned short token;
+	struct reference *ref;
+	struct kittyField *fields = NULL;
 
 	token = *( (unsigned short *) ptr);
 	ptr +=2;
@@ -1334,11 +1335,19 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 					if (count == 0)
 					{
 						channel = *((int *) ptr);
+
+						if (kittyFiles[channel-1].fields == NULL)
+						{
+							kittyFiles[channel-1].fields = (struct kittyField *) malloc( sizeof(struct kittyField) * 100 );
+						}
+
+						fields = kittyFiles[channel-1].fields;
 					}
 					else
 					{
-
-					}					
+						fields[count-1].size = *((int *) ptr);
+					}
+					ptr+=2;
 					break;					
 
 			case 0x005C:	
@@ -1347,8 +1356,14 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 
 			case 0x01E6:	// as
 				break;
+
 			case 0x0006:	// var
+				ref = (struct reference *) ptr;
+				fields[count-1].ref = ref->ref;
+				ptr += sizeof(struct reference *);
+				ptr += ref -> length;
 				break;
+
 			default:
 				// error, unexpected token
 				break;
@@ -1377,4 +1392,8 @@ char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdAt(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
 
