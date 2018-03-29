@@ -65,8 +65,11 @@ void clean_up_files()
 	int n;
 	for (n=0;n<10;n++)
 	{
-		if (kittyFile[n]) fclose(kittyFile[n]);
-		kittyFile[n] = NULL;
+		if (kittyFiles[n].fd) fclose(kittyFiles[n].fd);
+		if (kittyFiles[n].fields) free(kittyFiles[n].fields);
+
+		kittyFiles[n].fd = NULL;
+		kittyFiles[n].fields = NULL;
 	}
 }
 
