@@ -132,6 +132,19 @@ struct kittyBank
 	int length;
 };
 
+struct kittyFiled
+{
+	int size;
+	int var;
+};
+
+struct kittyFile
+{
+	FILE *fd;
+	int fieldItmes;
+	struct kittyFiled *fields;
+};
+
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
@@ -199,7 +212,7 @@ extern char *_file_end_;
 
 extern APTR contextDir;
 
-extern FILE *kittyFile[10];
+extern struct kittyFile kittyFiles[10];
 
 extern void (*do_input) ( struct nativeCommand *cmd );
 extern struct glueCommands input_cmd_context;
