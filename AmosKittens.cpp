@@ -596,6 +596,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x23AC,"Get f,n", 0, cmdGet },
 	{0x23B8,"Put f,n", 0, cmdPut },
+	{0x01E6,"At",0,cmdAt },
 
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17AE,"Dir",0,cmdDir },
@@ -775,7 +776,8 @@ int main()
 //	fd = fopen("amos-test/open-out.amos","r");
 //	fd = fopen("amos-test/open-in.amos","r");
 //	fd = fopen("amos-test/line_input.amos","r");
-	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
+//	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
+	fd = fopen("amos-test/open_random.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

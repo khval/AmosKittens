@@ -35,4 +35,5 @@ char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdField(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdGet(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdAt(struct nativeCommand *cmd, char *tokenBuffer);
 

@@ -132,17 +132,17 @@ struct kittyBank
 	int length;
 };
 
-struct kittyFiled
+struct kittyField
 {
 	int size;
-	int var;
+	int ref;
 };
 
 struct kittyFile
 {
 	FILE *fd;
 	int fieldItmes;
-	struct kittyFiled *fields;
+	struct kittyField *fields;
 };
 
 #define stackCmdNormal( fn, buf )				\
