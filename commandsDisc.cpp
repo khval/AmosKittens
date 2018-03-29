@@ -126,7 +126,7 @@ char *_cmdAppend( struct glueCommands *data )
 
 char *_cmdOpenRandom( struct glueCommands *data )
 {
-	return _open_file_( data, "a+" );
+	return _open_file_( data, "w+" );
 }
 
 char *_cmdClose( struct glueCommands *data )
@@ -1013,9 +1013,6 @@ char *_cmdInputIn( struct glueCommands *data )
 	return NULL;
 }
 
-
-
-
 char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
@@ -1040,7 +1037,6 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
-
 
 char *_cmdLineInput( struct glueCommands *data )
 {
@@ -1286,12 +1282,35 @@ char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-
 char *_cmdGet( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	int channel = 0;
+	int n;
+	struct kittyField *fields = NULL;
+	FILE *fd;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
+
+	if (args == 2)
+	{
+		channel = _stackInt( stack -1 ) ;
+
+		if ((channel>0)&&(channel<11))
+		{
+			fields = kittyFiles[channel-1].fields ;
+			fd = kittyFiles[channel-1].fd ;
+
+			for (n=0; n<kittyFiles[channel-1].fieldsCount;n++)
+			{
+				printf(" [%d,%d] ", fields -> size, fields -> ref );
+				fields ++;
+			}
+			printf("\n");
+		}
+	}
+
 	getchar();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1300,8 +1319,47 @@ char *_cmdGet( struct glueCommands *data )
 
 char *_cmdPut( struct glueCommands *data )
 {
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	int channel = 0;
+	int n, index;
+	struct kittyField *fields = NULL;
+	FILE *fd;
+	char fmt[15];
+	char tmp[1000];
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
+
+	if (args == 2)
+	{
+		channel = _stackInt( stack -1 ) ;
+		index = _stackInt( stack ) ;
+
+		if ((channel>0)&&(channel<11) && (index>0))
+		{
+			fields = kittyFiles[channel-1].fields ;
+			fd = kittyFiles[channel-1].fd ;
+
+			printf("Seek to %d\n",(index -1) * kittyFiles[channel-1].fieldsSize);
+
+			fseek( fd, (index -1) * kittyFiles[channel-1].fieldsSize , SEEK_SET);
+
+			for (n=0; n<kittyFiles[channel-1].fieldsCount;n++)
+			{
+				printf(" [%d,%d] ", fields -> size, fields -> ref );
+
+				sprintf( fmt, "%%-%ds",fields -> size);
+				sprintf( tmp, fmt, globalVars[ fields -> ref -1 ].var.str );
+				tmp[ fields -> size ] = 0;
+
+				fputs(tmp,fd);
+
+				fields ++;
+			}
+			printf("\n");
+		}
+	}
+
 	getchar();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1318,6 +1376,7 @@ char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdField(struct nativeCommand *cmd, char *ptr)
 {
 	int count = 0;
+	int size = 0;
 	int channel = 0;
 	unsigned short token;
 	struct reference *ref;
@@ -1343,9 +1402,10 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 
 						fields = kittyFiles[channel-1].fields;
 					}
-					else
+					else if (fields)
 					{
 						fields[count-1].size = *((int *) ptr);
+						size += fields[count-1].size;
 					}
 					ptr+=2;
 					break;					
@@ -1358,10 +1418,14 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 				break;
 
 			case 0x0006:	// var
-				ref = (struct reference *) ptr;
-				fields[count-1].ref = ref->ref;
-				ptr += sizeof(struct reference *);
-				ptr += ref -> length;
+
+				if ((fields)&&(count))
+				{
+					ref = (struct reference *) ptr;
+					fields[count-1].ref = ref->ref;
+					ptr += sizeof(struct reference *);
+					ptr += ref -> length;
+				}
 				break;
 
 			default:
@@ -1374,6 +1438,15 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 		ptr += 2;
 
 	} while ((token != 0) && (token != 0x0054 ));
+
+	if (channel) 
+	{
+		kittyFiles[channel-1].fieldsCount = count ;
+		kittyFiles[channel-1].fieldsSize = size ;
+	}
+
+	printf("size %d, count %d\n", size, count);
+	getchar();
 
 	return ptr - 2;
 }

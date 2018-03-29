@@ -141,7 +141,8 @@ struct kittyField
 struct kittyFile
 {
 	FILE *fd;
-	int fieldItmes;
+	int fieldsCount;
+	int fieldsSize;
 	struct kittyField *fields;
 };
 
