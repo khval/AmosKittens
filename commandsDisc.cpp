@@ -44,7 +44,7 @@ char *_cmdPrintOut( struct glueCommands *data )
 
 	if ((num>-1)&&(num<10))
 	{
-		fd =  kittyFile[ num ];
+		fd =  kittyFiles[ num ].fd;
 
 		for (n=data->stack+1;n<=stack;n++)
 		{
@@ -85,14 +85,22 @@ char *_open_file_( struct glueCommands *data, const char *access )
 
 		if ((num>-1)&&(num<10))
 		{
-			if ( kittyFile[ num ] )
+			if ( kittyFiles[ num ].fd )
 			{
-				fclose( kittyFile[ num ] );
-				kittyFile[ num ] = NULL;
+				fclose( kittyFiles[ num ].fd );
+				kittyFiles[ num ].fd = NULL;
+			}
+			
+			if ( kittyFiles[ num ].fields )
+			{
+				free( kittyFiles[ num ].fields );
+				kittyFiles[ num ].fields = NULL;
 			}
 
 			_str = _stackString( stack );
-			if (_str) kittyFile[ num ] = fopen( _str, access );
+			if (_str) kittyFiles[ num ].fd = fopen( _str, access );
+
+			if (kittyFiles[ num ].fd  == NULL) setError(81);
 		}
 	}
 
@@ -128,8 +136,14 @@ char *_cmdClose( struct glueCommands *data )
 
 		if ((num>-1)&&(num<10))
 		{
-			fclose( kittyFile[ num ] );
-			kittyFile[ num ] = NULL;
+			fclose( kittyFiles[ num ].fd );
+			kittyFiles[ num ].fd = NULL;
+
+			if (kittyFiles[ num ].fields)
+			{
+				free(kittyFiles[ num ].fields);
+				kittyFiles[ num ].fields = NULL;
+			}
 		}
 	}
 
@@ -803,7 +817,7 @@ void file_input( struct nativeCommand *cmd )
 	{
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
-			fd = kittyFile[ input_cmd_context.lastVar -1 ] ;
+			fd = kittyFiles[ input_cmd_context.lastVar -1 ].fd ;
 		}
 		else
 		{
@@ -943,7 +957,7 @@ void file_line_input( struct nativeCommand *cmd )
 	{
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
-			fd = kittyFile[ input_cmd_context.lastVar -1 ] ;
+			fd = kittyFiles[ input_cmd_context.lastVar -1 ].fd ;
 		}
 		else
 		{
@@ -974,7 +988,7 @@ void file_line_input( struct nativeCommand *cmd )
 		}
 		else
 		{
-			setError(79); // file not open
+			setError(97); // file not open
 		}
 	}
 }
@@ -1082,7 +1096,7 @@ char *_cmdInputStrFile( struct glueCommands *data )
 
 		if (( channel >0)&&( channel <11))
 		{
-			fd = kittyFile[ channel -1 ] ;
+			fd = kittyFiles[ channel -1 ].fd ;
 
 			if (fd)
 			{
@@ -1105,7 +1119,7 @@ char *_cmdInputStrFile( struct glueCommands *data )
 
 				return NULL;
 			}
-			else	setError(79); // file not open
+			else	setError(97); // file not open
 		}
 		else	setError(23);	// "Illegal function call"
 	}
@@ -1140,7 +1154,7 @@ char *_cmdLof( struct glueCommands *data )
 
 		if (( channel >0)&&( channel <11))
 		{
-			fd = kittyFile[ channel -1 ] ;
+			fd = kittyFiles[ channel -1 ].fd ;
 
 			if (fd)
 			{
@@ -1154,7 +1168,7 @@ char *_cmdLof( struct glueCommands *data )
 				_num( len );
 				return NULL;
 			}
-			else	setError(79); // file not open
+			else	setError(97); // file not open
 		}
 		else	setError(23);	// "Illegal function call"
 	}
@@ -1178,7 +1192,7 @@ char *_cmdPof( struct glueCommands *data )
 
 		if (( channel >0)&&( channel <11))
 		{
-			fd = kittyFile[ channel -1 ] ;
+			fd = kittyFiles[ channel -1 ].fd ;
 
 			if (fd)
 			{
@@ -1186,7 +1200,7 @@ char *_cmdPof( struct glueCommands *data )
 				_num( ftell( fd ));
 				return NULL;
 			}
-			else	setError(79); // file not open
+			else	setError(97); // file not open
 		}
 		else	setError(23);	// "Illegal function call"
 	}
@@ -1211,7 +1225,7 @@ char *_cmdEof( struct glueCommands *data )
 
 		if (( channel >0)&&( channel <11))
 		{
-			fd = kittyFile[ channel -1 ] ;
+			fd = kittyFiles[ channel -1 ].fd ;
 
 			if (fd)
 			{
@@ -1219,7 +1233,7 @@ char *_cmdEof( struct glueCommands *data )
 				_num( feof( fd ));
 				return NULL;
 			}
-			else	setError(79); // file not open
+			else	setError(97); // file not open
 		}
 		else	setError(23);	// "Illegal function call"
 	}
@@ -1263,4 +1277,104 @@ char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _cmdEof, tokenBuffer );
 	return tokenBuffer;
 }
+
+
+char *_cmdOpenRandom( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdGet( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *_cmdPut( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+	getchar();
+
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdOpenRandom, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdField(struct nativeCommand *cmd, char *ptr)
+{
+	int count = 0;
+	int channel = 0;
+	unsigned short token;
+
+	token = *( (unsigned short *) ptr);
+	ptr +=2;
+
+	do 
+	{
+		switch (token)
+		{
+			case 0x003E:	// number.
+
+					if (count == 0)
+					{
+						channel = *((int *) ptr);
+					}
+					else
+					{
+
+					}					
+					break;					
+
+			case 0x005C:	
+				count ++;
+				break;
+
+			case 0x01E6:	// as
+				break;
+			case 0x0006:	// var
+				break;
+			default:
+				// error, unexpected token
+				break;
+		}
+
+		last_token = token;
+		token = *( (short *) ptr);
+		ptr += 2;
+
+	} while ((token != 0) && (token != 0x0054 ));
+
+	return ptr - 2;
+}
+
+char *cmdGet(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdGet, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdPut, tokenBuffer );
+	return tokenBuffer;
+}
+
 

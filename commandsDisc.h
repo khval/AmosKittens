@@ -31,3 +31,8 @@ char *cmdLof(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdPof(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdField(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdGet(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer);
+

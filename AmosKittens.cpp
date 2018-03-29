@@ -45,7 +45,7 @@ void _num( int num );
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
-FILE *kittyFile[10];
+struct kittyFile kittyFiles[10];
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
@@ -591,6 +591,11 @@ struct nativeCommand nativeCommands[]=
 	{0x187C,"Lof(f)", 0, cmdLof },
 	{0x1886,"Eof(f)", 0, cmdEof },
 	{0x1890,"Pof(f)", 0, cmdPof },
+
+	{0x18A8,"open random f,name", 0, cmdOpenRandom },
+	{0x1948,"Field f,size as nane$,...", 0, cmdField },
+	{0x23AC,"Get f,n", 0, cmdGet },
+	{0x23B8,"Put f,n", 0, cmdPut },
 
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17AE,"Dir",0,cmdDir },
