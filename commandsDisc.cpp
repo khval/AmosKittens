@@ -1286,9 +1286,10 @@ char *_cmdGet( struct glueCommands *data )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int channel = 0;
-	int n;
+	int n, index;
 	struct kittyField *fields = NULL;
 	FILE *fd;
+	char *str;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
@@ -1296,15 +1297,25 @@ char *_cmdGet( struct glueCommands *data )
 	if (args == 2)
 	{
 		channel = _stackInt( stack -1 ) ;
+		index = _stackInt( stack ) ;
 
-		if ((channel>0)&&(channel<11))
+		if ((channel>0)&&(channel<11) && (index>0))
 		{
 			fields = kittyFiles[channel-1].fields ;
 			fd = kittyFiles[channel-1].fd ;
 
+			printf("Seek to %d\n",(index -1) * kittyFiles[channel-1].fieldsSize);
+
+			fseek( fd, (index -1) * kittyFiles[channel-1].fieldsSize , SEEK_SET);
+
 			for (n=0; n<kittyFiles[channel-1].fieldsCount;n++)
 			{
-				printf(" [%d,%d] ", fields -> size, fields -> ref );
+				if (globalVars[ fields -> ref -1 ].var.str) free(globalVars[ fields -> ref -1 ].var.str);
+
+				str = (char *) malloc( fields -> size + 1);
+				fgets(str,fields -> size+1,fd);
+				globalVars[ fields -> ref -1 ].var.str = str;
+				
 				fields ++;
 			}
 			printf("\n");
