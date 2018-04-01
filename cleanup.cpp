@@ -10,6 +10,7 @@
 extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
 extern int global_var_count;
+extern char *dir_first_pattern ;
 
 void clean_up_vars()
 {
@@ -79,6 +80,12 @@ void clean_up_special()
 	{
 		ReleaseDirContext(contextDir);
 		contextDir = NULL;
+	}
+
+	if (dir_first_pattern)
+	{
+		free(dir_first_pattern);
+		dir_first_pattern = NULL;
 	}
 }
 
