@@ -19,9 +19,13 @@ extern int tokenMode;
 extern int tokenlength;
 
 extern char *findLabel( char *name );
+extern int findVarPublic( char *name );
+//extern int findVar( char *name, int _proc );
+
 
 char *(*onError)(char *ptr) = NULL;
 char *on_error_goto_location = NULL;
+char *on_error_proc_location = NULL;
 
 char *_cmdError( struct glueCommands *data )
 {
@@ -82,10 +86,17 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 
 					if (name)
 					{
+						int found;
 						printf("name: %s\n",name);
 
-//						on_error_goto_location = findLabel(name);
-//						onError = onErrorGoto;
+						found = findVarPublic(name);
+
+						if (found)
+						{
+							on_error_proc_location = globalVars[found -1].var.tokenBufferPos;
+							onError = onErrorProc;
+						}
+
 						free(name);
 					}
 
@@ -120,6 +131,20 @@ char *onErrorGoto(char *ptr)
 	{
 		kittyError.newError = false;
 		return on_error_goto_location;
+	}
+	else
+	{
+		return ptr;
+	}
+}
+
+char *onErrorProc(char *ptr)
+{
+	if ( kittyError.newError )
+	{
+		kittyError.newError = false;
+		stackCmdLoop( _procedure, ptr);
+		return on_error_proc_location;
 	}
 	else
 	{
