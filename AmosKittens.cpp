@@ -504,6 +504,9 @@ struct nativeCommand nativeCommands[]=
 	{0x0006, "", sizeof(struct reference),cmdVar},
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0012, "procedure with args",sizeof(struct reference),cmdProcAndArgs },
+
+	{0x0018, "", sizeof(struct reference),cmdVar},		// being a dick here its proc not a var
+
 	{0x0026, "\"",2, cmdQuote },
 	{0x003E, "",4,cmdNumber },
 	{0x0046, "",4,cmdFloat },
@@ -649,7 +652,9 @@ struct nativeCommand nativeCommands[]=
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
 
-	{0x02E6, "on error", 0, cmdOnError }
+	{0x02E6, "on error", 0, cmdOnError },
+	{0x031E, "Resume Label", 0, cmdResumeLabel },
+	{0x03EE, "Error", 0, cmdError }
 
 };
 
@@ -783,7 +788,8 @@ int main()
 //	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
 //	fd = fopen("amos-test/open_random.amos","r");
 //	fd = fopen("amos-test/dir_first_dir_next.amos","r");
-	fd = fopen("amos-test/on_error_goto.amos","r");
+//	fd = fopen("amos-test/on_error_goto.amos","r");
+	fd = fopen("amos-test/on_error_proc.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

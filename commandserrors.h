@@ -8,6 +8,9 @@ extern char *(*onError)(char *ptr);
 
 extern char *onErrorBreak(char *ptr);
 extern char *onErrorGoto(char *ptr);
+extern char *onErrorProc(char *ptr);
 
+extern char *cmdError(nativeCommand *cmd, char *ptr);
 extern char *cmdOnError(nativeCommand *cmd, char *ptr);
+extern char *cmdResumeLabel(nativeCommand *cmd, char *ptr);
 
