@@ -385,7 +385,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			case 0x0006:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x000C:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0012:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
-			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
+			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;				
 			case 0x0386:   token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0026:	token_size = QuoteByteLength(ptr)+2; break;
 			case 0x002E:	token_size = QuoteByteLength(ptr)+2; break;
@@ -394,6 +394,9 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			// skip other commands data
 
 			default:
+		
+				printf("other\n");
+
 
 				for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 				{
@@ -450,8 +453,6 @@ void pass1_proc_end( char *ptr )
 {
 	char *ret;
 
-	getchar();
-
 	if ( *((short *) ptr) == 0x0084 )
 	{
 		ret = FinderTokenInBuffer( ptr, 0x008C , 0x0000, 0x0000, _file_end_ );
@@ -464,8 +465,6 @@ void pass1_proc_end( char *ptr )
 	{
 		((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr-2;
 	}
-
-	getchar();
 
 	nested_count --;
 }
@@ -528,6 +527,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0012:	pass1var( ptr, false );	
 							ret += ReferenceByteLength(ptr); 
+							break;
+
+				case 0x0018:	ret += ReferenceByteLength(ptr); 
 							break;
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
