@@ -15,6 +15,7 @@
 #include "commandsMath.h"
 #include "commandsBanks.h"
 #include "commandsDisc.h"
+#include "commandsErrors.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -648,6 +649,8 @@ struct nativeCommand nativeCommands[]=
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
 
+	{0x02E6, "on error", 0, cmdOnError }
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -700,10 +703,8 @@ void code_reader( char *start, int tokenlength )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
-		if ( kittyError.code != 0) break;
-
-
-		if ( ptr == NULL ) break;
+		ptr = onError( ptr );
+		if (ptr == NULL) break;
 
 		last_token = token;
 		token = *((short *) ptr);
@@ -724,6 +725,9 @@ int main()
 
 	stack = 0;
 	cmdStack = 0;
+
+	onError = onErrorBreak;
+
 
 	memset(globalVars,0,sizeof(globalVars));
 
@@ -777,7 +781,9 @@ int main()
 //	fd = fopen("amos-test/open-in.amos","r");
 //	fd = fopen("amos-test/line_input.amos","r");
 //	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
-	fd = fopen("amos-test/open_random.amos","r");
+//	fd = fopen("amos-test/open_random.amos","r");
+//	fd = fopen("amos-test/dir_first_dir_next.amos","r");
+	fd = fopen("amos-test/on_error_goto.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -805,7 +811,7 @@ int main()
 				code_reader( data, tokenlength );
 			}
 
-			if (kittyError.code != 0)
+			if (kittyError.newError)
 			{
 				printError( &kittyError, runtime ? errorsRunTime : errorsTestTime );
 			}
@@ -813,14 +819,14 @@ int main()
 
 		fclose(fd);
 
-		if (kittyError.code == 0)
+		if (kittyError.newError == false)
 		{
 			dump_end_of_program();
 		}
 	}
 	else
 	{
-		printf("FILE not open\n");
+		printf("AMOS file not open/can't find it\n");
 	}
 
 		clean_up_vars();
