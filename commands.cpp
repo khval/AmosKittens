@@ -1130,3 +1130,84 @@ char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+
+char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	int num = 0;
+	unsigned short ref_num = 0;
+	unsigned short token = 0;
+
+	tokenBuffer += 4;	// skip crap, no idea what use this for... :-P
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+		int idx = ref->ref-1;
+
+		printf("works\n");
+
+		switch ( globalVars[idx].var.type )
+		{
+			case type_int:
+				num = globalVars[idx].var.value;
+				break;
+		}
+
+		tokenBuffer += (2 + ref -> length + sizeof(struct reference ));
+
+		token = NEXT_TOKEN(tokenBuffer);
+		if ( (token==0x02A8) || (token==0x02B2) || (token==0x0386) ) 
+		{
+			tokenBuffer += 2;	// we know this tokens..
+
+			printf("success I think :-) num is %d\n", num);
+
+			for(;;)
+			{			
+				switch (NEXT_TOKEN(tokenBuffer))
+				{
+					case 0x0006:
+						tokenBuffer +=2;
+						ref = (struct reference *) (tokenBuffer);
+						num--;
+						if (num == 0)	ref_num = ref -> ref;
+						tokenBuffer += sizeof(struct reference) + ref -> length;
+						break;
+					case 0x005C:
+						tokenBuffer +=2;
+						break;
+					default: 
+						goto exit_on_for_loop;
+				}
+			}
+
+exit_on_for_loop:
+
+			if (ref_num>0)
+			{
+				printf("name: %s\n",globalVars[ref_num-1].varName);
+
+				switch (token)
+				{
+					case 0x02A8:	// goto
+							tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+							break;
+					case 0x02B2:	// gosub
+							stackCmdLoop( _gosub, tokenBuffer + 2);
+							tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+							break;
+					case 0x0386:	// proc
+							break;
+				}
+
+			}
+		}
+	}
+
+	tokenBuffer -= 4;	// yes right, 4 will be added by main program.
+
+	getchar();
+
+	return tokenBuffer;
+}
+

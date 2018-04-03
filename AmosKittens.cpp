@@ -654,7 +654,8 @@ struct nativeCommand nativeCommands[]=
 
 	{0x02E6, "on error", 0, cmdOnError },
 	{0x031E, "Resume Label", 0, cmdResumeLabel },
-	{0x03EE, "Error", 0, cmdError }
+	{0x03EE, "Error", 0, cmdError },
+	{0x0316, "On", 4, cmdOn }
 
 };
 
@@ -789,7 +790,8 @@ int main()
 //	fd = fopen("amos-test/open_random.amos","r");
 //	fd = fopen("amos-test/dir_first_dir_next.amos","r");
 //	fd = fopen("amos-test/on_error_goto.amos","r");
-	fd = fopen("amos-test/on_error_proc.amos","r");
+//	fd = fopen("amos-test/on_error_proc.amos","r");
+	fd = fopen("amos-test/on_gosub.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

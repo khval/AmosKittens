@@ -42,6 +42,8 @@ char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer );
+
 char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer );
 
