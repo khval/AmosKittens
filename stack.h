@@ -15,10 +15,14 @@ extern bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1);
 extern bool stackLessStr(struct kittyData *item0,	struct kittyData *item1);
 extern bool stackEqualStr(struct kittyData *item0, struct kittyData *item1);
 
+extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1);
+extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1);
+
 extern void popStack(int n);
 
 void unLockPara();
 void flushCmdParaStack();
+void flushProgStackToProc( char *(*fn) (struct glueCommands *data) );
 
 extern int _stackInt( int n );
 extern char *_stackString( int n );

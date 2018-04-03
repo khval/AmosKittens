@@ -525,11 +525,12 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr); 
 							break;
 
-				case 0x0012:	pass1var( ptr, false );	
+				case 0x0012:	pass1var( ptr, false );
 							ret += ReferenceByteLength(ptr); 
 							break;
 
-				case 0x0018:	ret += ReferenceByteLength(ptr); 
+				case 0x0018:	pass1label( ptr );
+							ret += ReferenceByteLength(ptr); 
 							break;
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.

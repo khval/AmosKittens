@@ -5,6 +5,7 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -20,12 +21,12 @@ extern int tokenlength;
 
 extern char *findLabel( char *name );
 extern int findVarPublic( char *name );
-//extern int findVar( char *name, int _proc );
-
+extern std::vector<struct label> labels;
 
 char *(*onError)(char *ptr) = NULL;
 char *on_error_goto_location = NULL;
 char *on_error_proc_location = NULL;
+char *resume_location = NULL;
 
 char *_cmdError( struct glueCommands *data )
 {
@@ -109,14 +110,47 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-extern char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
+char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
+
+char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 {
+	struct reference *ref;
 	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
+
+	switch (NEXT_TOKEN(tokenBuffer))
+	{
+		case 0x0018:
+
+			ref = (struct reference *) (tokenBuffer + 2);
+			tokenBuffer += 2;
+
+			if (ref->ref)
+			{
+				resume_location = labels[ref->ref-1].tokenLocation+2;
+			}
+
+			tokenBuffer += sizeof(struct reference) + ref -> length;
+			break;
+
+		case 0x0000:
+		case 0x0054:
+
+			flushProgStackToProc( _procedure );	// might be in a loop or something.
+
+			if (cmdStack)
+			{
+				if (cmdTmp[cmdStack-1].cmd == _procedure ) 
+				{
+					printf(" maybe need flush some stack here? %d - %d --\n", cmdTmp[cmdStack-1].stack, stack );
+					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+				}
+			}
+			if ( resume_location ) tokenBuffer = resume_location;
+			break;
+	}
 
 	return tokenBuffer;
 }
-
-
 
 char *onErrorBreak(char *ptr)
 {

@@ -11,6 +11,16 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
+void flushProgStackToProc( char *(*fn) (struct glueCommands *data) )
+{
+	while (cmdStack > 0)
+	{
+		if (cmdTmp[cmdStack-1].cmd == fn) return;
+		cmdStack--;
+	}
+}
+
+
 void unLockPara()
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
