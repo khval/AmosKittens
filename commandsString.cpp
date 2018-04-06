@@ -9,6 +9,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
+#include "commandsData.h"
 #include "debug.h"
 #include "errors.h"
 
@@ -56,13 +57,23 @@ char *_print( struct glueCommands *data )
 	printf("\n");
 	
 	popStack( stack - data->stack );
+	do_breakdata = NULL;	// done doing that.
 
 	return NULL;
+}
+
+void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _addData, tokenBuffer );
+	stack++;
 }
 
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
 	stackCmdNormal( _print, ptr );
+
+	do_breakdata = _print_break;
+
 	return ptr;
 }
 
