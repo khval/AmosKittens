@@ -120,31 +120,6 @@ char *_step( struct glueCommands *data )
 	return NULL;
 }
 
-char *_input( struct glueCommands *data )
-{
-	int n;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	for (n=data->stack;n<=stack;n++)
-	{
-		switch (kittyStack[n].type)
-		{
-			case 0:
-				printf("%d", kittyStack[n].value);
-				break;
-			case 1:
-				printf("%f", kittyStack[n].decimal);
-				break;
-			case 2:
-				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
-				break;
-
-		}
-	}
-	return NULL;
-}
-
 char *_if( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -211,26 +186,6 @@ char *_repeat( struct glueCommands *data )
 }
 
 
-char *cmdInput(nativeCommand *cmd, char *ptr)
-{
-	printf("----------- START -------------------\n");
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (NEXT_TOKEN( ptr ) == 0x0006)
-	{
-		input_mode(ptr);
-	}
-	else
-	{
-		tokenMode = mode_input;
-		stackCmdNormal( _input, ptr );
-	}
-
-	printf("-------------- END --------------------\n");
-
-	return ptr;
-}
 
 
 
@@ -467,14 +422,11 @@ char *_setVarReverse( struct glueCommands *data )
 
 //--------------------------------------------------------
 
-
-
-
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack();
 	
-	if (do_input) do_input( cmd );	// read from keyboad or disk.
+	if (do_input) do_input( cmd, tokenBuffer );	// read from keyboad or disk.
 
 	stack++;
 	return tokenBuffer;
@@ -503,63 +455,10 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void	input_mode( char *tokenBuffer )
-{
-	std::string input;
-	int num;
-	double des;
-
-	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
-	{
-		struct reference *ref = (struct reference *) (tokenBuffer + 2);
-		int idx = ref->ref-1;
-
-		flushCmdParaStack();
-
-		getline(cin, input);
-
-		switch ( globalVars[idx].var.type & 7 )
-		{
-			case type_int:
-				sscanf( input.c_str(), "%d", &num );
-				_num( num );
-				break;
-
-			case type_float:
-
-				sscanf( input.c_str(), "%llf", &des );
-				setStackDecimal( des );
-				break;
-
-			case type_string:
-				setStackStrDup( input.c_str() );
-				break;
-		}
-
-		stack++;
-				 
-		stackCmdParm( _setVarReverse, tokenBuffer );
-	}
-}
-
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (tokenMode)
-	{
- 		case mode_standard:
-			stackCmdParm( _addData, tokenBuffer );
-			stack++;
-			break;
-
-		case mode_input:
-			input_mode( tokenBuffer );
-			break;
-	}
-
+	if (do_breakdata) do_breakdata( cmd, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -1211,3 +1110,136 @@ exit_on_for_loop:
 	return tokenBuffer;
 }
 
+void _input_arg( struct nativeCommand *cmd, char *tokenBuffer );
+int input_count = 0;
+std::string input_str;
+
+char *_Input(struct glueCommands *data)
+{
+	int args = stack - data -> stack +1;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	_input_arg( NULL, NULL );
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	popStack( stack - data -> stack  );
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	_num(-1);		// quit;
+
+	do_input = NULL;
+	do_breakdata = NULL;
+
+	return NULL;
+}
+
+void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	int args = 0;
+	int index = 0;
+	int idx;
+	size_t i;
+	std::string arg = "";
+	struct glueCommands data;
+	bool success = false;
+	int num;
+	double des;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (cmd == NULL)
+	{
+		args = stack - cmdTmp[cmdStack].stack + 1;
+	}
+	else
+	{
+		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _Input)
+		{
+			args = stack - cmdTmp[cmdStack-1].stack + 1;
+		}
+	}
+	
+	if ((input_count == 0)&&(stack))		// should be one arg.
+	{
+		char *str = _stackString( stack-args+1 );
+		if (str) printf("%s", str);
+	}
+	else if (input_str.empty())
+	{
+		printf("??? ");
+	}
+
+	do
+	{
+		do
+		{
+			while (input_str.empty()) getline(cin, input_str);
+
+			i = input_str.find(",");	
+			if (i != std::string::npos)
+			{
+				arg = input_str.substr(0,i); input_str.erase(0,i+1);
+			}
+			else	
+			{
+				arg = input_str; input_str = "";
+			}
+		}
+		while ( arg.empty() );
+
+		if (last_var)
+		{
+			switch (globalVars[last_var -1].var.type & 7)
+			{	
+				case type_string:
+					success = true; break;
+				case type_int:
+					success = arg.find_first_not_of( "-0123456789" ) == std::string::npos; break;
+				case type_float:
+					success = arg.find_first_not_of( "-0123456789." ) == std::string::npos; break;
+			}
+		}
+	}
+	while (!success);
+
+	switch (globalVars[last_var -1].var.type & 7)
+	{	
+		case type_string:
+			setStackStrDup(arg.c_str()); break;
+
+		case type_int:
+			sscanf(arg.c_str(),"%d",&num); _num(num); break;
+
+		case type_float:
+			sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
+	}
+
+	data.lastVar = last_var;
+	_setVar( &data );
+	input_count ++;
+}
+
+void breakdata_inc_stack( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stack++;
+}
+
+char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	input_count = 0;
+	input_str = "";
+
+	do_input = _input_arg;
+	do_breakdata = breakdata_inc_stack;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _Input, tokenBuffer );
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+
+	return tokenBuffer;
+}
