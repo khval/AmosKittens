@@ -848,7 +848,7 @@ char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer)
 
 extern char *_setVar( struct glueCommands *data );
 
-void file_input( struct nativeCommand *cmd )
+void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int idx = 0;
 	bool valid = false;
@@ -986,7 +986,7 @@ int getline( char **line,size_t *len, FILE *fd )
 #endif
 
 
-void file_line_input( struct nativeCommand *cmd )
+void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int idx = 0;
 	bool valid = false;
@@ -1054,7 +1054,7 @@ char *_cmdInputIn( struct glueCommands *data )
 {
 	getchar();
 
-	if (do_input) do_input( NULL );
+	if (do_input) do_input( NULL, NULL );
 
 	do_input = NULL;
 
@@ -1095,7 +1095,7 @@ char *_cmdLineInput( struct glueCommands *data )
 
 	getchar();
 
-	if (do_input) do_input( NULL );
+	if (do_input) do_input( NULL, NULL );
 
 	do_input = NULL;
 

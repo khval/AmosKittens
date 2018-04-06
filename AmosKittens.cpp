@@ -38,7 +38,8 @@ int tokenlength;
 char *data_read_pointer = NULL;
 
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
-void (*do_input) ( struct nativeCommand *cmd ) = NULL;
+void (*do_input) ( struct nativeCommand *, char * ) = NULL;
+void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
 void _num( int num );
@@ -344,12 +345,14 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (jump_mode)
 	{
-
 		printf("jump_mode\n");
 		return jump_mode( ref, ptr );
 	}
 
 	last_var = ref -> ref;
+
+
+	printf("----- stack %d\n",stack);
 
 	if (next_token == 0x0074)	// ( symbol
 	{
@@ -626,8 +629,8 @@ struct nativeCommand nativeCommands[]=
 	{0xFF7A,"<=",0,lessOrEqualData },
 	{0xFF84,"<=",0,lessOrEqualData },
 
-	{0xFF8E,"<=",0,moreOrEqualData },
-	{0xFF98,"<=",0,moreOrEqualData },
+	{0xFF8E,">=",0,moreOrEqualData },
+	{0xFF98,">=",0,moreOrEqualData },
 
 	{0xFFAC,"<",0, lessData },
 	{0xFFB6,">",0, moreData },
@@ -792,6 +795,7 @@ int main()
 //	fd = fopen("amos-test/on_error_goto.amos","r");
 //	fd = fopen("amos-test/on_error_proc.amos","r");
 	fd = fopen("amos-test/on_gosub.amos","r");
+//	fd = fopen("amos-test/input_two_args.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
