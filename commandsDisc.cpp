@@ -26,7 +26,7 @@ char *dir_first_pattern = NULL;
 char *dir_first_path = NULL;
 
 char *_cmdInputIn( struct glueCommands *data );
-char *_cmdLineInput( struct glueCommands *data );
+char *_cmdLineInputFile( struct glueCommands *data );
 
 char *amos_to_amiga_pattern(const char *amosPattern);
 void split_path_pattern(const char *str, char **path, const char **pattern);
@@ -1002,7 +1002,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if (cmdStack > 0)
 		{
-			if (cmdTmp[cmdStack-1].cmd == _cmdLineInput) valid = true;
+			if (cmdTmp[cmdStack-1].cmd == _cmdLineInputFile) valid = true;
 		}
 	}
 
@@ -1088,7 +1088,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdLineInput( struct glueCommands *data )
+char *_cmdLineInputFile( struct glueCommands *data )
 {
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1104,19 +1104,19 @@ char *_cmdLineInput( struct glueCommands *data )
 	return NULL;
 }
 
-char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer)
+char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
 
-		input_cmd_context.cmd = _cmdLineInput;
+		input_cmd_context.cmd = _cmdLineInputFile;
 		input_cmd_context.stack = stack;
 		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
 		input_cmd_context.tokenBuffer = tokenBuffer;
 
-		stackCmdNormal( _cmdLineInput, tokenBuffer );
+		stackCmdNormal( _cmdLineInputFile, tokenBuffer );
 
 		do_input = file_line_input;
 

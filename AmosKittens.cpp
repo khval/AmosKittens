@@ -562,7 +562,7 @@ struct nativeCommand nativeCommands[]=
 	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04D0, "Input",0,cmdInput },
 
-	{0x04BE, "Line Input",0,cmdLineInput },
+	{0x04BE, "Line Input #",0,cmdLineInputFile },
 
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
@@ -788,13 +788,14 @@ int main()
 //	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
 //	fd = fopen("amos-test/open-out.amos","r");
 //	fd = fopen("amos-test/open-in.amos","r");
-//	fd = fopen("amos-test/line_input.amos","r");
+//	fd = fopen("amos-test/line_input_file.amos","r");
+	fd = fopen("amos-test/line_input.amos","r");
 //	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
 //	fd = fopen("amos-test/open_random.amos","r");
 //	fd = fopen("amos-test/dir_first_dir_next.amos","r");
 //	fd = fopen("amos-test/on_error_goto.amos","r");
 //	fd = fopen("amos-test/on_error_proc.amos","r");
-	fd = fopen("amos-test/on_gosub.amos","r");
+//	fd = fopen("amos-test/on_gosub.amos","r");
 //	fd = fopen("amos-test/input_two_args.amos","r");
 	if (fd)
 	{

@@ -19,7 +19,7 @@ char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdOpenIn(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdAppend(struct nativeCommand *cmd, char *tokenBuffer);
