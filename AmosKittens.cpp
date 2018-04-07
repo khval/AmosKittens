@@ -460,10 +460,8 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		stack++;
 	}
 
-	kittyStack[stack].value = *((int *) ptr);
+	_num( *((int *) ptr) );
 	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_int;
-
 	flushCmdParaStack();
 
 	return ptr;
@@ -656,6 +654,7 @@ struct nativeCommand nativeCommands[]=
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
 
+	{0x029E, "Exit", 2, cmdExit },
 	{0x02E6, "on error", 0, cmdOnError },
 	{0x031E, "Resume Label", 0, cmdResumeLabel },
 	{0x03EE, "Error", 0, cmdError },
@@ -789,7 +788,7 @@ int main()
 //	fd = fopen("amos-test/open-out.amos","r");
 //	fd = fopen("amos-test/open-in.amos","r");
 //	fd = fopen("amos-test/line_input_file.amos","r");
-	fd = fopen("amos-test/line-input.amos","r");
+//	fd = fopen("amos-test/line-input.amos","r");
 //	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
 //	fd = fopen("amos-test/open_random.amos","r");
 //	fd = fopen("amos-test/dir_first_dir_next.amos","r");
@@ -797,6 +796,7 @@ int main()
 //	fd = fopen("amos-test/on_error_proc.amos","r");
 //	fd = fopen("amos-test/on_gosub.amos","r");
 //	fd = fopen("amos-test/input_two_args.amos","r");
+	fd = fopen("amos-test/exit.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
