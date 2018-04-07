@@ -622,16 +622,23 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x0404:	if (data_read_pointer == 0) data_read_pointer = ptr + 2;
+							break;
 
 			}
-
+	
 			ret += cmd -> size;
+
+
+			printf("cmd size %d\n",cmd->size);
+
 			return ret;
 		}
 	}
 
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
+
+setError(35);
 
 	return NULL;
 }
