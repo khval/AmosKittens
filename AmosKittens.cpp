@@ -563,6 +563,7 @@ struct nativeCommand nativeCommands[]=
 	{0x04D0, "Input",0,cmdInput },
 
 	{0x04BE, "Line Input #",0,cmdLineInputFile },
+	{0x04DC, "Line Input", 0, cmdLineInput },
 
 	{0x050E, "Mid$",0,cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
@@ -659,7 +660,6 @@ struct nativeCommand nativeCommands[]=
 	{0x031E, "Resume Label", 0, cmdResumeLabel },
 	{0x03EE, "Error", 0, cmdError },
 	{0x0316, "On", 4, cmdOn }
-
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -789,7 +789,7 @@ int main()
 //	fd = fopen("amos-test/open-out.amos","r");
 //	fd = fopen("amos-test/open-in.amos","r");
 //	fd = fopen("amos-test/line_input_file.amos","r");
-	fd = fopen("amos-test/line_input.amos","r");
+	fd = fopen("amos-test/line-input.amos","r");
 //	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
 //	fd = fopen("amos-test/open_random.amos","r");
 //	fd = fopen("amos-test/dir_first_dir_next.amos","r");

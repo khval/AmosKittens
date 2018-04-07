@@ -11,6 +11,7 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer);
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer);
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer);
