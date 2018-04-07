@@ -1327,3 +1327,19 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+char *_cmdExit(struct glueCommands *data)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data -> stack +1;
+	popStack( stack - data -> stack  );
+	return NULL;
+}
+
+char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdExit, tokenBuffer );
+
+	return tokenBuffer;
+}
