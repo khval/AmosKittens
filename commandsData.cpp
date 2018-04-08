@@ -607,14 +607,7 @@ char *_addData( struct glueCommands *data )
 
 	args = stack - data -> stack + 1;
 
-
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	printf("args: %d\n",args) ;
-
-
-	dump_stack();
-
-	getchar();
 
 	if (stack==0) 
 	{
