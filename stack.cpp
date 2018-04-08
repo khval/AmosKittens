@@ -11,6 +11,7 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
+
 bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) )
 {
 	while (cmdStack > 0)
@@ -285,7 +286,6 @@ void correct_for_hidden_sub_data()
 			kittyStack[stack-1] = kittyStack[stack];
 			kittyStack[stack].str = NULL;
 			stack --;
-			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		}
 	}
 }
