@@ -11,6 +11,38 @@ extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
+char *_for (struct glueCommands *data);
+char *_do (struct glueCommands *data);
+char *_equal (struct glueCommands *data);
+char *_andData (struct glueCommands *data);
+
+struct stackDebugSymbol
+{
+	char *(*fn) (struct glueCommands *data);
+	const char *name;
+};
+
+struct stackDebugSymbol stackDebugSymbols[] =
+{
+	{_for,"_for" },
+	{_do,"_do" },
+	{_equal, "=" },
+	{_andData, "AND" },
+	{NULL, NULL}
+};
+
+const char *findDebugSymbolName( char *(*fn) (struct glueCommands *data) )
+{
+	struct stackDebugSymbol *ptr;
+
+	for (ptr = stackDebugSymbols; ptr -> fn; ptr++)
+	{
+		if (ptr -> fn == fn) return ptr -> name;
+	}
+
+	return NULL;
+}
+
 void dumpLabels()
 {
 	int n;
@@ -110,10 +142,15 @@ void dump_global()
 void dump_prog_stack()
 {
 	int n;
+	const char *name;
+
 
 	for (n=0; n<cmdStack;n++)
 	{
-		printf("cmdTmp[%d].cmd = %08x\n", n, cmdTmp[n].cmd);
+
+		name = findDebugSymbolName( cmdTmp[n].cmd );
+
+		printf("cmdTmp[%d].cmd = %08x (%s) \n", n, cmdTmp[n].cmd, name ? name : "?????" );
 		printf("cmdTmp[%d].tokenBuffer = %08x\n", n, cmdTmp[n].tokenBuffer);
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
