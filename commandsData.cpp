@@ -392,21 +392,6 @@ char *_moreOrEqualData( struct glueCommands *data )
 }
 
 
-void correct_for_hidden_sub_data()
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (stack > 0)
-	{
-		while (kittyStack[stack-1].state == state_hidden_subData)
-		{
-			kittyStack[stack-1] = kittyStack[stack];
-			kittyStack[stack].str = NULL;
-			stack --;
-			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-		}
-	}
-}
 
 char *_orData( struct glueCommands *data )
 {
@@ -473,11 +458,15 @@ char *_orData( struct glueCommands *data )
 char *_andData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	getchar();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
+
+	dump_stack();
+
 
 	if (stack==0) 
 	{
@@ -1032,11 +1021,16 @@ char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 {
+
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	flushCmdParaStack();
-
 	stackCmdParm( _andData, tokenBuffer );
+
+	dump_prog_stack();
+
+	getchar();
+
 	stack++;
 	return tokenBuffer;
 }

@@ -19,11 +19,12 @@ extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1
 extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1);
 
 extern void popStack(int n);
+extern void correct_for_hidden_sub_data();
 
-void unLockPara();
-void flushCmdParaStack();
-bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
-bool dropProgStackToType( int type );
+extern void unLockPara();
+extern void flushCmdParaStack();
+extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
+extern bool dropProgStackToType( int type );
 
 extern int _stackInt( int n );
 extern char *_stackString( int n );

@@ -274,3 +274,18 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	return true;
 }
 
+void correct_for_hidden_sub_data()
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (stack > 0)
+	{
+		while (kittyStack[stack-1].state == state_hidden_subData)
+		{
+			kittyStack[stack-1] = kittyStack[stack];
+			kittyStack[stack].str = NULL;
+			stack --;
+			if (cmdStack) if (stack) if (kittyStack[stack-1].state == state_none) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		}
+	}
+}
