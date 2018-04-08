@@ -800,7 +800,8 @@ int main()
 //	fd = fopen("amos-test/on_error_proc.amos","r");
 //	fd = fopen("amos-test/on_gosub.amos","r");
 //	fd = fopen("amos-test/input_two_args.amos","r");
-	fd = fopen("amos-test/exit.amos","r");
+//	fd = fopen("amos-test/exit.amos","r");
+	fd = fopen("amos-test/exit2.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
