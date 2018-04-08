@@ -46,7 +46,8 @@ enum
 	cmd_first = 0,
 	cmd_index, 
 	cmd_para,
-	cmd_loop
+	cmd_loop,
+	cmd_proc
 };
 
 enum
@@ -72,7 +73,7 @@ struct glueCommands
 	char *(*cmd) ( struct glueCommands *data );	// can return token location
 	char *tokenBuffer;
 	char *tokenBuffer2;		// a place to store a 2en token buffer pos.
-	int flag;
+	int flag;				// should rename this to type
 	int lastVar;
 	int step;		// specal to one command, think this can be union if more specals are needed.
 	int stack;
@@ -158,6 +159,14 @@ struct kittyFile
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_loop;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdStack++; \
+
+#define stackCmdProc( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_proc;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
