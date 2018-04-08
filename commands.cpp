@@ -1330,28 +1330,28 @@ char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
 	char *ptr;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_prog_stack();
 
 	if (dropProgStackToType( cmd_loop ))
 	{
-		printf("we found a loop :-)\n");
-
 		ptr = cmdTmp[cmdStack-1].tokenBuffer;
-
 		token = *((unsigned short *) (ptr - 2)) ;
 
 		switch (token)
 		{
+			case 0x0250:	// Repeat
+			case 0x0268:	// While
 			case 0x027E:	// DO
-				printf( "should be skip value here: %08x\n", *((unsigned short *) ptr) );
+				tokenBuffer = ptr + ( *((unsigned short *) ptr) * 2 ) + 2  ;
+				return tokenBuffer-4;
 				break;
 
+			default:
+				dump_prog_stack();
+				printf("token was %08x\n", token);
+				getchar();
 		}
-
-		printf("token was %08x\n", token);
 	}
 
-	getchar();
-	return tokenBuffer-4;
+	return tokenBuffer;
 }
 
