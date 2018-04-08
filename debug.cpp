@@ -131,9 +131,9 @@ void dump_stack()
 
 		if (kittyStack[n].state == state_hidden_subData)
 		{
-			printf("[blocked hidden]\n");
+			printf("[blocked hidden] ---- data: %08x\n", kittyStack[n].str);
 		}
-		if (kittyStack[n].state == state_subData)
+		else if (kittyStack[n].state == state_subData)
 		{
 			printf("[blocked]\n");
 		}
@@ -142,7 +142,7 @@ void dump_stack()
 			switch( kittyStack[n].type )
 			{		
 				case type_int:
-					printf("%d\n",kittyStack[n].value);
+					printf("%d ---- data: %08x\n",kittyStack[n].value, kittyStack[n].str);
 					break;
 				case type_float:
 					printf("%f\n",kittyStack[n].decimal);
