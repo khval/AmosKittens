@@ -99,6 +99,10 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	}
 
 	tokenMode = mode_standard;
+
+
+	printf("tokenMode: %d\n", tokenMode);
+
 	currentLine ++;
 
 	if (ret) ptr = ret - 2;
@@ -352,7 +356,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	last_var = ref -> ref;
 
 
-	printf("----- stack %d\n",stack);
+	printf("----- stack %d ---- last var %d\n",stack, last_var);
 
 	if (next_token == 0x0074)	// ( symbol
 	{
@@ -654,7 +658,7 @@ struct nativeCommand nativeCommands[]=
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
 
-	{0x029E, "Exit", 2, cmdExit },
+	{0x029E, "Exit", 4, cmdExit },
 	{0x02E6, "on error", 0, cmdOnError },
 	{0x031E, "Resume Label", 0, cmdResumeLabel },
 	{0x03EE, "Error", 0, cmdError },
