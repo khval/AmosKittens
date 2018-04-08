@@ -123,6 +123,10 @@ char *_if( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	dump_stack();
+
+	dump_prog_stack();
+
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
@@ -185,9 +189,6 @@ char *_repeat( struct glueCommands *data )
 }
 
 
-
-
-
 char *_equal( struct glueCommands *data )
 {
 	printf("%s\n",__FUNCTION__);
@@ -217,6 +218,8 @@ char *_equal( struct glueCommands *data )
 //		case 2:	_equalStr( data );
 //				break;
 	}
+
+	correct_for_hidden_sub_data();
 
 	return NULL;
 }
@@ -250,6 +253,8 @@ char *_not_equal( struct glueCommands *data )
 //		case 2:	_not_equalStr( data );
 //				break;
 	}
+
+	correct_for_hidden_sub_data();
 
 	return NULL;
 }
@@ -1316,20 +1321,23 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdExitNum(struct glueCommands *data)
+char *_cmdExit(struct glueCommands *data)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	int args = stack - data -> stack +1;
-	popStack( stack - data -> stack  );
-	return NULL;
-}
-
-char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
-{
+	int exit_loops = 1;
 	unsigned short token;
 	char *ptr;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data -> stack +1;
+
+	if (args==1) exit_loops = _stackInt(stack);
+	popStack( stack - data -> stack  );
+
+	while (exit_loops>1)
+	{
+		if (dropProgStackToType( cmd_loop )) cmdStack--;
+		exit_loops--;
+	}
 
 	if (dropProgStackToType( cmd_loop ))
 	{
@@ -1341,8 +1349,7 @@ char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
 			case 0x0250:	// Repeat
 			case 0x0268:	// While
 			case 0x027E:	// DO
-				tokenBuffer = ptr + ( *((unsigned short *) ptr) * 2 ) + 2  ;
-				return tokenBuffer-4;
+				return ptr + ( *((unsigned short *) ptr) * 2 ) + 2  ;
 				break;
 
 			default:
@@ -1351,6 +1358,14 @@ char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
 				getchar();
 		}
 	}
+
+	return NULL;
+}
+
+char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdExit, tokenBuffer );
 
 	return tokenBuffer;
 }
