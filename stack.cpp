@@ -11,15 +11,25 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
-void flushProgStackToProc( char *(*fn) (struct glueCommands *data) )
+bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) )
 {
 	while (cmdStack > 0)
 	{
-		if (cmdTmp[cmdStack-1].cmd == fn) return;
+		if (cmdTmp[cmdStack-1].cmd == fn) return true;
 		cmdStack--;
 	}
+	return false;
 }
 
+bool dropProgStackToType( int type )
+{
+	while (cmdStack > 0)
+	{
+		if (cmdTmp[cmdStack-1].flag == type) return true;
+		cmdStack--;
+	}
+	return false;
+}
 
 void unLockPara()
 {
@@ -118,6 +128,8 @@ void _num( int num )
 	if (kittyStack[stack].str) 
 	{
 		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
+		
+
 		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[stack].str = NULL;
 		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
@@ -146,7 +158,7 @@ void setStackStrDup(const char *str)
 {
 	if (kittyStack[stack].str)
 	{
-		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
+		printf("%s::FREE stack(%d)  %08x --- %d\n",__FUNCTION__,stack,kittyStack[stack].str, stack,kittyStack[stack].type);
 		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 	}
 

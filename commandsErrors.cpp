@@ -135,9 +135,7 @@ char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 		case 0x0000:
 		case 0x0054:
 
-			flushProgStackToProc( _procedure );	// might be in a loop or something.
-
-			if (cmdStack)
+			if (dropProgStackToProc( _procedure ))
 			{
 				if (cmdTmp[cmdStack-1].cmd == _procedure ) 
 				{

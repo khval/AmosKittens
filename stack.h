@@ -22,7 +22,8 @@ extern void popStack(int n);
 
 void unLockPara();
 void flushCmdParaStack();
-void flushProgStackToProc( char *(*fn) (struct glueCommands *data) );
+bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
+bool dropProgStackToType( int type );
 
 extern int _stackInt( int n );
 extern char *_stackString( int n );
