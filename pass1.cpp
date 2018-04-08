@@ -36,6 +36,8 @@ enum
 	nested_then_else,
 	nested_else,
 	nested_while,
+	nested_repeat,
+	nested_do,
 	nested_proc
 };
 
@@ -537,6 +539,27 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 				case 0x064A:	ret += QuoteByteLength(ptr); break;	// skip strings.
+
+				case 0x027E:	addNest( nested_do );
+							break;
+
+				// loop
+				case 0x0286:	if LAST_TOKEN_(do)
+								fix_token_short( nested_do, ptr+2 );
+							else
+								setError( 28 );	
+							break;
+
+
+				case 0x0250:	addNest( nested_repeat );
+							break;
+
+				// until
+				case 0x025C:	if LAST_TOKEN_(repeat)
+								fix_token_short( nested_repeat, ptr+2 );
+							else
+								setError( 32 );	
+							break;
 
 				case 0x0268:	addNest( nested_while );
 							break;
