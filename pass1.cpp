@@ -419,6 +419,9 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 void eol( char *ptr )
 {
+	// so EOL is special becouse you have 0x0000 then some data before the next token line
+	// so added "+2" skip the data
+
 	if (nested_count>0)
 	{
 		switch (nested_command[ nested_count -1 ].cmd )
@@ -427,8 +430,7 @@ void eol( char *ptr )
 
 			case nested_then:
 			case nested_then_else:
-				printf("%04x\n",*((short *) (nested_command[ nested_count -1 ].ptr - 2)));
-				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
+				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)+2) / 2 ;
 				nested_count --;
 				break;
 		}
