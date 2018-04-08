@@ -423,29 +423,33 @@ char *_orData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			_num( (item0->decimal != 0) || (item1->value != 0) );
+			success = true;
 		}
 		else if (type1 == type_float)
 		{
 			_num( (item0->decimal != 0) || (item1->decimal != 0) );
+			success = true;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
 		if (type1 == type_int)
 		{
 			_num( (item0->value != 0) ||  (item1->value != 0) );
+			success = true;
 		}
 		else if (type1 == type_float)
 		{
 			_num(  (item0->value != 0 ) || (item1->decimal != 0) );
+			success = true;
 		}
-		return NULL;
 	}
 
-	correct_for_hidden_sub_data();
-
-	if (success == FALSE)
+	if (success)
+	{
+		correct_for_hidden_sub_data();
+	}
+	else
 	{
 		printf("%d != %d\n",type0, type1);
 		setError(ERROR_Type_mismatch);
@@ -489,10 +493,12 @@ char *_andData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			_num( (item0->decimal != 0) && (item1->value != 0) );
+			success = true;
 		}
 		else if (type1 == type_float)
 		{
 			_num( (item0->decimal != 0) && (item1->decimal != 0) );
+			success = true;
 		}
 	}
 	else if (type0 == type_int) 
@@ -500,16 +506,20 @@ char *_andData( struct glueCommands *data )
 		if (type1 == type_int)
 		{
 			_num( (item0->value != 0) &&  (item1->value != 0) );
+			success = true;
 		}
 		else if (type1 == type_float)
 		{
 			_num(  (item0->value != 0 ) && (item1->decimal != 0) );
+			success = true;
 		}
 	}
 
-	correct_for_hidden_sub_data();
-
-	if (success == FALSE)
+	if (success)
+	{
+		correct_for_hidden_sub_data();
+	}
+	else
 	{
 		printf("%d != %d\n",type0, type1);
 		setError(ERROR_Type_mismatch);
@@ -639,7 +649,6 @@ char *_addData( struct glueCommands *data )
 			setStackDecimal( (double) item0->value + item1->decimal );
 			success = TRUE;
 		}
-		return NULL;
 	}
 	else if ( type0 == type_string) 
 	{
@@ -653,9 +662,11 @@ char *_addData( struct glueCommands *data )
 		}
 	}
 
-	correct_for_hidden_sub_data();
-
-	if (success == FALSE)
+	if (success )
+	{
+		correct_for_hidden_sub_data();
+	}
+	else
 	{
 		printf("%d != %d\n",type0, type1);
 		setError(ERROR_Type_mismatch);
