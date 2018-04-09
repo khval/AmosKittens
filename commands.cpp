@@ -674,7 +674,7 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 
 			if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
 			{
-				cmdTmp[cmdStack-1].tokenBuffer = tokenBuffer ;
+				cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
 				cmdTmp[cmdStack-1].flag = cmd_loop;
 				is_for_to = true;
 			}
@@ -730,15 +730,36 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	char *ptr = tokenBuffer ;
 	char *new_ptr = NULL;
+	int idx_var = -1;
 
-	if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_prog_stack();
+
+	if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
-		int idx_var = ref -> ref -1;
-		
+		idx_var = ref -> ref -1;
+	}
+	else 	// For var=
+	{
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 		{
-			ptr = cmdTmp[cmdStack-1].tokenBuffer;
+			char *ptr = cmdTmp[cmdStack-1].tokenBuffer + 2  ;	// first short is JMP address, next after is token.
+
+			if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
+			{
+				struct reference *ref = (struct reference *) (ptr + 2);
+				idx_var = ref -> ref -1;
+			}
+		}
+	}
+		
+	if (idx_var>-1)
+	{
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+		{
+			ptr = cmdTmp[cmdStack-1].tokenBuffer2;
 
 			if (globalVars[idx_var].var.value < NEXT_INT(ptr, &new_ptr)  )
 			{
@@ -1341,6 +1362,8 @@ char *_cmdExit(struct glueCommands *data)
 	if (args==1) exit_loops = _stackInt(stack);
 	popStack( stack - data -> stack  );
 
+	printf("exit loops %d\n", exit_loops);
+
 	while (exit_loops>1)
 	{
 		if (dropProgStackToType( cmd_loop )) cmdStack--;
@@ -1357,7 +1380,20 @@ char *_cmdExit(struct glueCommands *data)
 			case 0x0250:	// Repeat
 			case 0x0268:	// While
 			case 0x027E:	// DO
-				return ptr + ( *((unsigned short *) ptr) * 2 ) + 2  ;
+
+
+				cmdStack --;
+
+				printf("exit from loop %04x\n", token);
+
+	printf("does it look ok?\n");
+	dump_prog_stack();
+	getchar();
+
+				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
+
+				return (ptr+2);
+
 				break;
 
 			default:
@@ -1366,6 +1402,8 @@ char *_cmdExit(struct glueCommands *data)
 				getchar();
 		}
 	}
+
+
 
 	return NULL;
 }
