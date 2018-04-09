@@ -23,7 +23,7 @@ bool correct_order( int last_token, int next_token )
 {
 	bool ret = true;
 
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+//	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	switch (last_token)
 	{
@@ -178,8 +178,8 @@ char *_lessOrEqualData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	dump_global();
-	dump_stack();
+//	dump_global();
+//	dump_stack();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -251,8 +251,8 @@ char *_moreData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	dump_global();
-	dump_stack();
+//	dump_global();
+//	dump_stack();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -323,8 +323,8 @@ char *_moreOrEqualData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	dump_global();
-	dump_stack();
+//	dump_global();
+//	dump_stack();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -462,15 +462,13 @@ char *_orData( struct glueCommands *data )
 char *_andData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-	getchar();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	dump_stack();
-
+//	dump_stack();
 
 	if (stack==0) 
 	{
@@ -605,8 +603,6 @@ char *_addData( struct glueCommands *data )
 	bool success = FALSE;
 
 	args = stack - data -> stack + 1;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (stack==0) 
 	{
@@ -1038,9 +1034,8 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 	flushCmdParaStack();
 	stackCmdParm( _andData, tokenBuffer );
 
-	dump_prog_stack();
-
-	getchar();
+//	dump_prog_stack();
+//	getchar();
 
 	stack++;
 	return tokenBuffer;
