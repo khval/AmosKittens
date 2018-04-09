@@ -124,8 +124,8 @@ char *_if( struct glueCommands *data )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	dump_stack();
-	dump_prog_stack();
-	flushCmdParaStack();
+//	dump_prog_stack();
+//	flushCmdParaStack();
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
@@ -522,8 +522,11 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-	dump_prog_stack();
+	dump_global();
+	getchar();
+
+//	dump_stack();
+//	dump_prog_stack();
 	
 	// empty the stack for what ever is inside the IF.
 
@@ -590,7 +593,7 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_prog_stack();
+//	dump_prog_stack();
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
