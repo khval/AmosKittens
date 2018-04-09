@@ -451,8 +451,8 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
-	dump_stack();
-	dump_prog_stack();
+//	dump_stack();
+//	dump_prog_stack();
 
 	// check if - or + comes before *, / or ; symbols
 
@@ -681,19 +681,19 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
-
+/*
 			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-
+*/
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
 			return ret;
 		}
 	}
-
+/*
 	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-
+*/
 	return NULL;
 }
 

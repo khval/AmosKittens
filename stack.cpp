@@ -128,12 +128,8 @@ void _num( int num )
 
 	if (kittyStack[stack].str) 
 	{
-		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
-		
-
 		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[stack].str = NULL;
-		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
 	}
 
 	kittyStack[stack].value = num;
@@ -145,7 +141,6 @@ void setStackDecimal( double decimal )
 {
 	if (kittyStack[stack].str)
 	{
-		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
 		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[stack].str = NULL;
 	}
@@ -157,15 +152,8 @@ void setStackDecimal( double decimal )
 
 void setStackStrDup(const char *str)
 {
-	if (kittyStack[stack].str)
-	{
-		printf("%s::FREE stack(%d)  %08x --- %d\n",__FUNCTION__,stack,kittyStack[stack].str, stack,kittyStack[stack].type);
-		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-	}
-
+	if (kittyStack[stack].str)	free(kittyStack[stack].str);
 	kittyStack[stack].str = str ? strdup( str ) : NULL;
-
-	printf("%s::ALLOC stack(%d) %08x\n",__FUNCTION__, stack, kittyStack[stack].str);
 
 	kittyStack[stack].len = kittyStack[stack].str ? strlen( kittyStack[stack].str ) : 0;
 	kittyStack[stack].state = state_none;
@@ -176,14 +164,10 @@ void setStackStr( char *str)
 {
 	if ((str != kittyStack[stack].str)&&(kittyStack[stack].str))
 	{
-		printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
 		if (kittyStack[stack].str) free(kittyStack[stack].str);	
 	}
 
 	kittyStack[stack].str = str ;
-
-	printf("%s::SET stack(%d) %08x\n",__FUNCTION__, stack, kittyStack[stack].str);
-
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
@@ -277,7 +261,7 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 
 void correct_for_hidden_sub_data()
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+//	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (stack > 0)
 	{
