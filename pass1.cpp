@@ -38,6 +38,7 @@ enum
 	nested_while,
 	nested_repeat,
 	nested_do,
+	nested_for,
 	nested_proc
 };
 
@@ -550,6 +551,15 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								setError( 28 );	
 							break;
 
+				case 0x023C: addNest( nested_for );
+							break;
+
+				// next
+				case 0x0246:	if LAST_TOKEN_(for)
+								fix_token_short( nested_for, ptr+2 );
+							else
+								setError( 34 );	
+							break;
 
 				case 0x0250:	addNest( nested_repeat );
 							break;
