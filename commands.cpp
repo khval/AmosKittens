@@ -1377,10 +1377,10 @@ char *_cmdExit(struct glueCommands *data)
 
 		switch (token)
 		{
+			case 0x023C:	// For
 			case 0x0250:	// Repeat
 			case 0x0268:	// While
 			case 0x027E:	// DO
-
 
 				cmdStack --;
 
