@@ -32,7 +32,7 @@ main_SRCS = AmosKittens.cpp
 objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
 
-%.o:		%.cpp 
+%.o:		debug.h %.cpp 
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:.o=.cpp) -o $@
 
 %.exe:		%.cpp $(objects)
