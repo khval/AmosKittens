@@ -9,8 +9,6 @@ void dump_end_of_program();
 #define show_token_numbers_no
 #define show_debug_printf_no
 
-
-
 #ifdef show_debug_printf_yes
 #define dprintf printf
 #else

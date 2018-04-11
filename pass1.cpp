@@ -100,7 +100,7 @@ int findVar( char *name, int _proc )
 
 	for (n=0;n<global_var_count;n++)
 	{
-		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
+//		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
 
 		if (globalVars[n].varName == NULL) return 0;
 
@@ -136,9 +136,6 @@ int QuoteByteLength(char *ptr)
 {
 	unsigned short length = *((unsigned short *) ptr);
 	length += (length & 1);		// align to 2 bytes
-
-	printf("length %d\n",length);
-
 	return length;
 }
 
@@ -147,9 +144,6 @@ int ReferenceByteLength(char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short length = ref -> length;
 	length += (length & 1);		// align to 2 bytes
-
-	printf("length %d\n",length);
-
 	return length;
 }
 
@@ -175,13 +169,9 @@ void pass1var(char *ptr, bool is_proc )
 	struct reference *ref = (struct reference *) ptr;
 	struct kittyData *var;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	tmp = dupRef( ref );
 	if (tmp)
 	{
-		printf("looking for %s %d\n", tmp, procCount);
-
 		found = findVar(tmp, is_proc ? 0 : procCount);
 		if (found)
 		{
@@ -190,15 +180,12 @@ void pass1var(char *ptr, bool is_proc )
 		
 			if (is_proc)
 			{
-				printf("proc change %\n",found);
-
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
 
 				globalVars[found-1].proc = is_proc ? 0 : procCount;
 			}
-			else printf("not changed\n");
 		}
 		else
 		{
@@ -442,7 +429,7 @@ void eol( char *ptr )
 
 void fix_token_short( int cmd, char *ptr )
 {
-	printf("%d:%d\n",__FUNCTION__,__LINE__);
+//	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (nested_count>0)
 	{
@@ -662,10 +649,6 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 			}
 	
 			ret += cmd -> size;
-
-
-			printf("cmd size %d\n",cmd->size);
-
 			return ret;
 		}
 	}
