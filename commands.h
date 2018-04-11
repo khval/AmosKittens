@@ -59,6 +59,7 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdData(struct nativeCommand *cmd, char *tokenBuffer );
 
 char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );

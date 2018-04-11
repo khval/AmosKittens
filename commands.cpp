@@ -1351,7 +1351,71 @@ char *_cmdExit(struct glueCommands *data)
 	if (args==1) exit_loops = _stackInt(stack);
 	popStack( stack - data -> stack  );
 
-	proc_names_printf("exit loops %d\n", exit_loops);
+	while (exit_loops>1)
+	{
+		if (dropProgStackToType( cmd_loop )) cmdStack--;
+		exit_loops--;
+	}
+
+	if (dropProgStackToType( cmd_loop ))
+	{
+		ptr = cmdTmp[cmdStack-1].tokenBuffer;
+		token = *((unsigned short *) (ptr - 2)) ;
+
+		switch (token)
+		{
+			case 0x023C:	// For
+			case 0x0250:	// Repeat
+			case 0x0268:	// While
+			case 0x027E:	// DO
+
+				cmdStack --;
+				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
+				return (ptr+2);
+				break;
+
+			default:
+				dump_prog_stack();
+				proc_names_printf("token was %08x\n", token);
+				getchar();
+		}
+	}
+
+	return NULL;
+}
+
+char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdExit, tokenBuffer );
+
+	return tokenBuffer;
+}
+
+char *_cmdExitIf(struct glueCommands *data)
+{
+	int exit_loops = 1;
+	bool is_true = false;
+	unsigned short token;
+	char *ptr;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data -> stack +1;
+
+	switch (args)
+	{
+		case 1:
+			is_true = _stackInt(stack);
+			break;
+		case 2:
+			is_true = _stackInt(stack -1);
+			exit_loops = _stackInt(stack);
+			break;
+	}
+
+	popStack( stack - data -> stack  );
+
+	if (is_true == false) return NULL;
 
 	while (exit_loops>1)
 	{
@@ -1372,13 +1436,9 @@ char *_cmdExit(struct glueCommands *data)
 			case 0x027E:	// DO
 
 				cmdStack --;
-
 				proc_names_printf("exit from loop %04x\n", token);
-
 				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
-
 				return (ptr+2);
-
 				break;
 
 			default:
@@ -1388,16 +1448,16 @@ char *_cmdExit(struct glueCommands *data)
 		}
 	}
 
-
-
 	return NULL;
 }
 
-char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
+char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdNormal( _cmdExit, tokenBuffer );
+	stackCmdNormal( _cmdExitIf, tokenBuffer );
+	tokenMode = mode_logical;
 
 	return tokenBuffer;
 }
+
 

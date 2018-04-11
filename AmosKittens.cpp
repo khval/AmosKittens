@@ -535,6 +535,8 @@ struct nativeCommand nativeCommands[]=
 	{0x03AA, "Global", 0, cmdGlobal },
 	{0x03B6, "End",0,cmdEnd },
 
+	{0x0290, "Exit If",4,cmdExitIf },
+
 	{0x03CA, "Param#",0,cmdParamFloat },
 	{0x03D6, "Param$",0,cmdParamStr },
 	{0x03E2, "Param",0,cmdParam },
@@ -791,7 +793,8 @@ int main()
 //	fd = fopen("amos-test/on_gosub.amos","r");
 //	fd = fopen("amos-test/input_two_args.amos","r");
 //	fd = fopen("amos-test/exit.amos","r");
-	fd = fopen("amos-test/exit2.amos","r");
+//	fd = fopen("amos-test/exit2.amos","r");
+	fd = fopen("amos-test/exit-if.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
