@@ -100,9 +100,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	tokenMode = mode_standard;
 
-
-	printf("tokenMode: %d\n", tokenMode);
-
 	currentLine ++;
 
 	if (ret) ptr = ret - 2;
@@ -334,11 +331,11 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	struct kittyData *var;
 	
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( correct_order( last_token,  next_token ) == false )
 	{
-		printf("---hidden ( symbol \n");
+		dprintf("---hidden ( symbol \n");
 
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;
@@ -355,13 +352,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	last_var = ref -> ref;
 
-
-	printf("----- stack %d ---- last var %d\n",stack, last_var);
-
 	if (next_token == 0x0074)	// ( symbol
 	{
-		printf("#going this path\n");
-
 		if (tokenMode != mode_alloc)
 		{
 			stackCmdIndex( _array_index_var, ptr );
@@ -391,7 +383,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
-
 	if (cmdStack) if (stack)
 	{
 		char *newTokenLoc = NULL;
@@ -418,8 +409,6 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	if ( correct_order( last_token,  next_token ) == false )
 	{
-		printf("---hidden ( symbol \n");
-
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;
 		kittyStack[stack].value = 0;
@@ -430,13 +419,9 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
 	kittyStack[stack].str = strndup( ptr + 2, length );
 
-	printf("%s::ALLOC %08x\n",__FUNCTION__, kittyStack[stack].str);
-
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack) if (stack)
 	{
@@ -681,19 +666,21 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
-/*
+#ifdef show_token_numbers_yes
 			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
-*/
+#endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
 			return ret;
 		}
 	}
-/*
+
+#ifdef show_token_numbers_yes
 	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-*/
+#endif
+
 	return NULL;
 }
 

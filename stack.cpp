@@ -11,7 +11,6 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
-
 bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) )
 {
 	while (cmdStack > 0)
@@ -34,7 +33,7 @@ bool dropProgStackToType( int type )
 
 void unLockPara()
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
@@ -95,7 +94,7 @@ void popStack(int n)
 	{
 		if (kittyStack[stack].str)
 		{
-			printf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
+			dprintf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
 			free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
 			kittyStack[stack].str = NULL;
 		}
@@ -124,7 +123,7 @@ int _stackInt( int n )
 
 void _num( int num )
 {
-	printf("set num stack[%d]\n",stack);
+	dprintf("set num stack[%d]\n",stack);
 
 	if (kittyStack[stack].str) 
 	{
@@ -226,27 +225,17 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 
 bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	printf("\n\n\n");
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
-
-	printf("%s\n", item0 -> str  ? item0 -> str  : "NULL");
-	printf("%s\n", item1 -> str  ? item1 -> str  : "NULL");
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	_num( strcmp( item0->str , item1->str ) > 0  );
-
-	dump_stack();
-
-	getchar();
-
 	return true;
 }
 
 bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	_num( strcmp( item0->str , item1->str ) < 0  );
 	return true;
@@ -254,6 +243,8 @@ bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 
 bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	_num( strcmp( item0->str , item1->str ) == 0  );
 	return true;
@@ -261,7 +252,7 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 
 void correct_for_hidden_sub_data()
 {
-//	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (stack > 0)
 	{
