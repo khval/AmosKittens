@@ -652,7 +652,11 @@ struct nativeCommand nativeCommands[]=
 	{0x02E6, "on error", 0, cmdOnError },
 	{0x031E, "Resume Label", 0, cmdResumeLabel },
 	{0x03EE, "Error", 0, cmdError },
-	{0x0316, "On", 4, cmdOn }
+	{0x0316, "On", 4, cmdOn },
+
+	{0x019C, "Every On", 0, cmdEveryOn },
+	{0x034A, "Every ...",  0, cmdEvery },
+	{0x129E, "Wait", 0, cmdWait },
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -794,7 +798,8 @@ int main()
 //	fd = fopen("amos-test/input_two_args.amos","r");
 //	fd = fopen("amos-test/exit.amos","r");
 //	fd = fopen("amos-test/exit2.amos","r");
-	fd = fopen("amos-test/exit-if.amos","r");
+//	fd = fopen("amos-test/exit-if.amos","r");
+	fd = fopen("amos-test/every.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

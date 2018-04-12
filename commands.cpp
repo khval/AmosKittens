@@ -6,12 +6,17 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <proto/dos.h>
 
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsData.h"
 #include "errors.h"
+
+
+bool every_on = true;
+int every_timer = 0;
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -1460,4 +1465,75 @@ char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+
+char *_cmdEvery( struct glueCommands *data )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return  data -> tokenBuffer ;
+}
+
+char *_cmdWait( struct glueCommands *data )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	Delay( _stackInt(data->stack) );
+
+	return  data -> tokenBuffer ;
+}
+
+char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	every_on = true;
+	return tokenBuffer;
+}
+
+char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	every_on = false;
+	return tokenBuffer;
+}
+
+char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x003E )	// next is variable
+	{
+		every_timer = *((int *) (tokenBuffer + 2));
+		tokenBuffer += 6;
+
+		switch (NEXT_TOKEN(tokenBuffer))
+		{
+			// gosub
+			case 0x02B2:
+					tokenBuffer += 2;
+					break;
+			// proc
+			case 0x0386:
+					tokenBuffer += 2;
+					break;
+		}
+
+
+		printf("every timer: %d\n",every_timer);
+
+	}
+
+	stackCmdNormal( _cmdEvery, tokenBuffer );
+
+	return tokenBuffer;
+}
+
+char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdWait, tokenBuffer );
+
+	return tokenBuffer;
+}
 

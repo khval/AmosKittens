@@ -61,6 +61,11 @@ char *cmdData(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer );
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
