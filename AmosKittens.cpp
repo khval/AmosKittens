@@ -657,6 +657,7 @@ struct nativeCommand nativeCommands[]=
 	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x034A, "Every ...",  0, cmdEvery },
 	{0x129E, "Wait", 0, cmdWait },
+	{0x12CE, "Timer", 0, cmdTimer }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -733,9 +734,7 @@ int main()
 
 	stack = 0;
 	cmdStack = 0;
-
 	onError = onErrorBreak;
-
 
 	memset(globalVars,0,sizeof(globalVars));
 
@@ -799,7 +798,8 @@ int main()
 //	fd = fopen("amos-test/exit.amos","r");
 //	fd = fopen("amos-test/exit2.amos","r");
 //	fd = fopen("amos-test/exit-if.amos","r");
-	fd = fopen("amos-test/every.amos","r");
+//	fd = fopen("amos-test/every.amos","r");
+	fd = fopen("amos-test/timer.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

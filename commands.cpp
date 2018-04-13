@@ -17,6 +17,9 @@
 
 bool every_on = true;
 int every_timer = 0;
+int timer_offset = 0;
+
+static struct timeval timer_before, timer_after;
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -30,7 +33,6 @@ extern void setStackStrDup( const char *str );
 using namespace std;
 
 extern char *findLabel( char *name );
-
 
 void	input_mode( char *tokenBuffer );
 
@@ -363,6 +365,10 @@ BOOL setVarStringArray( struct kittyData *var )
 	return FALSE;
 }
 
+char *_setVar( struct glueCommands *data );
+
+char *(*_do_set) ( struct glueCommands *data ) = _setVar;
+
 char *_setVar( struct glueCommands *data )
 {
 	BOOL success;
@@ -494,14 +500,14 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		proc_names_printf("logical mode\n");
+		dprintf("logical mode\n");
 		stackCmdParm(_equal, tokenBuffer);
 		stack++;
 	}
 	else
 	{
-		proc_names_printf("none logical mode\n");
-		stackCmdNormal(_setVar, tokenBuffer);
+		dprintf("none logical mode\n");
+		stackCmdNormal( _do_set, tokenBuffer);
 		if (tokenMode == mode_standard) tokenMode = mode_logical;		// first equal is set, next equal is logical
 	}
 	return tokenBuffer;
@@ -1476,8 +1482,6 @@ char *_cmdEvery( struct glueCommands *data )
 char *_cmdWait( struct glueCommands *data )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 
 	Delay( _stackInt(data->stack) );
 
@@ -1519,7 +1523,6 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 					break;
 		}
 
-
 		printf("every timer: %d\n",every_timer);
 
 	}
@@ -1531,9 +1534,41 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdWait, tokenBuffer );
 
 	return tokenBuffer;
 }
 
+
+char *_set_timer( struct glueCommands *data )
+{
+	timer_offset = _stackInt( stack );
+	gettimeofday(&timer_before, NULL);	// reset diff.
+	_do_set = _setVar;
+	return NULL;
+}
+
+
+char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	unsigned int ms_before;
+	unsigned int ms_after;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ((last_token == 0x0000) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	{
+		tokenMode = mode_store;
+		_do_set = _set_timer;
+	}
+
+	gettimeofday(&timer_after, NULL);	// reset diff.
+
+	ms_before = (timer_before.tv_sec * 1000) + (timer_before.tv_usec/1000);
+	ms_after = (timer_after.tv_sec * 1000) + (timer_after.tv_usec/1000);
+
+	_num( ((ms_after - ms_before) / 20) + timer_offset );		// 1/50 sec = every 20 ms
+
+	return tokenBuffer;
+}
