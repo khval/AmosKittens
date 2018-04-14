@@ -13,7 +13,7 @@ extern int global_var_count;
 
 char *_for (struct glueCommands *data);
 char *_do (struct glueCommands *data);
-char *_equal (struct glueCommands *data);
+char *_equalData (struct glueCommands *data);
 char *_andData (struct glueCommands *data);
 
 struct stackDebugSymbol
@@ -26,7 +26,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 {
 	{_for,"_for" },
 	{_do,"_do" },
-	{_equal, "=" },
+	{_equalData, "=" },
 	{_andData, "AND" },
 	{NULL, NULL}
 };
