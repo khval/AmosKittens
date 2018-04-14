@@ -811,8 +811,6 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0074) badSyntax();	// (
 	tokenBuffer +=2;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// array
 	
 	ref = (struct reference *) (tokenBuffer + 2);
@@ -820,42 +818,22 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	array_var = &globalVars[idx1].var;
 	tokenBuffer += sizeof( struct reference) + ref -> length + 2;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("%04x\n",NEXT_TOKEN( tokenBuffer ));
-
-	dump_global();
-
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0074) badSyntax();	// (
 	tokenBuffer +=2;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 
 	if (NEXT_TOKEN( tokenBuffer ) != 0x003E) badSyntax();	// 0
 	tokenBuffer += 6;	
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-
 	if (NEXT_TOKEN( tokenBuffer ) != 0x007C) badSyntax();	// )
 	tokenBuffer +=2;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	if (NEXT_TOKEN( tokenBuffer ) != 0x005C) badSyntax();	// ,
 	tokenBuffer +=2;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 
 	// --- this part can be rewritten ---, callback on this part can make sense.
 	// just store the array for later...
 
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// var
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 
 	ref = (struct reference *) (tokenBuffer + 2);
 	idx2 = ref -> ref -1;
