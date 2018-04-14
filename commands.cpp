@@ -525,6 +525,12 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("warning this 'ELSE IF' command does nothing\n");
+	return tokenBuffer;
+}
+
 char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	return tokenBuffer;
@@ -1589,3 +1595,28 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
+char *cmdBreakOff(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *cmdBreakOn(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *cmdCloseWorkbench(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *cmdCloseEditor(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+

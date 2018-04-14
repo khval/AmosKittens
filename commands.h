@@ -57,6 +57,11 @@ char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdBreakOff(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdBreakOn(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdCloseWorkbench(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdCloseEditor(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );

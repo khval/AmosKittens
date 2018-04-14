@@ -52,6 +52,7 @@ struct kittyFile kittyFiles[10];
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
 std::vector<struct label> labels;	// 0 is not used.
+std::vector<struct lineAddr> linesAddress;
 
 int global_var_count = 0;
 int labels_count = 0;
@@ -657,7 +658,15 @@ struct nativeCommand nativeCommands[]=
 	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x034A, "Every ...",  0, cmdEvery },
 	{0x129E, "Wait", 0, cmdWait },
-	{0x12CE, "Timer", 0, cmdTimer }
+	{0x12CE, "Timer", 0, cmdTimer },
+
+	{0x0436, "Break On", 0, cmdBreakOn },
+	{0x0426, "Break Off", 0, cmdBreakOff },
+	{0x01AA, "Every Off", 0, cmdEveryOff },
+	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
+	{0x171A, "Close Editor", 0, cmdCloseEditor },
+
+	{0x25A4, "Else If", 2, cmdElseIf }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -828,7 +837,9 @@ int main()
 //	fd = fopen("amos-test/exit-if.amos","r");
 //	fd = fopen("amos-test/every.amos","r");
 //	fd = fopen("amos-test/timer.amos","r");
-	fd = fopen("amos-test/string_compare.amos","r");
+//	fd = fopen("amos-test/string_compare.amos","r");
+//	fd = fopen("amos-test/close-wb-editor-break.amos","r");
+	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -878,6 +889,8 @@ int main()
 		clean_up_stack();
 		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
+
+		dumpLineAddress();
 
 		closedown();
 	}
