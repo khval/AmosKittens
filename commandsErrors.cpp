@@ -45,6 +45,8 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
 
+	onError = onErrorBreak;	// default.
+
 	switch ( NEXT_TOKEN(tokenBuffer ))
 	{
 		case 0x02A8:
@@ -54,10 +56,7 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 				{
 					char *name;
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
-
 					name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );
-
-					onError = onErrorBreak;	// default.
 
 					if (name)
 					{
@@ -68,30 +67,20 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 
 					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;					
 				}
-
-				printf("On error goto 0x%08X\n", on_error_goto_location);
 				break;
 
 		case 0x0386:
 				tokenBuffer += 2;
-				printf("token %04x\n",NEXT_TOKEN(tokenBuffer));
 
 				if (NEXT_TOKEN(tokenBuffer ) == 0x0012)	// proc
 				{
 					char *name;
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
-
 					name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );
-
-					onError = onErrorBreak;	// default.
 
 					if (name)
 					{
-						int found;
-						printf("name: %s\n",name);
-
-						found = findVarPublic(name);
-
+						int found = findVarPublic(name);
 						if (found)
 						{
 							on_error_proc_location = globalVars[found -1].var.tokenBufferPos;
@@ -103,7 +92,6 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 
 					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
 				}
-
 				break;
 	}
 
