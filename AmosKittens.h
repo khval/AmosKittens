@@ -139,6 +139,12 @@ struct kittyField
 	int ref;
 };
 
+struct lineAddr
+{
+	char *start;
+	char *end;
+};
+
 struct kittyFile
 {
 	FILE *fd;

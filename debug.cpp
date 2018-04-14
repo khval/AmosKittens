@@ -8,6 +8,7 @@
 #include <vector>
 
 extern struct globalVar globalVars[1000];
+extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
@@ -214,5 +215,29 @@ void dump_end_of_program()
 
 	printf("\n--- label dump ---\n");
 	dumpLabels();
+}
+
+int getLineFromPointer( char *address )
+{
+	int n = 0;
+
+	for (n=0;n<linesAddress.size();n++)
+	{
+		if ( (linesAddress[n].start >= address) && (linesAddress[n].end <= address) )
+		{
+			return n;
+		}
+	}
+	return -1;
+}
+
+void dumpLineAddress()
+{
+	int n = 0;
+
+	for (n=0;n<linesAddress.size();n++)
+	{
+		printf("Line %08d, start %08x end %08x\n", n, linesAddress[n].start , linesAddress[n].end );
+	}
 }
 

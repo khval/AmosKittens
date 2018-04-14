@@ -20,8 +20,13 @@ extern int nativeCommandsSize;
 extern struct nativeCommand nativeCommands[];
 
 extern std::vector<struct label> labels;
+extern std::vector<struct lineAddr> linesAddress;
+char *lastLineAddr;
+
+void addLineAddress( char *_start, char *_end );
 
 #define LAST_TOKEN_(name) ((nested_count>0) && (nested_command[ nested_count -1 ].cmd == nested_ ## name ))
+#define GET_LAST_NEST ((nested_count>0) ? nested_command[ nested_count -1 ].cmd : -1)
 
 int ifCount = 0;
 int endIfCount = 0;
@@ -35,12 +40,28 @@ enum
 	nested_then,
 	nested_then_else,
 	nested_else,
+	nested_else_if,
 	nested_while,
 	nested_repeat,
 	nested_do,
 	nested_for,
 	nested_proc
 };
+
+const char *nest_names[] =
+{
+	"nested_if",
+	"nested_then",
+	"nested_then_else",
+	"nested_else",
+	"nested_else_if",
+	"nested_while",
+	"nested_repeat",
+	"nested_do",
+	"nested_for",
+	"nested_proc"
+};
+
 
 struct nested
 {
@@ -56,6 +77,17 @@ int nested_count = 0;
 	nested_command[ nested_count ].ptr = ptr; \
 	nested_count++; 
 
+
+void dump_nest()
+{
+	int i;
+	for (i=0;i<nested_count;i++)
+	{
+		printf("%04d -- %04X - %s\n", 
+			i, nested_command[ i ].cmd, 
+			nest_names[ nested_command[ i ].cmd ] );
+	}
+}
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
@@ -470,6 +502,7 @@ void pass1_if_or_else( char *ptr )
 			case nested_if:
 			case nested_then:
 			case nested_else:
+			case nested_else_if:
 
 				printf("write to %08x-------%08x\n",(short *) (nested_command[ nested_count -1 ].ptr),
 					(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2);
@@ -507,6 +540,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 			{
 				case 0x0000:	eol( ptr );
 							currentLine++;
+							addLineAddress( lastLineAddr, ptr );
+							lastLineAddr = ptr;
 							break;
 
 				case 0x0006:	pass1var( ptr, false );
@@ -579,8 +614,37 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								setError( 23 );
 							break;
 
+				case 0x25A4:	// ELSE IF
+							if LAST_TOKEN_(if)
+							{
+								pass1_if_or_else(ptr+2);
+								addNest( nested_else_if );
+							}
+							else if LAST_TOKEN_(else_if)
+							{
+								pass1_if_or_else(ptr+2);
+								addNest( nested_else_if );
+							}
+							else if LAST_TOKEN_(then)
+							{
+								pass1_if_or_else(ptr+2);
+								addNest( nested_then_else );
+							}
+							else
+							{
+								printf("ELSE IF -- GET_LAST_NEST %04x\n", GET_LAST_NEST );
+								dump_nest();
+								setError( 25 );	
+							}
+							break;
+
 				case 0x02D0:	// ELSE
 							if LAST_TOKEN_(if)
+							{
+								pass1_if_or_else(ptr+2);
+								addNest( nested_else );
+							}
+							else if LAST_TOKEN_(else_if)
 							{
 								pass1_if_or_else(ptr+2);
 								addNest( nested_else );
@@ -598,7 +662,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 							endIfCount ++;
 
-							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else) )
+							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else_if) || LAST_TOKEN_(else) )
 							{
 								pass1_if_or_else( ptr+2 );
 							}
@@ -676,6 +740,7 @@ void pass1_reader( char *start, int tokenlength )
 	int token = 0;
 	last_token = 0;
 	
+	lastLineAddr = start;
 	ptr = start;
 	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) ) && ( kittyError.code == 0))
 	{
@@ -685,10 +750,15 @@ void pass1_reader( char *start, int tokenlength )
 		token = *((short *) ptr);
 		ptr += 2;	// next token.		
 	}
+	addLineAddress( lastLineAddr, ptr );
 
 	// if we did not count back to 0, then there most be some thing wrong.
 
-	printf("ifCount %d endIfCount %d\n", ifCount, endIfCount );
+	printf("'if' Count %d, 'end If' Count %d\n", ifCount, endIfCount );
+
+	printf("dump of pass1 nest\n");
+
+	dump_nest();
 
 	while (nested_count)
 	{
@@ -706,4 +776,16 @@ void pass1_reader( char *start, int tokenlength )
 	}
 
 	nested_count = 0;
+
+	printf("end of %s\n",__FUNCTION__);
 }
+
+void addLineAddress( char *_start, char *_end )
+{
+	struct lineAddr line;
+	line.start = _start;
+	line.end = _end;
+	linesAddress.push_back( line );
+}
+
+
