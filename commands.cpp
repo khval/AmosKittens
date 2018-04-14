@@ -135,6 +135,8 @@ char *_step( struct glueCommands *data )
 char *_if( struct glueCommands *data )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	unsigned short token;
+	char *ptr;
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
@@ -143,7 +145,8 @@ char *_if( struct glueCommands *data )
 		if (offset) 
 		{
 			proc_names_printf("IF is FALSE --  read from %08x jump to %08x - %04x\n" ,data->tokenBuffer ,data->tokenBuffer+(offset*2), offset);
-			return data->tokenBuffer+(offset*2);
+			ptr = data->tokenBuffer+(offset*2) ;
+			return ptr+2;
 		}
 	}
 	return NULL;
@@ -195,42 +198,6 @@ char *_repeat( struct glueCommands *data )
 {
 	if (kittyStack[stack].value == 0) return data -> tokenBuffer-2;
 	return 0;
-}
-
-
-char *_equal( struct glueCommands *data )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (stack==0) 
-	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
-	{
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	proc_names_printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value == kittyStack[stack+1].value) );
-
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:	_num( kittyStack[stack].value == kittyStack[stack+1].value) ;
-				break;
-		case 1:	_num (kittyStack[stack].decimal == kittyStack[stack+1].decimal);
-				break;
-//		case 2:	_equalStr( data );
-//				break;
-	}
-
-	correct_for_hidden_sub_data();
-
-	return NULL;
 }
 
 char *_not_equal( struct glueCommands *data )
@@ -505,13 +472,13 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		dprintf("logical mode\n");
-		stackCmdParm(_equal, tokenBuffer);
+		printf("logical mode\n");
+		stackCmdParm(_equalData, tokenBuffer);
 		stack++;
 	}
 	else
 	{
-		dprintf("none logical mode\n");
+		printf("none logical mode\n");
 		stackCmdNormal( _do_set, tokenBuffer);
 		if (tokenMode == mode_standard) tokenMode = mode_logical;		// first equal is set, next equal is logical
 	}

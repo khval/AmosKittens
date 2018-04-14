@@ -58,7 +58,6 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer );
 
-
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );
