@@ -17,6 +17,11 @@
 
 bool every_on = true;
 int every_timer = 0;
+char *on_every_gosub_location = NULL;
+char *on_every_proc_location = NULL;
+struct timeval every_before, every_after;
+
+
 int timer_offset = 0;
 
 static struct timeval timer_before, timer_after;
@@ -26,9 +31,9 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
-
 extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
+extern int findVarPublic( char *name );
 
 using namespace std;
 
@@ -1490,14 +1495,12 @@ char *_cmdWait( struct glueCommands *data )
 
 char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	every_on = true;
 	return tokenBuffer;
 }
 
 char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	every_on = false;
 	return tokenBuffer;
 }
@@ -1505,6 +1508,9 @@ char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	on_every_proc_location = NULL;
+	on_every_gosub_location = NULL;
 
 	if (NEXT_TOKEN(tokenBuffer) == 0x003E )	// next is variable
 	{
@@ -1516,16 +1522,60 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 			// gosub
 			case 0x02B2:
 					tokenBuffer += 2;
+
+					if (NEXT_TOKEN(tokenBuffer ) == 0x006)	// label
+					{
+						char *name;
+						struct reference *ref = (struct reference *) (tokenBuffer + 2);
+						name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );	
+
+						if (name)
+						{
+							on_every_gosub_location = findLabel(name);
+							every_on = true;
+							free(name);
+						}
+
+						tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;					
+					}
+
 					break;
 			// proc
 			case 0x0386:
 					tokenBuffer += 2;
+
+					switch (NEXT_TOKEN(tokenBuffer ))
+					{
+						case 0x0012:
+						case 0x0006:
+
+							char *name;
+							struct reference *ref = (struct reference *) (tokenBuffer + 2);
+							name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );
+
+							if (name)
+							{
+								int found = findVarPublic(name);
+								if (found)
+								{
+									on_every_proc_location = globalVars[found -1].var.tokenBufferPos;
+									every_on = true;
+								}
+
+								free(name);
+							}
+
+							tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
+					}
+	
 					break;
 		}
 
 		printf("every timer: %d\n",every_timer);
 
 	}
+
+	gettimeofday(&every_before, NULL);	// reset diff.
 
 	stackCmdNormal( _cmdEvery, tokenBuffer );
 

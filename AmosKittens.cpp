@@ -715,6 +715,35 @@ void code_reader( char *start, int tokenlength )
 		ptr = onError( ptr );
 		if (ptr == NULL) break;
 
+		if (every_on)
+		{
+			gettimeofday(&every_after, NULL);	// reset diff.
+			unsigned int ms_before = (every_before.tv_sec * 1000) + (every_before.tv_usec/1000);
+			unsigned int ms_after = (every_after.tv_sec * 1000) + (every_after.tv_usec/1000);
+
+			if (((ms_after - ms_before) / 20) >= every_timer)
+			{
+				every_before = every_after;
+				
+				if (on_every_gosub_location)
+				{
+					stackCmdLoop( _gosub, ptr+2 );
+					ptr = on_every_gosub_location;
+
+					every_on = false;
+				}
+
+				if (on_every_proc_location)
+				{
+					stackCmdLoop( _procedure, ptr+2 );
+					ptr = on_every_proc_location;
+
+					every_on = false;
+				}
+			}
+		}
+
+
 		last_token = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.		
@@ -798,8 +827,8 @@ int main()
 //	fd = fopen("amos-test/exit.amos","r");
 //	fd = fopen("amos-test/exit2.amos","r");
 //	fd = fopen("amos-test/exit-if.amos","r");
-//	fd = fopen("amos-test/every.amos","r");
-	fd = fopen("amos-test/timer.amos","r");
+	fd = fopen("amos-test/every.amos","r");
+//	fd = fopen("amos-test/timer.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

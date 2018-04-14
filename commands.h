@@ -99,3 +99,9 @@ struct rem
 	unsigned short length;
 };
 
+extern bool every_on;
+extern int every_timer;
+extern char *on_every_gosub_location;
+extern char *on_every_proc_location;
+extern struct timeval every_before, every_after;
+
