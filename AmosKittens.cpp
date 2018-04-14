@@ -667,8 +667,6 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
-//	dump_stack();
-
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
@@ -688,6 +686,7 @@ char *executeToken( char *ptr, unsigned short token )
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 #endif
 
+	setError(23);
 	return NULL;
 }
 
@@ -827,8 +826,9 @@ int main()
 //	fd = fopen("amos-test/exit.amos","r");
 //	fd = fopen("amos-test/exit2.amos","r");
 //	fd = fopen("amos-test/exit-if.amos","r");
-	fd = fopen("amos-test/every.amos","r");
+//	fd = fopen("amos-test/every.amos","r");
 //	fd = fopen("amos-test/timer.amos","r");
+	fd = fopen("amos-test/string_compare.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
