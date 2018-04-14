@@ -13,6 +13,10 @@ extern bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1);
 
 extern bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1);
 extern bool stackLessStr(struct kittyData *item0,	struct kittyData *item1);
+
+extern bool stackMoreOrEqualStr(struct kittyData *item0,struct kittyData *item1);
+extern bool stackLessOrEqualStr(struct kittyData *item0,struct kittyData *item1);
+
 extern bool stackEqualStr(struct kittyData *item0, struct kittyData *item1);
 
 extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1);

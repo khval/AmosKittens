@@ -225,28 +225,66 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 
 bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 {
+	int ret;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	_num( strcmp( item0->str , item1->str ) > 0  );
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+
+	_num( ret > 0  );
+
 	return true;
 }
 
 bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 {
+	int ret;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	_num( strcmp( item0->str , item1->str ) < 0  );
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+	_num( ret < 0  );
+
+	return true;
+}
+
+bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	int ret;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+	_num( ret <= 0  );
+	return true;
+}
+
+bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	int ret;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+	_num( ret >= 0  );
+
 	return true;
 }
 
 bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
+	int ret;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	_num( strcmp( item0->str , item1->str ) == 0  );
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+
+	_num( ret == 0  );
 	return true;
 }
 
