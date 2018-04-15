@@ -12,6 +12,7 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
+char *_setVar (struct glueCommands *data);
 char *_for (struct glueCommands *data);
 char *_do (struct glueCommands *data);
 char *_equalData (struct glueCommands *data);
@@ -27,6 +28,8 @@ struct stackDebugSymbol
 
 struct stackDebugSymbol stackDebugSymbols[] =
 {
+	{_print,"_print"},
+	{_setVar, "_setVar"},
 	{_for,"_for" },
 	{_do,"_do" },
 	{_equalData, "=" },
