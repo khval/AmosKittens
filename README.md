@@ -17,10 +17,32 @@ Current status:
 
 Amos The Creator Manual:
 
-* Chapter 4. Basic Principles is implemented.
-* Chapter 5. String functions is implemented.
-* Chapter 7. Control structures is implemented.
-* Chapter 20. Disk access is implemented.
+Implemented:
+
+* Chapter 4. Basic Principle .
+* Chapter 5. String functions.
+* Chapter 7. Control structures.
+* Chapter 20. Disk access.
+
+Partially implemented:
+
+* Chapter 18. The Keyboard
+* Chapter 19. Other commands
+
+Not Implemented:
+
+* Chapter 6. Graphics.
+* Chapter 8. Text & Windows
+* Chapter 10. Screens
+* Chapter 11. Hardware sprites
+* Chapter 12. Blitter objects
+* Chapter 13. Object control
+* Chapter 14. Amal
+* Chapter 15. Background graphics.
+* Chapter 16. Menus
+* Chapter 17. Sound and music
+* Chapter 21. Screen compaction.
+* Chapter 22. Machine level instructions
 
 Note: 
 -----
