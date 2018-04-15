@@ -7,9 +7,9 @@ void dump_end_of_program();
 void dumpLineAddress();
 int getLineFromPointer( char *address );
 
-#define show_proc_names_yes
-#define show_token_numbers_yes
-#define show_debug_printf_yes
+#define show_proc_names_no
+#define show_token_numbers_no
+#define show_debug_printf_no
 
 #ifdef show_debug_printf_yes
 #define dprintf printf
