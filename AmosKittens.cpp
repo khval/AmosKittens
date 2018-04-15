@@ -34,6 +34,7 @@ int procStackCount = 0;
 unsigned short last_token = 0;
 int last_var = 0;
 int tokenlength;
+unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
 char *data_read_pointer = NULL;
 
@@ -72,11 +73,15 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
+	unsigned int type;
 
 	// we should empty stack, until first/normal command is not a parm command.
 
-	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
+	while (cmdStack)
 	{
+		type = cmdTmp[cmdStack-1].flag;
+		if  ( ( type == cmd_loop ) || ( type  == cmd_never ) || (type == cmd_eol) ) break;
+	
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 		if (cmdTmp[cmdStack].flag == cmd_first) break;
@@ -92,9 +97,13 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
+	unsigned int type;
 
-	while ((cmdStack) && (cmdTmp[cmdStack-1].flag != cmd_loop ))
+	while (cmdStack)
 	{
+		type = cmdTmp[cmdStack-1].flag;
+		if  ( ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
+
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 		if (ret) break;
 	}
@@ -676,6 +685,8 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
+	currentLine = getLineFromPointer( ptr );	// maybe slow!!!
+
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
@@ -695,7 +706,12 @@ char *executeToken( char *ptr, unsigned short token )
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 #endif
 
+
+	token_not_found = token;
+	currentLine = getLineFromPointer( ptr );
 	setError(23);
+	printf("Addr %08x, token not found %04X\n", ptr, token_not_found);
+
 	return NULL;
 }
 
@@ -890,7 +906,7 @@ int main()
 		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
 
-		dumpLineAddress();
+//		dumpLineAddress();
 
 		closedown();
 	}
