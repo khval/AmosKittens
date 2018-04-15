@@ -47,7 +47,9 @@ enum
 	cmd_index, 
 	cmd_para,
 	cmd_loop,
-	cmd_proc
+	cmd_proc,
+	cmd_never,
+	cmd_eol
 };
 
 enum
@@ -152,6 +154,12 @@ struct kittyFile
 	int fieldsSize;
 	struct kittyField *fields;
 };
+
+#define stackIfSuccess()					\
+	cmdTmp[cmdStack].cmd = _ifSuccess;		\
+	cmdTmp[cmdStack].tokenBuffer = NULL;	\
+	cmdTmp[cmdStack].flag = cmd_never;	\
+	cmdStack++; \
 
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
