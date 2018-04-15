@@ -31,5 +31,6 @@ extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
 extern bool dropProgStackToType( int type );
 
 extern int _stackInt( int n );
+extern double _stackDecimal( int n );
 extern char *_stackString( int n );
 

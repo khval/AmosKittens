@@ -112,6 +112,15 @@ char *_stackString( int n )
 	return NULL;
 }
 
+double _stackDecimal( int n )
+{
+	if (kittyStack[n].type == type_float)
+	{
+		return (kittyStack[n].decimal);
+	}
+	return 0.0;
+}
+
 int _stackInt( int n )
 {
 	if (kittyStack[n].type == type_int)
