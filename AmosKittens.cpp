@@ -675,7 +675,32 @@ struct nativeCommand nativeCommands[]=
 	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
 	{0x171A, "Close Editor", 0, cmdCloseEditor },
 
-	{0x25A4, "Else If", 2, cmdElseIf }
+	{0x25A4, "Else If", 2, cmdElseIf },
+
+	{0x0686,"Rnd",0,mathRnd},
+	{0x0690,"Randomize",0,mathRandomize},
+	{0x06A0,"Sgn",0,mathSgn},
+	{0x06AA,"Abs",0,mathAbs},
+	{0x06B4,"Int",0,mathInt},
+	{0x06BE,"Radian",0,mathRadian},
+	{0x06CA,"Degree",0,mathDegree},
+	{0x06D6,"Pi#",0,mathPi},
+	{0x06E0,"Fix",0,mathFix},
+	{0x06EA,"Min",0,mathMin},
+	{0x06F6,"Max",0,mathMax},
+	{0x0702,"Sin",0,mathSin},
+	{0x070C,"Cos",0,mathCos},
+	{0x0716,"Tan",0,mathTan},
+	{0x0720,"Asin",0,mathAsin},
+	{0x072C,"Acos",0,mathAcos},
+	{0x0738,"Atan",0,mathAtan},
+	{0x0744,"Hsin",0,mathHsin},
+	{0x0750,"Hcos",0,mathHcos},
+	{0x075C,"Htan",0,mathHtan},
+	{0x0768,"Sqr",0,mathSqr},
+	{0x0772,"Log",0,mathLog},
+	{0x077C,"Ln",0,mathLn},
+	{0x0786,"Exp",0,mathExp}
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
