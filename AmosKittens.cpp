@@ -880,7 +880,8 @@ int main()
 //	fd = fopen("amos-test/timer.amos","r");
 //	fd = fopen("amos-test/string_compare.amos","r");
 //	fd = fopen("amos-test/close-wb-editor-break.amos","r");
-	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
+//	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
+	fd = fopen("amos-test/sin.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
