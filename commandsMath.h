@@ -8,35 +8,34 @@
 
 #include "amosKittens.h"
 
-char *incMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *decMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *addMath(struct nativeCommand *cmd, char *tokenBuffer);
-
-char *degreeMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *radianMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *piMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *sinMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *cosMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *tanMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *acosMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *asinMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *atanMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *hsinMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *hcosMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *htanMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *logMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *expMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *lnMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *sqrMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *absMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *intMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *sgnMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *rndMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *randomizeMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *maxMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *minMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *swapMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *fixMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *defFnMath(struct nativeCommand *cmd, char *tokenBuffer);
-char *fnMath(struct nativeCommand *cmd, char *tokenBuffer);
+char *mathInc (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathDec (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAdd (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathDegree (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathRadian (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathPi (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathSin (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathCos (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathTan (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAcos (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAsin (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAtan (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathHsin (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathHcos (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathHtan (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathLog (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathExp (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathLn (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathSqr (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAbs (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathInt (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathSgn (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathRnd (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathRandomize (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathMax (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathMin (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathSwap (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathFix (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathDefFn (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathFn (struct nativeCommand *cmd, char *tokenBuffer);
 
