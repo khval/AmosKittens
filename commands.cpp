@@ -59,7 +59,6 @@ char *_ifSuccess( struct glueCommands *data )
 
 char *_ifThenSuccess( struct glueCommands *data ) 
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return NULL;
 }
 
@@ -153,7 +152,7 @@ char *_step( struct glueCommands *data )
 
 char *_if( struct glueCommands *data )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned short token;
 	char *ptr;
 
@@ -163,9 +162,8 @@ char *_if( struct glueCommands *data )
 
 		if (offset) 
 		{
-			proc_names_printf("IF is FALSE --  read from %08x jump to %08x - %04x\n" ,data->tokenBuffer ,data->tokenBuffer+(offset*2), offset);
 			ptr = data->tokenBuffer+(offset*2) ;
-			return ptr-4;
+			return ptr;
 		}
 	}
 	else 	stackIfSuccess();
@@ -175,23 +173,18 @@ char *_if( struct glueCommands *data )
 
 char *_else_if( struct glueCommands *data )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned short token;
 	char *ptr;
-
-	dump_stack();
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
 
-		printf("FALSE offset %d\n", offset * 2);
-
 		if (offset) 
 		{
-			printf("IF is FALSE --  read from %08x jump to %08x \n" ,data->tokenBuffer ,data->tokenBuffer+(offset*2));
 			ptr = data->tokenBuffer+(offset*2) ;
-			return ptr-4 ;
+			return ptr ;
 		}
 	}
 	else 	stackIfSuccess();
@@ -532,8 +525,8 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	printf("at line %d\n", getLineFromPointer(tokenBuffer) );
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+//	printf("at line %d\n", getLineFromPointer(tokenBuffer) );
 
 	_num(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
@@ -578,13 +571,11 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_prog_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
-		if (cmdTmp[cmdStack-1].cmd == _ifSuccess)		// if success jump over else
+		if ((cmdTmp[cmdStack-1].cmd == _ifSuccess) || (cmdTmp[cmdStack-1].cmd == _ifThenSuccess)) 		// if success jump over else
 		{
 			char *ptr;
 			int offset = *((unsigned short *) tokenBuffer);
@@ -602,9 +593,7 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_prog_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
@@ -631,16 +620,7 @@ char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack)
-	{
-		if (cmdTmp[cmdStack-1].cmd == _ifSuccess)
-		{
-			printf("removed 'If Success'\n");
-			cmdStack--;
-			getchar();
-		}
-	}
-
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _ifSuccess) cmdStack--;
 	return tokenBuffer;
 }
 
@@ -679,8 +659,6 @@ char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-//	dump_prog_stack();
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
