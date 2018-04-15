@@ -35,8 +35,6 @@ char *_print( struct glueCommands *data )
 {
 	int n;
 
-	printf("PRINT: ");
-
 	for (n=data->stack;n<=stack;n++)
 	{
 		switch (kittyStack[n].type)
