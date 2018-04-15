@@ -16,6 +16,8 @@ char *_for (struct glueCommands *data);
 char *_do (struct glueCommands *data);
 char *_equalData (struct glueCommands *data);
 char *_andData (struct glueCommands *data);
+char *_ifSuccess (struct glueCommands *data);
+char *_ifThenSuccess (struct glueCommands *data);
 
 struct stackDebugSymbol
 {
@@ -29,6 +31,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_do,"_do" },
 	{_equalData, "=" },
 	{_andData, "AND" },
+	{_ifSuccess,"If Success" },
+	{_ifThenSuccess,"If Then Success" },
 	{NULL, NULL}
 };
 
@@ -223,9 +227,9 @@ int getLineFromPointer( char *address )
 
 	for (n=0;n<linesAddress.size();n++)
 	{
-		if ( (linesAddress[n].start >= address) && (linesAddress[n].end <= address) )
+		if ( (linesAddress[n].start >= address) && (address < linesAddress[n].end) )
 		{
-			return n;
+			return n-1;
 		}
 	}
 	return -1;
@@ -237,7 +241,7 @@ void dumpLineAddress()
 
 	for (n=0;n<linesAddress.size();n++)
 	{
-		printf("Line %08d, start %08x end %08x\n", n, linesAddress[n].start , linesAddress[n].end );
+		printf("Line %08d, start %08x end %08x\n", n-1, linesAddress[n].start , linesAddress[n].end );
 	}
 }
 

@@ -5,6 +5,7 @@ void dump_stack();
 void dumpLabels();
 void dump_end_of_program();
 void dumpLineAddress();
+int getLineFromPointer( char *address );
 
 #define show_proc_names_yes
 #define show_token_numbers_yes
