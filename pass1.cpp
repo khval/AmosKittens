@@ -39,6 +39,7 @@ enum
 	nested_if,
 	nested_then,
 	nested_then_else,
+	nested_then_else_if,
 	nested_else,
 	nested_else_if,
 	nested_while,
@@ -53,6 +54,7 @@ const char *nest_names[] =
 	"nested_if",
 	"nested_then",
 	"nested_then_else",
+	"nested_then_else_if",
 	"nested_else",
 	"nested_else_if",
 	"nested_while",
@@ -441,8 +443,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 void eol( char *ptr )
 {
-	// so EOL is special becouse you have 0x0000 then some data before the next token line
-	// so added "+2" skip the data
+	unsigned short offset;
 
 	if (nested_count>0)
 	{
@@ -452,8 +453,16 @@ void eol( char *ptr )
 
 			case nested_then:
 			case nested_then_else:
-				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)+2) / 2 ;
+			case nested_then_else_if:
+
+				offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
+
+				*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
 				nested_count --;
+
+				printf("End of line FIX -- offset %04x  (or %04x)\n", offset, offset * 2);
+				getchar();
+
 				break;
 		}
 	}
@@ -504,7 +513,9 @@ void pass1_if_or_else( char *ptr )
 			case nested_else:
 			case nested_else_if:
 
-				printf("write to %08x-------%08x\n",(short *) (nested_command[ nested_count -1 ].ptr),
+				printf("write to line %d  ---- addr %08x-------%08x\n",
+					getLineFromPointer( nested_command[ nested_count -1 ].ptr ),
+					(short *) (nested_command[ nested_count -1 ].ptr),
 					(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2);
 
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
@@ -515,8 +526,11 @@ void pass1_if_or_else( char *ptr )
 
 //				printf("Error: End If, with out Else or Then\n");
 				setError( 25 );	
+				getchar();
 		}
 	}
+
+	getchar();
 }
 
 
@@ -627,8 +641,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							}
 							else if LAST_TOKEN_(then)
 							{
-								pass1_if_or_else(ptr+2);
-								addNest( nested_then_else );
+								pass1_if_or_else(ptr);
+								addNest( nested_then_else_if );
 							}
 							else
 							{
@@ -641,19 +655,25 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x02D0:	// ELSE
 							if LAST_TOKEN_(if)
 							{
-								pass1_if_or_else(ptr+2);
+								pass1_if_or_else(ptr+6);	// we need to jump over ELSE
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(else_if)
 							{
-								pass1_if_or_else(ptr+2);
+								pass1_if_or_else(ptr+6); // we need to jump over ELSE (else is 6 bytes)
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(then)
 							{
+								pass1_if_or_else(ptr+6);
+								addNest( nested_then_else );
+							}
+							else if LAST_TOKEN_(then_else_if)
+							{
 								pass1_if_or_else(ptr+2);
 								addNest( nested_then_else );
 							}
+	
 							else
 								setError( 25 );	
 							break;
