@@ -554,9 +554,9 @@ struct nativeCommand nativeCommands[]=
 	{0x0404,"data", 2, cmdData },
 	{0x040E,"read",0,cmdRead },
 
-	{0x0444, "Inc",0,incMath },
-	{0x044E, "Dec",0,decMath },
-	{0x0458, "Add",0,addMath },
+	{0x0444, "Inc",0,mathInc },
+	{0x044E, "Dec",0,mathDec },
+	{0x0458, "Add",0,mathAdd },
 
 	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,cmdPrint },
