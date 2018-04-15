@@ -868,12 +868,15 @@ char *_subData( struct glueCommands *data )
 
 char *_mulData( struct glueCommands *data )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
+
+	dump_stack();
+
 
 	if (stack==0) 
 	{
@@ -932,7 +935,9 @@ char *_mulData( struct glueCommands *data )
 
 char *_divData( struct glueCommands *data )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_stack();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -1075,7 +1080,9 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_stack();
 
 	stackCmdParm( _mulData, tokenBuffer );
 	stack++;
@@ -1084,7 +1091,9 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_stack();
 
 	stackCmdParm( _divData, tokenBuffer );
 	stack++;
