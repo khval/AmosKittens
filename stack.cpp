@@ -48,7 +48,13 @@ void unLockPara()
 
 			if ( state == state_subData ) 
 			{
-				kittyStack[cmd -> stack].state = state_none;
+				int i;
+
+				for (i=cmd -> stack+1; i<=stack; i++)
+				{
+					kittyStack[i-1] = kittyStack[i];
+				}
+				stack --;
 			}
 		}
 	}
@@ -72,7 +78,7 @@ void flushCmdParaStack()
 
 			if ( state == state_none ) 
 			{
-				cmd -> cmd(&cmdTmp[cmdStack]);
+				cmd -> cmd(cmd);
 				cmdStack--;
 			}
 			else 
@@ -114,18 +120,20 @@ char *_stackString( int n )
 
 double _stackDecimal( int n )
 {
-	if (kittyStack[n].type == type_float)
+	switch (kittyStack[n].type)
 	{
-		return (kittyStack[n].decimal);
+		case type_int:	return (double) kittyStack[n].value;
+		case type_float: return kittyStack[n].decimal;
 	}
 	return 0.0;
 }
 
 int _stackInt( int n )
 {
-	if (kittyStack[n].type == type_int)
+	switch (kittyStack[n].type)
 	{
-		return (kittyStack[n].value);
+		case type_int:	return kittyStack[n].value;
+		case type_float: return (int) kittyStack[n].decimal;
 	}
 	return 0;
 }
