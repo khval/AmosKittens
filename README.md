@@ -15,32 +15,12 @@ Currently this interpreter dumps out a lot debug information, it will holt the p
 Current status:
 ---------------
 
-This commands are supported:
+Amos The Creator Manual:
 
-* Dim,Print,Input,Goto,If,Then,Else,End If,Do,Loop,repeat,until,False,True,While,Wend
-
-
-And some math operations works: 
-
-* Pulss, Minus, Muls, Div, power, Inc, Dec, Add
-
-Logical opertations supported:
-
-* equal, not equal, less, more, 
-
-String
-------
-
-commands supported:
-
-* Left$(), Mid$(), Right$(), Instr(), Flip$, Space$, Upper$, Lower$, String$, Chr$, Asc, Len, Val, Str$
-
-Basic Principles
-----------------
-
-Command supported:
-
-* Procedure, End Proc, Shared, Global, Pop Proc, Param, Param#, Param$, Reserve As Work, Reserve As Chip Work, Reserve As Data, Reserve As Chip Data, List Bank, Erase, Start, Length, BSave, BLoad
+Chapter 4. Basic Principles is implemented.
+Chapter 5. String functions is implemented.
+Chapter 7. Control structures is implemented.
+Chapter 20. Disk access is implemented.
 
 Note: 
 -----
@@ -70,10 +50,10 @@ Known bugs:
 Not yet supported:
 ------------------
 lots of stuff.
-logical "and", "or", "xor"
-disk stuff.
+logical "xor"
 graphics stuff.
 Machine code commands (only two).
+All the new stuff in Amos Pro.
 
 Orginal source code can be found here:
 --------------------------------------
