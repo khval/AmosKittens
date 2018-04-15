@@ -17,10 +17,10 @@ Current status:
 
 Amos The Creator Manual:
 
-Chapter 4. Basic Principles is implemented.
-Chapter 5. String functions is implemented.
-Chapter 7. Control structures is implemented.
-Chapter 20. Disk access is implemented.
+* Chapter 4. Basic Principles is implemented.
+* Chapter 5. String functions is implemented.
+* Chapter 7. Control structures is implemented.
+* Chapter 20. Disk access is implemented.
 
 Note: 
 -----
