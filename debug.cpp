@@ -12,6 +12,11 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
+char *_mathSin (struct glueCommands *data);
+char *_addData (struct glueCommands *data);
+char *_subData (struct glueCommands *data);
+char *_mulData (struct glueCommands *data);
+char *_divData (struct glueCommands *data);
 char *_setVar (struct glueCommands *data);
 char *_for (struct glueCommands *data);
 char *_do (struct glueCommands *data);
@@ -28,6 +33,11 @@ struct stackDebugSymbol
 
 struct stackDebugSymbol stackDebugSymbols[] =
 {
+	{_mathSin,"_mathSin"},
+	{_addData,"_addData"},
+	{_subData,"_subData"},
+	{_divData,"_divData"},
+	{_mulData,"_mulData"},
 	{_print,"_print"},
 	{_setVar, "_setVar"},
 	{_for,"_for" },
@@ -187,7 +197,7 @@ void dump_stack()
 			switch( kittyStack[n].type )
 			{		
 				case type_int:
-					printf("%d ---- data: %08x\n",kittyStack[n].value, kittyStack[n].str);
+					printf("%d\n",kittyStack[n].value);
 					break;
 				case type_float:
 					printf("%f\n",kittyStack[n].decimal);
