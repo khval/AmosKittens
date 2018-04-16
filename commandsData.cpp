@@ -861,7 +861,7 @@ char *_subData( struct glueCommands *data )
 
 char *_mulData( struct glueCommands *data )
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -928,7 +928,7 @@ char *_mulData( struct glueCommands *data )
 
 char *_divData( struct glueCommands *data )
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -1069,7 +1069,6 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 	stackCmdParm(_subData,tokenBuffer);
 	stack++;
 	return tokenBuffer;
@@ -1077,9 +1076,8 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _mulData, tokenBuffer );
-
 	stack++;
 	return tokenBuffer;
 }
@@ -1088,7 +1086,6 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _divData, tokenBuffer );
-
 	stack++;
 	return tokenBuffer;
 }
@@ -1096,7 +1093,6 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 	stackCmdParm( _powerData, tokenBuffer );
 	stack++;
 	return tokenBuffer;

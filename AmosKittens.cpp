@@ -446,9 +446,6 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
-//	dump_stack();
-//	dump_prog_stack();
-
 	// check if - or + comes before *, / or ; symbols
 
 	if ( correct_order( last_token,  next_token ) == false )

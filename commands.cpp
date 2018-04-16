@@ -458,27 +458,28 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
 	kittyStack[stack].str = NULL;
 	kittyStack[stack].state = state_subData;
-
 	stack++;
 
-	if (kittyStack[stack].str) proc_names_printf("%s::Unexpcted data %08x on new stack pos %d\n",__FUNCTION__, kittyStack[stack].str,stack);
+	if (kittyStack[stack].str) printf("%s::Unexpcted data %08x on new stack pos %d\n",__FUNCTION__, kittyStack[stack].str,stack);
 
 	return tokenBuffer;
 }
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	flushCmdParaStack();
+
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
 	flushCmdParaStack();
 	unLockPara();
 	flushCmdParaStack();
-
-	dump_stack();
 
 	return tokenBuffer;
 }
