@@ -171,7 +171,6 @@ char *_mathSin( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( sin( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -185,7 +184,6 @@ char *_mathCos( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( cos( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -199,7 +197,6 @@ char *_mathTan( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( tan( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -213,7 +210,6 @@ char *_mathAcos( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( acos( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -227,7 +223,6 @@ char *_mathAsin( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( asin( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -239,7 +234,6 @@ char *_mathAtan( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( atan( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -252,7 +246,6 @@ char *_mathHsin( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( sinh( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -265,7 +258,6 @@ char *_mathHcos( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( cosh( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -278,7 +270,6 @@ char *_mathHtan( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( tanh( r ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -291,7 +282,6 @@ char *_mathLog( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( log( d ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -302,7 +292,6 @@ char *_mathExp( struct glueCommands *data )
 	popStack(stack - data->stack);
 
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -313,7 +302,6 @@ char *_mathLn( struct glueCommands *data )
 	popStack(stack - data->stack);
 
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -326,7 +314,6 @@ char *_mathSqr( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( sqrt( d ) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -339,7 +326,6 @@ char *_mathAbs( struct glueCommands *data )
 	popStack(stack - data->stack);
 	_num( abs(n) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -352,7 +338,6 @@ char *_mathInt( struct glueCommands *data )
 	popStack(stack - data->stack);
 	_num( (int) d ) ;
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -365,7 +350,6 @@ char *_mathSgn( struct glueCommands *data )
 	popStack(stack - data->stack);
 	_num( (d<0) ? -1 : ((d>0) ? 1 : 0) ) ;
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -378,7 +362,6 @@ char *_mathRnd( struct glueCommands *data )
 	popStack(stack - data->stack);
 	_num( rand() % (n+1) );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -406,7 +389,6 @@ char *_mathMax( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( a>b ? a: b );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -423,7 +405,6 @@ char *_mathMin( struct glueCommands *data )
 	popStack(stack - data->stack);
 	setStackDecimal( a<b ? a: b );
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -453,7 +434,6 @@ char *_mathDefFn( struct glueCommands *data )
 	popStack(stack - data->stack);
 
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
 	return NULL;
 }
 
@@ -487,8 +467,7 @@ char *mathPi(struct nativeCommand *cmd, char *tokenBuffer)
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	setStackDecimal(M_PI);
-	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
+	flushCmdParaStack();		// PI is on stack, we are ready.
 
 	return tokenBuffer;
 }
@@ -623,6 +602,7 @@ char *mathMax(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _mathMax, tokenBuffer );
+	flushCmdParaStack();
 	return tokenBuffer;
 }
 
