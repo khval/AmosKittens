@@ -26,6 +26,7 @@ Implemented:
 
 Partially implemented:
 
+* Chapter 8. Maths commands
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
 
@@ -33,7 +34,6 @@ Not Implemented:
 
 * Chapter 6. Graphics.
 * Chapter 8. Text & Windows
-* Chapter 8. Maths commands
 * Chapter 10. Screens
 * Chapter 11. Hardware sprites
 * Chapter 12. Blitter objects
