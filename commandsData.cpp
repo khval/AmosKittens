@@ -115,7 +115,6 @@ char *_equalData( struct glueCommands *data )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		dump_stack();
 		setError(22);
 		return NULL;
 	}
@@ -190,7 +189,6 @@ char *_lessData( struct glueCommands *data )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		dump_stack();
 		setError(22);
 		return NULL;
 	}
@@ -267,7 +265,6 @@ char *_lessOrEqualData( struct glueCommands *data )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		dump_stack();
 		setError(22);
 		return NULL;
 	}
@@ -341,9 +338,6 @@ char *_moreData( struct glueCommands *data )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		printf("data -> stack %d, stack %d\n", data -> stack, stack );
-
-		dump_stack();
 		setError(22);
 		return NULL;
 	}
@@ -416,7 +410,6 @@ char *_moreOrEqualData( struct glueCommands *data )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		dump_stack();
 		setError(22);
 		return NULL;
 	}
@@ -875,9 +868,6 @@ char *_mulData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	dump_stack();
-
-
 	if (stack==0) 
 	{
 		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
@@ -896,11 +886,13 @@ char *_mulData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
+			printf("%f * %d\n",  item0->decimal , (double) item1->value );
 			setStackDecimal( item0->decimal * (double) item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
+			printf("%f * %f\n",  item0->decimal , item1->decimal );
 			setStackDecimal( item0->decimal * item1->decimal );
 			success = TRUE;
 		}
@@ -909,12 +901,13 @@ char *_mulData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			proc_names_printf(" = %d * %d\n", item0->value , item1->value );
+			printf(" %d * %d\n", item0->value , item1->value );
 			_num( item0->value * item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
+			printf("%f * %f\n",  (double) item0->value , item1->decimal );
 			setStackDecimal( (double) item0->value * item1->decimal );
 			success = TRUE;
 		}
@@ -936,8 +929,6 @@ char *_mulData( struct glueCommands *data )
 char *_divData( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	dump_stack();
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -962,11 +953,16 @@ char *_divData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
+			printf(" %f / %d\n", item0->decimal , item1->value );
 			setStackDecimal( item0->decimal / (double) item1->value );
+
+			dump_stack();
+
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
+			printf(" %f / %f\n", item0->decimal , item1->decimal );
 			setStackDecimal( item0->decimal / item1->decimal );
 			success = TRUE;
 		}
@@ -975,12 +971,13 @@ char *_divData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			proc_names_printf(" = %d / %d\n", item0->value , item1->value );
+			printf(" %d / %d\n", item0->value , item1->value );
 			_num( item0->value / item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
+			printf(" %d / %f\n", item0->value , item1->decimal );
 			setStackDecimal( (double) item0->value / item1->decimal );
 			success = TRUE;
 		}
@@ -1081,10 +1078,8 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	dump_stack();
-
 	stackCmdParm( _mulData, tokenBuffer );
+
 	stack++;
 	return tokenBuffer;
 }
@@ -1092,10 +1087,8 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	dump_stack();
-
 	stackCmdParm( _divData, tokenBuffer );
+
 	stack++;
 	return tokenBuffer;
 }
