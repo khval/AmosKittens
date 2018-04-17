@@ -71,9 +71,7 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdPrint(nativeCommand *cmd, char *ptr)
 {
 	stackCmdNormal( _print, ptr );
-
 	do_breakdata = _print_break;
-
 	return ptr;
 }
 
@@ -109,8 +107,6 @@ char *_mid( struct glueCommands *data )
 	char *tmp = NULL;
 	int _start, _len;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
-
 	if (args == 3)
 	{
 		str = _stackString( stack - 2 );
@@ -139,8 +135,6 @@ char *_right( struct glueCommands *data )
 	char *tmp = NULL;
 	int _start, _len;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
-
 	if (args == 2)
 	{
 		str = _stackString( stack - 1 );
@@ -164,19 +158,11 @@ char *_instr( struct glueCommands *data )
 	char *tmp = NULL;
 	int  _pos = 0;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
-
-	dump_stack();
-
 	if (args == 2)
 	{
 		str = _stackString( stack - 1 );
 		find = _stackString( stack );
-
 		ret = strstr( str, find );
-
-		printf("%s,%s,%s\n",str,find,ret ? ret : "NULL");
-
 		_pos = ret ? (unsigned int) (ret - str) +1 : 0;
 	}	
 
@@ -193,16 +179,12 @@ char *_str( struct glueCommands *data )
 	int num;
 	char _str[30];
 
-	printf("%s: args %d stack %d\n",__FUNCTION__,args,stack);
-
 	num = _stackInt( data->stack + 1 );
 
 	_str[0]=0;
 	sprintf(_str,"%d",num);
 
 	popStack(stack - data->stack);
-
-	printf("%s %d\n",_str,stack);
 
 	setStackStrDup(_str);
 
