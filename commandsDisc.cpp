@@ -203,7 +203,7 @@ char *_cmdRename( struct glueCommands *data )
 
 char *_cmdFselStr( struct glueCommands *data )
 {
-	int args = stack - cmdTmp[cmdStack].stack ;
+	int args = stack - cmdTmp[cmdStack].stack +1;
 	struct FileRequester	 *filereq;
 	char *ret = NULL;
 	char *amigaPattern = NULL;
@@ -1265,7 +1265,7 @@ char *_cmdPof( struct glueCommands *data )
 
 char *_cmdEof( struct glueCommands *data )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack;	
+	int args = stack - cmdTmp[cmdStack-1].stack +1;	
 	int channel = 0;
 	FILE *fd;
 
