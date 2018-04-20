@@ -471,9 +471,9 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	unsigned int data = *((unsigned int *) ptr);
 	unsigned int number1 = data >> 8;
 
-	int e = (data & 31) ;
+	int e = (data & 0x3F) ;
 
-	if (data & 32) e |= 0xFFFFFFE0;
+	if ( (data & 0x40)  == 0)	e = -(65 - e);
 
 	int n;
 	double f = 0.0f;
@@ -486,13 +486,10 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		}
 	}
 
-	printf("%f E %d ", f, e );
+	if (e>0) { while (--e) { f *= 2.0; } }
+	if (e<0) { while (e) {  f /= 2.0f; e++; } }
 
-	if (e>0)	f *= 1 <<e-1;
-	if (e==0)	f /= 2;
-	if (e<0)	f /= 1<<(-e+1);
-
-	setStackDecimal( round( f *1000 ) / 1000.0f  );
+	setStackDecimal( (data & 0x80) ? -f : f  );
 
 	return ptr;
 }
@@ -832,7 +829,7 @@ int main()
 //	fd = fopen("amos-test/for-to-next.amos","r");
 //	fd = fopen("amos-test/for-to-next2.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
-//	fd = fopen("amos-test/left-mid-right.amos","r");
+	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
 //	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
 //	fd = fopen("amos-test/str-chr-asc-len.amos","r");
@@ -878,7 +875,7 @@ int main()
 //	fd = fopen("amos-test/string_compare.amos","r");
 //	fd = fopen("amos-test/close-wb-editor-break.amos","r");
 //	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
-	fd = fopen("amos-test/sin.amos","r");
+//	fd = fopen("amos-test/sin.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
