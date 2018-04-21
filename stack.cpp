@@ -50,10 +50,15 @@ void unLockPara()
 			{
 				int i;
 
+				printf("%s:%d -- fix up\n",__FUNCTION__,__LINE__);
+
 				for (i=cmd -> stack+1; i<=stack; i++)
 				{
 					kittyStack[i-1] = kittyStack[i];
 				}
+
+				if (cmd -> stack<stack) kittyStack[stack].str = NULL;
+
 				stack --;
 			}
 		}
@@ -81,12 +86,7 @@ void flushCmdParaStack()
 				cmd -> cmd(cmd);
 				cmdStack--;
 			}
-			else 
-			{
-				printf("not ready to execute this command.\n");
-				printf("first agrument on stack has type %d\n",state);
-				break;
-			}
+			else	break;
 
 			// some math operation is blocking... can't flush at this time.
 			if (stack)	if (kittyStack[stack-1].state != state_none) return;
