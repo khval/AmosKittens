@@ -145,11 +145,11 @@ char *_machinePeek( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		char *adr = (char *) _stackInt(data->stack);
+		char *adr = (char *) _stackInt(stack);
 
 		if (adr)
 		{
@@ -263,6 +263,7 @@ char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( ptr ) == 0x0074) ptr+=2;
 
@@ -270,8 +271,6 @@ char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
 		int idx = ref->ref-1;
-
-		printf("globalVars[idx].var.type: %d\n",globalVars[idx].var.type);
 
 		switch ( globalVars[idx].var.type )
 		{
@@ -292,10 +291,45 @@ char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
 
 	if (NEXT_TOKEN( ptr ) == 0x007C) ptr+=2;
 
-	dump_stack();
-
-	printf("%04x\n",NEXT_TOKEN( ptr ));
-
 	return ptr;
+}
+
+char *_machineFill( struct glueCommands *data )
+{
+	int *adrStart, *adrEnd;
+	int num;
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int _n, _size = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==3)
+	{
+		adrStart = (int *) _stackInt(stack-2);
+		adrEnd = (int *) _stackInt(stack-1);
+		num = _stackInt(stack);
+
+		printf("%08X, %08X, %08x\n", adrStart, adrEnd, num);
+
+		if ( (adrStart) && (((int) adrStart&3)==0) && (((int)adrEnd&3)==0) )
+		{
+			_size = ((int) adrEnd - (int) adrStart) / sizeof(int);
+			for (_n=0;_n<_size;_n++) adrStart[_n] = num;
+			success = true;
+		}
+	}
+
+	if (success == false) setError(25);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *machineFill(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineFill, tokenBuffer );
+	return tokenBuffer;
 }
 

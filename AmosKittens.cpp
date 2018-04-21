@@ -703,6 +703,7 @@ struct nativeCommand nativeCommands[]=
 	{0x21FE,"Leek",0,machineLeek},
 	{0x21AA,"copy",0,machineCopy},
 	{0x0614,"Varptr",0,machineVarPtr},
+	{0x219A,"Fill",0,machineFill},
 
 };
 
@@ -887,7 +888,8 @@ int main()
 //	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
 //	fd = fopen("amos-test/sin.amos","r");
 //	fd = fopen("amos-test/m.amos","r");
-	fd = fopen("amos-test/varptr.amos","r");
+//	fd = fopen("amos-test/varptr.amos","r");
+	fd = fopen("amos-test/fill.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
