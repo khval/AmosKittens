@@ -35,6 +35,12 @@ void unLockPara()
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	dump_stack();
+
+	dump_prog_stack();
+
+		printf("cmdStack %d\n",cmdStack);
+
 	if (cmdStack)
 	{
 		struct glueCommands *cmd;
@@ -45,6 +51,8 @@ void unLockPara()
 		if (cmd -> flag == cmd_para)
 		{
 			state = kittyStack[cmd -> stack].state;
+
+			printf("state %d\n", state);
 
 			if ( state == state_subData ) 
 			{
@@ -62,18 +70,27 @@ void unLockPara()
 				stack --;
 			}
 		}
+
+		
 	}
 }
 
 void flushCmdParaStack()
 {
+	struct glueCommands *cmd;
+
 	// some math operation is blocking... can't flush at this time.
-	if (stack)	if (kittyStack[stack-1].state != state_none) return;
+
+	if (cmdStack)	
+	{
+		cmd = &cmdTmp[cmdStack-1];
+		if (cmd -> stack) if (kittyStack[cmd -> stack].state != state_none)	return;
+	}
 
 	// flush all params.
 	if (cmdStack)
 	{
-		struct glueCommands *cmd;
+
 		int state;
 
 		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
