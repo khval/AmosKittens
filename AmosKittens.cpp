@@ -704,7 +704,27 @@ struct nativeCommand nativeCommands[]=
 	{0x21AA,"copy",0,machineCopy},
 	{0x0614,"Varptr",0,machineVarPtr},
 	{0x219A,"Fill",0,machineFill},
-
+/*
+	{0x21BA,"Hunt",0,machineHunt},
+	{0x226C,"rol.b",0,machineRolB},	
+	{0x227A,"rol.w",0,machineRolW},
+	{0x2288,"rol.l",0,machineRolL},
+	{0x2242,"ror.b",0,machineRorB},	
+	{0x227A,"ror.w",0,machineRorW},
+	{0x2288,"ror.l",0,machineRorL},
+	{0x2234,"Bbtst",0,machineBtst},
+	{0x220A,"Bset",0,machineBset},	
+	{0x2226,"Bchg",0,machineBchg},
+	{0x2218,"Bclr",0,machineBclr},
+	{0x,"PLoad",0,machinePLoad},
+	{0x,"Call",0,machineCall},	
+	{0x2296,"AREG",0,machineAREG},
+	{0x22A2,"DREG",0,machineDREG},
+	{0x,"DOSCALL",0,machineDOSCALL},
+	{0x,"EXECALL",0,machineEXECALL},
+	{0x,"GFXCALL",0,machineGFXCALL},	
+	{0x,"INTCALL",0,machineINTCALL},	
+*/
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -889,7 +909,8 @@ int main()
 //	fd = fopen("amos-test/sin.amos","r");
 //	fd = fopen("amos-test/m.amos","r");
 //	fd = fopen("amos-test/varptr.amos","r");
-	fd = fopen("amos-test/fill.amos","r");
+//	fd = fopen("amos-test/fill.amos","r");
+	fd = fopen("amos-test/hunt.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -948,3 +969,4 @@ int main()
 
 	return 0;
 }
+

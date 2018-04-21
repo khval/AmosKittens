@@ -227,7 +227,7 @@ char *machinePoke(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machinePeek(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _machinePeek, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _machinePeek, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -239,7 +239,7 @@ char *machineDoke(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machineDeek(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _machineDeek, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _machineDeek, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -251,7 +251,7 @@ char *machineLoke(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machineLeek(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _machineLeek, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _machineLeek, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -333,3 +333,40 @@ char *machineFill(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+/*
+char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineAREG, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineDREG, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineDOSCALL, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineEXECALL, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineGFXCALL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineGFXCALL, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineINTCALL, tokenBuffer );
+	return tokenBuffer;
+}
+*/
