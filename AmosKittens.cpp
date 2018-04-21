@@ -16,6 +16,7 @@
 #include "commandsBanks.h"
 #include "commandsDisc.h"
 #include "commandsErrors.h"
+#include "commandsMachine.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -412,9 +413,8 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	char *txt;
 
 	// check if - or + comes before *, / or ; symbols
-
+	
 	length2 += (length & 1);		// align to 2 bytes
-
 	next_token = *((short *) (ptr+2+length2) );
 
 	if ( correct_order( last_token,  next_token ) == false )
@@ -428,7 +428,6 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
 	kittyStack[stack].str = strndup( ptr + 2, length );
-
 	kittyStack[stack].len = strlen( kittyStack[stack].str );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
@@ -694,7 +693,16 @@ struct nativeCommand nativeCommands[]=
 	{0x0768,"Sqr",0,mathSqr},
 	{0x0772,"Log",0,mathLog},
 	{0x077C,"Ln",0,mathLn},
-	{0x0786,"Exp",0,mathExp}
+	{0x0786,"Exp",0,mathExp},
+
+	{0x21CA,"Poke",0,machinePoke},
+	{0x21E6,"Peek",0,machinePeek},
+//	{0,"Doke",0,machineDoke},
+	{0x21F2,"Deek",0,machineDeek},
+//	{0,"Loke",0,machineLoke},
+	{0x21FE,"Leek",0,machineLeek},
+	{0x21AA,"copy",0,machineCopy},
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -711,8 +719,8 @@ char *executeToken( char *ptr, unsigned short token )
 		if (token == cmd->id ) 
 		{
 #ifdef show_token_numbers_yes
-			printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
+			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+					getLineFromPointer(ptr), ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -721,7 +729,8 @@ char *executeToken( char *ptr, unsigned short token )
 	}
 
 #ifdef show_token_numbers_yes
-	printf("%08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+	printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+					getLineFromPointer(ptr),
 					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
 #endif
 
@@ -829,7 +838,7 @@ int main()
 //	fd = fopen("amos-test/for-to-next.amos","r");
 //	fd = fopen("amos-test/for-to-next2.amos","r");
 //	fd = fopen("amos-test/gosub-return.amos","r");
-	fd = fopen("amos-test/left-mid-right.amos","r");
+//	fd = fopen("amos-test/left-mid-right.amos","r");
 //	fd = fopen("amos-test/instr.amos","r");
 //	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
 //	fd = fopen("amos-test/str-chr-asc-len.amos","r");
@@ -876,6 +885,7 @@ int main()
 //	fd = fopen("amos-test/close-wb-editor-break.amos","r");
 //	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
 //	fd = fopen("amos-test/sin.amos","r");
+	fd = fopen("amos-test/m.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
