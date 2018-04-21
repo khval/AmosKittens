@@ -1,6 +1,9 @@
 
 extern int stack;
 
+#define setStackNum(adr) _num(adr)
+#define setStackPtr(adr) _num((int) adr) 
+
 extern void _num( int num );
 extern void setStackDecimal( double decimal );
 extern void setStackStr( char *str );
