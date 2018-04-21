@@ -333,9 +333,10 @@ char *_chr( struct glueCommands *data )
 	int args = stack - data->stack + 1;
 	char _str[2];
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
 
-	_str[0] = (char) _stackInt( stack );
+	_str[0] = args == 1 ? (char) _stackInt( stack ) : 0;
 	_str[1] =0;
 
 	popStack(stack - data->stack);
