@@ -35,12 +35,6 @@ void unLockPara()
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-
-	dump_prog_stack();
-
-		printf("cmdStack %d\n",cmdStack);
-
 	if (cmdStack)
 	{
 		struct glueCommands *cmd;
@@ -52,14 +46,9 @@ void unLockPara()
 		{
 			state = kittyStack[cmd -> stack].state;
 
-			printf("state %d\n", state);
-
 			if ( state == state_subData ) 
 			{
 				int i;
-
-				printf("%s:%d -- fix up\n",__FUNCTION__,__LINE__);
-
 				for (i=cmd -> stack+1; i<=stack; i++)
 				{
 					kittyStack[i-1] = kittyStack[i];
@@ -70,14 +59,14 @@ void unLockPara()
 				stack --;
 			}
 		}
-
-		
 	}
 }
 
 void flushCmdParaStack()
 {
 	struct glueCommands *cmd;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	// some math operation is blocking... can't flush at this time.
 

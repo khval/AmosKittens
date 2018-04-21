@@ -24,6 +24,9 @@ char *_equalData (struct glueCommands *data);
 char *_andData (struct glueCommands *data);
 char *_ifSuccess (struct glueCommands *data);
 char *_ifThenSuccess (struct glueCommands *data);
+char *_machinePeek( struct glueCommands *data );
+char *_cmdStart( struct glueCommands *data );
+char *_chr( struct glueCommands *data );
 
 struct stackDebugSymbol
 {
@@ -46,6 +49,9 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_andData, "AND" },
 	{_ifSuccess,"If Success" },
 	{_ifThenSuccess,"If Then Success" },
+	{_machinePeek,"Peek" },
+	{_cmdStart,"Start" },
+	{_chr,"Chr$" },
 	{NULL, NULL}
 };
 

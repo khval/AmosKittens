@@ -51,15 +51,11 @@ char *_cmdStart( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		n = _stackInt(data->stack);
-
-		printf("%d\n",n);
+		n = _stackInt(stack);
 
 		if ((n>0)&&(n<16))
 		{
@@ -82,11 +78,11 @@ char *_cmdLength( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		n = _stackInt(data->stack);
+		n = _stackInt(stack);
 		if ((n>0)&&(n<16))
 		{
 			ret = (int)  kittyBanks[n-1].length;
@@ -104,7 +100,7 @@ char *_cmdLength( struct glueCommands *data )
 
 char *_cmdBload( struct glueCommands *data )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
 	FILE *fd;

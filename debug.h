@@ -14,7 +14,7 @@ int getLineFromPointer( char *address );
 #ifdef show_debug_printf_yes
 #define dprintf printf
 #else
-#define dprintf 
+#define dprintf(fmt,...)
 #endif
 
 #ifdef show_proc_names_yes

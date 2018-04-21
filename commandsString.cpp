@@ -88,8 +88,6 @@ char *_left( struct glueCommands *data )
 		str = _stackString( stack - 1 );
 		_len = _stackInt( stack );
 		tmp = strndup(str, _len );
-
-		printf("len %d\n", _len);
 	}	
 
 	popStack(args);
@@ -117,8 +115,6 @@ char *_mid( struct glueCommands *data )
 		if (_start>strlen(str)-1) _start = strlen(str)-1;
 
 		tmp = strndup(str + _start, _len );
-
-		printf("len %d\n", _len);
 	}	
 
 	popStack(args);
@@ -197,7 +193,7 @@ char *_hex( struct glueCommands *data )
 	int num;
 	char _str[12];
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	num = _stackInt( stack );
 	sprintf(_str,"$%X",num);
@@ -215,7 +211,7 @@ char *_bin( struct glueCommands *data )
 	int num,len,n;
 	char *str,*p;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	len = 0;
 	num = _stackInt( stack  );
@@ -250,7 +246,7 @@ char *_flip( struct glueCommands *data )
 	int l,i;
 	char *str,*p,t;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	str = _stackString( stack  );
 
@@ -277,7 +273,7 @@ char *_string( struct glueCommands *data )
 	char *str;
 	char *_str;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	_str = _stackString( stack - 1 );
 	_len = _stackInt( stack  );
@@ -299,7 +295,7 @@ char *_asc( struct glueCommands *data )
 	int args = stack - data->stack + 1 ;
 	char *_str;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	_str = _stackString( stack  );
 
@@ -316,7 +312,7 @@ char *_val( struct glueCommands *data )
 	int num;
 	char *_str;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	_str = _stackString( stack  );
 	if (_str) sscanf(_str,"%d",&num);
@@ -333,8 +329,7 @@ char *_chr( struct glueCommands *data )
 	int args = stack - data->stack + 1;
 	char _str[2];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	_str[0] = args == 1 ? (char) _stackInt( stack ) : 0;
 	_str[1] =0;
@@ -352,7 +347,7 @@ char *_len( struct glueCommands *data )
 	int len = 0;
 	char *_str;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	if (kittyStack[data->stack + 1].type == type_string)
 	{
@@ -372,7 +367,7 @@ char *_space( struct glueCommands *data )
 	int i,_len;
 	char *str;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	_len = _stackInt( stack );
 
@@ -393,9 +388,7 @@ char *_upper( struct glueCommands *data )
 	int args = stack - data->stack + 1  ;
 	char *str,*s;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
-
-	dump_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	str = _stackString( stack );
 
@@ -414,7 +407,7 @@ char *_lower( struct glueCommands *data )
 	int args = stack - data->stack + 1 ;
 	char *str,*s;
 
-	printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	dump_stack();
 
