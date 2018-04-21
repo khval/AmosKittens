@@ -697,11 +697,12 @@ struct nativeCommand nativeCommands[]=
 
 	{0x21CA,"Poke",0,machinePoke},
 	{0x21E6,"Peek",0,machinePeek},
-//	{0,"Doke",0,machineDoke},
+	{0x015A,"Doke",0,machineDoke},
 	{0x21F2,"Deek",0,machineDeek},
-//	{0,"Loke",0,machineLoke},
+	{0x21D8,"Loke",0,machineLoke},
 	{0x21FE,"Leek",0,machineLeek},
 	{0x21AA,"copy",0,machineCopy},
+	{0x0614,"Varptr",0,machineVarPtr},
 
 };
 
@@ -885,7 +886,8 @@ int main()
 //	fd = fopen("amos-test/close-wb-editor-break.amos","r");
 //	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
 //	fd = fopen("amos-test/sin.amos","r");
-	fd = fopen("amos-test/m.amos","r");
+//	fd = fopen("amos-test/m.amos","r");
+	fd = fopen("amos-test/varptr.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

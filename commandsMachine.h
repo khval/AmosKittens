@@ -12,4 +12,5 @@ char *machineDeek(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineLoke(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineLeek(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer);
+char *machineVarPtr(struct nativeCommand *cmd, char *tokenBuffer);
 

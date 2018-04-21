@@ -49,7 +49,8 @@ char *_machineCopy( struct glueCommands *data )
 
 char *_machinePoke( struct glueCommands *data )
 {
-	int adr, value;
+	char *adr;
+	int value;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -59,14 +60,14 @@ char *_machinePoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = _stackInt(stack-1);
+		adr = (char *) _stackInt(stack-1);
 		value = _stackInt(stack);
 
 		printf("adr: %d\n",adr);
 
-		if (adr>0)	// we can only Poke positive addresses
+		if (adr)	// we can only Poke positive addresses
 		{
-			*((char *) adr) = value;
+			*adr = (char) value;
 			success = true;
 		}
 	}
@@ -80,7 +81,8 @@ char *_machinePoke( struct glueCommands *data )
 
 char *_machineDoke( struct glueCommands *data )
 {
-	int adr, value;
+	short *adr;
+	int value;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -89,12 +91,12 @@ char *_machineDoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = _stackInt(stack-1);
+		adr = (short *) _stackInt(stack-1);
 		value = _stackInt(stack);
 
-		if (adr>0)	// we can only Doke positive addresses
+		if (adr)	// we can only Doke positive addresses
 		{
-			*((short *) adr) = value;
+			*adr = (short) value;
 			success = true;
 		}
 	}
@@ -108,7 +110,8 @@ char *_machineDoke( struct glueCommands *data )
 
 char *_machineLoke( struct glueCommands *data )
 {
-	int adr, value;
+	int *adr;
+	int value;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -117,14 +120,16 @@ char *_machineLoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = _stackInt(data->stack-1);
-		value = _stackInt(data->stack);
+		adr = (int *) _stackInt(stack-1);
+		value = _stackInt(stack);
 
-		if (adr>0)	// we can only Loke positive addresses
+		if (adr)
 		{
-			*((int *) adr) = value;
+			*adr = (int) value;
 			success = true;
 		}
+
+		printf("%04x\n",adr);
 	}
 
 	if (success == false) setError(25);
@@ -136,7 +141,6 @@ char *_machineLoke( struct glueCommands *data )
 
 char *_machinePeek( struct glueCommands *data )
 {
-	int n;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -145,12 +149,16 @@ char *_machinePeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		n = _stackInt(data->stack);
-		if (n>0)	// we can only peek positive addresses
+		char *adr = (char *) _stackInt(data->stack);
+
+		if (adr)
 		{
-			ret = *((char *) n);
+			ret = *adr;
+			success = true;
 		}
 	}
+
+	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
 	_num(ret);
@@ -159,7 +167,6 @@ char *_machinePeek( struct glueCommands *data )
 
 char *_machineDeek( struct glueCommands *data )
 {
-	int n;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -168,12 +175,16 @@ char *_machineDeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		n = _stackInt(data->stack);
-		if (n>0)	// we can only peek positive addresses
+		short *adr = (short *) _stackInt(data->stack);
+
+		if (adr)
 		{
-			ret = *((short *) n);
+			ret = *adr;
+			success = true;
 		}
 	}
+
+	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
 	_num(ret);
@@ -183,7 +194,6 @@ char *_machineDeek( struct glueCommands *data )
 
 char *_machineLeek( struct glueCommands *data )
 {
-	int n;
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
@@ -192,12 +202,16 @@ char *_machineLeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		n = _stackInt(data->stack);
-		if (n>0)	// we can only peek positive addresses
+		int *adr = (int *) _stackInt(data->stack);
+
+		if (adr)
 		{
-			ret = *((int *) n);
+			ret = *adr;
+			success = true;
 		}
 	}
+
+	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
 	_num(ret);
@@ -245,5 +259,43 @@ char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _machineCopy, tokenBuffer );
 	return tokenBuffer;
+}
+
+char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
+{
+
+	if (NEXT_TOKEN( ptr ) == 0x0074) ptr+=2;
+
+	if (NEXT_TOKEN( ptr ) == 0x0006)
+	{
+		struct reference *ref = (struct reference *) (ptr + 2);
+		int idx = ref->ref-1;
+
+		printf("globalVars[idx].var.type: %d\n",globalVars[idx].var.type);
+
+		switch ( globalVars[idx].var.type )
+		{
+			case type_float:
+				setStackPtr( &globalVars[idx].var.decimal );
+				break;
+
+			case type_int:
+				setStackPtr( &globalVars[idx].var.value );
+				break;
+
+			case type_string:
+				setStackPtr( globalVars[idx].var.str );
+				break;
+		}
+		ptr += (2 + sizeof(struct reference) + ref -> length) ;
+	}
+
+	if (NEXT_TOKEN( ptr ) == 0x007C) ptr+=2;
+
+	dump_stack();
+
+	printf("%04x\n",NEXT_TOKEN( ptr ));
+
+	return ptr;
 }
 
