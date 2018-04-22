@@ -370,6 +370,193 @@ char *machineHunt(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+//------
+
+char *_machineRolB( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 0x80 ? 1: 0) | (tmp << 1)) & 0xFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineRolW( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 0x8000 ? 1: 0) | (tmp << 1)) & 0xFFFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineRolL( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 0x80000000 ? 1: 0) | (tmp << 1)) & 0xFFFFFFFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineRorB( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 1 ? 0x80: 0) | (tmp >> 1)) & 0xFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineRorW( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 1 ? 0x8000: 0) | (tmp >> 1)) & 0xFFFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineRorL( struct glueCommands *data )
+{
+	unsigned int shift;
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		shift = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			int tmp;
+			struct kittyData *var = &globalVars[last_var -1].var;
+			tmp = var -> value;
+			while (shift--) tmp = ((tmp & 1 ? 0x80000000: 0) | (tmp >> 1)) & 0xFFFFFFFF  ;
+			var -> value = tmp;
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *machineRolB(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRolB, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineRolW(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRolW, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineRolL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRolL, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineRorB(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRorB, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineRorW(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRorW, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineRorL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineRorL, tokenBuffer );
+	return tokenBuffer;
+}
 
 /*
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
