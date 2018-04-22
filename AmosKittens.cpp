@@ -501,6 +501,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0018, "", sizeof(struct reference),cmdVar},		// being a dick here its proc not a var
 
 	{0x0026, "\"",2, cmdQuote },
+	{0x001E, "",4,cmdNumber },		// binrary
 	{0x003E, "",4,cmdNumber },
 	{0x0046, "",4,cmdFloat },
 	{0x0054, ":", 0, nextCmd },
@@ -703,13 +704,13 @@ struct nativeCommand nativeCommands[]=
 	{0x219A,"Fill",0,machineFill},
 
 	{0x21BA,"Hunt",0,machineHunt},
-/*
 	{0x226C,"rol.b",0,machineRolB},	
 	{0x227A,"rol.w",0,machineRolW},
 	{0x2288,"rol.l",0,machineRolL},
 	{0x2242,"ror.b",0,machineRorB},	
-	{0x227A,"ror.w",0,machineRorW},
-	{0x2288,"ror.l",0,machineRorL},
+	{0x2250,"ror.w",0,machineRorW},
+	{0x225E,"ror.l",0,machineRorL},
+/*
 	{0x2234,"Bbtst",0,machineBtst},
 	{0x220A,"Bset",0,machineBset},	
 	{0x2226,"Bchg",0,machineBchg},
@@ -908,7 +909,8 @@ int main()
 //	fd = fopen("amos-test/m.amos","r");
 //	fd = fopen("amos-test/varptr.amos","r");
 //	fd = fopen("amos-test/fill.amos","r");
-	fd = fopen("amos-test/hunt.amos","r");
+//	fd = fopen("amos-test/hunt.amos","r");
+	fd = fopen("amos-test/rol-ror.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
