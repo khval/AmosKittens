@@ -432,10 +432,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
 
-	if (cmdStack) if (stack)
-	{
-		 if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	}
+	flushCmdParaStack();
 
 	return ptr + length2;
 }
@@ -704,8 +701,9 @@ struct nativeCommand nativeCommands[]=
 	{0x21AA,"copy",0,machineCopy},
 	{0x0614,"Varptr",0,machineVarPtr},
 	{0x219A,"Fill",0,machineFill},
-/*
+
 	{0x21BA,"Hunt",0,machineHunt},
+/*
 	{0x226C,"rol.b",0,machineRolB},	
 	{0x227A,"rol.w",0,machineRolW},
 	{0x2288,"rol.l",0,machineRolL},
