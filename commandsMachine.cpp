@@ -25,7 +25,7 @@ char *_machineCopy( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
@@ -377,7 +377,7 @@ char *_machineRolB( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -402,7 +402,7 @@ char *_machineRolW( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -427,7 +427,7 @@ char *_machineRolL( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -452,7 +452,7 @@ char *_machineRorB( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -477,7 +477,7 @@ char *_machineRorW( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -502,7 +502,7 @@ char *_machineRorL( struct glueCommands *data )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
