@@ -394,13 +394,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
-	if (cmdStack) if (stack)
-	{
-		char *newTokenLoc = NULL;
-
-		if (kittyStack[stack-1].state == state_none) if (cmdTmp[cmdStack-1].flag == cmd_para ) newTokenLoc =cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-		if (newTokenLoc) return newTokenLoc - sizeof(struct reference) - 2;
-	}
+	flushCmdParaStack();
 
 	return ptr + ref -> length ;
 }
@@ -710,11 +704,12 @@ struct nativeCommand nativeCommands[]=
 	{0x2242,"ror.b",0,machineRorB},	
 	{0x2250,"ror.w",0,machineRorW},
 	{0x225E,"ror.l",0,machineRorL},
-/*
+
 	{0x2234,"Bbtst",0,machineBtst},
 	{0x220A,"Bset",0,machineBset},	
 	{0x2226,"Bchg",0,machineBchg},
 	{0x2218,"Bclr",0,machineBclr},
+/*
 	{0x,"PLoad",0,machinePLoad},
 	{0x,"Call",0,machineCall},	
 	{0x2296,"AREG",0,machineAREG},
@@ -910,7 +905,8 @@ int main()
 //	fd = fopen("amos-test/varptr.amos","r");
 //	fd = fopen("amos-test/fill.amos","r");
 //	fd = fopen("amos-test/hunt.amos","r");
-	fd = fopen("amos-test/rol-ror.amos","r");
+//	fd = fopen("amos-test/rol-ror.amos","r");
+	fd = fopen("amos-test/bit.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
