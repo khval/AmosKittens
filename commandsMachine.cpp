@@ -522,6 +522,8 @@ char *_machineRorL( struct glueCommands *data )
 	return NULL;
 }
 
+// ----------------------------------------------
+
 char *machineRolB(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _machineRolB, tokenBuffer );
@@ -557,6 +559,133 @@ char *machineRorL(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _machineRorL, tokenBuffer );
 	return tokenBuffer;
 }
+
+// ----------------------------------------------
+
+char *_machineBtst( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		bit = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			struct kittyData *var = &globalVars[last_var -1].var;
+			ret = var -> value & (1<<bit) ? true : false;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *_machineBset( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		bit = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			struct kittyData *var = &globalVars[last_var -1].var;
+			var -> value |= (1<<bit) ;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineBchg( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		bit = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			struct kittyData *var = &globalVars[last_var -1].var;
+			var -> value ^= (1<<bit) ;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineBclr( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		bit = _stackInt(stack-1);
+
+		if (last_var)
+		{
+			struct kittyData *var = &globalVars[last_var -1].var;
+			var -> value &= ~(1<<bit) ;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+
+char *machineBtst(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineBtst, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineBset(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineBset, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineBchg(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineBchg, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineBclr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineBclr, tokenBuffer );
+	return tokenBuffer;
+}
+
+// ----------------------------------------------
 
 /*
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
