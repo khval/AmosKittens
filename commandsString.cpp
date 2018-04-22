@@ -208,7 +208,7 @@ char *_hex( struct glueCommands *data )
 char *_bin( struct glueCommands *data )
 {
 	int args = stack - data->stack + 1;
-	int num,len,n;
+	unsigned int num,len,n;
 	char *str,*p;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
