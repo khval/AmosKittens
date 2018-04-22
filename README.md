@@ -29,6 +29,7 @@ Partially implemented:
 * Chapter 8. Maths commands
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
+* Chapter 22. Machine level instructions
 
 Not Implemented:
 
@@ -43,7 +44,6 @@ Not Implemented:
 * Chapter 16. Menus
 * Chapter 17. Sound and music
 * Chapter 21. Screen compaction.
-* Chapter 22. Machine level instructions
 
 Note: 
 -----
@@ -59,23 +59,18 @@ atm, but should not be to hard to implement, it be just different type on the st
 
 Page 47 in AMOS The Creator Manual, local data statements is not working in Amos Pro, restore, data and read is covered many places in the manual, I return to this later time, personally I think its redundant old way of doing things.
 
-Machine Code 
-------------
+Note Machine Code 
+-----------------
+Ba careful with these commands.
 
-Command supported:
-
-* Hex$, Bin$
-
-Known bugs:
-----------
-* Amos Kittens does not clean up after it self..
+String in Amos kittens are \0 terminated.
+Amos kittens don’t have length in front of strings, VarPtr(a$)-2 won't work, use Len(a$)
+VarPtr(a$), will return a address to double not a float.
 
 Not yet supported:
 ------------------
-lots of stuff.
 logical "xor"
 graphics stuff.
-Machine code commands (only two).
 All the new stuff in Amos Pro.
 
 Orginal source code can be found here:
