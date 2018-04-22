@@ -43,7 +43,7 @@ char *_machineCopy( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -55,15 +55,12 @@ char *_machinePoke( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
 		adr = (char *) _stackInt(stack-1);
 		value = _stackInt(stack);
-
-		printf("adr: %d\n",adr);
 
 		if (adr)	// we can only Poke positive addresses
 		{
@@ -75,7 +72,7 @@ char *_machinePoke( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -87,7 +84,7 @@ char *_machineDoke( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -104,7 +101,7 @@ char *_machineDoke( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -116,7 +113,7 @@ char *_machineLoke( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -128,14 +125,12 @@ char *_machineLoke( struct glueCommands *data )
 			*adr = (int) value;
 			success = true;
 		}
-
-		printf("%04x\n",adr);
 	}
 
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -161,7 +156,7 @@ char *_machinePeek( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -171,7 +166,7 @@ char *_machineDeek( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -187,7 +182,7 @@ char *_machineDeek( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -198,7 +193,7 @@ char *_machineLeek( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -214,7 +209,7 @@ char *_machineLeek( struct glueCommands *data )
 	if (success == false) setError(25);
 
 	popStack( stack - data->stack );
-	_num(ret);
+	setStackNum(ret);
 	return NULL;
 }
 
@@ -332,6 +327,49 @@ char *machineFill(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _machineFill, tokenBuffer );
 	return tokenBuffer;
 }
+
+
+char *_machineHunt( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int found = 0;
+
+	proc_names_printf("%s:%d, stack %d\n",__FUNCTION__,__LINE__, data->stack);
+
+	if (args==3)
+	{
+		int _n, _size = 0;
+		char *adrStart = (char *) _stackInt(stack-2);
+		char *adrEnd = (char *) _stackInt(stack-1);
+		char *find = (char *) _stackString(stack);
+
+		if (( adrStart ) && ( adrEnd ))
+		{
+			_size = (int) adrEnd - (int) adrStart - strlen(find);
+			for (_n=0;_n<_size;_n++) 
+			{
+				if (strcmp( adrStart + _n, find )==0)
+				{
+					found = _n; break;
+				}
+			}
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	setStackNum( found );
+
+	return NULL;
+}
+
+char *machineHunt(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineHunt, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 /*
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)

@@ -1,7 +1,7 @@
 
 extern int stack;
 
-#define setStackNum(adr) _num(adr)
+#define setStackNum(num) _num(num)
 #define setStackPtr(adr) _num((int) adr) 
 
 extern void _num( int num );

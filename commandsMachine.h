@@ -22,8 +22,8 @@ char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineGFXCALL(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer);
 
-/*
 char *machineHunt(struct nativeCommand *cmd, char *tokenBuffer);
+/*
 char *machineRolB(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineRolW(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineRolL(struct nativeCommand *cmd, char *tokenBuffer);
