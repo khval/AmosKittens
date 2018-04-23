@@ -523,7 +523,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id )
 		{
-			printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
 			ret = ptr;
