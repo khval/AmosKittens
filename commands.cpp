@@ -51,17 +51,15 @@ char *_for( struct glueCommands *data )
 
 char *_ifSuccess( struct glueCommands *data ) 
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setError(22);	// shoud not be executed
 	return NULL;
 }
-
 
 char *_ifThenSuccess( struct glueCommands *data ) 
 {
 	return NULL;
 }
-
 
 char *_procedure( struct glueCommands *data )
 {
@@ -107,13 +105,11 @@ char *_procAndArgs( struct glueCommands *data )
 
 				oldStack = data -> stack;
 
-				printf("****\n");
-
 				stackCmdProc( _procedure, data -> tokenBuffer2);	//  data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
 
 				cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
 
-				printf("Goto %08x\n", globalVars[idx].var.tokenBufferPos);
+				dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 				tokenMode = mode_store;
 				return globalVars[idx].var.tokenBufferPos  ;
@@ -147,8 +143,6 @@ char *_step( struct glueCommands *data )
 
 	return NULL;
 }
-
-
 
 char *_if( struct glueCommands *data )
 {
@@ -531,7 +525,6 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-//	printf("at line %d\n", getLineFromPointer(tokenBuffer) );
 
 	_num(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
@@ -863,10 +856,9 @@ char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	struct procedure *proc = (struct procedure *) tokenBuffer;
 
-	proc_names_printf("Goto %08x\n",proc -> EndOfProc);
+	proc_names_printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
 
 	return proc -> EndOfProc - sizeof(struct procedure);
 }
@@ -874,7 +866,6 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	struct reference *ref = (struct reference *) (tokenBuffer);
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
