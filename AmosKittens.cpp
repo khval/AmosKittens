@@ -97,23 +97,26 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
-	char *ret = NULL;
-	unsigned int type;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	while (cmdStack)
+	if (cmdStack)
 	{
-		type = cmdTmp[cmdStack-1].flag;
-		if  ( ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
-
-		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-		if (ret) break;
+		char *ret = NULL;
+		unsigned int type;
+		do 
+		{
+			type = cmdTmp[cmdStack-1].flag;
+			if  ( (type == cmd_proc) || ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
+			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			if (ret) 
+			{
+				return ret-2;
+			}
+		} while (cmdStack);
 	}
 
 	tokenMode = mode_standard;
 
-	currentLine ++;
-
-	if (ret) ptr = ret - 2;
 
 	return ptr;
 }
@@ -865,7 +868,7 @@ int main()
 //	fd = fopen("amos-test/compare-strings.amos","r");
 //	fd = fopen("amos-test/procedure.amos","r");
 //	fd = fopen("amos-test/procedure2.amos","r");
-//	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
+	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
 //	fd = fopen("amos-test/procedure-shared.amos","r");
 //	fd = fopen("amos-test/procedure-global.amos","r");
 //	fd = fopen("amos-test/procedure_return_value.amos","r");
@@ -906,7 +909,7 @@ int main()
 //	fd = fopen("amos-test/fill.amos","r");
 //	fd = fopen("amos-test/hunt.amos","r");
 //	fd = fopen("amos-test/rol-ror.amos","r");
-	fd = fopen("amos-test/bit.amos","r");
+//	fd = fopen("amos-test/bit.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
