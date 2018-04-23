@@ -77,7 +77,7 @@ int nested_count = 0;
 #define addNest( enum_cmd ) \
 	nested_command[ nested_count ].cmd = enum_cmd; \
 	nested_command[ nested_count ].ptr = ptr; \
-	nested_count++; 
+	nested_count++;
 
 
 void dump_nest()
@@ -85,8 +85,8 @@ void dump_nest()
 	int i;
 	for (i=0;i<nested_count;i++)
 	{
-		printf("%04d -- %04X - %s\n", 
-			i, nested_command[ i ].cmd, 
+		printf("%04d -- %04X - %s\n",
+			i, nested_command[ i ].cmd,
 			nest_names[ nested_command[ i ].cmd ] );
 	}
 }
@@ -138,9 +138,9 @@ int findVar( char *name, int _proc )
 
 		if (globalVars[n].varName == NULL) return 0;
 
-		if ((strcasecmp( globalVars[n].varName, name)==0) && 
+		if ((strcasecmp( globalVars[n].varName, name)==0) &&
 			(
-				(globalVars[n].proc == _proc) || 
+				(globalVars[n].proc == _proc) ||
 				(globalVars[n].pass1_shared_to == _proc) ||
 				(globalVars[n].isGlobal)
 			))
@@ -211,7 +211,7 @@ void pass1var(char *ptr, bool is_proc )
 		{
 			free(tmp);		//  don't need tmp
 			ref -> ref = found;
-		
+
 			if (is_proc)
 			{
 				var = &globalVars[found-1].var;
@@ -246,8 +246,6 @@ void pass1var(char *ptr, bool is_proc )
 void next_var_should_be_proc_type( char *ptr )
 {
 	short token = *((short *) ptr);
-//	struct reference *ref = (struct reference *) (ptr+2);
-
 	if (token == 0x0006) pass1var(  ptr+2, true );
 }
 
@@ -310,7 +308,7 @@ char *pass1_shared( char *ptr )
 						if (tmp)
 						{
 							var = findVarPublic(tmp);
-							if (var) 
+							if (var)
 							{
 								globalVars[var-1].pass1_shared_to = procCount;
 								ref->ref = var;
@@ -323,7 +321,7 @@ char *pass1_shared( char *ptr )
 						break;
 			case 0x005C: break;
 
-			default: 
+			default:
 						setError(1);
 		}
 
@@ -354,7 +352,7 @@ char *pass1_global( char *ptr )
 						if (tmp)
 						{
 							var = findVarPublic(tmp);
-							if (var) 
+							if (var)
 							{
 								free(tmp);
 								globalVars[var-1].isGlobal = TRUE;
@@ -373,7 +371,7 @@ char *pass1_global( char *ptr )
 						break;
 			case 0x005C: break;
 
-			default: 
+			default:
 						setError(1);
 		}
 
@@ -389,7 +387,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 	struct nativeCommand *cmd;
 	unsigned short current_token = *((unsigned short *) ptr);
 	int token_size;
-	
+
 	// loop until we find token, then exit, or find term token then exit.
 
 	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) && ( ptr < _eof_ ) )
@@ -405,7 +403,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			case 0x0006:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x000C:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0012:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
-			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;				
+			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0386:   token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0026:	token_size = QuoteByteLength(ptr)+2; break;
 			case 0x002E:	token_size = QuoteByteLength(ptr)+2; break;
@@ -414,7 +412,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			// skip other commands data
 
 			default:
-		
+
 				printf("other\n");
 
 
@@ -427,7 +425,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 		ptr += token_size ;	// skip token data, we have skiped token before
 		current_token = *((unsigned short *) ptr);
-	}	
+	}
 
 	if ( current_token == token)
 	{
@@ -510,7 +508,7 @@ void pass1_if_or_else( char *ptr )
 
 			default:
 
-				setError( 25 );	
+				setError( 25 );
 		}
 	}
 }
@@ -523,7 +521,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
-		if (token == cmd->id ) 
+		if (token == cmd->id )
 		{
 			printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
@@ -539,19 +537,19 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x0006:	pass1var( ptr, false );
-							ret += ReferenceByteLength(ptr); 
+							ret += ReferenceByteLength(ptr);
 							break;
 
 				case 0x000c:	pass1label( ptr );
-							ret += ReferenceByteLength(ptr); 
+							ret += ReferenceByteLength(ptr);
 							break;
 
 				case 0x0012:	pass1var( ptr, false );
-							ret += ReferenceByteLength(ptr); 
+							ret += ReferenceByteLength(ptr);
 							break;
 
 				case 0x0018:	pass1label( ptr );
-							ret += ReferenceByteLength(ptr); 
+							ret += ReferenceByteLength(ptr);
 							break;
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
@@ -564,7 +562,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0286:	if LAST_TOKEN_(do)
 								fix_token_short( nested_do, ptr+2 );
 							else
-								setError( 28 );	
+								setError( 28 );
 							break;
 
 				case 0x023C: addNest( nested_for );
@@ -574,7 +572,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0246:	if LAST_TOKEN_(for)
 								fix_token_short( nested_for, ptr+2 );
 							else
-								setError( 34 );	
+								setError( 34 );
 							break;
 
 				case 0x0250:	addNest( nested_repeat );
@@ -584,7 +582,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x025C:	if LAST_TOKEN_(repeat)
 								fix_token_short( nested_repeat, ptr+2 );
 							else
-								setError( 32 );	
+								setError( 32 );
 							break;
 
 				case 0x0268:	addNest( nested_while );
@@ -593,7 +591,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0274:	if LAST_TOKEN_(while)
 								fix_token_short( nested_while, ptr+2 );
 							else
-								setError( 30 );	
+								setError( 30 );
 							break;
 				// if
 				case 0x02BE:	addNest( nested_if );
@@ -601,7 +599,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 							break;
 
-				case 0x02C6:	// THEN 
+				case 0x02C6:	// THEN
 							if LAST_TOKEN_(if)
 								nested_command[ nested_count -1 ].cmd = nested_then;
 							else
@@ -628,19 +626,19 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							{
 								printf("ELSE IF -- GET_LAST_NEST %04x\n", GET_LAST_NEST );
 								dump_nest();
-								setError( 25 );	
+								setError( 25 );
 							}
 							break;
 
 				case 0x02D0:	// ELSE
 							if LAST_TOKEN_(if)
 							{
-								pass1_if_or_else(ptr-2);	
+								pass1_if_or_else(ptr-2);
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(else_if)
 							{
-								pass1_if_or_else(ptr-2); 
+								pass1_if_or_else(ptr-2);
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(then)
@@ -653,9 +651,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								pass1_if_or_else(ptr-2);
 								addNest( nested_then_else );
 							}
-	
+
 							else
-								setError( 25 );	
+								setError( 25 );
 							break;
 
 				case 0x02DA:	// END IF
@@ -679,7 +677,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0390: // End Proc
 							procStackCount--;
-							if LAST_TOKEN_(proc) 
+							if LAST_TOKEN_(proc)
 							{
 								pass1_proc_end( ptr );
 							}
@@ -711,14 +709,14 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 			}
-	
+
 			ret += cmd -> size;
 			return ret;
 		}
 	}
 
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
+					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
 setError(35);
 
@@ -739,7 +737,7 @@ void pass1_reader( char *start, int tokenlength )
 	char *ptr;
 	int token = 0;
 	last_token = 0;
-	
+
 	lastLineAddr = start;
 	ptr = start;
 	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) ) && ( kittyError.code == 0))
@@ -748,7 +746,7 @@ void pass1_reader( char *start, int tokenlength )
 
 		last_token = token;
 		token = *((short *) ptr);
-		ptr += 2;	// next token.		
+		ptr += 2;	// next token.
 	}
 	addLineAddress( lastLineAddr, ptr );
 
