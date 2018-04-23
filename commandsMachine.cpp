@@ -687,7 +687,60 @@ char *machineBclr(struct nativeCommand *cmd, char *tokenBuffer)
 
 // ----------------------------------------------
 
-/*
+
+int reg = 0;
+unsigned int regs[16];
+
+extern char *_setVar( struct glueCommands *data );
+extern char *(*_do_set) ( struct glueCommands *data );
+
+char *_set_reg( struct glueCommands *data )
+{
+	if ((reg>-1)&&(reg<16)) regs[reg] = _stackInt(stack);
+	_do_set = _setVar;
+	return NULL;
+}
+
+char *_machineAREG( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		reg = _stackInt(stack) + 8;
+		if ((reg>7)&&(reg<16)) setStackNum( regs[reg] );
+		_do_set = _set_reg;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_machineDREG( struct glueCommands *data )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	bool ret = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		reg = _stackInt(stack);
+		if ((reg>-1)&&(reg<8)) setStackNum( regs[reg] );
+		_do_set = _set_reg;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineAREG, tokenBuffer );
@@ -700,6 +753,7 @@ char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+/*
 char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineDOSCALL, tokenBuffer );

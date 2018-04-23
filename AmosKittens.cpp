@@ -712,11 +712,13 @@ struct nativeCommand nativeCommands[]=
 	{0x220A,"Bset",0,machineBset},	
 	{0x2226,"Bchg",0,machineBchg},
 	{0x2218,"Bclr",0,machineBclr},
+
+	{0x2296,"AREG",0,machineAREG},
+	{0x22A2,"DREG",0,machineDREG},
+
 /*
 	{0x,"PLoad",0,machinePLoad},
 	{0x,"Call",0,machineCall},	
-	{0x2296,"AREG",0,machineAREG},
-	{0x22A2,"DREG",0,machineDREG},
 	{0x,"DOSCALL",0,machineDOSCALL},
 	{0x,"EXECALL",0,machineEXECALL},
 	{0x,"GFXCALL",0,machineGFXCALL},	
@@ -868,7 +870,7 @@ int main()
 //	fd = fopen("amos-test/compare-strings.amos","r");
 //	fd = fopen("amos-test/procedure.amos","r");
 //	fd = fopen("amos-test/procedure2.amos","r");
-	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
+//	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
 //	fd = fopen("amos-test/procedure-shared.amos","r");
 //	fd = fopen("amos-test/procedure-global.amos","r");
 //	fd = fopen("amos-test/procedure_return_value.amos","r");
@@ -910,6 +912,7 @@ int main()
 //	fd = fopen("amos-test/hunt.amos","r");
 //	fd = fopen("amos-test/rol-ror.amos","r");
 //	fd = fopen("amos-test/bit.amos","r");
+	fd = fopen("amos-test/asm.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
