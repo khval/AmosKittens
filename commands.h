@@ -63,6 +63,9 @@ char *cmdCloseWorkbench(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdCloseEditor(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer );
 
+char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer );
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
 char *_print( struct glueCommands *data );

@@ -724,6 +724,10 @@ struct nativeCommand nativeCommands[]=
 	{0x,"GFXCALL",0,machineGFXCALL},	
 	{0x,"INTCALL",0,machineINTCALL},	
 */
+
+	{0x24BE,"Amos To Back",0,cmdAmosToBack},
+//	{0x0000,"Amos To Front",0,cmdAmosToFront},
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -912,7 +916,8 @@ int main()
 //	fd = fopen("amos-test/hunt.amos","r");
 //	fd = fopen("amos-test/rol-ror.amos","r");
 //	fd = fopen("amos-test/bit.amos","r");
-	fd = fopen("amos-test/asm.amos","r");
+//	fd = fopen("amos-test/asm.amos","r");
+	fd = fopen("amos-test/doscall.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
