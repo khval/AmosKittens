@@ -26,7 +26,8 @@ main_objects = commands.cpp \
 			stack.cpp \
 			commandsDisc.cpp \
 			init.cpp \
-			cleanup.cpp
+			cleanup.cpp \
+			readhunk.cpp
 
 main_SRCS = AmosKittens.cpp
 
