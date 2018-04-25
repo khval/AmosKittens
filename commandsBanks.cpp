@@ -305,7 +305,8 @@ const char *bankTypes[] = {
 	"Chip Work",
 	"Chip Data",
 	"Fast work",
-	"Fast Data"
+	"Fast Data",
+	"Code"
 };
 
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
