@@ -715,18 +715,19 @@ struct nativeCommand nativeCommands[]=
 
 	{0x2296,"AREG",0,machineAREG},
 	{0x22A2,"DREG",0,machineDREG},
+	{0x0214,"DOSCALL",0,machineDOSCALL},
+	{0x01F8,"EXECALL",0,machineEXECALL},
 
+
+	{0x182A,"PLoad",0,machinePload},
+	{0x01EE,"Call",0,machineCall},	
 /*
-	{0x,"PLoad",0,machinePLoad},
-	{0x,"Call",0,machineCall},	
-	{0x,"DOSCALL",0,machineDOSCALL},
-	{0x,"EXECALL",0,machineEXECALL},
 	{0x,"GFXCALL",0,machineGFXCALL},	
 	{0x,"INTCALL",0,machineINTCALL},	
 */
 
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
-//	{0x0000,"Amos To Front",0,cmdAmosToFront},
+	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 
 };
 
@@ -917,7 +918,9 @@ int main()
 //	fd = fopen("amos-test/rol-ror.amos","r");
 //	fd = fopen("amos-test/bit.amos","r");
 //	fd = fopen("amos-test/asm.amos","r");
-	fd = fopen("amos-test/doscall.amos","r");
+//	fd = fopen("amos-test/doscall.amos","r");
+//	fd = fopen("amos-test/execall.amos","r");
+	fd = fopen("amos-test/pload.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
