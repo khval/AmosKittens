@@ -898,15 +898,48 @@ char *_machineCall( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	void *code = NULL;
 
 	if (args==1)
 	{
+		int bank = _stackInt(stack);
 
+		if ((bank>0)&&(bank<16))
+		{
+			if (kittyBanks[bank-1].type == 11)
+			{
+				code = kittyBanks[bank-1].start;
+			}
+		}
+		else
+		{
+			code = (void *) bank;
+		}
 
 	}
 	else setError(22);
-
 	popStack( stack - data->stack );
+
+
+	if (code)
+	{
+		int	ret = EmulateTags( 
+					code,
+					ET_RegisterD0,regs[0],
+					ET_RegisterD1,regs[1],
+					ET_RegisterD2,regs[2],
+					ET_RegisterD3,regs[3],
+					ET_RegisterD4,regs[4],
+					ET_RegisterD5,regs[5],
+					ET_RegisterD6,regs[6],
+					ET_RegisterD7,regs[7],
+					ET_RegisterA0,regs[8],
+					ET_RegisterA1,regs[9],
+					ET_RegisterA2,regs[10],
+					TAG_END	 );
+		setStackNum(ret);
+	}
+	else setError(22);
 
 	return NULL;
 }
