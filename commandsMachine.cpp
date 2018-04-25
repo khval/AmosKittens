@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <proto/exec.h>
+#include <exec/emulation.h>
+#include <proto/dos.h>
 #include "debug.h"
 #include <string>
 #include <iostream>
@@ -11,6 +13,7 @@
 #include "commands.h"
 #include "commandsBanks.h"
 #include "errors.h"
+#include "readhunk.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -753,12 +756,94 @@ char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-/*
+char *_machineDOSCALL( struct glueCommands *data )
+{
+	int libVec;
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		libVec = _stackInt(stack);
+
+		if (libVec<0)
+		{
+			ret = libVec;
+
+			ret = EmulateTags( 
+					DOSBase,
+					ET_Offset, libVec,
+					ET_RegisterD0,regs[0],
+					ET_RegisterD1,regs[1],
+					ET_RegisterD2,regs[2],
+					ET_RegisterD3,regs[3],
+					ET_RegisterD4,regs[4],
+					ET_RegisterD5,regs[5],
+					ET_RegisterD6,regs[6],
+					ET_RegisterD7,regs[7],
+					ET_RegisterA0,regs[8],
+					ET_RegisterA1,regs[9],
+					ET_RegisterA2,regs[10],
+					TAG_END	 );
+
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+
+	return NULL;
+}
+
+char *_machineEXECALL( struct glueCommands *data )
+{
+	int libVec;
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		libVec = _stackInt(stack);
+
+		if (libVec<0)
+		{
+			ret = libVec;
+
+			ret = EmulateTags( 
+					SysBase,
+					ET_Offset, libVec,
+					ET_RegisterD0,regs[0],
+					ET_RegisterD1,regs[1],
+					ET_RegisterD2,regs[2],
+					ET_RegisterD3,regs[3],
+					ET_RegisterD4,regs[4],
+					ET_RegisterD5,regs[5],
+					ET_RegisterD6,regs[6],
+					ET_RegisterD7,regs[7],
+					ET_RegisterA0,regs[8],
+					ET_RegisterA1,regs[9],
+					ET_RegisterA2,regs[10],
+					TAG_END	 );
+
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+
+	return NULL;
+}
+
 char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineDOSCALL, tokenBuffer );
 	return tokenBuffer;
 }
+
 
 char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -766,6 +851,74 @@ char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_machinePload( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	char *keep_code = NULL;
+	int code_size;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		char *name = _stackString(stack-1);
+		int bank = _stackInt(stack);
+		FILE *fd;
+
+		if (name)	readhunk( name, &keep_code, &code_size );
+
+		if ((bank>0)&&(bank<16)&&(keep_code))
+		{
+			kittyBanks[bank-1].length = code_size;
+			if (kittyBanks[bank-1].start) free( kittyBanks[bank-1].start );
+			kittyBanks[bank-1].start = keep_code;
+			kittyBanks[bank-1].type = 11;	
+		}
+		else
+		{
+			if (keep_code) free(keep_code);
+		}
+
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+
+char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machinePload, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_machineCall( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+
+
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+
+char *machineCall(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineCall, tokenBuffer );
+	return tokenBuffer;
+}
+
+/*
 char *machineGFXCALL(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineGFXCALL, tokenBuffer );
