@@ -55,6 +55,7 @@ int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
 std::vector<struct label> labels;	// 0 is not used.
 std::vector<struct lineAddr> linesAddress;
+std::vector<struct defFn> defFns;
 
 int global_var_count = 0;
 int labels_count = 0;
@@ -495,6 +496,9 @@ struct nativeCommand nativeCommands[]=
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0012, "procedure with args",sizeof(struct reference),cmdProcAndArgs },
 
+	{0x00b0, "Def fn", 0, mathDefFn },
+	{0x00bc, "Fn", 0, mathFn },
+
 	{0x0018, "", sizeof(struct reference),cmdVar},		// being a dick here its proc not a var
 
 	{0x0026, "\"",2, cmdQuote },
@@ -920,7 +924,8 @@ int main()
 //	fd = fopen("amos-test/asm.amos","r");
 //	fd = fopen("amos-test/doscall.amos","r");
 //	fd = fopen("amos-test/execall.amos","r");
-	fd = fopen("amos-test/pload.amos","r");
+//	fd = fopen("amos-test/pload.amos","r");
+	fd = fopen("amos-test/def-fn.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
@@ -932,6 +937,9 @@ int main()
 		data = (char *) malloc(amos_filesize);
 		if (data)
 		{
+			_file_start_ = data;
+			_file_end_ = data + tokenlength;
+
 			fread(data,amos_filesize,1,fd);
 
 			// snifff the tokens find labels, vars, functions and so on.
