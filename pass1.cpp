@@ -21,6 +21,7 @@ extern struct nativeCommand nativeCommands[];
 
 extern std::vector<struct label> labels;
 extern std::vector<struct lineAddr> linesAddress;
+extern std::vector<struct defFn> defFns;
 char *lastLineAddr;
 
 void addLineAddress( char *_start, char *_end );
@@ -194,6 +195,41 @@ void add_var_from_ref( struct reference *ref, char *tmp, bool is_proc )
 	var->type = is_proc ? type_proc : ref -> flags & 7;
 	var->len = 0;
 	if (var -> type == type_string) var->str = strdup("");
+}
+
+char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
+
+char *pass1DefFn( char *ptr )
+{
+	char *_;
+	// skip all new lines..
+
+	if (*(unsigned short *) ptr  == 0x0006 )
+	{
+		struct reference *ref;
+		ptr+=2;
+ 		ref = (struct reference *) ptr;
+		struct defFn fn;
+
+		printf("_file_end_ %08x\n",_file_end_);
+
+		fn.fnAddr = ptr + sizeof(struct reference) + ref -> length;
+		fn.skipAddr = FinderTokenInBuffer( fn.fnAddr, 0x0000 , -1, -1, _file_end_ );
+
+		fn.name = dupRef( ref );
+
+		if (fn.name)
+		{
+			defFns.push_back(fn);
+			ref -> ref = defFns.size();
+
+			printf("%d - Navn: '%s' - Address: 0x%08x Skip: 0x%08x\n",ref -> ref, fn.name, fn.fnAddr, fn.skipAddr);
+		}
+
+		ptr += sizeof(struct reference) + ref -> length;		// no point adding this var list.
+	}
+
+	return ptr;
 }
 
 void pass1var(char *ptr, bool is_proc )
@@ -392,7 +428,6 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 	while (  (current_token  != token) && (current_token != token_eof1 ) && (current_token != token_eof2 ) && ( ptr < _eof_ ) )
 	{
-		printf("current_token %04x\n",current_token);
 		ptr += 2; // skip token id.
 
 		token_size = 0;
@@ -412,9 +447,6 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			// skip other commands data
 
 			default:
-
-				printf("other\n");
-
 
 				for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 				{
@@ -538,6 +570,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0006:	pass1var( ptr, false );
 							ret += ReferenceByteLength(ptr);
+							break;
+
+				case 0x00b0:	ret = pass1DefFn( ptr );
 							break;
 
 				case 0x000c:	pass1label( ptr );

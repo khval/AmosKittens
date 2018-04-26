@@ -128,6 +128,13 @@ struct globalVar
 	bool isGlobal;
 };
 
+struct defFn
+{
+	char *name;
+	char *fnAddr;
+	char *skipAddr;
+};
+
 struct kittyBank 
 {
 	int type;

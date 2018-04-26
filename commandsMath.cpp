@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include <vector>
 
 #include "debug.h"
 #include "stack.h"
@@ -12,6 +13,8 @@
 #include "commands.h"
 #include "commandsData.h"
 #include "errors.h"
+
+extern std::vector<struct defFn> defFns;
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -643,6 +646,17 @@ char *mathFix(struct nativeCommand *cmd, char *tokenBuffer)
 char *mathDefFn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+
+		if (ref -> ref)
+		{
+			tokenBuffer = defFns[ ref -> ref -1 ].skipAddr;
+		}
+	}
+
 	return tokenBuffer;
 }
 
