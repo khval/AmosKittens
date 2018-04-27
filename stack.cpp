@@ -62,9 +62,10 @@ void unLockPara()
 	}
 }
 
-void flushCmdParaStack()
+char *flushCmdParaStack()
 {
 	struct glueCommands *cmd;
+	char *ret = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -73,13 +74,12 @@ void flushCmdParaStack()
 	if (cmdStack)	
 	{
 		cmd = &cmdTmp[cmdStack-1];
-		if (cmd -> stack) if (kittyStack[cmd -> stack].state != state_none)	return;
+		if (cmd -> stack) if (kittyStack[cmd -> stack].state != state_none)	return NULL;
 	}
 
 	// flush all params.
 	if (cmdStack)
 	{
-
 		int state;
 
 		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
@@ -89,15 +89,17 @@ void flushCmdParaStack()
 
 			if ( state == state_none ) 
 			{
-				cmd -> cmd(cmd);
+				ret = cmd -> cmd(cmd);
 				cmdStack--;
 			}
 			else	break;
 
 			// some math operation is blocking... can't flush at this time.
-			if (stack)	if (kittyStack[stack-1].state != state_none) return;
+			if (stack)	if (kittyStack[stack-1].state != state_none) return NULL;
 		}
 	}
+
+	return ret;
 }
 
 void popStack(int n)

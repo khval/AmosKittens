@@ -29,7 +29,7 @@ extern void popStack(int n);
 extern void correct_for_hidden_sub_data();
 
 extern void unLockPara();
-extern void flushCmdParaStack();
+extern char *flushCmdParaStack();
 extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
 extern bool dropProgStackToType( int type );
 

@@ -28,6 +28,7 @@ int var_param_num;
 double var_param_decimal;
 
 char *_file_start_ = NULL;
+char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands are executed.
 char *_file_end_ = NULL;
 
 int cmdStack = 0;
