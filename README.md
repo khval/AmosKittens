@@ -23,13 +23,13 @@ Implemented:
 * Chapter 5. String functions.
 * Chapter 7. Control structures.
 * Chapter 20. Disk access.
+* Chapter 22. Machine level instructions
 
 Partially implemented:
 
 * Chapter 8. Maths commands
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
-* Chapter 22. Machine level instructions
 
 Not Implemented:
 
