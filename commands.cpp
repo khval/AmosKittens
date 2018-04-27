@@ -21,6 +21,7 @@ char *on_every_gosub_location = NULL;
 char *on_every_proc_location = NULL;
 struct timeval every_before, every_after;
 
+extern char *_file_pos_ ;
 
 int timer_offset = 0;
 
@@ -465,15 +466,24 @@ char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	char *ret;
+
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	flushCmdParaStack();
+	_file_pos_ = tokenBuffer;		// needed by "Fn", need to return End Bracket after Fn call.
+
+	ret = flushCmdParaStack();
+	if (ret) return ret;
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	flushCmdParaStack();
+	ret = flushCmdParaStack();
+	if (ret) return ret;
+
 	unLockPara();
-	flushCmdParaStack();
+
+	ret = flushCmdParaStack();
+	if (ret) return ret;
 
 	return tokenBuffer;
 }
@@ -905,55 +915,63 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
+{
+	struct reference *ref;
+	struct glueCommands data;
+	char *ptr;
+	int args = 0;
+	int n;
+	unsigned short token;
+
+	proc_names_printf("go down this path ....\n");
+
+	args = stack - sdata->stack +1;
+
+	stack -= (args-1);	// move to start of args.
+
+	n=0;
+	for (ptr = tokenBuffer; (*((unsigned short *) ptr) != 0x008C) &&(n<args) ;ptr+=2)
+	{
+		token = *((unsigned short *) ptr);
+
+		switch ( token )
+		{
+			case 0x0006:	
+
+				ref = (struct reference *) (ptr+2);
+
+				data.lastVar = ref->ref;
+				_setVar( &data );
+
+				ptr += sizeof(struct reference ) + ref -> length;
+				n++;
+				stack ++;
+				break;
+
+			case 0x005C:
+				break;
+		}
+
+		ptr += 2;	 // next token
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+
+	return ptr;
+}
 
 char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	char *(*scmd )( struct glueCommands *data ) = NULL;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procedure ) 
+	if (cmdStack) scmd = cmdTmp[cmdStack-1].cmd ;
+
+	if ( scmd == _procedure )
 	{
-		struct reference *ref;
-		struct glueCommands data;
-		char *ptr;
-		int args = 0;
-		int n;
-		unsigned short token;
-
-		proc_names_printf("go down this path ....\n");
-
-		args = stack - cmdTmp[cmdStack-1].stack +1;
-
-		stack -= (args-1);
-	
-		n=0;
-		for (ptr = tokenBuffer; (*((unsigned short *) ptr) != 0x008C) &&(n<args) ;ptr+=2)
-		{
-			token = *((unsigned short *) ptr);
-
-			switch ( token )
-			{
-				case 0x0006:	
-
-					ref = (struct reference *) (ptr+2);
-
-					data.lastVar = ref->ref;
-					_setVar( &data );
-
-					ptr += sizeof(struct reference ) + ref -> length;
-					n++;
-					stack ++;
-					break;
-
-				case 0x005C:
-					break;
-			}
-
-			ptr += 2;	 // next token
-		}
-
-		popStack( stack - cmdTmp[cmdStack-1].stack  );
-
-		return ptr;
+		return read_kitty_args(tokenBuffer, &cmdTmp[cmdStack-1]);
 	}
 
 	return tokenBuffer;
