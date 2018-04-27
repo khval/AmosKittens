@@ -26,6 +26,8 @@ double to_rad_factor=1.0f;
 double to_degree_factor=1.0f ;
 int decimals = 2;		// FIX sets text formating 
 
+extern char *_file_pos_ ;
+
 char *_mathInc( struct glueCommands *data )
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
@@ -445,15 +447,6 @@ char *_mathDefFn( struct glueCommands *data )
 	return NULL;
 }
 
-char *_mathFn( struct glueCommands *data )
-{
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-	int args = stack - data->stack +1;
-	popStack(stack - data->stack);
-	return NULL;
-}
-
-
 //------------------------------------------------------------
 
 char *mathDegree(struct nativeCommand *cmd, char *tokenBuffer)
@@ -660,6 +653,56 @@ char *mathDefFn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
+
+char *_mathFnReturn( struct glueCommands *data )
+{
+	printf("End of Line\n");
+	getchar();
+	return data -> tokenBuffer;
+}
+
+char *_mathFn( struct glueCommands *data )
+{
+	int args = stack - data->stack + 1 ;
+	char *_str;
+	int ref = data -> lastVar;
+	char *ptr;
+
+	printf("%s: args %d\n",__FUNCTION__,args);
+	
+
+	if (ref)
+	{
+		printf("ref->ref %d, %08x\n", ref, defFns[  ref -1 ].fnAddr);
+		ptr = defFns[  ref -1 ].fnAddr;
+
+		if (NEXT_TOKEN(ptr)==0x0074)
+		{
+			ptr+=2;
+			ptr = read_kitty_args(ptr, data);
+
+			data -> tokenBuffer = _file_pos_;
+			data -> cmd = _mathFnReturn;
+			data -> cmd_type = cmd_eol;	// force flush to stop.
+			cmdStack++;		// stop stack from being deleted
+
+			printf("args read, next addr: %08x\n",ptr);
+
+			return ptr;
+		}
+	}
+	else
+	{
+		printf("pass1 failed\n");
+	}
+
+	popStack(stack - data->stack);
+
+	return NULL;
+}
+
+
 char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
@@ -670,15 +713,10 @@ char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
 
-		if (ref -> ref)
-		{
-			printf("ref->ref %d, %08x\n", ref->ref, defFns[ ref -> ref -1 ].fnAddr);
-		}
-		else
-		{
-			printf("pass1 failed\n");
-		}
+		stackCmdParm( _mathFn, tokenBuffer );
+		cmdTmp[cmdStack-1].lastVar = ref -> ref;
 
+		tokenBuffer += 2 + sizeof(struct reference) + ref -> length;
 	}
 
 
