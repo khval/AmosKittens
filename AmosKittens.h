@@ -75,7 +75,13 @@ struct glueCommands
 	char *(*cmd) ( struct glueCommands *data );	// can return token location
 	char *tokenBuffer;
 	char *tokenBuffer2;		// a place to store a 2en token buffer pos.
-	int flag;				// should rename this to type
+
+	union
+	{
+		int flag;				// should remove flag and use cmd_type
+		int cmd_type;
+	};
+
 	int lastVar;
 	int step;		// specal to one command, think this can be union if more specals are needed.
 	int stack;
