@@ -663,6 +663,25 @@ char *mathDefFn(struct nativeCommand *cmd, char *tokenBuffer)
 char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	dump_global();
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+
+		if (ref -> ref)
+		{
+			printf("ref->ref %d, %08x\n", ref->ref, defFns[ ref -> ref -1 ].fnAddr);
+		}
+		else
+		{
+			printf("pass1 failed\n");
+		}
+
+	}
+
+
 	return tokenBuffer;
 }
 

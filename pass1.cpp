@@ -199,6 +199,55 @@ void add_var_from_ref( struct reference *ref, char *tmp, bool is_proc )
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
+int findFnByName(char *name)
+{
+	int n;
+	for (n=0;n<defFns.size();n++)
+	{
+		if (strcasecmp(name, defFns[n].name) == 0)
+		{
+			printf("return %d\n",n+1);
+			return n +1;
+		}
+	}
+	return 0;
+}
+
+char *pass1Fn( char *ptr )
+{
+	char *_;
+	// skip all new lines..
+
+	if (*(unsigned short *) ptr  == 0x0006 )
+	{
+		struct reference *ref;
+		char *tmp;
+
+		ptr+=2;
+ 		ref = (struct reference *) ptr;
+
+		tmp = dupRef( ref );
+
+		if (tmp)
+		{
+			ref -> ref = findFnByName(tmp);
+
+			if (ref -> ref == 0)
+			{
+				struct defFn fn;
+				fn.name = tmp;
+				defFns.push_back(fn);
+				ref -> ref = defFns.size();
+			}
+		}
+
+		ptr += sizeof(struct reference) + ref -> length;		// no point adding this var list.
+	}
+
+	return ptr;
+}
+
+
 char *pass1DefFn( char *ptr )
 {
 	char *_;
@@ -207,23 +256,31 @@ char *pass1DefFn( char *ptr )
 	if (*(unsigned short *) ptr  == 0x0006 )
 	{
 		struct reference *ref;
+		char *tmp;
 		ptr+=2;
  		ref = (struct reference *) ptr;
-		struct defFn fn;
 
-		printf("_file_end_ %08x\n",_file_end_);
+		tmp = dupRef( ref );
 
-		fn.fnAddr = ptr + sizeof(struct reference) + ref -> length;
-		fn.skipAddr = FinderTokenInBuffer( fn.fnAddr, 0x0000 , -1, -1, _file_end_ );
-
-		fn.name = dupRef( ref );
-
-		if (fn.name)
+		if (tmp)
 		{
-			defFns.push_back(fn);
-			ref -> ref = defFns.size();
+			ref -> ref = findFnByName(tmp);
 
-			printf("%d - Navn: '%s' - Address: 0x%08x Skip: 0x%08x\n",ref -> ref, fn.name, fn.fnAddr, fn.skipAddr);
+			if (ref -> ref)
+			{
+				struct defFn *fn = &defFns[ref->ref-1];
+				fn -> fnAddr = ptr + sizeof(struct reference) + ref -> length;
+				fn -> skipAddr = FinderTokenInBuffer( fn -> fnAddr, 0x0000 , -1, -1, _file_end_ );
+			}
+			else
+			{
+				struct defFn fn;
+				fn.fnAddr = ptr + sizeof(struct reference) + ref -> length;
+				fn.skipAddr = FinderTokenInBuffer( fn.fnAddr, 0x0000 , -1, -1, _file_end_ );
+				fn.name = tmp;
+				defFns.push_back(fn);
+				ref -> ref = defFns.size();
+			}
 		}
 
 		ptr += sizeof(struct reference) + ref -> length;		// no point adding this var list.
@@ -573,6 +630,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x00b0:	ret = pass1DefFn( ptr );
+							break;
+
+				case 0x00bc:	ret = pass1Fn( ptr );
 							break;
 
 				case 0x000c:	pass1label( ptr );
