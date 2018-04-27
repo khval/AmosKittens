@@ -62,6 +62,18 @@ void unLockPara()
 	}
 }
 
+
+bool isArgsClean( struct glueCommands *cmd )
+{
+	int s;
+	for (s= cmd -> stack; s<stack;s++)
+	{
+		if (kittyStack[s].state != state_none) return FALSE;
+	}
+	return TRUE;
+}
+
+
 char *flushCmdParaStack()
 {
 	struct glueCommands *cmd;
@@ -69,33 +81,18 @@ char *flushCmdParaStack()
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	// some math operation is blocking... can't flush at this time.
-
-	if (cmdStack)	
-	{
-		cmd = &cmdTmp[cmdStack-1];
-		if (cmd -> stack) if (kittyStack[cmd -> stack].state != state_none)	return NULL;
-	}
-
-	// flush all params.
 	if (cmdStack)
 	{
-		int state;
-
 		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
 		{
 			cmd = &cmdTmp[cmdStack-1];
-			state = kittyStack[cmd -> stack].state;
 
-			if ( state == state_none ) 
+			if ( isArgsClean( cmd ) ) 
 			{
-				ret = cmd -> cmd(cmd);
+				ret = cmd -> cmd(cmd);		// can only return value if foced, or last arg
 				cmdStack--;
 			}
 			else	break;
-
-			// some math operation is blocking... can't flush at this time.
-			if (stack)	if (kittyStack[stack-1].state != state_none) return NULL;
 		}
 	}
 
