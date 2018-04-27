@@ -47,7 +47,8 @@ enum
 	nested_repeat,
 	nested_do,
 	nested_for,
-	nested_proc
+	nested_proc,
+	nested_defFn
 };
 
 const char *nest_names[] =
@@ -542,6 +543,14 @@ void eol( char *ptr )
 				*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
 				nested_count --;
 				break;
+
+			case nested_defFn:
+
+				getchar();
+				nested_count --;
+
+				break;
+
 		}
 	}
 }
@@ -629,7 +638,10 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x00b0:	ret = pass1DefFn( ptr );
+				case 0x00b0:	procCount ++;
+							procStackCount++;
+							addNest( nested_defFn );
+							ret = pass1DefFn( ptr );
 							break;
 
 				case 0x00bc:	ret = pass1Fn( ptr );
