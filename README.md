@@ -4,6 +4,8 @@ About
 -----
 Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project.
 
+Developer's contributors to Amos kittens
+----------------------------------------
 Now its a simple AMOS interpreter for AmigaOS, (more precisely being programmed on AmigaOS4.x, If you’re a MorphOS or AROS developer don't let that stop you, but please make directories like OS/MorphOS or OS/AROS, where keep the modified versions of files, plase clone this porject on git so I can merge in changes I like), I like try to avoid "#IFDEF" all over the source code.
 
 Amos developers:
