@@ -4,13 +4,19 @@ About
 -----
 Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project.
 
-Now its a simple AMOS interpreter for AmigaOS, 
-(more precisely being programmed on AmigaOS4.x, If you’re a MorphOS or AROS developer don't let that stop you, but please make directlry like OS/MorphOS or OS/AROS, where keep the modified versions of files, plase clone this porject on git so I can merge in changes I like)
+Now its a simple AMOS interpreter for AmigaOS, (more precisely being programmed on AmigaOS4.x, If you’re a MorphOS or AROS developer don't let that stop you, but please make directories like OS/MorphOS or OS/AROS, where keep the modified versions of files, plase clone this porject on git so I can merge in changes I like), I like try to avoid "#IFDEF" all over the source code.
 
-This program is only uploaded to GITHUB, so developers who is interested in helping out can have look at it.
-This program is of little use to AMOS developers at the moment, but hopefully it will be in X months time.
+Amos developers:
+------------------------
+You can start using this thing for small text adventures, quiz games, or something like that. Right now .AMOS filename is hard coded into AmosKittens.cpp file, so some changes will be needed to made to allow it load from .AMOS files as CLI arguments, or WBStartup message.
 
-Currently this interpreter dumps out a lot debug information, it will holt the program at critical places waiting for "ENTER" key to continue.
+Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
+
+Debuging Amos Kittens:
+----------------------
+To enable debugging edit debug.h file here you find some switches , you can enable or disable, once the file is changed all files will be rebuilt automatic no need to type "make clean"
+
+Amos kittens might stop at any time.. it is possible that getchar(), command is halting the program. This most likely due to a command your using has not yet fully implemented, and program is being paused, so I can see what is going on.
 
 Current status:
 ---------------
