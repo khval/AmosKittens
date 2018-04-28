@@ -371,7 +371,7 @@ char *_moreData( struct glueCommands *data )
 
 		if (type1 == type_int)
 		{
-			proc_names_printf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
+			dprintf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
 			_num( item0->value > item1->value );
 			success = TRUE;
 		}
@@ -443,7 +443,7 @@ char *_moreOrEqualData( struct glueCommands *data )
 
 		if (type1 == type_int)
 		{
-			proc_names_printf ("( %d >= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
+			dprintf ("( %d >= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
 			_num( item0->value >= item1->value );
 			success = TRUE;
 		}
@@ -470,8 +470,6 @@ char *_moreOrEqualData( struct glueCommands *data )
 
 	return NULL;
 }
-
-
 
 char *_orData( struct glueCommands *data )
 {
@@ -715,6 +713,8 @@ char *_addData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
+			dprintf(" = %d + %d\n", item0->value , item1->value );
+
 			_num( item0->value + item1->value );
 			success = TRUE;
 		}
@@ -726,8 +726,6 @@ char *_addData( struct glueCommands *data )
 	}
 	else if ( type0 == type_string) 
 	{
-		proc_names_printf("type0 == type_string\n");
-
 		switch (type1)
 		{
 			case type_int:		success = stackStrAddValue( item0, item1 ); break;
@@ -886,13 +884,13 @@ char *_mulData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			printf("%f * %d\n",  item0->decimal , (double) item1->value );
+			dprintf("%f * %d\n",  item0->decimal , (double) item1->value );
 			setStackDecimal( item0->decimal * (double) item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			printf("%f * %f\n",  item0->decimal , item1->decimal );
+			dprintf("%f * %f\n",  item0->decimal , item1->decimal );
 			setStackDecimal( item0->decimal * item1->decimal );
 			success = TRUE;
 		}
@@ -901,7 +899,7 @@ char *_mulData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			printf(" %d * %d\n", item0->value , item1->value );
+			dprintf(" %d * %d\n", item0->value , item1->value );
 			_num( item0->value * item1->value );
 			success = TRUE;
 		}
@@ -953,7 +951,7 @@ char *_divData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			printf(" %f / %d\n", item0->decimal , item1->value );
+			dprintf(" %f / %d\n", item0->decimal , item1->value );
 			setStackDecimal( item0->decimal / (double) item1->value );
 
 			dump_stack();
@@ -962,7 +960,7 @@ char *_divData( struct glueCommands *data )
 		}
 		else if (type1 == type_float)
 		{
-			printf(" %f / %f\n", item0->decimal , item1->decimal );
+			dprintf(" %f / %f\n", item0->decimal , item1->decimal );
 			setStackDecimal( item0->decimal / item1->decimal );
 			success = TRUE;
 		}
@@ -971,13 +969,13 @@ char *_divData( struct glueCommands *data )
 	{
 		if (type1 == type_int)
 		{
-			printf(" %d / %d\n", item0->value , item1->value );
+			dprintf(" %d / %d\n", item0->value , item1->value );
 			_num( item0->value / item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			printf(" %d / %f\n", item0->value , item1->decimal );
+			dprintf(" %d / %f\n", item0->value , item1->decimal );
 			setStackDecimal( (double) item0->value / item1->decimal );
 			success = TRUE;
 		}
