@@ -544,8 +544,9 @@ struct nativeCommand nativeCommands[]=
 	{0x03D6, "Param$",0,cmdParamStr },
 	{0x03E2, "Param",0,cmdParam },
 
-	{0x0404,"data", 2, cmdData },
+	{0x0404,"data", 2, cmdData },		
 	{0x040E,"read",0,cmdRead },
+	{0x0418,"Restore", 0, cmdRestore },
 
 	{0x0444, "Inc",0,mathInc },
 	{0x044E, "Dec",0,mathDec },
@@ -583,6 +584,7 @@ struct nativeCommand nativeCommands[]=
 	{0x05E4, "Instr",0, cmdInstr },
 	{0x0640, "Dim",0, cmdDim },
 	{0x064A, "Rem",2, cmdRem },
+	{0x0652, "mark rem",2, cmdRem },
 
 	{0x0662, "match",0,cmdMatch },
 
@@ -734,7 +736,8 @@ struct nativeCommand nativeCommands[]=
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 
-	{0x00A6,"Swap", 0, mathSwap}
+	{0x00A6,"Swap", 0, mathSwap},
+
 
 };
 
@@ -929,7 +932,8 @@ int main()
 //	fd = fopen("amos-test/execall.amos","r");
 //	fd = fopen("amos-test/pload.amos","r");
 //	fd = fopen("amos-test/def-fn.amos","r");
-	fd = fopen("amos-test/swap.amos","r");
+//	fd = fopen("amos-test/swap.amos","r");
+	fd = fopen("amos-test/data.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

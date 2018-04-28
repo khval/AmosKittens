@@ -41,6 +41,7 @@ using namespace std;
 extern char *findLabel( char *name );
 
 void	input_mode( char *tokenBuffer );
+char *dupRef( struct reference *ref );
 
 // dummy not used, see code in cmdNext
 char *_for( struct glueCommands *data )
@@ -1041,15 +1042,27 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
+
+
+char *_cmdRestore( struct glueCommands *data )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	char *str = _stackString( stack );
+	if (str) printf("%s\n",str);
+
+	popStack( stack - data->stack  );
+
+	return NULL;
+}
+
+
 char *_cmdRead( struct glueCommands *data )
 {
 	short token;
 	unsigned short _len;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	popStack( stack - data->stack  );
-
 
 	if (data_read_pointer)
 	{
@@ -1072,7 +1085,6 @@ char *_cmdRead( struct glueCommands *data )
 			default:
 					proc_names_printf("--- token %04x ---\n",token);
 					getchar();
-
 		}
 
 		token = *((short *) data_read_pointer);
@@ -1102,7 +1114,6 @@ char *_cmdRead( struct glueCommands *data )
 
 			// we need to seek to next "data" command
 		}
-
 	}
 
 	stack ++;
@@ -1115,12 +1126,33 @@ char *_cmdRead( struct glueCommands *data )
 
 char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
-
-	dump_global();
-
 	proc_names_printf("read %04x\n", *((short *) tokenBuffer) );
-
 	stackCmdNormal( _cmdRead, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n", __FUNCTION__,__LINE__);
+
+	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+		char *name = dupRef( ref );
+
+		if (name)
+		{
+			char *ptr = findLabel(name);
+
+			if (ptr) data_read_pointer = ptr;
+			free(name);
+		}
+	}
+	else
+	{
+		stackCmdNormal( _cmdRestore, tokenBuffer );
+	}
 
 	return tokenBuffer;
 }

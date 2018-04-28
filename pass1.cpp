@@ -661,6 +661,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0026:	ret += QuoteByteLength(ptr); break;	// skip strings.
 				case 0x064A:	ret += QuoteByteLength(ptr); break;	// skip strings.
+				case 0x0652:	ret += QuoteByteLength(ptr); break;	// skip strings.
 
 				case 0x027E:	addNest( nested_do );
 							break;
