@@ -22,12 +22,12 @@ Implemented:
 * Chapter 4. Basic Principle .
 * Chapter 5. String functions.
 * Chapter 7. Control structures.
+* Chapter 8. Maths commands
 * Chapter 20. Disk access.
 * Chapter 22. Machine level instructions
 
 Partially implemented:
 
-* Chapter 8. Maths commands
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
 
