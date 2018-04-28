@@ -734,6 +734,8 @@ struct nativeCommand nativeCommands[]=
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 
+	{0x00A6,"Swap", 0, mathSwap}
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
@@ -926,7 +928,8 @@ int main()
 //	fd = fopen("amos-test/doscall.amos","r");
 //	fd = fopen("amos-test/execall.amos","r");
 //	fd = fopen("amos-test/pload.amos","r");
-	fd = fopen("amos-test/def-fn.amos","r");
+//	fd = fopen("amos-test/def-fn.amos","r");
+	fd = fopen("amos-test/swap.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

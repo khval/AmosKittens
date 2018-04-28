@@ -38,4 +38,5 @@ char *mathSwap (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathFix (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathDefFn (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathFn (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathSwap (struct nativeCommand *cmd, char *tokenBuffer);
 

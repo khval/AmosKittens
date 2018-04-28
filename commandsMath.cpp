@@ -103,7 +103,7 @@ char *_mathAdd( struct glueCommands *data )
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
-	int args = stack - data->stack ;
+	int args = stack - data->stack +1;
 	char *ptr = data -> tokenBuffer ;
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
@@ -129,7 +129,7 @@ char *_mathAdd( struct glueCommands *data )
 		}
 	}
 
-	popStack(args);
+	popStack(args-1);
 	return NULL;
 }
 
@@ -422,8 +422,28 @@ char *_mathMin( struct glueCommands *data )
 
 char *_mathSwap( struct glueCommands *data )
 {
+	int args = stack - data->stack +1;
+
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
+	if (args==2)
+	{
+		struct kittyData tmp;
+
+		// swap stack
+
+		tmp = kittyStack[stack -1];
+		kittyStack[stack-1] =kittyStack[stack];
+		kittyStack[stack]=tmp;
+
+		// read the stack back in.
+
+		read_kitty_args(data -> tokenBuffer, data);
+	}
+
+	dump_stack();
+
+	popStack(args-1);
 
 	return NULL;
 }
@@ -625,7 +645,7 @@ char *mathMin(struct nativeCommand *cmd, char *tokenBuffer)
 char *mathSwap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-	stackCmdParm( _mathSwap, tokenBuffer );
+	stackCmdNormal( _mathSwap, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -718,8 +738,6 @@ char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 
 		tokenBuffer += 2 + sizeof(struct reference) + ref -> length;
 	}
-
-
 	return tokenBuffer;
 }
 
