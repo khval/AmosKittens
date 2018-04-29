@@ -1043,44 +1043,43 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
 
-
-char *_cmdRestore( struct glueCommands *data )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	char *str = _stackString( stack );
-	if (str) printf("%s\n",str);
-
-	popStack( stack - data->stack  );
-
-	return NULL;
-}
-
-
 char *_cmdRead( struct glueCommands *data )
 {
 	short token;
 	unsigned short _len;
+	int args = stack - data->stack +1;
 
 	popStack( stack - data->stack  );
 
-	printf("we are here\n");
-
-	if (data_read_pointer)
+	while (args--)
 	{
-		bool try_next_token;
-	
-		do
+		dprintf("args: %d\n",args);
+
+		if (data_read_pointer)
 		{
-			try_next_token = false;
-			token = *((short *) data_read_pointer);
-			switch (token)
+			bool try_next_token;
+	
+			do
 			{
-				case 0x003E: _num ( *((int *) (data_read_pointer + 2)) );
+				try_next_token = false;
+				token = *((short *) data_read_pointer);
+
+				dprintf("token %04x\n",token);
+
+				switch (token)
+				{
+					case 0x0404:	// data
+							data_read_pointer+=4;	// token + data size 2
+							try_next_token = true;
+							break;
+
+					case 0x003E: 	// num
+							_num ( *((int *) (data_read_pointer + 2)) );
 							data_read_pointer +=6;
 							break;
 	
-				case 0x0026:	_len = *((unsigned short *) (data_read_pointer + 2));
+					case 0x0026:	// string
+							_len = *((unsigned short *) (data_read_pointer + 2));
 							_len = _len + (_len & 1);
 							if (kittyStack[stack].str) free(kittyStack[stack].str);
 							kittyStack[stack].str = strndup( data_read_pointer + 4, _len );
@@ -1088,7 +1087,7 @@ char *_cmdRead( struct glueCommands *data )
 							data_read_pointer +=4 + _len;
 							break;
 
-				case 0x000c:	// label
+					case 0x000c:	// label
 							{
 								struct reference *ref = (struct reference *) (data_read_pointer + 2);
 								data_read_pointer += 2 + sizeof(struct reference) + ref -> length;
@@ -1096,35 +1095,27 @@ char *_cmdRead( struct glueCommands *data )
 							try_next_token = true;
 							break;
 
-				case 0x005C:	// comma
+					case 0x005C:	// comma
 							data_read_pointer +=2;
+							stack ++;
 							try_next_token = true;
 							break;
 
-				case 0x0000:	// new line
+					case 0x0000:	// new line
 							data_read_pointer +=4;
-							token = *((short *) data_read_pointer);
-
-							if ((token != 0x003E)&&(token != 0x0026)&&(token != 0x000c)&&(token != 0x005C))
-							{
-								data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x404, 0xFFFF, 0xFFFF,_file_end_ );
-							}
-
 							try_next_token = true;	
 							break;
-				default:
-						proc_names_printf("--- token %04x ---\n",token);
-						getchar();
-			}
+					default:
+							data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x0404 , -1, -1, _file_end_ );
+							try_next_token = true;	
+				}
 
-			if (data_read_pointer == 0x0000) break;
-
-		} while ( try_next_token );
+				if (data_read_pointer == 0x0000) break;
+			} while ( try_next_token );
+		}
 	}
 
-	stack ++;
-
-	_setVarReverse( data );
+	read_kitty_args(data -> tokenBuffer, data);
 
 	return NULL;
 }
@@ -1137,6 +1128,21 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdRestore( struct glueCommands *data )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	char *name = _stackString( stack );
+	if (name)
+	{
+		char *ptr = findLabel(name);
+		if (ptr) data_read_pointer = ptr;
+	}
+
+	popStack( stack - data->stack  );
+
+	return NULL;
+}
 
 char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 {

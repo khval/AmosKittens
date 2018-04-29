@@ -933,7 +933,8 @@ int main()
 //	fd = fopen("amos-test/pload.amos","r");
 //	fd = fopen("amos-test/def-fn.amos","r");
 //	fd = fopen("amos-test/swap.amos","r");
-	fd = fopen("amos-test/data.amos","r");
+//	fd = fopen("amos-test/data.amos","r");
+	fd = fopen("amos-test/restore.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);
