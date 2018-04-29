@@ -213,11 +213,24 @@ char *_bin( struct glueCommands *data )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	len = 0;
-	num = _stackInt( stack  );
-	for (n= num ; n!=0 ; n >>= 1 ) len++;
+	switch (args)
+	{
+		case 1:	num = _stackInt( stack  );
+				break;
+		case 2:	num = _stackInt( stack -1 );
+				len = _stackInt( stack );
+				break;
+		default: 
+				setError(22);
+	}
+	popStack(stack - data->stack);
 
-	len = len ? len : len + 1;	// always one number in bin number.
+	if (args == 1)
+	{
+		len = 0;
+		for (n= num ; n!=0 ; n >>= 1 ) len++;
+		len = len ? len : len + 1;	// always one number in bin number.
+	}
 
 	str = (char *) malloc(len+2);	 //  '%' and '\0' symbols
 
@@ -232,8 +245,6 @@ char *_bin( struct glueCommands *data )
 		}
 		*p = 0;
 	}
-
-	popStack(stack - data->stack);
 
 	setStackStr(str);
 
