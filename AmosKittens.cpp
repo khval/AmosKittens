@@ -22,6 +22,9 @@
 #include "pass1.h"
 #include "init.h"
 #include "cleanup.h"
+#include "engine.h"
+
+bool running = true;
 
 char *var_param_str = NULL;
 int var_param_num;
@@ -860,6 +863,8 @@ int main()
 
 	if (init())
 	{
+		start_engine();
+
 
 //	fd = fopen("amos-test/var.amos","r");
 //	fd = fopen("amos-test/var_num.amos","r");
@@ -993,6 +998,9 @@ int main()
 		clean_up_special();	// we add other stuff to this one.
 
 //		dumpLineAddress();
+
+		running = false;
+		wait_engine();
 
 		closedown();
 	}
