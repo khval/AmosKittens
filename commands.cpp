@@ -1064,56 +1064,62 @@ char *_cmdRead( struct glueCommands *data )
 
 	popStack( stack - data->stack  );
 
+	printf("we are here\n");
+
 	if (data_read_pointer)
 	{
-		token = *((short *) data_read_pointer);
-
-		switch (token)
-		{
-			case 0x003E: _num ( *((int *) (data_read_pointer + 2)) );
-						data_read_pointer +=6;
-						break;
+		bool try_next_token;
 	
-			case 0x0026:	_len = *((unsigned short *) (data_read_pointer + 2));
-						_len = _len + (_len & 1);
-						if (kittyStack[stack].str) free(kittyStack[stack].str);
-						kittyStack[stack].str = strndup( data_read_pointer + 4, _len );
-						kittyStack[stack].len = strlen( kittyStack[stack].str );
-						data_read_pointer +=4 + _len;
-						break;
-
-			default:
-					proc_names_printf("--- token %04x ---\n",token);
-					getchar();
-		}
-
-		token = *((short *) data_read_pointer);
-
-		if (token == 0x005C)
+		do
 		{
-			data_read_pointer +=2;
-			proc_names_printf("Next item\n");
-		}
-		else if (token == 0x0000 )
-		{
-			data_read_pointer +=4;
-			proc_names_printf("end of data\n");
-
-			data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x404, 0xFFFF, 0xFFFF,_file_end_ );	// this is really bad code.
-
-			if (data_read_pointer)
+			try_next_token = false;
+			token = *((short *) data_read_pointer);
+			switch (token)
 			{
-				token = *((short *) data_read_pointer);
-				proc_names_printf("--- token %04x ---\n",token);
-				if (token =0x0404) data_read_pointer+= 4; // it has data
-			}
-			else
-			{
-				proc_names_printf("nothing to be found, sorry\n");
+				case 0x003E: _num ( *((int *) (data_read_pointer + 2)) );
+							data_read_pointer +=6;
+							break;
+	
+				case 0x0026:	_len = *((unsigned short *) (data_read_pointer + 2));
+							_len = _len + (_len & 1);
+							if (kittyStack[stack].str) free(kittyStack[stack].str);
+							kittyStack[stack].str = strndup( data_read_pointer + 4, _len );
+							kittyStack[stack].len = strlen( kittyStack[stack].str );
+							data_read_pointer +=4 + _len;
+							break;
+
+				case 0x000c:	// label
+							{
+								struct reference *ref = (struct reference *) (data_read_pointer + 2);
+								data_read_pointer += 2 + sizeof(struct reference) + ref -> length;
+							}
+							try_next_token = true;
+							break;
+
+				case 0x005C:	// comma
+							data_read_pointer +=2;
+							try_next_token = true;
+							break;
+
+				case 0x0000:	// new line
+							data_read_pointer +=4;
+							token = *((short *) data_read_pointer);
+
+							if ((token != 0x003E)&&(token != 0x0026)&&(token != 0x000c)&&(token != 0x005C))
+							{
+								data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x404, 0xFFFF, 0xFFFF,_file_end_ );
+							}
+
+							try_next_token = true;	
+							break;
+				default:
+						proc_names_printf("--- token %04x ---\n",token);
+						getchar();
 			}
 
-			// we need to seek to next "data" command
-		}
+			if (data_read_pointer == 0x0000) break;
+
+		} while ( try_next_token );
 	}
 
 	stack ++;
