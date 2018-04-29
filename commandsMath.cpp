@@ -25,8 +25,9 @@ extern int tokenlength;
 double to_rad_factor=1.0f;
 double to_degree_factor=1.0f ;
 int decimals = 2;		// FIX sets text formating 
-
 extern char *_file_pos_ ;
+
+extern char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
 
 char *_mathInc( struct glueCommands *data )
 {
