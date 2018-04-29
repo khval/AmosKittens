@@ -514,6 +514,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0084, "[", 0, cmdBracket },
 	{0x008C, "]", 0, cmdBracketEnd },
 	{0x0094, "To",0,cmdTo },
+	{0x009C, "Not",0,cmdNot },
+
 	{0x023C, "For",2,cmdFor },
 	{0x0246, "Next",0,cmdNext },
 	{0x0356, "Step",0,cmdStep },
@@ -567,6 +569,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x05C4, "Hex$",0,cmdHex },
 	{0x05AE, "Bin$",0,cmdBin },
+	{0x05BA, "Bin$(var,num)", 0, cmdBin },
 	{0x05A4, "Val",0, cmdVal },
 	{0x0598, "Str$",0, cmdStr },
 
@@ -934,7 +937,8 @@ int main()
 //	fd = fopen("amos-test/def-fn.amos","r");
 //	fd = fopen("amos-test/swap.amos","r");
 //	fd = fopen("amos-test/data.amos","r");
-	fd = fopen("amos-test/restore.amos","r");
+//	fd = fopen("amos-test/restore.amos","r");
+	fd = fopen("amos-test/not.amos","r");
 	if (fd)
 	{
 		fseek(fd, 0, SEEK_END);

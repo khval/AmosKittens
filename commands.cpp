@@ -1775,3 +1775,26 @@ char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdNot( struct glueCommands *data )
+{
+	int res;
+	int args = stack - data->stack +1;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	res = _stackInt( stack );
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	setStackNum(~res);
+
+	return  NULL ;
+}
+
+char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+	stackCmdParm( _cmdNot, tokenBuffer );
+
+	return tokenBuffer;
+}
+
