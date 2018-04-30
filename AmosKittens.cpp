@@ -17,6 +17,7 @@
 #include "commandsDisc.h"
 #include "commandsErrors.h"
 #include "commandsMachine.h"
+#include "commandsGfx.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -25,6 +26,8 @@
 #include "engine.h"
 
 bool running = true;
+
+int sig_main_vbl = 0;
 
 char *var_param_str = NULL;
 int var_param_num;
@@ -507,6 +510,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x0026, "\"",2, cmdQuote },
 	{0x001E, "",4,cmdNumber },		// binrary
+	{0x0036, "",4,cmdNumber },		// hex
 	{0x003E, "",4,cmdNumber },
 	{0x0046, "",4,cmdFloat },
 	{0x0054, ":", 0, nextCmd },
@@ -741,9 +745,15 @@ struct nativeCommand nativeCommands[]=
 
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
-
 	{0x00A6,"Swap", 0, mathSwap},
 
+	// Screen Open
+	{0x09EA,"Screen Open",0,gfxScreenOpen },
+	{0x0D1C,"Colour",0,gfxColour },
+	{0x0A18,"Screen Display",0,gfxScreenDisplay },
+	{0x0C90,"Lowres",0,gfxLowres },
+	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
+	{0x1E32,"Mouse Key",0,gfxMouseKey }
 
 };
 
@@ -844,7 +854,94 @@ void code_reader( char *start, int tokenlength )
 	}
 }
 
-int main()
+char *filename = NULL;
+
+void set_default_filename()
+{
+	if (filename) return;
+
+//	filename = strdup("amos-test/var.amos");
+//	filename = strdup("amos-test/var_num.amos");
+//	filename = strdup("amos-test/math.amos");
+//	filename = strdup("amos-test/dim2.amos");
+//	filename = strdup("amos-test/input.amos");
+//	filename = strdup("amos-test/goto.amos");
+//	filename = strdup("amos-test/if.amos");
+//	filename = strdup("amos-test/goto2.amos");
+//	filename = strdup("amos-test/do-loop.amos");
+//	filename = strdup("amos-test/repeat-until.amos");
+//	filename = strdup("amos-test/legal-ilegal-if.amos");
+//	filename = strdup("amos-test/while-wend.amos");
+//	filename = strdup("amos-test/for-to-step-next.amos");
+//	filename = strdup("amos-test/for-to-next.amos");
+//	filename = strdup("amos-test/for-to-next2.amos");
+//	filename = strdup("amos-test/gosub-return.amos");
+//	filename = strdup("amos-test/left-mid-right.amos");
+//	filename = strdup("amos-test/instr.amos");
+//	filename = strdup("amos-test/upper-lower-flip-spaces.amos");
+//	filename = strdup("amos-test/str-chr-asc-len.amos");
+//	filename = strdup("amos-test/hex-bin-val-str.amos");
+//	filename = strdup("amos-test/casting_int_float.amos");
+//	filename = strdup("amos-test/arithmetic.amos");
+//	filename = strdup("amos-test/inc-dec-add.amos");
+//	filename = strdup("amos-test/compare-strings.amos");
+//	filename = strdup("amos-test/procedure.amos");
+//	filename = strdup("amos-test/procedure2.amos");
+//	filename = strdup("amos-test/procedure_with_paramiters_x.amos");
+//	filename = strdup("amos-test/procedure-shared.amos");
+//	filename = strdup("amos-test/procedure-global.amos");
+//	filename = strdup("amos-test/procedure_return_value.amos");
+//	filename = strdup("amos-test/procedure_all_params.amos");
+//	filename = strdup("amos-test/procedure_pop_proc.amos");
+//	filename = strdup("amos-test/reserve.amos");
+//	filename = strdup("amos-test/erase-start-length-bsave-bload.amos");
+//	filename = strdup("amos-test/sort.amos");
+//	filename = strdup("amos-test/or.amos");
+//	filename = strdup("amos-test/logical1.amos");
+//	filename = strdup("amos-test/match.amos");
+//	filename = strdup("amos-test/dir.amos");
+//	filename = strdup("amos-test/dir_str.amos");
+//	filename = strdup("amos-test/parent-set-dir.amos");
+//	filename = strdup("amos-test/fsel_exits_dir_first_dir_next.amos");
+//	filename = strdup("amos-test/open-out.amos");
+//	filename = strdup("amos-test/open-in.amos");
+//	filename = strdup("amos-test/line_input_file.amos");
+//	filename = strdup("amos-test/line-input.amos");
+//	filename = strdup("amos-test/set-input-input-eof-pof.amos");
+//	filename = strdup("amos-test/open_random.amos");
+//	filename = strdup("amos-test/dir_first_dir_next.amos");
+//	filename = strdup("amos-test/on_error_goto.amos");
+//	filename = strdup("amos-test/on_error_proc.amos");
+//	filename = strdup("amos-test/on_gosub.amos");
+//	filename = strdup("amos-test/input_two_args.amos");
+//	filename = strdup("amos-test/exit.amos");
+//	filename = strdup("amos-test/exit2.amos");
+//	filename = strdup("amos-test/exit-if.amos");
+//	filename = strdup("amos-test/every.amos");
+//	filename = strdup("amos-test/timer.amos");
+//	filename = strdup("amos-test/string_compare.amos");
+//	filename = strdup("amos-test/close-wb-editor-break.amos");
+//	filename = strdup("amos-test/if-then-else-if-end-if.amos");
+//	filename = strdup("amos-test/sin.amos");
+//	filename = strdup("amos-test/m.amos");
+//	filename = strdup("amos-test/varptr.amos");
+//	filename = strdup("amos-test/fill.amos");
+//	filename = strdup("amos-test/hunt.amos");
+//	filename = strdup("amos-test/rol-ror.amos");
+//	filename = strdup("amos-test/bit.amos");
+//	filename = strdup("amos-test/asm.amos");
+//	filename = strdup("amos-test/doscall.amos");
+//	filename = strdup("amos-test/execall.amos");
+//	filename = strdup("amos-test/pload.amos");
+//	filename = strdup("amos-test/def-fn.amos");
+//	filename = strdup("amos-test/swap.amos");
+//	filename = strdup("amos-test/data.amos");
+//	filename = strdup("amos-test/restore.amos");
+	filename = strdup("amos-test/not.amos");
+}
+
+
+int main(char args, char **arg)
 {
 	BOOL runtime = FALSE;
 	FILE *fd;
@@ -852,6 +949,16 @@ int main()
 	char amosid[17];
 	char *data;
 	int n;
+
+	if (args == 2)
+	{
+		filename = strdup(arg[1]);
+	}
+
+	if (filename == NULL)
+	{
+		set_default_filename();
+	}
 
 	amosid[16] = 0;	// /0 string.
 
@@ -861,136 +968,61 @@ int main()
 
 	memset(globalVars,0,sizeof(globalVars));
 
+	sig_main_vbl = AllocSignal(-1);
+
 	if (init())
 	{
 		start_engine();
 
+		fd = fopen(filename,"r");
 
-//	fd = fopen("amos-test/var.amos","r");
-//	fd = fopen("amos-test/var_num.amos","r");
-//	fd = fopen("amos-test/math.amos","r");
-//	fd = fopen("amos-test/dim2.amos","r");
-//	fd = fopen("amos-test/input.amos","r");
-//	fd = fopen("amos-test/goto.amos","r");
-//	fd = fopen("amos-test/if.amos","r");
-//	fd = fopen("amos-test/goto2.amos","r");
-//	fd = fopen("amos-test/do-loop.amos","r");
-//	fd = fopen("amos-test/repeat-until.amos","r");
-//	fd = fopen("amos-test/legal-ilegal-if.amos","r");
-//	fd = fopen("amos-test/while-wend.amos","r");
-//	fd = fopen("amos-test/for-to-step-next.amos","r");
-//	fd = fopen("amos-test/for-to-next.amos","r");
-//	fd = fopen("amos-test/for-to-next2.amos","r");
-//	fd = fopen("amos-test/gosub-return.amos","r");
-//	fd = fopen("amos-test/left-mid-right.amos","r");
-//	fd = fopen("amos-test/instr.amos","r");
-//	fd = fopen("amos-test/upper-lower-flip-spaces.amos","r");
-//	fd = fopen("amos-test/str-chr-asc-len.amos","r");
-//	fd = fopen("amos-test/hex-bin-val-str.amos","r");
-//	fd = fopen("amos-test/casting_int_float.amos","r");
-//	fd = fopen("amos-test/arithmetic.amos","r");
-//	fd = fopen("amos-test/inc-dec-add.amos","r");
-//	fd = fopen("amos-test/compare-strings.amos","r");
-//	fd = fopen("amos-test/procedure.amos","r");
-//	fd = fopen("amos-test/procedure2.amos","r");
-//	fd = fopen("amos-test/procedure_with_paramiters_x.amos","r");
-//	fd = fopen("amos-test/procedure-shared.amos","r");
-//	fd = fopen("amos-test/procedure-global.amos","r");
-//	fd = fopen("amos-test/procedure_return_value.amos","r");
-//	fd = fopen("amos-test/procedure_all_params.amos","r");
-//	fd = fopen("amos-test/procedure_pop_proc.amos","r");
-//	fd = fopen("amos-test/reserve.amos","r");
-//	fd = fopen("amos-test/erase-start-length-bsave-bload.amos","r");
-//	fd = fopen("amos-test/sort.amos","r");
-//	fd = fopen("amos-test/or.amos","r");
-//	fd = fopen("amos-test/logical1.amos","r");
-//	fd = fopen("amos-test/match.amos","r");
-//	fd = fopen("amos-test/dir.amos","r");
-//	fd = fopen("amos-test/dir_str.amos","r");
-//	fd = fopen("amos-test/parent-set-dir.amos","r");
-//	fd = fopen("amos-test/fsel_exits_dir_first_dir_next.amos","r");
-//	fd = fopen("amos-test/open-out.amos","r");
-//	fd = fopen("amos-test/open-in.amos","r");
-//	fd = fopen("amos-test/line_input_file.amos","r");
-//	fd = fopen("amos-test/line-input.amos","r");
-//	fd = fopen("amos-test/set-input-input-eof-pof.amos","r");
-//	fd = fopen("amos-test/open_random.amos","r");
-//	fd = fopen("amos-test/dir_first_dir_next.amos","r");
-//	fd = fopen("amos-test/on_error_goto.amos","r");
-//	fd = fopen("amos-test/on_error_proc.amos","r");
-//	fd = fopen("amos-test/on_gosub.amos","r");
-//	fd = fopen("amos-test/input_two_args.amos","r");
-//	fd = fopen("amos-test/exit.amos","r");
-//	fd = fopen("amos-test/exit2.amos","r");
-//	fd = fopen("amos-test/exit-if.amos","r");
-//	fd = fopen("amos-test/every.amos","r");
-//	fd = fopen("amos-test/timer.amos","r");
-//	fd = fopen("amos-test/string_compare.amos","r");
-//	fd = fopen("amos-test/close-wb-editor-break.amos","r");
-//	fd = fopen("amos-test/if-then-else-if-end-if.amos","r");
-//	fd = fopen("amos-test/sin.amos","r");
-//	fd = fopen("amos-test/m.amos","r");
-//	fd = fopen("amos-test/varptr.amos","r");
-//	fd = fopen("amos-test/fill.amos","r");
-//	fd = fopen("amos-test/hunt.amos","r");
-//	fd = fopen("amos-test/rol-ror.amos","r");
-//	fd = fopen("amos-test/bit.amos","r");
-//	fd = fopen("amos-test/asm.amos","r");
-//	fd = fopen("amos-test/doscall.amos","r");
-//	fd = fopen("amos-test/execall.amos","r");
-//	fd = fopen("amos-test/pload.amos","r");
-//	fd = fopen("amos-test/def-fn.amos","r");
-//	fd = fopen("amos-test/swap.amos","r");
-//	fd = fopen("amos-test/data.amos","r");
-//	fd = fopen("amos-test/restore.amos","r");
-	fd = fopen("amos-test/not.amos","r");
-	if (fd)
-	{
-		fseek(fd, 0, SEEK_END);
-		amos_filesize = ftell(fd);
-		fseek(fd, 0, SEEK_SET);
-		fread( amosid, 16, 1, fd );
-		fread( &tokenlength, 4, 1, fd );
-
-		data = (char *) malloc(amos_filesize);
-		if (data)
+		if (fd)
 		{
-			_file_start_ = data;
-			_file_end_ = data + tokenlength;
+			fseek(fd, 0, SEEK_END);
+			amos_filesize = ftell(fd);
+			fseek(fd, 0, SEEK_SET);
+			fread( amosid, 16, 1, fd );
+			fread( &tokenlength, 4, 1, fd );
 
-			fread(data,amos_filesize,1,fd);
-
-			// snifff the tokens find labels, vars, functions and so on.
-			pass1_reader( data, tokenlength );
-
-			if (kittyError.code == 0)
+			data = (char *) malloc(amos_filesize);
+			if (data)
 			{
-				runtime = TRUE;
-
 				_file_start_ = data;
 				_file_end_ = data + tokenlength;
 
-				//  execute the code.
-				code_reader( data, tokenlength );
+				fread(data,amos_filesize,1,fd);
+
+				// snifff the tokens find labels, vars, functions and so on.
+				pass1_reader( data, tokenlength );
+
+				if (kittyError.code == 0)
+				{
+					runtime = TRUE;
+
+					_file_start_ = data;
+					_file_end_ = data + tokenlength;
+
+					//  execute the code.
+					code_reader( data, tokenlength );
+				}
+
+				if (kittyError.newError)
+				{
+					printError( &kittyError, runtime ? errorsRunTime : errorsTestTime );
+				}
 			}
 
-			if (kittyError.newError)
+			fclose(fd);
+
+			if (kittyError.newError == false)
 			{
-				printError( &kittyError, runtime ? errorsRunTime : errorsTestTime );
+				dump_end_of_program();
 			}
 		}
-
-		fclose(fd);
-
-		if (kittyError.newError == false)
+		else
 		{
-			dump_end_of_program();
+			printf("AMOS file not open/can't find it\n");
 		}
-	}
-	else
-	{
-		printf("AMOS file not open/can't find it\n");
-	}
 
 		clean_up_vars();
 		clean_up_stack();
@@ -1004,7 +1036,11 @@ int main()
 
 		closedown();
 	}
+
+	if (sig_main_vbl) FreeSignal(sig_main_vbl);
 	
+	if (filename) free(filename);
+
 
 	return 0;
 }

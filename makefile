@@ -20,6 +20,7 @@ main_objects = commands.cpp \
 			commandsBanks.cpp \
 			commandsErrors.cpp \
 			commandsMachine.cpp \
+			commandsGfx.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
