@@ -7,6 +7,7 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <proto/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -21,6 +22,9 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
+
+extern struct retroScreen *screens[8] ;
+extern struct retroVideo *video;
 
 char *_gfxScreenOpen( struct glueCommands *data )
 {
@@ -38,7 +42,15 @@ char *_gfxScreenOpen( struct glueCommands *data )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
+			// Kitty ignores colors we don't care, allways 256 colors.
+
 			engine_lock();
+			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
+			screens[screen_num] = retroOpenScreen(_stackInt( stack-3 ),_stackInt( stack-2 ),_stackInt( stack ));
+			if (screens[screen_num])
+				retroApplyScreen( screens[screen_num], video, 0, 0,
+					screens[screen_num] -> realWidth,screens[screen_num]->realHeight );
+
 			engine_unlock();
 
 			success = true;
@@ -67,7 +79,20 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
+			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-3 );
+			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = _stackInt( stack-2 );
+			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = _stackInt( stack-1 );
+			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = _stackInt( stack );
+
 			engine_lock();
+
+			if (screens[screen_num])
+				retroApplyScreen( screens[screen_num], video, 
+					screens[screen_num] -> scanline_x,
+					screens[screen_num] -> scanline_y,
+					screens[screen_num] -> displayWidth,
+					screens[screen_num] -> displayHeight );
+
 			engine_unlock();
 
 			success = true;
@@ -109,13 +134,13 @@ char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(0);
+	setStackNum(retroLowres);
 	return tokenBuffer;
 }
 
 char *gfxHires(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(0);
+	setStackNum(retroHires);
 	return tokenBuffer;
 }
 
@@ -127,7 +152,7 @@ char *gfxMouseKey(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (sig_main_vbl)
+	if (( sig_main_vbl )&&( engine_started ))
 	{
 		Wait(1<<sig_main_vbl);
 	}
