@@ -10,13 +10,20 @@
 #include <proto/layers.h>
 #include <proto/retroMode.h>
 
+#include "engine.h"
+
+extern int sig_main_vbl;
 extern bool running;
+
+bool engine_started = false;
 
 APTR engine_mx = 0;
 
  int engine_mouse_key = 0;
  int engine_mouse_x = 0;
  int engine_mouse_y = 0;
+
+struct retroScreen *screens[8] ;
 
 #define IDCMP_COMMON IDCMP_MOUSEBUTTONS | IDCMP_INACTIVEWINDOW | IDCMP_ACTIVEWINDOW  | \
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
@@ -208,7 +215,6 @@ void main_engine();
 static struct Process *MainTask = NULL;
 static struct Process *gfx_engine = NULL;
 
-bool engine_started = false;
 
 bool start_engine()
 {
@@ -237,7 +243,6 @@ void wait_engine()
 
 void main_engine()
 {
-	struct retroScreen *screen = NULL;
 	struct RastPort scroll_rp;
 	struct IntuiMessage *msg;
 
@@ -246,29 +251,30 @@ void main_engine()
 
 	if (init_engine())		// libs open her.
 	{
+		int n;
 		engine_started = true;
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 
 		retroClearVideo(video);
 
-		screen = retroOpenScreen(320,200,retroLowres);
+		screens[0] = retroOpenScreen(320,200,retroLowres);
 
-		if (screen)
+		if (screens[0])
 		{
 			int x;
 
-			retroScreenColor( screen, 0, 255, 100, 50 );
-			retroScreenColor( screen, 1, 255, 255, 255 );
-			retroScreenColor( screen, 2, 0, 0, 0 );
-			retroScreenColor( screen, 3, 255, 0, 0 );
+			retroScreenColor( screens[0], 0, 255, 100, 50 );
+			retroScreenColor( screens[0], 1, 255, 255, 255 );
+			retroScreenColor( screens[0], 2, 0, 0, 0 );
+			retroScreenColor( screens[0], 3, 255, 0, 0 );
 
-			retroScreenColor( screen, 4, 0, 0, 0 );
-			retroScreenColor( screen, 5, 255, 255, 255 );
-			retroScreenColor( screen, 6, 0, 0, 0 );
-			retroScreenColor( screen, 7, 255, 0, 0 );
+			retroScreenColor( screens[0], 4, 0, 0, 0 );
+			retroScreenColor( screens[0], 5, 255, 255, 255 );
+			retroScreenColor( screens[0], 6, 0, 0, 0 );
+			retroScreenColor( screens[0], 7, 255, 0, 0 );
 		}
 
-		if (screen)	retroApplyScreen( screen, video, 0, 0,320,200 );
+		if (screens[0])	retroApplyScreen( screens[0], video, 0, 0,320,200 );
 
 		while (running)
 		{
@@ -288,14 +294,23 @@ void main_engine()
 			}
 
 			retroClearVideo( video );
+
+			engine_lock();
 			retroDrawVideo( video );
+			engine_unlock();
+
 			retroDmaVideo(video);
 
 			WaitTOF();
 			BackFill_Func(NULL, NULL );
-		}
 
-		retroCloseScreen(&screen);
+			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );
+		}
+		
+		for (n=0; n<8;n++)
+		{
+			if (screens[n]) retroCloseScreen(&screens[n]);
+		}
 		retroFreeVideo(video);
 	}
 	else
@@ -306,6 +321,8 @@ void main_engine()
 
 	close_engine();
 	engine_started = false;
+	if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
+
 }
 
 void engine_lock()
