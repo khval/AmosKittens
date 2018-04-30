@@ -11,7 +11,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
-#include "commandsBanks.h"
+#include "commandsMachine.h"
 #include "errors.h"
 #include "readhunk.h"
 
