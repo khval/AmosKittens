@@ -10,8 +10,13 @@
 #include <proto/layers.h>
 #include <proto/retroMode.h>
 
-
 extern bool running;
+
+APTR engine_mx = 0;
+
+ int engine_mouse_key = 0;
+ int engine_mouse_x = 0;
+ int engine_mouse_y = 0;
 
 #define IDCMP_COMMON IDCMP_MOUSEBUTTONS | IDCMP_INACTIVEWINDOW | IDCMP_ACTIVEWINDOW  | \
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
@@ -170,10 +175,11 @@ bool init_engine()
 	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
-
 	if ( ! open_window(640,480) ) return false;
-
 	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
+
+	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
+	if ( ! engine_mx) return FALSE;
 
 	return TRUE;
 }
@@ -193,6 +199,8 @@ void close_engine()
 
 	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
 	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
+
+	if (engine_mx) FreeSysObject(ASOT_MUTEX, engine_mx); engine_mx = 0;
 }
 
 void main_engine();
@@ -266,7 +274,16 @@ void main_engine()
 		{
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
-				if (msg -> Class == IDCMP_CLOSEWINDOW) running = false;
+				switch (msg -> Class) 
+				{
+					case IDCMP_CLOSEWINDOW: 
+							running = false; break;
+
+					case IDCMP_MOUSEBUTTONS:
+							engine_mouse_key = msg -> Code;
+							break;
+				}
+
 				ReplyMsg( (Message*) msg );
 			}
 
@@ -289,4 +306,14 @@ void main_engine()
 
 	close_engine();
 	engine_started = false;
+}
+
+void engine_lock()
+{
+	MutexObtain(engine_mx);
+}
+
+void engine_unlock()
+{
+	MutexRelease(engine_mx);
 }
