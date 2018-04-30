@@ -201,7 +201,10 @@ void dump_stack()
 		else
 		{
 			switch( kittyStack[n].type )
-			{		
+			{	
+				case type_none:
+					printf("<Nothing>\n");
+					break;
 				case type_int:
 					v = kittyStack[n].value;
 					if (  ((v>='a')&&(v<='z'))  ||  ((v>='A')&&(v<='Z'))  )

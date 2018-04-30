@@ -449,6 +449,8 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 	if (do_input) do_input( cmd, tokenBuffer );	// read from keyboad or disk.
 
 	stack++;
+	kittyStack[stack].type = type_none; 
+
 	return tokenBuffer;
 }
 

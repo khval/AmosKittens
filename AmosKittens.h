@@ -59,6 +59,7 @@ enum
 	type_string,
 	type_file,
 	type_proc,
+	type_none,
 	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
 };
 
