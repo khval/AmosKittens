@@ -753,7 +753,17 @@ struct nativeCommand nativeCommands[]=
 	{0x0A18,"Screen Display",0,gfxScreenDisplay },
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
-	{0x1E32,"Mouse Key",0,gfxMouseKey }
+	{0x1E32,"Mouse Key",0,gfxMouseKey },
+
+	{0x0ED8,"Box",0,gfxBox },
+	{0x0EC8,"Bar",0,gfxBar },
+	{0x0E74,"Draw",0,gfxDraw },
+	{0x0E9A,"Circle",0,gfxCircle },
+	{0x0E86,"Ellipse",0,gfxEllipse },
+	{0x1044,"Ink",0,gfxInk },
+	{0x1050,"Ink",0,gfxInk },
+	{0x1E16,"X Mouse",0,gfxXMouse },
+	{0x1E24,"Y Mouse",0,gfxYMouse }
 
 };
 
