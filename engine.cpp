@@ -293,9 +293,8 @@ void main_engine()
 				ReplyMsg( (Message*) msg );
 			}
 
-			retroClearVideo( video );
-
 			engine_lock();
+			retroClearVideo( video );
 			retroDrawVideo( video );
 			engine_unlock();
 
