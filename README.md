@@ -36,12 +36,12 @@ Implemented:
 
 Partially implemented:
 
+* Chapter 6. Graphics.
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
 
 Not Implemented:
 
-* Chapter 6. Graphics.
 * Chapter 8. Text & Windows
 * Chapter 10. Screens
 * Chapter 11. Hardware sprites
@@ -61,10 +61,6 @@ Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedu
 
 Commands "Save" and"Load" is not supported atm, will return to this when I start working on graphics.
 
-Not setting values in parameters, some going skip for now, will return to this at later time.
-(some modern basic or JavaScript use command nothing or null for this, this is not supported, 
-atm, but should not be to hard to implement, it be just different type on the stack, and preset type before data is assigned)
-
 Page 47 in AMOS The Creator Manual, local data statements is not working in Amos Pro, restore, data and read is covered many places in the manual, I return to this later time, personally I think its redundant old way of doing things.
 
 Note Machine Code 
@@ -74,11 +70,11 @@ Ba careful with these commands.
 String in Amos kittens are \0 terminated.
 Amos kittens don’t have length in front of strings, VarPtr(a$)-2 won't work, use Len(a$)
 VarPtr(a$), will return a address to double not a float.
+Call don't support arguments (yet, arguments has to be converted from Amos Kitty to Amos Pro, and freed on command exit)
 
 Not yet supported:
 ------------------
 logical "xor"
-graphics stuff.
 All the new stuff in Amos Pro.
 
 Orginal source code can be found here:
