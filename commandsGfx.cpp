@@ -203,8 +203,6 @@ char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxBox( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -227,8 +225,6 @@ char *_gfxBox( struct glueCommands *data )
 char *_gfxBar( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -251,8 +247,6 @@ char *_gfxBar( struct glueCommands *data )
 char *_gfxDraw( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -286,16 +280,15 @@ char *_gfxDraw( struct glueCommands *data )
 char *_gfxCircle( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
-	int x0,y0,r;
+	int x0=xgr,y0=ygr,r;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
 
 	if (args==3)
 	{
-		x0 = _stackInt( stack-2 );
-		y0 = _stackInt( stack-1 );
+		stack_get_if_int( stack-2, &x0 );
+		stack_get_if_int( stack-1, &y0 );
 		r = _stackInt( stack );
 
 		if (screens[current_screen]) retroEllipse( screens[current_screen], x0,y0,r,r,0,pen0 );
@@ -309,16 +302,14 @@ char *_gfxCircle( struct glueCommands *data )
 char *_gfxEllipse( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
-	int x0,y0,r0,r1;
+	int x0=xgr,y0=ygr,r0,r1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
-		x0 = _stackInt( stack-3 );
-		y0 = _stackInt( stack-2 );
+		stack_get_if_int( stack-3, &x0 );
+		stack_get_if_int( stack-2, &y0 );
 		r0 = _stackInt( stack-1 );
 		r1 = _stackInt( stack );
 
@@ -332,30 +323,35 @@ char *_gfxEllipse( struct glueCommands *data )
 
 char *gfxBox(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxBox, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxBar(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxBar, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxDraw(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxDraw, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxCircle(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxCircle, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxEllipse, tokenBuffer );
 	return tokenBuffer;
 }
@@ -363,8 +359,6 @@ char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxInk( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0,y0,r0,r1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -397,7 +391,7 @@ char *gfxInk(struct nativeCommand *cmd, char *tokenBuffer)
 	// make sure there is nothing on the stack.
 	// this command takes nothing as a arg.
 
-	kittyStack[stack].type = type_none;	
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxInk, tokenBuffer );
 
 	return tokenBuffer;
@@ -428,11 +422,10 @@ char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxPlot( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0 = xgr, y0 = ygr,c;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
 
 	switch (args)
 	{
@@ -458,8 +451,6 @@ char *_gfxPlot( struct glueCommands *data )
 char *_gfxPoint( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
 	int x0 = xgr, y0 = ygr,c;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -469,25 +460,65 @@ char *_gfxPoint( struct glueCommands *data )
 		case 2:
 			stack_get_if_int( stack-1, &x0 );
 			stack_get_if_int( stack, &y0 );
+			popStack( stack - data->stack );
 			if (screens[current_screen]) _stackInt( retroPoint(screens[current_screen], x0, y0) );
+			break;
+		default:
+			popStack( stack - data->stack );
+			setError(22);
+	}
+
+	return NULL;
+}
+
+char *_gfxGrLocate( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	switch (args)
+	{
+		case 2:
+			xgr = _stackInt( stack -1 );
+			ygr = _stackInt( stack );
 			break;
 		default:
 			setError(22);
 	}
-
 	popStack( stack - data->stack );
+
 	return NULL;
 }
 
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxPlot, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	kittyStack[stack].type = type_none;
 	stackCmdParm( _gfxPoint, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxGrLocate(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxGrLocate, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxXGR(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	setStackNum(xgr);
+	return tokenBuffer;
+}
+
+char *gfxYGR(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	setStackNum(ygr);
 	return tokenBuffer;
 }
 

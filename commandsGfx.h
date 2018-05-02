@@ -27,4 +27,7 @@ char *gfxCursOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxGrLocate(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxXGR(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxYGR(struct nativeCommand *cmd, char *tokenBuffer);
 

@@ -769,7 +769,10 @@ struct nativeCommand nativeCommands[]=
 	{0x1446,"Curs Off",0,gfxCursOff },
 	{0x0D34,"Flash Off",0,gfxFlashOff },
 	{0x0E3C,"Plot",0,gfxPlot },
-	{0x0E56,"Point",0,gfxPoint }
+	{0x0E56,"Point",0,gfxPoint },
+	{0x0F04,"Gr Locate",0,gfxGrLocate },
+//	{0x0000,"xgr",0,gfxXGR },
+//	{0x0000,"ygr Locate",0,gfxYGR }
 
 };
 
