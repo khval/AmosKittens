@@ -1793,10 +1793,7 @@ char *_cmdNot( struct glueCommands *data )
 char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 	stackCmdParm( _cmdNot, tokenBuffer );
-
 	return tokenBuffer;
 }
 

@@ -5,6 +5,7 @@
 #include <proto/dos.h>
 #include "amosKittens.h"
 #include "commands.h"
+#include "debug.h"
 #include <vector>
 
 extern struct globalVar globalVars[1000];
@@ -27,6 +28,7 @@ char *_ifThenSuccess (struct glueCommands *data);
 char *_machinePeek( struct glueCommands *data );
 char *_cmdStart( struct glueCommands *data );
 char *_chr( struct glueCommands *data );
+char *_gfxPoint( struct glueCommands *data );
 
 struct stackDebugSymbol
 {
@@ -52,6 +54,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_machinePeek,"Peek" },
 	{_cmdStart,"Start" },
 	{_chr,"Chr$" },
+	{_gfxPoint,"Point" },
 	{NULL, NULL}
 };
 
@@ -168,6 +171,7 @@ void dump_prog_stack()
 	int n;
 	const char *name;
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	for (n=0; n<cmdStack;n++)
 	{
