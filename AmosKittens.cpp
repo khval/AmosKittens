@@ -757,13 +757,19 @@ struct nativeCommand nativeCommands[]=
 
 	{0x0ED8,"Box",0,gfxBox },
 	{0x0EC8,"Bar",0,gfxBar },
+	{0x0E64,"Draw",0,gfxDraw },
 	{0x0E74,"Draw",0,gfxDraw },
 	{0x0E9A,"Circle",0,gfxCircle },
 	{0x0E86,"Ellipse",0,gfxEllipse },
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
 	{0x1E16,"X Mouse",0,gfxXMouse },
-	{0x1E24,"Y Mouse",0,gfxYMouse }
+	{0x1E24,"Y Mouse",0,gfxYMouse },
+
+	{0x1446,"Curs Off",0,gfxCursOff },
+	{0x0D34,"Flash Off",0,gfxFlashOff },
+	{0x0E3C,"Plot",0,gfxPlot },
+	{0x0E56,"Point",0,gfxPoint }
 
 };
 

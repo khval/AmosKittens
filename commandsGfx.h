@@ -23,3 +23,8 @@ char *gfxInk(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxXMouse(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxYMouse(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *gfxCursOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer);
+
