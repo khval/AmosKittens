@@ -143,6 +143,16 @@ int _stackInt( int n )
 	return 0;
 }
 
+void stack_get_if_int( int n, int *ret )
+{
+	switch (kittyStack[n].type)
+	{
+		case type_int:	*ret = kittyStack[n].value; break;
+		case type_float: *ret = (int) kittyStack[n].decimal; break;
+	}
+}
+
+
 void _num( int num )
 {
 	dprintf("set num stack[%d]\n",stack);

@@ -33,7 +33,13 @@ extern char *flushCmdParaStack();
 extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
 extern bool dropProgStackToType( int type );
 
+// return value or 0 or NULL
+
 extern int _stackInt( int n );
 extern double _stackDecimal( int n );
 extern char *_stackString( int n );
+
+// only set ret var if type is correct.
+
+extern void stack_get_if_int( int n, int *ret );
 
