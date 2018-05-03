@@ -751,6 +751,7 @@ struct nativeCommand nativeCommands[]=
 	// Screen Open
 	{0x09EA,"Screen Open",0,gfxScreenOpen },
 	{0x0D1C,"Colour",0,gfxColour },
+	{0x0D2C,"=Colour(n)", 0, gfxGetColour },
 	{0x0A18,"Screen Display",0,gfxScreenDisplay },
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
@@ -773,7 +774,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0E56,"Point",0,gfxPoint },
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
 //	{0x0000,"xgr",0,gfxXGR },
-//	{0x0000,"ygr Locate",0,gfxYGR }
+//	{0x0000,"ygr Locate",0,gfxYGR },
+	{0x0EAC,"Polyline",0,gfxPolyline }
 
 };
 

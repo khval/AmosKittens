@@ -276,6 +276,36 @@ char *_gfxDraw( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxPolyline( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( (args>2) && ((args&1) == 0) && (screens[current_screen]) )
+	{
+		int coordinates = args >> 1;
+		int lx,ly,x,y,_stack,n;
+
+		_stack = data -> stack;
+
+		lx = _stackInt( _stack++ );
+		ly = _stackInt( _stack++ );
+
+		for (n=1;n<coordinates;n++)
+		{
+			x = _stackInt( _stack++ );
+			y = _stackInt( _stack++ );
+			retroLine( screens[current_screen], lx,ly,x,y,pen0 );
+			lx = x;
+			ly=y;
+		}
+	}
+	else	setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
 
 char *_gfxCircle( struct glueCommands *data )
 {
@@ -490,6 +520,37 @@ char *_gfxGrLocate( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxGetColour( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int c;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	switch (args)
+	{
+		case 1:
+			c = _stackInt( stack );
+
+			if ((c>-1)&&(c<256))
+			{
+				if (screens[current_screen])	// check if screen is open.
+				{
+					struct retroRGB rgb = screens[current_screen]->orgPalette[c];
+
+					setStackNum( ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17) );
+				}
+			}
+
+
+			break;
+		default:
+			setError(22);
+	}
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	kittyStack[stack].type = type_none;
@@ -519,6 +580,18 @@ char *gfxXGR(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxYGR(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	setStackNum(ygr);
+	return tokenBuffer;
+}
+
+char *gfxGetColour(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxGetColour, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxPolyline, tokenBuffer );
 	return tokenBuffer;
 }
 

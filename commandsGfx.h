@@ -4,7 +4,6 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 
-
 char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxHires(struct nativeCommand *cmd, char *tokenBuffer);
@@ -30,4 +29,7 @@ char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxGrLocate(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxXGR(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxYGR(struct nativeCommand *cmd, char *tokenBuffer);
+
+char *gfxGetColour(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer);
 
