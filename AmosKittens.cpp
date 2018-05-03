@@ -575,8 +575,9 @@ struct nativeCommand nativeCommands[]=
 	{0x0536, "Right$",0,cmdRight },
 
 	{0x05C4, "Hex$",0,cmdHex },
+	{0x05D0, "Hex$(num,chars)",0,cmdHex },
 	{0x05AE, "Bin$",0,cmdBin },
-	{0x05BA, "Bin$(var,num)", 0, cmdBin },
+	{0x05BA, "Bin$(num,chars)", 0, cmdBin },
 	{0x05A4, "Val",0, cmdVal },
 	{0x0598, "Str$",0, cmdStr },
 
