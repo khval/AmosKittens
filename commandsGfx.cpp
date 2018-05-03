@@ -551,6 +551,28 @@ char *_gfxGetColour( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxPalette( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int color,n,num;
+	struct retroRGB rgb;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	for (n=data->stack;n<=stack;n++)
+	{
+		num = n-data->stack;
+		rgb = screens[current_screen]->orgPalette[num];
+		color =  ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17);
+		stack_get_if_int( n, &color );
+		retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+	}
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	kittyStack[stack].type = type_none;
@@ -592,6 +614,12 @@ char *gfxGetColour(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxPolyline, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxPalette(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxPalette, tokenBuffer );
 	return tokenBuffer;
 }
 

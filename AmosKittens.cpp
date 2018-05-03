@@ -775,8 +775,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr Locate",0,gfxYGR },
-	{0x0EAC,"Polyline",0,gfxPolyline }
-
+	{0x0EAC,"Polyline",0,gfxPolyline },
+	{0x0CFC,"Palette",0,gfxPalette }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
