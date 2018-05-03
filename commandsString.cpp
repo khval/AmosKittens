@@ -190,13 +190,25 @@ char *_str( struct glueCommands *data )
 char *_hex( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	int num;
+	int num,chars;
 	char _str[12];
+	char fmt[10];
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	num = _stackInt( stack );
-	sprintf(_str,"$%X",num);
+	switch (args)
+	{
+		case 1:
+				num = _stackInt( stack );
+				sprintf(_str,"$%X",num);
+				break;
+		case 2:
+				num = _stackInt( stack-1 );
+				chars = _stackInt( stack );	
+				sprintf(fmt,"$%%0%dX",chars);
+				sprintf(_str,fmt,num);
+				break;
+	}
 
 	popStack(stack - data->stack);
 
@@ -208,7 +220,7 @@ char *_hex( struct glueCommands *data )
 char *_bin( struct glueCommands *data )
 {
 	int args = stack - data->stack + 1;
-	unsigned int num,len,n;
+	unsigned int num= 0,len =0,n;
 	char *str,*p;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
