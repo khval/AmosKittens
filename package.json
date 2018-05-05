@@ -1,5 +1,6 @@
 { "dependencies" :
   { "AmigaOS SDK" : ">=4.1" },
+  { "RetroMode.library" : ">=?.?" },
   "OS" : ["AmigaOS"],
   "license": "(MIT)"
 }
