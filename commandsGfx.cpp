@@ -276,6 +276,34 @@ char *_gfxDraw( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxPolygon( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int array[100*2];
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( (args>=4) && ((args&1) == 0) && (screens[current_screen]) )
+	{
+		int n;
+		int _stack = data -> stack;
+
+		for (n=0;n<args;n++)
+		{
+			array[n] = _stackInt( _stack++ );
+			printf("int: %d\n",array[n] );
+		}
+
+//		printf("args: %d\n",args);
+
+		retroPolyGonArray( screens[current_screen], pen0, args, array );
+	}
+	else	setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *_gfxPolyline( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -620,6 +648,12 @@ char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxPalette(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxPalette, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxPolygon, tokenBuffer );
 	return tokenBuffer;
 }
 
