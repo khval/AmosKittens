@@ -135,18 +135,28 @@ void wait_engine()
 	} while (engine_started);
 }
 
-void set_default_colors( int screen )
+void set_default_colors( struct retroScreen *screen )
 {
-	retroScreenColor( screens[screen], 0, 0, 0, 0 );
-	retroScreenColor( screens[screen], 1, 255, 100, 50 );
-	retroScreenColor( screens[screen], 2, 255, 255, 255 );
-	retroScreenColor( screens[screen], 3, 255, 0, 0 );
-	retroScreenColor( screens[screen], 4, 0, 255, 0 );
+	retroScreenColor( screen, 0, 0, 0, 0 );
+	retroScreenColor( screen, 1, 255, 100, 50 );
+	retroScreenColor( screen, 2, 255, 255, 255 );
+	retroScreenColor( screen, 3, 255, 0, 0 );
+	retroScreenColor( screen, 4, 0, 255, 0 );
 
-	retroScreenColor( screens[screen], 5, 0, 0, 0 );
-	retroScreenColor( screens[screen], 6, 255, 255, 255 );
-	retroScreenColor( screens[screen], 7, 0, 0, 0 );
-	retroScreenColor( screens[screen], 8, 255, 0, 0 );
+	retroScreenColor( screen, 5, 0, 0, 0 );
+	retroScreenColor( screen, 6, 255, 255, 255 );
+	retroScreenColor( screen, 7, 0, 0, 0 );
+	retroScreenColor( screen, 8, 255, 0, 0 );
+}
+
+void draw_cursor(struct retroScreen *screen)
+{
+	int gx,gy;
+
+	gx = screen -> locateX * 8;
+	gy = screen -> locateY * 8;
+
+	retroBAR( screen, gx,gy+6,gx+6,gy+7, 3);
 }
 
 void main_engine()
@@ -169,9 +179,11 @@ void main_engine()
 
 		if (screens[0])
 		{
-			set_default_colors( 0 );
-			retroBAR( screens[0], 0,0, screens[0] -> realWidth, screens[0] -> realHeight, 1 );
+			set_default_colors( screens[0] );
 			retroFlash( screens[0], 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
+
+			retroBAR( screens[0], 0,0, screens[0] -> realWidth, screens[0] -> realHeight, 1 );
+			draw_cursor(screens[0]);
 		}
 
 		if (screens[0])	retroApplyScreen( screens[0], video, 0, 0,320,200 );

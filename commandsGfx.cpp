@@ -57,9 +57,11 @@ char *_gfxScreenOpen( struct glueCommands *data )
 				retroApplyScreen( screens[screen_num], video, 0, 0,
 					screens[screen_num] -> realWidth,screens[screen_num]->realHeight );
 
-				retroBAR( screens[screen_num], 0,0, screens[screen_num] -> realWidth,screens[screen_num]->realHeight, 1 );
+				set_default_colors( screens[screen_num] );
+				retroFlash( screens[screen_num], 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
 
-				set_default_colors( screen_num );
+				retroBAR( screens[screen_num], 0,0, screens[screen_num] -> realWidth,screens[screen_num]->realHeight, 1 );
+				draw_cursor(screens[0]);
 			}
 
 			engine_unlock();
@@ -84,12 +86,10 @@ char *_gfxScreenClose( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack-4 );
+		int screen_num = _stackInt( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			current_screen = screen_num;
-
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			engine_unlock();
@@ -190,7 +190,7 @@ char *_gfxScreen( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack-4 );
+		int screen_num = _stackInt( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -216,6 +216,14 @@ char *_gfxFlash( struct glueCommands *data )
 
 	if (args==2)
 	{
+		int color = _stackInt( stack-1 );
+		char *str = _stackString( stack );
+
+		if (screens[current_screen])
+		{
+			if (str) retroFlash( screens[current_screen], color, str );
+		}
+		success = true;
 	}
 
 	if (success == false) setError(22);
