@@ -5,9 +5,13 @@
 #include "amosKittens.h"
 
 char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer);
+
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxHires(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxMouseKey(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer);
@@ -23,6 +27,7 @@ char *gfxXMouse(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxYMouse(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *gfxCursOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer);

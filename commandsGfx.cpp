@@ -74,6 +74,37 @@ char *_gfxScreenOpen( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxScreenClose( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack-4 );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			current_screen = screen_num;
+
+			engine_lock();
+			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
+			engine_unlock();
+
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *_gfxScreenDisplay( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -117,6 +148,83 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 	setStackNum(ret);
 	return NULL;
 }
+
+char *_gfxScreenOffset( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==3)
+	{
+		int screen_num = _stackInt( stack-4 );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			engine_lock();
+
+			retroClearVideo( video );
+			retroDrawVideo( video );
+			engine_unlock();
+
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *_gfxScreen( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack-4 );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			current_screen = screen_num;
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *_gfxFlash( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
 
 char *_gfxColour( struct glueCommands *data )
 {
@@ -291,10 +399,7 @@ char *_gfxPolygon( struct glueCommands *data )
 		for (n=0;n<args;n++)
 		{
 			array[n] = _stackInt( _stack++ );
-			printf("int: %d\n",array[n] );
 		}
-
-//		printf("args: %d\n",args);
 
 		retroPolyGonArray( screens[current_screen], pen0, args, array );
 	}
@@ -472,8 +577,29 @@ char *gfxCursOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxFlash, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	if (screens[current_screen])
+	{
+		struct retroFlashTable **ptr = screens[current_screen]->allocatedFlashs;
+		struct retroFlashTable **ptr_end = screens[current_screen]->allocatedFlashs_end;
+
+		engine_lock();
+
+		for ( ; ptr<ptr_end;ptr++)
+		{
+			if (*ptr) retroDeleteFlash( screens[current_screen], (*ptr) -> color );
+		}
+
+		engine_unlock();
+	}
+
 	return tokenBuffer;
 }
 
@@ -656,4 +782,23 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxPolygon, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScreenClose, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScreenOffset, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScreen, tokenBuffer );
+	return tokenBuffer;
+}
+
 
