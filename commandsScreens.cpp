@@ -111,8 +111,24 @@ char *_gfxScreenClone( struct glueCommands *data )
 			{
 				engine_lock();
 				if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
+
 				screens[screen_num] = retroScreenClone(screens[current_screen], screens[current_screen] -> videomode );
+
+				if (screens[screen_num])
+				{
+					set_default_colors( screens[screen_num] );
+
+					retroApplyScreen( screens[screen_num], video, 0, 100, screens[screen_num]->displayWidth, screens[screen_num]->displayHeight );
+					video -> refreshAllScanlines = TRUE;
+					printf("retroApplyScreen\n");
+				}
+
 				engine_unlock();
+
+				printf("screen clone %d at %04x org screen %d\n",screen_num, screens[screen_num], current_screen);
+//				getchar();
+
+				current_screen = screen_num;
 				success = true;
 			}
 		}
