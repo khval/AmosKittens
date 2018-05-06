@@ -67,7 +67,7 @@ bool open_window( int window_width, int window_height )
 			WA_SizeBBottom,	FALSE,
 
 			WA_IDCMP,           IDCMP_COMMON,
-			WA_Flags,           WFLG_REPORTMOUSE,
+			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP,
 			TAG_DONE);
 
 	return (My_Window != NULL) ;
@@ -198,12 +198,20 @@ void main_engine()
 							running = false; break;
 
 					case IDCMP_MOUSEBUTTONS:
-							engine_mouse_key = msg -> Code;
+
+							switch (msg -> Code)
+							{
+								case SELECTDOWN:	engine_mouse_key |= 1; break;
+								case SELECTUP:	engine_mouse_key &= ~1; break;
+								case MENUDOWN:	engine_mouse_key |= 2; break;
+								case MENUUP:		engine_mouse_key &= ~2; break;
+							}
+
 							break;
 
 					case IDCMP_MOUSEMOVE:
-							engine_mouse_x = msg -> MouseX;
-							engine_mouse_y = msg -> MouseY;
+							engine_mouse_x = msg -> MouseX - video -> window -> BorderLeft;
+							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
 							break;
 				}
 
