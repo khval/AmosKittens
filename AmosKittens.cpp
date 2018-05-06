@@ -18,6 +18,7 @@
 #include "commandsErrors.h"
 #include "commandsMachine.h"
 #include "commandsGfx.h"
+#include "commandsScreens.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -751,8 +752,12 @@ struct nativeCommand nativeCommands[]=
 	// Screen Open
 	{0x09EA,"Screen Open",0,gfxScreenOpen },
 	{0x0A04,"Screen Close",0,gfxScreenClose },
-
 	{0x0A18,"Screen Display",0,gfxScreenDisplay },
+	{0x09D6,"Screen Clone",0,gfxScreenClone },
+	{0x0A5E,"Screen Colour", 0, gfxScreenColour },
+	{0x0B58,"Screen Width", 0, gfxScreenWidth },
+	{0x0B74,"Screen Height", 0, gfxScreenHeight },
+
 	{0x0C6E,"Screen",0,gfxScreen },
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
