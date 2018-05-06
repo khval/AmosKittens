@@ -21,6 +21,7 @@ main_objects = commands.cpp \
 			commandsErrors.cpp \
 			commandsMachine.cpp \
 			commandsGfx.cpp \
+			commandsScreens.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
