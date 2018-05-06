@@ -219,7 +219,6 @@ char *_gfxScreen( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int ret = 0;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -237,9 +236,73 @@ char *_gfxScreen( struct glueCommands *data )
 	if (success == false) setError(22);
 
 	popStack( stack - data->stack );
-	setStackNum(ret);
 	return NULL;
 }
+
+char *_gfxScin( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+/*
+	if (args==2)
+	{
+		int mx = _stackInt( stack-1 );
+		int my = _stackInt( stack );
+		struct retroScreen **screen_item;
+		struct retroScreen *screen;
+		int dest_y;
+		int start_at,end_at;
+
+		for (screen_item = video -> attachedScreens; screen_item < video -> attachedScreens_end; screen_item++)
+		{
+			screen = *screen_item;
+
+			if (screen ->videomode & retroInterlaced)
+			{
+				if (dest_y<0)
+				{
+					start_at = - dest_y;
+					dest_y = 0;
+				}
+
+				if (screen -> scanline_y + screen -> displayHeight > video->height)
+				{
+					end_at = video->height - screen -> scanline_y;
+				}
+				else
+				{
+					end_at = screen -> displayHeight;
+				}
+			}
+			else		// not interlaced.
+			{
+				if (dest_y<0)
+				{
+					start_at = - dest_y / 2;
+					dest_y = 0;
+				}
+
+				if (screen -> scanline_y + (screen -> displayHeight*2) > video->height)
+				{
+					end_at = (video->height - screen -> scanline_y) / 2;
+				}
+				else
+				{
+					end_at = screen -> displayHeight;
+				}
+			}
+		}
+	}
+
+//	if (success == false) setError(22);
+*/
+	popStack( stack - data->stack );
+	setStackNum(0);
+	return NULL;
+}
+
 
 char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -312,6 +375,75 @@ char *gfxScreenHeight(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	return tokenBuffer;
 }
+
+char *gfxScin(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxScin, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxScreenToFront( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			retroScreenToFront(screens[screen_num]);
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_gfxScreenToBack( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			retroScreenToBack(screens[screen_num]);
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _gfxScreenToFront, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _gfxScreenToBack, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
 
