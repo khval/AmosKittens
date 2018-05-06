@@ -540,7 +540,7 @@ void eol( char *ptr )
 			case nested_then_else_if:
 
 				offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
-				*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
+				*((short *) (nested_command[ nested_count -1 ].ptr)) = offset-1;
 				nested_count --;
 				break;
 
