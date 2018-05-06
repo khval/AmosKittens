@@ -120,7 +120,6 @@ char *_gfxScreenClone( struct glueCommands *data )
 
 					retroApplyScreen( screens[screen_num], video, 0, 100, screens[screen_num]->displayWidth, screens[screen_num]->displayHeight );
 					video -> refreshAllScanlines = TRUE;
-					printf("retroApplyScreen\n");
 				}
 
 				engine_unlock();
@@ -169,8 +168,7 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 					screens[screen_num] -> displayWidth,
 					screens[screen_num] -> displayHeight );
 
-			retroClearVideo( video );
-			retroDrawVideo( video );
+			video -> refreshAllScanlines = TRUE;
 
 			engine_unlock();
 
@@ -243,63 +241,46 @@ char *_gfxScin( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
+	int ret = -1;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-/*
+
 	if (args==2)
 	{
 		int mx = _stackInt( stack-1 );
 		int my = _stackInt( stack );
-		struct retroScreen **screen_item;
-		struct retroScreen *screen;
-		int dest_y;
-		int start_at,end_at;
 
-		for (screen_item = video -> attachedScreens; screen_item < video -> attachedScreens_end; screen_item++)
+		if ((my>-1)&&(my<480))
 		{
-			screen = *screen_item;
+			struct retroScreen *s = NULL;
+			int n;
 
-			if (screen ->videomode & retroInterlaced)
+			if ( video -> scanlines[my].data)
 			{
-				if (dest_y<0)
-				{
-					start_at = - dest_y;
-					dest_y = 0;
-				}
+				s = video -> scanlines[my].screen;
+			}
+			else if (my>0)
+			{
+				s = video -> scanlines[my-1].screen;
+			}
 
-				if (screen -> scanline_y + screen -> displayHeight > video->height)
+			if (s)
+			{
+				for (n=0;n<8;n++)
 				{
-					end_at = video->height - screen -> scanline_y;
-				}
-				else
-				{
-					end_at = screen -> displayHeight;
+					if ( screens[n] == s )
+					{
+						ret =n;
+						break;
+					}
 				}
 			}
-			else		// not interlaced.
-			{
-				if (dest_y<0)
-				{
-					start_at = - dest_y / 2;
-					dest_y = 0;
-				}
-
-				if (screen -> scanline_y + (screen -> displayHeight*2) > video->height)
-				{
-					end_at = (video->height - screen -> scanline_y) / 2;
-				}
-				else
-				{
-					end_at = screen -> displayHeight;
-				}
-			}
+			printf("ret: %d\n",ret);
 		}
 	}
 
-//	if (success == false) setError(22);
-*/
 	popStack( stack - data->stack );
-	setStackNum(0);
+	setStackNum( ret );
 	return NULL;
 }
 
@@ -396,6 +377,7 @@ char *_gfxScreenToFront( struct glueCommands *data )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			retroScreenToFront(screens[screen_num]);
+			video -> refreshAllScanlines = TRUE;
 			success = true;
 		}
 	}
@@ -420,6 +402,7 @@ char *_gfxScreenToBack( struct glueCommands *data )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			retroScreenToBack(screens[screen_num]);
+			video -> refreshAllScanlines = TRUE;
 			success = true;
 		}
 	}
