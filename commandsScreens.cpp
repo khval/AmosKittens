@@ -427,7 +427,71 @@ char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxScreenShow( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack );
 
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			printf("screen_num %d\n",screen_num);
+
+			if (screens[screen_num]) screens[screen_num]->flags &= ~retroscreen_flag_hide;
+			video -> refreshAllScanlines = TRUE;
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_gfxScreenHide( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = _stackInt( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			printf("screen_num %d\n",screen_num);
+
+			if (screens[screen_num]) screens[screen_num]->flags |= retroscreen_flag_hide;
+			video -> refreshAllScanlines = TRUE;
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxScreenShow(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _gfxScreenShow, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScreenHide(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _gfxScreenHide, tokenBuffer );
+	return tokenBuffer;
+}
 

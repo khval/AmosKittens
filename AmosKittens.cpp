@@ -759,7 +759,9 @@ struct nativeCommand nativeCommands[]=
 	{0x0B74,"Screen Height", 0, gfxScreenHeight },
 	{0x16B6,"Scin(x,y)",0,gfxScin },
 	{0x0A88,"Screen To Front",0,gfxScreenToFront },
-	{0x0AA6,"Screen To Front",0,gfxScreenToBack },
+	{0x0AA6,"Screen To Back",0,gfxScreenToBack },
+	{0x0AC0,"Screen Hide",0,gfxScreenHide },
+	{0x0ADA,"Screen Show",0,gfxScreenShow },
 
 	{0x0C6E,"Screen",0,gfxScreen },
 	{0x0C90,"Lowres",0,gfxLowres },
