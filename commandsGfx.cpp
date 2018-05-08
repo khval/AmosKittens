@@ -162,6 +162,53 @@ char *_gfxBar( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxCls( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	switch (args)
+	{
+		case 1:
+			{
+				int color = _stackInt( stack );
+
+				if ((color >-1)&&(color<256))
+				{
+					if (screens[current_screen]) 
+						retroBAR( screens[current_screen], 
+							0,0,
+							screens[current_screen]->realWidth,screens[current_screen]->realHeight,
+							color );
+				}
+			}
+			break;
+
+		case 5:
+			{
+				int color = _stackInt( stack -4 );
+				int x0 = _stackInt( stack -3 );
+				int y0 = _stackInt( stack -2 );
+				int x1 = _stackInt( stack -1 );
+				int y1 = _stackInt( stack );
+
+				if ((color >-1)&&(color<256))
+				{
+					if (screens[current_screen]) retroBAR( screens[current_screen], x0,y0,x1,y1,color );
+				}
+			}
+			break;
+		default:
+			setError(22);
+	}
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+
 char *_gfxDraw( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -593,4 +640,9 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxCls, tokenBuffer );
+	return tokenBuffer;
+}
 

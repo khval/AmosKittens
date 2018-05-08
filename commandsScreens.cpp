@@ -193,14 +193,14 @@ char *_gfxScreenOffset( struct glueCommands *data )
 
 	if (args==3)
 	{
-		int screen_num = _stackInt( stack-4 );
+		int screen_num = _stackInt( stack-2 );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			engine_lock();
-			retroClearVideo( video );
-			retroDrawVideo( video );
-			engine_unlock();
+			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-1 );
+			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> scanline_y = _stackInt( stack );
+
+			if (screens[screen_num]) retroScreenOffset( screens[screen_num] , screens[screen_num] -> scanline_x, screens[screen_num] -> scanline_y );
 
 			success = true;
 		}
@@ -357,6 +357,15 @@ char *gfxScreenHeight(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxGetScreen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (screens[current_screen])	// check if current screen is open.
+	{
+		setStackNum(current_screen);
+	}
+	return tokenBuffer;
+}
+
 char *gfxScin(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _gfxScin, tokenBuffer );
@@ -481,6 +490,56 @@ char *_gfxScreenHide( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxScreenCopy( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			{
+				int src_screen = _stackInt( stack-1 );
+				int dest_screen = _stackInt( stack );
+
+				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
+				{
+					retroScreenBlit( screens[src_screen], 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
+							screens[dest_screen],0, 0);
+				}
+			}
+			break;
+
+		case 8:	// Screen Copy 1,x,y,w,h to 2,x,y
+			{
+				int src_screen = _stackInt( stack-7 );
+				int src_x = _stackInt( stack-6 );
+				int src_y = _stackInt( stack-5 );
+				int src_w = _stackInt( stack-4 );
+				int src_h = _stackInt( stack-3 );
+				int dest_screen = _stackInt( stack-2 );
+				int dest_x = _stackInt( stack-1 );
+				int dest_y = _stackInt( stack );
+
+				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
+				{
+					retroScreenBlit( screens[src_screen], src_x, src_y, src_w, src_h,
+							screens[dest_screen],dest_x, dest_y);
+				}
+			}
+			break;
+
+		default:
+ 			setError(22);
+			break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxScreenShow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -492,6 +551,12 @@ char *gfxScreenHide(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenHide, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScreenCopy, tokenBuffer );
 	return tokenBuffer;
 }
 

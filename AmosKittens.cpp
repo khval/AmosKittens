@@ -19,6 +19,7 @@
 #include "commandsMachine.h"
 #include "commandsGfx.h"
 #include "commandsScreens.h"
+#include "commandsText.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -762,8 +763,12 @@ struct nativeCommand nativeCommands[]=
 	{0x0AA6,"Screen To Back",0,gfxScreenToBack },
 	{0x0AC0,"Screen Hide",0,gfxScreenHide },
 	{0x0ADA,"Screen Show",0,gfxScreenShow },
+	{0x09A8,"Screen Copy",0,gfxScreenCopy },
+	{0x0A36,"Screen Offset",0,gfxScreenOffset },
 
 	{0x0C6E,"Screen",0,gfxScreen },
+	{0x0C7C,"=Screen",0,gfxGetScreen },
+
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
 
@@ -794,7 +799,12 @@ struct nativeCommand nativeCommands[]=
 //	{0x0000,"ygr Locate",0,gfxYGR },
 	{0x0EAC,"Polyline",0,gfxPolyline },
 	{0x0CFC,"Palette",0,gfxPalette },
-	{0x0EBA,"Polygon",0,gfxPolygon }
+	{0x0EBA,"Polygon",0,gfxPolygon },
+
+	{0x0BAE,"Cls",0,gfxCls},
+	{0x0BC0,"Cls s,x,y,w,h to d,x,y",0,gfxCls},
+
+	{0x1378,"Locate",0, textLocate }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
