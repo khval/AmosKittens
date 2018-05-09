@@ -24,6 +24,18 @@ APTR engine_mx = 0;
  int engine_mouse_y = 0;
 
 struct retroScreen *screens[8] ;
+struct retroRGB DefaultPalette[256] = 
+{
+	{ 0, 0, 0 },
+	{ 255, 100, 50 },
+	{ 255, 255, 255 },
+	{ 255, 0, 0 },
+	{ 0, 255, 0 },
+	{ 0, 0, 0 },
+	{ 255, 255, 255 },
+	{ 0, 0, 0 },
+	{ 255, 0, 0 }
+};
 
 #define IDCMP_COMMON IDCMP_MOUSEBUTTONS | IDCMP_INACTIVEWINDOW | IDCMP_ACTIVEWINDOW  | \
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
@@ -137,16 +149,9 @@ void wait_engine()
 
 void set_default_colors( struct retroScreen *screen )
 {
-	retroScreenColor( screen, 0, 0, 0, 0 );
-	retroScreenColor( screen, 1, 255, 100, 50 );
-	retroScreenColor( screen, 2, 255, 255, 255 );
-	retroScreenColor( screen, 3, 255, 0, 0 );
-	retroScreenColor( screen, 4, 0, 255, 0 );
-
-	retroScreenColor( screen, 5, 0, 0, 0 );
-	retroScreenColor( screen, 6, 255, 255, 255 );
-	retroScreenColor( screen, 7, 0, 0, 0 );
-	retroScreenColor( screen, 8, 255, 0, 0 );
+	int n;
+	for (n=0;n<256;n++)
+		retroScreenColor( screen, n,DefaultPalette[n].r,DefaultPalette[n].g,DefaultPalette[n].b);
 }
 
 void draw_cursor(struct retroScreen *screen)

@@ -19,7 +19,9 @@
 extern int last_var;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
+
 int current_screen = 0;
+extern struct retroRGB DefaultPalette[256];
 
 char *_gfxScreenOpen( struct glueCommands *data )
 {
