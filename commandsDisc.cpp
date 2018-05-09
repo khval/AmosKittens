@@ -42,7 +42,7 @@ char *_cmdPrintOut( struct glueCommands *data )
 	int num,n;
 	FILE *fd;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	num = _stackInt( data -> stack ) -1;
 
@@ -81,7 +81,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 	int num;
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
@@ -137,7 +137,7 @@ char *_cmdClose( struct glueCommands *data )
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int num;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
@@ -167,7 +167,7 @@ char *_cmdKill( struct glueCommands *data )
 	int32 success = false;
 	_str = _stackString( stack );
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (_str) success = Delete(_str);
 
@@ -394,7 +394,7 @@ char *_cmdDirFirstStr( struct glueCommands *data )
 	const char *_pattern;
 	char *outStr = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (contextDir)
 	{
@@ -447,7 +447,7 @@ char *_cmdDirNextStr( struct glueCommands *data )
 {
 	char *outStr = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if( contextDir )
 	{
@@ -576,7 +576,7 @@ char *_cmdDir( struct glueCommands *data )
 	char *_path = NULL;
 	const char *_pattern = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	str = _stackString( stack );
 
@@ -670,7 +670,7 @@ char *_cmdDirStr( struct glueCommands *data )
 	BPTR oldLock;
 	char *_str;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	_str = _stackString( stack );
 
@@ -699,9 +699,9 @@ char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("%08x - %08x\n", last_token, NEXT_TOKEN( tokenBuffer ) );
+	dprintf("%08x - %08x\n", last_token, NEXT_TOKEN( tokenBuffer ) );
 
 	if (last_token == 0x0000) printf("last token 0x0000\n");
 	if (NEXT_TOKEN( tokenBuffer ) == 0xFFA2) printf("next token 0xFFA2\n");
@@ -728,7 +728,7 @@ char *cmdParent(struct nativeCommand *cmd, char *tokenBuffer)
 	BPTR lock;
 	BPTR oldLock;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	lock = Lock( "/", SHARED_LOCK );
 	if (lock)
@@ -754,9 +754,9 @@ char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		unsigned int freeBlocks;
 
-		printf("num blocks %d\n", data.id_NumBlocks);
-		printf("used blocks %d\n", data.id_NumBlocksUsed);
-		printf("bytes per block %d\n", data.id_BytesPerBlock);
+		dprintf("num blocks %d\n", data.id_NumBlocks);
+		dprintf("used blocks %d\n", data.id_NumBlocksUsed);
+		dprintf("bytes per block %d\n", data.id_BytesPerBlock);
 
 
 		freeBlocks = data.id_NumBlocks - data.id_NumBlocksUsed;
@@ -1091,7 +1091,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 char *_cmdLineInputFile( struct glueCommands *data )
 {
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	getchar();
 
@@ -1106,7 +1106,7 @@ char *_cmdLineInputFile( struct glueCommands *data )
 
 char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
@@ -1141,7 +1141,7 @@ char *_cmdInputStrFile( struct glueCommands *data )
 	char *newstr;
 	FILE *fd;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
@@ -1184,7 +1184,7 @@ char *_cmdInputStrFile( struct glueCommands *data )
 
 char *_cmdSetInput( struct glueCommands *data )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
 	getchar();
 
@@ -1199,7 +1199,7 @@ char *_cmdLof( struct glueCommands *data )
 	FILE *fd;
 	int pos,len;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
 
 	if (args == 1)
@@ -1237,7 +1237,7 @@ char *_cmdPof( struct glueCommands *data )
 	int channel = 0;
 	FILE *fd;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
 
 	if (args == 1)
@@ -1269,13 +1269,13 @@ char *_cmdEof( struct glueCommands *data )
 	int channel = 0;
 	FILE *fd;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
 		channel = _stackInt(stack);
 
-		printf("channel: %d\n",channel);
+		dprintf("channel: %d\n",channel);
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1299,35 +1299,35 @@ char *_cmdEof( struct glueCommands *data )
 
 char *cmdInputStrFile(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdInputStrFile, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdSetInput(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdSetInput, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdLof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdLof, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdPof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdPof, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdEof, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1341,7 +1341,7 @@ char *_cmdGet( struct glueCommands *data )
 	FILE *fd;
 	char *str;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
 
 	if (args == 2)
@@ -1388,7 +1388,7 @@ char *_cmdPut( struct glueCommands *data )
 	char fmt[15];
 	char tmp[1000];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
 
 	if (args == 2)
@@ -1429,7 +1429,7 @@ char *_cmdPut( struct glueCommands *data )
 
 char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdOpenRandom, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1506,7 +1506,7 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 		kittyFiles[channel-1].fieldsSize = size ;
 	}
 
-	printf("size %d, count %d\n", size, count);
+	dprintf("size %d, count %d\n", size, count);
 	getchar();
 
 	return ptr - 2;
@@ -1514,14 +1514,14 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 
 char *cmdGet(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdGet, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdPut, tokenBuffer );
 	return tokenBuffer;
 }

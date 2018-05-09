@@ -858,14 +858,6 @@ void pass1_reader( char *start, int tokenlength )
 	}
 	addLineAddress( lastLineAddr, ptr );
 
-	// if we did not count back to 0, then there most be some thing wrong.
-
-	printf("'if' Count %d, 'end If' Count %d\n", ifCount, endIfCount );
-
-	printf("dump of pass1 nest\n");
-
-	dump_nest();
-
 	while (nested_count)
 	{
 		switch (nested_command[ nested_count - 1 ].cmd )
@@ -882,8 +874,6 @@ void pass1_reader( char *start, int tokenlength )
 	}
 
 	nested_count = 0;
-
-	printf("end of %s\n",__FUNCTION__);
 }
 
 void addLineAddress( char *_start, char *_end )

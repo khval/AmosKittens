@@ -79,7 +79,7 @@ char *_gfxColour( struct glueCommands *data )
 			if (screens[current_screen])
 			{
 				retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
-				printf("Screen %d,Color %d,R %d,G %d,B %d\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
+				dprintf("Screen %d,Color %d,R %d,G %d,B %d\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
 
 			}
 			success = true;
@@ -167,8 +167,6 @@ char *_gfxCls( struct glueCommands *data )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-
 	switch (args)
 	{
 		case 1:
@@ -178,10 +176,7 @@ char *_gfxCls( struct glueCommands *data )
 				if ((color >-1)&&(color<256))
 				{
 					if (screens[current_screen]) 
-						retroBAR( screens[current_screen], 
-							0,0,
-							screens[current_screen]->realWidth,screens[current_screen]->realHeight,
-							color );
+						retroBAR( screens[current_screen],0,0,screens[current_screen]->realWidth,screens[current_screen]->realHeight,color );
 				}
 			}
 			break;
