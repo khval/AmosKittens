@@ -563,21 +563,62 @@ char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void LoadIff( char *name, int n )
+void LoadIff( char *name, const int n )
 {
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
-		
+	struct ColorRegister *cr;
+	ULONG modeid; 
+	ULONG colors;		
+
 	if(dto = (struct DataType *) NewDTObject( name, DTA_GroupID, GID_PICTURE, TAG_DONE))
 	{
 		SetDTAttrs ( (Object*) dto, NULL,NULL,	PDTA_DestMode, (ULONG) PMODE_V43,TAG_DONE);
 		DoDTMethod ( (Object*) dto,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE); 
-		GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	PDTA_BitMap, (ULONG) &dt_bitmap, TAG_DONE);
+		GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	
+					PDTA_BitMap, (ULONG) &dt_bitmap, 
+					PDTA_ColorRegisters, &cr,
+					PDTA_NumColors, &colors,
+					PDTA_ModeID, &modeid,
+					TAG_DONE);
 
-		printf("Wdith %d, Height %d, Depth %d\n",bm_header -> bmh_Width,bm_header -> bmh_Height,bm_header -> bmh_Depth);
+		engine_lock();
+
+		if (screens[n]) retroCloseScreen(&screens[n]);
+		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height,1);
+
+		if (screens[n])
+		{
+			struct RastPort rp;
+			int x,y,c;
+
+			retroApplyScreen( screens[n], video, 0, 20, screens[n] -> realWidth,screens[n]->realHeight );
+			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, 1 );
+			set_default_colors( screens[n] );
+
+			if (cr)
+			{
+				for (c=0;c<colors;c++)		
+				{
+					retroScreenColor(screens[n],c,cr[c].red,cr[c].green,cr[c].blue);
+				}
+			}
+
+			InitRastPort(&rp);
+			rp.BitMap = dt_bitmap;
+
+			for (y=0;y<screens[n]->realHeight;y++)
+			{
+				for (x=0;x<screens[n]->realWidth;x++)
+				{
+					retroPixel( screens[n], x,y, ReadPixel(&rp,x,y));
+				}
+			}
+		}
 
 		DisposeDTObject((Object*) dto);
+		engine_unlock();
 	}
 }
 
