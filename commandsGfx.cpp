@@ -24,7 +24,7 @@ extern int tokenlength;
 
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
-
+extern struct retroRGB DefaultPalette[256];
 
 int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
@@ -561,17 +561,96 @@ char *_gfxPalette( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	int color,n,num;
-	struct retroRGB rgb;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+
+	engine_lock();
+
+	if ((screens[current_screen])&&(args > 0))
+	{
+		struct retroRGB *Palette = screens[current_screen]->orgPalette;
+		struct retroRGB rgb;
+
+		for (n=data->stack;n<=stack;n++)
+		{
+			num = n-data->stack;
+			rgb = Palette[num];
+			color =  ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17);
+			stack_get_if_int( n, &color );
+			retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+		}
+	}
+
+	engine_unlock();
+
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+char *_gfxGetPalette( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int color,n,num;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	engine_lock();
+
+	if ((current_screen>-1)&&(current_screen<8))
+	{
+		if ((screens[current_screen])&&(args == 1))
+		{
+			int screen_num = _stackInt( stack );
+
+			if ((screen_num>-1)&&(screen_num<8))
+			{
+				if (screens[screen_num])
+				{
+					struct retroRGB rgb;
+					struct retroRGB *Palette = screens[screen_num]->orgPalette;
+
+					for (n=0;n<256;n++)
+					{
+						retroScreenColor( screens[current_screen], n,Palette[n].r,Palette[n].g,Palette[n].b);
+					}
+				}
+			}
+		}
+	}
+
+	engine_unlock();
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+char *_gfxDefaultPalette( struct glueCommands *data )
+{
+	int color,n,num;
+	struct retroRGB rgb;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	for (n=data->stack;n<=stack;n++)
 	{
 		num = n-data->stack;
-		rgb = screens[current_screen]->orgPalette[num];
-		color =  ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17);
-		stack_get_if_int( n, &color );
-		retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+
+		if ((num>-1)&&(num<256))
+		{
+			rgb = DefaultPalette[num];
+			color =  ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17);
+			stack_get_if_int( n, &color );
+
+			DefaultPalette[num].r = ((color &0xF00) >>8) * 17;
+			DefaultPalette[num].g = ((color & 0xF0) >> 4) * 17; 
+			DefaultPalette[num].b = (color & 0xF)  * 17;
+		}
 	}
 
 	popStack( stack - data->stack );
@@ -640,4 +719,17 @@ char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxCls, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *gfxGetPalette(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxGetPalette, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxDefaultPalette(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxDefaultPalette, tokenBuffer );
+	return tokenBuffer;
+}
+
 

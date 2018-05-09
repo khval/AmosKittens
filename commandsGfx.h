@@ -26,6 +26,8 @@ char *gfxYGR(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxGetColour(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPalette(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxGetPalette(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxDefaultPalette(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer);
 

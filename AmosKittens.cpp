@@ -798,11 +798,13 @@ struct nativeCommand nativeCommands[]=
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr Locate",0,gfxYGR },
 	{0x0EAC,"Polyline",0,gfxPolyline },
+	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
 	{0x0CFC,"Palette",0,gfxPalette },
 	{0x0EBA,"Polygon",0,gfxPolygon },
 
 	{0x0BAE,"Cls",0,gfxCls},
 	{0x0BC0,"Cls s,x,y,w,h to d,x,y",0,gfxCls},
+	{0x0B90,"Get Palette",0,gfxGetPalette },
 
 	{0x1378,"Locate",0, textLocate },
 	{0x17E4,"Load Iff",0, gfxLoadIff }
