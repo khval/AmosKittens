@@ -7,6 +7,8 @@
 #include <string>
 #include <iostream>
 #include <proto/retroMode.h>
+#include <proto/datatypes.h>
+#include <datatypes/pictureclass.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -189,7 +191,7 @@ char *_gfxScreenOffset( struct glueCommands *data )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
@@ -197,11 +199,10 @@ char *_gfxScreenOffset( struct glueCommands *data )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-1 );
-			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> scanline_y = _stackInt( stack );
-
-			if (screens[screen_num]) retroScreenOffset( screens[screen_num] , screens[screen_num] -> scanline_x, screens[screen_num] -> scanline_y );
-
+			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> offset_x = _stackInt( stack-1 );
+			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> offset_y = _stackInt( stack );
+ 			screens[screen_num] -> refreshScanlines = TRUE;
+			video -> refreshSomeScanlines = TRUE;
 			success = true;
 		}
 	}
@@ -557,6 +558,57 @@ char *gfxScreenHide(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxScreenCopy, tokenBuffer );
+	return tokenBuffer;
+}
+
+void LoadIff( char *name, int n )
+{
+	struct DataType *dto = NULL;
+	struct BitMapHeader *bm_header;
+	struct BitMap *dt_bitmap;
+		
+	if(dto = (struct DataType *) NewDTObject( name, DTA_GroupID, GID_PICTURE, TAG_DONE))
+	{
+		SetDTAttrs ( (Object*) dto, NULL,NULL,	PDTA_DestMode, (ULONG) PMODE_V43,TAG_DONE);
+		DoDTMethod ( (Object*) dto,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE); 
+		GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	PDTA_BitMap, (ULONG) &dt_bitmap, TAG_DONE);
+
+		printf("Wdith %d, Height %d, Depth %d\n",bm_header -> bmh_Width,bm_header -> bmh_Height,bm_header -> bmh_Depth);
+
+		DisposeDTObject((Object*) dto);
+	}
+}
+
+char *_gfxLoadIff( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	// load iff image to current screen.
+				{
+					char *name= _stackString( stack );
+					if (name)	LoadIff(name,2);
+				}
+				break;
+		case 2:	// load iff image to new screen.
+				{
+					char *name= _stackString( stack -1);
+					int screen_num = _stackInt( stack );
+					if (name)	LoadIff(name,screen_num);
+				}
+				break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxLoadIff, tokenBuffer );
 	return tokenBuffer;
 }
 

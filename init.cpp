@@ -8,7 +8,10 @@
 struct Library 				 *AmosExtensionBase = NULL;
 struct AmosExtensionIFace	 *IAmosExtension = NULL;
 
-extern struct Library 		 *DOSBase ;
+struct Library			*DataTypesBase = NULL;
+struct DataTypesIFace	*IDataTypes = NULL;
+
+extern struct Library 	 *DOSBase  ;
 extern struct DOSIFace	 *IDOS ;
 
 struct Library 		 *AslBase = NULL;
@@ -33,6 +36,7 @@ BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct L
 BOOL init()
 {
 	if ( ! open_lib( "asl.library", 0L , "main", 1, &AslBase, (struct Interface **) &IAsl  ) ) return FALSE;
+	if ( ! open_lib( "datatypes.library", 0L , "main", 1, &DataTypesBase, (struct Interface **) &IDataTypes  ) ) return FALSE;
 	return TRUE;
 }
 
@@ -40,5 +44,8 @@ void closedown()
 {
 	if (IAsl) DropInterface((struct Interface*) IAsl); IAsl = 0;
 	if (AslBase) CloseLibrary(AslBase); AslBase = 0;
+
+	if (IDataTypes) DropInterface((struct Interface*) IDataTypes); IDataTypes = 0;
+	if (DataTypesBase) CloseLibrary(DataTypesBase); DataTypesBase = 0;
 }
 

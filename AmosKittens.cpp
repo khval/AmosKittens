@@ -804,7 +804,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0BAE,"Cls",0,gfxCls},
 	{0x0BC0,"Cls s,x,y,w,h to d,x,y",0,gfxCls},
 
-	{0x1378,"Locate",0, textLocate }
+	{0x1378,"Locate",0, textLocate },
+	{0x17E4,"Load Iff",0, gfxLoadIff }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
