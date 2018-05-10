@@ -32,4 +32,7 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDefScroll(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxShiftUp(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer);
 

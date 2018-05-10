@@ -789,9 +789,6 @@ char *_gfxScroll( struct glueCommands *data )
 								}
 							}
 						}
-
-						screens[current_screen] -> refreshScanlines = TRUE;
-						video -> refreshSomeScanlines = TRUE;
 					}
 				}
 			}
@@ -891,4 +888,71 @@ char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+//---
+
+char *_gfxShiftUp( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 4:
+			{
+				int delay = _stackInt( stack -3 );
+				int firstColour = _stackInt( stack -2 );
+				int lastColour = _stackInt( stack -1 );
+				int flag = _stackInt( stack );
+			}
+
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_gfxShiftDown( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 4:
+			{
+				int delay = _stackInt( stack -3 );
+				int firstColour = _stackInt( stack -2 );
+				int lastColour = _stackInt( stack -1 );
+				int flag = _stackInt( stack );
+			}
+
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *gfxShiftUp(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxShiftUp, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxShiftDown, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
 
