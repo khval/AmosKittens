@@ -16,6 +16,7 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer);
 char *orData(struct nativeCommand *cmd, char *tokenBuffer);
 char *andData(struct nativeCommand *cmd, char *tokenBuffer);
 char *xorData(struct nativeCommand *cmd, char *tokenBuffer);
+char *modData(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *lessData(struct nativeCommand *cmd, char *tokenBuffer);
 char *moreData(struct nativeCommand *cmd, char *tokenBuffer);

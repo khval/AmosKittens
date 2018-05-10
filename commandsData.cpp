@@ -32,6 +32,7 @@ bool correct_order( int last_token, int next_token )
 				|| (next_token == token_sub)
 				|| (next_token == token_mul)
 				|| (next_token == token_div)
+				|| (next_token == token_mod)
 				|| (next_token == token_power)
 				|| (next_token == token_more_or_equal )
 				|| (next_token == token_less_or_equal	)
@@ -53,6 +54,7 @@ bool correct_order( int last_token, int next_token )
 				|| (next_token == token_sub)
 				|| (next_token == token_mul)
 				|| (next_token == token_div)
+				|| (next_token == token_mod)
 				|| (next_token == token_power)
 				|| (next_token == token_more_or_equal )
 				|| (next_token == token_less_or_equal	)
@@ -77,19 +79,22 @@ bool correct_order( int last_token, int next_token )
 				|| (next_token == token_sub)
 				|| (next_token == token_mul)
 				|| (next_token == token_div)
+				|| (next_token == token_mod)
 				|| (next_token == token_power)) return false;
 			break;
 
 		case token_add:
 			if ((next_token == token_mul)
-				||(next_token == token_div)
-				||(next_token == token_power)) return false;
+				|| (next_token == token_div)
+				|| (next_token == token_mod)
+				|| (next_token == token_power)) return false;
 			break;
 
 		case token_sub:
 			if ((next_token == token_mul)
 				|| (next_token == token_div)
-				||(next_token == token_power)) return false;
+				|| (next_token == token_mod)
+				|| (next_token == token_power)) return false;
 			break;
 
 		case token_mul:
@@ -857,6 +862,72 @@ char *_subData( struct glueCommands *data )
 	return NULL;
 }
 
+char *_modData( struct glueCommands *data )
+{
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+	if (stack==0) 
+	{
+		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	if (type0 == type_float) 
+	{
+		if (type1 == type_int)
+		{
+			dprintf("%f %% %d\n",  item0->decimal , (double) item1->value );
+			setStackNum( (int) item0->decimal % item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			dprintf("%f %% %f\n",  item0->decimal , item1->decimal );
+			setStackNum( (int) item0->decimal % (int) item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (type0 == type_int) 
+	{
+		if (type1 == type_int)
+		{
+			dprintf(" %d %% %d\n", item0->value , item1->value );
+			setStackNum( item0->value * item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			printf("%f %% %f\n",  (double) item0->value , item1->decimal );
+			setStackNum( item0->value % (int) item1->decimal );
+			success = TRUE;
+		}
+	}
+
+	correct_for_hidden_sub_data();
+
+	if (success == FALSE)
+	{
+		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
 char *_mulData( struct glueCommands *data )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
@@ -1068,6 +1139,14 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm(_subData,tokenBuffer);
+	stack++;
+	return tokenBuffer;
+}
+
+char *modData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	stackCmdParm( _modData, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }
