@@ -10,6 +10,7 @@
 #define token_power	0xFFF6
 #define token_or		0xFF4C
 #define token_and		0xFF58
+#define token_mod		0xFFD4
 
 #define token_more_or_equal	0xFF8E
 #define token_less_or_equal		0xFF7A
