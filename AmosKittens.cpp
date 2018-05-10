@@ -649,6 +649,7 @@ struct nativeCommand nativeCommands[]=
 	{0xFFC0,"+",0, addData },
 	{0xFFCA,"-", 0, subData },
 	{0xFFA2,"=", 0, setVar },
+	{0xFFD4,"mod",0,modData },
 	{0xFFE2,"*", 0, mulData },
 	{0xFFEC,"/", 0, divData },
 	{0xFFF6,"^", 0, powerData },
@@ -787,30 +788,37 @@ struct nativeCommand nativeCommands[]=
 	{0x1E16,"X Mouse",0,gfxXMouse },
 	{0x1E24,"Y Mouse",0,gfxYMouse },
 
+	{0x13DC,"Paper",0,textPaper },
 	{0x1446,"Curs Off",0,gfxCursOff },
 
 	{0x0D34,"Flash Off",0,gfxFlashOff },
 	{0x0D44,"Flash",0,gfxFlash },
+	{0x0D52,"Shift Off",0,gfxShiftOff },
+	{0x0D62,"Shift Up",0,gfxShiftUp },
 
-	{0x0E3C,"Plot",0,gfxPlot },
-	{0x0E56,"Point",0,gfxPoint },
-	{0x0F04,"Gr Locate",0,gfxGrLocate },
 //	{0x0000,"xgr",0,gfxXGR },
-//	{0x0000,"ygr Locate",0,gfxYGR },
-	{0x0EAC,"Polyline",0,gfxPolyline },
+//	{0x0000,"ygr",0,gfxYGR },
+
 	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
 	{0x0CFC,"Palette",0,gfxPalette },
+	{0x0E3C,"Plot",0,gfxPlot },
+	{0x0E56,"Point",0,gfxPoint },
+	{0x0EAC,"Polyline",0,gfxPolyline },
 	{0x0EBA,"Polygon",0,gfxPolygon },
+	{0x0F04,"Gr Locate",0,gfxGrLocate },
 
-	{0x0BAE,"Cls",0,gfxCls},
-	{0x0BC0,"Cls s,x,y,w,h to d,x,y",0,gfxCls},
+	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
+
 	{0x0B90,"Get Palette",0,gfxGetPalette },
+	{0x0BAE,"Cls",0,gfxCls},
+	{0x0BB8,"Cls color",0,gfxCls},
+	{0x0BC0,"Cls color,x,y,w,h to d,x,y",0,gfxCls},
+	{0x0BD0,"Def Scroll",0,gfxDefScroll },
 
 	{0x1378,"Locate",0, textLocate },
+	{0x14E0,"Scroll",0,gfxScroll },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
-	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
-	{0x0BD0,"Def Scroll",0,gfxDefScroll },
-	{0x14E0,"Scroll",0,gfxScroll }
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
