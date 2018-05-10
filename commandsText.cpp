@@ -19,6 +19,9 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern int current_screen;
 
+int pen;
+int paper;
+
 char *_textLocate( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -45,4 +48,58 @@ char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _textLocate, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_textPen( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		pen  = _stackInt( stack-1 );
+		success = true;
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textPen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textPen, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_textPaper( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	bool success = false;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		paper = _stackInt( stack-1 );
+		success = true;
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textPaper(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textPaper, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 

@@ -5,4 +5,6 @@
 #include "amosKittens.h"
 
 char *textLocate(struct nativeCommand *cmd, char *tokenBuffer);
+char *textPaper(struct nativeCommand *cmd, char *tokenBuffer);
+char *textPen(struct nativeCommand *cmd, char *tokenBuffer);
 
