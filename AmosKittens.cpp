@@ -807,7 +807,10 @@ struct nativeCommand nativeCommands[]=
 	{0x0B90,"Get Palette",0,gfxGetPalette },
 
 	{0x1378,"Locate",0, textLocate },
-	{0x17E4,"Load Iff",0, gfxLoadIff }
+	{0x17E4,"Load Iff",0, gfxLoadIff },
+	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
+	{0x0BD0,"Def Scroll",0,gfxDefScroll },
+	{0x14E0,"Scroll",0,gfxScroll }
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);

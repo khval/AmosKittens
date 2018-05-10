@@ -31,6 +31,18 @@ int xgr = 0,  ygr = 0;
 
 extern int current_screen;
 
+struct defScroll
+{
+	int x0;
+	int y0;
+	int x1;
+	int y1;
+	int dx;
+	int dy;
+};
+
+struct defScroll defScrolls[16];
+
 char *_gfxFlash( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -658,6 +670,141 @@ char *_gfxDefaultPalette( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxDefScroll( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	switch (args)
+	{
+		case 7:
+			{
+				int n = _stackInt( stack -6 ) -1;
+
+				if ((n>-1)&&(n<16))
+				{
+					defScrolls[n].x0 = _stackInt( stack -5 );
+					defScrolls[n].y0 = _stackInt( stack -4 );
+					defScrolls[n].x1 = _stackInt( stack -3 );
+					defScrolls[n].y1 = _stackInt( stack -2 );
+					defScrolls[n].dx = _stackInt( stack -1 );
+					defScrolls[n].dy = _stackInt( stack );
+					success = true;
+				}
+			}
+			break;
+	}
+	popStack( stack - data->stack );
+
+	if (success == false) setError(22);
+
+	return NULL;
+}
+
+char *_gfxScroll( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	switch (args)
+	{
+		case 1:
+			{
+				int n = _stackInt( stack  ) -1;
+
+				if ((n>-1)&&(n<16))
+				{
+					int x0 = defScrolls[n].x0 ;
+					int y0 = defScrolls[n].y0 ;
+					int x1 = defScrolls[n].x1 ;
+					int y1 = defScrolls[n].y1 ;
+					int dx = defScrolls[n].dx ;
+					int dy = defScrolls[n].dy ;
+
+					// limit to screen first
+					if (x0<0) x0=0;
+					if (x1>screens[current_screen] -> realWidth-1) x1 = screens[current_screen] -> realWidth -1;
+
+					if (y0<0) y0=0;
+					if (y1>screens[current_screen] -> realHeight-1) y1 = screens[current_screen] -> realHeight -1;
+
+					// limit to x0,y0,x1,y1
+
+					if (dx>0) { x1 = x1 - dx; } else { if (x0+dx<0) x0=-(x0+dx); }
+
+					if (dy>0) 
+					{ 
+						y1 = y1 -dy; 
+					} 
+					else 
+					{
+						 if (y0+dy<0) y0=-(y0+dy);
+						y1 = y1 + dy;
+					}
+
+					if (screens[current_screen])
+					{
+						unsigned char *mem = screens[current_screen] -> Memory;
+						unsigned int bytesPerRow = screens[current_screen] -> bytesPerRow;
+						unsigned char *src;
+						unsigned char *des;
+						int x,y;
+
+						if (dy>0)
+						{
+							if (dx>0)
+							{
+								for (y=y1;y>=y0;y--)
+								{
+									src = mem + (bytesPerRow * y) + x1;	des = mem + (bytesPerRow * (y+dy)) + x1 +dx;
+									for (x=x1;x>=x0;x--) *des--=*src--;		
+								}
+							}
+							else
+							{
+								for (y=y1;y>=y0;y--)
+								{
+									src = mem + (bytesPerRow * y) + x0; 	des = mem + (bytesPerRow * (y+dy)) + x0 +dx;
+									for (x=x0;x<=x1;x++) *des++=*src++;		
+								}
+							}
+						}
+						else
+						{
+							if (dx>0)
+							{
+								for (y=y0;y<=y1;y++)
+								{
+									src = mem + (bytesPerRow * (y-dy)) + x1;	des = mem + (bytesPerRow * y) + x1 +dx;
+									for (x=x1;x>=x0;x--) *des--=*src--;		
+								}
+							}
+							else
+							{
+								for (y=y0;y<=y1;y++)
+								{
+									src = mem + (bytesPerRow * (y-dy)) + x0; 	des = mem + (bytesPerRow * y) + x0 +dx;
+									for (x=x0;x<=x1;x++) *des++=*src++;		
+								}
+							}
+						}
+
+						screens[current_screen] -> refreshScanlines = TRUE;
+						video -> refreshSomeScanlines = TRUE;
+					}
+				}
+			}
+			break;
+		default:
+			setError(22);
+	}
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	kittyStack[stack].type = type_none;
@@ -729,6 +876,18 @@ char *gfxGetPalette(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxDefaultPalette(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxDefaultPalette, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxDefScroll(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxDefScroll, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScroll, tokenBuffer );
 	return tokenBuffer;
 }
 

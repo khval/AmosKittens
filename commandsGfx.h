@@ -30,4 +30,6 @@ char *gfxGetPalette(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDefaultPalette(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxDefScroll(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer);
 
