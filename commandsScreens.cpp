@@ -597,6 +597,8 @@ void LoadIff( char *name, const int n )
 			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, 1 );
 			set_default_colors( screens[n] );
 
+			current_screen = n;
+
 			if (cr)
 			{
 				for (c=0;c<colors;c++)		
@@ -652,6 +654,12 @@ char *_gfxLoadIff( struct glueCommands *data )
 char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxLoadIff, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// Dummy function, we kind of have double buffer in retromode.library video
 	return tokenBuffer;
 }
 
