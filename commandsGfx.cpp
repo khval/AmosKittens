@@ -890,6 +890,15 @@ char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer)
 
 //---
 
+struct 
+{
+				int delay ;
+				int firstColour ;
+				int lastColour ;
+				int flag ;
+} shift;
+
+
 char *_gfxShiftUp( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -899,11 +908,20 @@ char *_gfxShiftUp( struct glueCommands *data )
 	{
 		case 4:
 			{
-				int delay = _stackInt( stack -3 );
-				int firstColour = _stackInt( stack -2 );
-				int lastColour = _stackInt( stack -1 );
-				int flag = _stackInt( stack );
-			}
+				if (screens[current_screen])
+				{
+					engine_lock();
+					retroCycleOff(screens[current_screen] );
+					retroCycleColorsUp( 
+						screens[current_screen],
+						 _stackInt( stack -3 ),
+						 _stackInt( stack -2 ),
+						 _stackInt( stack -1 ),
+						 _stackInt( stack ));
+
+					engine_unlock();
+				}
+			};
 
 			break;
 		default:
@@ -922,13 +940,20 @@ char *_gfxShiftDown( struct glueCommands *data )
 	switch (args)
 	{
 		case 4:
-			{
-				int delay = _stackInt( stack -3 );
-				int firstColour = _stackInt( stack -2 );
-				int lastColour = _stackInt( stack -1 );
-				int flag = _stackInt( stack );
-			}
+				if (screens[current_screen])
+				{
+					engine_lock();
 
+					retroCycleOff(screens[current_screen] );
+					retroCycleColorsDown( 
+						screens[current_screen],
+						 _stackInt( stack -3 ),
+						 _stackInt( stack -2 ),
+						 _stackInt( stack -1 ),
+						 _stackInt( stack ));
+
+					engine_unlock();
+				}
 			break;
 		default:
 			setError(22);
@@ -953,6 +978,13 @@ char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	if (screens[current_screen])
+	{
+		engine_lock();
+		retroCycleOff(screens[current_screen] );
+		engine_unlock();
+	}
+
 	return tokenBuffer;
 }
 
