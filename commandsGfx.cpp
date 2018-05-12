@@ -890,7 +890,7 @@ char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer)
 
 //---
 
-struct 
+struct _never_used_shift_
 {
 				int delay ;
 				int firstColour ;
@@ -985,6 +985,74 @@ char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer)
 		engine_unlock();
 	}
 
+	return tokenBuffer;
+}
+
+char *_gfxSetRainbow( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x0 = xgr ,y0 = ygr,x1,y1;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	if (args==6)
+	{
+		int n = _stackInt( stack-5 );
+		int colour = _stackInt( stack-4 );
+		int length = _stackInt( stack-3 );
+		char *r = _stackString( stack-2 );
+		char *g = _stackString( stack-1 );
+		char *b = _stackString( stack );
+
+		printf("%d,%d,%d,%s,%s,%s\n",n,colour,length,r,g,b);
+
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	printf("after pop\n");
+
+	dump_stack();
+
+	return NULL;
+}
+
+char *_gfxRainbow( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x0 = xgr ,y0 = ygr,x1,y1;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	if (args==4)
+	{
+		int n = _stackInt( stack-3 );
+		int base = _stackInt( stack-2 );
+		int y = _stackInt( stack-1 );
+		int h = _stackInt( stack );
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+
+char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxSetRainbow, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxRainbow(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxRainbow, tokenBuffer );
 	return tokenBuffer;
 }
 

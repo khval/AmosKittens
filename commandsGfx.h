@@ -35,4 +35,6 @@ char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxShiftUp(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxRainbow(struct nativeCommand *cmd, char *tokenBuffer);
 
