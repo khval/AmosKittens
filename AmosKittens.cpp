@@ -795,6 +795,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0D44,"Flash",0,gfxFlash },
 	{0x0D52,"Shift Off",0,gfxShiftOff },
 	{0x0D62,"Shift Up",0,gfxShiftUp },
+	{0x0D90,"Set Rainbow",0,gfxSetRainbow },
+	{0x0DDC,"Rainbow",0,gfxRainbow },
 
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr",0,gfxYGR },
@@ -818,6 +820,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1378,"Locate",0, textLocate },
 	{0x14E0,"Scroll",0,gfxScroll },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
+
 
 };
 
