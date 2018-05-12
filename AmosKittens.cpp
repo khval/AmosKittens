@@ -603,6 +603,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
+	{0x1290,"Wait Key",0,cmdWaitKey },
 
 	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },
 	{0x16F2,"Set input", 0, cmdSetInput },
