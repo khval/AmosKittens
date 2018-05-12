@@ -29,6 +29,10 @@ char *_machinePeek( struct glueCommands *data );
 char *_cmdStart( struct glueCommands *data );
 char *_chr( struct glueCommands *data );
 char *_gfxPoint( struct glueCommands *data );
+char *_mid( struct glueCommands *data );
+char *_left( struct glueCommands *data );
+char *_right( struct glueCommands *data );
+char *_cmdStr( struct glueCommands *data );
 
 struct stackDebugSymbol
 {
@@ -55,6 +59,10 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_cmdStart,"Start" },
 	{_chr,"Chr$" },
 	{_gfxPoint,"Point" },
+	{_mid,"Mid" },
+	{_left,"Left" },
+	{_right,"Right" },
+	{_cmdStr,"Str$" },
 	{NULL, NULL}
 };
 
