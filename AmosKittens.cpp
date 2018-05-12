@@ -573,6 +573,7 @@ struct nativeCommand nativeCommands[]=
 	{0x04DC, "Line Input", 0, cmdLineInput },
 
 	{0x050E, "Mid$",0,cmdMid },
+	{0x051E, "Mid$(a$,start)",0, cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
 
@@ -582,7 +583,6 @@ struct nativeCommand nativeCommands[]=
 	{0x05BA, "Bin$(num,chars)", 0, cmdBin },
 	{0x05A4, "Val",0, cmdVal },
 
-	{0x051E, "Str$",0, cmdStr },
 	{0x0598, "Str$",0, cmdStr },
 
 	{0x0658,"Sort",0,cmdSort },
