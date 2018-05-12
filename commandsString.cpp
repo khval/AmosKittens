@@ -83,6 +83,8 @@ char *_left( struct glueCommands *data )
 	char *tmp = NULL;
 	int _len;
 
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
 	if (args == 2)
 	{
 		str = _stackString( stack - 1 );
@@ -91,7 +93,6 @@ char *_left( struct glueCommands *data )
 	}	
 
 	popStack(args);
-
 	if (tmp) setStackStr(tmp);
 
 	return NULL;
@@ -105,22 +106,35 @@ char *_mid( struct glueCommands *data )
 	char *tmp = NULL;
 	int _start, _len;
 
-	if (args == 3)
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	switch (args)
 	{
-		str = _stackString( stack - 2 );
-		_start = _stackInt( stack -1 ) -1;
-		_len = _stackInt( stack );
+		case 2:
+			str = _stackString( stack - 1 );
+			_start = _stackInt( stack ) -1;
 
-		if (_start<0) _start = 0;
-		if (_start>strlen(str)-1) _start = strlen(str)-1;
+			if (_start<0) _start = 0;
+			if (_start>strlen(str)-1) _start = strlen(str)-1;
+			tmp = strdup(str + _start );
+			break;
 
-		tmp = strndup(str + _start, _len );
+		case 3:
+			str = _stackString( stack - 2 );
+			_start = _stackInt( stack -1 ) -1;
+			_len = _stackInt( stack );
+
+			if (_start<0) _start = 0;
+			if (_start>strlen(str)-1) _start = strlen(str)-1;
+			tmp = strndup(str + _start, _len );
+			break;
+		default:
+			setError(22);
 	}	
 
-	popStack(args);
+	popStack(stack - data->stack);
 
 	if (tmp) setStackStr(tmp);
-
 	return NULL;
 }
 
@@ -130,6 +144,8 @@ char *_right( struct glueCommands *data )
 	char *str;
 	char *tmp = NULL;
 	int _start, _len;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
 	if (args == 2)
 	{
@@ -154,6 +170,8 @@ char *_instr( struct glueCommands *data )
 	char *tmp = NULL;
 	int  _pos = 0;
 
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
 	if (args == 2)
 	{
 		str = _stackString( stack - 1 );
@@ -169,19 +187,30 @@ char *_instr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_str( struct glueCommands *data )
+char *_cmdStr( struct glueCommands *data )
 {
 	int args = stack - data->stack + 1;
 	int num;
 	char _str[30];
 
-	num = _stackInt( data->stack + 1 );
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	_str[0]=0;
-	sprintf(_str,"%d",num);
+	switch (args)
+	{
+		case 1:
+				num = _stackInt( stack );
+				_str[0]=0;
+
+				if (num>0)
+					sprintf(_str," %d",num);
+				else
+					sprintf(_str,"%d",num);
+				break;
+		default:
+				setError(22);
+	}
 
 	popStack(stack - data->stack);
-
 	setStackStrDup(_str);
 
 	return NULL;
@@ -539,11 +568,7 @@ char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s: stack %d\n",__FUNCTION__,stack);
-
-	stackCmdParm( _str, tokenBuffer );	// we need to store the step counter.
-
-	dump_stack();
-
+	stackCmdParm( _cmdStr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
@@ -765,7 +790,7 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 
-	stackCmdParm( _str, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _cmdStr, tokenBuffer );	// we need to store the step counter.
 
 	return tokenBuffer;
 }
@@ -848,3 +873,4 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
