@@ -16,15 +16,13 @@ extern char *cmdFlip(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdSpace(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdUpper(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdLower(struct nativeCommand *cmd, char *tokenBuffer );
-
 extern char *cmdString(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdChr(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdAsc(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdLen(struct nativeCommand *cmd, char *tokenBuffer );
-
 extern char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
-
 extern char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
 
