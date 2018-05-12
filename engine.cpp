@@ -15,6 +15,7 @@
 extern int sig_main_vbl;
 extern bool running;
 
+bool engine_wait_key = false;
 bool engine_started = false;
 
 APTR engine_mx = 0;
@@ -241,6 +242,12 @@ void main_engine()
 							engine_mouse_x = msg -> MouseX - video -> window -> BorderLeft;
 							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
 							break;
+
+
+					case IDCMP_RAWKEY:
+							engine_wait_key = false;
+							break;
+
 				}
 
 				ReplyMsg( (Message*) msg );

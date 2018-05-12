@@ -7,6 +7,7 @@ extern void engine_unlock();
 extern void set_default_colors( struct retroScreen *screen );
 extern void draw_cursor( struct retroScreen *screen );
 
+extern bool engine_wait_key;
 extern int engine_mouse_key;
 extern int engine_mouse_x;
 extern int engine_mouse_y;

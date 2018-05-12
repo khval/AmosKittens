@@ -13,7 +13,7 @@
 #include "commands.h"
 #include "commandsData.h"
 #include "errors.h"
-
+#include "engine.h"
 
 bool every_on = true;
 int every_timer = 0;
@@ -1794,6 +1794,26 @@ char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdNot, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (engine_started)
+	{
+		engine_wait_key = true;
+		do
+		{
+			Delay(1);
+		} while (engine_wait_key == true);
+	}
+	else
+	{
+		getchar();
+	}
+
 	return tokenBuffer;
 }
 
