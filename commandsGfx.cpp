@@ -988,14 +988,41 @@ char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void channelRainbowOCS( unsigned char *rgb, int channel, int lines, int step, int count, int length )
+{
+	int n;
+	int C = 0;
+	int y= 0;
+	int pos;
+	unsigned char rgb_value;
+
+	if (step == 0) return;
+
+	y = 0;
+	rgb +=  channel +1;		// (Channels are in short format).
+	do
+	{
+		rgb_value = ((C  & 15) << 4) | (C & 15);
+
+		for (n=0;n<lines;n++)
+		{
+			*rgb = rgb_value;	
+			rgb+=sizeof(struct retroRGB);
+			y++;
+			if (y>=length)	break;
+		}
+
+		C+=step;
+
+	} while (y<length) ;
+}
+
 char *_gfxSetRainbow( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 
 	if (args==6)
 	{
@@ -1005,17 +1032,29 @@ char *_gfxSetRainbow( struct glueCommands *data )
 		char *r = _stackString( stack-2 );
 		char *g = _stackString( stack-1 );
 		char *b = _stackString( stack );
+		int y;
+		unsigned char *rgb;
 
-		printf("%d,%d,%d,%s,%s,%s\n",n,colour,length,r,g,b);
+		engine_lock();
 
+		if (video -> rainbow[n].table) FreeVec(video -> rainbow[n].table);
+		video -> rainbow[n].color = colour;
+		video -> rainbow[n].tableSize = length;
+		video -> rainbow[n].table = (struct retroRGB *) AllocVecTags(sizeof(struct retroRGB)  * video -> rainbow[n].tableSize,  AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0,	TAG_END );
+
+		if (rgb = (unsigned char *) video -> rainbow[n].table)
+		{
+			 int lines, step, count;
+			if (r)	if (sscanf( r,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
+			if (g)	if (sscanf( g,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,g),  lines, step, count, length );
+			if (b)	if (sscanf( b,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,b),  lines, step, count, length );
+		}
+
+		engine_unlock();
 	}
 	else setError(22);
 
 	popStack( stack - data->stack );
-
-	printf("after pop\n");
-
-	dump_stack();
 
 	return NULL;
 }
@@ -1031,10 +1070,12 @@ char *_gfxRainbow( struct glueCommands *data )
 
 	if (args==4)
 	{
-		int n = _stackInt( stack-3 );
+		int rainbowNumber = _stackInt( stack-3 );
 		int base = _stackInt( stack-2 );
-		int y = _stackInt( stack-1 );
-		int h = _stackInt( stack );
+		int verticalOffset = _stackInt( stack-1 );
+		int height = _stackInt( stack );
+
+		retroRainbow( video, rainbowNumber, verticalOffset, height);
 	}
 	else setError(22);
 
