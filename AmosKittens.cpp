@@ -581,6 +581,8 @@ struct nativeCommand nativeCommands[]=
 	{0x05AE, "Bin$",0,cmdBin },
 	{0x05BA, "Bin$(num,chars)", 0, cmdBin },
 	{0x05A4, "Val",0, cmdVal },
+
+	{0x051E, "Str$",0, cmdStr },
 	{0x0598, "Str$",0, cmdStr },
 
 	{0x0658,"Sort",0,cmdSort },
