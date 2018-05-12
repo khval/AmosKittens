@@ -19,8 +19,8 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern int current_screen;
 
-int pen;
-int paper;
+int pen = 2;
+int paper = 1;
 
 char *_textLocate( struct glueCommands *data )
 {

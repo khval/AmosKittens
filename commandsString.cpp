@@ -12,14 +12,19 @@
 #include "commandsData.h"
 #include "debug.h"
 #include "errors.h"
+#include "bitmap_font.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
+extern int current_screen;
+
+extern struct retroScreen *screens[8] ;
 
 extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
+extern bool engine_started ;
 
 using namespace std;
 
@@ -31,11 +36,25 @@ string names like xxx is new and can saved on stack, with out being copied.
 
 *********/
 
+
+void __print_text(char *txt)
+{
+	if (engine_started)
+	{
+		if (screens[current_screen])
+		{
+			_my_print_text(screens[current_screen], txt);
+		}
+	}
+	else
+	{
+		printf("%s", txt);
+	}
+}
+
 char *_print( struct glueCommands *data )
 {
 	int n;
-
-	printf("\nPRINT: ");
 
 	for (n=data->stack;n<=stack;n++)
 	{
@@ -48,13 +67,13 @@ char *_print( struct glueCommands *data )
 				printf("%f", kittyStack[n].decimal);
 				break;
 			case type_string:
-				if (kittyStack[n].str) printf("%s", kittyStack[n].str);
+				if (kittyStack[n].str) __print_text(kittyStack[n].str);
 				break;
 		}
 
 		if (n<=stack) printf("    ");
 	}
-	printf("\n");
+	__print_text("\n");
 
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.

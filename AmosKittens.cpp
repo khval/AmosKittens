@@ -794,6 +794,9 @@ struct nativeCommand nativeCommands[]=
 	{0x13DC,"Paper",0,textPaper },
 	{0x1446,"Curs Off",0,gfxCursOff },
 
+	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
+	{0x0CFC,"Palette",0,gfxPalette },
+
 	{0x0D34,"Flash Off",0,gfxFlashOff },
 	{0x0D44,"Flash",0,gfxFlash },
 	{0x0D52,"Shift Off",0,gfxShiftOff },
@@ -804,8 +807,6 @@ struct nativeCommand nativeCommands[]=
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr",0,gfxYGR },
 
-	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
-	{0x0CFC,"Palette",0,gfxPalette },
 	{0x0E3C,"Plot",0,gfxPlot },
 	{0x0E56,"Point",0,gfxPoint },
 	{0x0EAC,"Polyline",0,gfxPolyline },

@@ -7,10 +7,12 @@
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/graphics.h>
+#include <proto/diskfont.h>
 #include <proto/layers.h>
 #include <proto/retroMode.h>
 
 #include "engine.h"
+#include "bitmap_font.h"
 
 extern int sig_main_vbl;
 extern bool running;
@@ -74,6 +76,9 @@ struct IntuitionIFace *IIntuition = NULL;
 struct Library * GraphicsBase = NULL;
 struct GraphicsIFace *IGraphics = NULL;
 
+struct Library * DiskfontBase = NULL;
+struct DiskfontIFace *IDiskfont 	= NULL;
+
 struct Library * RetroModeBase = NULL;
 struct RetroModeIFace *IRetroMode = NULL;
 
@@ -109,14 +114,20 @@ bool open_window( int window_width, int window_height )
 	return (My_Window != NULL) ;
 }
 
+struct TextFont *topaz8_font = NULL;
+
 bool init_engine()
 {
 	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
 	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
+	if ( ! open_lib( "diskfont.library", 50L, "main", 1, &DiskfontBase, (struct Interface **) &IDiskfont  ) ) return FALSE;
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 	if ( ! open_window(640,480) ) return false;
+
 	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
+
+	topaz8_font =  open_font( "topaz.font" ,  8);
 
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
@@ -126,6 +137,8 @@ bool init_engine()
 
 void close_engine()
 {
+	if (topaz8_font) CloseFont(topaz8_font); topaz8_font=0;
+
 	if (My_Window) CloseWindow(My_Window);
 
 	if (IntuitionBase) CloseLibrary(IntuitionBase); IntuitionBase = 0;
@@ -139,6 +152,9 @@ void close_engine()
 
 	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
 	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
+
+	if (DiskfontBase) CloseLibrary(DiskfontBase); DiskfontBase = 0;
+	if (IDiskfont) DropInterface((struct Interface*) IDiskfont); IRetroMode = 0;
 
 	if (engine_mx) FreeSysObject(ASOT_MUTEX, engine_mx); engine_mx = 0;
 }
