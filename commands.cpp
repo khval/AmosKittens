@@ -1807,7 +1807,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 		do
 		{
 			Delay(1);
-		} while (engine_wait_key == true);
+		} while ((engine_wait_key == true) && (engine_started));
 	}
 	else
 	{
