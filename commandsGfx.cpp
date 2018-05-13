@@ -1144,23 +1144,39 @@ char *_gfxFade( struct glueCommands *data )
 					pal = screens[current_screen] -> fadePalette;
 					while ( n++<256)
 					{
-						pal -> r = 0;
-						pal -> g = 0;
-						pal -> b = 0;
+						if (n!=2)
+						{
+							pal -> r = 0;
+							pal -> g = 0;
+							pal -> b = 0;
+						}
 						pal++;
 					}
 				}
 				break;
-
-/*
-		case 4:
+		case 2:
 				if (screens[current_screen])
 				{
-					engine_lock();
-					engine_unlock();
+					int n;
+					struct retroRGB *pal;
+
+					screens[current_screen] -> fade_count = 0;
+					screens[current_screen] -> fade_speed = _stackInt( stack-1 );
+
+					n = 0;
+					pal = screens[current_screen] -> fadePalette;
+					while ( n++<256)
+					{
+						if (n!=2)
+						{
+							pal -> r = 255;
+							pal -> g = 0;
+							pal -> b = 0;
+						}
+						pal++;
+					}
 				}
-			break;
-*/
+				break;
 		default:
 			setError(22);
 	}
