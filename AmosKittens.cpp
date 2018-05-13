@@ -706,6 +706,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
+	{0x10D6,"zoom",0,gfxZoom },
 
 	{0x1378,"Locate",0, textLocate },
 	{0x13DC,"Paper",0,textPaper },

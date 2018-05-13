@@ -1066,8 +1066,6 @@ char *_gfxRainbow( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-
 	if (args==4)
 	{
 		int rainbowNumber = _stackInt( stack-3 );
@@ -1084,6 +1082,45 @@ char *_gfxRainbow( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxZoom( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 10:
+			{
+				int from_screen = _stackInt( stack-9 );
+				int x0 = _stackInt( stack-8 );
+				int y0 = _stackInt( stack-7 );
+				int x1 = _stackInt( stack-6 );
+				int y1 = _stackInt( stack-5 );
+				int to_screen = _stackInt( stack-4 );
+				int x2 = _stackInt( stack-3 );
+				int y2 = _stackInt( stack-2 );
+				int x3 = _stackInt( stack-1 );
+				int y3 = _stackInt( stack );
+
+				if (((from_screen>=0)&&(from_screen<8))&&((to_screen>=0)&&(to_screen<8)))	// is in range.
+				{
+					if ((screens[from_screen])&&(screens[to_screen]))	// is open
+					{
+						engine_lock();
+						retroZoom(screens[from_screen],  x0,  y0, x1,  y1, screens[to_screen],  x2,  y2,  x3,  y3);
+						engine_unlock();
+					}
+				}
+			}
+			break;
+
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
 
 char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1097,3 +1134,8 @@ char *gfxRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxZoom, tokenBuffer );
+	return tokenBuffer;
+}
