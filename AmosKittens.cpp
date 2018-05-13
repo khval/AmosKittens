@@ -525,6 +525,9 @@ struct nativeCommand nativeCommands[]=
 	{0x0094, "To",0,cmdTo },
 	{0x009C, "Not",0,cmdNot },
 
+	{0x019C, "Every On", 0, cmdEveryOn },
+	{0x01E6,"At",0,cmdAt },
+
 	{0x023C, "For",2,cmdFor },
 	{0x0246, "Next",0,cmdNext },
 	{0x0356, "Step",0,cmdStep },
@@ -558,17 +561,13 @@ struct nativeCommand nativeCommands[]=
 	{0x0404,"data", 2, cmdData },		
 	{0x040E,"read",0,cmdRead },
 	{0x0418,"Restore", 0, cmdRestore },
-
 	{0x0444, "Inc",0,mathInc },
 	{0x044E, "Dec",0,mathDec },
 	{0x0458, "Add",0,mathAdd },
-
 	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,cmdPrint },
-
 	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04D0, "Input",0,cmdInput },
-
 	{0x04BE, "Line Input #",0,cmdLineInputFile },
 	{0x04DC, "Line Input", 0, cmdLineInput },
 
@@ -576,18 +575,20 @@ struct nativeCommand nativeCommands[]=
 	{0x051E, "Mid$(a$,start)",0, cmdMid },
 	{0x0528, "Left$",0,cmdLeft },
 	{0x0536, "Right$",0,cmdRight },
-
 	{0x05C4, "Hex$",0,cmdHex },
 	{0x05D0, "Hex$(num,chars)",0,cmdHex },
 	{0x05AE, "Bin$",0,cmdBin },
 	{0x05BA, "Bin$(num,chars)", 0, cmdBin },
 	{0x05A4, "Val",0, cmdVal },
-
 	{0x0598, "Str$",0, cmdStr },
-
+	{0x05E4, "Instr",0, cmdInstr },
+	{0x0640, "Dim",0, cmdDim },
+	{0x064A, "Rem",2, cmdRem },
+	{0x0652, "mark rem",2, cmdRem },
 	{0x0658,"Sort",0,cmdSort },
+	{0x0662, "match",0,cmdMatch },
 
-	{0x01dc, "Aac",0, cmdAsc },
+	{0x01dc, "Asc",0, cmdAsc },
 	{0x0546, "Flip$",0, cmdFlip },
 	{0x0552, "Chr$",0, cmdChr },
 	{0x055E, "Space$",0, cmdSpace },
@@ -595,13 +596,6 @@ struct nativeCommand nativeCommands[]=
 	{0x057C, "Upper$",0, cmdUpper },
 	{0x058A, "Lower$",0, cmdLower },
 	{0x05DA, "Len",0, cmdLen },
-
-	{0x05E4, "Instr",0, cmdInstr },
-	{0x0640, "Dim",0, cmdDim },
-	{0x064A, "Rem",2, cmdRem },
-	{0x0652, "mark rem",2, cmdRem },
-
-	{0x0662, "match",0,cmdMatch },
 
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
@@ -617,7 +611,6 @@ struct nativeCommand nativeCommands[]=
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x23B8,"Get f,n", 0, cmdGet },
 	{0x23AC,"Put f,n", 0, cmdPut },
-	{0x01E6,"At",0,cmdAt },
 
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17AE,"Dir",0,cmdDir },
@@ -676,7 +669,6 @@ struct nativeCommand nativeCommands[]=
 	{0x03EE, "Error", 0, cmdError },
 	{0x0316, "On", 4, cmdOn },
 
-	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x034A, "Every ...",  0, cmdEvery },
 	{0x129E, "Wait", 0, cmdWait },
 	{0x12CE, "Timer", 0, cmdTimer },
@@ -684,11 +676,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0436, "Break On", 0, cmdBreakOn },
 	{0x0426, "Break Off", 0, cmdBreakOff },
 	{0x01AA, "Every Off", 0, cmdEveryOff },
-	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
-	{0x171A, "Close Editor", 0, cmdCloseEditor },
 
-	{0x25A4, "Else If", 2, cmdElseIf },
-
+	{0x0614,"Varptr",0,machineVarPtr},
 	{0x0686,"Rnd",0,mathRnd},
 	{0x0690,"Randomize",0,mathRandomize},
 	{0x06A0,"Sgn",0,mathSgn},
@@ -700,6 +689,7 @@ struct nativeCommand nativeCommands[]=
 	{0x06E0,"Fix",0,mathFix},
 	{0x06EA,"Min",0,mathMin},
 	{0x06F6,"Max",0,mathMax},
+
 	{0x0702,"Sin",0,mathSin},
 	{0x070C,"Cos",0,mathCos},
 	{0x0716,"Tan",0,mathTan},
@@ -714,6 +704,22 @@ struct nativeCommand nativeCommands[]=
 	{0x077C,"Ln",0,mathLn},
 	{0x0786,"Exp",0,mathExp},
 
+	{0x1044,"Ink",0,gfxInk },
+	{0x1050,"Ink",0,gfxInk },
+
+	{0x1378,"Locate",0, textLocate },
+	{0x13DC,"Paper",0,textPaper },
+	{0x1446,"Curs Off",0,gfxCursOff },
+	{0x14E0,"Scroll",0,gfxScroll },
+	{0x17E4,"Load Iff",0, gfxLoadIff },
+
+	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
+	{0x171A, "Close Editor", 0, cmdCloseEditor },
+
+	{0x1E16,"X Mouse",0,gfxXMouse },
+	{0x1E24,"Y Mouse",0,gfxYMouse },
+	{0x1E32,"Mouse Key",0,gfxMouseKey },
+
 	{0x21CA,"Poke",0,machinePoke},
 	{0x21E6,"Peek",0,machinePeek},
 	{0x015A,"Doke",0,machineDoke},
@@ -721,7 +727,6 @@ struct nativeCommand nativeCommands[]=
 	{0x21D8,"Loke",0,machineLoke},
 	{0x21FE,"Leek",0,machineLeek},
 	{0x21AA,"copy",0,machineCopy},
-	{0x0614,"Varptr",0,machineVarPtr},
 	{0x219A,"Fill",0,machineFill},
 
 	{0x21BA,"Hunt",0,machineHunt},
@@ -739,6 +744,9 @@ struct nativeCommand nativeCommands[]=
 
 	{0x2296,"AREG",0,machineAREG},
 	{0x22A2,"DREG",0,machineDREG},
+
+	{0x25A4, "Else If", 2, cmdElseIf },
+
 	{0x0214,"DOSCALL",0,machineDOSCALL},
 	{0x01F8,"EXECALL",0,machineEXECALL},
 
@@ -770,33 +778,17 @@ struct nativeCommand nativeCommands[]=
 	{0x09A8,"Screen Copy",0,gfxScreenCopy },
 	{0x0A36,"Screen Offset",0,gfxScreenOffset },
 
+	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
+
 	{0x0C6E,"Screen",0,gfxScreen },
 	{0x0C7C,"=Screen",0,gfxGetScreen },
-
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
-
-	{0x0D1C,"Colour",0,gfxColour },
-	{0x0D2C,"=Colour(n)", 0, gfxGetColour },
-	{0x1E32,"Mouse Key",0,gfxMouseKey },
-
-	{0x0ED8,"Box",0,gfxBox },
-	{0x0EC8,"Bar",0,gfxBar },
-	{0x0E64,"Draw",0,gfxDraw },
-	{0x0E74,"Draw",0,gfxDraw },
-	{0x0E9A,"Circle",0,gfxCircle },
-	{0x0E86,"Ellipse",0,gfxEllipse },
-	{0x1044,"Ink",0,gfxInk },
-	{0x1050,"Ink",0,gfxInk },
-	{0x1E16,"X Mouse",0,gfxXMouse },
-	{0x1E24,"Y Mouse",0,gfxYMouse },
-
-	{0x13DC,"Paper",0,textPaper },
-	{0x1446,"Curs Off",0,gfxCursOff },
-
 	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
 	{0x0CFC,"Palette",0,gfxPalette },
 
+	{0x0D1C,"Colour",0,gfxColour },
+	{0x0D2C,"=Colour(n)", 0, gfxGetColour },
 	{0x0D34,"Flash Off",0,gfxFlashOff },
 	{0x0D44,"Flash",0,gfxFlash },
 	{0x0D52,"Shift Off",0,gfxShiftOff },
@@ -807,24 +799,23 @@ struct nativeCommand nativeCommands[]=
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr",0,gfxYGR },
 
-	{0x0E3C,"Plot",0,gfxPlot },
-	{0x0E56,"Point",0,gfxPoint },
-	{0x0EAC,"Polyline",0,gfxPolyline },
-	{0x0EBA,"Polygon",0,gfxPolygon },
-	{0x0F04,"Gr Locate",0,gfxGrLocate },
-
-	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
-
 	{0x0B90,"Get Palette",0,gfxGetPalette },
 	{0x0BAE,"Cls",0,gfxCls},
 	{0x0BB8,"Cls color",0,gfxCls},
 	{0x0BC0,"Cls color,x,y,w,h to d,x,y",0,gfxCls},
 	{0x0BD0,"Def Scroll",0,gfxDefScroll },
 
-	{0x1378,"Locate",0, textLocate },
-	{0x14E0,"Scroll",0,gfxScroll },
-	{0x17E4,"Load Iff",0, gfxLoadIff },
-
+	{0x0E3C,"Plot",0,gfxPlot },
+	{0x0E56,"Point",0,gfxPoint },
+	{0x0ED8,"Box",0,gfxBox },
+	{0x0EC8,"Bar",0,gfxBar },
+	{0x0E64,"Draw",0,gfxDraw },
+	{0x0E74,"Draw",0,gfxDraw },
+	{0x0E9A,"Circle",0,gfxCircle },
+	{0x0E86,"Ellipse",0,gfxEllipse },
+	{0x0EAC,"Polyline",0,gfxPolyline },
+	{0x0EBA,"Polygon",0,gfxPolygon },
+	{0x0F04,"Gr Locate",0,gfxGrLocate },
 
 };
 
