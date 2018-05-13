@@ -453,7 +453,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	if ( correct_order( last_token,  next_token ) == false )
 	{
-		printf("---hidden ( symbol \n");
+		dprintf("---hidden ( symbol \n");
 
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;
@@ -796,6 +796,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0D62,"Shift Up",0,gfxShiftUp },
 	{0x0D90,"Set Rainbow",0,gfxSetRainbow },
 	{0x0DDC,"Rainbow",0,gfxRainbow },
+	{0x0DFE,"Fade",0,gfxFade },
 
 //	{0x0000,"xgr",0,gfxXGR },
 //	{0x0000,"ygr",0,gfxYGR },

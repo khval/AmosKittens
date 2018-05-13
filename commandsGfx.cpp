@@ -1122,6 +1122,53 @@ char *_gfxZoom( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxFade( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	switch (args)
+	{
+		case 1:
+				if (screens[current_screen])
+				{
+					int n;
+					struct retroRGB *pal;
+
+					screens[current_screen] -> fade_count = 0;
+					screens[current_screen] -> fade_speed = _stackInt( stack );
+
+					n = 0;
+					pal = screens[current_screen] -> fadePalette;
+					while ( n++<256)
+					{
+						pal -> r = 0;
+						pal -> g = 0;
+						pal -> b = 0;
+						pal++;
+					}
+				}
+				break;
+
+/*
+		case 4:
+				if (screens[current_screen])
+				{
+					engine_lock();
+					engine_unlock();
+				}
+			break;
+*/
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxSetRainbow, tokenBuffer );
@@ -1137,5 +1184,11 @@ char *gfxRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxZoom, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxFade, tokenBuffer );
 	return tokenBuffer;
 }

@@ -226,7 +226,6 @@ void main_engine()
 		{
 			set_default_colors( screens[0] );
 			retroFlash( screens[0], 3, (char *) "(110,5),(220,5),(330,5),(440,5),(550,5),(660,5)(770,5),(880,5),(990,5),(AA0,5),(BB0,5),(CC0,5),(DD0,5),(CC0,5),(BB0,5),(AA0,5),(990,5),(880,5),(770,5),(660,5),(550,5)(440,5),(330,5),(220,5)");
-
 			retroBAR( screens[0], 0,0, screens[0] -> realWidth, screens[0] -> realHeight, 1 );
 			draw_cursor(screens[0]);
 		}
@@ -243,7 +242,6 @@ void main_engine()
 							running = false; break;
 
 					case IDCMP_MOUSEBUTTONS:
-
 							switch (msg -> Code)
 							{
 								case SELECTDOWN:	engine_mouse_key |= 1; break;
@@ -251,7 +249,6 @@ void main_engine()
 								case MENUDOWN:	engine_mouse_key |= 2; break;
 								case MENUUP:		engine_mouse_key &= ~2; break;
 							}
-
 							break;
 
 					case IDCMP_MOUSEMOVE:
@@ -259,11 +256,9 @@ void main_engine()
 							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
 							break;
 
-
 					case IDCMP_RAWKEY:
 							engine_wait_key = false;
 							break;
-
 				}
 
 				ReplyMsg( (Message*) msg );
@@ -277,6 +272,14 @@ void main_engine()
 
 			WaitTOF();
 			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );
+
+			for (n=0; n<8;n++)
+			{
+				if (n==1) if (screens[n])
+				{
+					retroFadeScreen(screens[n]);
+				}
+			}
 
 			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, video->rp.BitMap,
