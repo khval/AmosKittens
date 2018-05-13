@@ -53,7 +53,7 @@ char *_for( struct glueCommands *data )
 
 char *_ifSuccess( struct glueCommands *data ) 
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setError(22);	// shoud not be executed
 	return NULL;
 }
@@ -749,32 +749,33 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
+
+void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int flag;
-	bool is_for_to = false;
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	if (tokenMode == mode_for)
+	if (cmdStack) if ( cmdTmp[cmdStack-1].cmd == _setVar ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	if (cmdStack) 
 	{
-		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
 
-		if (cmdStack) if ( cmdTmp[cmdStack-1].cmd == _setVar ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-		if (cmdStack) 
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
 		{
-			// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
-
-			if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
-			{
-				cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
-				cmdTmp[cmdStack-1].flag = cmd_loop;
-				is_for_to = true;
-			}
+			cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
+			cmdTmp[cmdStack-1].cmd_type = cmd_loop;
 		}
 	}
+}
 
-	if (is_for_to == false) stack ++;
+void do_to_default( struct nativeCommand *, char * )
+{
+	stack ++;
+}
 
+char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	if (do_to) do_to( cmd, tokenBuffer );	
 	return tokenBuffer;
 }
 

@@ -85,7 +85,13 @@ struct glueCommands
 	};
 
 	int lastVar;
-	int step;		// specal to one command, think this can be union if more specals are needed.
+
+	union
+	{
+		int step;	
+		int have_to;
+	};
+
 	int stack;
 };
 
@@ -261,6 +267,7 @@ extern struct kittyFile kittyFiles[10];
 
 extern void (*do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern void (*do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
 
 extern struct glueCommands input_cmd_context;
 

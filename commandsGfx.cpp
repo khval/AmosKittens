@@ -1125,12 +1125,15 @@ char *_gfxZoom( struct glueCommands *data )
 char *_gfxFade( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	bool done = false;
 
-	dump_stack();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
+		case 0:
+				setError(22);
+				return NULL;
 		case 1:
 				if (screens[current_screen])
 				{
@@ -1153,32 +1156,55 @@ char *_gfxFade( struct glueCommands *data )
 						pal++;
 					}
 				}
+				done = true;
+
 				break;
 		case 2:
-				if (screens[current_screen])
+				if (data->have_to == 1)
 				{
-					int n;
-					struct retroRGB *pal;
+					int source_screen = _stackInt( stack );
 
-					screens[current_screen] -> fade_count = 0;
-					screens[current_screen] -> fade_speed = _stackInt( stack-1 );
-
-					n = 0;
-					pal = screens[current_screen] -> fadePalette;
-					while ( n++<256)
+					if ((screens[current_screen])&&(screens[source_screen]))
 					{
-						if (n!=2)
+						int n;
+						struct retroRGB *source_pal;
+						struct retroRGB *dest_pal;
+
+						screens[current_screen] -> fade_count = 0;
+						screens[current_screen] -> fade_speed = _stackInt( stack-1 );
+
+						source_pal = screens[source_screen] -> orgPalette;
+						dest_pal = screens[current_screen] -> fadePalette;
+						n = 0;
+						while ( n++<256)
 						{
-							pal -> r = 255;
-							pal -> g = 0;
-							pal -> b = 0;
+							*dest_pal++=*source_pal++;
 						}
-						pal++;
 					}
+					done = true;
 				}
 				break;
-		default:
-			setError(22);
+	}
+
+	if ((done == false) && (screens[current_screen] ))
+	{
+		int ecs_rgb = 0;
+		int s;
+		screens[current_screen] -> fade_speed = _stackInt( data -> stack );
+
+		struct retroRGB *opal= screens[current_screen] -> orgPalette;
+		struct retroRGB *fpal= screens[current_screen] -> fadePalette;
+
+		for ( s = data -> stack+1; s<=stack;s++ );
+		{
+			ecs_rgb = ((opal -> r & 0xF0) << 4) | (opal -> g & 0xF0 ) | ((opal ->b & 0xF0) >>4);
+			stack_get_if_int( s, &ecs_rgb );
+			fpal -> r = ((ecs_rgb & 0xF00) >> 8) * 0x11;
+			fpal -> g = ((ecs_rgb & 0xF0) >> 4) * 0x11;
+			fpal -> b = (ecs_rgb & 0xF) * 0x11;
+			opal++;
+			fpal++;
+		}
 	}
 
 	popStack( stack - data->stack );
@@ -1203,8 +1229,21 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	if (cmdStack)
+	{
+		if (cmdTmp[cmdStack-1].cmd == _gfxFade)
+		{
+			cmdTmp[cmdStack-1].have_to = 1;
+		}
+	}
+	stack++;
+}
+
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	do_to = do_to_set_have_to;
 	stackCmdNormal( _gfxFade, tokenBuffer );
 	return tokenBuffer;
 }

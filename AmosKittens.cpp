@@ -49,6 +49,10 @@ unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 
 char *data_read_pointer = NULL;
 
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
+
+void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
+
+void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
 void (*do_input) ( struct nativeCommand *, char * ) = NULL;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
@@ -86,6 +90,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	char *ret = NULL;
 	unsigned int type;
 
+
 	// we should empty stack, until first/normal command is not a parm command.
 
 	while (cmdStack)
@@ -99,6 +104,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 		if (ret) break;
 	}
 
+	do_to = do_to_default;
 	tokenMode = mode_standard;
 
 	if (ret) ptr = ret - 2;
@@ -125,8 +131,8 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 		} while (cmdStack);
 	}
 
+	do_to = do_to_default;
 	tokenMode = mode_standard;
-
 
 	return ptr;
 }
