@@ -176,6 +176,12 @@ struct kittyFile
 	cmdTmp[cmdStack].flag = cmd_never;	\
 	cmdStack++; \
 
+#define stackIfNotSuccess()					\
+	cmdTmp[cmdStack].cmd = _ifNotSuccess;		\
+	cmdTmp[cmdStack].tokenBuffer = NULL;	\
+	cmdTmp[cmdStack].flag = cmd_never;	\
+	cmdStack++; \
+
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\

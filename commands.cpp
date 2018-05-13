@@ -58,6 +58,14 @@ char *_ifSuccess( struct glueCommands *data )
 	return NULL;
 }
 
+char *_ifNotSuccess( struct glueCommands *data ) 
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setError(22);	// shoud not be executed
+	return NULL;
+}
+
+
 char *_ifThenSuccess( struct glueCommands *data ) 
 {
 	return NULL;
@@ -159,6 +167,7 @@ char *_if( struct glueCommands *data )
 		if (offset) 
 		{
 			ptr = data->tokenBuffer+(offset*2) ;
+			stackIfNotSuccess();
 			return ptr;
 		}
 	}
@@ -593,7 +602,7 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 
 			if (offset) 
 			{
-				ptr = tokenBuffer+(offset*2) -4;
+				ptr = tokenBuffer+(offset*2) -2;
 				return ptr;
 			}
 		}
@@ -631,7 +640,14 @@ char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _ifSuccess) cmdStack--;
+	if (cmdStack)
+	{
+		if ( (cmdTmp[cmdStack-1].cmd == _ifSuccess) || (cmdTmp[cmdStack-1].cmd == _ifNotSuccess) )
+		{
+			cmdStack--;
+		}
+	}
+
 	return tokenBuffer;
 }
 

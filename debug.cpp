@@ -13,6 +13,9 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
+char *_ifSuccess( struct glueCommands *data ) ;
+char *_ifNotSuccess( struct glueCommands *data ) ;
+
 char *_mathSin (struct glueCommands *data);
 char *_addData (struct glueCommands *data);
 char *_subData (struct glueCommands *data);
@@ -63,6 +66,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_left,"Left" },
 	{_right,"Right" },
 	{_cmdStr,"Str$" },
+	{_ifSuccess,"if Success" },
+	{_ifNotSuccess,"if Not Success"},
 	{NULL, NULL}
 };
 

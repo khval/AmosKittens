@@ -770,7 +770,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else_if) || LAST_TOKEN_(else) )
 							{
-								pass1_if_or_else( ptr );
+								pass1_if_or_else( ptr-2 );
 							}
 							else
 								setError( 23 );
