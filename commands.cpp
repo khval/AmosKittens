@@ -546,7 +546,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
 
 	_num(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
@@ -591,7 +591,7 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
 
 	if (cmdStack)
 	{
@@ -613,7 +613,7 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
 
 	if (cmdStack)
 	{
