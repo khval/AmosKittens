@@ -52,6 +52,20 @@ void __print_text(char *txt)
 	}
 }
 
+void __print_num( int num )
+{
+	char tmp[40];
+	sprintf(tmp,"%d",num);
+	__print_text(tmp);
+}
+
+void __print_double( double d )
+{
+	char tmp[40];
+	sprintf(tmp,"%lf",d);
+	__print_text(tmp);
+}
+
 char *_print( struct glueCommands *data )
 {
 	int n;
@@ -61,10 +75,10 @@ char *_print( struct glueCommands *data )
 		switch (kittyStack[n].type)
 		{
 			case type_int:
-				printf("%d", kittyStack[n].value);
+				__print_num( kittyStack[n].value);
 				break;
 			case type_float:
-				printf("%f", kittyStack[n].decimal);
+				__print_double( kittyStack[n].decimal);
 				break;
 			case type_string:
 				if (kittyStack[n].str) __print_text(kittyStack[n].str);
