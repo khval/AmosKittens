@@ -85,7 +85,7 @@ char *_print( struct glueCommands *data )
 				break;
 		}
 
-		if (n<=stack) printf("    ");
+		if (n<stack) __print_text("    ");
 	}
 	__print_text("\n");
 
