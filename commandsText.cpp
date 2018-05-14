@@ -28,12 +28,15 @@ char *_textLocate( struct glueCommands *data )
 
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
-		int x = _stackInt( stack-1 );
-		int y = _stackInt( stack );
+		if (screens[current_screen])
+		{
+			screens[current_screen] -> locateX = _stackInt( stack-1 );
+			screens[current_screen] -> locateY = _stackInt( stack );
+		}
 		success = true;
 	}
 
@@ -55,11 +58,11 @@ char *_textPen( struct glueCommands *data )
 
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		pen  = _stackInt( stack-1 );
+		pen  = _stackInt( stack );
 		success = true;
 	}
 
@@ -81,11 +84,11 @@ char *_textPaper( struct glueCommands *data )
 
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		paper = _stackInt( stack-1 );
+		paper = _stackInt( stack );
 		success = true;
 	}
 
