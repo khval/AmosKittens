@@ -47,8 +47,6 @@ struct _font
 void draw_bit( struct retroScreen *screen, int x,int y)
 {
 	retroPixel( screen,x,y,pen);
-
-//	RectFillColor( rp, x, y, x, y , 0xFF000000 );
 }
 
 struct TextFont *open_font( char const *filename, int size )
@@ -148,6 +146,37 @@ void _my_print_text(struct retroScreen *screen, char *text)
 		{
 			screen -> locateX = 0;
 			screen -> locateY++;
+		}
+
+		if (screen-> locateY>=screen -> realHeight /8)
+		{
+			unsigned char *src = screen -> Memory + ( screen -> bytesPerRow * 8 );
+			unsigned char *des = screen -> Memory;
+			screen -> locateY--;
+			int intsPerRow = screen ->bytesPerRow / 4;
+			int *isrc;
+			int *ides;
+			int paper_rows = screen -> realHeight / 8;
+			int paper_height = paper_rows * 8;
+
+			for (y=0;y<paper_height-8;y++)
+			{	
+				isrc = (int *) src;
+				ides = (int *) des;
+
+				for (x=0;x<intsPerRow; x++)
+				{
+					ides[x]=isrc[x];
+				}
+
+				src += screen -> bytesPerRow;
+				des += screen -> bytesPerRow;
+			}
+
+			retroBAR( screen,
+					0,paper_height-8,
+					screen->realWidth, screen-> realHeight, 
+					paper);
 		}
 	}
 }
