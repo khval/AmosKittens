@@ -738,11 +738,14 @@ char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+void do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
+
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	stackCmdNormal( _for, tokenBuffer );
 	cmdTmp[cmdStack-1].step = 1;		// set default counter step
-	tokenMode = mode_for;
+	do_to = do_for_to;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
