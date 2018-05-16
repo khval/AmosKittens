@@ -1542,7 +1542,7 @@ char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdExit, tokenBuffer );
-
+	setStackNum(1);	// set default exit loops
 	return tokenBuffer;
 }
 
