@@ -7,10 +7,15 @@ void dump_end_of_program();
 void dumpLineAddress();
 int getLineFromPointer( char *address );
 
+// --------- debug options ---------------
+
 #define show_pass1_tokens_no
 #define show_proc_names_no
 #define show_token_numbers_no
 #define show_debug_printf_no
+
+//------------- end of options -----------------
+
 
 #ifdef show_debug_printf_yes
 #define dprintf printf
