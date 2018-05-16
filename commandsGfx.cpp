@@ -318,7 +318,8 @@ char *_gfxCircle( struct glueCommands *data )
 		stack_get_if_int( stack-1, &y0 );
 		r = _stackInt( stack );
 
-		if (screens[current_screen]) retroEllipse( screens[current_screen], x0,y0,r,r,0,pen0 );
+//		if (screens[current_screen])  retroEllipse( screens[current_screen], x0,y0,r,r,0,pen0 );
+		if (screens[current_screen])  retroCircle( screens[current_screen], x0,y0,r,pen0 );
 	}
 	else setError(22);
 
