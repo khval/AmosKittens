@@ -1048,9 +1048,9 @@ char *_gfxSetRainbow( struct glueCommands *data )
 		if (rgb = (unsigned char *) video -> rainbow[n].table)
 		{
 			 int lines, step, count;
-			if (r)	if (sscanf( r,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
-			if (g)	if (sscanf( g,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,g),  lines, step, count, length );
-			if (b)	if (sscanf( b,"(%d,%d,%d)", &lines, &step, &count ) == 3) channelRainbowOCS( rgb, offsetof(struct retroRGB,b),  lines, step, count, length );
+			if (r)	if (sscanf( r,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
+			if (g)	if (sscanf( g,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,g), lines, step, count, length );
+			if (b)	if (sscanf( b,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,b), lines, step, count, length );
 		}
 
 		engine_unlock();
@@ -1088,7 +1088,6 @@ char *_gfxRainbow( struct glueCommands *data )
 int _set_rainbow = -1;
 int _set_rainbow_index = -1;
 
-
 char *_set_rain( struct glueCommands *data )
 {
 	int _rgb_;
@@ -1101,19 +1100,16 @@ char *_set_rain( struct glueCommands *data )
 	{
 		if ((rgb = rainbow -> table) && ( _set_rainbow_index>-1 ) && (_set_rainbow_index < rainbow -> tableSize))
 		{
-			printf("Set\n");
-
 			_rgb_= _stackInt( stack );
-			rgb[_set_rainbow_index].r = ((_rgb_ & 0xF00) >> 8) * 0x11 ;
-			rgb[_set_rainbow_index].g = ((_rgb_ & 0xF0) >> 4) * 0x11 ;
-			rgb[_set_rainbow_index].b = (_rgb_ & 0xF) * 0x11 ;
+			rgb[_set_rainbow_index].r =	((_rgb_ & 0xF00) >> 8) * 0x11 ;
+			rgb[_set_rainbow_index].g =	((_rgb_ & 0x0F0) >> 4) * 0x11 ;
+			rgb[_set_rainbow_index].b =	(_rgb_ & 0x00F) * 0x11 ;
 		}
 	}
 
 	_do_set = _setVar;
 	return NULL;
 }
-
 
 char *_gfxRain( struct glueCommands *data )
 {
@@ -1252,9 +1248,9 @@ char *_gfxFade( struct glueCommands *data )
 		{
 			ecs_rgb = ((opal -> r & 0xF0) << 4) | (opal -> g & 0xF0 ) | ((opal ->b & 0xF0) >>4);
 			stack_get_if_int( s, &ecs_rgb );
-			fpal -> r = ((ecs_rgb & 0xF00) >> 8) * 0x11;
-			fpal -> g = ((ecs_rgb & 0xF0) >> 4) * 0x11;
-			fpal -> b = (ecs_rgb & 0xF) * 0x11;
+			fpal -> r =	((ecs_rgb & 0xF00) >> 8) * 0x11;
+			fpal -> g =	((ecs_rgb & 0x0F0) >> 4) * 0x11;
+			fpal -> b =	(ecs_rgb & 0x00F) * 0x11;
 			opal++;
 			fpal++;
 		}

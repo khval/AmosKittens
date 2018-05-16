@@ -42,6 +42,7 @@ extern char *findLabel( char *name );
 
 void	input_mode( char *tokenBuffer );
 char *dupRef( struct reference *ref );
+char *_setVar( struct glueCommands *data );
 
 // dummy not used, see code in cmdNext
 char *_for( struct glueCommands *data )
@@ -388,7 +389,7 @@ BOOL setVarStringArray( struct kittyData *var )
 	return FALSE;
 }
 
-char *_setVar( struct glueCommands *data );
+
 
 char *(*_do_set) ( struct glueCommands *data ) = _setVar;
 
@@ -1506,12 +1507,12 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 
 char *_cmdExit(struct glueCommands *data)
 {
+	int args = stack - data -> stack +1;
 	int exit_loops = 1;
 	unsigned short token;
 	char *ptr;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	int args = stack - data -> stack +1;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1) exit_loops = _stackInt(stack);
 	popStack( stack - data -> stack  );
