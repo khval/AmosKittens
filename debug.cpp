@@ -37,6 +37,9 @@ char *_left( struct glueCommands *data );
 char *_right( struct glueCommands *data );
 char *_cmdStr( struct glueCommands *data );
 
+char *_while( struct glueCommands *data );
+char *_repeat( struct glueCommands *data );
+
 struct stackDebugSymbol
 {
 	char *(*fn) (struct glueCommands *data);
@@ -68,6 +71,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_cmdStr,"Str$" },
 	{_ifSuccess,"if Success" },
 	{_ifNotSuccess,"if Not Success"},
+	{_repeat,"repeat"},
+	{_while,"while" },
 	{NULL, NULL}
 };
 
