@@ -39,5 +39,6 @@ char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxRainbow(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxRain(struct nativeCommand *cmd, char *tokenBuffer);
 
 

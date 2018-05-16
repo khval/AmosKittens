@@ -30,6 +30,8 @@ int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
 extern int current_screen;
+extern char *(*_do_set) ( struct glueCommands *data );
+char *_setVar( struct glueCommands *data );
 
 struct defScroll
 {
@@ -1083,6 +1085,56 @@ char *_gfxRainbow( struct glueCommands *data )
 	return NULL;
 }
 
+int _set_rainbow = -1;
+int _set_rainbow_index = -1;
+
+
+char *_set_rain( struct glueCommands *data )
+{
+	int _rgb_;
+	struct retroRGB *rgb;
+	struct retroRainbow *rainbow;
+
+	if (_set_rainbow<0) return NULL;
+
+	if (rainbow = &video -> rainbow[_set_rainbow])
+	{
+		if ((rgb = rainbow -> table) && ( _set_rainbow_index>-1 ) && (_set_rainbow_index < rainbow -> tableSize))
+		{
+			printf("Set\n");
+
+			_rgb_= _stackInt( stack );
+			rgb[_set_rainbow_index].r = ((_rgb_ & 0xF00) >> 8) * 0x11 ;
+			rgb[_set_rainbow_index].g = ((_rgb_ & 0xF0) >> 4) * 0x11 ;
+			rgb[_set_rainbow_index].b = (_rgb_ & 0xF) * 0x11 ;
+		}
+	}
+
+	_do_set = _setVar;
+	return NULL;
+}
+
+
+char *_gfxRain( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x0 = xgr ,y0 = ygr,x1,y1;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		_set_rainbow = _stackInt( stack-1 );
+		_set_rainbow_index = _stackInt( stack );
+		_do_set = _set_rain;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
 char *_gfxZoom( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -1246,5 +1298,11 @@ char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	do_to = do_to_set_have_to;
 	stackCmdNormal( _gfxFade, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxRain(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxRain, tokenBuffer );
 	return tokenBuffer;
 }
