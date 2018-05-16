@@ -71,6 +71,12 @@ char *_ifThenSuccess( struct glueCommands *data )
 	return NULL;
 }
 
+char *_ifThenNotSuccess( struct glueCommands *data ) 
+{
+	return NULL;
+}
+
+
 char *_procedure( struct glueCommands *data )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -579,6 +585,11 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdTmp[cmdStack-1].cmd == _ifSuccess) 
 		{
 			cmdTmp[cmdStack-1].cmd = _ifThenSuccess;
+			cmdTmp[cmdStack-1].flag = cmd_eol;			// should run at end of line
+		}
+		else	if (cmdTmp[cmdStack-1].cmd == _ifNotSuccess) 
+		{
+			cmdTmp[cmdStack-1].cmd = _ifThenNotSuccess;
 			cmdTmp[cmdStack-1].flag = cmd_eol;			// should run at end of line
 		}
 	}
