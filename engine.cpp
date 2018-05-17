@@ -19,6 +19,7 @@ extern bool running;
 
 bool engine_wait_key = false;
 bool engine_started = false;
+extern bool curs_on;
 
 APTR engine_mx = 0;
 
@@ -194,14 +195,29 @@ void set_default_colors( struct retroScreen *screen )
 		retroScreenColor( screen, n,DefaultPalette[n].r,DefaultPalette[n].g,DefaultPalette[n].b);
 }
 
+extern int paper;
+
+void clear_cursor(struct retroScreen *screen)
+{
+	if (curs_on)
+	{
+		int gx,gy;
+		gx = screen -> locateX * 8;
+		gy = screen -> locateY * 8;
+		retroBAR( screen, gx,gy,gx+7,gy+7, paper);
+	}
+}
+
+
 void draw_cursor(struct retroScreen *screen)
 {
-	int gx,gy;
-
-	gx = screen -> locateX * 8;
-	gy = screen -> locateY * 8;
-
-	retroBAR( screen, gx,gy+6,gx+6,gy+7, 3);
+	if (curs_on)
+	{
+		int gx,gy;
+		gx = screen -> locateX * 8;
+		gy = screen -> locateY * 8;
+		retroBAR( screen, gx,gy+6,gx+6,gy+7, 3);
+	}
 }
 
 void main_engine()

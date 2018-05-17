@@ -5,6 +5,7 @@ extern void wait_engine();
 extern void engine_lock();
 extern void engine_unlock();
 extern void set_default_colors( struct retroScreen *screen );
+extern void clear_cursor( struct retroScreen *screen );
 extern void draw_cursor( struct retroScreen *screen );
 
 extern bool engine_wait_key;

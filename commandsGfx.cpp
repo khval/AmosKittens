@@ -439,11 +439,6 @@ char *gfxYMouse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxCursOff(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	return tokenBuffer;
-}
-
 char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxFlash, tokenBuffer );

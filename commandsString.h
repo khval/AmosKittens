@@ -5,7 +5,6 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 
-extern char *cmdPrint(nativeCommand *cmd, char *ptr);
 extern char *cmdLeft(nativeCommand *cmd, char *ptr);
 extern char *cmdMid(nativeCommand *cmd, char *ptr);
 extern char *cmdRight(nativeCommand *cmd, char *ptr);

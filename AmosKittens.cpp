@@ -571,7 +571,7 @@ struct nativeCommand nativeCommands[]=
 	{0x044E, "Dec",0,mathDec },
 	{0x0458, "Add",0,mathAdd },
 	{0x046A, "Print #",0,cmdPrintOut },
-	{0x0476, "Print",0,cmdPrint },
+	{0x0476, "Print",0,textPrint },
 	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04D0, "Input",0,cmdInput },
 	{0x04BE, "Line Input #",0,cmdLineInputFile },
@@ -717,7 +717,7 @@ struct nativeCommand nativeCommands[]=
 	{0x13D2,"Pen",0,textPen },
 	{0x1378,"Locate",0, textLocate },
 	{0x13DC,"Paper",0,textPaper },
-	{0x1446,"Curs Off",0,gfxCursOff },
+	{0x1446,"Curs Off",0,textCursOff },
 	{0x14E0,"Scroll",0,gfxScroll },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
 

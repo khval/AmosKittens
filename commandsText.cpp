@@ -22,6 +22,7 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern int current_screen;
 
+bool curs_on = true;
 int pen = 2;
 int paper = 1;
 
@@ -136,6 +137,8 @@ char *_print( struct glueCommands *data )
 {
 	int n;
 
+	if (screens[current_screen]) clear_cursor(screens[current_screen]);
+
 	for (n=data->stack;n<=stack;n++)
 	{
 		switch (kittyStack[n].type)
@@ -154,6 +157,7 @@ char *_print( struct glueCommands *data )
 		if (n<stack) __print_text("    ");
 	}
 	__print_text("\n");
+	if (screens[current_screen]) draw_cursor(screens[current_screen]);
 
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
@@ -178,5 +182,13 @@ char *cmdPrint(nativeCommand *cmd, char *ptr)
 	stackCmdNormal( _print, ptr );
 	do_breakdata = _print_break;
 	return ptr;
+}
+
+char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	curs_on = false;
+
+	return tokenBuffer;
 }
 
