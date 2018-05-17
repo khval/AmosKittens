@@ -717,6 +717,7 @@ struct nativeCommand nativeCommands[]=
 	{0x13D2,"Pen",0,textPen },
 	{0x1378,"Locate",0, textLocate },
 	{0x13DC,"Paper",0,textPaper },
+	{0x13E8,"Centre",0,textCentre },
 	{0x1446,"Curs Off",0,textCursOff },
 	{0x14E0,"Scroll",0,gfxScroll },
 	{0x17E4,"Load Iff",0, gfxLoadIff },

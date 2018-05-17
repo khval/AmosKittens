@@ -164,12 +164,62 @@ char *_print( struct glueCommands *data )
 
 	return NULL;
 }
+
+char *_textCentre( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int n;
+	int charsPerLine = 100;
+	const char *txt = NULL;
+
+	if (args!=1) setError(22);
+
+	if (engine_started)
+	{
+		if (screens[current_screen])
+		{
+			txt = _stackString(stack);
+			charsPerLine = screens[current_screen] -> realWidth / 8;
+
+			clear_cursor(screens[current_screen]);
+
+			if (txt)
+			{
+				screens[current_screen] -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
+
+				if (screens[current_screen] -> locateX<0)
+				{
+					txt -= screens[current_screen] -> locateX;	// its read only.
+					screens[current_screen] -> locateX = 0;
+				}
+			}
+		}
+	}
+
+	if (txt)
+	{
+		__print_text(txt);
+	}
+
+	if (screens[current_screen]) draw_cursor(screens[current_screen]);
+
+	popStack( stack - data->stack );
+	do_breakdata = NULL;	// done doing that.
+
+	return NULL;
+}
+
 char *textPaper(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _textPaper, tokenBuffer );
 	return tokenBuffer;
 }
 
+char *textCentre(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textCentre, tokenBuffer );
+	return tokenBuffer;
+}
 
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -177,7 +227,7 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 	stack++;
 }
 
-char *cmdPrint(nativeCommand *cmd, char *ptr)
+char *textPrint(nativeCommand *cmd, char *ptr)
 {
 	stackCmdNormal( _print, ptr );
 	do_breakdata = _print_break;

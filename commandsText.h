@@ -8,6 +8,7 @@ extern char *textPrint(nativeCommand *cmd, char *ptr);
 extern char *textLocate(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPaper(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPen(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textCentre(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPrint(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer);
