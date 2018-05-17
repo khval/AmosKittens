@@ -1076,7 +1076,8 @@ char *_gfxRainbow( struct glueCommands *data )
 		int verticalOffset = _stackInt( stack-1 );
 		int height = _stackInt( stack );
 
-		retroRainbow( video, rainbowNumber, verticalOffset, height);
+		WaitTOF();
+		retroRainbow( video, rainbowNumber, base, verticalOffset, height);
 	}
 	else setError(22);
 
