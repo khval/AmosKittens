@@ -15,7 +15,8 @@
 #include "bitmap_font.h"
 
 extern int sig_main_vbl;
-extern bool running;
+extern bool running;			// 
+extern bool interpreter_running;	// interprenter is really running.
 
 bool engine_wait_key = false;
 bool engine_started = false;
@@ -309,7 +310,13 @@ void main_engine()
 						BLITA_DestY, My_Window->BorderTop,
 						TAG_END);
 		}
-		
+	
+		// make sure interpenter is close before we start closing screens.
+		while (interpreter_running)
+		{
+			Delay(1);
+		}
+
 		for (n=0; n<8;n++)
 		{
 			if (screens[n]) retroCloseScreen(&screens[n]);

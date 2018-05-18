@@ -28,6 +28,7 @@
 #include "engine.h"
 
 bool running = true;
+bool interpreter_running = false;
 
 int sig_main_vbl = 0;
 
@@ -883,6 +884,8 @@ void code_reader( char *start, int tokenlength )
 	int token = 0;
 	last_token = 0;
 	
+	interpreter_running = true;
+
 	currentLine = 0;
 	ptr = start;
 	while ( ptr = token_reader(  start, ptr,  last_token, token, tokenlength ) )
@@ -927,6 +930,8 @@ void code_reader( char *start, int tokenlength )
 
 		if (running == false) break;
 	}
+
+	interpreter_running = false;
 }
 
 char *filename = NULL;
