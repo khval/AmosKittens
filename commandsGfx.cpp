@@ -1257,6 +1257,88 @@ char *_gfxFade( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxAppear( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int from_screen;
+	int to_screen;
+	int step = 0;
+	int pixels;
+	bool args_ok = true;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 3:
+			{
+				from_screen = _stackInt( stack-2 );
+				to_screen = _stackInt( stack-1 );
+				step = _stackInt( stack );
+				pixels = 0;
+			}
+			break;
+		case 4:
+			{
+				from_screen = _stackInt( stack-3 );
+				to_screen = _stackInt( stack-2 );
+				step = _stackInt( stack-1 );
+				pixels = _stackInt( stack );
+			}
+			break;
+
+		default:
+			args_ok = false;
+	}
+
+	if ((args_ok)&&(step>0))
+	{
+		retroScreen *fscreen,*tscreen;
+		fscreen = screens[from_screen];
+		tscreen = screens[to_screen];
+
+		if ((fscreen)&&(tscreen))
+		{
+			int n = 0;
+			int x,y;
+			int mw = fscreen->realWidth < tscreen->realWidth ? fscreen->realWidth : tscreen->realWidth;
+			int mh = fscreen->realHeight < tscreen->realHeight ? fscreen->realHeight : tscreen->realHeight;
+			int updateEveryNPixels = (mh * 10 / 100) * mw;
+
+			if (pixels == 0) pixels = mw *mh;
+
+//			engine_lock();
+
+			while (n<(pixels*step))
+			{
+				n += step;
+				x = n % mw;
+				y = ((n-x)/mw) % mh;
+				retroPixel(tscreen,x,y,retroPoint(fscreen,x,y));
+
+				if ( (n % updateEveryNPixels) == 0 )
+				{
+//					engine_unlock();
+					WaitTOF();
+//					engine_lock();
+				}
+//				if (engine_started == false) break;
+			}
+
+//			engine_unlock;
+		}
+	}
+	else
+	{
+		dump_stack();
+		setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxSetRainbow, tokenBuffer );
@@ -1299,3 +1381,10 @@ char *gfxRain(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _gfxRain, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxAppear, tokenBuffer );
+	return tokenBuffer;
+}
+
