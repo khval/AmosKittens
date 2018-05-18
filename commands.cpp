@@ -1536,8 +1536,7 @@ char *_cmdExit(struct glueCommands *data)
 			case 0x027E:	// DO
 
 				cmdStack --;
-				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
-				return (ptr+2);
+				return ptr + ( *((unsigned short *) ptr) * 2 )-2;
 				break;
 
 			default:
