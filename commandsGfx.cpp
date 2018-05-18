@@ -859,6 +859,7 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxCls, tokenBuffer );
+	setStackNum( 0 );
 	return tokenBuffer;
 }
 
