@@ -624,6 +624,78 @@ void LoadIff( char *name, const int n )
 	}
 }
 
+void SaveIff( char *name, const int n )
+{
+	struct DataType *dto = NULL;
+	struct BitMapHeader *bm_header;
+	struct BitMap *dt_bitmap;
+	struct ColorRegister *cr;
+	ULONG modeid; 
+	struct RastPort rp;
+
+	printf("we try to create a datatype\n");
+
+	dt_bitmap = AllocBitMap(screens[n] -> realWidth,screens[n]-> realHeight,8,BMF_CLEAR, NULL);
+
+	if (dt_bitmap)
+	{
+		int x,y;
+		dto = (struct DataType *) NewDTObject( NULL, 
+				DTA_SourceType, DTST_RAM,
+				DTA_GroupID,GID_PICTURE,
+				PDTA_BitMap, dt_bitmap,
+				PDTA_NumColors, 256, 
+				TAG_DONE);
+
+		InitRastPort(&rp);
+		rp.BitMap = dt_bitmap;
+		
+		for (y=0;y<screens[n]-> realHeight;y++)
+		for (x=0;x<screens[n] -> realWidth;x++)
+		{
+			SetAPen(&rp, retroPoint(screens[n],x,y));
+			WritePixel(&rp,x,y);
+		}
+	}
+
+	if ((dt_bitmap)&&(dto))
+	{
+		GetDTAttrs( (Object *) dto, PDTA_BitMapHeader, &bm_header, PDTA_ColorRegisters, &cr,	TAG_END);
+
+		if (cr)
+		{
+			int colors = 256;
+			int c;
+			struct retroRGB *pal = screens[n]->orgPalette;
+
+			for (c=0;c<colors;c++)		
+			{
+				cr[c].red = pal[c].r ;
+				cr[c].green = pal[c].g ;
+				cr[c].blue = pal[c].b ;
+			}
+		}
+
+		if (bm_header)
+		{
+			bm_header -> bmh_Width = 320;
+			bm_header -> bmh_Height = 200;
+			bm_header -> bmh_Depth = 8;
+			bm_header -> bmh_XAspect = 22;
+			bm_header -> bmh_YAspect = 22;
+		}
+
+		SaveDTObject( (Object*) dto, NULL,NULL, name, FALSE, TAG_END );
+	}
+
+	if (dto)	// if datatype object is created bitmap is attached to it, and will be freed here.
+	{
+		 DisposeDTObject((Object*) dto);
+	}
+	else 	if (dt_bitmap) FreeBitMap(dt_bitmap);
+}
+
+
 char *_gfxLoadIff( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -635,7 +707,7 @@ char *_gfxLoadIff( struct glueCommands *data )
 		case 1:	// load iff image to current screen.
 				{
 					char *name= _stackString( stack );
-					if (name)	LoadIff(name,2);
+					if (name)	LoadIff(name,current_screen);
 				}
 				break;
 		case 2:	// load iff image to new screen.
@@ -651,11 +723,47 @@ char *_gfxLoadIff( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxSaveIff( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:	// save iff image from current screen.
+				{
+					char *name= _stackString( stack );
+					if (name)	SaveIff(name,current_screen);
+				}
+				break;
+		case 2:	// save iff image from screen X.
+				{
+					char *name= _stackString( stack -1);
+					int screen_num = _stackInt( stack );
+					if (name)	SaveIff(name,screen_num);
+				}
+				break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxLoadIff, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxSaveIff, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 {
