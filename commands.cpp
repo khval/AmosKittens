@@ -1848,3 +1848,16 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdSetBuffers( struct glueCommands *data )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	popStack( stack - data->stack  );
+	return NULL;
+}
+
+char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdSetBuffers, tokenBuffer );
+	return tokenBuffer;
+}

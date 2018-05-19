@@ -682,6 +682,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x0436, "Break On", 0, cmdBreakOn },
 	{0x0426, "Break Off", 0, cmdBreakOff },
+	{0x04FE, "Set Buffers", 0, cmdSetBuffers },
 	{0x01AA, "Every Off", 0, cmdEveryOff },
 
 	{0x0614,"Varptr",0,machineVarPtr},
