@@ -213,6 +213,8 @@ char *_array_index_var( glueCommands *self )
 		}
 	}
 
+//	getchar();
+
 	return NULL;
 }
 
@@ -508,8 +510,8 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 
 struct nativeCommand nativeCommands[]=
 {
-	{0x0000,	"", 2,	cmdNewLine},
-	{0x0006, "", sizeof(struct reference),cmdVar},
+	{0x0000,	"<EOL>", 2,	cmdNewLine},
+	{0x0006, "<var>", sizeof(struct reference),cmdVar},
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0012, "procedure with args",sizeof(struct reference),cmdProcAndArgs },
 
@@ -518,11 +520,11 @@ struct nativeCommand nativeCommands[]=
 
 	{0x0018, "", sizeof(struct reference),cmdVar},		// being a dick here its proc not a var
 
-	{0x0026, "\"",2, cmdQuote },
-	{0x001E, "",4,cmdNumber },		// binrary
-	{0x0036, "",4,cmdNumber },		// hex
-	{0x003E, "",4,cmdNumber },
-	{0x0046, "",4,cmdFloat },
+	{0x0026, "<Text>",2, cmdQuote },
+	{0x001E, "<Bin>",4,cmdNumber },		// binrary
+	{0x0036, "<Hex>",4,cmdNumber },		// hex
+	{0x003E, "<number>",4,cmdNumber },
+	{0x0046, "<float>",4,cmdFloat },
 	{0x0054, ":", 0, nextCmd },
 	{0x005C, ",", 0, nextArg },
 	{0x0064, ";", 0, breakData },
@@ -843,6 +845,21 @@ struct nativeCommand nativeCommands[]=
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
 
+const char *noName = "<not found>";
+
+const char *TokenName( unsigned short token )
+{
+	struct nativeCommand *cmd;
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+	{
+		if (token == cmd->id ) 
+		{
+			return cmd-> name;
+		}
+	}
+	return noName;
+}
+
 char *executeToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -855,8 +872,8 @@ char *executeToken( char *ptr, unsigned short token )
 		if (token == cmd->id ) 
 		{
 #ifdef show_token_numbers_yes
-			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					getLineFromPointer(ptr), ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
+			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
+					getLineFromPointer(ptr), ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
