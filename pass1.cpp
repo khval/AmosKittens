@@ -431,6 +431,7 @@ char *pass1_global( char *ptr )
 	struct reference *ref;
 	char *tmp;
 	int var;
+	int count = 0;
 
 	// we only support two tokens as arguments for shared.
 
@@ -463,7 +464,12 @@ char *pass1_global( char *ptr )
 						ptr += sizeof(struct reference *) + ref -> length;
 
 						break;
-			case 0x005C: break;
+
+			case 0x0074: count ++; break;
+			case 0x007C: count--;  break;
+
+			case 0x005C: 	if (count != 0) 	setError(1);
+						break;
 
 			default:
 						setError(1);
