@@ -798,6 +798,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
 	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
+	{0x0CEE,"Default",0,gfxDefault },
 	{0x0CFC,"Palette",0,gfxPalette },
 
 	{0x0D1C,"Colour",0,gfxColour },

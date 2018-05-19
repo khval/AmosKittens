@@ -221,6 +221,8 @@ void draw_cursor(struct retroScreen *screen)
 	}
 }
 
+char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer);
+
 void main_engine()
 {
 	struct RastPort scroll_rp;
@@ -236,18 +238,7 @@ void main_engine()
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 
 		retroClearVideo(video);
-
-		screens[0] = retroOpenScreen(320,200,retroLowres);
-
-		if (screens[0])
-		{
-			set_default_colors( screens[0] );
-			retroFlash( screens[0], 3, (char *) "(110,5),(220,5),(330,5),(440,5),(550,5),(660,5)(770,5),(880,5),(990,5),(AA0,5),(BB0,5),(CC0,5),(DD0,5),(CC0,5),(BB0,5),(AA0,5),(990,5),(880,5),(770,5),(660,5),(550,5)(440,5),(330,5),(220,5)");
-			retroBAR( screens[0], 0,0, screens[0] -> realWidth, screens[0] -> realHeight, 1 );
-			draw_cursor(screens[0]);
-		}
-
-		if (screens[0])	retroApplyScreen( screens[0], video, 0, 0,320,200 );
+		gfxDefault(NULL, NULL);
 
 		while (running)
 		{
