@@ -100,6 +100,13 @@ char *cmdScancode(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	engine_lock();
+	keyboardBuffer.erase(keyboardBuffer.begin(),keyboardBuffer.begin()+keyboardBuffer.size());
+	engine_unlock();
+
+	_scancode = 0;
+
 	setStackNum(0);
 	return tokenBuffer;
 }
