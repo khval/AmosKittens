@@ -57,33 +57,42 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (engine_started)
 	{
+		struct InputEvent event;
+		bzero(&event,sizeof(struct InputEvent));
+
+		event.ie_NextEvent = 0;
+       		event.ie_Class     = IECLASS_RAWKEY;
+		event.ie_SubClass  = 0;
+
+		engine_lock();
 		if (! keyboardBuffer.empty() )
 		{
-			struct InputEvent event;
+
 			ULONG actual;
+			ULONG code;
 			char buffer[20];
 
-			bzero(&event,sizeof(struct InputEvent));
-
-			event.ie_NextEvent = 0;
-       			event.ie_Class     = IECLASS_RAWKEY;
-			event.ie_SubClass  = 0;
-
-			if (_scancode = keyboardBuffer[0].Code)
+			if (code = keyboardBuffer[0].Code)
 			{
-				event.ie_Code = keyboardBuffer[0].Code;
-				event.ie_Qualifier = keyboardBuffer[0].Qualifier;
-				actual = MapRawKey(&event, buffer, 20, 0);
-
-				if (actual)
+				if ((code & IECODE_UP_PREFIX) == 0)	// button pressed.
 				{
-					buf[0] = buffer[0];
-					buf[1]=0;
+					_scancode = code;
+
+					event.ie_Code = keyboardBuffer[0].Code;
+					event.ie_Qualifier = keyboardBuffer[0].Qualifier;
+					actual = MapRawKey(&event, buffer, 20, 0);
+
+					if (actual)
+					{
+						buf[0] = buffer[0];
+						buf[1]=0;
+					}
 				}
 			}	
 
 			keyboardBuffer.erase(keyboardBuffer.begin());
 		}
+		engine_unlock();
 	}
 
 	setStackStrDup(buf);
