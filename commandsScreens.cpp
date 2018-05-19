@@ -89,6 +89,20 @@ char *_gfxScreenClose( struct glueCommands *data )
 
 			success = true;
 		}
+
+		// find a open screen, and set current screen to that.
+		if (screen_num == current_screen)
+		{
+			int n;
+			for (n=0; n<8;n++)
+			{
+				if (screens[n])
+				{
+					current_screen = n;
+					break;
+				}
+			}
+		}
 	}
 
 	if (success == false) setError(22);
@@ -159,7 +173,7 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-3 );
-			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = _stackInt( stack-2 );
+			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (_stackInt( stack-2 ) *2) - 100;
 			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = _stackInt( stack-1 );
 			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = _stackInt( stack );
 
