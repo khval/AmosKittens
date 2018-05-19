@@ -566,6 +566,14 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	else
 	{
 		stackCmdNormal( _do_set, tokenBuffer);
+
+		switch (kittyStack[stack].type)
+		{
+			case type_int : setStackNum(0); break;
+			case type_float : setStackDecimal(0); break;
+		}
+
+
 		if (tokenMode == mode_standard) tokenMode = mode_logical;		// first equal is set, next equal is logical
 	}
 	return tokenBuffer;
