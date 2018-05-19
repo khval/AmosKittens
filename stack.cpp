@@ -31,33 +31,35 @@ bool dropProgStackToType( int type )
 	return false;
 }
 
-void unLockPara()
+void remove_parenthesis(int black_at_stack )
+{
+	if ( kittyStack[black_at_stack].state == state_subData ) 
+	{
+		int i;
+		for (i=black_at_stack+1; i<=stack; i++)
+		{
+			kittyStack[i-1] = kittyStack[i];
+		}
+
+		if (black_at_stack <stack) kittyStack[stack].str = NULL;
+
+		stack --;
+	}
+}
+
+
+void _unLockPara()
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
 		struct glueCommands *cmd;
-		int state;
-
 		cmd = &cmdTmp[cmdStack-1];
 
 		if (cmd -> flag == cmd_para)
 		{
-			state = kittyStack[cmd -> stack].state;
-
-			if ( state == state_subData ) 
-			{
-				int i;
-				for (i=cmd -> stack+1; i<=stack; i++)
-				{
-					kittyStack[i-1] = kittyStack[i];
-				}
-
-				if (cmd -> stack<stack) kittyStack[stack].str = NULL;
-
-				stack --;
-			}
+			remove_parenthesis(cmd -> stack );
 		}
 	}
 }

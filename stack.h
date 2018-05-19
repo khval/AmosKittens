@@ -29,6 +29,8 @@ extern void popStack(int n);
 extern void correct_for_hidden_sub_data();
 
 extern void unLockPara();
+extern void remove_parenthesis(int black_at_stack );
+
 extern char *flushCmdParaStack();
 extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
 extern bool dropProgStackToType( int type );

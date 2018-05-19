@@ -470,9 +470,15 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+int parenthesis[100];
+int parenthesis_count = 0;
+
 char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	parenthesis[parenthesis_count] =stack;
+	parenthesis_count++;
 
 	kittyStack[stack].str = NULL;
 	kittyStack[stack].state = state_subData;
@@ -499,7 +505,21 @@ char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	ret = flushCmdParaStack();
 	if (ret) return ret;
 
-	unLockPara();
+
+	if (parenthesis_count)
+	{
+//		stack_dump();
+
+		remove_parenthesis( parenthesis[parenthesis_count -1] );
+		parenthesis[parenthesis_count -1] = 255;
+		parenthesis_count--;
+
+//		stack_dump();
+
+	}
+
+
+//	unLockPara();
 
 	ret = flushCmdParaStack();
 	if (ret) return ret;
