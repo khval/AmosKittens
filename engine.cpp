@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <vector>
 
 #include <proto/exec.h>
 #include <proto/dos.h>
@@ -24,9 +25,11 @@ extern bool curs_on;
 
 APTR engine_mx = 0;
 
- int engine_mouse_key = 0;
- int engine_mouse_x = 0;
- int engine_mouse_y = 0;
+std::vector<struct keyboard_buffer> keyboardBuffer;
+
+int engine_mouse_key = 0;
+int engine_mouse_x = 0;
+int engine_mouse_y = 0;
 
 struct retroScreen *screens[8] ;
 struct retroRGB DefaultPalette[256] = 
@@ -78,9 +81,6 @@ struct IntuitionIFace *IIntuition = NULL;
 struct Library * GraphicsBase = NULL;
 struct GraphicsIFace *IGraphics = NULL;
 
-struct Library * DiskfontBase = NULL;
-struct DiskfontIFace *IDiskfont 	= NULL;
-
 struct Library * RetroModeBase = NULL;
 struct RetroModeIFace *IRetroMode = NULL;
 
@@ -108,9 +108,10 @@ bool open_window( int window_width, int window_height )
 			WA_Borderless,      FALSE,
 			WA_SizeGadget,      FALSE,
 			WA_SizeBBottom,	FALSE,
+			WA_Activate, TRUE,
 
 			WA_IDCMP,           IDCMP_COMMON,
-			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP,
+			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP ,
 			TAG_DONE);
 
 	return (My_Window != NULL) ;
@@ -122,7 +123,6 @@ bool init_engine()
 {
 	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
 	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
-	if ( ! open_lib( "diskfont.library", 50L, "main", 1, &DiskfontBase, (struct Interface **) &IDiskfont  ) ) return FALSE;
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 	if ( ! open_window(640,480) ) return false;
@@ -154,9 +154,6 @@ void close_engine()
 
 	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
 	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
-
-	if (DiskfontBase) CloseLibrary(DiskfontBase); DiskfontBase = 0;
-	if (IDiskfont) DropInterface((struct Interface*) IDiskfont); IRetroMode = 0;
 
 	if (engine_mx) FreeSysObject(ASOT_MUTEX, engine_mx); engine_mx = 0;
 }
@@ -223,6 +220,19 @@ void draw_cursor(struct retroScreen *screen)
 
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer);
 
+void add_to_keyboard_queue( ULONG Code, ULONG Qualifier )
+{
+	struct keyboard_buffer event;
+
+	engine_lock();
+	event.Code = Code;
+	event.Qualifier = Qualifier;
+
+	keyboardBuffer.push_back(event);
+
+	engine_unlock();
+}
+
 void main_engine()
 {
 	struct RastPort scroll_rp;
@@ -233,6 +243,9 @@ void main_engine()
 
 	if (init_engine())		// libs open her.
 	{
+		ULONG Class;
+		UWORD Code;
+		UWORD Qualifier;
 		int n;
 		engine_started = true;
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
@@ -244,13 +257,17 @@ void main_engine()
 		{
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
-				switch (msg -> Class) 
+				Qualifier = msg -> Qualifier;
+				Class = msg -> Class;
+				Code = msg -> Code;
+
+				switch (Class) 
 				{
 					case IDCMP_CLOSEWINDOW: 
 							running = false; break;
 
 					case IDCMP_MOUSEBUTTONS:
-							switch (msg -> Code)
+							switch (Code)
 							{
 								case SELECTDOWN:	engine_mouse_key |= 1; break;
 								case SELECTUP:	engine_mouse_key &= ~1; break;
@@ -266,6 +283,16 @@ void main_engine()
 
 					case IDCMP_RAWKEY:
 							engine_wait_key = false;
+
+							if (Qualifier & IEQUALIFIER_REPEAT)
+							{
+								printf("we have a repeat key\n");
+							}
+
+							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
+							{
+								add_to_keyboard_queue( Code & ~ IECODE_UP_PREFIX, Qualifier );
+							}
 							break;
 				}
 

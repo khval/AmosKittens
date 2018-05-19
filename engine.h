@@ -14,3 +14,9 @@ extern int engine_mouse_x;
 extern int engine_mouse_y;
 extern bool engine_started;
 
+struct keyboard_buffer
+{
+	ULONG Code;
+	ULONG Qualifier;
+};
+
