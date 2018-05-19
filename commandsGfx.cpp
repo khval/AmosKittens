@@ -200,8 +200,8 @@ char *_gfxCls( struct glueCommands *data )
 				int color = _stackInt( stack -4 );
 				int x0 = _stackInt( stack -3 );
 				int y0 = _stackInt( stack -2 );
-				int x1 = _stackInt( stack -1 );
-				int y1 = _stackInt( stack );
+				int x1 = _stackInt( stack -1 )-1;
+				int y1 = _stackInt( stack )-1;
 
 				if ((color >-1)&&(color<256))
 				{
@@ -1064,7 +1064,7 @@ char *_gfxRainbow( struct glueCommands *data )
 	{
 		int rainbowNumber = _stackInt( stack-3 );
 		int base = _stackInt( stack-2 );
-		int verticalOffset = _stackInt( stack-1 );
+		int verticalOffset = _stackInt( stack-1 ) - 38;
 		int height = _stackInt( stack );
 
 		WaitTOF();
