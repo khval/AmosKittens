@@ -67,6 +67,7 @@ char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );
