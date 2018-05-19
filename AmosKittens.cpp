@@ -794,6 +794,7 @@ struct nativeCommand nativeCommands[]=
 
 	{0x0C6E,"Screen",0,gfxScreen },
 	{0x0C7C,"=Screen",0,gfxGetScreen },
+	{0x0C84,"Hires",0,gfxHires },
 	{0x0C90,"Lowres",0,gfxLowres },
 	{0x0CCA,"Wait Vbl", 0,gfxWaitVbl },
 	{0x0CD8,"Default Palette",0,gfxDefaultPalette },
