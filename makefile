@@ -23,6 +23,7 @@ main_objects = commands.cpp \
 			commandsGfx.cpp \
 			commandsScreens.cpp \
 			commandsText.cpp \
+			commandsKeyboard.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \

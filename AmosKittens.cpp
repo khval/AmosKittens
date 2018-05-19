@@ -20,6 +20,7 @@
 #include "commandsGfx.h"
 #include "commandsScreens.h"
 #include "commandsText.h"
+#include "commandsKeyboard.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -531,6 +532,10 @@ struct nativeCommand nativeCommands[]=
 	{0x008C, "]", 0, cmdBracketEnd },
 	{0x0094, "To",0,cmdTo },
 	{0x009C, "Not",0,cmdNot },
+
+	{0x00F2,"Inkey$",0,cmdInkey },
+	{0x1280,"Clear Key",0,cmdClearKey },
+	{0x1262,"Scancode",0,cmdScancode },
 
 	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x01E6,"At",0,cmdAt },

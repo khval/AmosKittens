@@ -1836,26 +1836,6 @@ char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (engine_started)
-	{
-		engine_wait_key = true;
-		do
-		{
-			Delay(1);
-		} while ((engine_wait_key == true) && (engine_started));
-	}
-	else
-	{
-		getchar();
-	}
-
-	return tokenBuffer;
-}
-
 char *_cmdSetBuffers( struct glueCommands *data )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
