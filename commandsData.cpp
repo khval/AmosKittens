@@ -753,6 +753,68 @@ char *_addData( struct glueCommands *data )
 	return NULL;
 }
 
+char *_addDataToText( struct glueCommands *data )
+{
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	int args;
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+	char buffer[100];
+
+	args = stack - data -> stack + 1;
+
+	if (stack==0) 
+	{
+		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	switch( type0 )
+	{
+		case type_int:
+			sprintf(buffer,"%d", item0->value );
+			setStackStrDup(buffer);
+			break;
+
+		case type_float:
+			sprintf(buffer,"%d", item0->decimal );
+			setStackStrDup(buffer);
+			break;
+	}
+
+	switch (type1)
+	{
+		case type_int:		success = stackStrAddValue( item0, item1 ); break;
+		case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
+		case type_string:	success = stackStrAddStr( item0, item1 ); break;
+	}
+	
+	if (success )
+	{
+		correct_for_hidden_sub_data();
+	}
+	else
+	{
+		proc_names_printf("%d != %d\n",type0, type1);
+		setError(ERROR_Type_mismatch);
+		return NULL;
+	}
+
+	return NULL;
+}
+
+
 
 char *_subStr( struct glueCommands *data )
 {

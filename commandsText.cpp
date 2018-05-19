@@ -221,9 +221,11 @@ char *textCentre(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_addDataToText( struct glueCommands *data );
+
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdParm( _addData, tokenBuffer );
+	stackCmdParm( _addDataToText, tokenBuffer );
 	stack++;
 }
 
