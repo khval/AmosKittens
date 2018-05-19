@@ -695,7 +695,6 @@ void SaveIff( char *name, const int n )
 	else 	if (dt_bitmap) FreeBitMap(dt_bitmap);
 }
 
-
 char *_gfxLoadIff( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -751,7 +750,6 @@ char *_gfxSaveIff( struct glueCommands *data )
 	return NULL;
 }
 
-
 char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxLoadIff, tokenBuffer );
@@ -763,7 +761,6 @@ char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxSaveIff, tokenBuffer );
 	return tokenBuffer;
 }
-
 
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 {
