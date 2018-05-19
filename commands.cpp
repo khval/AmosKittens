@@ -1032,9 +1032,17 @@ char *cmdShared(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdGlobal( struct glueCommands *data )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	popStack( stack - data->stack  );
+	return NULL;
+}
+
 char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	// we should not need to do anything here, but maybe good idea to jump over few tokens.
+	// This is done PASS1, but we need clean and empty the stack.
+	stackCmdNormal( _cmdGlobal, tokenBuffer );
 	return tokenBuffer;
 }
 
