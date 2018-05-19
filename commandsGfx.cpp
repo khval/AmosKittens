@@ -312,7 +312,6 @@ char *_gfxCircle( struct glueCommands *data )
 	int x0=xgr,y0=ygr,r;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	if (args==3)
 	{
@@ -471,7 +470,6 @@ char *_gfxPlot( struct glueCommands *data )
 	int x0 = xgr, y0 = ygr,c;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	switch (args)
 	{
@@ -573,7 +571,6 @@ char *_gfxPalette( struct glueCommands *data )
 	int color,n,num;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	engine_lock();
 
@@ -606,8 +603,6 @@ char *_gfxGetPalette( struct glueCommands *data )
 	int color,n,num;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 
 	engine_lock();
 
@@ -1307,8 +1302,6 @@ char *_gfxAppear( struct glueCommands *data )
 
 			if (pixels == 0) pixels = mw *mh;
 
-//			engine_lock();
-
 			while (n<(pixels*step))
 			{
 				n += step;
@@ -1318,19 +1311,13 @@ char *_gfxAppear( struct glueCommands *data )
 
 				if ( (n % updateEveryNPixels) == 0 )
 				{
-//					engine_unlock();
 					WaitTOF();
-//					engine_lock();
 				}
-//				if (engine_started == false) break;
 			}
-
-//			engine_unlock;
 		}
 	}
 	else
 	{
-		dump_stack();
 		setError(22);
 	}
 

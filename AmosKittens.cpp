@@ -149,7 +149,7 @@ char *_array_index_var( glueCommands *self )
 	int index;
 	struct kittyData *var = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	tmp_cells = stack - self -> stack;
 
@@ -267,7 +267,7 @@ char *_alloc_mode_off( glueCommands *self )
 
 	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
 
-	dump_global();
+//	dump_global();
 
 	return NULL;
 }

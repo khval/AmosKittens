@@ -442,7 +442,7 @@ char *_mathSwap( struct glueCommands *data )
 		read_kitty_args(data -> tokenBuffer, data);
 	}
 
-	dump_stack();
+//	dump_stack();
 
 	popStack(args-1);
 
@@ -728,7 +728,7 @@ char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	dump_global();
+//	dump_global();
 
 	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )
 	{

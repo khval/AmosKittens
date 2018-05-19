@@ -421,8 +421,6 @@ char *_lower( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
-
 	str = _stackString( stack );
 
 	if (str)
