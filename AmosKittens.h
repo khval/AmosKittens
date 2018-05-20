@@ -76,7 +76,11 @@ struct glueCommands
 {
 	char *(*cmd) ( struct glueCommands *data );	// can return token location
 	char *tokenBuffer;
-	char *tokenBuffer2;		// a place to store a 2en token buffer pos.
+	union
+	{
+		char *tokenBuffer2;		// a place to store a 2en token buffer pos.
+		char *FOR_NUM_TOKENBUFFER;
+	};
 
 	union
 	{
