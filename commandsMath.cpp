@@ -34,7 +34,7 @@ char *_mathInc( struct glueCommands *data )
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
-	int args = stack - data->stack ;
+	int args = stack - data->stack +1;
 	char *ptr = data -> tokenBuffer ;
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
@@ -60,7 +60,7 @@ char *_mathInc( struct glueCommands *data )
 		}
 	}
 
-	popStack(args);
+	popStack(stack - data->stack);
 	return NULL;
 }
 
