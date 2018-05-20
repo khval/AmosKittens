@@ -836,7 +836,7 @@ extern char *executeToken( char *ptr, unsigned short token );
 #undef NEXT_INT
 
 
-int NEXT_INT( char *tokenBuffer , char **new_ptr )
+int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 {
 	unsigned short token;
 	char *ptr = tokenBuffer;
@@ -844,7 +844,7 @@ int NEXT_INT( char *tokenBuffer , char **new_ptr )
 	token = *( (unsigned short *) ptr);
 	ptr +=2;
 
-	do 
+	while  ((token != 0) && (token != 0x0356 ))
 	{
 		ptr = executeToken( ptr, token );
 		
@@ -857,8 +857,7 @@ int NEXT_INT( char *tokenBuffer , char **new_ptr )
 		last_token = token;
 		token = *( (short *) ptr);
 		ptr += 2;
-
-	} while ((token != 0) && (token != 0x0356 ));
+	};
 
 	*new_ptr = ptr - 2;
 
