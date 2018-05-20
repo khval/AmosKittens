@@ -130,6 +130,7 @@ bool init_engine()
 	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
 
 	topaz8_font =  open_font( "topaz.font" ,  8);
+	if ( ! topaz8_font ) return FALSE;
 
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
