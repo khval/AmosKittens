@@ -472,7 +472,10 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		stack++;
 	}
 
-	_num( *((int *) ptr) );
+	setStackNum( *((int *) ptr) );
+
+	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
+
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack();
 

@@ -1198,7 +1198,7 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm(_subData,tokenBuffer);
 	stack++;
 	return tokenBuffer;

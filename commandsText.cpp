@@ -233,6 +233,7 @@ char *textPrint(nativeCommand *cmd, char *ptr)
 {
 	stackCmdNormal( _print, ptr );
 	do_breakdata = _print_break;
+
 	return ptr;
 }
 
