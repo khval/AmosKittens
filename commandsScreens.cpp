@@ -173,7 +173,7 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-3 );
-			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (_stackInt( stack-2 ) *2) - 100;
+			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (_stackInt( stack-2 ) *2) - 80;
 			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = _stackInt( stack-1 );
 			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = _stackInt( stack );
 
