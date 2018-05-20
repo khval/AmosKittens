@@ -807,6 +807,7 @@ void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
 			cmdTmp[cmdStack-1].cmd_type = cmd_loop;
+			popStack( stack - cmdTmp[cmdStack-1].stack );
 		}
 	}
 }
