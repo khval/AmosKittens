@@ -263,13 +263,8 @@ char *_alloc_mode_off( glueCommands *self )
 
 	memset( var -> str, 0, size );	// str is a union :-)
 
-//	printf("name %s, cells %d, size %d, sizeTab %08x\n", globalVars[varNum].varName, 	var -> cells,var -> count,var ->sizeTab );
-
 	var -> type |= type_array; 	
-
 	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
-
-//	dump_global();
 
 	return NULL;
 }
