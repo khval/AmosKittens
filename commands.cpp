@@ -149,17 +149,7 @@ char *_gosub( struct glueCommands *data )
 	return ptr ;
 }
 
-char *_step( struct glueCommands *data )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
-	{
-		cmdTmp[cmdStack-1].step = kittyStack[stack].value;
-	}
-
-	return NULL;
-}
 
 char *_if( struct glueCommands *data )
 {
@@ -823,11 +813,28 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_step( struct glueCommands *data )
+{
+	printf("%s:%d--------\n",__FUNCTION__,__LINE__);
+	if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+	{
+		cmdTmp[cmdStack-1].step = kittyStack[stack].value;
+	}
+	popStack(stack - data->stack);
+	return NULL;
+}
 char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	if (NEXT_TOKEN(tokenBuffer) == 0xFFCA)
+	{
+		setStackNum(0);
+		stack++;
+		setStackNum(0);
+	}
 
 	return tokenBuffer;
 }
@@ -897,12 +904,16 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 		{
 			ptr = cmdTmp[cmdStack-1].tokenBuffer2;
+			unsigned short next_num;
+			ptr = cmdTmp[cmdStack-1].FOR_NUM_TOKENBUFFER;
 			globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
 
+			next_num = FOR_NEXT_INT(ptr, &new_ptr);
 			if (cmdTmp[cmdStack-1].step > 0)
 			{
-				if (globalVars[idx_var].var.value <= NEXT_INT(ptr, &new_ptr)  )
+				if (globalVars[idx_var].var.value <= next_num )
 				{
+					printf("OK\n");
 					tokenBuffer = new_ptr;
 				}
 				else
@@ -912,8 +923,9 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 			}
 			else	if (cmdTmp[cmdStack-1].step < 0)
 			{
-				if (globalVars[idx_var].var.value >= NEXT_INT(ptr, &new_ptr)  )
+				if (globalVars[idx_var].var.value >= next_num  )
 				{
+					printf("OK\n");
 					tokenBuffer = new_ptr;
 				}
 				else
