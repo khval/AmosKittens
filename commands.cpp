@@ -825,6 +825,9 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	return tokenBuffer;
 }
 
@@ -894,15 +897,29 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 		{
 			ptr = cmdTmp[cmdStack-1].tokenBuffer2;
+			globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
 
-			if (globalVars[idx_var].var.value < NEXT_INT(ptr, &new_ptr)  )
+			if (cmdTmp[cmdStack-1].step > 0)
 			{
-				globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
-				tokenBuffer = new_ptr;
+				if (globalVars[idx_var].var.value <= NEXT_INT(ptr, &new_ptr)  )
+				{
+					tokenBuffer = new_ptr;
+				}
+				else
+				{
+					cmdStack--;
+				}
 			}
-			else
+			else	if (cmdTmp[cmdStack-1].step < 0)
 			{
-				cmdStack--;
+				if (globalVars[idx_var].var.value >= NEXT_INT(ptr, &new_ptr)  )
+				{
+					tokenBuffer = new_ptr;
+				}
+				else
+				{
+					cmdStack--;
+				}
 			}
 		}
 	}
