@@ -384,6 +384,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (next_token == 0x0074)	// ( symbol
 	{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 		if (tokenMode != mode_alloc)
 		{
 			stackCmdIndex( _array_index_var, ptr );
@@ -527,8 +529,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0054, ":", 0, nextCmd },
 	{0x005C, ",", 0, nextArg },
 	{0x0064, ";", 0, breakData },
-	{0x0074, "(", 0, subCalc },
-	{0x007C, ")", 0, subCalcEnd },
+	{0x0074, "(", 0, parenthesisStart },
+	{0x007C, ")", 0, parenthesisEnd },
 	{0x0084, "[", 0, cmdBracket },
 	{0x008C, "]", 0, cmdBracketEnd },
 	{0x0094, "To",0,cmdTo },

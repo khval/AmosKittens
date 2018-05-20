@@ -143,7 +143,7 @@ char *_gosub( struct glueCommands *data )
 	if (NEXT_TOKEN( ptr ) == 0x0006)
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
-		ptr += (2 + sizeof(struct reference) + ref -> length) ;
+		ptr += ( sizeof(struct reference) + ref -> length + 2) ;
 	}
 
 	return ptr ;
@@ -463,23 +463,20 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 int parenthesis[100];
 int parenthesis_count = 0;
 
-char *subCalc(struct nativeCommand *cmd, char *tokenBuffer)
+char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	parenthesis[parenthesis_count] =stack;
 	parenthesis_count++;
 
-	kittyStack[stack].str = NULL;
-	kittyStack[stack].state = state_subData;
+	setParenthesis();
 	stack++;
-
-	if (kittyStack[stack].str) printf("%s::Unexpcted data %08x on new stack pos %d\n",__FUNCTION__, kittyStack[stack].str,stack);
 
 	return tokenBuffer;
 }
 
-char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer)
+char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	char *ret;
 

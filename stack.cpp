@@ -206,6 +206,16 @@ void setStackStr( char *str)
 	kittyStack[stack].type = type_string;
 }
 
+void setParenthesis()
+{
+	if (kittyStack[stack].str) free(kittyStack[stack].str);
+	kittyStack[stack].str = NULL ;
+	kittyStack[stack].len = 0;
+	kittyStack[stack].state = state_subData;
+	kittyStack[stack].type = type_none;
+}
+
+
 bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 {
 	int new_size = item0 -> len + 20;

@@ -6,8 +6,8 @@
 #include "amosKittens.h"
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer);
-char *subCalc(struct nativeCommand *cmd, char *tokenBuffer);
-char *subCalcEnd(struct nativeCommand *cmd, char *tokenBuffer);
+char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer);
+char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer);
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer);
 char *setVar(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
