@@ -227,9 +227,7 @@ void add_to_keyboard_queue( ULONG Code, ULONG Qualifier )
 	engine_lock();
 	event.Code = Code;
 	event.Qualifier = Qualifier;
-
 	keyboardBuffer.push_back(event);
-
 	engine_unlock();
 }
 
@@ -282,7 +280,6 @@ void main_engine()
 							break;
 
 					case IDCMP_RAWKEY:
-							engine_wait_key = false;
 
 							if (Qualifier & IEQUALIFIER_REPEAT)
 							{
@@ -291,6 +288,7 @@ void main_engine()
 
 							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
 							{
+								engine_wait_key = false;
 								add_to_keyboard_queue( Code & ~ IECODE_UP_PREFIX, Qualifier );
 							}
 							break;
