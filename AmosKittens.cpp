@@ -140,18 +140,16 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 }
 
 
-char *_array_index_var( glueCommands *self )
+char *_array_index_var( glueCommands *self)
 {
-	int tmp_cells;
 	int varNum;
 	int n = 0;
 	int mul;
 	int index;
 	struct kittyData *var = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d - at line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( self -> tokenBuffer ));
 
-	tmp_cells = stack - self -> stack;
 
 	varNum = self -> lastVar;
 
@@ -165,21 +163,25 @@ char *_array_index_var( glueCommands *self )
 	{
 		if ( (var -> type & type_array)  == 0)
 		{
-			popStack(tmp_cells);
+			popStack(stack - self -> stack);
 			setError(27);		// var is not a array
 			return 0;
 		}
 
-		index = 0; mul  = 1;
+		index = 0; 
+		mul  = 1;
 		for (n = self -> stack+1;n<=stack; n++ )
 		{
+			printf("mul %d\n",mul);
 			index += (mul * kittyStack[n].value);
 			mul *= var -> sizeTab[n- self -> stack -1];
 		}
 
+		printf("index: %d\n",index);
+
 		var -> index = index;
 
-		popStack(tmp_cells);
+		popStack(stack - self -> stack);
 
 		if ((index >= 0)  && (index<var->count))
 		{
@@ -234,16 +236,15 @@ char *_alloc_mode_off( glueCommands *self )
 
 	var = &globalVars[varNum-1].var;
 
-	var -> cells = stack - self -> stack;
+	var -> cells = stack - self -> stack +1;
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
 
+	var -> count = 1;
 	for (n= 0; n<var -> cells; n++ ) 
 	{
 		var -> sizeTab[n] = kittyStack[self -> stack + n].value + 1;
+		var -> count *= var -> sizeTab[n];
 	}
-
-	var -> count =  kittyStack[stack].value +1 ;
-	for (n= 1; n<var -> cells;n++) var -> count *= var -> sizeTab[n];
 
 	switch (var -> type)
 	{
