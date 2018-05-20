@@ -110,7 +110,7 @@ char *_procAndArgs( struct glueCommands *data )
 	int oldStack;
 	struct reference *ref = (struct reference *) (data->tokenBuffer);
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ((ref -> ref) && (data -> tokenBuffer2))
 	{
@@ -809,6 +809,7 @@ void do_to_default( struct nativeCommand *, char * )
 
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	if (do_to) do_to( cmd, tokenBuffer );	
 	return tokenBuffer;
 }
@@ -828,7 +829,6 @@ char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	if (NEXT_TOKEN(tokenBuffer) == 0xFFCA)
 	{
 		setStackNum(0);
@@ -903,7 +903,6 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 		{
-			ptr = cmdTmp[cmdStack-1].tokenBuffer2;
 			unsigned short next_num;
 			ptr = cmdTmp[cmdStack-1].FOR_NUM_TOKENBUFFER;
 			globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
