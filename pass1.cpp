@@ -474,6 +474,7 @@ char *pass1_global( char *ptr )
 						break;
 
 			default:
+						printf("%d\n",token);
 						setError(1);
 		}
 

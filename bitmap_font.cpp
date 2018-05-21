@@ -120,14 +120,21 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 	}
 }
 
-void _my_print_text(struct retroScreen *screen, char *text)
+void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 {
  	int x;
 	int y;
 	char c;
+	int cnt = 0;
 
-	while (c =*text ++)
+	while (c =*text ++) 
 	{
+		if (maxchars) 
+		{
+			if (cnt>=maxchars) break;
+			cnt++;
+		}
+
 		switch (c)
 		{
 			case 10:	screen -> locateX = 0;

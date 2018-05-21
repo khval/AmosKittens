@@ -104,13 +104,13 @@ char *_textPaper( struct glueCommands *data )
 	return NULL;
 }
 
-void __print_text(const char *txt)
+void __print_text(const char *txt, int maxchars)
 {
 	if (engine_started)
 	{
 		if (screens[current_screen])
 		{
-			_my_print_text(  screens[current_screen], (char *) txt);
+			_my_print_text(  screens[current_screen], (char *) txt, maxchars);
 		}
 	}
 	else
@@ -123,14 +123,14 @@ void __print_num( int num )
 {
 	char tmp[40];
 	sprintf(tmp,"%d",num);
-	__print_text(tmp);
+	__print_text(tmp,0);
 }
 
 void __print_double( double d )
 {
 	char tmp[40];
 	sprintf(tmp,"%lf",d);
-	__print_text(tmp);
+	__print_text(tmp,0);
 }
 
 char *_print( struct glueCommands *data )
@@ -150,13 +150,13 @@ char *_print( struct glueCommands *data )
 				__print_double( kittyStack[n].decimal);
 				break;
 			case type_string:
-				if (kittyStack[n].str) __print_text(kittyStack[n].str);
+				if (kittyStack[n].str) __print_text(kittyStack[n].str,0);
 				break;
 		}
 
-		if (n<stack) __print_text("    ");
+		if (n<stack) __print_text("    ",0);
 	}
-	__print_text("\n");
+	__print_text("\n",0);
 	if (screens[current_screen]) draw_cursor(screens[current_screen]);
 
 	popStack( stack - data->stack );
@@ -198,7 +198,7 @@ char *_textCentre( struct glueCommands *data )
 
 	if (txt)
 	{
-		__print_text(txt);
+		__print_text(txt,0);
 	}
 
 	if (screens[current_screen]) draw_cursor(screens[current_screen]);

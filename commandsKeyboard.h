@@ -6,4 +6,6 @@ char *cmdScancode(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdKeyShift(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdKeyState(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdInput(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer);
 
