@@ -25,6 +25,9 @@ extern char *_file_pos_ ;
 
 int timer_offset = 0;
 
+extern int _last_var_index;		// we need to know what index was to keep it.
+extern int _set_var_index;		// we need to resore index 
+
 static struct timeval timer_before, timer_after;
 
 extern int last_var;
@@ -335,6 +338,8 @@ BOOL setVarString( struct kittyData *var )
 
 BOOL setVarIntArray( struct kittyData *var )
 {
+	var -> index = _set_var_index;
+
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
@@ -351,6 +356,8 @@ BOOL setVarIntArray( struct kittyData *var )
 
 BOOL setVarDecimalArray( struct kittyData *var )
 {
+	var -> index = _set_var_index;
+
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
@@ -367,6 +374,8 @@ BOOL setVarDecimalArray( struct kittyData *var )
 
 BOOL setVarStringArray( struct kittyData *var )
 {
+	var -> index = _set_var_index;
+
 	switch (kittyStack[stack].type)
 	{
 		case type_string:
@@ -542,6 +551,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	else
 	{
 		stackCmdNormal( _do_set, tokenBuffer);
+		_set_var_index = _last_var_index;		// (var->index will be overwritten by index reads)
 
 		switch (kittyStack[stack].type)
 		{

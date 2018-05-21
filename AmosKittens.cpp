@@ -140,16 +140,18 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 }
 
 
+int _last_var_index;		// we need to know what index was to keep it.
+int _set_var_index;		// we need to resore index 
+
+
 char *_array_index_var( glueCommands *self)
 {
 	int varNum;
 	int n = 0;
 	int mul;
-	int index;
 	struct kittyData *var = NULL;
 
-	printf("%s:%d - at line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( self -> tokenBuffer ));
-
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__ );
 
 	varNum = self -> lastVar;
 
@@ -168,48 +170,32 @@ char *_array_index_var( glueCommands *self)
 			return 0;
 		}
 
-		index = 0; 
+		_last_var_index = 0; 
 		mul  = 1;
 		for (n = self -> stack+1;n<=stack; n++ )
 		{
-			printf("mul %d\n",mul);
-			index += (mul * kittyStack[n].value);
+			_last_var_index += (mul * kittyStack[n].value);
 			mul *= var -> sizeTab[n- self -> stack -1];
 		}
 
-		printf("index: %d\n",index);
-
-		var -> index = index;
+		var -> index = _last_var_index;
 
 		popStack(stack - self -> stack);
 
-		if ((index >= 0)  && (index<var->count))
+		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
-			// we over write it stack.
-			if (kittyStack[n].str) free(kittyStack[n].str);
-			kittyStack[n].str = NULL;
-
-			// change stack
 			switch (var -> type & 7)
 			{
-				case type_int:
+				case type_int: 
+					setStackNum( var -> int_array[_last_var_index] );	break;
 
-					kittyStack[stack].type = (var -> type & 7);
-					kittyStack[stack].value = var -> int_array[index];
+				case type_float: 
+					setStackDecimal( var -> float_array[_last_var_index] );	
 					break;
 
-				case type_float:
-
-					kittyStack[stack].type = (var -> type & 7);
-					kittyStack[stack].decimal = var -> float_array[index];
-					break;
-
-				case type_string:
-
-					char *str = var -> str_array[index];
-					kittyStack[stack].type = (var -> type & 7);
-					kittyStack[stack].str = str ? strdup( str ) : strdup("") ;
-					kittyStack[stack].len = str ? strlen( str ) : 0 ;
+				case type_string: 	
+					char *str = var -> str_array[_last_var_index];
+					setStackStrDup( str ? str : "" );
 					break;
 			}
 		}
