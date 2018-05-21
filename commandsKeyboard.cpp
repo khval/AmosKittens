@@ -115,6 +115,7 @@ void kitty_getline(string &input)
 	if (engine_started)
 	{
 		engine_lock();
+		draw_cursor( screens[current_screen] );
 		rightx = screens[current_screen]->locateX;
 		charsPerRow = (screens[current_screen]-> realWidth / 8);
 		charspace = charsPerRow-rightx - 1;
@@ -136,6 +137,29 @@ void kitty_getline(string &input)
 
 				case 8:
 					printf("<backspace>\n");
+
+					if (input.length()>0)
+					{
+						if (cursx == input.length())
+						{
+							cursx --;
+							input.erase(cursx,1);
+						}
+
+						engine_lock();
+						clear_cursor( screens[current_screen] );
+						screens[current_screen]->locateX = rightx;
+						engine_unlock();
+
+						if (cursx - scrollx < 0) scrollx--;
+
+						__print_text(input.c_str() + scrollx,charspace);
+						engine_lock();
+						clear_cursor( screens[current_screen] );
+						draw_cursor( screens[current_screen] );
+						engine_unlock();
+					}
+
 					break;
 
 				case 10:
@@ -148,11 +172,17 @@ void kitty_getline(string &input)
 					cursx ++;
 
 					engine_lock();
+					clear_cursor( screens[current_screen] );
 					screens[current_screen]->locateX = rightx;
 					engine_unlock();
 
 					if (cursx - scrollx > charspace) scrollx++;
 					__print_text(input.c_str() + scrollx,charspace);
+
+					engine_lock();
+					draw_cursor( screens[current_screen] );
+					engine_unlock();
+
 					break;	
 			}
 
