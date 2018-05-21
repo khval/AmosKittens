@@ -294,6 +294,7 @@ void main_engine()
 							 
 							{
 								int emu_code = Code &~ IECODE_UP_PREFIX;
+								if (emu_code==75) emu_code = 95;
 								keyState[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
 							}
 
