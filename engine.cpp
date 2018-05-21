@@ -21,6 +21,7 @@ extern bool interpreter_running;	// interprenter is really running.
 
 bool engine_wait_key = false;
 bool engine_started = false;
+
 extern bool curs_on;
 
 APTR engine_mx = 0;
@@ -281,6 +282,7 @@ void main_engine()
 							break;
 
 					case IDCMP_RAWKEY:
+
 
 							if (Qualifier & IEQUALIFIER_REPEAT)
 							{

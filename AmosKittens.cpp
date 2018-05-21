@@ -215,8 +215,6 @@ char *_array_index_var( glueCommands *self)
 		}
 	}
 
-//	getchar();
-
 	return NULL;
 }
 
@@ -384,8 +382,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (next_token == 0x0074)	// ( symbol
 	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 		if (tokenMode != mode_alloc)
 		{
 			stackCmdIndex( _array_index_var, ptr );
