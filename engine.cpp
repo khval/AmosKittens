@@ -23,6 +23,7 @@ bool engine_wait_key = false;
 bool engine_started = false;
 
 extern bool curs_on;
+extern int _keyshift;
 
 APTR engine_mx = 0;
 
@@ -283,6 +284,7 @@ void main_engine()
 
 					case IDCMP_RAWKEY:
 
+							_keyshift = Qualifier;
 
 							if (Qualifier & IEQUALIFIER_REPEAT)
 							{

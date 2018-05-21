@@ -23,6 +23,8 @@
 extern std::vector<struct keyboard_buffer> keyboardBuffer;
 
 extern ULONG *codeset_page;
+int _scancode;
+int _keyshift;
 
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -43,8 +45,6 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
-
-int _scancode;
 
 char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -105,6 +105,14 @@ char *cmdScancode(struct nativeCommand *cmd, char *tokenBuffer )
 	setStackNum(_scancode);
 	return tokenBuffer;
 }
+
+char *cmdKeyShift(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackNum(_keyshift);
+	return tokenBuffer;
+}
+
 
 char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
