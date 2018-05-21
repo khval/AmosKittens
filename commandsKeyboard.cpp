@@ -22,9 +22,11 @@
 
 extern std::vector<struct keyboard_buffer> keyboardBuffer;
 
+extern int last_var;
 extern ULONG *codeset_page;
 int _scancode;
 int _keyshift;
+int keyState[256];
 
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -125,5 +127,39 @@ char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer )
 	_scancode = 0;
 
 	setStackNum(0);
+	return tokenBuffer;
+}
+
+
+char *_cmdKeyState( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int key = _stackInt( stack );
+
+		if ((key>-1)&&(key<256))
+		{
+			ret = keyState[key];
+			success = true;
+		}
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *cmdKeyState(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdKeyState, tokenBuffer );
 	return tokenBuffer;
 }

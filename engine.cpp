@@ -18,6 +18,7 @@
 extern int sig_main_vbl;
 extern bool running;			// 
 extern bool interpreter_running;	// interprenter is really running.
+extern int keyState[256];
 
 bool engine_wait_key = false;
 bool engine_started = false;
@@ -289,6 +290,11 @@ void main_engine()
 							if (Qualifier & IEQUALIFIER_REPEAT)
 							{
 								printf("we have a repeat key\n");
+							}
+							 
+							{
+								int emu_code = Code &~ IECODE_UP_PREFIX;
+								keyState[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
 							}
 
 							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
