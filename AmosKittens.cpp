@@ -598,6 +598,7 @@ struct nativeCommand nativeCommands[]=
 	{0x11E8,"Key Shift",0,cmdKeyShift },
 	{0x123E,"TRUE",0, cmdTrue },
 	{0x1248,"FALSE",0, cmdFalse },
+	{0x1254,"Put Key",0,cmdPutKey },
 	{0x1290,"Wait Key",0,cmdWaitKey },
 
 	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },

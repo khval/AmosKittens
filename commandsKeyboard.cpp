@@ -88,7 +88,11 @@ void atomic_get_char( char *buf)
 						if (buf[0]==13) buf[0]=10;
 					}
 				}
-			}	
+			}
+			else
+			{
+				buf[0] = keyboardBuffer[0].Char;
+			}
 
 			keyboardBuffer.erase(keyboardBuffer.begin());
 		}
@@ -537,3 +541,37 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+char *_cmdPutKey(struct glueCommands *data)
+{
+	int args = stack - data -> stack +1;
+
+	if (args==1)
+	{
+		char *str = _stackString(stack);
+		if (str)
+		{
+			char *c;
+			for (c = str; *c; c++)
+			{
+				atomic_add_to_keyboard_queue( 0, 0, *c );
+			}
+		}
+	}
+	else
+	{
+		setError(22);
+	}
+
+	popStack( stack - data -> stack  );
+	return NULL;
+}
+
+
+char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdPutKey, tokenBuffer );
+	return tokenBuffer;
+}
+
