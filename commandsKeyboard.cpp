@@ -378,6 +378,12 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	while (!success);
 
+	engine_lock();
+	clear_cursor( screens[current_screen] );
+	engine_unlock();
+
+	__print_text( "\n" ,0 );
+
 	switch (globalVars[last_var -1].var.type & 7)
 	{	
 		case type_string:
