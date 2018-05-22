@@ -224,7 +224,7 @@ void draw_cursor(struct retroScreen *screen)
 
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer);
 
-void add_to_keyboard_queue( ULONG Code, ULONG Qualifier )
+void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 {
 	struct keyboard_buffer event;
 
@@ -301,7 +301,7 @@ void main_engine()
 							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
 							{
 								engine_wait_key = false;
-								add_to_keyboard_queue( Code & ~ IECODE_UP_PREFIX, Qualifier );
+								atomic_add_to_keyboard_queue( Code & ~ IECODE_UP_PREFIX, Qualifier, 0 );
 							}
 							break;
 				}

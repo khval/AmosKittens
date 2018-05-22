@@ -45,7 +45,7 @@ std::string input_str;
 using namespace std;
 
 
-void get_char( char *buf)
+void atomic_get_char( char *buf)
 {
 	buf[0]=0;
 
@@ -125,7 +125,7 @@ void kitty_getline(string &input)
 
 		do
 		{
-			get_char(buf);
+			atomic_get_char(buf);
 			WaitTOF();
 
 			if (buf[0] != 0) printf("--%d--\n",buf[0]);
@@ -222,7 +222,7 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	_scancode = 0;
 
-	get_char(buf);
+	atomic_get_char(buf);
 
 	setStackStrDup(buf);
 	return tokenBuffer;
