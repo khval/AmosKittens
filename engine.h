@@ -19,5 +19,6 @@ struct keyboard_buffer
 {
 	ULONG Code;
 	ULONG Qualifier;
+	char	Char;
 };
 

@@ -231,6 +231,7 @@ void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 	engine_lock();
 	event.Code = Code;
 	event.Qualifier = Qualifier;
+	event.Char = Char;
 	keyboardBuffer.push_back(event);
 	engine_unlock();
 }
