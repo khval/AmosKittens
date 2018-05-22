@@ -342,7 +342,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else if (input_str.empty())
 	{
-		proc_names_printf("??? ");
+		__print_text("??? ",0);
 	}
 
 	do
@@ -419,21 +419,41 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 	
-	if ((input_count == 0)&&(stack))		// should be one arg.
+	if (input_count == 0)		// should be one arg.
 	{
-		char *str = _stackString( stack-args+1 );
-		if (str) proc_names_printf("%s", str);
+		char *str = _stackString( stack );
+		bool have_question = false;
+
+		if (str) if (str[0])
+		{
+			__print_text( str ,0 );
+			have_question = true;
+		}
+
+		if (have_question == false)
+		{
+			__print_text("? ",0);
+		}
 	}
 	else if (input_str.empty())
 	{
-		proc_names_printf("??? ");
+		__print_text("?? ",0);
 	}
+
+	engine_lock();
+	draw_cursor( screens[current_screen] );
+	engine_unlock();
 
 	do
 	{
 		do
 		{
 			while (input_str.empty()) kitty_getline(input_str);
+
+			engine_lock();
+			clear_cursor( screens[current_screen] );
+			engine_unlock();
+
 			arg = input_str; input_str = "";
 		}
 		while ( arg.empty() );
@@ -450,8 +470,13 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 					success = arg.find_first_not_of( "-0123456789." ) == std::string::npos; break;
 			}
 		}
+
+		printf("%s:%d -- success = %s\n",__FUNCTION__,__LINE__, success ? "True" : "False");
+
 	}
 	while (!success);
+
+	__print_text( "\n" ,0 );
 
 	switch (globalVars[last_var -1].var.type & 7)
 	{	
@@ -492,6 +517,10 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	engine_lock();
+	clear_cursor( screens[current_screen] );
+	engine_unlock();
 
 	input_count = 0;
 	input_str = "";
