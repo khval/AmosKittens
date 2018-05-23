@@ -232,6 +232,36 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_InputStrN(struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	string tmp;
+	char buf[2];
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	_scancode = 0;
+
+	if (args==1)
+	{
+		int n = _stackInt( stack );
+		while (tmp.length()<n)
+		{
+			atomic_get_char(buf);
+			tmp += buf;
+			WaitTOF();
+		}
+	}
+	else
+	{
+		setError(22);
+	}
+
+	setStackStrDup(tmp.c_str());
+	return NULL;
+}
+
+
 char *cmdScancode(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -520,6 +550,20 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 	do_input = _input_arg;
 	do_breakdata = breakdata_inc_stack;
 	stackCmdNormal( _Input, tokenBuffer );
+
+	return tokenBuffer;
+}
+
+char *cmdInputStrN(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	input_count = 0;
+	input_str = "";
+
+	do_input = _input_arg;
+	do_breakdata = breakdata_inc_stack;
+	stackCmdNormal( _InputStrN, tokenBuffer );
 
 	return tokenBuffer;
 }

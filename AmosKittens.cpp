@@ -594,6 +594,7 @@ struct nativeCommand nativeCommands[]=
 	{0x058A, "Lower$",0, cmdLower },
 	{0x05DA, "Len",0, cmdLen },
 
+	{0x048E,"Input$(n)",0,cmdInputStrN },
 	{0x11D8,"Key State",0,cmdKeyState },
 	{0x11E8,"Key Shift",0,cmdKeyShift },
 	{0x123E,"TRUE",0, cmdTrue },
