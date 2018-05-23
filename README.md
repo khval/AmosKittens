@@ -18,9 +18,9 @@ AmosKittens [dir]/[filename.amos]
   
 if window flashes on the screen, you might runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
 
-If AmosKittens return with token number, it is likely that Amos program your trying is too advanced for Amos kittens, only about half of "Amos The Creator" commands are implemented. And possibly only a few commands from "Amos Professional."
+If AmosKittens return with a token number, it is likely that Amos program your trying is too advanced for Amos kittens, only about half of the "Amos The Creator" commands are implemented. And possibly only a few commands from "Amos Professional."
 
-See Issues on GitHub so see what Amos Kittens support and what not.
+See "Issues" and "Current Status:" on GitHub so see what Amos Kittens support and what not.
 
 Debuging Amos Kittens:
 ----------------------
