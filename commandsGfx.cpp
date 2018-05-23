@@ -1103,6 +1103,22 @@ char *_set_rain( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxAutoback( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *_gfxRain( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -1374,4 +1390,24 @@ char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxAppear, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	setStackNum( 0 );
+	return tokenBuffer;
+}
+
+char *gfxHide(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// hide mouse pointer.
+	return tokenBuffer;
+}
+
+char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxAutoback, tokenBuffer );
+	return tokenBuffer;
+}
+
 

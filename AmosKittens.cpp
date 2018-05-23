@@ -754,6 +754,10 @@ struct nativeCommand nativeCommands[]=
 
 	{0x25A4, "Else If", 2, cmdElseIf },
 
+	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.
+	{0x1DE0, "Hide", 0, gfxHide },	// hide mouse, (only dummy).
+	{0x0E2C, "Autoback", 0, gfxAutoback },
+
 	{0x0214,"DOSCALL",0,machineDOSCALL},
 	{0x01F8,"EXECALL",0,machineEXECALL},
 

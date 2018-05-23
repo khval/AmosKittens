@@ -40,4 +40,8 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxRain(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxHide(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer);
+
 
