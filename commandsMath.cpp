@@ -99,6 +99,67 @@ char *_mathDec( struct glueCommands *data )
 	return NULL;
 }
 
+char *_mathAddRange( struct glueCommands *data )
+{
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	struct kittyData *var = NULL;
+	int args = stack - data->stack +1;
+	char *ptr = data -> tokenBuffer ;
+
+	if (NEXT_TOKEN( ptr ) == 0x0006)
+	{
+		struct reference *ref = (struct reference *) (ptr + 2);
+		var = &globalVars[ref->ref-1].var;
+	}
+	
+	dump_stack();
+
+	if ((var)&&(args==5))
+	{
+		int _value = _stackInt( stack - 3 );
+		int _inc = _stackInt( stack - 2 );
+		int _from = _stackInt( stack - 1 );
+		int _to = _stackInt( stack );
+
+		if (_inc>0)
+		{
+			_value += _inc;	
+			if (_value > _to ) _value = _from;	// if more then max reset to min
+			if (_value < _from) _value =_from;	// limit to min
+		}
+		else
+		{
+			_value += _inc;	
+			if (_value < _from) _value = _to;	// if less then min reset to max
+			if (_value > _to) _value = _to;		// limit to max
+		}
+
+		// write
+
+		switch (var->type)
+		{
+			case type_int:
+				var->value= _value;
+				break;
+	
+			case type_int | type_array:
+				var->int_array[var -> index]= _value;
+				break;
+	
+			default:
+				setError(ERROR_Type_mismatch);
+		}
+	}
+	else
+	{
+		setError(22);
+	}
+
+	popStack(args-1);
+	return NULL;
+}
+
 char *_mathAdd( struct glueCommands *data )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
@@ -166,6 +227,18 @@ char *mathAdd(struct nativeCommand *cmd, char *tokenBuffer)
 	stack++;
 	return tokenBuffer;
 }
+
+char *mathAddRange(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	stackCmdNormal( _mathAddRange, tokenBuffer );
+	stack++;
+	return tokenBuffer;
+}
+
 
 //------------------------------------------------------------
 

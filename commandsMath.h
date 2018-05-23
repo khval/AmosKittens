@@ -11,6 +11,7 @@
 char *mathInc (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathDec (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathAdd (struct nativeCommand *cmd, char *tokenBuffer);
+char *mathAddRange (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathDegree (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathRadian (struct nativeCommand *cmd, char *tokenBuffer);
 char *mathPi (struct nativeCommand *cmd, char *tokenBuffer);
