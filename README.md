@@ -10,9 +10,17 @@ If you’re a MorphOS or AROS developer don't let that stop you, but please make
 
 Amos developers:
 ------------------------
-You can start using this thing for small text adventures, quiz games, or something like that. Right now .AMOS filename is hard coded into AmosKittens.cpp file, so some changes will be needed to made to allow it load from .AMOS files as CLI arguments, or WBStartup message.
-
+You can start using this thing for small text adventures, quiz games, or something like that. snake games and other simple games.
 Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
+
+To start a game you type:
+AmosKittens <dir>/<filename.amos>
+  
+if window flashes on the screen, you might runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
+
+If AmosKittens return with token number, it is likely that Amos program your trying is too advanced for Amos kittens, only about half of "Amos The Creator" commands are implemented. And possibly only a few commands from "Amos Professional."
+
+See Issues on GitHub so see what Amos Kittens support and what not.
 
 Debuging Amos Kittens:
 ----------------------
