@@ -16,7 +16,7 @@ Before posting bug reports please read Notes, some features are not yet implemen
 To start a game you type:
 AmosKittens [dir]/[filename.amos]
   
-if window flashes on the screen, you might runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
+if window flashes on the screen, you might be runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
 
 If AmosKittens return with a token number, it is likely that Amos program your trying is too advanced for Amos kittens, only about half of the "Amos The Creator" commands are implemented. And possibly only a few commands from "Amos Professional."
 
