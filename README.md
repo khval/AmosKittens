@@ -14,7 +14,7 @@ You can start using this thing for small text adventures, quiz games, or somethi
 Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
 
 To start a game you type:
-AmosKittens <dir>/<filename.amos>
+AmosKittens [dir]/[filename.amos]
   
 if window flashes on the screen, you might runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
 
