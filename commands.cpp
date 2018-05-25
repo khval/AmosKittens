@@ -396,7 +396,7 @@ char *_setVar( struct glueCommands *data )
 
 	proc_names_printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
 
-	proc_names_printf("SET var %s \n",globalVars[ data->lastVar-1].varName);
+	dprintf("SET var %s \n",globalVars[ data->lastVar-1].varName);
 
 	var = &globalVars[data -> lastVar-1].var;
 
@@ -481,6 +481,8 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+extern int last_var;
 
 char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {

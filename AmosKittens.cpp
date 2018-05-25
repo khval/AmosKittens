@@ -52,8 +52,11 @@ char *data_read_pointer = NULL;
 
 char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
 
+char *get_var_index( glueCommands *self);
+
 void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 
+char *(*do_var_index) ( glueCommands *self ) = get_var_index;
 void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
 void (*do_input) ( struct nativeCommand *, char * ) = NULL;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
@@ -144,7 +147,7 @@ int _last_var_index;		// we need to know what index was to keep it.
 int _set_var_index;		// we need to resore index 
 
 
-char *_array_index_var( glueCommands *self)
+char *get_var_index( glueCommands *self)
 {
 	int varNum;
 	int n = 0;
@@ -159,7 +162,11 @@ char *_array_index_var( glueCommands *self)
 
 	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
 
-	if (varNum) var = &globalVars[varNum-1].var;
+	if (varNum) 
+	{
+		var = &globalVars[varNum-1].var;
+		dprintf("varname: %s\n",globalVars[varNum-1].varName);
+	}
 
 	if (var)
 	{
@@ -206,27 +213,40 @@ char *_array_index_var( glueCommands *self)
 
 char *_alloc_mode_off( glueCommands *self )
 {
+	do_input = NULL;
+	do_var_index = get_var_index;
+
+	return NULL;
+}
+
+
+
+char *do_var_index_alloc( glueCommands *cmd)
+{
+	int args = stack - cmd -> stack + 1;
 	int size = 0;
 	int n;
 	int varNum;
 	int count;
 	struct kittyData *var;
 
-	tokenMode = mode_standard;	
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	varNum = *((unsigned short *) (self -> tokenBuffer + 2));
-
+	varNum = cmd -> lastVar;	
 	if (varNum == 0) return NULL;
 
-	var = &globalVars[varNum-1].var;
+	dprintf("var num: %d\n", varNum-1);
 
-	var -> cells = stack - self -> stack +1;
+	var = &globalVars[varNum-1].var;
+	var -> cells = stack - cmd -> stack +1;
+
+	if (var -> sizeTab) free( var -> sizeTab);
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
 
 	var -> count = 1;
 	for (n= 0; n<var -> cells; n++ ) 
 	{
-		var -> sizeTab[n] = kittyStack[self -> stack + n].value + 1;
+		var -> sizeTab[n] = kittyStack[cmd -> stack + n].value + 1;
 		var -> count *= var -> sizeTab[n];
 	}
 
@@ -249,14 +269,21 @@ char *_alloc_mode_off( glueCommands *self )
 	memset( var -> str, 0, size );	// str is a union :-)
 
 	var -> type |= type_array; 	
-	stack -=  var -> cells;	// should use garbage collector here ;-) memory leaks works to for now.
 
+	popStack(stack - cmd -> stack);
 	return NULL;
+}
+
+void do_dim_next_arg(nativeCommand *cmd, char *ptr)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 }
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
 {
-	tokenMode = mode_alloc;
+	do_input = do_dim_next_arg;
+	do_var_index = do_var_index_alloc;
+
 	stackCmdNormal( _alloc_mode_off, ptr );
 	return ptr;
 }
@@ -368,16 +395,15 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 	if (next_token == 0x0074)	// ( symbol
 	{
-		if (tokenMode != mode_alloc)
-		{
-			stackCmdIndex( _array_index_var, ptr );
-		}
+		if (do_var_index) stackCmdIndex( do_var_index, ptr );
 	}
 	else
 	{
 		if (ref -> ref)
 		{
 			int idx = ref->ref-1;
+
+			dprintf("varname: %s\n",globalVars[idx].varName);
 
 			switch (globalVars[idx].var.type & 7)
 			{
