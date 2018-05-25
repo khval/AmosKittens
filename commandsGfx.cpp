@@ -492,6 +492,29 @@ char *_gfxPlot( struct glueCommands *data )
 	return NULL;
 }
 
+char *_gfxPaint( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x0 = xgr, y0 = ygr,c;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			stack_get_if_int( stack-1, &x0 );
+			stack_get_if_int( stack, &y0 );
+			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,pen0 );
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *_gfxPoint( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
@@ -799,6 +822,13 @@ char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	kittyStack[stack].type = type_none;
 	stackCmdNormal( _gfxPlot, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *gfxPaint(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	kittyStack[stack].type = type_none;
+	stackCmdNormal( _gfxPaint, tokenBuffer );
 	return tokenBuffer;
 }
 

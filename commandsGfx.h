@@ -43,5 +43,6 @@ char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxHide(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxPaint(struct nativeCommand *cmd, char *tokenBuffer);
 
 

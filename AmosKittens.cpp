@@ -757,6 +757,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.
 	{0x1DE0, "Hide", 0, gfxHide },	// hide mouse, (only dummy).
 	{0x0E2C, "Autoback", 0, gfxAutoback },
+	{0x0EE8, "Paint",0, gfxPaint },
 
 	{0x0214,"DOSCALL",0,machineDOSCALL},
 	{0x01F8,"EXECALL",0,machineEXECALL},
@@ -769,6 +770,7 @@ struct nativeCommand nativeCommands[]=
 	{0x,"INTCALL",0,machineINTCALL},	
 */
 
+	{0x23D0,"Multi Wait",0,cmdMultiWait },		// dummy function.
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 	{0x00A6,"Swap", 0, mathSwap},
@@ -777,6 +779,7 @@ struct nativeCommand nativeCommands[]=
 	{0x09EA,"Screen Open",0,gfxScreenOpen },
 	{0x0A04,"Screen Close",0,gfxScreenClose },
 	{0x0A18,"Screen Display",0,gfxScreenDisplay },
+	{0x0AE2,"Screen Swap",0,gfxScreenSwap },		// dummy function
 	{0x09D6,"Screen Clone",0,gfxScreenClone },
 	{0x0A5E,"Screen Colour", 0, gfxScreenColour },
 	{0x0AFC,"Save Iff",0,gfxSaveIff },
@@ -790,7 +793,7 @@ struct nativeCommand nativeCommands[]=
 	{0x09A8,"Screen Copy",0,gfxScreenCopy },
 	{0x0A36,"Screen Offset",0,gfxScreenOffset },
 
-	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
+	{0x012C,"Double Buffer",0,gfxDoubleBuffer },	// dummy function
 
 	{0x0C6E,"Screen",0,gfxScreen },
 	{0x0C7C,"=Screen",0,gfxGetScreen },
@@ -1113,7 +1116,7 @@ int main(char args, char **arg)
 
 			fclose(fd);
 
-			if (kittyError.newError == false)
+//			if (kittyError.newError == true)
 			{
 				dump_end_of_program();
 			}

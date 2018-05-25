@@ -1686,3 +1686,9 @@ char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer )
 	stackCmdNormal( _cmdSetBuffers, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}

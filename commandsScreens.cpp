@@ -782,6 +782,12 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// Dummy function, we kind of have double buffer in retromode.library video
+	return tokenBuffer;
+}
+
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	int n;

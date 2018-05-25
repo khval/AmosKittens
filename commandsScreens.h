@@ -27,5 +27,5 @@ char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer);
-
+char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer);
 
