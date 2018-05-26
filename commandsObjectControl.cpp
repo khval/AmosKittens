@@ -66,9 +66,71 @@ char *_ocMouseLimit( struct glueCommands *data )
 	return NULL;
 }
 
-
 char *ocMouseLimit(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _ocMouseLimit, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocReserveZone( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _ocReserveZone, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocZoneStr( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocZoneStr, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocMouseZone( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocMouseZone, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocChangeMouse( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocChangeMouse(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocChangeMouse, tokenBuffer );
 	return tokenBuffer;
 }
