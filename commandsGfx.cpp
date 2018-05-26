@@ -82,27 +82,42 @@ char *_gfxColour( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (args==2)
+	switch (args)
 	{
-		num = _stackInt( stack-1 );
-
-		if ((num>-1)&&(num<256))
-		{
-			color = _stackInt( stack );
+		case 1:
+			num = _stackInt( stack );
+			popStack( stack - data->stack );
 
 			if (screens[current_screen])
 			{
-				retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
-				dprintf("Screen %d,Color %d,R %d,G %d,B %d\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
-
+				struct retroRGB rgb = screens[current_screen]->orgPalette[num];
+				setStackNum( ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17) );
 			}
-			success = true;
-		}
+			break;
+
+		case 2:
+			num = _stackInt( stack-1 );
+			popStack( stack - data->stack );
+
+			if ((num>-1)&&(num<256))
+			{
+				color = _stackInt( stack );
+
+				if (screens[current_screen])
+				{
+					retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+					dprintf("Screen %d,Color %d,R %d,G %d,B %d\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
+
+				}
+				success = true;
+			}
+			break;
+
+		defaut:
+			setError(22);
+			popStack( stack - data->stack );
 	}
 
-	if (success == false) setError(22);
-
-	popStack( stack - data->stack );
 	return NULL;
 }
 
