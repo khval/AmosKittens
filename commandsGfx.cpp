@@ -1455,4 +1455,60 @@ char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxColourBack( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+				if (screens[current_screen])
+				{
+				}
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxColourBack(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxColourBack, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxSetPaint( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+				if (screens[current_screen])
+				{
+				}
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxSetPaint, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+
 
