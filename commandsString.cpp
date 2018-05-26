@@ -321,13 +321,16 @@ char *_asc( struct glueCommands *data )
 char *_val( struct glueCommands *data )
 {
 	int args = stack - data->stack  + 1;
-	int num;
+	int num = 0;
 	char *_str;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%d args %d\n",__FUNCTION__,__LINE__,args);
 
 	_str = _stackString( stack  );
-	if (_str) sscanf(_str,"%d",&num);
+	if (_str)
+	{
+		if (sscanf(_str,"%d",&num)==0) num=0;
+	}
 
 	popStack(stack - data->stack);
 
