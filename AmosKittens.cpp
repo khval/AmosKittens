@@ -628,6 +628,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1248,"FALSE",0, cmdFalse },
 	{0x1254,"Put Key",0,cmdPutKey },
 	{0x1290,"Wait Key",0,cmdWaitKey },
+	{0x1392,"Home",0,textHome },
 
 	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },
 	{0x16F2,"Set input", 0, cmdSetInput },
@@ -743,6 +744,8 @@ struct nativeCommand nativeCommands[]=
 	{0x13DC,"Paper",0,textPaper },
 	{0x13E8,"Centre",0,textCentre },
 	{0x1446,"Curs Off",0,textCursOff },
+	{0x1462,"textInverseOff",0,textInverseOff },
+	{0x1474,"Inverse On",0,textInverseOn },
 	{0x14E0,"Scroll",0,gfxScroll },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
 

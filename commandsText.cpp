@@ -17,6 +17,9 @@
 #include "engine.h"
 #include "bitmap_font.h"
 
+extern int pen0;
+extern int pen1;
+extern int pen2;
 extern int last_var;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -51,6 +54,31 @@ char *_textLocate( struct glueCommands *data )
 	popStack( stack - data->stack );
 	return NULL;
 }
+
+char *_textHome( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+
+	bool success = false;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		if (screens[current_screen])
+		{
+			screens[current_screen] -> locateX = 0;
+			screens[current_screen] -> locateY = 0;
+		}
+		success = true;
+	}
+
+	if (success == false) setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 
 char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -172,6 +200,12 @@ char *_textCentre( struct glueCommands *data )
 	int charsPerLine = 100;
 	const char *txt = NULL;
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
+	printf("args: %d, stack %d, data -> stack %d \n",args,stack,data->stack);
+
 	if (args!=1) setError(22);
 
 	if (engine_started)
@@ -241,7 +275,41 @@ char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	clear_cursor(screens[current_screen]);
 	curs_on = false;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	return tokenBuffer;
 }
+
+char *textHome(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textHome, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	int t;
+
+	t = pen0 ;
+	pen0 = pen1;
+	pen1 = t;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	int t;
+
+	t = pen0 ;
+	pen0 = pen1;
+	pen1 = t;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+
 
