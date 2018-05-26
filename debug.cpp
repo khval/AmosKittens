@@ -190,7 +190,7 @@ void dump_prog_stack()
 	int n;
 	const char *name;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("\nDump prog stack:\n\n");
 
 	for (n=0; n<cmdStack;n++)
 	{
@@ -208,6 +208,8 @@ void dump_prog_stack()
 void dump_stack()
 {
 	int n,v;
+
+	printf("\nDump stack:\n\n");
 
 	for (n=0; n<=stack;n++)
 	{
