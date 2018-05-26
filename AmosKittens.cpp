@@ -190,6 +190,8 @@ char *get_var_index( glueCommands *self)
 
 		popStack(stack - self -> stack);
 
+		dprintf("var: index %d\n", var -> index);
+
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
 			switch (var -> type & 7)
