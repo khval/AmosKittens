@@ -747,6 +747,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1462,"textInverseOff",0,textInverseOff },
 	{0x1474,"Inverse On",0,textInverseOn },
 	{0x14E0,"Scroll",0,gfxScroll },
+	{0x17D4,"Load iff",0, gfxLoadIff },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
 
 	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
@@ -856,6 +857,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0BD0,"Def Scroll",0,gfxDefScroll },
 
 	{0x0E3C,"Plot",0,gfxPlot },
+	{0x0E4A,"Plot x,y,c",0,gfxPlot },
 	{0x0E56,"Point",0,gfxPoint },
 	{0x0ED8,"Box",0,gfxBox },
 	{0x0EC8,"Bar",0,gfxBar },
