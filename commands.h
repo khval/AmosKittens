@@ -67,6 +67,7 @@ char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdEdit(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data );

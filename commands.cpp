@@ -1551,7 +1551,7 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 
 							if (name)
 							{
-								int found = findVarPublic(name);
+								int found = findVarPublic(name,ref -> flags);
 								if (found)
 								{
 									on_every_proc_location = globalVars[found -1].var.tokenBufferPos;
@@ -1700,3 +1700,10 @@ char *cmdEdit(struct nativeCommand *cmd, char *tokenBuffer )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
+
+char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
