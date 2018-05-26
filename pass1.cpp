@@ -110,7 +110,7 @@ char *dupRef( struct reference *ref )
 
 // find Public variables not defined as global
 
-int findVarPublic( char *name )
+int findVarPublic( char *name, int type )
 {
 	int n;
 
@@ -121,6 +121,7 @@ int findVarPublic( char *name )
 		if (globalVars[n].varName == NULL) return 0;
 
 		if ((strcasecmp( globalVars[n].varName, name)==0)
+			&& (globalVars[n].var.type == type)
 			&& (globalVars[n].proc == 0)
 			&& (globalVars[n].isGlobal == FALSE))
 		{
@@ -130,22 +131,21 @@ int findVarPublic( char *name )
 	return 0;
 }
 
-int findVar( char *name, int _proc )
+int findVar( char *name, int type, int _proc )
 {
 	int n;
 
 	for (n=0;n<global_var_count;n++)
 	{
-//		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
 
 		if (globalVars[n].varName == NULL) return 0;
 
-		if ((strcasecmp( globalVars[n].varName, name)==0) &&
-			(
+		if ((strcasecmp( globalVars[n].varName, name)==0) 
+			&& (globalVars[n].var.type == type)
+			&& (
 				(globalVars[n].proc == _proc) ||
-				(globalVars[n].pass1_shared_to == _proc) ||
-				(globalVars[n].isGlobal)
-			))
+				(globalVars[n].pass1_shared_to == _proc) )
+		)
 		{
 			return n+1;
 		}
@@ -183,7 +183,7 @@ int ReferenceByteLength(char *ptr)
 	return length;
 }
 
-void add_var_from_ref( struct reference *ref, char *tmp, bool is_proc )
+void add_var_from_ref( struct reference *ref, char *tmp, int type )
 {
 	struct kittyData *var;
 
@@ -193,7 +193,7 @@ void add_var_from_ref( struct reference *ref, char *tmp, bool is_proc )
 	globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
 
 	var = &globalVars[global_var_count-1].var;
-	var->type = is_proc ? type_proc : ref -> flags & 7;
+	var->type = type;
 	var->len = 0;
 	if (var -> type == type_string) var->str = strdup("");
 }
@@ -300,7 +300,19 @@ void pass1var(char *ptr, bool is_proc )
 	tmp = dupRef( ref );
 	if (tmp)
 	{
-		found = findVar(tmp, is_proc ? 0 : procCount);
+		int type = ref -> flags & 7;
+
+		if (is_proc)
+		{
+			type = type_proc;
+		}
+		else
+		{
+			char *next_ptr = ptr + sizeof(struct reference) + ref -> length;	
+			if  (*((unsigned short *) next_ptr)  == 0x0074) type |= type_array;
+		}
+
+		found = findVar(tmp, type , is_proc ? 0 : procCount);
 		if (found)
 		{
 			free(tmp);		//  don't need tmp
@@ -311,24 +323,23 @@ void pass1var(char *ptr, bool is_proc )
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
-
-				globalVars[found-1].proc = is_proc ? 0 : procCount;
+				globalVars[found-1].proc =  procCount;
 			}
 		}
 		else
 		{
 			if (is_proc)
 			{
-				add_var_from_ref( ref, tmp, is_proc );
+				add_var_from_ref( ref, tmp, type_proc );
+
 				globalVars[global_var_count-1].proc = procCount;
 
 				var = &globalVars[global_var_count-1].var;
-				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
 			}
 			else
 			{
-				add_var_from_ref( ref, tmp, is_proc );
+				add_var_from_ref( ref, tmp, type );
 				globalVars[global_var_count-1].proc = procCount;
 			}
 		}

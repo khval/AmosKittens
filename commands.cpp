@@ -36,7 +36,7 @@ extern int tokenMode;
 extern int tokenlength;
 extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
-extern int findVarPublic( char *name );
+extern int findVarPublic( char *name, int type );
 
 using namespace std;
 

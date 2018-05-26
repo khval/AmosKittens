@@ -20,7 +20,7 @@ extern int tokenMode;
 extern int tokenlength;
 
 extern char *findLabel( char *name );
-extern int findVarPublic( char *name );
+extern int findVarPublic( char *name, int type );
 extern std::vector<struct label> labels;
 
 char *(*onError)(char *ptr) = NULL;

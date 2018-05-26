@@ -253,23 +253,23 @@ char *do_var_index_alloc( glueCommands *cmd)
 
 	switch (var -> type)
 	{
-		case type_int:
+		case type_int | type_array:
 				size = var -> count * sizeof(int);
 				var -> int_array = (int *) malloc( size ) ;
 				break;
-		case type_float:
+		case type_float | type_array:
 				size = var -> count * sizeof(double);
 				var -> float_array = (double *) malloc( size ) ;
 				break;
-		case type_string:
+		case type_string | type_array:
 				size = var -> count * sizeof(char *);
 				var -> str_array = (char **) malloc( size ) ;
 				break;
+
+		default: setError(22);
 	}
 
-	memset( var -> str, 0, size );	// str is a union :-)
-
-	var -> type |= type_array; 	
+	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
 
 	popStack(stack - cmd -> stack);
 	return NULL;
