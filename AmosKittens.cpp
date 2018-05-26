@@ -791,6 +791,7 @@ struct nativeCommand nativeCommands[]=
 	{0x25A4, "Else If", 2, cmdElseIf },
 
 	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.
+
 	{0x0E2C, "Autoback", 0, gfxAutoback },
 	{0x0EE8, "Paint",0, gfxPaint },
 

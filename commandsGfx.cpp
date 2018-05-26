@@ -31,7 +31,7 @@ int xgr = 0,  ygr = 0;
 
 extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data );
-char *_setVar( struct glueCommands *data );
+extern char *_setVar( struct glueCommands *data );
 
 struct defScroll
 {
@@ -469,7 +469,7 @@ char *_gfxPlot( struct glueCommands *data )
 	int args = stack - data->stack +1 ;
 	int x0 = xgr, y0 = ygr,c;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
