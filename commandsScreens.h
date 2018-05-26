@@ -28,4 +28,6 @@ char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxXScreen(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxYScreen(struct nativeCommand *cmd, char *tokenBuffer);
 

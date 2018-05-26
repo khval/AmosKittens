@@ -811,3 +811,68 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+char *_gfxXScreen( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int x = 0;
+	struct retroScreen *screen;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1) 
+	{
+		if (screen = screens[current_screen])
+		{
+			x = engine_mouse_x 
+				- screen -> scanline_x 
+				- screen -> offset_x;
+
+			if ( (screen -> videomode & retroHires) == 0 ) x /= 2;
+		}
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(x);
+	return NULL;
+}
+
+char *gfxXScreen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxXScreen, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxYScreen( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int y = 0;
+	struct retroScreen *screen;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1) 
+	{
+		if (screen = screens[current_screen])
+		{
+			y = engine_mouse_y 
+				- screen -> scanline_y 
+				- screen -> offset_y;
+
+			if ( (screen -> videomode & retroInterlaced) == 0 ) y /= 2;
+		}
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(y);
+	return NULL;
+}
+
+char *gfxYScreen(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxYScreen, tokenBuffer );
+	return tokenBuffer;
+}
+
