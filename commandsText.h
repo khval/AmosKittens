@@ -15,4 +15,5 @@ extern char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textHome(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textBorderStr(nativeCommand *cmd, char *ptr);
 

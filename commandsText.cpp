@@ -311,5 +311,21 @@ char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textBorderStr( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textBorderStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textBorderStr, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
