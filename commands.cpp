@@ -1694,3 +1694,9 @@ char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
+
+char *cmdEdit(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}

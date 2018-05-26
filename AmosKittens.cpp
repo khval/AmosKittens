@@ -21,6 +21,7 @@
 #include "commandsScreens.h"
 #include "commandsText.h"
 #include "commandsKeyboard.h"
+#include "commandsObjectControl.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -708,6 +709,8 @@ struct nativeCommand nativeCommands[]=
 	{0x01AA, "Every Off", 0, cmdEveryOff },
 
 	{0x0614,"Varptr",0,machineVarPtr},
+
+	{0x0670,"Edit",0,cmdEdit },
 	{0x0686,"Rnd",0,mathRnd},
 	{0x0690,"Randomize",0,mathRandomize},
 	{0x06A0,"Sgn",0,mathSgn},
