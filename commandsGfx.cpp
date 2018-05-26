@@ -271,29 +271,47 @@ char *_gfxPolygon( struct glueCommands *data )
 char *_gfxPolyline( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
+	bool success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ( (args>2) && ((args&1) == 0) && (screens[current_screen]) )
+	printf("args: %d\n",args);
+
+	if (screens[current_screen])
 	{
-		int coordinates = args >> 1;
-		int lx,ly,x,y,_stack,n;
-
-		_stack = data -> stack;
-
-		lx = _stackInt( _stack++ );
-		ly = _stackInt( _stack++ );
-
-		for (n=1;n<coordinates;n++)
+		
+		if ( (args>2) && ((args&1) == 0))
 		{
-			x = _stackInt( _stack++ );
-			y = _stackInt( _stack++ );
-			retroLine( screens[current_screen], lx,ly,x,y,pen0 );
-			lx = x;
-			ly=y;
+			int coordinates = args >> 1;
+			int lx,ly,_stack,n;
+
+			_stack = data -> stack;
+
+			lx = _stackInt( _stack++ );
+			ly = _stackInt( _stack++ );
+
+			for (n=1;n<coordinates;n++)
+			{
+				xgr = _stackInt( _stack++ );
+				ygr = _stackInt( _stack++ );
+				retroLine( screens[current_screen], lx,ly,xgr,ygr,pen0 );
+				lx = xgr;
+				ly=ygr;
+			}
+			success = true;
+		}
+		else if (args == 3)
+		{
+			int x,y;
+			x = _stackInt( stack-1 );
+			y = _stackInt( stack );
+			retroLine( screens[current_screen], xgr,ygr,x,y,pen0 );
+			xgr=x;ygr=y;
+			success = true;
 		}
 	}
-	else	setError(22);
+	
+	if (success == false) setError(22);
 
 	popStack( stack - data->stack );
 	return NULL;
