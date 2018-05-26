@@ -521,6 +521,12 @@ char *_gfxPaint( struct glueCommands *data )
 			stack_get_if_int( stack, &y0 );
 			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,pen0 );
 			break;
+		case 3:
+			stack_get_if_int( stack-1, &x0 );
+			stack_get_if_int( stack, &y0 );
+			c = _stackInt( stack );
+			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,c );
+			break;
 		default:
 			setError(22);
 	}
