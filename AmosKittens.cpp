@@ -749,9 +749,12 @@ struct nativeCommand nativeCommands[]=
 	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
 	{0x171A, "Close Editor", 0, cmdCloseEditor },
 
-	{0x1E16,"X Mouse",0,gfxXMouse },
-	{0x1E24,"Y Mouse",0,gfxYMouse },
-	{0x1E32,"Mouse Key",0,gfxMouseKey },
+	{0x1DE0, "Hide", 0, ocHide },	// hide mouse, (only dummy).
+	{0x1E16,"X Mouse",0,ocXMouse },
+	{0x1E24,"Y Mouse",0,ocYMouse },
+	{0x1E32,"Mouse Key",0,ocMouseKey },
+	{0x1E42,"Mouse Click",0,ocMouseClick },
+	{0x1E6E,"Limit Mouse",0,ocMouseLimit },
 
 	{0x21CA,"Poke",0,machinePoke},
 	{0x21E6,"Peek",0,machinePeek},
@@ -781,7 +784,6 @@ struct nativeCommand nativeCommands[]=
 	{0x25A4, "Else If", 2, cmdElseIf },
 
 	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.
-	{0x1DE0, "Hide", 0, gfxHide },	// hide mouse, (only dummy).
 	{0x0E2C, "Autoback", 0, gfxAutoback },
 	{0x0EE8, "Paint",0, gfxPaint },
 

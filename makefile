@@ -33,6 +33,7 @@ main_objects = commands.cpp \
 			cleanup.cpp \
 			readhunk.cpp \
 			engine.cpp \
+			commandsObjectControl.cpp \
 			bitmap_font.cpp
 
 main_SRCS = AmosKittens.cpp

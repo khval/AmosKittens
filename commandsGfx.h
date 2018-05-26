@@ -5,7 +5,6 @@
 #include "amosKittens.h"
 
 char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxMouseKey(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxBox(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxBar(struct nativeCommand *cmd, char *tokenBuffer);
@@ -13,8 +12,6 @@ char *gfxDraw(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxCircle(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxInk(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxXMouse(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxYMouse(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer);
@@ -41,7 +38,6 @@ char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxRain(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxHide(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPaint(struct nativeCommand *cmd, char *tokenBuffer);
 

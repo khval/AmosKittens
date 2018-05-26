@@ -106,13 +106,6 @@ char *_gfxColour( struct glueCommands *data )
 	return NULL;
 }
 
-
-char *gfxMouseKey(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	setStackNum(engine_mouse_key);
-	return tokenBuffer;
-}
-
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (( sig_main_vbl )&&( engine_started ))
@@ -426,17 +419,6 @@ char *gfxInk(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxXMouse(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	setStackNum(engine_mouse_x);
-	return tokenBuffer;
-}
-
-char *gfxYMouse(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	setStackNum(engine_mouse_y);
-	return tokenBuffer;
-}
 
 char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1424,12 +1406,6 @@ char *gfxAppear(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	setStackNum( 0 );
-	return tokenBuffer;
-}
-
-char *gfxHide(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	// hide mouse pointer.
 	return tokenBuffer;
 }
 
