@@ -1193,8 +1193,10 @@ char *_cmdRead( struct glueCommands *data )
 	short token;
 	unsigned short _len;
 	int args = stack - data->stack +1;
+	bool is_first = true;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("args: %d\n",args);
 
 	popStack( stack - data->stack  );
 
@@ -1242,7 +1244,7 @@ char *_cmdRead( struct glueCommands *data )
 
 					case 0x005C:	// comma
 							data_read_pointer +=2;
-							stack ++;
+							if (is_first == false)	stack ++;
 							try_next_token = true;
 							break;
 
@@ -1254,6 +1256,8 @@ char *_cmdRead( struct glueCommands *data )
 							data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x0404 , -1, -1, _file_end_ );
 							try_next_token = true;	
 				}
+
+				is_first = false;
 
 				if (data_read_pointer == 0x0000) break;
 			} while ( try_next_token );
