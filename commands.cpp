@@ -420,9 +420,13 @@ char *_setVar( struct glueCommands *data )
 
 	proc_names_printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
 
-	dprintf("SET var %s \n",globalVars[ data->lastVar-1].varName);
-
 	var = &globalVars[data -> lastVar-1].var;
+
+	#ifdef show_debug_printf_yes
+		printf("SET var %s",globalVars[ data->lastVar-1].varName);
+		if (var -> type & type_array)	printf("(%d)=",_set_var_index);
+		printf("\n");
+	#endif
 
 	success = FALSE;
 
@@ -1040,10 +1044,9 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 	int n;
 	unsigned short token;
 
-	proc_names_printf("go down this path ....\n");
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	args = stack - sdata->stack +1;
-
 	stack -= (args-1);	// move to start of args.
 
 	n=0;
@@ -1172,12 +1175,12 @@ char *_cmdRead( struct glueCommands *data )
 	unsigned short _len;
 	int args = stack - data->stack +1;
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	popStack( stack - data->stack  );
 
 	while (args--)
 	{
-		dprintf("args: %d\n",args);
-
 		if (data_read_pointer)
 		{
 			bool try_next_token;
@@ -1187,7 +1190,7 @@ char *_cmdRead( struct glueCommands *data )
 				try_next_token = false;
 				token = *((short *) data_read_pointer);
 
-				dprintf("token %04x\n",token);
+				dprintf("data pointer %08x (line %d) - token %04x\n",data_read_pointer, getLineFromPointer(data_read_pointer), token);
 
 				switch (token)
 				{
