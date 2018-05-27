@@ -314,9 +314,31 @@ char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *_textBorderStr( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
+	char *newstr = NULL;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (args == 2)
+	{
+		char *txt = _stackString( stack-1 );
+		int border = _stackInt( stack );
+
+		if ((txt)&&(border>0)&&(border<16))
+		{
+			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
+			if (newstr)
+			{
+				sprintf(newstr,"%cE0%s%cE%c",27,txt,27,48+ border );
+			}
+		}
+
+		if (newstr == NULL) setError(60);
+	}
+	else setError(22);
+
 	popStack( stack - data->stack );
+	if (newstr) setStackStr( newstr );
+
 	return NULL;
 }
 
