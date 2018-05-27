@@ -114,27 +114,51 @@ char *_procAndArgs( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ((ref -> ref) && (data -> tokenBuffer2))
+	if (ref -> ref)
 	{
 		int idx = ref->ref-1;
 
-		switch (globalVars[idx].var.type & 7)
+		printf("idx %d\n",idx);
+
+		if (data -> tokenBuffer2)	// has arguments.
 		{
-			case type_proc:
+			switch (globalVars[idx].var.type & 7)
+			{
+				case type_proc:
 
-				oldStack = data -> stack;
+					oldStack = data -> stack;
 
-				stackCmdProc( _procedure, data -> tokenBuffer2);	//  data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
+					stackCmdProc( _procedure, data -> tokenBuffer2);  
 
-				cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
-				dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
+					cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
-				tokenMode = mode_store;
-				return globalVars[idx].var.tokenBufferPos   ;
+					tokenMode = mode_store;
+					return globalVars[idx].var.tokenBufferPos   ;
+			}
+		}
+		else 	// no arguments
+		{
+			switch (globalVars[idx].var.type & 7)
+			{
+				case type_proc:
+
+					oldStack = data -> stack;
+
+					stackCmdProc( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
+
+					cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
+
+					tokenMode = mode_store;
+					return globalVars[idx].var.tokenBufferPos   ;
+			}
 		}
 	}
 
-	return  data -> tokenBuffer ;
+	setError(22);
+
+	return  NULL ;
 }
 
 char *_gosub( struct glueCommands *data )
