@@ -98,6 +98,7 @@ struct glueCommands
 	};
 
 	int stack;
+	int parenthesis_count;
 };
 
 struct proc 
@@ -199,6 +200,7 @@ struct kittyFile
 	cmdTmp[cmdStack].flag = cmd_first;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
 #define stackCmdLoop( fn, buf )				\
@@ -223,6 +225,7 @@ struct kittyFile
 	cmdTmp[cmdStack].flag = cmd_index;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
 #define stackCmdParm( fn, buf )				\
@@ -231,9 +234,11 @@ struct kittyFile
 	cmdTmp[cmdStack].flag = cmd_para;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
 extern int currentLine;
+extern int parenthesis_count;
 
 extern void _num( int num );
 

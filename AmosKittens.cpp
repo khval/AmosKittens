@@ -42,6 +42,7 @@ char *_file_start_ = NULL;
 char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands are executed.
 char *_file_end_ = NULL;
 
+int parenthesis_count = 0;
 int cmdStack = 0;
 int procStackCount = 0;
 unsigned short last_token = 0;

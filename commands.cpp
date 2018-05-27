@@ -467,7 +467,7 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 int parenthesis[100];
-int parenthesis_count = 0;
+extern int parenthesis_count ;
 
 char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {
