@@ -454,13 +454,21 @@ char *_setVar( struct glueCommands *data )
 
 	if (success == FALSE)
 	{
-		proc_names_printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
+		if ( kittyStack[stack].type !=  (var -> type & 7))
+		{
+			proc_names_printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
 				stack, 
 				kittyStack[stack].type, 
 				data -> lastVar, 
 				var -> type & 7);
+			dump_stack();
+			setError(ERROR_Type_mismatch);
+		}
 
-		setError(ERROR_Type_mismatch);
+		if (var -> type & type_array)
+		{
+			if (var -> count == 0) setError(27);
+		}
 	}
 
 	return NULL;
