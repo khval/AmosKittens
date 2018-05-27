@@ -49,7 +49,7 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 
 	switch ( NEXT_TOKEN(tokenBuffer ))
 	{
-		case 0x02A8:
+		case 0x02A8:	// Goto
 				tokenBuffer += 2;
 				
 				if (NEXT_TOKEN(tokenBuffer ) == 0x006)	// label
@@ -69,7 +69,7 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 				}
 				break;
 
-		case 0x0386:
+		case 0x0386:	// Proc
 				tokenBuffer += 2;
 
 				if (NEXT_TOKEN(tokenBuffer ) == 0x0012)	// proc
@@ -80,7 +80,7 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 
 					if (name)
 					{
-						int found = findVarPublic(name);
+						int found = findVarPublic(name, ref -> flags);
 						if (found)
 						{
 							on_error_proc_location = globalVars[found -1].var.tokenBufferPos;

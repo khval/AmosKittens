@@ -412,7 +412,12 @@ char *pass1_shared( char *ptr )
 
 						if (tmp)
 						{
-							var = findVarPublic(tmp);
+							unsigned short next_token = *((unsigned short *) (ptr + sizeof(struct reference) + ref -> length) );
+							int type = ref -> flags;
+
+							if ( next_token == 0x0074 ) type |= type_array;
+
+							var = findVarPublic(tmp, type);
 							if (var)
 							{
 								globalVars[var-1].pass1_shared_to = procCount;
@@ -457,7 +462,13 @@ char *pass1_global( char *ptr )
 
 						if (tmp)
 						{
-							var = findVarPublic(tmp);
+							char *next_ptr = ptr + sizeof(struct reference *) + ref -> length;
+							unsigned short next_token = *((unsigned short *) (ptr + sizeof(struct reference) + ref -> length) );
+							int type = ref -> flags;
+
+							if ( next_token == 0x0074 ) type |= type_array;
+
+							var = findVarPublic(tmp, type );
 							if (var)
 							{
 								free(tmp);

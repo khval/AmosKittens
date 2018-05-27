@@ -677,13 +677,11 @@ char *_addData( struct glueCommands *data )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	int args;
+	int args = stack - data -> stack + 1;
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
-
-	args = stack - data -> stack + 1;
 
 	if (stack==0) 
 	{
@@ -814,8 +812,6 @@ char *_addDataToText( struct glueCommands *data )
 	return NULL;
 }
 
-
-
 char *_subStr( struct glueCommands *data )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
@@ -852,7 +848,6 @@ char *_subStr( struct glueCommands *data )
 
 	return NULL;
 }
-
 
 char *_subData( struct glueCommands *data )
 {
