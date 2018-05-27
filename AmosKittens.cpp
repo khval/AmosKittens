@@ -280,7 +280,10 @@ char *do_var_index_alloc( glueCommands *cmd)
 
 void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (parenthesis_count == 0)
+	{
+		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	}
 }
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
