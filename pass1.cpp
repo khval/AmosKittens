@@ -682,7 +682,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x0012:	pass1var( ptr, false );
+				case 0x0012:	pass1var( ptr, true );
 							ret += ReferenceByteLength(ptr);
 							break;
 
