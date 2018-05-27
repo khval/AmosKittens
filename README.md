@@ -46,12 +46,12 @@ Implemented:
 Partially implemented:
 
 * Chapter 6. Graphics.
+* Chapter 8. Text & Windows
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
 
 Not Implemented:
 
-* Chapter 8. Text & Windows
 * Chapter 11. Hardware sprites
 * Chapter 12. Blitter objects
 * Chapter 13. Object control
@@ -69,11 +69,9 @@ Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedu
 
 Commands "Save" and"Load" is not supported atm, will return to this when I start working on graphics.
 
-Page 47 in AMOS The Creator Manual, local data statements is not working in Amos Pro, restore, data and read is covered many places in the manual, I return to this later time, personally I think its redundant old way of doing things.
-
 Note Machine Code 
 -----------------
-Ba careful with these commands.
+Be careful with these commands.
 
 String in Amos kittens are \0 terminated.
 Amos kittens don’t have length in front of strings, VarPtr(a$)-2 won't work, use Len(a$)
