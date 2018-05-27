@@ -328,7 +328,7 @@ char *_textBorderStr( struct glueCommands *data )
 			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
 			if (newstr)
 			{
-				sprintf(newstr,"%cE0%s%cE%c",27,txt,27,48+ border );
+				sprintf(newstr,"%cE0%s%cR%c",27,txt,27,48+ border );
 			}
 		}
 

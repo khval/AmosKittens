@@ -22,6 +22,8 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
+int _reserve_zones_ = 20;
+
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
@@ -90,16 +92,43 @@ char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocZoneStr( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
+	char *newstr = NULL;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (args == 2)
+	{
+		char *txt = _stackString( stack-1 );
+		int zone = _stackInt( stack );
+
+		dump_stack();
+		printf("zone: %d\n",zone);
+
+		if ((txt)&&(zone>-1)&&(zone<_reserve_zones_))
+		{
+			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
+			if (newstr)
+			{
+				sprintf(newstr,"%cZ0%s%cR%c",27,txt,27,48+ zone );
+			}
+		}
+
+		if (newstr == NULL) setError(60);
+	}
+	else setError(22);
+
 	popStack( stack - data->stack );
+	if (newstr) setStackStr( newstr );
+
 	return NULL;
 }
 
 char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdNormal( _ocZoneStr, tokenBuffer );
+
+
+	stackCmdParm( _ocZoneStr, tokenBuffer );
 	return tokenBuffer;
 }
 
