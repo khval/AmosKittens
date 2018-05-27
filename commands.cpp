@@ -358,54 +358,65 @@ BOOL setVarString( struct kittyData *var )
 	return FALSE;
 }
 
-
 BOOL setVarIntArray( struct kittyData *var )
 {
-	var -> index = _set_var_index;
-
-	switch (kittyStack[stack].type)
+	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
-		case type_int:
-			var->int_array[var -> index] = kittyStack[stack].value;
-			return TRUE;
+		var -> index = _set_var_index;
 
-		case type_float:
-			var->int_array[var -> index] = (int) kittyStack[stack].decimal;
-			return TRUE;
+		switch (kittyStack[stack].type)
+		{
+			case type_int:
+				var->int_array[var -> index] = kittyStack[stack].value;
+				return TRUE;
+
+			case type_float:
+				var->int_array[var -> index] = (int) kittyStack[stack].decimal;
+				return TRUE;
+		}
 	}
+	else setError(25);
 
 	return FALSE;
 }
 
 BOOL setVarDecimalArray( struct kittyData *var )
 {
-	var -> index = _set_var_index;
-
-	switch (kittyStack[stack].type)
+	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
-		case type_int:
-			var->float_array[var -> index] = (double) kittyStack[stack].value;
-			return TRUE;
+		var -> index = _set_var_index;
 
-		case type_float:
-			var->float_array[var -> index] = kittyStack[stack].decimal;
-			return TRUE;
+		switch (kittyStack[stack].type)
+		{
+			case type_int:
+				var->float_array[var -> index] = (double) kittyStack[stack].value;
+				return TRUE;
+
+			case type_float:
+				var->float_array[var -> index] = kittyStack[stack].decimal;
+				return TRUE;
+		}
 	}
+	else setError(25);
 
 	return FALSE;
 }
 
 BOOL setVarStringArray( struct kittyData *var )
 {
-	var -> index = _set_var_index;
-
-	switch (kittyStack[stack].type)
+	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
-		case type_string:
-			if (var->str_array[var -> index] ) free(var->str_array[var->index]);
-			var->str_array[var -> index] = strdup(kittyStack[stack].str);	
-			return TRUE;
+		var -> index = _set_var_index;
+
+		switch (kittyStack[stack].type)
+		{
+			case type_string:
+				if (var->str_array[var -> index] ) free(var->str_array[var->index]);
+				var->str_array[var -> index] = strdup(kittyStack[stack].str);	
+				return TRUE;
+		}
 	}
+	else setError(25);
 
 	return FALSE;
 }
