@@ -14,6 +14,8 @@ extern struct TextFont *topaz8_font;
 extern int pen;
 extern int paper;
 
+void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph);
+
 struct _font_loc {
 	short bit_start;
 	short bit_width;
@@ -47,6 +49,14 @@ struct _font
 void draw_bit( struct retroScreen *screen, int x,int y)
 {
 	retroPixel( screen,x,y,pen);
+}
+
+void draw_char(struct retroScreen *screen, int lX, int lY, char c )
+{
+	int x = lX * 8;
+	int y = lY * 8 ;
+	retroBAR( screen, x,y,x+7,y+7, paper);
+	draw_glyph( screen, topaz8_font, x, y, c );
 }
 
 struct TextFont *open_font( char const *filename, int size )
@@ -120,12 +130,78 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 	}
 }
 
+//struct esc_cmd;	// forward declare.
+
+struct esc_data
+{
+	const char *esc;
+	void (*fn) (struct retroScreen *screen, struct esc_data *, int, int, char );
+	int x;
+	int y;
+};
+
+struct esc_cmd
+{
+	const char *name;
+	void (*fn) (struct retroScreen *screen,struct esc_data *, int, int, char );
+};
+
+void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+{
+	int x,y;
+	data -> y --;
+	data -> x --;
+	x1 ++;
+	y1 ++;
+
+	if (data -> y>-1) draw_char(screen, x , data -> y , '-');
+	if ( y1>-1) draw_char(screen, x , y1 , '-');
+
+	for (y=data->y+1;y<y1;y++)
+	{
+		if (data -> x>-1) draw_char(screen, data -> x ,  y , '|');
+		if ( x1>-1) draw_char(screen, x1 , y , '|');
+	}
+
+	for (x=data->x+1;x<x1;x++)
+	{
+		if (data -> y>-1) draw_char(screen, x , data -> y , '-');
+		if ( y1>-1) draw_char(screen, x , y1 , '-');
+	}
+}
+
+struct esc_cmd esc_codes[]=
+{
+	{"R",NULL},		// return
+	{"Z0",NULL},	// zone
+	{"E0",esc_border},		// border
+	{NULL,NULL}
+};
+
+struct esc_data esc_data_tab[20];
+
+int what_esc_code(const char *txt)
+{
+	int ret;
+	struct esc_cmd *code;
+
+	ret = 0;
+	for (code=esc_codes; code->name; code++)
+	{
+		if (strncmp(txt,code->name,strlen(code->name))==0) return ret;
+		ret ++;
+	}
+	return -1;
+}
+
+
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 {
  	int x;
 	int y;
 	char c;
 	int cnt = 0;
+	int esc_count = 0;
 
 	while (c =*text ++) 
 	{
@@ -137,15 +213,42 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 
 		switch (c)
 		{
+			case 27:	// ESC code sequence.
+					{
+						int code = what_esc_code( (const char *) text);
+						bool not_found = false;
+						switch (code)
+						{
+							case -1:	break;
+							case 0:	text +=1;		// skip R.
+									if (*text)	// not \0
+									{
+										if (esc_count)
+										{
+											esc_count --;
+											printf("%s: %d,%d to %d,%d, return %c\n",  esc_data_tab[esc_count].esc, esc_data_tab[esc_count].x, esc_data_tab[esc_count].y, screen -> locateX, screen -> locateY, *text);
+											if (esc_data_tab[esc_count].fn) esc_data_tab[esc_count].fn( screen, &esc_data_tab[esc_count], screen -> locateX, screen -> locateY, *text);
+										}
+										text++;
+									}
+									break;
+							default: 	
+									text += strlen(esc_codes[code].name);
+									esc_data_tab[esc_count].esc = esc_codes[code].name;
+									esc_data_tab[esc_count].fn = esc_codes[code].fn;
+									esc_data_tab[esc_count].x = screen -> locateX;
+									esc_data_tab[esc_count].y = screen -> locateY;
+									esc_count++;
+									break;
+						}
+					}
+					break;
+
 			case 10:	screen -> locateX = 0;
 					screen -> locateY++;
 					break;
 			default:
-					x = screen -> locateX * 8;
-					y = (screen -> locateY * 8) ;
-
-					retroBAR( screen, x,y,x+7,y+7, paper);
-					draw_glyph( screen, topaz8_font, x, y, c );
+					draw_char(screen, screen -> locateX , screen -> locateY , c);
 					screen -> locateX ++;
 		}
 
