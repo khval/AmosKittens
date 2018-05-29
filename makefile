@@ -34,7 +34,8 @@ main_objects = commands.cpp \
 			readhunk.cpp \
 			engine.cpp \
 			commandsObjectControl.cpp \
-			bitmap_font.cpp
+			bitmap_font.cpp \
+			var_helper.cpp
 
 main_SRCS = AmosKittens.cpp
 
