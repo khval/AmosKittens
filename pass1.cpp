@@ -362,33 +362,43 @@ void pass1label(char *ptr)
 	struct kittyData *var;
 	char *next;
 
+	printf("crock\n");
+
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
 	{
 		printf("%s\n",tmpName);
+		ref -> ref = 1;	
 
-		at = findLabel(tmpName);
-		if (at)
+		// only add new labels if last token is 0.
+
+		if (last_token  == 0)
 		{
-			free(tmpName);		//  don't need tmp
-			ref -> ref = 1;		// don't care, we have the address in lookup table
+			at = findLabel(tmpName);
+
+			if (at)
+			{
+				free(tmpName);		//  don't need tmp
+			}
+			else
+			{
+				label tmp;
+				next = ptr + sizeof(struct reference) + ref->length;
+
+				// skip all new lines..
+				while ( (*(unsigned short *) next) == 0x0000 ) next += 4;	// token and newline code
+
+				tmp.name = tmpName;
+				tmp.tokenLocation = next ;
+
+				labels.push_back(tmp);
+				ref -> ref = labels.size();
+
+				tmpName = NULL;
+			}
 		}
-		else
-		{
-			label tmp;
-			next = ptr + sizeof(struct reference) + ref->length;
 
-			// skip all new lines..
-			while ( (*(unsigned short *) next) == 0x0000 ) next += 4;	// token and newline code
-
-			tmp.name = tmpName;
-			tmp.tokenLocation = next ;
-
-			labels.push_back(tmp);
-			ref -> ref = labels.size();
-		}
-
-		// we should not free tmp, see code above.
+		if (tmpName) free(tmpName);
 	}
 }
 
