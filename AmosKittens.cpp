@@ -54,8 +54,6 @@ unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 
 
 char *data_read_pointer = NULL;
 
-char *(*jump_mode) (struct reference *ref, char *ptr) = NULL;
-
 char *get_var_index( glueCommands *self);
 
 void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
@@ -308,74 +306,6 @@ char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
 
 extern char *findLabel( char *name );
 
-char *jump_mode_goto (struct reference *ref, char *ptr) 
-{
-	if (ref -> flags == 0)
-	{
-		char *name = strndup( ptr + sizeof(struct reference), ref->length );
-		char *newLocation;
-
-		if (name)
-		{
-			newLocation = findLabel(name);
-			if (newLocation)
-			{
-				if (ref->length>=4)
-				{
-					ref -> flags = 255;
-					*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
-				}
-
-				free(name);
-				return newLocation - sizeof(struct reference)  ;
-			}
-			free(name);
-		}
-	} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
-	{
-		return *((char **) (ptr + sizeof(struct reference))) ;
-	}
-
-	stack++;
-
-	return ptr;
-}
-
-char *jump_mode_gosub (struct reference *ref, char *ptr) 
-{
-	stackCmdLoop( _gosub, ptr );
-
-	if (ref -> flags == 0)
-	{
-		char *name = strndup( ptr + sizeof(struct reference), ref->length );
-		char *newLocation;
-
-		if (name)
-		{
-			newLocation = findLabel(name);
-			if (newLocation)
-			{
-				if (ref->length>=4)
-				{
-					ref -> flags = 255;
-					*((char **) (ptr + sizeof(struct reference))) = newLocation - sizeof(struct reference)  ;
-				}
-
-				free(name);
-				return newLocation - sizeof(struct reference)  ;
-			}
-			free(name);
-		}
-	} else if ( ref -> flags == 255 )	// accelerated, we don't give fuck about the name of variable
-	{
-		return *((char **) (ptr + sizeof(struct reference))) ;
-	}
-
-	stack++;
-
-	return ptr;
-}
-
 
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
@@ -394,12 +324,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		kittyStack[stack].value = 0;
 		kittyStack[stack].state = state_hidden_subData;
 		stack++;
-	}
-
-	if (jump_mode)
-	{
-		printf("jump_mode\n");
-		return jump_mode( ref, ptr );
 	}
 
 	last_var = ref -> ref;
@@ -746,7 +670,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1462,"textInverseOff",0,textInverseOff },
 	{0x1474,"Inverse On",0,textInverseOn },
 	{0x14E0,"Scroll",0,gfxScroll },
-	{0x1632,"Reserve Zone", 0, ocReserveZone },		// dummy
+	{0x1632,"Reserve Zone", 0, ocReserveZone },
+	{0x1646,"Reserve Zone", 0, ocReserveZone },
 	{0x16B6,"Scin(x,y)",0,gfxScin },
 	{0x16E2,"Mouse Zone",0,ocMouseZone },			// dummy.
 	{0x16F2,"Set input", 0, cmdSetInput },
