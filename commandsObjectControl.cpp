@@ -52,7 +52,6 @@ char *ocMouseClick(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 char *ocHide(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	// hide mouse pointer.
@@ -70,6 +69,7 @@ char *_ocMouseLimit( struct glueCommands *data )
 
 char *ocMouseLimit(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _ocMouseLimit, tokenBuffer );
 	return tokenBuffer;
 }
@@ -79,12 +79,28 @@ char *_ocReserveZone( struct glueCommands *data )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (zones) free(zones);
+	zones_allocated = 0;
+
+	if (args == 1)
+	{
+		int newzones = _stackInt( stack );
+
+		if (newzones)
+		{
+			zones = (struct zone *) malloc( sizeof(struct zone) * (newzones+1) );
+			zones_allocated = (newzones+1);
+		}
+	}
+	else setError(22);
+
 	popStack( stack - data->stack );
 	return NULL;
 }
 
 char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _ocReserveZone, tokenBuffer );
 	return tokenBuffer;
 }
@@ -132,12 +148,34 @@ char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+int XScreen_formula( struct retroScreen *screen );
+int YScreen_formula( struct retroScreen *screen );
+
 char *_ocMouseZone( struct glueCommands *data )
 {
+	struct retroScreen *s;
+	struct zone *zz;
 	int args = stack - data->stack +1 ;
+	int z,rz = -1;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	for (z=0;z<zones_allocated;z++)
+	{
+		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		{
+			if (s = screens[zones[z].screen])
+			{
+				int x = XScreen_formula( s );
+				int y = YScreen_formula( s );
+				zz = &zones[z];
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	rz = z;
+			}
+		}
+	}
+
 	popStack( stack - data->stack );
+	setStackNum( rz );
+
 	return NULL;
 }
 
