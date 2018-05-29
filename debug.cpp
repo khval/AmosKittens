@@ -89,7 +89,7 @@ const char *findDebugSymbolName( char *(*fn) (struct glueCommands *data) )
 	return NULL;
 }
 
-void dumpLabels()
+void dump_labels()
 {
 	int n;
 
@@ -270,7 +270,7 @@ void dump_end_of_program()
 	dump_prog_stack();
 
 	printf("\n--- label dump ---\n");
-	dumpLabels();
+	dump_labels();
 }
 
 int getLineFromPointer( char *address )
