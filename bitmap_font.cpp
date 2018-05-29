@@ -146,6 +146,26 @@ struct esc_cmd
 	void (*fn) (struct retroScreen *screen,struct esc_data *, int, int, char );
 };
 
+extern int current_screen;
+extern struct retroScreen *screens[8] ;
+
+void esc_zone (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+{
+	int z = c - '0';
+
+	if ((z>-1)&&(z<zones_allocated))
+	{
+		zones[z].screen = current_screen ;
+		zones[z].x0 = data -> x * 8;
+		zones[z].y0 = data -> y * 8;
+		zones[z].x1 = x1*8+7;
+		zones[z].y1 = y1*8+7;
+
+//		retroBAR( screen,zones[z].x0,zones[z].y0,zones[z].x1,zones[z].y1,4);
+	}
+}
+
+
 void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
 {
 	int x,y;
@@ -154,8 +174,18 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 	x1 ++;
 	y1 ++;
 
-	if (data -> y>-1) draw_char(screen, x , data -> y , '-');
-	if ( y1>-1) draw_char(screen, x , y1 , '-');
+	if (data->x>-1)
+	{
+		if (data -> y>-1) draw_char(screen, data->x , data -> y , '.');
+		if ( y1>-1) draw_char(screen, data->x , y1 , '\'');
+	}
+
+	if (x1>-1)
+	{
+		if (data -> y>-1) draw_char(screen, x1 , data -> y , '.');
+		if ( y1>-1) draw_char(screen, x1 , y1 , '\'');
+	}
+
 
 	for (y=data->y+1;y<y1;y++)
 	{
@@ -173,7 +203,7 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 struct esc_cmd esc_codes[]=
 {
 	{"R",NULL},		// return
-	{"Z0",NULL},	// zone
+	{"Z0",esc_zone},	// zone
 	{"E0",esc_border},		// border
 	{NULL,NULL}
 };
