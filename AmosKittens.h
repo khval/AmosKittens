@@ -182,6 +182,15 @@ struct kittyFile
 	struct kittyField *fields;
 };
 
+struct zone
+{
+	int screen;
+	int x0;
+	int y0;
+	int x1;
+	int y1;
+};
+
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
@@ -236,6 +245,9 @@ struct kittyFile
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
+
+extern struct zone *zones;
+extern int zones_allocated;
 
 extern int currentLine;
 extern int parenthesis_count;

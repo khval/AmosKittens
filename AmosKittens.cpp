@@ -48,6 +48,8 @@ int procStackCount = 0;
 unsigned short last_token = 0;
 int last_var = 0;
 int tokenlength;
+
+
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
 char *data_read_pointer = NULL;
@@ -70,6 +72,8 @@ struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
 struct kittyFile kittyFiles[10];
+struct zone *zones = NULL;
+int zones_allocated = 0;
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
@@ -1127,6 +1131,7 @@ int main(char args, char **arg)
 		clean_up_stack();
 		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
+		if (zones) free(zones);
 
 //		dumpLineAddress();
 
