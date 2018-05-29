@@ -11,6 +11,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsData.h"
+#include "var_helper.h"
 #include "errors.h"
 #include "engine.h"
 
@@ -37,6 +38,7 @@ extern int tokenlength;
 extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
 extern int findVarPublic( char *name, int type );
+extern int ReferenceByteLength(char *ptr);
 
 using namespace std;
 
@@ -159,19 +161,6 @@ char *_procAndArgs( struct glueCommands *data )
 	setError(22);
 
 	return  NULL ;
-}
-
-char *_gosub( struct glueCommands *data )
-{
-	char *ptr = data -> tokenBuffer ;
-	ptr-=2;
-	if (NEXT_TOKEN( ptr ) == 0x0006)
-	{
-		struct reference *ref = (struct reference *) (ptr + 2);
-		ptr += ( sizeof(struct reference) + ref -> length + 2) ;
-	}
-
-	return ptr ;
 }
 
 
@@ -724,19 +713,131 @@ char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_goto( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+
+	return NULL ;
+}
+
+
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	jump_mode = jump_mode_goto;
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+	char *ptr;
+	char *return_tokenBuffer;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (next_token)
+	{
+		case 0x0026:	// text
+
+					stackCmdNormal( _goto, tokenBuffer );
+					break;
+
+		case 0x0018:	// label
+		case 0x0006: 	// variable
+
+					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
+					{
+						case type_int:		// jump to label with same name as var.
+								return_tokenBuffer = tokenBuffer + 2 + ReferenceByteLength(tokenBuffer + 2) + sizeof(struct reference ) ;
+								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
+								break;
+
+						case type_string:	// jump to string.
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								stackCmdNormal( _goto, tokenBuffer );
+								break;
+
+						case type_float:
+
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								setError(22);
+								break;
+					}
+				
+					stackCmdNormal( _gosub, tokenBuffer );
+					break;
+
+		default:
+
+				printf("bad token: %04x\n", next_token);
+				setError(22);
+	}
+
 	return tokenBuffer;
 }
 
+char *_gosub( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	dump_stack();
+
+	return NULL ;
+}
+
+char *_gosub_return( struct glueCommands *data )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return data -> tokenBuffer;	// jumpBack.
+}
+
+
 char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+	char *ptr;
+	char *return_tokenBuffer;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-	jump_mode = jump_mode_gosub;
+	switch (next_token)
+	{
+		case 0x0026:	// text
+
+					stackCmdNormal( _gosub, tokenBuffer );
+					break;
+
+		case 0x0018:	// label
+		case 0x0006: 	// variable
+
+					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
+					{
+						case type_int:		// jump to label with same name as var.
+
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								dump_labels();
+
+								return_tokenBuffer = tokenBuffer + 2 + ReferenceByteLength(tokenBuffer + 2) + sizeof(struct reference ) ;
+
+								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
+								if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
+
+								break;
+
+						case type_string:	// jump to string.
+
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								stackCmdNormal( _gosub, tokenBuffer );
+								break;
+
+						case type_float:
+
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								setError(22);
+								break;
+					}
+				
+					stackCmdNormal( _gosub, tokenBuffer );
+					break;
+
+		default:
+
+				printf("bad token: %04x\n", next_token);
+				setError(22);
+	}
+
 	return tokenBuffer;
 }
 
@@ -997,7 +1098,7 @@ char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub_return ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	return tokenBuffer;
 }
@@ -1748,7 +1849,7 @@ char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdEdit(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	return tokenBuffer;
+	return NULL;	// quit
 }
 
 char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer )
