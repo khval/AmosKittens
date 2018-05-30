@@ -564,6 +564,9 @@ char *_gfxGrLocate( struct glueCommands *data )
 	int args = stack - data->stack +1 ;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+
 	switch (args)
 	{
 		case 2:
@@ -1508,6 +1511,161 @@ char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxSetPaint, tokenBuffer );
 	return tokenBuffer;
 }
+
+
+char *_gfxSetTempras( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxSetTempras(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxSetTempras, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxGrWriting( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxGrWriting, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxText( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 3:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxText(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxText, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxClip( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:
+			break;
+		case 4:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxClip, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxSetPattern( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxSetPattern, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxSetLine( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:
+			break;
+		default:
+			setError(22);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxSetLine, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 
 
 

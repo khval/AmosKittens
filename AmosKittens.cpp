@@ -646,10 +646,17 @@ struct nativeCommand nativeCommands[]=
 	{0x0ED8,"Box",0,gfxBox },
 	{0x0EE8, "Paint",0, gfxPaint },
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
-	{0x0F6A,"Set Paint",0,gfxSetPaint },		// dummy function
+	{0x0F4A,"Text",0,gfxText },					// dummy function
+	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
+	{0x1022,"Set Pattern",0,gfxSetPattern },
+	{0x1034,"Set Line",0,gfxSetLine },
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
 	{0x105A,"Ink n,n,n",0,gfxInk },
+	{0x1066,"Gr Writing",0,gfxGrWriting },			// dummy function
+	{0x1078,"Clip",0,gfxClip },					// dummy function
+	{0x1084,"Clip",0,gfxClip },					// dummy function
+	{0x10AC,"Set Tempras",0,gfxSetTempras },		// dummy function
 	{0x10B6,"Appear",0,gfxAppear },
 	{0x10D6,"zoom",0,gfxZoom },
 	{0x11D8,"Key State",0,cmdKeyState },
