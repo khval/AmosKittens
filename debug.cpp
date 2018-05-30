@@ -21,6 +21,8 @@ char *_addData (struct glueCommands *data);
 char *_subData (struct glueCommands *data);
 char *_mulData (struct glueCommands *data);
 char *_divData (struct glueCommands *data);
+char *_orData (struct glueCommands *data);
+char *_andData (struct glueCommands *data);
 char *_setVar (struct glueCommands *data);
 char *_for (struct glueCommands *data);
 char *_do (struct glueCommands *data);
@@ -53,6 +55,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_subData,"_subData"},
 	{_divData,"_divData"},
 	{_mulData,"_mulData"},
+	{_orData,"_orData"},
+	{_andData,"_andData"},
 	{_print,"_print"},
 	{_setVar, "_setVar"},
 	{_for,"_for" },
