@@ -1080,9 +1080,6 @@ char *_divData( struct glueCommands *data )
 		{
 			dprintf(" %f / %d\n", item0->decimal , item1->value );
 			setStackDecimal( item0->decimal / (double) item1->value );
-
-//			dump_stack();
-
 			success = TRUE;
 		}
 		else if (type1 == type_float)
