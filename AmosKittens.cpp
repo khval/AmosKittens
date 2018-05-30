@@ -649,6 +649,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0F6A,"Set Paint",0,gfxSetPaint },		// dummy function
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
+	{0x105A,"Ink n,n,n",0,gfxInk },
 	{0x10B6,"Appear",0,gfxAppear },
 	{0x10D6,"zoom",0,gfxZoom },
 	{0x11D8,"Key State",0,cmdKeyState },
