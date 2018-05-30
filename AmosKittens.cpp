@@ -99,7 +99,6 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	char *ret = NULL;
 	unsigned int type;
 
-
 	// we should empty stack, until first/normal command is not a parm command.
 
 	while (cmdStack)
@@ -122,7 +121,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__ );
 
 	if (cmdStack)
 	{
@@ -567,6 +566,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0658,"Sort",0,cmdSort },
 	{0x0662, "match",0,cmdMatch },
 	{0x0670,"Edit",0,cmdEdit },
+	{0x067A,"Direct",0,cmdDirect },
 	{0x0686,"Rnd",0,mathRnd},
 	{0x0690,"Randomize",0,mathRandomize},
 	{0x06A0,"Sgn",0,mathSgn},

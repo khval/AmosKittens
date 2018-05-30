@@ -1860,6 +1860,12 @@ char *cmdEdit(struct nativeCommand *cmd, char *tokenBuffer )
 	return NULL;	// quit
 }
 
+char *cmdDirect(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return NULL;	// quit
+}
+
 char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

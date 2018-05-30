@@ -1229,11 +1229,12 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-	
+
 	flushCmdParaStack();
 
 	stackCmdParm( _orData, tokenBuffer );
 	stack++;
+
 	return tokenBuffer;
 }
 
