@@ -169,6 +169,14 @@ char *_if( struct glueCommands *data )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned short token;
 	char *ptr;
+	int args = stack - data -> stack + 1;
+
+	if (args > 1) 
+	{
+		dump_stack();
+		dump_prog_stack();
+		setError(22);
+	}
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
