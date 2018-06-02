@@ -26,6 +26,8 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
+extern struct RastPort font_render_rp;
+
 int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
@@ -1569,6 +1571,24 @@ char *_gfxText( struct glueCommands *data )
 	switch (args)
 	{
 		case 3:
+			{
+				int x = _stackInt( stack-2 );
+				int y = _stackInt( stack-1 );
+				char *txt = _stackString( stack );
+
+				if (txt)
+				{
+					int l = strlen(txt);
+					int tl;
+
+					SetAPen( &font_render_rp, 4 );
+					Move( &font_render_rp, 0,10 );
+					Text( &font_render_rp, txt, l );
+					tl = TextLength(&font_render_rp, txt, l );
+
+					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screens[current_screen], x , y);
+				}
+			}
 			break;
 		default:
 			setError(22);

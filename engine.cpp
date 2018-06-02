@@ -121,6 +121,7 @@ bool open_window( int window_width, int window_height )
 }
 
 struct TextFont *topaz8_font = NULL;
+struct RastPort font_render_rp;
 
 bool init_engine()
 {
@@ -135,6 +136,19 @@ bool init_engine()
 	topaz8_font =  open_font( "topaz.font" ,  8);
 	if ( ! topaz8_font ) return FALSE;
 
+
+	InitRastPort(&font_render_rp);
+	font_render_rp.BitMap = AllocBitMapTags( 800, 50, 256, 
+				BMATags_PixelFormat, PIXF_CLUT, 
+				BMATags_Clear, true,
+				BMATags_Displayable, false,
+				TAG_END);
+
+	if ( !font_render_rp.BitMap ) return false;
+
+	font_render_rp.Font =  My_Window -> RPort -> Font;
+	SetBPen( &font_render_rp, 0 );
+
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
 
@@ -144,6 +158,12 @@ bool init_engine()
 void close_engine()
 {
 	if (topaz8_font) CloseFont(topaz8_font); topaz8_font=0;
+
+	if ( font_render_rp.BitMap )
+	{
+		FreeBitMap( font_render_rp.BitMap );
+		font_render_rp.BitMap = NULL;
+	}
 
 	if (My_Window) CloseWindow(My_Window);
 
