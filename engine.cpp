@@ -278,6 +278,8 @@ void main_engine()
 
 		while (running)
 		{
+			if (SetSignal(0L, SIGBREAKF_CTRL_C) & SIGBREAKF_CTRL_C) running = false;
+
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
 				Qualifier = msg -> Qualifier;
