@@ -200,11 +200,26 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 	}
 }
 
+extern int pen;
+extern int paper;
+
+void esc_paper (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+{
+	paper = c-'0';
+}
+
+void esc_pen (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+{
+	pen = c-'0';
+}
+
 struct esc_cmd esc_codes[]=
 {
-	{"R",NULL},		// return
-	{"Z0",esc_zone},	// zone
-	{"E0",esc_border},		// border
+	{"R",NULL},		// 0,return
+	{"Z0",esc_zone},	// 1, zone
+	{"E0",esc_border},	// 2, border
+	{"B",NULL},		// 3
+	{"P",NULL},		// 4
 	{NULL,NULL}
 };
 
@@ -262,6 +277,19 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 										text++;
 									}
 									break;
+
+							case 3:	// Paper
+									text += strlen(esc_codes[code].name);
+									esc_paper( screen, NULL, 0, 0, *text);
+									if (*text) text++;
+									break;
+
+							case 4:	// Pen
+									text += strlen(esc_codes[code].name);
+									esc_pen( screen, NULL, 0, 0, *text);
+									if (*text) text++;
+									break;
+
 							default: 	
 									text += strlen(esc_codes[code].name);
 									esc_data_tab[esc_count].esc = esc_codes[code].name;
