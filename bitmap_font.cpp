@@ -158,7 +158,7 @@ void esc_zone (struct retroScreen *screen,struct esc_data *data, int x1, int y1,
 		zones[z].screen = current_screen ;
 		zones[z].x0 = data -> x * 8;
 		zones[z].y0 = data -> y * 8;
-		zones[z].x1 = x1*8+7;
+		zones[z].x1 = x1*8;
 		zones[z].y1 = y1*8+7;
 
 //		retroBAR( screen,zones[z].x0,zones[z].y0,zones[z].x1,zones[z].y1,4);
@@ -171,7 +171,6 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 	int x,y;
 	data -> y --;
 	data -> x --;
-	x1 ++;
 	y1 ++;
 
 	if (data->x>-1)
