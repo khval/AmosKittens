@@ -131,9 +131,32 @@ int findVarPublic( char *name, int type )
 	return 0;
 }
 
+int findProc( char *name )
+{
+	int n;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	for (n=0;n<global_var_count;n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+
+		printf("%s\n", globalVars[n].varName);
+
+		if ( (strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.type & type_proc) )
+		{
+			return n+1;
+		}
+	}
+	return 0;
+}
+
+
 int findVar( char *name, int type, int _proc )
 {
 	int n;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
 	{
