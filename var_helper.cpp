@@ -23,7 +23,11 @@ char *var_JumpToName(struct reference *ref)
 {
 	char *ptr = NULL;
 	char *name = dupRef(ref);
-	if (name) ptr = findLabel( name );
+	if (name) 
+	{
+		ptr = findLabel( name );
+		free(name);
+	}
 	return ptr;
 }
 
