@@ -23,7 +23,6 @@ extern int tokenMode;
 extern int tokenlength;
 
 extern int current_screen;
-int _reserve_zones_ = 0;
 
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -121,7 +120,7 @@ char *_ocZoneStr( struct glueCommands *data )
 		dump_stack();
 		printf("zone: %d\n",zone);
 
-		if ((txt)&&(zone>-1)&&(zone<_reserve_zones_))
+		if ((txt)&&(zone>-1)&&(zone<zones_allocated))
 		{
 			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
 			if (newstr)
@@ -216,7 +215,7 @@ char *_ocSetZone( struct glueCommands *data )
 		int x1 = _stackInt( stack -1 );
 		int y1 = _stackInt( stack );
 
-		if ((zones)&&(z>-1)&&(z<_reserve_zones_))
+		if ((zones)&&(z>-1)&&(z<zones_allocated))
 		{
 			zones[z].screen = current_screen;
 			zones[z].x0 = x0;
