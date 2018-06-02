@@ -219,7 +219,6 @@ char *_lessData( struct glueCommands *data )
 			setStackNum( item0->decimal < item1->decimal );
 			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (type0 == type_int) 
 	{
@@ -235,7 +234,6 @@ char *_lessData( struct glueCommands *data )
 			setStackNum( (double) item0->value < item1->decimal );
 			success = TRUE;
 		}
-		return NULL;
 	}
 	else if (( type0 == type_string) && (type1 == type_string))
 	{
