@@ -190,7 +190,7 @@ void kitty_getline(string &input)
 					break;	
 			}
 
-		} while (done == false);
+		} while ((done == false)&&(engine_started == true));
 	}
 	else
 	{
@@ -383,7 +383,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty()) kitty_getline( input_str);
+			while (input_str.empty() && engine_started ) kitty_getline( input_str);
 
 			i = input_str.find(",");	
 			if (i != std::string::npos)
@@ -395,7 +395,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 				arg = input_str; input_str = "";
 			}
 		}
-		while ( arg.empty() );
+		while ( arg.empty() && engine_started );
 
 		if (last_var)
 		{
@@ -410,7 +410,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 			}
 		}
 	}
-	while (!success);
+	while (!success && engine_started);
 
 	engine_lock();
 	clear_cursor( screens[current_screen] );
@@ -488,7 +488,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty()) kitty_getline(input_str);
+			while (input_str.empty() && engine_started ) kitty_getline(input_str);
 
 			engine_lock();
 			clear_cursor( screens[current_screen] );
@@ -496,7 +496,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 			arg = input_str; input_str = "";
 		}
-		while ( arg.empty() );
+		while ( arg.empty() && engine_started );
 
 		if (last_var)
 		{
@@ -514,7 +514,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		printf("%s:%d -- success = %s\n",__FUNCTION__,__LINE__, success ? "True" : "False");
 
 	}
-	while (!success);
+	while (!success && engine_started );
 
 	__print_text( "\n" ,0 );
 
