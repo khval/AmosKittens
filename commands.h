@@ -23,7 +23,6 @@ char *cmdRepeat(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdWhile(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdLess(struct nativeCommand *cmd, char *tokenBuffer);

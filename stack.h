@@ -22,6 +22,7 @@ extern bool stackMoreOrEqualStr(struct kittyData *item0,struct kittyData *item1)
 extern bool stackLessOrEqualStr(struct kittyData *item0,struct kittyData *item1);
 
 extern bool stackEqualStr(struct kittyData *item0, struct kittyData *item1);
+extern bool stackNotEqualStr(struct kittyData *item0, struct kittyData *item1);
 
 extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1);

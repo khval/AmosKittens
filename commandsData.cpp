@@ -1341,3 +1341,86 @@ char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
+char *_not_equal( struct glueCommands *data )
+{
+	proc_names_printf("%s\n",__FUNCTION__);
+
+	struct kittyData *item0;
+	struct kittyData *item1;
+	int type0, type1;
+	bool success = FALSE;
+
+
+	if ((stack - data -> stack + 1)!=2)
+	{
+		setError(22);
+		return NULL;
+	}
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
+
+	type0 = item0 -> type & 3;
+	type1 = item1 -> type & 3;
+
+	if (type0 == type_float) 
+	{
+		stack --;
+		
+		if (type1 == type_int)
+		{
+			setStackNum( item0->decimal != (double) item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			setStackNum( item0->decimal != item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (type0 == type_int) 
+	{
+		stack --;
+
+		if (type1 == type_int)
+		{
+			setStackNum( item0->value != item1->value );
+			success = TRUE;
+		}
+		else if (type1 == type_float)
+		{
+			setStackNum( (double) item0->value != item1->decimal );
+			success = TRUE;
+		}
+	}
+	else if (( type0 == type_string) && (type1 == type_string))
+	{
+		stackNotEqualStr( item0, item1 ); 
+		success = TRUE;
+	}
+
+	correct_for_hidden_sub_data();
+
+	return NULL;
+}
+
+char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+
+	if (tokenMode == mode_logical)
+	{
+		stackCmdParm(_not_equal, tokenBuffer);
+		stack++;
+	}
+	else
+	{
+		proc_names_printf("Syntax error\n");
+	}
+
+	return tokenBuffer;
+}
+

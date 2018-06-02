@@ -332,6 +332,19 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	return true;
 }
 
+bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
+{
+	int ret;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
+	ret = strcmp( item0->str , item1->str );
+	popStack(1);	
+
+	_num( ret != 0  );
+	return true;
+}
+
 void correct_for_hidden_sub_data()
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

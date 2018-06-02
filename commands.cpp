@@ -266,40 +266,6 @@ char *_repeat( struct glueCommands *data )
 	return 0;
 }
 
-char *_not_equal( struct glueCommands *data )
-{
-	proc_names_printf("%s\n",__FUNCTION__);
-
-	if (stack==0) 
-	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
-
-	stack --;
-
-	if (kittyStack[stack].type != kittyStack[stack+1].type)
-	{
-		setError(ERROR_Type_mismatch);
-		return NULL;
-	}
-
-	proc_names_printf("(%d == %d) == %d \n", kittyStack[stack].value , kittyStack[stack+1].value, (kittyStack[stack].value != kittyStack[stack+1].value) );
-
-	switch (kittyStack[stack].type & 3)
-	{
-		case 0:	_num( kittyStack[stack].value != kittyStack[stack+1].value) ;
-				break;
-		case 1:	_num (kittyStack[stack].decimal != kittyStack[stack+1].decimal);
-				break;
-//		case 2:	_not_equalStr( data );
-//				break;
-	}
-
-	correct_for_hidden_sub_data();
-
-	return NULL;
-}
 
 
 BOOL setVarInt( struct kittyData *var )
@@ -564,24 +530,6 @@ char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	if (do_breakdata) do_breakdata( cmd, tokenBuffer );
-	return tokenBuffer;
-}
-
-
-char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_not_equal, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		proc_names_printf("Syntax error\n");
-	}
-
 	return tokenBuffer;
 }
 
@@ -1335,7 +1283,6 @@ char *_cmdRead( struct glueCommands *data )
 	bool is_first = true;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	printf("args: %d\n",args);
 
 	popStack( stack - data->stack  );
 
