@@ -27,5 +27,14 @@ extern char *textAt(nativeCommand *cmd, char *ptr);
 extern char *textXText(nativeCommand *cmd, char *ptr);
 extern char *textYText(nativeCommand *cmd, char *ptr);
 extern char *textCMove(nativeCommand *cmd, char *ptr);
+extern char *textCUp(nativeCommand *cmd, char *ptr);
 extern char *textCDown(nativeCommand *cmd, char *ptr);
+extern char *textCLeft(nativeCommand *cmd, char *ptr);
+extern char *textCRight(nativeCommand *cmd, char *ptr);
+extern char *textSetTab(nativeCommand *cmd, char *ptr);
+extern char *textSetCurs(nativeCommand *cmd, char *ptr);
+extern char *textMemorizeX(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textMemorizeY(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer);
 

@@ -288,6 +288,36 @@ char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+char *textMemorizeX(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *textMemorizeY(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+
 char *textHome(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -626,3 +656,46 @@ char *textCDown(nativeCommand *cmd, char *ptr)
 	}
 	return ptr;
 }
+
+
+char *_textSetTab( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x = 0, y = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+char *textSetTab(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textSetTab, ptr );
+	setStackDecimal(0);
+	return ptr;
+}
+
+char *_textSetCurs( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textSetCurs(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textSetCurs, ptr );
+
+	return ptr;
+}
+
