@@ -116,8 +116,6 @@ int findVarPublic( char *name, int type )
 
 	for (n=0;n<global_var_count;n++)
 	{
-		printf("globalVars[%d].varName=%s\n",n,globalVars[n].varName);
-
 		if (globalVars[n].varName == NULL) return 0;
 
 		if ((strcasecmp( globalVars[n].varName, name)==0)
@@ -189,6 +187,20 @@ char *findLabel( char *name )
 		}
 	}
 	return NULL;
+}
+
+int findLabelRef( char *name )
+{
+	int n;
+
+	for (n=0;n<labels.size();n++)
+	{
+		if (strcasecmp( labels[n].name, name)==0)
+		{
+			return n+1;
+		}
+	}
+	return 0;
 }
 
 int QuoteByteLength(char *ptr)
@@ -380,27 +392,28 @@ void next_var_should_be_proc_type( char *ptr )
 void pass1label(char *ptr)
 {
 	char *tmpName;
-	char *at;
+	int found_ref;
 	struct reference *ref = (struct reference *) ptr;
 	struct kittyData *var;
 	char *next;
 
-	printf("crock\n");
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
 	{
 		printf("%s\n",tmpName);
-		ref -> ref = 1;	
+		ref -> ref = 0;	
 
 		// only add new labels if last token is 0.
 
 		if (last_token  == 0)
 		{
-			at = findLabel(tmpName);
+			found_ref = findLabelRef(tmpName);
 
-			if (at)
+			if (found_ref>0)
 			{
+				ref -> ref = found_ref;
 				free(tmpName);		//  don't need tmp
 			}
 			else
@@ -418,6 +431,20 @@ void pass1label(char *ptr)
 				ref -> ref = labels.size();
 
 				tmpName = NULL;
+			}
+		}
+		else
+		{
+			found_ref = findLabelRef(tmpName);
+
+			if (found_ref>0)
+			{
+				ref -> ref = found_ref;
+				free(tmpName);		//  don't need tmp
+			}
+			else
+			{
+				ref -> ref = 0xFFFF;
 			}
 		}
 
