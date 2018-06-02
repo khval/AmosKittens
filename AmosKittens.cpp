@@ -679,6 +679,7 @@ struct nativeCommand nativeCommands[]=
 	{0x13E8,"Centre",0,textCentre },
 	{0x1408,"Writing",0,textWriting },
 	{0x1446,"Curs Off",0,textCursOff },
+	{0x1454,"Curs On",0,textCursOn },
 	{0x1462,"textInverseOff",0,textInverseOff },
 	{0x1474,"Inverse On",0,textInverseOn },
 	{0x1484,"Under Off",0,textUnderOff },

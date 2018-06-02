@@ -280,6 +280,14 @@ char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	clear_cursor(screens[current_screen]);
+	curs_on = true;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	return tokenBuffer;
+}
 char *textHome(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
