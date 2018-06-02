@@ -23,7 +23,7 @@ extern int tokenMode;
 extern int tokenlength;
 
 extern int current_screen;
-int _reserve_zones_ = 20;
+int _reserve_zones_ = 0;
 
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -207,9 +207,6 @@ char *_ocSetZone( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (zones) free(zones);
-	zones_allocated = 0;
 
 	if (args == 5)
 	{
