@@ -202,15 +202,28 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 extern int pen;
 extern int paper;
 
-void esc_paper (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+void esc_paper (struct retroScreen *screen, char c )
 {
 	paper = c-'0';
 }
 
-void esc_pen (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
+void esc_pen (struct retroScreen *screen, char c )
 {
 	pen = c-'0';
 }
+
+void esc_x (struct retroScreen *screen, char c )
+{
+	if (screens[current_screen]) screens[current_screen] -> locateX = c-'0';
+}
+
+
+void esc_y (struct retroScreen *screen, char c )
+{
+	if (screens[current_screen]) screens[current_screen] -> locateY = c-'0';
+
+}
+
 
 struct esc_cmd esc_codes[]=
 {
@@ -219,6 +232,8 @@ struct esc_cmd esc_codes[]=
 	{"E0",esc_border},	// 2, border
 	{"B",NULL},		// 3
 	{"P",NULL},		// 4
+	{"X",NULL},		// 5
+	{"Y",NULL},		// 6
 	{NULL,NULL}
 };
 
@@ -279,13 +294,25 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 
 							case 3:	// Paper
 									text += strlen(esc_codes[code].name);
-									esc_paper( screen, NULL, 0, 0, *text);
+									esc_paper( screen, *text);
 									if (*text) text++;
 									break;
 
 							case 4:	// Pen
 									text += strlen(esc_codes[code].name);
-									esc_pen( screen, NULL, 0, 0, *text);
+									esc_pen( screen, *text);
+									if (*text) text++;
+									break;
+
+							case 5:	// X
+									text += strlen(esc_codes[code].name);
+									esc_x( screen,  *text);
+									if (*text) text++;
+									break;
+
+							case 6:	// Y
+									text += strlen(esc_codes[code].name);
+									esc_y( screen,  *text);
 									if (*text) text++;
 									break;
 

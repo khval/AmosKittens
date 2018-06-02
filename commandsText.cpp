@@ -349,6 +349,44 @@ char *textBorderStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textAt( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x =-1,y= -1;
+	char str[] = {27,'X','0',27,'Y','0',0};
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 2)
+	{
+		if (screens[current_screen])
+		{
+			x = screens[current_screen] -> locateX ;
+			y = screens[current_screen] -> locateY ;
+		}
+		
+		 stack_get_if_int( stack -1,&x);
+		 stack_get_if_int( stack,&y);
+
+		if (x>-1) str[2]='0'+x;
+		if (y>-1) str[5]='0'+y;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackStrDup( str );
+
+	return NULL;
+}
+
+extern char *textAt(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textAt, ptr );
+	kittyStack[stack].type = type_none; 
+	return ptr;
+}
+
 char *_textPenStr( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;

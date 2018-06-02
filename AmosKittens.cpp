@@ -673,6 +673,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1392,"Home",0,textHome },
 	{0x13AC,"Pen$(n)",0,textPenStr },
 	{0x13B8,"Paper$(n)",0,textPaperStr },
+	{0x13C6,"At(x,y)",0,textAt },
 	{0x13D2,"Pen",0,textPen },
 	{0x13DC,"Paper",0,textPaper },
 	{0x13E8,"Centre",0,textCentre },
