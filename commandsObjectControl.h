@@ -14,5 +14,5 @@ char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocChangeMouse(struct nativeCommand *cmd, char *tokenBuffer);
-
+char *ocSetZone(struct nativeCommand *cmd, char *tokenBuffer);
 

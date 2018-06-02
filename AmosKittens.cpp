@@ -687,6 +687,7 @@ struct nativeCommand nativeCommands[]=
 	{0x14E0,"Scroll",0,gfxScroll },
 	{0x1632,"Reserve Zone", 0, ocReserveZone },
 	{0x1646,"Reserve Zone", 0, ocReserveZone },
+	{0x1668,"Set Zone",0,ocSetZone },
 	{0x16B6,"Scin(x,y)",0,gfxScin },
 	{0x16E2,"Mouse Zone",0,ocMouseZone },			// dummy.
 	{0x16F2,"Set input", 0, cmdSetInput },

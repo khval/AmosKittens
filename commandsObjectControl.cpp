@@ -22,6 +22,7 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
+extern int current_screen;
 int _reserve_zones_ = 20;
 
 extern struct retroScreen *screens[8] ;
@@ -199,5 +200,43 @@ char *ocChangeMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _ocChangeMouse, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocSetZone( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (zones) free(zones);
+	zones_allocated = 0;
+
+	if (args == 5)
+	{
+		int z = _stackInt( stack -4 );
+		int x0 = _stackInt( stack -3 );
+		int y0 = _stackInt( stack -2 );
+		int x1 = _stackInt( stack -1 );
+		int y1 = _stackInt( stack );
+
+		if ((zones)&&(z>-1)&&(z<_reserve_zones_))
+		{
+			zones[z].screen = current_screen;
+			zones[z].x0 = x0;
+			zones[z].y0 = y0;
+			zones[z].x1 = x1;
+			zones[z].y1 = y1;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocSetZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocSetZone, tokenBuffer );
 	return tokenBuffer;
 }
