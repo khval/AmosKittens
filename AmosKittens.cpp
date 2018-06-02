@@ -457,7 +457,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0006, "<var>", sizeof(struct reference),cmdVar},
 	{0x000C, "", sizeof(struct reference),cmdLabelOnLine },		// no code to execute
 	{0x0012, "procedure with args",sizeof(struct reference),cmdProcAndArgs },
-	{0x0018, "", sizeof(struct reference),cmdVar},		// being a dick here its proc not a var
+	{0x0018, "<label>", sizeof(struct reference),cmdVar},	
 	{0x001E, "<Bin>",4,cmdNumber },		// binrary
 	{0x0026, "<Text>",2, cmdQuote },
 	{0x0036, "<Hex>",4,cmdNumber },		// hex
