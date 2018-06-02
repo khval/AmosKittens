@@ -6,6 +6,7 @@
 #include "debug.h"
 #include <string>
 #include <proto/dos.h>
+#include <vector>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -29,6 +30,8 @@ extern int _last_var_index;		// we need to know what index was to keep it.
 extern int _set_var_index;		// we need to resore index 
 
 static struct timeval timer_before, timer_after;
+
+extern std::vector<struct label> labels;
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -1105,9 +1108,7 @@ char *cmdEnd(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub_return ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
 	return tokenBuffer;
 }
 
@@ -1432,12 +1433,15 @@ char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+int findLabelRef( char *name );
 
 char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int num = 0;
 	unsigned short ref_num = 0;
 	unsigned short token = 0;
+	unsigned short next_token = 0;
+	unsigned int is_token = 0;
 
 	tokenBuffer += 4;	// skip crap, no idea what use this for... :-P
 
@@ -1445,8 +1449,6 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
 		int idx = ref->ref-1;
-
-		proc_names_printf("works\n");
 
 		switch ( globalVars[idx].var.type )
 		{
@@ -1456,29 +1458,98 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 
 		tokenBuffer += (2 + ref -> length + sizeof(struct reference ));
-
 		token = NEXT_TOKEN(tokenBuffer);
+
 		if ( (token==0x02A8) || (token==0x02B2) || (token==0x0386) ) 
 		{
 			tokenBuffer += 2;	// we know this tokens..
 
-			proc_names_printf("success I think :-) num is %d\n", num);
-
 			for(;;)
-			{			
-				switch (NEXT_TOKEN(tokenBuffer))
+			{	
+				next_token = NEXT_TOKEN(tokenBuffer);
+
+				printf("<%04X>",next_token);
+
+				switch (next_token)
 				{
 					case 0x0006:
+
+						is_token = 0x0006;
 						tokenBuffer +=2;
 						ref = (struct reference *) (tokenBuffer);
 						num--;
-						if (num == 0)	ref_num = ref -> ref;
+
+						if (num == 0)
+						{
+							if (ref -> flags & type_proc )
+							{
+								ref_num = ref -> ref;
+							}
+							else
+							{
+								ref -> flags |= type_proc;
+								ref -> ref = var_find_proc_ref( ref );
+								ref_num = ref -> ref;
+							}
+
+							if (ref_num == 0) setError(22);
+						}
+
 						tokenBuffer += sizeof(struct reference) + ref -> length;
 						break;
+
+					case 0x0012:
+
+						is_token = 0x0012;
+						tokenBuffer +=2;
+						ref = (struct reference *) (tokenBuffer);
+						num--;
+
+						if (num == 0)
+						{
+							if (ref -> flags & type_proc )
+							{
+								ref_num = ref -> ref;
+							}
+							else
+							{
+								ref -> ref = var_find_proc_ref( ref );
+								ref_num = ref -> ref;
+							}
+
+							if (ref_num == 0) setError(22);
+						}
+
+						tokenBuffer += sizeof(struct reference) + ref -> length;
+						break;
+
+					case 0x0018:
+						is_token = 0x0018;
+						tokenBuffer +=2;
+						ref = (struct reference *) (tokenBuffer);
+						num--;
+
+						if (ref->ref == -1) // Because line start with 0x0018 is labels.
+						{
+							char *name = dupRef( ref ) ;
+							if (name)
+							{
+								ref->ref = findLabelRef( name );	free(name); 
+							}
+						}
+
+						if (num == 0)	ref_num = ref -> ref;
+						if (ref_num == 0) setError(22);
+
+						tokenBuffer += sizeof(struct reference) + ref -> length;
+						break;
+
 					case 0x005C:
 						tokenBuffer +=2;
 						break;
+
 					default: 
+
 						goto exit_on_for_loop;
 				}
 			}
@@ -1487,21 +1558,33 @@ exit_on_for_loop:
 
 			if (ref_num>0)
 			{
-				proc_names_printf("name: %s\n",globalVars[ref_num-1].varName);
-
 				switch (token)
 				{
 					case 0x02A8:	// goto
 							tokenBuffer = findLabel(globalVars[ref_num-1].varName);
 							break;
+
 					case 0x02B2:	// gosub
-							stackCmdLoop( _gosub, tokenBuffer + 2);
-							tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+
+							switch (is_token)
+							{
+								case 0x0006:
+										stackCmdLoop( _gosub_return, tokenBuffer );
+										tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+										break;
+								case 0x0018:
+										stackCmdLoop( _gosub_return, tokenBuffer );
+										tokenBuffer = labels[ref_num-1].tokenLocation;
+										break;
+							}
 							break;
+
 					case 0x0386:	// proc
+
+							stackCmdProc( _procedure, tokenBuffer);  
+							tokenBuffer = globalVars[ref_num-1].var.tokenBufferPos;
 							break;
 				}
-
 			}
 		}
 	}
