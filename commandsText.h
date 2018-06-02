@@ -24,4 +24,8 @@ extern char *textShadeOn(nativeCommand *cmd, char *ptr);
 extern char *textUnderOff(nativeCommand *cmd, char *ptr);
 extern char *textUnderOn(nativeCommand *cmd, char *ptr);
 extern char *textAt(nativeCommand *cmd, char *ptr);
+extern char *textXText(nativeCommand *cmd, char *ptr);
+extern char *textYText(nativeCommand *cmd, char *ptr);
+extern char *textCMove(nativeCommand *cmd, char *ptr);
+extern char *textCDown(nativeCommand *cmd, char *ptr);
 

@@ -528,3 +528,101 @@ char *textUnderOn(nativeCommand *cmd, char *ptr)
 	stackCmdNormal( _textShadeOn, ptr );
 	return ptr;
 }
+
+char *_textXText( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int n = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		n = _stackInt( stack ) / 8;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum( n  );
+
+	return NULL;
+}
+
+char *textXText(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textXText, ptr );
+	return ptr;
+}
+
+char *_textYText( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int n = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		n = _stackInt( stack ) / 8;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum( n  );
+
+	return NULL;
+}
+
+char *textYText(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textYText, ptr );
+	return ptr;
+}
+
+char *_textCMove( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	int x = 0, y = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 2)
+	{
+		if (screens[current_screen])
+		{
+			x = screens[current_screen] -> locateX ;
+			y = screens[current_screen] -> locateY ;
+
+			x += _stackInt( stack - 1 ) ;
+			y += _stackInt( stack ) ;
+
+			screens[current_screen] -> locateX = x;
+			screens[current_screen] -> locateY = y;
+		}
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+char *textCMove(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textCMove, ptr );
+	setStackDecimal(0);
+	return ptr;
+}
+
+
+char *textCDown(nativeCommand *cmd, char *ptr)
+{
+	if (screens[current_screen])
+	{
+		screens[current_screen] -> locateY++ ;
+	}
+	return ptr;
+}
