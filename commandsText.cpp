@@ -349,5 +349,136 @@ char *textBorderStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textPenStr( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	char str[] = {27,'P','0',0};
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (args == 1)
+	{
+		int n = _stackInt( stack );
+		if (n>-1) str[2]='0'+n;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackStrDup( str );
+
+	return NULL;
+}
+
+extern char *textPenStr(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textPenStr, ptr );
+	return ptr;
+}
+
+char *_textPaperStr( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	char str[] = {27,'B','0',0};
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		int n = _stackInt( stack );
+		if (n>-1) str[2]='0'+n;
+	}
+	else setError(22);
+
+	popStack( stack - data->stack );
+	setStackStrDup( str );
+
+	return NULL;
+}
+
+extern char *textPaperStr(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _textPaperStr, ptr );
+	return ptr;
+}
+
+char *_textWriting( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textWriting(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textWriting, ptr );
+	return ptr;
+}
+
+char *_textShadeOff( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textShadeOff(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textShadeOff, ptr );
+	return ptr;
+}
+
+char *_textShadeOn( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textShadeOn(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textShadeOn, ptr );
+	return ptr;
+}
+
+char *_textUnderOff( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textUnderOff(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textShadeOn, ptr );
+	return ptr;
+}
+
+char *_textUnderOn( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textUnderOn(nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textShadeOn, ptr );
+	return ptr;
+}

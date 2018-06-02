@@ -16,4 +16,11 @@ extern char *textHome(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textBorderStr(nativeCommand *cmd, char *ptr);
+extern char *textPenStr(nativeCommand *cmd, char *ptr);
+extern char *textPaperStr(nativeCommand *cmd, char *ptr);
+extern char *textWriting(nativeCommand *cmd, char *ptr);
+extern char *textShadeOff(nativeCommand *cmd, char *ptr);
+extern char *textShadeOn(nativeCommand *cmd, char *ptr);
+extern char *textUnderOff(nativeCommand *cmd, char *ptr);
+extern char *textUnderOn(nativeCommand *cmd, char *ptr);
 
