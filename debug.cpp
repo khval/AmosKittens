@@ -40,6 +40,7 @@ char *_right( struct glueCommands *data );
 char *_cmdStr( struct glueCommands *data );
 char *_while( struct glueCommands *data );
 char *_repeat( struct glueCommands *data );
+char *_gosub_return( struct glueCommands *data );
 char *get_var_index( glueCommands *self);
 
 struct stackDebugSymbol
@@ -77,6 +78,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_ifNotSuccess,"if Not Success"},
 	{_repeat,"repeat"},
 	{_while,"while" },
+	{_gosub_return,"gosub_return" },
 	{get_var_index,"get var(index,...)" },
 	{NULL, NULL}
 };
