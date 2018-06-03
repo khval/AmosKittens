@@ -399,6 +399,8 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
 
+	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
+
 	// check if - or + comes before *, / or ; symbols
 
 	if ( correct_order( last_token,  next_token ) == false )
@@ -413,8 +415,6 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	}
 
 	setStackNum( *((int *) ptr) );
-
-	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack();

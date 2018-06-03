@@ -24,6 +24,7 @@ extern int tokenlength;
 
 extern int current_screen;
 
+
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
@@ -118,7 +119,6 @@ char *_ocZoneStr( struct glueCommands *data )
 		int zone = _stackInt( stack );
 
 		dump_stack();
-		printf("zone: %d\n",zone);
 
 		if ((txt)&&(zone>-1)&&(zone<zones_allocated))
 		{

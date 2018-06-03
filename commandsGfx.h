@@ -49,3 +49,4 @@ char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer);
 
+

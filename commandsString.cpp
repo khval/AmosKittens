@@ -528,7 +528,6 @@ char *cmdVal(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s: stack %d\n",__FUNCTION__,stack);
 	stackCmdParm( _cmdStr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }

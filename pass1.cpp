@@ -430,7 +430,7 @@ void pass1label(char *ptr)
 				labels.push_back(tmp);
 				ref -> ref = labels.size();
 
-				tmpName = NULL;
+				tmpName = NULL;			// we store tmpName, we only set tmpName to NULL
 			}
 		}
 		else
@@ -648,7 +648,7 @@ void eol( char *ptr )
 
 void fix_token_short( int cmd, char *ptr )
 {
-//	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (nested_count>0)
 	{
