@@ -409,6 +409,7 @@ void pass1label(char *ptr)
 
 		if (last_token  == 0)
 		{
+
 			found_ref = findLabelRef(tmpName);
 
 			if (found_ref>0)
@@ -440,7 +441,6 @@ void pass1label(char *ptr)
 			if (found_ref>0)
 			{
 				ref -> ref = found_ref;
-				free(tmpName);		//  don't need tmp
 			}
 			else
 			{
