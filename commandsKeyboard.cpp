@@ -33,6 +33,8 @@ int keyState[256];
 extern struct retroScreen *screens[8] ;
 extern int current_screen;
 
+extern bool next_print_line_feed;
+
 char *_setVar( struct glueCommands *data );
 
 void _input_arg( struct nativeCommand *cmd, char *tokenBuffer );
@@ -547,6 +549,10 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 	input_count = 0;
 	input_str = "";
 
+	if (screens[current_screen]) clear_cursor(screens[current_screen]);
+	if (next_print_line_feed == true) __print_text("\n",0);
+	next_print_line_feed = true;
+
 	do_input = _input_arg;
 	do_breakdata = breakdata_inc_stack;
 	stackCmdNormal( _Input, tokenBuffer );
@@ -573,7 +579,11 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	engine_lock();
-	clear_cursor( screens[current_screen] );
+
+	if (screens[current_screen]) clear_cursor(screens[current_screen]);
+	if (next_print_line_feed == true) __print_text("\n",0);
+	next_print_line_feed = true;
+
 	engine_unlock();
 
 	input_count = 0;

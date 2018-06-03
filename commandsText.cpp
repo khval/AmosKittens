@@ -29,6 +29,7 @@ bool curs_on = true;
 int pen = 2;
 int paper = 1;
 
+bool next_print_line_feed = false;
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 
 char *_textLocate( struct glueCommands *data )
@@ -46,6 +47,7 @@ char *_textLocate( struct glueCommands *data )
 			screens[current_screen] -> locateX = _stackInt( stack-1 );
 			screens[current_screen] -> locateY = _stackInt( stack );
 		}
+		next_print_line_feed = false;
 		success = true;
 	}
 
@@ -69,6 +71,7 @@ char *_textHome( struct glueCommands *data )
 		{
 			screens[current_screen] -> locateX = 0;
 			screens[current_screen] -> locateY = 0;
+			next_print_line_feed = false;
 		}
 		success = true;
 	}
@@ -165,8 +168,6 @@ char *_print( struct glueCommands *data )
 {
 	int n;
 
-	if (screens[current_screen]) clear_cursor(screens[current_screen]);
-
 	for (n=data->stack;n<=stack;n++)
 	{
 		switch (kittyStack[n].type)
@@ -180,11 +181,14 @@ char *_print( struct glueCommands *data )
 			case type_string:
 				if (kittyStack[n].str) __print_text(kittyStack[n].str,0);
 				break;
+			case type_none:
+				next_print_line_feed = false;
+				break;
 		}
 
-		if (n<stack) __print_text("    ",0);
+		if ((n<stack)&&( kittyStack[n+1].type != type_none ))  __print_text("    ",0);
 	}
-	__print_text("\n",0);
+
 	if (screens[current_screen]) draw_cursor(screens[current_screen]);
 
 	popStack( stack - data->stack );
@@ -261,6 +265,7 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	stackCmdParm( _addDataToText, tokenBuffer );
 	stack++;
+ 	kittyStack[stack].type = type_none;
 }
 
 char *textPrint(nativeCommand *cmd, char *ptr)
@@ -268,6 +273,9 @@ char *textPrint(nativeCommand *cmd, char *ptr)
 	stackCmdNormal( _print, ptr );
 	do_breakdata = _print_break;
 
+	if (screens[current_screen]) clear_cursor(screens[current_screen]);
+	if (next_print_line_feed == true) __print_text("\n",0);
+	next_print_line_feed = true;
 	return ptr;
 }
 
@@ -652,7 +660,9 @@ char *textCDown(nativeCommand *cmd, char *ptr)
 {
 	if (screens[current_screen])
 	{
+		clear_cursor(screens[current_screen]);
 		screens[current_screen] -> locateY++ ;
+		draw_cursor(screens[current_screen]);
 	}
 	return ptr;
 }

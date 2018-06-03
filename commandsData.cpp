@@ -771,8 +771,8 @@ char *_addDataToText( struct glueCommands *data )
 	item0 = kittyStack + stack;
 	item1 = kittyStack + stack+1;
 
-	type0 = item0 -> type & 3;
-	type1 = item1 -> type & 3;
+	type0 = item0 -> type & 7;
+	type1 = item1 -> type & 7;
 
 	switch( type0 )
 	{
@@ -792,6 +792,7 @@ char *_addDataToText( struct glueCommands *data )
 		case type_int:		success = stackStrAddValue( item0, item1 ); break;
 		case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
 		case type_string:	success = stackStrAddStr( item0, item1 ); break;
+		case type_none:	success = true; stack++; break;	// nothing to add, will be added some where else.
 	}
 	
 	if (success )
