@@ -420,16 +420,19 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 	__print_text( "\n" ,0 );
 
-	switch (globalVars[last_var -1].var.type & 7)
-	{	
-		case type_string:
-			setStackStrDup(arg.c_str()); break;
+	if (last_var)
+	{
+		switch (globalVars[last_var -1].var.type & 7)
+		{	
+			case type_string:
+				setStackStrDup(arg.c_str()); break;
 
-		case type_int:
-			sscanf(arg.c_str(),"%d",&num); _num(num); break;
+			case type_int:
+				sscanf(arg.c_str(),"%d",&num); _num(num); break;
 
-		case type_float:
-			sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
+			case type_float:
+				sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
+		}
 	}
 
 	data.lastVar = last_var;
