@@ -898,7 +898,6 @@ void code_reader( char *start, int tokenlength )
 			}
 		}
 
-
 		last_token = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.		

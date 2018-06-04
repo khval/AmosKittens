@@ -1116,12 +1116,66 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 {
 	struct reference *ref;
 	struct glueCommands data;
+	char *ptr = tokenBuffer ;
+	int args = 0;
+	int read_args = 0;
+	unsigned short token;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+	getchar();
+
+	args = stack - sdata->stack +1;
+	stack -= (args-1);	// move to start of args.
+	token = *((unsigned short *) ptr);
+
+	printf("%s:%d - token %04x\n",__FUNCTION__,__LINE__, token);
+
+	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<args) ;)
+	{
+	printf("%s:%d - token %04x\n",__FUNCTION__,__LINE__, token);
+
+		ptr+=2;	// skip token
+		ptr = executeToken( ptr, token );
+
+		if ((token == 0x005C) || (token == 0x0054) || (token == 0x0000 ))
+		{
+
+			printf("--- last_var %d ---\n", last_var);
+			dump_stack();
+			getchar();
+			read_args ++;
+		}
+
+
+		token = *((unsigned short *) ptr);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	}
+
+	printf("read_args: %d\n",read_args);
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return ptr;
+}
+
+
+
+char *read_kitty_args_old(char *tokenBuffer, struct glueCommands *sdata)
+{
+	struct reference *ref;
+	struct glueCommands data;
 	char *ptr;
 	int args = 0;
 	int n;
 	unsigned short token;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_stack();
+	getchar();
 
 	args = stack - sdata->stack +1;
 	stack -= (args-1);	// move to start of args.
@@ -1274,20 +1328,13 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
+char *_cmdRead( struct glueCommands *data );
 
-char *_cmdRead( struct glueCommands *data )
+void read_from_data()
 {
-	short token;
-	unsigned short _len;
-	int args = stack - data->stack +1;
-	bool is_first = true;
+	unsigned short token;
+	int _len;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	popStack( stack - data->stack  );
-
-	while (args--)
-	{
 		if (data_read_pointer)
 		{
 			bool try_next_token;
@@ -1330,7 +1377,6 @@ char *_cmdRead( struct glueCommands *data )
 
 					case 0x005C:	// comma
 							data_read_pointer +=2;
-							if (is_first == false)	stack ++;
 							try_next_token = true;
 							break;
 
@@ -1343,23 +1389,58 @@ char *_cmdRead( struct glueCommands *data )
 							try_next_token = true;	
 				}
 
-				is_first = false;
-
 				if (data_read_pointer == 0x0000) break;
 			} while ( try_next_token );
 		}
+}
+
+void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	int args = 0;
+	int num = 0;
+	double des = -1.0f;
+	struct glueCommands data;
+
+	if (cmd == NULL)
+	{
+		args = stack - cmdTmp[cmdStack].stack + 1;
+	}
+	else
+	{
+		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _cmdRead)
+		{
+			args = stack - cmdTmp[cmdStack-1].stack + 1;
+		}
+	}
+	
+	if (last_var)
+	{
+		_set_var_index = globalVars[last_var -1].var.index;
+		read_from_data();
 	}
 
-	read_kitty_args(data -> tokenBuffer, data);
+	data.lastVar = last_var;
+	_setVar( &data );
+}
 
+char *_cmdRead( struct glueCommands *data )
+{
+	int args = stack - data -> stack +1;
+	_read_arg( NULL, NULL );
+	popStack( stack - data -> stack  );
+	do_input = NULL;
+	do_breakdata = NULL;
 	return NULL;
 }
 
-
 char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("read %04x\n", *((short *) tokenBuffer) );
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	do_input = _read_arg;
+	do_breakdata = NULL;
 	stackCmdNormal( _cmdRead, tokenBuffer );
+
 	return tokenBuffer;
 }
 
