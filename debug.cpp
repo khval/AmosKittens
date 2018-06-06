@@ -124,7 +124,7 @@ void dump_global()
 					globalVars[n].varName, globalVars[n].var.value );
 				break;
 			case type_float:
-				printf("%d -- %d::%s%s=%d\n",n,
+				printf("%d -- %d::%s%s=%0.2lf\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.decimal );
