@@ -344,8 +344,8 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 
 		if (screen-> locateY>=screen -> realHeight /8)
 		{
-			unsigned char *src = screen -> Memory + ( screen -> bytesPerRow * 8 );
-			unsigned char *des = screen -> Memory;
+			unsigned char *src = screen -> Memory[ screen -> double_buffer_draw_frame ] + ( screen -> bytesPerRow * 8 );
+			unsigned char *des = screen -> Memory[ screen -> double_buffer_draw_frame ];
 			screen -> locateY--;
 			int intsPerRow = screen ->bytesPerRow / 4;
 			int *isrc;

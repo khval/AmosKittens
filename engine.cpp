@@ -335,7 +335,7 @@ void main_engine()
 			engine_lock();
 			retroClearVideo( video );
 			retroDrawVideo( video );
-			retroDmaVideo(video);
+			retroDmaVideo( video );
 			engine_unlock();
 
 			WaitTOF();

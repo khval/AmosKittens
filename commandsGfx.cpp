@@ -767,6 +767,13 @@ char *_gfxScroll( struct glueCommands *data )
 
 				if ((n>-1)&&(n<16))
 				{
+					unsigned char *mem ;
+					unsigned int bytesPerRow ;
+					unsigned char *src;
+					unsigned char *des;
+					int x,y;
+
+					struct retroScreen *screen = screens[current_screen];
 					int x0 = defScrolls[n].x0 ;
 					int y0 = defScrolls[n].y0 ;
 					int x1 = defScrolls[n].x1 ;
@@ -774,34 +781,32 @@ char *_gfxScroll( struct glueCommands *data )
 					int dx = defScrolls[n].dx ;
 					int dy = defScrolls[n].dy ;
 
-					// limit to screen first
-					if (x0<0) x0=0;
-					if (x1>screens[current_screen] -> realWidth-1) x1 = screens[current_screen] -> realWidth -1;
-
-					if (y0<0) y0=0;
-					if (y1>screens[current_screen] -> realHeight-1) y1 = screens[current_screen] -> realHeight -1;
-
-					// limit to x0,y0,x1,y1
-
-					if (dx>0) { x1 = x1 - dx; } else { if (x0+dx<0) x0=-(x0+dx); }
-
-					if (dy>0) 
-					{ 
-						y1 = y1 -dy; 
-					} 
-					else 
+					if (screen)
 					{
-						 if (y0+dy<0) y0=-(y0+dy);
-						y1 = y1 + dy;
-					}
 
-					if (screens[current_screen])
-					{
-						unsigned char *mem = screens[current_screen] -> Memory;
-						unsigned int bytesPerRow = screens[current_screen] -> bytesPerRow;
-						unsigned char *src;
-						unsigned char *des;
-						int x,y;
+						// limit to screen first
+						if (x0<0) x0=0;
+						if (x1>screens[current_screen] -> realWidth-1) x1 = screens[current_screen] -> realWidth -1;
+
+						if (y0<0) y0=0;
+						if (y1>screens[current_screen] -> realHeight-1) y1 = screens[current_screen] -> realHeight -1;
+
+						// limit to x0,y0,x1,y1
+
+						if (dx>0) { x1 = x1 - dx; } else { if (x0+dx<0) x0=-(x0+dx); }
+
+						if (dy>0) 
+						{ 
+							y1 = y1 -dy; 
+						} 
+						else 
+						{
+							 if (y0+dy<0) y0=-(y0+dy);
+							y1 = y1 + dy;
+						}
+
+						mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
+						bytesPerRow = screen -> bytesPerRow;
 
 						if (dy>0)
 						{
