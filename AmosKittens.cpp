@@ -426,26 +426,21 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
 	unsigned int data = *((unsigned int *) ptr);
 	unsigned int number1 = data >> 8;
-
 	int e = (data & 0x3F) ;
-
-	if ( (data & 0x40)  == 0)	e = -(65 - e);
-
 	int n;
 	double f = 0.0f;
 
+	if ( (data & 0x40)  == 0)	e = -(65 - e);
+
 	for (n=23;n>-1;n--)
 	{
-		if ((1<<n)&number1)
-		{
-			f += 1.0f / (double) (1<<(23-n));
-		}
+		if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
 	}
 
 	if (e>0) { while (--e) { f *= 2.0; } }
 	if (e<0) { while (e) {  f /= 2.0f; e++; } }
 
-	setStackDecimal( (data & 0x80) ? -f : f  );
+	setStackDecimal( f );
 
 	return ptr;
 }
