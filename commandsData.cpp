@@ -547,9 +547,9 @@ char *_andData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
@@ -613,9 +613,9 @@ char *_xorData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
@@ -679,9 +679,9 @@ char *_addData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
@@ -855,9 +855,9 @@ char *_subData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
@@ -925,9 +925,9 @@ char *_modData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
@@ -991,9 +991,9 @@ char *_mulData( struct glueCommands *data )
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if ((stack - data -> stack + 1)!=2)
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22);
 		return NULL;
 	}
 
