@@ -87,9 +87,14 @@ struct glueCommands input_cmd_context;
 
 extern char *nextToken_pass1( char *ptr, unsigned short token );
 
+bool breakpoint = false;
+
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
 	int length = *((short *) ptr);
+
+//	breakpoint = !breakpoint;
+
 	return ptr + length;
 }
 
@@ -141,6 +146,13 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	do_to = do_to_default;
 	tokenMode = mode_standard;
+
+	if (breakpoint)
+	{
+		dump_stack();
+		dump_global();
+		getchar();
+	}
 
 	return ptr;
 }
