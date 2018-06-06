@@ -739,7 +739,6 @@ char *_gosub( struct glueCommands *data )
 
 char *_gosub_return( struct glueCommands *data )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return data -> tokenBuffer;	// jumpBack.
 }
 
@@ -765,11 +764,7 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					{
 						case type_int:		// jump to label with same name as var.
 
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
-								dump_labels();
-
 								return_tokenBuffer = tokenBuffer + 2 + ReferenceByteLength(tokenBuffer + 2) + sizeof(struct reference ) ;
-
 								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
 								if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
 
@@ -783,12 +778,10 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 
 						case type_float:
 
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
 								setError(22);
 								break;
 					}
 				
-					stackCmdNormal( _gosub, tokenBuffer );
 					break;
 
 		default:
