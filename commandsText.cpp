@@ -152,15 +152,31 @@ void __print_text(const char *txt, int maxchars)
 
 void __print_num( int num )
 {
-	char tmp[40];
-	sprintf(tmp,"%d",num);
+	char tmp[50];
+
+	if (num>-1)
+	{
+		sprintf(tmp," %d",num);
+	}
+	else
+	{
+		sprintf(tmp,"%d",num);
+	}
 	__print_text(tmp,0);
 }
 
 void __print_double( double d )
 {
 	char tmp[40];
-	sprintf(tmp,"%lf",d);
+
+	if (d>=0.0)
+	{
+		sprintf(tmp," %lf",d);
+	}
+	else
+	{
+		sprintf(tmp,"%lf",d);
+	}
 	__print_text(tmp,0);
 }
 

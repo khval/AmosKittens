@@ -226,7 +226,15 @@ bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 	str = (char *) malloc ( new_size );
 	if (str)
 	{
-		sprintf(str,"%s %d", item0 -> str, item1 -> value);
+		if (item1->value> -1)
+		{
+			sprintf(str,"%s  %d", item0 -> str, item1 -> value);
+		}
+		else
+		{
+			sprintf(str,"%s %d", item0 -> str, item1 -> value);
+		}
+
 		setStackStr( str );
 		return true;
 	}
@@ -243,7 +251,15 @@ bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 	str = (char *) malloc ( new_size );
 	if (str)
 	{
-		sprintf(str,"%s %f", item0 -> str, item1 -> decimal);
+		if (item1->decimal>= 0.0)
+		{
+			sprintf(str,"%s  %f", item0 -> str, item1 -> decimal);
+		}
+		else
+		{
+			sprintf(str,"%s %f", item0 -> str, item1 -> decimal);
+		}
+
 		setStackStr( str );
 		return true;
 	}
