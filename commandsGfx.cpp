@@ -31,6 +31,9 @@ extern struct RastPort font_render_rp;
 int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
+extern int pen ;
+extern int paper ;
+
 extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data );
 extern char *_setVar( struct glueCommands *data );
@@ -189,19 +192,26 @@ char *_gfxBar( struct glueCommands *data )
 char *_gfxCls( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
+	int color = 0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
+			if (kittyStack[stack].type == type_none)
 			{
-				int color = _stackInt( stack );
+				color = paper;
+			}
+			else
+			{
 
-				if ((color >-1)&&(color<256))
-				{
-					if (screens[current_screen]) 
-						retroBAR( screens[current_screen],0,0,screens[current_screen]->realWidth,screens[current_screen]->realHeight,color );
-				}
+				 color = _stackInt( stack );
+			}
+
+			if ((color >-1)&&(color<256))
+			{
+				if (screens[current_screen]) 
+					retroBAR( screens[current_screen],0,0,screens[current_screen]->realWidth,screens[current_screen]->realHeight,color );
 			}
 			break;
 
@@ -910,7 +920,7 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxCls, tokenBuffer );
-	setStackNum( 0 );
+	kittyStack[stack].type = type_none;
 	return tokenBuffer;
 }
 
