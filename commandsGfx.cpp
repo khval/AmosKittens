@@ -28,6 +28,8 @@ extern struct retroRGB DefaultPalette[256];
 
 extern struct RastPort font_render_rp;
 
+extern bool next_print_line_feed;
+
 int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
@@ -193,6 +195,7 @@ char *_gfxCls( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
 	int color = 0;
+	struct retroScreen *screen = screens[current_screen];
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -204,14 +207,18 @@ char *_gfxCls( struct glueCommands *data )
 			}
 			else
 			{
-
 				 color = _stackInt( stack );
 			}
 
 			if ((color >-1)&&(color<256))
 			{
-				if (screens[current_screen]) 
-					retroBAR( screens[current_screen],0,0,screens[current_screen]->realWidth,screens[current_screen]->realHeight,color );
+				if (screen) 
+				{
+					retroBAR( screen,0,0,screen->realWidth,screen->realHeight,color );
+					screen -> locateX = 0;
+					screen -> locateY = 0;
+					next_print_line_feed = false;
+				}
 			}
 			break;
 
@@ -225,7 +232,13 @@ char *_gfxCls( struct glueCommands *data )
 
 				if ((color >-1)&&(color<256))
 				{
-					if (screens[current_screen]) retroBAR( screens[current_screen], x0,y0,x1,y1,color );
+					if (screen) 
+					{
+						retroBAR( screen, x0,y0,x1,y1,color );
+						screen -> locateX = 0;
+						screen -> locateY = 0;
+						next_print_line_feed = false;
+					}
 				}
 			}
 			break;
