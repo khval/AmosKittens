@@ -171,11 +171,11 @@ void __print_double( double d )
 
 	if (d>=0.0)
 	{
-		sprintf(tmp," %lf",d);
+		sprintf(tmp," %0.3lf",d);
 	}
 	else
 	{
-		sprintf(tmp,"%lf",d);
+		sprintf(tmp,"%0.3lf",d);
 	}
 	__print_text(tmp,0);
 }
