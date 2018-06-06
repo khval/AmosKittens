@@ -778,13 +778,33 @@ char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	// Dummy function, we kind of have double buffer in retromode.library video
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
+	{
+		engine_lock();
+		retroAllocDoubleBuffer( screen );
+		video -> refreshAllScanlines = TRUE;
+		engine_unlock();
+	}
+
 	return tokenBuffer;
 }
 
 char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	// Dummy function, we kind of have double buffer in retromode.library video
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen) 
+	{
+		engine_lock();
+		if (screen -> Memory[1])		// have buffer2
+		{
+			screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+		}
+		engine_unlock();
+	}
+
 	return tokenBuffer;
 }
 
