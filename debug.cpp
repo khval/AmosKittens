@@ -16,6 +16,7 @@ extern int global_var_count;
 char *_ifSuccess( struct glueCommands *data ) ;
 char *_ifNotSuccess( struct glueCommands *data ) ;
 
+char *_textCentre (struct glueCommands *data);
 char *_mathSin (struct glueCommands *data);
 char *_addData (struct glueCommands *data);
 char *_subData (struct glueCommands *data);
@@ -80,6 +81,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_while,"while" },
 	{_gosub_return,"gosub_return" },
 	{get_var_index,"get var(index,...)" },
+	{_textCentre, "Centre" },
 	{NULL, NULL}
 };
 
