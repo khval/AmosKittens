@@ -52,7 +52,7 @@ char *_left( struct glueCommands *data )
 		tmp = strndup(str, _len );
 	}	
 
-	popStack(args);
+	popStack(stack - data->stack);
 	if (tmp) setStackStr(tmp);
 
 	return NULL;
@@ -116,7 +116,7 @@ char *_right( struct glueCommands *data )
 		tmp = strdup(str + strlen(str) - _len );
 	}	
 
-	popStack(args);
+	popStack(stack - data->stack);
 
 	if (tmp) setStackStr(tmp);
 
