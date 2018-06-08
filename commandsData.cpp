@@ -1345,7 +1345,7 @@ char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_not_equal( struct glueCommands *data )
 {
-	proc_names_printf("%s\n",__FUNCTION__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;

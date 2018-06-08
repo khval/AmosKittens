@@ -508,16 +508,13 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	ret = flushCmdParaStack();
 	if (ret) return ret;
 
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
-
-	ret = flushCmdParaStack();
-	if (ret) return ret;
-
 	if (parenthesis_count)
 	{
 		remove_parenthesis( parenthesis[parenthesis_count -1] );
 		parenthesis[parenthesis_count -1] = 255;
 		parenthesis_count--;
+
+		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	}
 
 	ret = flushCmdParaStack();
@@ -528,7 +525,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 	if (do_breakdata) do_breakdata( cmd, tokenBuffer );
 	return tokenBuffer;
 }
@@ -537,7 +534,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	if (tokenMode == mode_logical)
 	{
@@ -881,7 +878,7 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+	if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
 	if (cmdStack) if ( cmdTmp[cmdStack-1].cmd == _setVar ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 

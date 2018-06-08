@@ -22,6 +22,7 @@
 #include "commandsText.h"
 #include "commandsKeyboard.h"
 #include "commandsObjectControl.h"
+#include "commandsSound.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -54,11 +55,11 @@ unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 
 
 char *data_read_pointer = NULL;
 
-char *get_var_index( glueCommands *self);
+char *_get_var_index( glueCommands *self);
 
 void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 
-char *(*do_var_index) ( glueCommands *self ) = get_var_index;
+char *(*do_var_index) ( glueCommands *self ) = _get_var_index;
 void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
 void (*do_input) ( struct nativeCommand *, char * ) = NULL;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
@@ -161,8 +162,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 int _last_var_index;		// we need to know what index was to keep it.
 int _set_var_index;		// we need to resore index 
 
-
-char *get_var_index( glueCommands *self)
+char *_get_var_index( glueCommands *self)
 {
 	int varNum;
 	int n = 0;
@@ -194,7 +194,7 @@ char *get_var_index( glueCommands *self)
 
 		_last_var_index = 0; 
 		mul  = 1;
-		for (n = self -> stack+1;n<=stack; n++ )
+		for (n = self -> stack;n<=stack; n++ )
 		{
 			_last_var_index += (mul * kittyStack[n].value);
 			mul *= var -> sizeTab[n- self -> stack -1];
@@ -230,7 +230,7 @@ char *_alloc_mode_off( glueCommands *self )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	do_input = NULL;
-	do_var_index = get_var_index;
+	do_var_index = _get_var_index;
 
 	return NULL;
 }
@@ -283,6 +283,9 @@ char *do_var_index_alloc( glueCommands *cmd)
 	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
 
 	popStack(stack - cmd -> stack);
+
+	printf("cmd stack loc %d, satck is %d\n",cmd -> stack, stack);
+
 	return NULL;
 }
 
@@ -704,6 +707,8 @@ struct nativeCommand nativeCommands[]=
 	{0x154C,"Memorize X",0,textMemorizeX },
 	{0x155C,"Memorize Y",0,textMemorizeY },
 	{0x157C,"CMove",0,textCMove },
+	{0x159E,"Hscroll",0,textHscroll },		// dummy command.
+	{0x15AC,"Vscroll",0,textVscroll },		// dummy command.
 	{0x15BA,"Set Tab",0,textSetTab },
 	{0x15C8,"Set Curs",0,textSetCurs },
 	{0x1632,"Reserve Zone", 0, ocReserveZone },
