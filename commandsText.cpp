@@ -682,6 +682,41 @@ char *textCMove(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *textCLeft(nativeCommand *cmd, char *ptr)
+{
+	if (screens[current_screen])
+	{
+		clear_cursor(screens[current_screen]);
+		screens[current_screen] -> locateX-- ;
+		if (screens[current_screen] -> locateX<0) screens[current_screen] -> locateX = screens[current_screen] -> realWidth / 8;
+		draw_cursor(screens[current_screen]);
+	}
+	return ptr;
+}
+
+char *textCRight(nativeCommand *cmd, char *ptr)
+{
+	if (screens[current_screen])
+	{
+		clear_cursor(screens[current_screen]);
+		screens[current_screen] -> locateX++ ;
+		draw_cursor(screens[current_screen]);
+	}
+	return ptr;
+}
+
+char *textCUp(nativeCommand *cmd, char *ptr)
+{
+	if (screens[current_screen])
+	{
+		clear_cursor(screens[current_screen]);
+		screens[current_screen] -> locateY--;
+		if (screens[current_screen] -> locateY<0) screens[current_screen] -> locateY = 0;
+		draw_cursor(screens[current_screen]);
+	}
+	return ptr;
+}
+
 
 char *textCDown(nativeCommand *cmd, char *ptr)
 {
