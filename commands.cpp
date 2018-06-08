@@ -732,7 +732,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gosub( struct glueCommands *data )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
+//	dump_stack();
 
 	return NULL ;
 }
@@ -1114,21 +1114,14 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 	int read_args = 0;
 	unsigned short token;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
-	getchar();
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	args = stack - sdata->stack +1;
 	stack -= (args-1);	// move to start of args.
 	token = *((unsigned short *) ptr);
 
-	printf("%s:%d - token %04x\n",__FUNCTION__,__LINE__, token);
-
 	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<args) ;)
 	{
-	printf("%s:%d - token %04x\n",__FUNCTION__,__LINE__, token);
-
 		ptr+=2;	// skip token
 		ptr = executeToken( ptr, token );
 
@@ -1143,18 +1136,11 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 
 
 		token = *((unsigned short *) ptr);
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	}
-
-	printf("read_args: %d\n",read_args);
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return ptr;
 }
-
-
 
 char *read_kitty_args_old(char *tokenBuffer, struct glueCommands *sdata)
 {

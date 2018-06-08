@@ -230,7 +230,6 @@ void clear_cursor(struct retroScreen *screen)
 	}
 }
 
-
 void draw_cursor(struct retroScreen *screen)
 {
 	if (curs_on)

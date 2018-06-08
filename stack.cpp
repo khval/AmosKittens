@@ -157,8 +157,6 @@ void stack_get_if_int( int n, int *ret )
 
 void _num( int num )
 {
-	dprintf("set num stack[%d]\n",stack);
-
 	if (kittyStack[stack].str) 
 	{
 		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.

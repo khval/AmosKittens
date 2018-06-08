@@ -201,10 +201,7 @@ char *get_var_index( glueCommands *self)
 		}
 
 		var -> index = _last_var_index;
-
 		popStack(stack - self -> stack);
-
-		dprintf("var: index %d\n", var -> index);
 
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
@@ -230,13 +227,13 @@ char *get_var_index( glueCommands *self)
 
 char *_alloc_mode_off( glueCommands *self )
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	do_input = NULL;
 	do_var_index = get_var_index;
 
 	return NULL;
 }
-
-
 
 char *do_var_index_alloc( glueCommands *cmd)
 {
@@ -251,8 +248,6 @@ char *do_var_index_alloc( glueCommands *cmd)
 
 	varNum = cmd -> lastVar;	
 	if (varNum == 0) return NULL;
-
-	dprintf("var num: %d\n", varNum-1);
 
 	var = &globalVars[varNum-1].var;
 	var -> cells = stack - cmd -> stack +1;
@@ -369,7 +364,9 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		}
 	}
 
+//	printf("------ %s:%d ------ stack %d \n",__FUNCTION__,__LINE__, stack);
 	flushCmdParaStack();
+//	printf("-------%s:%d ------ stack \n",__FUNCTION__,__LINE__, stack);
 
 	return ptr + ref -> length ;
 }
@@ -854,6 +851,12 @@ char *executeToken( char *ptr, unsigned short token )
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
 	ptr = executeToken( ptr, token );
+
+	if (stack<0)
+	{
+		printf("dog fart, stinky fart at line %d, stack is %d\n",getLineFromPointer(ptr),stack);
+		return NULL;
+	}
 
 	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
 

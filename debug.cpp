@@ -42,7 +42,8 @@ char *_cmdStr( struct glueCommands *data );
 char *_while( struct glueCommands *data );
 char *_repeat( struct glueCommands *data );
 char *_gosub_return( struct glueCommands *data );
-char *get_var_index( glueCommands *self);
+char *_get_var_index( glueCommands *self);
+char *_alloc_mode_off( glueCommands *self);
 
 struct stackDebugSymbol
 {
@@ -80,8 +81,9 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_repeat,"repeat"},
 	{_while,"while" },
 	{_gosub_return,"gosub_return" },
-	{get_var_index,"get var(index,...)" },
+	{_get_var_index,"get var(index,...)" },
 	{_textCentre, "Centre" },
+	{_alloc_mode_off,"_alloc_mode_off"},
 	{NULL, NULL}
 };
 
