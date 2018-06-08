@@ -793,3 +793,45 @@ char *textCursPen(struct nativeCommand *cmd, char *ptr)
 
 	return ptr;
 }
+
+char *_textVscroll( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textVscroll(struct nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textVscroll, ptr );
+	return ptr;
+}
+
+char *_textHscroll( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textHscroll(struct nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textVscroll, ptr );
+	return ptr;
+}
+
+

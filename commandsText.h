@@ -38,4 +38,6 @@ extern char *textMemorizeX(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textMemorizeY(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textVscroll(struct nativeCommand *cmd, char *ptr);
+extern char *textHscroll(struct nativeCommand *cmd, char *ptr);
 
