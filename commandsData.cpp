@@ -1368,7 +1368,6 @@ char *_not_equal( struct glueCommands *data )
 
 	if (type0 == type_float) 
 	{
-		stack --;
 		if (type1 == type_int)
 		{
 			setStackNum( item0->decimal != (double) item1->value );
@@ -1382,7 +1381,6 @@ char *_not_equal( struct glueCommands *data )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
 		if (type1 == type_int)
 		{
 			setStackNum( item0->value != item1->value );
