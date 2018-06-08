@@ -24,6 +24,7 @@ main_objects = commands.cpp \
 			commandsScreens.cpp \
 			commandsText.cpp \
 			commandsKeyboard.cpp \
+			commandsSound.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
