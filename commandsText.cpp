@@ -24,6 +24,7 @@ extern int last_var;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern int current_screen;
+extern int cursor_color;
 
 bool curs_on = true;
 int pen = 2;
@@ -725,3 +726,25 @@ char *textSetCurs(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *_textCursPen( struct glueCommands *data )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		cursor_color = _stackInt( stack ) ;
+		if (screens[current_screen]) draw_cursor(screens[current_screen]);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textCursPen(struct nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textCursPen, ptr );
+
+	return ptr;
+}

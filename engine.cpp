@@ -34,6 +34,8 @@ int engine_mouse_key = 0;
 int engine_mouse_x = 0;
 int engine_mouse_y = 0;
 
+int cursor_color = 3;
+
 struct retroScreen *screens[8] ;
 struct retroRGB DefaultPalette[256] = 
 {
@@ -237,7 +239,7 @@ void draw_cursor(struct retroScreen *screen)
 		int gx,gy;
 		gx = screen -> locateX * 8;
 		gy = screen -> locateY * 8;
-		retroBAR( screen, gx,gy+6,gx+6,gy+7, 3);
+		retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
 	}
 }
 

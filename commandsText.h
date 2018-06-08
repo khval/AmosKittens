@@ -12,6 +12,7 @@ extern char *textCentre(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPrint(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textCursPen(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textHome(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer);
