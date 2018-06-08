@@ -36,17 +36,19 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 char *_textLocate( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-
+	struct retroScreen *screen; 
 	bool success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
-		if (screens[current_screen])
+		if (screen=screens[current_screen])
 		{
-			screens[current_screen] -> locateX = _stackInt( stack-1 );
-			screens[current_screen] -> locateY = _stackInt( stack );
+			clear_cursor(screen);
+			screen -> locateX = _stackInt( stack-1 );
+			screen -> locateY = _stackInt( stack );
+			draw_cursor(screen);
 		}
 		next_print_line_feed = false;
 		success = true;
@@ -61,19 +63,21 @@ char *_textLocate( struct glueCommands *data )
 char *_textHome( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-
+	struct retroScreen *screen; 
 	bool success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		if (screens[current_screen])
+		if (screen=screens[current_screen])
 		{
-			screens[current_screen] -> locateX = 0;
-			screens[current_screen] -> locateY = 0;
-			next_print_line_feed = false;
+			clear_cursor(screen);
+			screen -> locateX = 0;
+			screen -> locateY = 0;
+			draw_cursor(screen);
 		}
+		next_print_line_feed = false;
 		success = true;
 	}
 
@@ -217,6 +221,7 @@ char *_print( struct glueCommands *data )
 char *_textCentre( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen; 
 	int n;
 	int charsPerLine = 100;
 	const char *txt = NULL;
@@ -231,21 +236,21 @@ char *_textCentre( struct glueCommands *data )
 
 	if (engine_started)
 	{
-		if (screens[current_screen])
+		if (screen = screens[current_screen])
 		{
 			txt = _stackString(stack);
-			charsPerLine = screens[current_screen] -> realWidth / 8;
+			charsPerLine = screen -> realWidth / 8;
 
-			clear_cursor(screens[current_screen]);
+			clear_cursor(screen);
 
 			if (txt)
 			{
-				screens[current_screen] -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
+				screen -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
 
-				if (screens[current_screen] -> locateX<0)
+				if (screen -> locateX<0)
 				{
-					txt -= screens[current_screen] -> locateX;	// its read only.
-					screens[current_screen] -> locateX = 0;
+					txt -= screen -> locateX;	// its read only.
+					screen -> locateX = 0;
 				}
 			}
 		}
@@ -638,6 +643,7 @@ char *textYText(nativeCommand *cmd, char *ptr)
 
 char *_textCMove( struct glueCommands *data )
 {
+	struct retroScreen *screen; 
 	int args = stack - data->stack +1 ;
 	int x = 0, y = 0;
 
@@ -645,16 +651,20 @@ char *_textCMove( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		if (screens[current_screen])
+		if (screen = screens[current_screen])
 		{
-			x = screens[current_screen] -> locateX ;
-			y = screens[current_screen] -> locateY ;
+			clear_cursor(screen);
+
+			x = screen -> locateX ;
+			y = screen -> locateY ;
 
 			x += _stackInt( stack - 1 ) ;
 			y += _stackInt( stack ) ;
 
-			screens[current_screen] -> locateX = x;
-			screens[current_screen] -> locateY = y;
+			screen -> locateX = x;
+			screen -> locateY = y;
+
+			draw_cursor(screen);
 		}
 	}
 	else setError(22);
