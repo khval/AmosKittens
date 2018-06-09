@@ -96,6 +96,20 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 
 //	breakpoint = !breakpoint;
 
+	{
+		char *txt = strndup( ptr + 2, length );
+
+		if (txt)
+		{
+			if (strcmp(txt+1,"dump stack")>0)
+			{
+				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
+			}
+
+			free(txt);
+		}
+	}
+	
 	return ptr + length;
 }
 
