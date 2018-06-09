@@ -1501,8 +1501,6 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 			{	
 				next_token = NEXT_TOKEN(tokenBuffer);
 
-				printf("<%04X>",next_token);
-
 				switch (next_token)
 				{
 					case 0x0006:
@@ -1577,6 +1575,23 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 						tokenBuffer += sizeof(struct reference) + ref -> length;
 						break;
 
+					case 0x001E:
+					case 0x0036:
+					case 0x003E:
+						is_token = 0x003E;
+						tokenBuffer +=2;
+
+						num--;
+						if (num == 0)
+						{
+							char num[50];
+							sprintf(num,"%d", *((int *) tokenBuffer));
+							ref_num = findLabelRef( num );
+						}
+
+						tokenBuffer += 4;
+						break;
+
 					case 0x005C:
 						tokenBuffer +=2;
 						break;
@@ -1606,6 +1621,10 @@ exit_on_for_loop:
 										tokenBuffer = findLabel(globalVars[ref_num-1].varName);
 										break;
 								case 0x0018:
+										stackCmdLoop( _gosub_return, tokenBuffer );
+										tokenBuffer = labels[ref_num-1].tokenLocation;
+										break;
+								case 0x003E:
 										stackCmdLoop( _gosub_return, tokenBuffer );
 										tokenBuffer = labels[ref_num-1].tokenLocation;
 										break;
