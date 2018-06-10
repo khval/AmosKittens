@@ -282,8 +282,6 @@ char *_lessOrEqualData( struct glueCommands *data )
 
 	if (type0 == type_float) 
 	{
-		stack --;	// don't need to worry about strings being freed.
-
 		if (type1 == type_int)
 		{
 			setStackNum( item0->decimal <= (double) item1->value );
