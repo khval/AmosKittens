@@ -270,8 +270,10 @@ char *_lessOrEqualData( struct glueCommands *data )
 		return NULL;
 	}
 
-	item0 = kittyStack + stack-1;
-	item1 = kittyStack + stack;
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
 
 	type0 = item0 -> type & 3;
 	type1 = item1 -> type & 3;
@@ -295,8 +297,6 @@ char *_lessOrEqualData( struct glueCommands *data )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
-
 		if (type1 == type_int)
 		{
 			proc_names_printf ("( %d <= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
@@ -343,8 +343,12 @@ char *_moreData( struct glueCommands *data )
 		return NULL;
 	}
 
-	item0 = kittyStack + stack-1;
-	item1 = kittyStack + stack;
+	dump_stack();
+
+	stack --;
+
+	item0 = kittyStack + stack;
+	item1 = kittyStack + stack+1;
 
 	type0 = item0 -> type & 3;
 	type1 = item1 -> type & 3;
@@ -353,8 +357,6 @@ char *_moreData( struct glueCommands *data )
 
 	if (type0 == type_float) 
 	{
-		stack --;
-
 		if (type1 == type_int)
 		{
 			setStackNum( item0->decimal > (double) item1->value );
@@ -368,8 +370,6 @@ char *_moreData( struct glueCommands *data )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
-
 		if (type1 == type_int)
 		{
 			dprintf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
@@ -1244,8 +1244,8 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	flushCmdParaStack();
 	stackCmdParm( _andData, tokenBuffer );
-
 	stack++;
+
 	return tokenBuffer;
 }
 
