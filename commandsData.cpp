@@ -1232,7 +1232,7 @@ char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 	flushCmdParaStack();
 
 	stackCmdParm( _orData, tokenBuffer );
-	stack++;
+	incStack;
 
 	return tokenBuffer;
 }
