@@ -851,13 +851,17 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setStackNum(-1);
+	flushCmdParaStack();
 	return tokenBuffer;
 }
 
 char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setStackNum(0);
+	flushCmdParaStack();
 	return tokenBuffer;
 }
 
