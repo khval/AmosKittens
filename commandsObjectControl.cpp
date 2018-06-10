@@ -85,7 +85,7 @@ char *_ocReserveZone( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		int newzones = _stackInt( stack );
+		int newzones = getStackNum( stack );
 
 		if (newzones)
 		{
@@ -115,8 +115,8 @@ char *_ocZoneStr( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		char *txt = _stackString( stack-1 );
-		int zone = _stackInt( stack );
+		char *txt = getStackString( stack-1 );
+		int zone = getStackNum( stack );
 
 		dump_stack();
 
@@ -209,11 +209,11 @@ char *_ocSetZone( struct glueCommands *data )
 
 	if (args == 5)
 	{
-		int z = _stackInt( stack -4 );
-		int x0 = _stackInt( stack -3 );
-		int y0 = _stackInt( stack -2 );
-		int x1 = _stackInt( stack -1 );
-		int y1 = _stackInt( stack );
+		int z = getStackNum( stack -4 );
+		int x0 = getStackNum( stack -3 );
+		int y0 = getStackNum( stack -2 );
+		int x1 = getStackNum( stack -1 );
+		int y1 = getStackNum( stack );
 
 		if ((zones)&&(z>-1)&&(z<zones_allocated))
 		{

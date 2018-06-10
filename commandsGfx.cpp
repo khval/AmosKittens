@@ -62,8 +62,8 @@ char *_gfxFlash( struct glueCommands *data )
 
 	if (args==2)
 	{
-		int color = _stackInt( stack-1 );
-		char *str = _stackString( stack );
+		int color = getStackNum( stack-1 );
+		char *str = getStackString( stack );
 
 		if (screens[current_screen])
 		{
@@ -92,7 +92,7 @@ char *_gfxColour( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
-			num = _stackInt( stack );
+			num = getStackNum( stack );
 			popStack( stack - data->stack );
 
 			if (screens[current_screen])
@@ -103,12 +103,12 @@ char *_gfxColour( struct glueCommands *data )
 			break;
 
 		case 2:
-			num = _stackInt( stack-1 );
+			num = getStackNum( stack-1 );
 			popStack( stack - data->stack );
 
 			if ((num>-1)&&(num<256))
 			{
-				color = _stackInt( stack );
+				color = getStackNum( stack );
 
 				if (screens[current_screen])
 				{
@@ -158,8 +158,8 @@ char *_gfxBox( struct glueCommands *data )
 	{
 		stack_get_if_int( stack-3, &x0 );
 		stack_get_if_int( stack-2, &y0 );
-		xgr = x1 = _stackInt( stack-1 );
-		ygr = y1 = _stackInt( stack );
+		xgr = x1 = getStackNum( stack-1 );
+		ygr = y1 = getStackNum( stack );
 
 		if (screens[current_screen]) retroBox( screens[current_screen], x0,y0,x1,y1,pen0 );
 	}
@@ -180,8 +180,8 @@ char *_gfxBar( struct glueCommands *data )
 	{
 		stack_get_if_int( stack-3, &x0 );
 		stack_get_if_int( stack-2, &y0 );
-		xgr = x1 = _stackInt( stack-1 );
-		ygr = y1 = _stackInt( stack );
+		xgr = x1 = getStackNum( stack-1 );
+		ygr = y1 = getStackNum( stack );
 
 		if (screens[current_screen]) retroBAR( screens[current_screen], x0,y0,x1,y1,pen0 );
 	}
@@ -207,7 +207,7 @@ char *_gfxCls( struct glueCommands *data )
 			}
 			else
 			{
-				 color = _stackInt( stack );
+				 color = getStackNum( stack );
 			}
 
 			if ((color >-1)&&(color<256))
@@ -224,11 +224,11 @@ char *_gfxCls( struct glueCommands *data )
 
 		case 5:
 			{
-				int color = _stackInt( stack -4 );
-				int x0 = _stackInt( stack -3 );
-				int y0 = _stackInt( stack -2 );
-				int x1 = _stackInt( stack -1 )-1;
-				int y1 = _stackInt( stack )-1;
+				int color = getStackNum( stack -4 );
+				int x0 = getStackNum( stack -3 );
+				int y0 = getStackNum( stack -2 );
+				int x1 = getStackNum( stack -1 )-1;
+				int y1 = getStackNum( stack )-1;
 
 				if ((color >-1)&&(color<256))
 				{
@@ -261,16 +261,16 @@ char *_gfxDraw( struct glueCommands *data )
 	switch (args)
 	{
 		case 2:
-			xgr = x1 = _stackInt( stack-1 );
-			ygr = y1 = _stackInt( stack );
+			xgr = x1 = getStackNum( stack-1 );
+			ygr = y1 = getStackNum( stack );
 			if (screens[current_screen]) retroLine( screens[current_screen], x0,y0,x1,y1,pen0 );
 			break;
 
 		case 4:
 			stack_get_if_int( stack-3, &x0 );
 			stack_get_if_int( stack-2, &y0 );
-			xgr = x1 = _stackInt( stack-1 );
-			ygr = y1 = _stackInt( stack );
+			xgr = x1 = getStackNum( stack-1 );
+			ygr = y1 = getStackNum( stack );
 
 			if (screens[current_screen]) retroLine( screens[current_screen], x0,y0,x1,y1,pen0 );
 			break;
@@ -297,7 +297,7 @@ char *_gfxPolygon( struct glueCommands *data )
 
 		for (n=0;n<args;n++)
 		{
-			array[n] = _stackInt( _stack++ );
+			array[n] = getStackNum( _stack++ );
 		}
 
 		retroPolyGonArray( screens[current_screen], pen0, args, array );
@@ -327,13 +327,13 @@ char *_gfxPolyline( struct glueCommands *data )
 
 			_stack = data -> stack;
 
-			lx = _stackInt( _stack++ );
-			ly = _stackInt( _stack++ );
+			lx = getStackNum( _stack++ );
+			ly = getStackNum( _stack++ );
 
 			for (n=1;n<coordinates;n++)
 			{
-				xgr = _stackInt( _stack++ );
-				ygr = _stackInt( _stack++ );
+				xgr = getStackNum( _stack++ );
+				ygr = getStackNum( _stack++ );
 				retroLine( screens[current_screen], lx,ly,xgr,ygr,pen0 );
 				lx = xgr;
 				ly=ygr;
@@ -343,8 +343,8 @@ char *_gfxPolyline( struct glueCommands *data )
 		else if (args == 3)
 		{
 			int x,y;
-			x = _stackInt( stack-1 );
-			y = _stackInt( stack );
+			x = getStackNum( stack-1 );
+			y = getStackNum( stack );
 			retroLine( screens[current_screen], xgr,ygr,x,y,pen0 );
 			xgr=x;ygr=y;
 			success = true;
@@ -368,7 +368,7 @@ char *_gfxCircle( struct glueCommands *data )
 	{
 		stack_get_if_int( stack-2, &x0 );
 		stack_get_if_int( stack-1, &y0 );
-		r = _stackInt( stack );
+		r = getStackNum( stack );
 
 //		if (screens[current_screen])  retroEllipse( screens[current_screen], x0,y0,r,r,0,pen0 );
 		if (screens[current_screen])  retroCircle( screens[current_screen], x0,y0,r,pen0 );
@@ -390,8 +390,8 @@ char *_gfxEllipse( struct glueCommands *data )
 	{
 		stack_get_if_int( stack-3, &x0 );
 		stack_get_if_int( stack-2, &y0 );
-		r0 = _stackInt( stack-1 );
-		r1 = _stackInt( stack );
+		r0 = getStackNum( stack-1 );
+		r1 = getStackNum( stack );
 
 		if (screens[current_screen]) retroEllipse( screens[current_screen], x0,y0,r0,r1,0,pen0 );
 	}
@@ -446,7 +446,7 @@ char *_gfxInk( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
-			pen0 = _stackInt( stack );
+			pen0 = getStackNum( stack );
 			break;
 		case 2:
 			stack_get_if_int( stack-1, &pen0 );
@@ -549,7 +549,7 @@ char *_gfxPaint( struct glueCommands *data )
 		case 3:
 			stack_get_if_int( stack-1, &x0 );
 			stack_get_if_int( stack, &y0 );
-			c = _stackInt( stack );
+			c = getStackNum( stack );
 			if (screens[current_screen]) retroFill( screens[current_screen], x0,y0,c );
 			break;
 		default:
@@ -574,12 +574,16 @@ char *_gfxPoint( struct glueCommands *data )
 			stack_get_if_int( stack-1, &x0 );
 			stack_get_if_int( stack, &y0 );
 			popStack( stack - data->stack );
-			if (screens[current_screen]) _stackInt( retroPoint(screens[current_screen], x0, y0) );
+			if (screens[current_screen]) ret = retroPoint(screens[current_screen], x0, y0) ;
 			break;
 		default:
 			popStack( stack - data->stack );
 			setError(22);
 	}
+
+	dprintf("%d=Point(%d,%d)\n",ret,x0,y0);
+
+	setStackNum(ret);
 
 	return NULL;
 }
@@ -595,8 +599,8 @@ char *_gfxGrLocate( struct glueCommands *data )
 	switch (args)
 	{
 		case 2:
-			xgr = _stackInt( stack -1 );
-			ygr = _stackInt( stack );
+			xgr = getStackNum( stack -1 );
+			ygr = getStackNum( stack );
 			break;
 		default:
 			setError(22);
@@ -615,7 +619,7 @@ char *_gfxGetColour( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
-			c = _stackInt( stack );
+			c = getStackNum( stack );
 
 			if ((c>-1)&&(c<256))
 			{
@@ -682,7 +686,7 @@ char *_gfxGetPalette( struct glueCommands *data )
 	{
 		if ((screens[current_screen])&&(args == 1))
 		{
-			int screen_num = _stackInt( stack );
+			int screen_num = getStackNum( stack );
 
 			if ((screen_num>-1)&&(screen_num<8))
 			{
@@ -745,16 +749,16 @@ char *_gfxDefScroll( struct glueCommands *data )
 	{
 		case 7:
 			{
-				int n = _stackInt( stack -6 ) -1;
+				int n = getStackNum( stack -6 ) -1;
 
 				if ((n>-1)&&(n<16))
 				{
-					defScrolls[n].x0 = _stackInt( stack -5 );
-					defScrolls[n].y0 = _stackInt( stack -4 );
-					defScrolls[n].x1 = _stackInt( stack -3 );
-					defScrolls[n].y1 = _stackInt( stack -2 );
-					defScrolls[n].dx = _stackInt( stack -1 );
-					defScrolls[n].dy = _stackInt( stack );
+					defScrolls[n].x0 = getStackNum( stack -5 );
+					defScrolls[n].y0 = getStackNum( stack -4 );
+					defScrolls[n].x1 = getStackNum( stack -3 );
+					defScrolls[n].y1 = getStackNum( stack -2 );
+					defScrolls[n].dx = getStackNum( stack -1 );
+					defScrolls[n].dy = getStackNum( stack );
 					success = true;
 				}
 			}
@@ -776,7 +780,7 @@ char *_gfxScroll( struct glueCommands *data )
 	{
 		case 1:
 			{
-				int n = _stackInt( stack  ) -1;
+				int n = getStackNum( stack  ) -1;
 
 				if ((n>-1)&&(n<16))
 				{
@@ -992,10 +996,10 @@ char *_gfxShiftUp( struct glueCommands *data )
 					retroCycleOff(screens[current_screen] );
 					retroCycleColorsUp( 
 						screens[current_screen],
-						 _stackInt( stack -3 ),
-						 _stackInt( stack -2 ),
-						 _stackInt( stack -1 ),
-						 _stackInt( stack ));
+						 getStackNum( stack -3 ),
+						 getStackNum( stack -2 ),
+						 getStackNum( stack -1 ),
+						 getStackNum( stack ));
 
 					engine_unlock();
 				}
@@ -1025,10 +1029,10 @@ char *_gfxShiftDown( struct glueCommands *data )
 					retroCycleOff(screens[current_screen] );
 					retroCycleColorsDown( 
 						screens[current_screen],
-						 _stackInt( stack -3 ),
-						 _stackInt( stack -2 ),
-						 _stackInt( stack -1 ),
-						 _stackInt( stack ));
+						 getStackNum( stack -3 ),
+						 getStackNum( stack -2 ),
+						 getStackNum( stack -1 ),
+						 getStackNum( stack ));
 
 					engine_unlock();
 				}
@@ -1104,12 +1108,12 @@ char *_gfxSetRainbow( struct glueCommands *data )
 
 	if (args==6)
 	{
-		int n = _stackInt( stack-5 );
-		int colour = _stackInt( stack-4 );
-		int length = _stackInt( stack-3 );
-		char *r = _stackString( stack-2 );
-		char *g = _stackString( stack-1 );
-		char *b = _stackString( stack );
+		int n = getStackNum( stack-5 );
+		int colour = getStackNum( stack-4 );
+		int length = getStackNum( stack-3 );
+		char *r = getStackString( stack-2 );
+		char *g = getStackString( stack-1 );
+		char *b = getStackString( stack );
 		int y;
 		unsigned char *rgb;
 
@@ -1146,10 +1150,10 @@ char *_gfxRainbow( struct glueCommands *data )
 
 	if (args==4)
 	{
-		int rainbowNumber = _stackInt( stack-3 );
-		int base = _stackInt( stack-2 );
-		int verticalOffset = _stackInt( stack-1 ) - 38;
-		int height = _stackInt( stack );
+		int rainbowNumber = getStackNum( stack-3 );
+		int base = getStackNum( stack-2 );
+		int verticalOffset = getStackNum( stack-1 ) - 38;
+		int height = getStackNum( stack );
 
 		WaitTOF();
 		retroRainbow( video, rainbowNumber, base, verticalOffset, height);
@@ -1176,7 +1180,7 @@ char *_set_rain( struct glueCommands *data )
 	{
 		if ((rgb = rainbow -> table) && ( _set_rainbow_index>-1 ) && (_set_rainbow_index < rainbow -> tableSize))
 		{
-			_rgb_= _stackInt( stack );
+			_rgb_= getStackNum( stack );
 			rgb[_set_rainbow_index].r =	((_rgb_ & 0xF00) >> 8) * 0x11 ;
 			rgb[_set_rainbow_index].g =	((_rgb_ & 0x0F0) >> 4) * 0x11 ;
 			rgb[_set_rainbow_index].b =	(_rgb_ & 0x00F) * 0x11 ;
@@ -1212,8 +1216,8 @@ char *_gfxRain( struct glueCommands *data )
 
 	if (args==2)
 	{
-		_set_rainbow = _stackInt( stack-1 );
-		_set_rainbow_index = _stackInt( stack );
+		_set_rainbow = getStackNum( stack-1 );
+		_set_rainbow_index = getStackNum( stack );
 		_do_set = _set_rain;
 	}
 	else setError(22);
@@ -1232,16 +1236,16 @@ char *_gfxZoom( struct glueCommands *data )
 	{
 		case 10:
 			{
-				int from_screen = _stackInt( stack-9 );
-				int x0 = _stackInt( stack-8 );
-				int y0 = _stackInt( stack-7 );
-				int x1 = _stackInt( stack-6 );
-				int y1 = _stackInt( stack-5 );
-				int to_screen = _stackInt( stack-4 );
-				int x2 = _stackInt( stack-3 );
-				int y2 = _stackInt( stack-2 );
-				int x3 = _stackInt( stack-1 );
-				int y3 = _stackInt( stack );
+				int from_screen = getStackNum( stack-9 );
+				int x0 = getStackNum( stack-8 );
+				int y0 = getStackNum( stack-7 );
+				int x1 = getStackNum( stack-6 );
+				int y1 = getStackNum( stack-5 );
+				int to_screen = getStackNum( stack-4 );
+				int x2 = getStackNum( stack-3 );
+				int y2 = getStackNum( stack-2 );
+				int x3 = getStackNum( stack-1 );
+				int y3 = getStackNum( stack );
 
 				if (((from_screen>=0)&&(from_screen<8))&&((to_screen>=0)&&(to_screen<8)))	// is in range.
 				{
@@ -1282,7 +1286,7 @@ char *_gfxFade( struct glueCommands *data )
 					struct retroRGB *pal;
 
 					screens[current_screen] -> fade_count = 0;
-					screens[current_screen] -> fade_speed = _stackInt( stack );
+					screens[current_screen] -> fade_speed = getStackNum( stack );
 
 					n = 0;
 					pal = screens[current_screen] -> fadePalette;
@@ -1303,7 +1307,7 @@ char *_gfxFade( struct glueCommands *data )
 		case 2:
 				if (data->have_to == 1)
 				{
-					int source_screen = _stackInt( stack );
+					int source_screen = getStackNum( stack );
 
 					if ((screens[current_screen])&&(screens[source_screen]))
 					{
@@ -1312,7 +1316,7 @@ char *_gfxFade( struct glueCommands *data )
 						struct retroRGB *dest_pal;
 
 						screens[current_screen] -> fade_count = 0;
-						screens[current_screen] -> fade_speed = _stackInt( stack-1 );
+						screens[current_screen] -> fade_speed = getStackNum( stack-1 );
 
 						source_pal = screens[source_screen] -> orgPalette;
 						dest_pal = screens[current_screen] -> fadePalette;
@@ -1331,7 +1335,7 @@ char *_gfxFade( struct glueCommands *data )
 	{
 		int ecs_rgb = 0;
 		int s;
-		screens[current_screen] -> fade_speed = _stackInt( data -> stack );
+		screens[current_screen] -> fade_speed = getStackNum( data -> stack );
 
 		struct retroRGB *opal= screens[current_screen] -> orgPalette;
 		struct retroRGB *fpal= screens[current_screen] -> fadePalette;
@@ -1367,18 +1371,18 @@ char *_gfxAppear( struct glueCommands *data )
 	{
 		case 3:
 			{
-				from_screen = _stackInt( stack-2 );
-				to_screen = _stackInt( stack-1 );
-				step = _stackInt( stack );
+				from_screen = getStackNum( stack-2 );
+				to_screen = getStackNum( stack-1 );
+				step = getStackNum( stack );
 				pixels = 0;
 			}
 			break;
 		case 4:
 			{
-				from_screen = _stackInt( stack-3 );
-				to_screen = _stackInt( stack-2 );
-				step = _stackInt( stack-1 );
-				pixels = _stackInt( stack );
+				from_screen = getStackNum( stack-3 );
+				to_screen = getStackNum( stack-2 );
+				step = getStackNum( stack-1 );
+				pixels = getStackNum( stack );
 			}
 			break;
 
@@ -1575,6 +1579,7 @@ char *_gfxGrWriting( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
+			GrWritingMode = getStackNum(stack);
 			break;
 		default:
 			setError(22);
@@ -1600,9 +1605,9 @@ char *_gfxText( struct glueCommands *data )
 	{
 		case 3:
 			{
-				int x = _stackInt( stack-2 );
-				int y = _stackInt( stack-1 );
-				char *txt = _stackString( stack );
+				int x = getStackNum( stack-2 );
+				int y = getStackNum( stack-1 );
+				char *txt = getStackString( stack );
 
 				if (txt)
 				{

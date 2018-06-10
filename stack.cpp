@@ -116,7 +116,7 @@ void popStack(int n)
 	}
 }
 
-char *_stackString( int n )
+char *getStackString( int n )
 {
 	if (kittyStack[n].type == type_string)
 	{
@@ -125,7 +125,7 @@ char *_stackString( int n )
 	return NULL;
 }
 
-double _stackDecimal( int n )
+double getStackDecimal( int n )
 {
 	switch (kittyStack[n].type)
 	{
@@ -135,7 +135,7 @@ double _stackDecimal( int n )
 	return 0.0;
 }
 
-int _stackInt( int n )
+int getStackNum( int n )
 {
 	switch (kittyStack[n].type)
 	{
@@ -155,7 +155,7 @@ void stack_get_if_int( int n, int *ret )
 }
 
 
-void _num( int num )
+void setStackNum( int num )
 {
 	if (kittyStack[stack].str) 
 	{
@@ -290,7 +290,7 @@ bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
 
-	_num( ret > 0  );
+	setStackNum( ret > 0  );
 
 	return true;
 }
@@ -303,7 +303,7 @@ bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	_num( ret < 0  );
+	setStackNum( ret < 0  );
 
 	return true;
 }
@@ -316,7 +316,7 @@ bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	_num( ret <= 0  );
+	setStackNum( ret <= 0  );
 	return true;
 }
 
@@ -328,7 +328,7 @@ bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	_num( ret >= 0  );
+	setStackNum( ret >= 0  );
 
 	return true;
 }
@@ -342,7 +342,7 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
 
-	_num( ret == 0  );
+	setStackNum( ret == 0  );
 	return true;
 }
 
@@ -355,7 +355,7 @@ bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
 
-	_num( ret != 0  );
+	setStackNum( ret != 0  );
 	return true;
 }
 

@@ -46,8 +46,8 @@ char *_textLocate( struct glueCommands *data )
 		if (screen=screens[current_screen])
 		{
 			clear_cursor(screen);
-			screen -> locateX = _stackInt( stack-1 );
-			screen -> locateY = _stackInt( stack );
+			screen -> locateX = getStackNum( stack-1 );
+			screen -> locateY = getStackNum( stack );
 			draw_cursor(screen);
 		}
 		next_print_line_feed = false;
@@ -104,7 +104,7 @@ char *_textPen( struct glueCommands *data )
 
 	if (args==1)
 	{
-		pen  = _stackInt( stack );
+		pen  = getStackNum( stack );
 		success = true;
 	}
 
@@ -130,7 +130,7 @@ char *_textPaper( struct glueCommands *data )
 
 	if (args==1)
 	{
-		paper = _stackInt( stack );
+		paper = getStackNum( stack );
 		success = true;
 	}
 
@@ -238,7 +238,7 @@ char *_textCentre( struct glueCommands *data )
 	{
 		if (screen = screens[current_screen])
 		{
-			txt = _stackString(stack);
+			txt = getStackString(stack);
 			charsPerLine = screen -> realWidth / 8;
 
 			clear_cursor(screen);
@@ -388,8 +388,8 @@ char *_textBorderStr( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		char *txt = _stackString( stack-1 );
-		int border = _stackInt( stack );
+		char *txt = getStackString( stack-1 );
+		int border = getStackNum( stack );
 
 		if ((txt)&&(border>0)&&(border<16))
 		{
@@ -464,7 +464,7 @@ char *_textPenStr( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		int n = _stackInt( stack );
+		int n = getStackNum( stack );
 		if (n>-1) str[2]='0'+n;
 	}
 	else setError(22);
@@ -491,7 +491,7 @@ char *_textPaperStr( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		int n = _stackInt( stack );
+		int n = getStackNum( stack );
 		if (n>-1) str[2]='0'+n;
 	}
 	else setError(22);
@@ -598,7 +598,7 @@ char *_textXText( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		n = _stackInt( stack ) / 8;
+		n = getStackNum( stack ) / 8;
 	}
 	else setError(22);
 
@@ -624,7 +624,7 @@ char *_textYText( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		n = _stackInt( stack ) / 8;
+		n = getStackNum( stack ) / 8;
 	}
 	else setError(22);
 
@@ -658,8 +658,8 @@ char *_textCMove( struct glueCommands *data )
 			x = screen -> locateX ;
 			y = screen -> locateY ;
 
-			x += _stackInt( stack - 1 ) ;
-			y += _stackInt( stack ) ;
+			x += getStackNum( stack - 1 ) ;
+			y += getStackNum( stack ) ;
 
 			screen -> locateX = x;
 			screen -> locateY = y;
@@ -778,7 +778,7 @@ char *_textCursPen( struct glueCommands *data )
 
 	if (args==1)
 	{
-		cursor_color = _stackInt( stack ) ;
+		cursor_color = getStackNum( stack ) ;
 		if (screens[current_screen]) draw_cursor(screens[current_screen]);
 	}
 

@@ -246,7 +246,7 @@ char *_InputStrN(struct glueCommands *data )
 
 	if (args==1)
 	{
-		int n = _stackInt( stack );
+		int n = getStackNum( stack );
 		while (tmp.length()<n)
 		{
 			atomic_get_char(buf);
@@ -304,7 +304,7 @@ char *_cmdKeyState( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int key = _stackInt( stack );
+		int key = getStackNum( stack );
 
 		if ((key>-1)&&(key<256))
 		{
@@ -373,7 +373,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	
 	if ((input_count == 0)&&(stack))		// should be one arg.
 	{
-		char *str = _stackString( stack-args+1 );
+		char *str = getStackString( stack-args+1 );
 		if (str)  __print_text( str ,0 );
 	}
 	else if (input_str.empty())
@@ -428,7 +428,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 				setStackStrDup(arg.c_str()); break;
 
 			case type_int:
-				sscanf(arg.c_str(),"%d",&num); _num(num); break;
+				sscanf(arg.c_str(),"%d",&num); setStackNum(num); break;
 
 			case type_float:
 				sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
@@ -466,7 +466,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	
 	if (input_count == 0)		// should be one arg.
 	{
-		char *str = _stackString( stack );
+		char *str = getStackString( stack );
 		bool have_question = false;
 
 		if (str) if (str[0])
@@ -529,7 +529,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 			setStackStrDup(arg.c_str()); break;
 
 		case type_int:
-			sscanf(arg.c_str(),"%d",&num); _num(num); break;
+			sscanf(arg.c_str(),"%d",&num); setStackNum(num); break;
 
 		case type_float:
 			sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
@@ -605,7 +605,7 @@ char *_cmdPutKey(struct glueCommands *data)
 
 	if (args==1)
 	{
-		char *str = _stackString(stack);
+		char *str = getStackString(stack);
 		if (str)
 		{
 			char *c;

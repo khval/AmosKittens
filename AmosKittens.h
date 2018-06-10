@@ -246,13 +246,12 @@ struct zone
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
+
 extern struct zone *zones;
 extern int zones_allocated;
 
 extern int currentLine;
 extern int parenthesis_count;
-
-extern void _num( int num );
 
 extern BOOL equal_symbol;
 extern struct nativeCommand NativeCommand[];

@@ -47,8 +47,8 @@ char *_left( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		str = _stackString( stack - 1 );
-		_len = _stackInt( stack );
+		str = getStackString( stack - 1 );
+		_len = getStackNum( stack );
 		tmp = strndup(str, _len );
 	}	
 
@@ -71,8 +71,8 @@ char *_mid( struct glueCommands *data )
 	switch (args)
 	{
 		case 2:
-			str = _stackString( stack - 1 );
-			_start = _stackInt( stack ) -1;
+			str = getStackString( stack - 1 );
+			_start = getStackNum( stack ) -1;
 
 			if (_start<0) _start = 0;
 			if (_start>strlen(str)-1) _start = strlen(str)-1;
@@ -80,9 +80,9 @@ char *_mid( struct glueCommands *data )
 			break;
 
 		case 3:
-			str = _stackString( stack - 2 );
-			_start = _stackInt( stack -1 ) -1;
-			_len = _stackInt( stack );
+			str = getStackString( stack - 2 );
+			_start = getStackNum( stack -1 ) -1;
+			_len = getStackNum( stack );
 
 			if (_start<0) _start = 0;
 			if (_start>strlen(str)-1) _start = strlen(str)-1;
@@ -109,8 +109,8 @@ char *_right( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		str = _stackString( stack - 1 );
-		_len = _stackInt( stack  );
+		str = getStackString( stack - 1 );
+		_len = getStackNum( stack  );
 		if (_len>strlen(str)) _start = strlen(str);
 
 		tmp = strdup(str + strlen(str) - _len );
@@ -134,15 +134,15 @@ char *_instr( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		str = _stackString( stack - 1 );
-		find = _stackString( stack );
+		str = getStackString( stack - 1 );
+		find = getStackString( stack );
 		ret = strstr( str, find );
 		_pos = ret ? (unsigned int) (ret - str) +1 : 0;
 	}	
 
 	popStack(stack - data->stack);
 
-	_num( _pos );
+	setStackNum( _pos );
 
 	return NULL;
 }
@@ -158,7 +158,7 @@ char *_cmdStr( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
-				num = _stackInt( stack );
+				num = getStackNum( stack );
 				_str[0]=0;
 
 				if (num>0)
@@ -188,12 +188,12 @@ char *_hex( struct glueCommands *data )
 	switch (args)
 	{
 		case 1:
-				num = _stackInt( stack );
+				num = getStackNum( stack );
 				sprintf(_str,"$%X",num);
 				break;
 		case 2:
-				num = _stackInt( stack-1 );
-				chars = _stackInt( stack );	
+				num = getStackNum( stack-1 );
+				chars = getStackNum( stack );	
 				sprintf(fmt,"$%%0%dX",chars);
 				sprintf(_str,fmt,num);
 				break;
@@ -216,10 +216,10 @@ char *_bin( struct glueCommands *data )
 
 	switch (args)
 	{
-		case 1:	num = _stackInt( stack  );
+		case 1:	num = getStackNum( stack  );
 				break;
-		case 2:	num = _stackInt( stack -1 );
-				len = _stackInt( stack );
+		case 2:	num = getStackNum( stack -1 );
+				len = getStackNum( stack );
 				break;
 		default: 
 				setError(22);
@@ -260,7 +260,7 @@ char *_flip( struct glueCommands *data )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	str = _stackString( stack  );
+	str = getStackString( stack  );
 
 	if (str)
 	{
@@ -287,8 +287,8 @@ char *_string( struct glueCommands *data )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	_str = _stackString( stack - 1 );
-	_len = _stackInt( stack  );
+	_str = getStackString( stack - 1 );
+	_len = getStackNum( stack  );
 
 	str = (char *) malloc(_len+1);
 
@@ -309,11 +309,11 @@ char *_asc( struct glueCommands *data )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	_str = _stackString( stack  );
+	_str = getStackString( stack  );
 
 	popStack(stack - data->stack);
 
-	_num( _str ? *_str : 0 );
+	setStackNum( _str ? *_str : 0 );
 
 	return NULL;
 }
@@ -326,7 +326,7 @@ char *_val( struct glueCommands *data )
 
 	proc_names_printf("%s:%d args %d\n",__FUNCTION__,__LINE__,args);
 
-	_str = _stackString( stack  );
+	_str = getStackString( stack  );
 	if (_str)
 	{
 		if (sscanf(_str,"%d",&num)==0) num=0;
@@ -334,7 +334,7 @@ char *_val( struct glueCommands *data )
 
 	popStack(stack - data->stack);
 
-	_num( num );
+	setStackNum( num );
 
 	return NULL;
 }
@@ -346,7 +346,7 @@ char *_chr( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	_str[0] = args == 1 ? (char) _stackInt( stack ) : 0;
+	_str[0] = args == 1 ? (char) getStackNum( stack ) : 0;
 	_str[1] =0;
 
 	popStack(stack - data->stack);
@@ -371,7 +371,7 @@ char *_len( struct glueCommands *data )
 
 	popStack(stack - data->stack);
 
-	_num( len );
+	setStackNum( len );
 
 	return NULL;
 }
@@ -384,7 +384,7 @@ char *_space( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	_len = _stackInt( stack );
+	_len = getStackNum( stack );
 
 	str = (char *) malloc(_len+1);
 
@@ -405,7 +405,7 @@ char *_upper( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	str = _stackString( stack );
+	str = getStackString( stack );
 
 	if (str)
 	{
@@ -424,7 +424,7 @@ char *_lower( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	str = _stackString( stack );
+	str = getStackString( stack );
 
 	if (str)
 	{
@@ -547,7 +547,7 @@ void	_match_int( struct kittyData *array, int value )
 		{
 			if (new_delta == 0)
 			{
-				_num(0);
+				setStackNum(0);
 				return;
 			}
 			else
@@ -558,7 +558,7 @@ void	_match_int( struct kittyData *array, int value )
 		}
 	}
 
-	_num( -closest );
+	setStackNum( -closest );
 }
 
 void _match_float( struct kittyData *array, double decimal )
@@ -577,7 +577,7 @@ void _match_float( struct kittyData *array, double decimal )
 		{
 			if (new_delta == 0)
 			{
-				_num(0);
+				setStackNum(0);
 				return;
 			}
 			else
@@ -588,7 +588,7 @@ void _match_float( struct kittyData *array, double decimal )
 		}
 	}
 
-	_num( -closest );
+	setStackNum( -closest );
 }
 
 void _match_str( struct kittyData *array,  char *str )
@@ -625,7 +625,7 @@ void _match_str( struct kittyData *array,  char *str )
 			{
 				if (new_delta == 0)
 				{
-					_num( n );
+					setStackNum( n );
 					return;
 				}
 				else
@@ -637,7 +637,7 @@ void _match_str( struct kittyData *array,  char *str )
 		}
 	}
 
-	_num( -closest );
+	setStackNum( -closest );
 }
 
 void	sort_int_array(	struct kittyData *var )

@@ -561,7 +561,7 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
 
-	_num(0);	// stack reset.
+	setStackNum(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
 
 	proc_names_printf("set mode_logical\n");
@@ -648,7 +648,7 @@ char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 
-	_num(0);	// stack reset.
+	setStackNum(0);	// stack reset.
 	stackCmdNormal(_else_if, tokenBuffer);
 	proc_names_printf("set mode_logical\n");
 	tokenMode = mode_logical;
@@ -851,13 +851,13 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	_num(-1);
+	setStackNum(-1);
 	return tokenBuffer;
 }
 
 char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	_num(0);
+	setStackNum(0);
 	return tokenBuffer;
 }
 
@@ -966,7 +966,7 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 
 	*new_ptr = ptr - 2;
 
-	return _stackInt(stack);
+	return getStackNum(stack);
 }
 
 char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
@@ -1280,7 +1280,7 @@ char *cmdParamFloat(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdParam(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	_num( var_param_num );
+	setStackNum( var_param_num );
 	return tokenBuffer;
 }
 
@@ -1330,7 +1330,7 @@ void read_from_data()
 							break;
 
 					case 0x003E: 	// num
-							_num ( *((int *) (data_read_pointer + 2)) );
+							setStackNum ( *((int *) (data_read_pointer + 2)) );
 							data_read_pointer +=6;
 							break;
 	
@@ -1424,7 +1424,7 @@ char *_cmdRestore( struct glueCommands *data )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	char *name = _stackString( stack );
+	char *name = getStackString( stack );
 	if (name)
 	{
 		char *ptr = findLabel(name);
@@ -1655,7 +1655,7 @@ char *_cmdExit(struct glueCommands *data)
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (args==1) exit_loops = _stackInt(stack);
+	if (args==1) exit_loops = getStackNum(stack);
 	popStack( stack - data -> stack  );
 
 	while (exit_loops>1)
@@ -1711,11 +1711,11 @@ char *_cmdExitIf(struct glueCommands *data)
 	switch (args)
 	{
 		case 1:
-			is_true = _stackInt(stack);
+			is_true = getStackNum(stack);
 			break;
 		case 2:
-			is_true = _stackInt(stack -1);
-			exit_loops = _stackInt(stack);
+			is_true = getStackNum(stack -1);
+			exit_loops = getStackNum(stack);
 			break;
 	}
 
@@ -1778,7 +1778,7 @@ char *_cmdWait( struct glueCommands *data )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 
-	Delay( _stackInt(data->stack) );
+	Delay( getStackNum(data->stack) );
 
 	return  data -> tokenBuffer ;
 }
@@ -1883,7 +1883,7 @@ char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_set_timer( struct glueCommands *data )
 {
-	timer_offset = _stackInt( stack );
+	timer_offset = getStackNum( stack );
 	gettimeofday(&timer_before, NULL);	// reset diff.
 	_do_set = _setVar;
 	return NULL;
@@ -1908,7 +1908,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	ms_before = (timer_before.tv_sec * 1000) + (timer_before.tv_usec/1000);
 	ms_after = (timer_after.tv_sec * 1000) + (timer_after.tv_usec/1000);
 
-	_num( ((ms_after - ms_before) / 20) + timer_offset );		// 1/50 sec = every 20 ms
+	setStackNum( ((ms_after - ms_before) / 20) + timer_offset );		// 1/50 sec = every 20 ms
 
 	return tokenBuffer;
 }
@@ -1955,7 +1955,7 @@ char *_cmdNot( struct glueCommands *data )
 	int args = stack - data->stack +1;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	res = _stackInt( stack );
+	res = getStackNum( stack );
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	setStackNum(~res);
 

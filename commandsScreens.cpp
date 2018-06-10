@@ -33,7 +33,7 @@ char *_gfxScreenOpen( struct glueCommands *data )
 
 	if (args==5)
 	{
-		int screen_num = _stackInt( stack-4 );
+		int screen_num = getStackNum( stack-4 );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -43,7 +43,7 @@ char *_gfxScreenOpen( struct glueCommands *data )
 
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
-			screens[screen_num] = retroOpenScreen(_stackInt( stack-3 ),_stackInt( stack-2 ),_stackInt( stack ));
+			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),getStackNum( stack ));
 
 			if (screens[screen_num])
 			{
@@ -79,7 +79,7 @@ char *_gfxScreenClose( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -121,7 +121,7 @@ char *_gfxScreenClone( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -168,14 +168,14 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 
 	if (args==5)
 	{
-		int screen_num = _stackInt( stack-4 );
+		int screen_num = getStackNum( stack-4 );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = _stackInt( stack-3 );
-			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (_stackInt( stack-2 ) *2) - 80;
-			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = _stackInt( stack-1 );
-			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = _stackInt( stack );
+			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = getStackNum( stack-3 );
+			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (getStackNum( stack-2 ) *2) - 80;
+			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = getStackNum( stack-1 );
+			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = getStackNum( stack );
 
 			engine_lock();
 
@@ -211,12 +211,12 @@ char *_gfxScreenOffset( struct glueCommands *data )
 
 	if (args==3)
 	{
-		int screen_num = _stackInt( stack-2 );
+		int screen_num = getStackNum( stack-2 );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> offset_x = _stackInt( stack-1 );
-			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> offset_y = _stackInt( stack );
+			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> offset_x = getStackNum( stack-1 );
+			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> offset_y = getStackNum( stack );
  			screens[screen_num] -> refreshScanlines = TRUE;
 			video -> refreshSomeScanlines = TRUE;
 			success = true;
@@ -239,7 +239,7 @@ char *_gfxScreen( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -264,8 +264,8 @@ char *_gfxScin( struct glueCommands *data )
 
 	if (args==2)
 	{
-		int mx = _stackInt( stack-1 );
-		int my = _stackInt( stack );
+		int mx = getStackNum( stack-1 );
+		int my = getStackNum( stack );
 
 		if ((my>-1)&&(my<480))
 		{
@@ -398,7 +398,7 @@ char *_gfxScreenToFront( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -423,7 +423,7 @@ char *_gfxScreenToBack( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -462,7 +462,7 @@ char *_gfxScreenShow( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -489,7 +489,7 @@ char *_gfxScreenHide( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int screen_num = _stackInt( stack );
+		int screen_num = getStackNum( stack );
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -518,8 +518,8 @@ char *_gfxScreenCopy( struct glueCommands *data )
 	{
 		case 2:
 			{
-				int src_screen = _stackInt( stack-1 );
-				int dest_screen = _stackInt( stack );
+				int src_screen = getStackNum( stack-1 );
+				int dest_screen = getStackNum( stack );
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
@@ -531,14 +531,14 @@ char *_gfxScreenCopy( struct glueCommands *data )
 
 		case 8:	// Screen Copy 1,x,y,w,h to 2,x,y
 			{
-				int src_screen = _stackInt( stack-7 );
-				int src_x = _stackInt( stack-6 );
-				int src_y = _stackInt( stack-5 );
-				int src_w = _stackInt( stack-4 );
-				int src_h = _stackInt( stack-3 );
-				int dest_screen = _stackInt( stack-2 );
-				int dest_x = _stackInt( stack-1 );
-				int dest_y = _stackInt( stack );
+				int src_screen = getStackNum( stack-7 );
+				int src_x = getStackNum( stack-6 );
+				int src_y = getStackNum( stack-5 );
+				int src_w = getStackNum( stack-4 );
+				int src_h = getStackNum( stack-3 );
+				int dest_screen = getStackNum( stack-2 );
+				int dest_x = getStackNum( stack-1 );
+				int dest_y = getStackNum( stack );
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
@@ -719,14 +719,14 @@ char *_gfxLoadIff( struct glueCommands *data )
 	{
 		case 1:	// load iff image to current screen.
 				{
-					char *name= _stackString( stack );
+					char *name= getStackString( stack );
 					if (name)	LoadIff(name,current_screen);
 				}
 				break;
 		case 2:	// load iff image to new screen.
 				{
-					char *name= _stackString( stack -1);
-					int screen_num = _stackInt( stack );
+					char *name= getStackString( stack -1);
+					int screen_num = getStackNum( stack );
 					if (name)	LoadIff(name,screen_num);
 				}
 				break;
@@ -747,14 +747,14 @@ char *_gfxSaveIff( struct glueCommands *data )
 	{
 		case 1:	// save iff image from current screen.
 				{
-					char *name= _stackString( stack );
+					char *name= getStackString( stack );
 					if (name)	SaveIff(name,current_screen);
 				}
 				break;
 		case 2:	// save iff image from screen X.
 				{
-					char *name= _stackString( stack -1);
-					int screen_num = _stackInt( stack );
+					char *name= getStackString( stack -1);
+					int screen_num = getStackNum( stack );
 					if (name)	SaveIff(name,screen_num);
 				}
 				break;

@@ -5,6 +5,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include "amosKittens.h"
+#include "stack.h"
 #include "errors.h"
 
 struct errorAt kittyError = { 0, 0 };
@@ -15,7 +16,7 @@ extern struct error errorsTestTime[];
 
 char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	_num( kittyError.code );
+	setStackNum( kittyError.code );
 	return tokenBuffer;
 }
 

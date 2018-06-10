@@ -65,7 +65,6 @@ void (*do_input) ( struct nativeCommand *, char * ) = NULL;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
-void _num( int num );
 
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.

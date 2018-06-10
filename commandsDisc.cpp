@@ -44,7 +44,7 @@ char *_cmdPrintOut( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	num = _stackInt( data -> stack ) -1;
+	num = getStackNum( data -> stack ) -1;
 
 	if ((num>-1)&&(num<10))
 	{
@@ -85,7 +85,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 
 	if (args == 2)
 	{
-		num = _stackInt( stack -1 ) -1;
+		num = getStackNum( stack -1 ) -1;
 
 		if ((num>-1)&&(num<10))
 		{
@@ -101,7 +101,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 				kittyFiles[ num ].fields = NULL;
 			}
 
-			_str = _stackString( stack );
+			_str = getStackString( stack );
 			if (_str) kittyFiles[ num ].fd = fopen( _str, access );
 
 			if (kittyFiles[ num ].fd  == NULL) setError(81);
@@ -141,7 +141,7 @@ char *_cmdClose( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		num = _stackInt( stack ) -1;
+		num = getStackNum( stack ) -1;
 
 		if ((num>-1)&&(num<10))
 		{
@@ -165,7 +165,7 @@ char *_cmdKill( struct glueCommands *data )
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	char *_str;
 	int32 success = false;
-	_str = _stackString( stack );
+	_str = getStackString( stack );
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -187,8 +187,8 @@ char *_cmdRename( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		char *oldName = _stackString( stack - 1 );
-		char *newName = _stackString( stack );
+		char *oldName = getStackString( stack - 1 );
+		char *newName = getStackString( stack );
 		if ((oldName)&&(newName))	success = Rename(  oldName, newName );
 	}
 
@@ -220,9 +220,9 @@ char *_cmdFselStr( struct glueCommands *data )
 		switch (args)
 		{
 			case 3:
-					_path_ = _stackString( stack -2 );
-					_default_ = _stackString( stack -1 );
-					_title_ = _stackString( stack );
+					_path_ = getStackString( stack -2 );
+					_default_ = getStackString( stack -1 );
+					_title_ = getStackString( stack );
 
 					amigaPattern = amos_to_amiga_pattern( (char *) _path_);
 
@@ -271,7 +271,7 @@ char *_cmdExist( struct glueCommands *data )
 	char *_str;
 	BPTR lock = 0;
 
-	_str = _stackString( stack );
+	_str = getStackString( stack );
 
 	if (args==1)
 	{
@@ -280,11 +280,11 @@ char *_cmdExist( struct glueCommands *data )
 		if (lock)
 		{
 			UnLock( lock );
-			_num( true ); 
+			setStackNum( true ); 
 		}
 	}
 
-	if (!lock) _num( false );
+	if (!lock) setStackNum( false );
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 	return NULL;
@@ -402,7 +402,7 @@ char *_cmdDirFirstStr( struct glueCommands *data )
 		contextDir = NULL;
 	}
 
-	str  = _stackString( stack );
+	str  = getStackString( stack );
 	if (str == NULL) return NULL;
 
 	if (dir_first_path)
@@ -578,7 +578,7 @@ char *_cmdDir( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	str = _stackString( stack );
+	str = getStackString( stack );
 
 	if (str == NULL) return NULL;
 
@@ -672,7 +672,7 @@ char *_cmdDirStr( struct glueCommands *data )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	_str = _stackString( stack );
+	_str = getStackString( stack );
 
 	if (_str)
 	{
@@ -764,7 +764,7 @@ char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer)
 		// this does not support my disk as it has more then 4 GB free :-/
 		// ints are 32bit internaly in AMOS kittens, should bump it up to 64bit, internally.
 
-		_num( freeBlocks * data.id_BytesPerBlock ); 
+		setStackNum( freeBlocks * data.id_BytesPerBlock ); 
 
 		// print the real size here... 
 		printf("free bytes %lld\n", (long long int) freeBlocks * (long long int) data.id_BytesPerBlock );
@@ -893,7 +893,7 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 				case type_int:
 
 					ret = fscanf( fd, "%d", &num );
-					if (ret==1) _num( num );
+					if (ret==1) setStackNum( num );
 					break;
 
 				case type_float:
@@ -1145,8 +1145,8 @@ char *_cmdInputStrFile( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		channel = _stackInt(stack - 1 );
-		len = _stackInt(stack );
+		channel = getStackNum(stack - 1 );
+		len = getStackNum(stack );
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1204,7 +1204,7 @@ char *_cmdLof( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		channel = _stackInt(stack);
+		channel = getStackNum(stack);
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1219,7 +1219,7 @@ char *_cmdLof( struct glueCommands *data )
 				len = ftell(fd);
 				fseek( fd, pos, SEEK_SET );
 
-				_num( len );
+				setStackNum( len );
 				return NULL;
 			}
 			else	setError(97); // file not open
@@ -1242,7 +1242,7 @@ char *_cmdPof( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		channel = _stackInt(stack);
+		channel = getStackNum(stack);
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1251,7 +1251,7 @@ char *_cmdPof( struct glueCommands *data )
 			if (fd)
 			{
 				popStack( stack - cmdTmp[cmdStack].stack  );
-				_num( ftell( fd ));
+				setStackNum( ftell( fd ));
 				return NULL;
 			}
 			else	setError(97); // file not open
@@ -1273,7 +1273,7 @@ char *_cmdEof( struct glueCommands *data )
 
 	if (args == 1)
 	{
-		channel = _stackInt(stack);
+		channel = getStackNum(stack);
 
 		dprintf("channel: %d\n",channel);
 
@@ -1284,7 +1284,7 @@ char *_cmdEof( struct glueCommands *data )
 			if (fd)
 			{
 				popStack( stack - cmdTmp[cmdStack].stack  );
-				_num( feof( fd ));
+				setStackNum( feof( fd ));
 				return NULL;
 			}
 			else	setError(97); // file not open
@@ -1346,8 +1346,8 @@ char *_cmdGet( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		channel = _stackInt( stack -1 ) ;
-		index = _stackInt( stack ) ;
+		channel = getStackNum( stack -1 ) ;
+		index = getStackNum( stack ) ;
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
@@ -1393,8 +1393,8 @@ char *_cmdPut( struct glueCommands *data )
 
 	if (args == 2)
 	{
-		channel = _stackInt( stack -1 ) ;
-		index = _stackInt( stack ) ;
+		channel = getStackNum( stack -1 ) ;
+		index = getStackNum( stack ) ;
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
