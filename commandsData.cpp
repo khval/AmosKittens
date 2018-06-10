@@ -1266,15 +1266,9 @@ char *lessData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_lessData, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		proc_names_printf("Syntax error\n");
-	}
+	flushCmdParaStack();
+	stackCmdParm(_lessData, tokenBuffer);
+	incStack;
 
 	return tokenBuffer;
 }
@@ -1285,19 +1279,9 @@ char *moreData(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (tokenMode == mode_logical)
-	{
-		proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-		stackCmdParm(_moreData, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		dprintf("%s:%d\n",__FUNCTION__,__LINE__);
-		dprintf("Syntax error\n");
-	}
+	flushCmdParaStack();
+	stackCmdParm(_moreData, tokenBuffer);
+	stack++;
 
 	return tokenBuffer;
 }
@@ -1308,15 +1292,9 @@ char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_lessOrEqualData, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		proc_names_printf("Syntax error\n");
-	}
+	flushCmdParaStack();
+	stackCmdParm(_lessOrEqualData, tokenBuffer);
+
 
 	return tokenBuffer;
 }
@@ -1327,18 +1305,9 @@ char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_moreOrEqualData, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		dprintf("%s:%d\n",__FUNCTION__,__LINE__);
-		dprintf("Syntax error\n");
-	}
+	flushCmdParaStack();
+	stackCmdParm(_moreOrEqualData, tokenBuffer);
+	stack++;
 
 	return tokenBuffer;
 }
@@ -1407,15 +1376,9 @@ char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
 
-	if (tokenMode == mode_logical)
-	{
-		stackCmdParm(_not_equal, tokenBuffer);
-		stack++;
-	}
-	else
-	{
-		proc_names_printf("Syntax error\n");
-	}
+	flushCmdParaStack();
+	stackCmdParm(_not_equal, tokenBuffer);
+	incStack;
 
 	return tokenBuffer;
 }
