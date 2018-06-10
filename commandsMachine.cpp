@@ -32,9 +32,9 @@ char *_machineCopy( struct glueCommands *data )
 
 	if (args==3)
 	{
-		adrFromStart = _stackInt(stack-2);
-		adrFromEnd = _stackInt(stack-1);
-		adrTo = _stackInt(stack);
+		adrFromStart = getStackNum(stack-2);
+		adrFromEnd = getStackNum(stack-1);
+		adrTo = getStackNum(stack);
 
 		if ((adrFromStart>0)&&(adrFromEnd>0)&&(adrTo>0))
 		{
@@ -62,8 +62,8 @@ char *_machinePoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = (char *) _stackInt(stack-1);
-		value = _stackInt(stack);
+		adr = (char *) getStackNum(stack-1);
+		value = getStackNum(stack);
 
 		if (adr)	// we can only Poke positive addresses
 		{
@@ -91,8 +91,8 @@ char *_machineDoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = (short *) _stackInt(stack-1);
-		value = _stackInt(stack);
+		adr = (short *) getStackNum(stack-1);
+		value = getStackNum(stack);
 
 		if (adr)	// we can only Doke positive addresses
 		{
@@ -120,8 +120,8 @@ char *_machineLoke( struct glueCommands *data )
 
 	if (args==2)
 	{
-		adr = (int *) _stackInt(stack-1);
-		value = _stackInt(stack);
+		adr = (int *) getStackNum(stack-1);
+		value = getStackNum(stack);
 
 		if (adr)
 		{
@@ -147,7 +147,7 @@ char *_machinePeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		char *adr = (char *) _stackInt(stack);
+		char *adr = (char *) getStackNum(stack);
 
 		if (adr)
 		{
@@ -173,7 +173,7 @@ char *_machineDeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		short *adr = (short *) _stackInt(data->stack);
+		short *adr = (short *) getStackNum(data->stack);
 
 		if (adr)
 		{
@@ -200,7 +200,7 @@ char *_machineLeek( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int *adr = (int *) _stackInt(data->stack);
+		int *adr = (int *) getStackNum(data->stack);
 
 		if (adr)
 		{
@@ -304,9 +304,9 @@ char *_machineFill( struct glueCommands *data )
 
 	if (args==3)
 	{
-		adrStart = (int *) _stackInt(stack-2);
-		adrEnd = (int *) _stackInt(stack-1);
-		num = _stackInt(stack);
+		adrStart = (int *) getStackNum(stack-2);
+		adrEnd = (int *) getStackNum(stack-1);
+		num = getStackNum(stack);
 
 		printf("%08X, %08X, %08x\n", adrStart, adrEnd, num);
 
@@ -342,9 +342,9 @@ char *_machineHunt( struct glueCommands *data )
 	if (args==3)
 	{
 		int _n, _size = 0;
-		char *adrStart = (char *) _stackInt(stack-2);
-		char *adrEnd = (char *) _stackInt(stack-1);
-		char *find = (char *) _stackString(stack);
+		char *adrStart = (char *) getStackNum(stack-2);
+		char *adrEnd = (char *) getStackNum(stack-1);
+		char *find = (char *) getStackString(stack);
 
 		if (( adrStart ) && ( adrEnd ))
 		{
@@ -384,7 +384,7 @@ char *_machineRolB( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -409,7 +409,7 @@ char *_machineRolW( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -434,7 +434,7 @@ char *_machineRolL( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -459,7 +459,7 @@ char *_machineRorB( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -484,7 +484,7 @@ char *_machineRorW( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -509,7 +509,7 @@ char *_machineRorL( struct glueCommands *data )
 
 	if (args==2)
 	{
-		shift = _stackInt(stack-1);
+		shift = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -575,7 +575,7 @@ char *_machineBtst( struct glueCommands *data )
 
 	if (args==2)
 	{
-		bit = _stackInt(stack-1);
+		bit = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -600,7 +600,7 @@ char *_machineBset( struct glueCommands *data )
 
 	if (args==2)
 	{
-		bit = _stackInt(stack-1);
+		bit = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -624,7 +624,7 @@ char *_machineBchg( struct glueCommands *data )
 
 	if (args==2)
 	{
-		bit = _stackInt(stack-1);
+		bit = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -648,7 +648,7 @@ char *_machineBclr( struct glueCommands *data )
 
 	if (args==2)
 	{
-		bit = _stackInt(stack-1);
+		bit = getStackNum(stack-1);
 
 		if (last_var)
 		{
@@ -699,7 +699,7 @@ extern char *(*_do_set) ( struct glueCommands *data );
 
 char *_set_reg( struct glueCommands *data )
 {
-	if ((reg>-1)&&(reg<16)) regs[reg] = _stackInt(stack);
+	if ((reg>-1)&&(reg<16)) regs[reg] = getStackNum(stack);
 	_do_set = _setVar;
 	return NULL;
 }
@@ -714,7 +714,7 @@ char *_machineAREG( struct glueCommands *data )
 
 	if (args==1)
 	{
-		reg = _stackInt(stack) + 8;
+		reg = getStackNum(stack) + 8;
 		if ((reg>7)&&(reg<16)) setStackNum( regs[reg] );
 		_do_set = _set_reg;
 	}
@@ -734,7 +734,7 @@ char *_machineDREG( struct glueCommands *data )
 
 	if (args==1)
 	{
-		reg = _stackInt(stack);
+		reg = getStackNum(stack);
 		if ((reg>-1)&&(reg<8)) setStackNum( regs[reg] );
 		_do_set = _set_reg;
 	}
@@ -765,7 +765,7 @@ char *_machineDOSCALL( struct glueCommands *data )
 
 	if (args==1)
 	{
-		libVec = _stackInt(stack);
+		libVec = getStackNum(stack);
 
 		if (libVec<0)
 		{
@@ -806,7 +806,7 @@ char *_machineEXECALL( struct glueCommands *data )
 
 	if (args==1)
 	{
-		libVec = _stackInt(stack);
+		libVec = getStackNum(stack);
 
 		if (libVec<0)
 		{
@@ -861,8 +861,8 @@ char *_machinePload( struct glueCommands *data )
 
 	if (args==2)
 	{
-		char *name = _stackString(stack-1);
-		int bank = _stackInt(stack);
+		char *name = getStackString(stack-1);
+		int bank = getStackNum(stack);
 		FILE *fd;
 
 		if (name)	readhunk( name, &keep_code, &code_size );
@@ -902,7 +902,7 @@ char *_machineCall( struct glueCommands *data )
 
 	if (args==1)
 	{
-		int bank = _stackInt(stack);
+		int bank = getStackNum(stack);
 
 		if ((bank>0)&&(bank<16))
 		{
