@@ -23,7 +23,7 @@ extern struct retroVideo *video;
 int current_screen = 0;
 extern struct retroRGB DefaultPalette[256];
 
-char *_gfxScreenOpen( struct glueCommands *data )
+char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -69,7 +69,7 @@ char *_gfxScreenOpen( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenClose( struct glueCommands *data )
+char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -111,7 +111,7 @@ char *_gfxScreenClose( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenClone( struct glueCommands *data )
+char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -158,7 +158,7 @@ char *_gfxScreenClone( struct glueCommands *data )
 }
 
 
-char *_gfxScreenDisplay( struct glueCommands *data )
+char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -201,7 +201,7 @@ char *_gfxScreenDisplay( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenOffset( struct glueCommands *data )
+char *_gfxScreenOffset( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -230,7 +230,7 @@ char *_gfxScreenOffset( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreen( struct glueCommands *data )
+char *_gfxScreen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -254,7 +254,7 @@ char *_gfxScreen( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScin( struct glueCommands *data )
+char *_gfxScin( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -389,7 +389,7 @@ char *gfxScin(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxScreenToFront( struct glueCommands *data )
+char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -414,7 +414,7 @@ char *_gfxScreenToFront( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenToBack( struct glueCommands *data )
+char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -453,7 +453,7 @@ char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxScreenShow( struct glueCommands *data )
+char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -480,7 +480,7 @@ char *_gfxScreenShow( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenHide( struct glueCommands *data )
+char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -507,7 +507,7 @@ char *_gfxScreenHide( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScreenCopy( struct glueCommands *data )
+char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -709,7 +709,7 @@ void SaveIff( char *name, const int n )
 	else 	if (dt_bitmap) FreeBitMap(dt_bitmap);
 }
 
-char *_gfxLoadIff( struct glueCommands *data )
+char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -736,7 +736,7 @@ char *_gfxLoadIff( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxSaveIff( struct glueCommands *data )
+char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -846,7 +846,7 @@ int YScreen_formula( struct retroScreen *screen )
 	return y;
 }
 
-char *_gfxXScreen( struct glueCommands *data )
+char *_gfxXScreen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -868,7 +868,7 @@ char *gfxXScreen(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxYScreen( struct glueCommands *data )
+char *_gfxYScreen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;

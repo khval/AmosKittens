@@ -28,7 +28,7 @@ char *on_error_goto_location = NULL;
 char *on_error_proc_location = NULL;
 char *resume_location = NULL;
 
-char *_cmdError( struct glueCommands *data )
+char *_cmdError( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -128,7 +128,7 @@ char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 				if (cmdTmp[cmdStack-1].cmd == _procedure ) 
 				{
 					printf(" maybe need flush some stack here? %d - %d --\n", cmdTmp[cmdStack-1].stack, stack );
-					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 				}
 			}
 			if ( resume_location ) tokenBuffer = resume_location;

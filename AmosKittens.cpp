@@ -55,11 +55,11 @@ unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 
 
 char *data_read_pointer = NULL;
 
-char *_get_var_index( glueCommands *self);
+char *_get_var_index( glueCommands *self, int nextToken);
 
 void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 
-char *(*do_var_index) ( glueCommands *self ) = _get_var_index;
+char *(*do_var_index) ( glueCommands *self, int nextToken ) = _get_var_index;
 void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
 void (*do_input) ( struct nativeCommand *, char * ) = NULL;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
@@ -89,20 +89,40 @@ extern char *nextToken_pass1( char *ptr, unsigned short token );
 
 bool breakpoint = false;
 
+const char *str_dump_stack = "dump stack";
+const char *str_breakpoint_on = "breakpoint on";
+const char *str_breakpoint_off = "breakpoint off";
+const char *str_warning = "warning";
+
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
 	int length = *((short *) ptr);
 
-//	breakpoint = !breakpoint;
-
+	if (length>4)
 	{
-		char *txt = strndup( ptr + 2, length );
-
+		char *txt = strndup( ptr + 3, length );
 		if (txt)
 		{
-			if (strcmp(txt+1,"dump stack")>0)
+			if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
 				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
+			}
+
+			if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
+			{
+				breakpoint = true;
+			}
+
+			if (strncmp(txt,str_breakpoint_off,strlen(str_breakpoint_off))==0)
+			{
+				breakpoint = false;
+			}
+
+			if (strncmp(txt,str_warning,strlen(str_warning))==0)
+			{
+				printf("**********************************\n");
+				printf(" %s\n",txt+strlen(str_warning));
+				printf("**********************************\n");
 			}
 
 			free(txt);
@@ -125,7 +145,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 		type = cmdTmp[cmdStack-1].flag;
 		if  ( ( type == cmd_loop ) || ( type  == cmd_never ) || (type == cmd_eol) ) break;
 	
-		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
 		if (cmdTmp[cmdStack].flag == cmd_first) break;
 		if (ret) break;
@@ -133,6 +153,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	do_to = do_to_default;
 	tokenMode = mode_standard;
+	dprintf("setTokenMode = mode_standard\n");
 
 	if (ret) ptr = ret - 2;
 	return ptr;
@@ -150,7 +171,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 		{
 			type = cmdTmp[cmdStack-1].flag;
 			if  ( (type == cmd_proc) || ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
-			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 			if (ret) 
 			{
 				return ret-2;
@@ -160,6 +181,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	do_to = do_to_default;
 	tokenMode = mode_standard;
+	dprintf("setTokenMode = mode_standard\n");
 
 	if (breakpoint)
 	{
@@ -175,7 +197,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 int _last_var_index;		// we need to know what index was to keep it.
 int _set_var_index;		// we need to resore index 
 
-char *_get_var_index( glueCommands *self)
+char *_get_var_index( glueCommands *self , int nextToken )
 {
 	int varNum;
 	int n = 0;
@@ -193,7 +215,6 @@ char *_get_var_index( glueCommands *self)
 	if (varNum) 
 	{
 		var = &globalVars[varNum-1].var;
-		dprintf("varname: %s\n",globalVars[varNum-1].varName);
 	}
 
 	if (var)
@@ -213,32 +234,47 @@ char *_get_var_index( glueCommands *self)
 			mul *= var -> sizeTab[n- self -> stack -1];
 		}
 
+		dprintf("varname: %s(%d)\n",globalVars[varNum-1].varName, _last_var_index);
+
 		var -> index = _last_var_index;
 		popStack(stack - self -> stack);
 
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
-			switch (var -> type & 7)
+			if ( correct_order( self -> lastToken,  nextToken ) == false )
+			{
+				dprintf("---hidden ( symbol \n");
+
+				// hidden ( condition.
+				kittyStack[stack].str = NULL;
+				kittyStack[stack].value = 0;
+				kittyStack[stack].state = state_hidden_subData;
+				stack++;
+			}
+
+			switch (var -> type & 3)
 			{
 				case type_int: 
 					setStackNum( var -> int_array[_last_var_index] );	break;
 
-				case type_float: 
+				case type_float:
 					setStackDecimal( var -> float_array[_last_var_index] );	
 					break;
 
-				case type_string: 	
+				case type_string:	
 					char *str = var -> str_array[_last_var_index];
 					setStackStrDup( str ? str : "" );
 					break;
 			}
+
+			flushCmdParaStack(nextToken);
 		}
 	}
 
 	return NULL;
 }
 
-char *_alloc_mode_off( glueCommands *self )
+char *_alloc_mode_off( glueCommands *self, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -248,7 +284,7 @@ char *_alloc_mode_off( glueCommands *self )
 	return NULL;
 }
 
-char *do_var_index_alloc( glueCommands *cmd)
+char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 {
 	int args = stack - cmd -> stack + 1;
 	int size = 0;
@@ -306,7 +342,7 @@ void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
 	if (parenthesis_count == 0)
 	{
-		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack]);
+		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 	}
 }
 
@@ -337,17 +373,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ( correct_order( last_token,  next_token ) == false )
-	{
-		dprintf("---hidden ( symbol \n");
-
-		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
-	}
-
 	last_var = ref -> ref;
 
 	if (next_token == 0x0074)	// ( symbol
@@ -356,6 +381,17 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
+		if ( correct_order( last_token,  next_token ) == false )
+		{
+			dprintf("---hidden ( symbol \n");
+
+			// hidden ( condition.
+			kittyStack[stack].str = NULL;
+			kittyStack[stack].value = 0;
+			kittyStack[stack].state = state_hidden_subData;
+			stack++;
+		}
+
 		if (ref -> ref)
 		{
 			int idx = ref->ref-1;
@@ -365,7 +401,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			switch (globalVars[idx].var.type & 7)
 			{
 				case type_int:
-					_num(globalVars[idx].var.value);
+					setStackNum(globalVars[idx].var.value);
 					break;
 				case type_float:
 					setStackDecimal(globalVars[idx].var.decimal);
@@ -378,11 +414,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					return globalVars[idx].var.tokenBufferPos ;					
 			}
 		}
+		flushCmdParaStack(next_token);
 	}
-
-//	printf("------ %s:%d ------ stack %d \n",__FUNCTION__,__LINE__, stack);
-	flushCmdParaStack();
-//	printf("-------%s:%d ------ stack \n",__FUNCTION__,__LINE__, stack);
 
 	return ptr + ref -> length ;
 }
@@ -414,7 +447,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
 
-	flushCmdParaStack();
+	flushCmdParaStack( (int) next_token );
 
 	return ptr + length2;
 }
@@ -423,7 +456,6 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
-
 	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
 	// check if - or + comes before *, / or ; symbols
@@ -442,7 +474,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	setStackNum( *((int *) ptr) );
 
 	kittyStack[stack].state = state_none;
-	flushCmdParaStack();
+	flushCmdParaStack( next_token );
 
 	return ptr;
 }

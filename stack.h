@@ -31,8 +31,8 @@ extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1
 extern void popStack(int n);
 extern void correct_for_hidden_sub_data();
 
-extern char *flushCmdParaStack();
-extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) );
+extern char *flushCmdParaStack( int nextToken );
+extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken ) );
 extern bool dropProgStackToType( int type );
 
 extern void stack_get_if_int( int n, int *ret );

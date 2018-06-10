@@ -16,7 +16,6 @@ int getLineFromPointer( char *address );
 
 //------------- end of options -----------------
 
-
 #ifdef show_debug_printf_yes
 #define dprintf printf
 #else

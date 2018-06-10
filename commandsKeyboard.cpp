@@ -35,7 +35,7 @@ extern int current_screen;
 
 extern bool next_print_line_feed;
 
-char *_setVar( struct glueCommands *data );
+char *_setVar( struct glueCommands *data,int nextToken );
 
 void _input_arg( struct nativeCommand *cmd, char *tokenBuffer );
 void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer );
@@ -234,7 +234,7 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *_InputStrN(struct glueCommands *data )
+char *_InputStrN( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	string tmp;
@@ -294,7 +294,7 @@ char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer )
 }
 
 
-char *_cmdKeyState( struct glueCommands *data )
+char *_cmdKeyState( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -327,7 +327,7 @@ char *cmdKeyState(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *_Input(struct glueCommands *data)
+char *_Input( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data -> stack +1;
 	_input_arg( NULL, NULL );
@@ -337,7 +337,7 @@ char *_Input(struct glueCommands *data)
 	return NULL;
 }
 
-char *_LineInput(struct glueCommands *data)
+char *_LineInput( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data -> stack +1;
 	_inputLine_arg( NULL, NULL );
@@ -436,7 +436,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 	data.lastVar = last_var;
-	_setVar( &data );
+	_setVar( &data,0 );
 	input_count ++;
 }
 
@@ -536,7 +536,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 	data.lastVar = last_var;
-	_setVar( &data );
+	_setVar( &data,0 );
 	input_count ++;
 }
 
@@ -599,7 +599,7 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdPutKey(struct glueCommands *data)
+char *_cmdPutKey( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data -> stack +1;
 

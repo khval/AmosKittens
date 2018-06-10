@@ -33,7 +33,7 @@ int paper = 1;
 bool next_print_line_feed = false;
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 
-char *_textLocate( struct glueCommands *data )
+char *_textLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
@@ -60,7 +60,7 @@ char *_textLocate( struct glueCommands *data )
 	return NULL;
 }
 
-char *_textHome( struct glueCommands *data )
+char *_textHome( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
@@ -94,7 +94,7 @@ char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_textPen( struct glueCommands *data )
+char *_textPen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -120,7 +120,7 @@ char *textPen(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_textPaper( struct glueCommands *data )
+char *_textPaper( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -185,7 +185,7 @@ void __print_double( double d )
 	__print_text(tmp,0);
 }
 
-char *_print( struct glueCommands *data )
+char *_print( struct glueCommands *data, int nextToken )
 {
 	int n;
 
@@ -218,7 +218,7 @@ char *_print( struct glueCommands *data )
 	return NULL;
 }
 
-char *_textCentre( struct glueCommands *data )
+char *_textCentre( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
@@ -227,10 +227,6 @@ char *_textCentre( struct glueCommands *data )
 	const char *txt = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
-
-	printf("args: %d, stack %d, data -> stack %d \n",args,stack,data->stack);
 
 	if (args!=1) setError(22);
 
@@ -281,7 +277,7 @@ char *textCentre(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_addDataToText( struct glueCommands *data );
+char *_addDataToText( struct glueCommands *data, int nextToken );
 
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -379,7 +375,7 @@ char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_textBorderStr( struct glueCommands *data )
+char *_textBorderStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char *newstr = NULL;
@@ -417,7 +413,7 @@ char *textBorderStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_textAt( struct glueCommands *data )
+char *_textAt( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x =-1,y= -1;
@@ -455,7 +451,7 @@ extern char *textAt(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textPenStr( struct glueCommands *data )
+char *_textPenStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char str[] = {27,'P','0',0};
@@ -482,7 +478,7 @@ extern char *textPenStr(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textPaperStr( struct glueCommands *data )
+char *_textPaperStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char str[] = {27,'B','0',0};
@@ -509,7 +505,7 @@ extern char *textPaperStr(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textWriting( struct glueCommands *data )
+char *_textWriting( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -525,7 +521,7 @@ char *textWriting(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textShadeOff( struct glueCommands *data )
+char *_textShadeOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -541,7 +537,7 @@ char *textShadeOff(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textShadeOn( struct glueCommands *data )
+char *_textShadeOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -557,7 +553,7 @@ char *textShadeOn(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textUnderOff( struct glueCommands *data )
+char *_textUnderOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -573,7 +569,7 @@ char *textUnderOff(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textUnderOn( struct glueCommands *data )
+char *_textUnderOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -589,7 +585,7 @@ char *textUnderOn(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textXText( struct glueCommands *data )
+char *_textXText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int n = 0;
@@ -615,7 +611,7 @@ char *textXText(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textYText( struct glueCommands *data )
+char *_textYText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int n = 0;
@@ -641,7 +637,7 @@ char *textYText(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textCMove( struct glueCommands *data )
+char *_textCMove( struct glueCommands *data, int nextToken )
 {
 	struct retroScreen *screen; 
 	int args = stack - data->stack +1 ;
@@ -730,7 +726,7 @@ char *textCDown(nativeCommand *cmd, char *ptr)
 }
 
 
-char *_textSetTab( struct glueCommands *data )
+char *_textSetTab( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x = 0, y = 0;
@@ -755,7 +751,7 @@ char *textSetTab(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textSetCurs( struct glueCommands *data )
+char *_textSetCurs( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -771,7 +767,7 @@ char *textSetCurs(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textCursPen( struct glueCommands *data )
+char *_textCursPen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -794,7 +790,7 @@ char *textCursPen(struct nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textVscroll( struct glueCommands *data )
+char *_textVscroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -814,7 +810,7 @@ char *textVscroll(struct nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textHscroll( struct glueCommands *data )
+char *_textHscroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

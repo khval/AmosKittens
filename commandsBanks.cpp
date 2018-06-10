@@ -19,7 +19,7 @@ extern int tokenMode;
 extern int tokenlength;
 
 
-char *_cmdErase( struct glueCommands *data )
+char *_cmdErase( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -44,7 +44,7 @@ char *_cmdErase( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdStart( struct glueCommands *data )
+char *_cmdStart( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -71,7 +71,7 @@ char *_cmdStart( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdLength( struct glueCommands *data )
+char *_cmdLength( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -98,7 +98,7 @@ char *_cmdLength( struct glueCommands *data )
 }
 
 
-char *_cmdBload( struct glueCommands *data )
+char *_cmdBload( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
@@ -147,7 +147,7 @@ char *_cmdBload( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdBsave( struct glueCommands *data )
+char *_cmdBsave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
@@ -180,7 +180,7 @@ char *_cmdBsave( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdReserveAsWork( struct glueCommands *data )
+char *_cmdReserveAsWork( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
@@ -203,7 +203,7 @@ char *_cmdReserveAsWork( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdReserveAsChipWork( struct glueCommands *data )
+char *_cmdReserveAsChipWork( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -225,7 +225,7 @@ char *_cmdReserveAsChipWork( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdReserveAsData( struct glueCommands *data )
+char *_cmdReserveAsData( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -247,7 +247,7 @@ char *_cmdReserveAsData( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdReserveAsChipData( struct glueCommands *data )
+char *_cmdReserveAsChipData( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;

@@ -13,41 +13,41 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
-char *_ifSuccess( struct glueCommands *data ) ;
-char *_ifNotSuccess( struct glueCommands *data ) ;
+char *_ifSuccess(struct glueCommands *data, int nextToken) ;
+char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
 
-char *_textCentre (struct glueCommands *data);
-char *_mathSin (struct glueCommands *data);
-char *_addData (struct glueCommands *data);
-char *_subData (struct glueCommands *data);
-char *_mulData (struct glueCommands *data);
-char *_divData (struct glueCommands *data);
-char *_orData (struct glueCommands *data);
-char *_andData (struct glueCommands *data);
-char *_setVar (struct glueCommands *data);
-char *_for (struct glueCommands *data);
-char *_do (struct glueCommands *data);
-char *_equalData (struct glueCommands *data);
-char *_andData (struct glueCommands *data);
-char *_ifSuccess (struct glueCommands *data);
-char *_ifThenSuccess (struct glueCommands *data);
-char *_machinePeek( struct glueCommands *data );
-char *_cmdStart( struct glueCommands *data );
-char *_chr( struct glueCommands *data );
-char *_gfxPoint( struct glueCommands *data );
-char *_mid( struct glueCommands *data );
-char *_left( struct glueCommands *data );
-char *_right( struct glueCommands *data );
-char *_cmdStr( struct glueCommands *data );
-char *_while( struct glueCommands *data );
-char *_repeat( struct glueCommands *data );
-char *_gosub_return( struct glueCommands *data );
-char *_get_var_index( glueCommands *self);
-char *_alloc_mode_off( glueCommands *self);
+char *_textCentre (struct glueCommands *data, int nextToken);
+char *_mathSin (struct glueCommands *data, int nextToken);
+char *_addData (struct glueCommands *data, int nextToken);
+char *_subData (struct glueCommands *data, int nextToken);
+char *_mulData (struct glueCommands *data, int nextToken);
+char *_divData (struct glueCommands *data, int nextToken);
+char *_orData (struct glueCommands *data, int nextToken);
+char *_andData (struct glueCommands *data, int nextToken);
+char *_setVar (struct glueCommands *data, int nextToken);
+char *_for (struct glueCommands *data, int nextToken);
+char *_do (struct glueCommands *data, int nextToken);
+char *_equalData (struct glueCommands *data, int nextToken);
+char *_andData (struct glueCommands *data, int nextToken);
+char *_ifSuccess (struct glueCommands *data, int nextToken);
+char *_ifThenSuccess (struct glueCommands *data, int nextToken);
+char *_machinePeek(struct glueCommands *data, int nextToken);
+char *_cmdStart(struct glueCommands *data, int nextToken);
+char *_chr(struct glueCommands *data, int nextToken);
+char *_gfxPoint(struct glueCommands *data, int nextToken);
+char *_mid(struct glueCommands *data, int nextToken);
+char *_left(struct glueCommands *data, int nextToken);
+char *_right(struct glueCommands *data, int nextToken);
+char *_cmdStr(struct glueCommands *data, int nextToken);
+char *_while(struct glueCommands *data, int nextToken);
+char *_repeat(struct glueCommands *data, int nextToken);
+char *_gosub_return(struct glueCommands *data, int nextToken);
+char *_get_var_index(struct glueCommands *data, int nextToken);
+char *_alloc_mode_off(struct glueCommands *data, int nextToken);
 
 struct stackDebugSymbol
 {
-	char *(*fn) (struct glueCommands *data);
+	char *(*fn) (struct glueCommands *data, int nextToken );
 	const char *name;
 };
 
@@ -87,7 +87,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{NULL, NULL}
 };
 
-const char *findDebugSymbolName( char *(*fn) (struct glueCommands *data) )
+const char *findDebugSymbolName( char *(*fn) (struct glueCommands *data, int nextToken) )
 {
 	struct stackDebugSymbol *ptr;
 

@@ -25,19 +25,19 @@ APTR contextDir = NULL;
 char *dir_first_pattern = NULL;
 char *dir_first_path = NULL;
 
-char *_cmdInputIn( struct glueCommands *data );
-char *_cmdLineInputFile( struct glueCommands *data );
+char *_cmdInputIn( struct glueCommands *data, int nextToken );
+char *_cmdLineInputFile( struct glueCommands *data, int nextToken );
 
 char *amos_to_amiga_pattern(const char *amosPattern);
 void split_path_pattern(const char *str, char **path, const char **pattern);
 
-char *_cmdSetDir( struct glueCommands *data )
+char *_cmdSetDir( struct glueCommands *data, int nextToken )
 {
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
 }
 
-char *_cmdPrintOut( struct glueCommands *data )
+char *_cmdPrintOut( struct glueCommands *data, int nextToken )
 {
 	int num,n;
 	FILE *fd;
@@ -112,27 +112,27 @@ char *_open_file_( struct glueCommands *data, const char *access )
 	return NULL;
 }
 
-char *_cmdOpenOut( struct glueCommands *data )
+char *_cmdOpenOut( struct glueCommands *data, int nextToken )
 {
 	return _open_file_( data, "w" );
 }
 
-char *_cmdOpenIn( struct glueCommands *data )
+char *_cmdOpenIn( struct glueCommands *data, int nextToken )
 {
 	return _open_file_( data, "r" );
 }
 
-char *_cmdAppend( struct glueCommands *data )
+char *_cmdAppend( struct glueCommands *data, int nextToken )
 {
 	return _open_file_( data, "a" );
 }
 
-char *_cmdOpenRandom( struct glueCommands *data )
+char *_cmdOpenRandom( struct glueCommands *data, int nextToken )
 {
 	return _open_file_( data, "w+" );
 }
 
-char *_cmdClose( struct glueCommands *data )
+char *_cmdClose( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int num;
@@ -160,7 +160,7 @@ char *_cmdClose( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdKill( struct glueCommands *data )
+char *_cmdKill( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	char *_str;
@@ -180,7 +180,7 @@ char *_cmdKill( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdRename( struct glueCommands *data )
+char *_cmdRename( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int32 success = false;
@@ -201,7 +201,7 @@ char *_cmdRename( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdFselStr( struct glueCommands *data )
+char *_cmdFselStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack].stack +1;
 	struct FileRequester	 *filereq;
@@ -265,7 +265,7 @@ char *_cmdFselStr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdExist( struct glueCommands *data )
+char *_cmdExist( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	char *_str;
@@ -388,7 +388,7 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 }
 
 
-char *_cmdDirFirstStr( struct glueCommands *data )
+char *_cmdDirFirstStr( struct glueCommands *data, int nextToken )
 {
 	char *str;
 	const char *_pattern;
@@ -443,7 +443,7 @@ char *_cmdDirFirstStr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdDirNextStr( struct glueCommands *data )
+char *_cmdDirNextStr( struct glueCommands *data, int nextToken )
 {
 	char *outStr = NULL;
 
@@ -570,7 +570,7 @@ void split_path_pattern(const char *str, char **path, const char **pattern)
 }
 
 
-char *_cmdDir( struct glueCommands *data )
+char *_cmdDir( struct glueCommands *data, int nextToken )
 {
 	char *str;
 	char *_path = NULL;
@@ -663,7 +663,7 @@ char *_cmdDir( struct glueCommands *data )
 }
 
 
-char *_cmdDirStr( struct glueCommands *data )
+char *_cmdDirStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	BPTR lock;
@@ -846,7 +846,7 @@ char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-extern char *_setVar( struct glueCommands *data );
+extern char *_setVar( struct glueCommands *data, int nextToken );
 
 void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -913,7 +913,7 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 			{
 				struct glueCommands varData;
 				varData.lastVar = last_var;
-				_setVar( &varData );
+				_setVar( &varData, 0 );
 			}
 			else
 			{
@@ -1035,7 +1035,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 				setStackStr( line );		
 				struct glueCommands varData;
 				varData.lastVar = last_var;
-				_setVar( &varData );
+				_setVar( &varData, 0 );
 			}
 			else
 			{
@@ -1050,7 +1050,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 }
 
 
-char *_cmdInputIn( struct glueCommands *data )
+char *_cmdInputIn( struct glueCommands *data, int nextToken )
 {
 	getchar();
 
@@ -1088,7 +1088,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdLineInputFile( struct glueCommands *data )
+char *_cmdLineInputFile( struct glueCommands *data, int nextToken )
 {
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1133,7 +1133,7 @@ char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdInputStrFile( struct glueCommands *data )
+char *_cmdInputStrFile( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack;
 	int channel = 0;
@@ -1182,7 +1182,7 @@ char *_cmdInputStrFile( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdSetInput( struct glueCommands *data )
+char *_cmdSetInput( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
@@ -1192,7 +1192,7 @@ char *_cmdSetInput( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdLof( struct glueCommands *data )
+char *_cmdLof( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack;
 	int channel = 0;
@@ -1231,7 +1231,7 @@ char *_cmdLof( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdPof( struct glueCommands *data )
+char *_cmdPof( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack;
 	int channel = 0;
@@ -1263,7 +1263,7 @@ char *_cmdPof( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdEof( struct glueCommands *data )
+char *_cmdEof( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;	
 	int channel = 0;
@@ -1332,7 +1332,7 @@ char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_cmdGet( struct glueCommands *data )
+char *_cmdGet( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int channel = 0;
@@ -1378,7 +1378,7 @@ char *_cmdGet( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdPut( struct glueCommands *data )
+char *_cmdPut( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int channel = 0;

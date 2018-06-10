@@ -70,10 +70,10 @@ char *cmdDirect(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer );
 
 // not used outside of commands.cpp, normally but just for testing.
-char *_addStr( struct glueCommands *data );
-char *_print( struct glueCommands *data );
-char *_gosub( struct glueCommands *data );
-char *_procedure( struct glueCommands *data );
+char *_addStr( struct glueCommands *data, int nextToken );
+char *_print( struct glueCommands *data, int nextToken );
+char *_gosub( struct glueCommands *data, int nextToken );
+char *_procedure( struct glueCommands *data, int nextToken );
 
 // structs are used read chunks of the AMOS file, so they need to be packed.
 

@@ -21,7 +21,7 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-char *_machineCopy( struct glueCommands *data )
+char *_machineCopy( struct glueCommands *data, int nextToken )
 {
 	int adrFromStart, adrFromEnd, adrTo;
 	int args = stack - data->stack +1 ;
@@ -50,7 +50,7 @@ char *_machineCopy( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machinePoke( struct glueCommands *data )
+char *_machinePoke( struct glueCommands *data, int nextToken )
 {
 	char *adr;
 	int value;
@@ -79,7 +79,7 @@ char *_machinePoke( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineDoke( struct glueCommands *data )
+char *_machineDoke( struct glueCommands *data, int nextToken )
 {
 	short *adr;
 	int value;
@@ -108,7 +108,7 @@ char *_machineDoke( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineLoke( struct glueCommands *data )
+char *_machineLoke( struct glueCommands *data, int nextToken )
 {
 	int *adr;
 	int value;
@@ -137,7 +137,7 @@ char *_machineLoke( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machinePeek( struct glueCommands *data )
+char *_machinePeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -163,7 +163,7 @@ char *_machinePeek( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineDeek( struct glueCommands *data )
+char *_machineDeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -190,7 +190,7 @@ char *_machineDeek( struct glueCommands *data )
 }
 
 
-char *_machineLeek( struct glueCommands *data )
+char *_machineLeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -292,7 +292,7 @@ char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_machineFill( struct glueCommands *data )
+char *_machineFill( struct glueCommands *data, int nextToken )
 {
 	int *adrStart, *adrEnd;
 	int num;
@@ -332,7 +332,7 @@ char *machineFill(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
-char *_machineHunt( struct glueCommands *data )
+char *_machineHunt( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int found = 0;
@@ -375,7 +375,7 @@ char *machineHunt(struct nativeCommand *cmd, char *tokenBuffer)
 
 //------
 
-char *_machineRolB( struct glueCommands *data )
+char *_machineRolB( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -400,7 +400,7 @@ char *_machineRolB( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineRolW( struct glueCommands *data )
+char *_machineRolW( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -425,7 +425,7 @@ char *_machineRolW( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineRolL( struct glueCommands *data )
+char *_machineRolL( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -450,7 +450,7 @@ char *_machineRolL( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineRorB( struct glueCommands *data )
+char *_machineRorB( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -475,7 +475,7 @@ char *_machineRorB( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineRorW( struct glueCommands *data )
+char *_machineRorW( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -500,7 +500,7 @@ char *_machineRorW( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineRorL( struct glueCommands *data )
+char *_machineRorL( struct glueCommands *data, int nextToken )
 {
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
@@ -565,7 +565,7 @@ char *machineRorL(struct nativeCommand *cmd, char *tokenBuffer)
 
 // ----------------------------------------------
 
-char *_machineBtst( struct glueCommands *data )
+char *_machineBtst( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -590,7 +590,7 @@ char *_machineBtst( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineBset( struct glueCommands *data )
+char *_machineBset( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -614,7 +614,7 @@ char *_machineBset( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineBchg( struct glueCommands *data )
+char *_machineBchg( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -638,7 +638,7 @@ char *_machineBchg( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineBclr( struct glueCommands *data )
+char *_machineBclr( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -694,17 +694,17 @@ char *machineBclr(struct nativeCommand *cmd, char *tokenBuffer)
 int reg = 0;
 unsigned int regs[16];
 
-extern char *_setVar( struct glueCommands *data );
-extern char *(*_do_set) ( struct glueCommands *data );
+extern char *_setVar( struct glueCommands *data, int nextToken );
+extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 
-char *_set_reg( struct glueCommands *data )
+char *_set_reg( struct glueCommands *data, int nextToken )
 {
 	if ((reg>-1)&&(reg<16)) regs[reg] = getStackNum(stack);
 	_do_set = _setVar;
 	return NULL;
 }
 
-char *_machineAREG( struct glueCommands *data )
+char *_machineAREG( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -724,7 +724,7 @@ char *_machineAREG( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineDREG( struct glueCommands *data )
+char *_machineDREG( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
@@ -756,7 +756,7 @@ char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_machineDOSCALL( struct glueCommands *data )
+char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 {
 	int libVec;
 	int args = stack - data->stack +1 ;
@@ -797,7 +797,7 @@ char *_machineDOSCALL( struct glueCommands *data )
 	return NULL;
 }
 
-char *_machineEXECALL( struct glueCommands *data )
+char *_machineEXECALL( struct glueCommands *data, int nextToken )
 {
 	int libVec;
 	int args = stack - data->stack +1 ;
@@ -851,7 +851,7 @@ char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_machinePload( struct glueCommands *data )
+char *_machinePload( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char *keep_code = NULL;
@@ -894,7 +894,7 @@ char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_machineCall( struct glueCommands *data )
+char *_machineCall( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

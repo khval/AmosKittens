@@ -39,8 +39,8 @@ extern int pen ;
 extern int paper ;
 
 extern int current_screen;
-extern char *(*_do_set) ( struct glueCommands *data );
-extern char *_setVar( struct glueCommands *data );
+extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
+extern char *_setVar( struct glueCommands *data, int nextToken );
 
 struct defScroll
 {
@@ -54,7 +54,7 @@ struct defScroll
 
 struct defScroll defScrolls[16];
 
-char *_gfxFlash( struct glueCommands *data )
+char *_gfxFlash( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -82,7 +82,7 @@ char *_gfxFlash( struct glueCommands *data )
 }
 
 
-char *_gfxColour( struct glueCommands *data )
+char *_gfxColour( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -149,7 +149,7 @@ char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxBox( struct glueCommands *data )
+char *_gfxBox( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -171,7 +171,7 @@ char *_gfxBox( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxBar( struct glueCommands *data )
+char *_gfxBar( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -193,7 +193,7 @@ char *_gfxBar( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxCls( struct glueCommands *data )
+char *_gfxCls( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int color = 0;
@@ -253,7 +253,7 @@ char *_gfxCls( struct glueCommands *data )
 }
 
 
-char *_gfxDraw( struct glueCommands *data )
+char *_gfxDraw( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -285,7 +285,7 @@ char *_gfxDraw( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxPolygon( struct glueCommands *data )
+char *_gfxPolygon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int array[100*2];
@@ -310,7 +310,7 @@ char *_gfxPolygon( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxPolyline( struct glueCommands *data )
+char *_gfxPolyline( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -359,7 +359,7 @@ char *_gfxPolyline( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxCircle( struct glueCommands *data )
+char *_gfxCircle( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0=xgr,y0=ygr,r;
@@ -381,7 +381,7 @@ char *_gfxCircle( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxEllipse( struct glueCommands *data )
+char *_gfxEllipse( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0=xgr,y0=ygr,r0,r1;
@@ -438,7 +438,7 @@ char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxInk( struct glueCommands *data )
+char *_gfxInk( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0,y0,r0,r1;
@@ -506,7 +506,7 @@ char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxPlot( struct glueCommands *data )
+char *_gfxPlot( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr, y0 = ygr,c;
@@ -547,7 +547,7 @@ char *_gfxPlot( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxPaint( struct glueCommands *data )
+char *_gfxPaint( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr, y0 = ygr,c;
@@ -576,7 +576,7 @@ char *_gfxPaint( struct glueCommands *data )
 }
 
 
-char *_gfxPoint( struct glueCommands *data )
+char *_gfxPoint( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = -1;
@@ -604,7 +604,7 @@ char *_gfxPoint( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxGrLocate( struct glueCommands *data )
+char *_gfxGrLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -626,7 +626,7 @@ char *_gfxGrLocate( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxGetColour( struct glueCommands *data )
+char *_gfxGetColour( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int c;
@@ -657,7 +657,7 @@ char *_gfxGetColour( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxPalette( struct glueCommands *data )
+char *_gfxPalette( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int color,n,num;
@@ -689,7 +689,7 @@ char *_gfxPalette( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxGetPalette( struct glueCommands *data )
+char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int color,n,num;
@@ -727,7 +727,7 @@ char *_gfxGetPalette( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxDefaultPalette( struct glueCommands *data )
+char *_gfxDefaultPalette( struct glueCommands *data, int nextToken )
 {
 	int color,n,num;
 	struct retroRGB rgb;
@@ -755,7 +755,7 @@ char *_gfxDefaultPalette( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxDefScroll( struct glueCommands *data )
+char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
@@ -787,7 +787,7 @@ char *_gfxDefScroll( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxScroll( struct glueCommands *data )
+char *_gfxScroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -997,7 +997,7 @@ struct _never_used_shift_
 } shift;
 
 
-char *_gfxShiftUp( struct glueCommands *data )
+char *_gfxShiftUp( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1030,7 +1030,7 @@ char *_gfxShiftUp( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxShiftDown( struct glueCommands *data )
+char *_gfxShiftDown( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1115,7 +1115,7 @@ void channelRainbowOCS( unsigned char *rgb, int channel, int lines, int step, in
 	} while (y<length) ;
 }
 
-char *_gfxSetRainbow( struct glueCommands *data )
+char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -1157,7 +1157,7 @@ char *_gfxSetRainbow( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxRainbow( struct glueCommands *data )
+char *_gfxRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -1184,7 +1184,7 @@ char *_gfxRainbow( struct glueCommands *data )
 int _set_rainbow = -1;
 int _set_rainbow_index = -1;
 
-char *_set_rain( struct glueCommands *data )
+char *_set_rain( struct glueCommands *data, int nextToken )
 {
 	int _rgb_;
 	struct retroRGB *rgb;
@@ -1207,7 +1207,7 @@ char *_set_rain( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxAutoback( struct glueCommands *data )
+char *_gfxAutoback( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -1223,7 +1223,7 @@ char *_gfxAutoback( struct glueCommands *data )
 }
 
 
-char *_gfxRain( struct glueCommands *data )
+char *_gfxRain( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
@@ -1243,7 +1243,7 @@ char *_gfxRain( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxZoom( struct glueCommands *data )
+char *_gfxZoom( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1283,7 +1283,7 @@ char *_gfxZoom( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxFade( struct glueCommands *data )
+char *_gfxFade( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool done = false;
@@ -1372,7 +1372,7 @@ char *_gfxFade( struct glueCommands *data )
 	return NULL;
 }
 
-char *_gfxAppear( struct glueCommands *data )
+char *_gfxAppear( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int from_screen;
@@ -1508,7 +1508,7 @@ char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxColourBack( struct glueCommands *data )
+char *_gfxColourBack( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1535,7 +1535,7 @@ char *gfxColourBack(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxSetPaint( struct glueCommands *data )
+char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1563,7 +1563,7 @@ char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
-char *_gfxSetTempras( struct glueCommands *data )
+char *_gfxSetTempras( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1587,7 +1587,7 @@ char *gfxSetTempras(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxGrWriting( struct glueCommands *data )
+char *_gfxGrWriting( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1612,7 +1612,7 @@ char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxText( struct glueCommands *data )
+char *_gfxText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1654,7 +1654,7 @@ char *gfxText(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxClip( struct glueCommands *data )
+char *_gfxClip( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1682,7 +1682,7 @@ char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxSetPattern( struct glueCommands *data )
+char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1708,7 +1708,7 @@ char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxSetLine( struct glueCommands *data )
+char *_gfxSetLine( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);

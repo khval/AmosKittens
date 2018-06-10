@@ -36,7 +36,7 @@ string names like xxx is new and can saved on stack, with out being copied.
 *********/
 
 
-char *_left( struct glueCommands *data )
+char *_left( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	char *str;
@@ -59,7 +59,7 @@ char *_left( struct glueCommands *data )
 }
 
 
-char *_mid( struct glueCommands *data )
+char *_mid( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1;
 	char *str;
@@ -98,7 +98,7 @@ char *_mid( struct glueCommands *data )
 	return NULL;
 }
 
-char *_right( struct glueCommands *data )
+char *_right( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char *str;
@@ -123,7 +123,7 @@ char *_right( struct glueCommands *data )
 	return NULL;
 }
 
-char *_instr( struct glueCommands *data )
+char *_instr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	char *str,*find, *ret;
@@ -147,7 +147,7 @@ char *_instr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_cmdStr( struct glueCommands *data )
+char *_cmdStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	int num;
@@ -176,7 +176,7 @@ char *_cmdStr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_hex( struct glueCommands *data )
+char *_hex( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int num,chars;
@@ -206,7 +206,7 @@ char *_hex( struct glueCommands *data )
 	return NULL;
 }
 
-char *_bin( struct glueCommands *data )
+char *_bin( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	unsigned int num= 0,len =0,n;
@@ -252,7 +252,7 @@ char *_bin( struct glueCommands *data )
 	return NULL;
 }
 
-char *_flip( struct glueCommands *data )
+char *_flip( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int l,i;
@@ -278,7 +278,7 @@ char *_flip( struct glueCommands *data )
 	return NULL;
 }
 
-char *_string( struct glueCommands *data )
+char *_string( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int i,_len;
@@ -302,7 +302,7 @@ char *_string( struct glueCommands *data )
 	return NULL;
 }
 
-char *_asc( struct glueCommands *data )
+char *_asc( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	char *_str;
@@ -318,7 +318,7 @@ char *_asc( struct glueCommands *data )
 	return NULL;
 }
 
-char *_val( struct glueCommands *data )
+char *_val( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack  + 1;
 	int num = 0;
@@ -339,7 +339,7 @@ char *_val( struct glueCommands *data )
 	return NULL;
 }
 
-char *_chr( struct glueCommands *data )
+char *_chr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	char _str[2];
@@ -356,7 +356,7 @@ char *_chr( struct glueCommands *data )
 	return NULL;
 }
 
-char *_len( struct glueCommands *data )
+char *_len( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	int len = 0;
@@ -376,7 +376,7 @@ char *_len( struct glueCommands *data )
 	return NULL;
 }
 
-char *_space( struct glueCommands *data )
+char *_space( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	int i,_len;
@@ -398,7 +398,7 @@ char *_space( struct glueCommands *data )
 	return NULL;
 }
 
-char *_upper( struct glueCommands *data )
+char *_upper( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1  ;
 	char *str,*s;
@@ -417,7 +417,7 @@ char *_upper( struct glueCommands *data )
 	return NULL;
 }
 
-char *_lower( struct glueCommands *data )
+char *_lower( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	char *str,*s;

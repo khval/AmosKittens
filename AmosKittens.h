@@ -74,7 +74,7 @@ struct nativeCommand
 
 struct glueCommands
 {
-	char *(*cmd) ( struct glueCommands *data );	// can return token location
+	char *(*cmd) ( struct glueCommands *data, int nextToken );	// can return token location
 	char *tokenBuffer;
 	
 	union
@@ -90,6 +90,7 @@ struct glueCommands
 	};
 
 	int lastVar;
+	int lastToken;
 
 	union
 	{
@@ -228,14 +229,15 @@ struct zone
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
 
-#define stackCmdIndex( fn, buf )				\
+#define stackCmdIndex( fn, buf )	{			\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_index;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].lastToken = last_token; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; \
+	cmdStack++; } \
 
 #define stackCmdParm( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\

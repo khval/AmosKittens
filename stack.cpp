@@ -11,7 +11,7 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
-bool dropProgStackToProc( char *(*fn) (struct glueCommands *data) )
+bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken) )
 {
 	while (cmdStack > 0)
 	{
@@ -76,7 +76,7 @@ bool isArgsClean( struct glueCommands *cmd )
 }
 
 
-char *flushCmdParaStack()
+char *flushCmdParaStack( int nextToken )
 {
 	struct glueCommands *cmd;
 	char *ret = NULL;
@@ -91,7 +91,7 @@ char *flushCmdParaStack()
 
 			if ( isArgsClean( cmd ) ) 
 			{
-				ret = cmd -> cmd(cmd);		// can only return value if foced, or last arg
+				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
 				cmdStack--;
 			}
 			else	break;
@@ -329,7 +329,6 @@ bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
 	setStackNum( ret >= 0  );
-
 	return true;
 }
 
@@ -341,7 +340,6 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-
 	setStackNum( ret == 0  );
 	return true;
 }
@@ -354,7 +352,6 @@ bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-
 	setStackNum( ret != 0  );
 	return true;
 }
@@ -367,6 +364,8 @@ void correct_for_hidden_sub_data()
 	{
 		while (kittyStack[stack-1].state == state_hidden_subData)
 		{
+			dprintf("removed hidden ')' \n");
+
 			kittyStack[stack-1] = kittyStack[stack];
 			kittyStack[stack].str = NULL;
 			stack --;

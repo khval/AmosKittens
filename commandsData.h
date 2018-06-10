@@ -24,8 +24,8 @@ char *moreData(struct nativeCommand *cmd, char *tokenBuffer);
 char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer);
 char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer);
 
-char *_addData( struct glueCommands *data );
-char *_equalData( struct glueCommands *data );
+char *_addData( struct glueCommands *data, int nextToken );
+char *_equalData( struct glueCommands *data, int nextToken );
 
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer);
 

@@ -59,7 +59,7 @@ char *ocHide(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocMouseLimit( struct glueCommands *data )
+char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -75,7 +75,7 @@ char *ocMouseLimit(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocReserveZone( struct glueCommands *data )
+char *_ocReserveZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -106,7 +106,7 @@ char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocZoneStr( struct glueCommands *data )
+char *_ocZoneStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	char *newstr = NULL;
@@ -151,7 +151,7 @@ char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 int XScreen_formula( struct retroScreen *screen );
 int YScreen_formula( struct retroScreen *screen );
 
-char *_ocMouseZone( struct glueCommands *data )
+char *_ocMouseZone( struct glueCommands *data, int nextToken )
 {
 	struct retroScreen *s;
 	struct zone *zz;
@@ -186,7 +186,7 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocChangeMouse( struct glueCommands *data )
+char *_ocChangeMouse( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -202,7 +202,7 @@ char *ocChangeMouse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocSetZone( struct glueCommands *data )
+char *_ocSetZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
