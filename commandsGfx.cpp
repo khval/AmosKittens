@@ -33,6 +33,8 @@ extern bool next_print_line_feed;
 int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
+int GrWritingMode = 0;
+
 extern int pen ;
 extern int paper ;
 
@@ -516,12 +518,25 @@ char *_gfxPlot( struct glueCommands *data )
 		case 2:
 			stack_get_if_int( stack-1, &x0 );
 			stack_get_if_int( stack, &y0 );
-			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,pen0 );
+			if (screens[current_screen])
+			{
+				switch (GrWritingMode)
+				{
+					case 0:	retroPixel( screens[current_screen], x0,y0,pen0 );
+							break;
+					case 2:
+							{
+								int old = retroPoint( screens[current_screen], x0,y0 ) ^ pen0;
+								retroPixel( screens[current_screen], x0,y0,old );
+							}
+							break;
+				}
+			}
 			break;
 		case 3:
 			stack_get_if_int( stack-2, &x0 );
 			stack_get_if_int( stack-1, &y0 );
-			c = _stackInt( stack );
+			c = getStackNum( stack );
 			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,c );
 			break;
 		default:
@@ -564,7 +579,8 @@ char *_gfxPaint( struct glueCommands *data )
 char *_gfxPoint( struct glueCommands *data )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr, y0 = ygr,c;
+	int ret = -1;
+	int x0 = xgr, y0 = ygr;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
