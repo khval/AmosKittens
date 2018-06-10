@@ -760,9 +760,8 @@ char *_addDataToText( struct glueCommands *data )
 
 	args = stack - data -> stack + 1;
 
-	if (stack==0) 
+	if ((data -> stack > -1) &&(args<2))
 	{
-		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
 		return NULL;
 	}
 
