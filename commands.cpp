@@ -859,6 +859,8 @@ void do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	stackCmdNormal( _for, tokenBuffer );
 	cmdTmp[cmdStack-1].step = 1;		// set default counter step
 	do_to = do_for_to;
@@ -871,6 +873,8 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	if (cmdStack) if ( cmdTmp[cmdStack-1].cmd == _setVar ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
@@ -942,7 +946,8 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 	token = *( (unsigned short *) ptr);
 	ptr +=2;
 
-	while  ((token != 0) && (token != 0x0356 ))
+	// exit on End of line, or exit on Step or next command.
+	while  ((token != 0) && (token != 0x0356 ) && (token != 0x0054))
 	{
 		ptr = executeToken( ptr, token );
 		
