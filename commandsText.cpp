@@ -390,7 +390,7 @@ char *_textBorderStr( struct glueCommands *data, int nextToken )
 		char *txt = getStackString( stack-1 );
 		int border = getStackNum( stack );
 
-		if ((txt)&&(border>0)&&(border<16))
+		if ((txt)&&(border>=0)&&(border<16))
 		{
 			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
 			if (newstr)
