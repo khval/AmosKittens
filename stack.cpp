@@ -154,6 +154,18 @@ void stack_get_if_int( int n, int *ret )
 	}
 }
 
+void setStackNone( void )
+{
+	if (kittyStack[stack].str) 
+	{
+		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
+		kittyStack[stack].str = NULL;
+	}
+
+	kittyStack[stack].value = 0;
+	kittyStack[stack].state = state_none;
+	kittyStack[stack].type = type_none;
+}
 
 void setStackNum( int num )
 {

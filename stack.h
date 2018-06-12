@@ -10,6 +10,7 @@ extern void	setStackNum( int num );
 extern void	setStackDecimal( double decimal );
 extern void	setStackStr( char *str );
 extern void	setStackStrDup(const char *str);
+extern void	setStackNone( void );
 
 extern int		getStackNum( int n );
 extern double	getStackDecimal( int n );
