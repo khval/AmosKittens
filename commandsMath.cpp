@@ -99,68 +99,10 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_mathAddRange( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	struct kittyData *var = NULL;
-	int args = stack - data->stack +1;
-	char *ptr = data -> tokenBuffer ;
-
-	if (NEXT_TOKEN( ptr ) == 0x0006)
-	{
-		struct reference *ref = (struct reference *) (ptr + 2);
-		var = &globalVars[ref->ref-1].var;
-	}
-	
-	if ((var)&&(args==5))
-	{
-		int _value = getStackNum( stack - 3 );
-		int _inc = getStackNum( stack - 2 );
-		int _from = getStackNum( stack - 1 );
-		int _to = getStackNum( stack );
-
-		if (_inc>0)
-		{
-			_value += _inc;	
-			if (_value > _to ) _value = _from;	// if more then max reset to min
-			if (_value < _from) _value =_from;	// limit to min
-		}
-		else
-		{
-			_value += _inc;	
-			if (_value < _from) _value = _to;	// if less then min reset to max
-			if (_value > _to) _value = _to;		// limit to max
-		}
-
-		// write
-
-		switch (var->type)
-		{
-			case type_int:
-				var->value= _value;
-				break;
-	
-			case type_int | type_array:
-				var->int_array[var -> index]= _value;
-				break;
-	
-			default:
-				setError(ERROR_Type_mismatch);
-		}
-	}
-	else
-	{
-		setError(22);
-	}
-
-	popStack(args-1);
-	return NULL;
-}
 
 char *_mathAdd( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
 	int args = stack - data->stack +1;
@@ -174,14 +116,58 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 	
 	if (var)
 	{
+		int _value = 0;
+
+		switch (args)
+		{
+			case 2:
+				switch (var->type)
+				{
+					case type_int:
+						_value = getStackNum( data -> stack + 2 ) + 1;
+						break;
+	
+					case type_int | type_array:
+						_value = getStackNum( data -> stack + 2 ) + 1;
+						break;
+	
+					default:
+						setError(ERROR_Type_mismatch);
+				}
+				break;
+
+			case 5:
+				{
+					int _inc = getStackNum( stack - 2 );
+					int _from = getStackNum( stack - 1 );
+					int _to = getStackNum( stack );
+
+					 _value = getStackNum( stack - 3 );
+
+					if (_inc>0)
+					{
+						_value += _inc;	
+						if (_value > _to ) _value = _from;	// if more then max reset to min
+						if (_value < _from) _value =_from;	// limit to min
+					}
+					else
+					{
+						_value += _inc;	
+						if (_value < _from) _value = _to;	// if less then min reset to max
+						if (_value > _to) _value = _to;		// limit to max
+					}
+				}
+				break;
+		}
+
 		switch (var->type)
 		{
 			case type_int:
-				var->value+= getStackNum( data -> stack + 2 );
+				var->value= _value;
 				break;
 	
 			case type_int | type_array:
-				var->int_array[var -> index]+= getStackNum( data -> stack + 2 );
+				var->int_array[var -> index]= _value;
 				break;
 	
 			default:
@@ -222,17 +208,6 @@ char *mathAdd(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	stackCmdNormal( _mathAdd, tokenBuffer );
-	stack++;
-	return tokenBuffer;
-}
-
-char *mathAddRange(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
-	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-
-	stackCmdNormal( _mathAddRange, tokenBuffer );
 	stack++;
 	return tokenBuffer;
 }

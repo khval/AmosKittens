@@ -584,7 +584,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0444, "Inc",0,mathInc },
 	{0x044E, "Dec",0,mathDec },
 	{0x0458, "Add",0,mathAdd },
-	{0x0462, "Add var,n,f TO t", 0, mathAddRange },
+	{0x0462, "Add var,n,f TO t", 0, mathAdd },
 	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,textPrint },
 	{0x048E,"Input$(n)",0,cmdInputStrN },
