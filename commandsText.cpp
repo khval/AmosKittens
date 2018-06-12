@@ -203,7 +203,7 @@ char *_print( struct glueCommands *data, int nextToken )
 				if (kittyStack[n].str) __print_text(kittyStack[n].str,0);
 				break;
 			case type_none:
-				next_print_line_feed = false;
+				if (n>data->stack) next_print_line_feed = false;
 				break;
 		}
 
@@ -294,6 +294,9 @@ char *textPrint(nativeCommand *cmd, char *ptr)
 	if (screens[current_screen]) clear_cursor(screens[current_screen]);
 	if (next_print_line_feed == true) __print_text("\n",0);
 	next_print_line_feed = true;
+
+	setStackNone();
+
 	return ptr;
 }
 
