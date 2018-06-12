@@ -42,6 +42,7 @@ extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
 extern int findVarPublic( char *name, int type );
 extern int ReferenceByteLength(char *ptr);
+extern int findLabelRef( char *name );
 
 using namespace std;
 
@@ -722,16 +723,61 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gosub( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	return NULL ;
-}
-
 char *_gosub_return( struct glueCommands *data, int nextToken )
 {
 	return data -> tokenBuffer;	// jumpBack.
 }
+
+char *_gosub( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack + 1;
+	int ref_num = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args != 1) setError(22);
+
+	switch (kittyStack[stack].type)
+	{
+		case type_int:	
+				{
+					char num[50];
+					sprintf(num,"%d", kittyStack[stack].value );
+					ref_num = findLabelRef( num );
+				}
+				break;
+
+		case type_string:
+				{
+					char *txt = getStackString( stack );
+					ref_num = findLabelRef( txt );
+				}
+				break;
+
+		default:
+				setError(22);
+	}
+
+	if (ref_num)
+	{
+		char *return_tokenBuffer = data -> tokenBuffer;
+
+		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
+
+		while ( *((unsigned short *) return_tokenBuffer) != nextToken  ) return_tokenBuffer += 2;
+		stackCmdLoop( _gosub_return, return_tokenBuffer );
+		return labels[ref_num-1].tokenLocation;
+	}
+	else
+	{
+		dump_stack();
+		setError(22);
+	}
+
+	return NULL ;
+}
+
+
 
 
 char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
@@ -746,6 +792,10 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 		case 0x0026:	// text
 
 					stackCmdNormal( _gosub, tokenBuffer );
+					break;
+
+		case 0x0074:  // ( data )
+					stackCmdNormal( _gosub,tokenBuffer );
 					break;
 
 		case 0x0018:	// label
@@ -1461,7 +1511,6 @@ char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-int findLabelRef( char *name );
 
 char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
