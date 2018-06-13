@@ -532,6 +532,7 @@ struct nativeCommand nativeCommands[]=
 	{0x010E,"Zone$", 0, ocZoneStr },					// dummy
 	{0x011C,"Border$", 0, textBorderStr },				// dummy
 	{0x012C,"Double Buffer",0,gfxDoubleBuffer },	// dummy function
+	{0x00FE,"Repeat$",0, cmdRepeatStr },
 	{0x0140, "Start", 0, cmdStart },
 	{0x014C, "Length", 0, cmdLength },
 	{0x015A,"Doke",0,machineDoke},
@@ -612,6 +613,7 @@ struct nativeCommand nativeCommands[]=
 	{0x05D0, "Hex$(num,chars)",0,cmdHex },
 	{0x05DA, "Len",0, cmdLen },
 	{0x05E4, "Instr",0, cmdInstr },
+	{0x0600,"Tab$",0,cmdTabStr },
 	{0x0614,"Varptr",0,machineVarPtr},
 	{0x0620,"Remember X",0,textRememberX },
 	{0x0640, "Dim",0, cmdDim },
@@ -726,6 +728,7 @@ struct nativeCommand nativeCommands[]=
 	{0x129E, "Wait", 0, cmdWait },
 	{0x12CE, "Timer", 0, cmdTimer },
 	{0x1378,"Locate",0, textLocate },
+	{0x1388,"Clw",0,textClw },
 	{0x1392,"Home",0,textHome },
 	{0x139C,"Curs Pen",0,textCursPen },
 	{0x13AC,"Pen$(n)",0,textPenStr },

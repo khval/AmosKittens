@@ -834,3 +834,45 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdRepeatStr( struct glueCommands *data, int nextToken )
+{
+	string txt;
+	int args = stack - data->stack + 1;
+	char *str;
+	char *tmp = NULL;
+	int _num;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	if (args == 2)
+	{
+		str = getStackString( stack - 1 );
+		_num = getStackNum( stack );
+
+		while (_num)
+		{
+			txt += str;
+			_num--;
+		}
+	}	
+
+	popStack(stack - data->stack);
+
+	setStackStrDup(txt.c_str());
+
+	return NULL;
+}
+
+char *cmdRepeatStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _cmdRepeatStr, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *cmdTabStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	char txt[2] = {9,0};
+	setStackStrDup(txt);
+	return tokenBuffer;
+}
+
