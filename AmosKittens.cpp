@@ -529,10 +529,10 @@ struct nativeCommand nativeCommands[]=
 	{0x00b0, "Def fn", 0, mathDefFn },
 	{0x00bc, "Fn", 0, mathFn },
 	{0x00F2,"Inkey$",0,cmdInkey },
-	{0x010E,"Zone$", 0, ocZoneStr },					// dummy
-	{0x011C,"Border$", 0, textBorderStr },				// dummy
-	{0x012C,"Double Buffer",0,gfxDoubleBuffer },	// dummy function
 	{0x00FE,"Repeat$",0, cmdRepeatStr },
+	{0x010E,"Zone$", 0, ocZoneStr },
+	{0x011C,"Border$", 0, textBorderStr },			// needs more work.
+	{0x012C,"Double Buffer",0,gfxDoubleBuffer },
 	{0x0140, "Start", 0, cmdStart },
 	{0x014C, "Length", 0, cmdLength },
 	{0x015A,"Doke",0,machineDoke},
@@ -658,7 +658,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0AA6,"Screen To Back",0,gfxScreenToBack },
 	{0x0AC0,"Screen Hide",0,gfxScreenHide },
 	{0x0ADA,"Screen Show",0,gfxScreenShow },
-	{0x0AE2,"Screen Swap",0,gfxScreenSwap },		// dummy function
+	{0x0AE2,"Screen Swap",0,gfxScreenSwap },	
 	{0x0AFC,"Save Iff",0,gfxSaveIff },
 	{0x0B58,"Screen Width", 0, gfxScreenWidth },
 	{0x0B74,"Screen Height", 0, gfxScreenHeight },
@@ -704,14 +704,14 @@ struct nativeCommand nativeCommands[]=
 	{0x0ED8,"Box",0,gfxBox },
 	{0x0EE8, "Paint",0, gfxPaint },
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
-	{0x0F4A,"Text",0,gfxText },					// dummy function
+	{0x0F4A,"Text",0,gfxText },	
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
 	{0x1022,"Set Pattern",0,gfxSetPattern },
 	{0x1034,"Set Line",0,gfxSetLine },
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
 	{0x105A,"Ink n,n,n",0,gfxInk },
-	{0x1066,"Gr Writing",0,gfxGrWriting },			// dummy function
+	{0x1066,"Gr Writing",0,gfxGrWriting },			// needs more work.
 	{0x1078,"Clip",0,gfxClip },					// dummy function
 	{0x1084,"Clip",0,gfxClip },					// dummy function
 	{0x10AC,"Set Tempras",0,gfxSetTempras },		// dummy function
@@ -755,7 +755,7 @@ struct nativeCommand nativeCommands[]=
 	{0x154C,"Memorize X",0,textMemorizeX },
 	{0x155C,"Memorize Y",0,textMemorizeY },
 	{0x157C,"CMove",0,textCMove },
-	{0x159E,"Hscroll",0,textHscroll },		// dummy command.
+	{0x159E,"Hscroll",0,textHscroll },	
 	{0x158A,"Cline",0,textCline },			
 	{0x15AC,"Vscroll",0,textVscroll },		// dummy command.
 	{0x15BA,"Set Tab",0,textSetTab },
@@ -764,7 +764,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1646,"Reserve Zone", 0, ocReserveZone },
 	{0x1668,"Set Zone",0,ocSetZone },
 	{0x16B6,"Scin(x,y)",0,gfxScin },
-	{0x16E2,"Mouse Zone",0,ocMouseZone },			// dummy.
+	{0x16E2,"Mouse Zone",0,ocMouseZone },
 	{0x16F2,"Set input", 0, cmdSetInput },
 	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
 	{0x171A, "Close Editor", 0, cmdCloseEditor },
