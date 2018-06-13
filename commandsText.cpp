@@ -832,7 +832,7 @@ char *_textHscroll( struct glueCommands *data, int nextToken )
 char *textHscroll(struct nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdNormal( _textVscroll, ptr );
+	stackCmdNormal( _textHscroll, ptr );
 	return ptr;
 }
 
