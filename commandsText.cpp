@@ -29,6 +29,7 @@ extern int cursor_color;
 bool curs_on = true;
 int pen = 2;
 int paper = 1;
+int _tab_size = 3;
 
 bool next_print_line_feed = false;
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
@@ -739,6 +740,7 @@ char *_textSetTab( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
+		_tab_size = getStackNum(stack);
 	}
 	else setError(22);
 
