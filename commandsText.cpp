@@ -837,3 +837,46 @@ char *textHscroll(struct nativeCommand *cmd, char *ptr)
 }
 
 
+char *_textCline( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int chars = 100000;
+	int x0=0,y0,x1=0,y1;
+
+	struct retroScreen *screen = screens[current_screen];
+
+	if ((args==1) && (screen))
+	{
+		y0 = screen -> locateY *8;
+		y1 = y0+7;
+
+		switch(kittyStack[stack].type)
+		{
+			case type_none:
+					x0 = 0;
+					x1 = screen -> realWidth;
+					break;
+			case type_int:
+					chars = getStackNum( stack );
+					x0 = screen -> locateY *8;
+					x1 = x0 + 7;
+					if (chars<0) x0 += chars * 8;
+					if (chars>0) x1 += chars * 8;
+					break;
+		}
+		
+		retroBAR(screen,x0,y0,x1,y1,paper);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textCline(struct nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textCline, ptr );
+	setStackNone();
+	return ptr;
+}

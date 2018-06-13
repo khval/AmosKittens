@@ -753,6 +753,7 @@ struct nativeCommand nativeCommands[]=
 	{0x155C,"Memorize Y",0,textMemorizeY },
 	{0x157C,"CMove",0,textCMove },
 	{0x159E,"Hscroll",0,textHscroll },		// dummy command.
+	{0x158A,"Cline",0,textCline },			
 	{0x15AC,"Vscroll",0,textVscroll },		// dummy command.
 	{0x15BA,"Set Tab",0,textSetTab },
 	{0x15C8,"Set Curs",0,textSetCurs },
