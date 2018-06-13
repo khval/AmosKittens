@@ -730,7 +730,6 @@ char *textCDown(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-
 char *_textSetTab( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -799,7 +798,7 @@ char *textCursPen(struct nativeCommand *cmd, char *ptr)
 char *_textVscroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -819,10 +818,67 @@ char *textVscroll(struct nativeCommand *cmd, char *ptr)
 char *_textHscroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int x0=0;
+	int y0=0;
+	int x1=0;
+	int y1=0;
+	int dx=0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
+		struct retroScreen *screen = screens[current_screen];
+
+		switch (getStackNum( stack ))
+		{
+			case 1:	y0 = screen -> locateY * 8;
+					y1 = y0+8;
+					dx = -8;
+					break;
+			case 2:	y0 = 0;
+					y1 = screen -> realHeight;
+					dx = -8;
+					break;
+			case 3:	y0 = screen -> locateY * 8;
+					y1 = y0+8;
+					dx = 8;
+					break;
+			case 4:	y0 = 0;
+					y1 = screen -> realHeight;
+					dx = 8;
+					break;
+		}
+
+		if (screen)
+		{
+			unsigned char *mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
+			unsigned char *src,*des;
+			int bytesPerRow = screen -> bytesPerRow;
+			int x,y;
+
+			if (dx>0)
+			{
+				x0 = 0;
+				x1 = screen -> realWidth -dx-1;
+
+				for (y=y0;y<y1;y++)
+				{
+					src = mem + (bytesPerRow * y) + x1;	des = mem + (bytesPerRow * y) + x1 +dx;
+					for (x=x1;x>=x0;x--) *des--=*src--;		
+				}
+			}
+			else
+			{
+				x0 = -dx +1;
+				x1 = screen -> realWidth ;
+
+				for (y=y0;y<y1;y++)
+				{
+					src = mem + (bytesPerRow * y) + x0; 	des = mem + (bytesPerRow * y) + x0 +dx;
+					for (x=x0;x<=x1;x++) *des++=*src++;		
+				}
+			}
+		}
 	}
 
 	popStack( stack - data->stack );
