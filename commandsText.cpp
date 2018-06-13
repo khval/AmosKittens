@@ -892,6 +892,25 @@ char *textHscroll(struct nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *_textClw( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textClw(struct nativeCommand *cmd, char *ptr)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _textClw, ptr );
+	return ptr;
+}
 
 char *_textCline( struct glueCommands *data, int nextToken )
 {
