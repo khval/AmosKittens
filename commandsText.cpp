@@ -91,6 +91,7 @@ char *_textHome( struct glueCommands *data, int nextToken )
 char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _textLocate, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
