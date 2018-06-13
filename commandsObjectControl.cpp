@@ -236,3 +236,37 @@ char *ocSetZone(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _ocSetZone, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ocResetZone( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		int z = getStackNum( stack );
+
+		if ((zones)&&(z>-1)&&(z<zones_allocated))
+		{
+			zones[z].screen = NULL;
+			zones[z].x0 = 0;
+			zones[z].y0 = 0;
+			zones[z].x1 = 0;
+			zones[z].y1 = 0;
+		}
+	}
+	else setError(22);
+
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocResetZone, tokenBuffer );
+	return tokenBuffer;
+}
+
+
