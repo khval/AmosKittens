@@ -100,7 +100,7 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 
 char *_mathAdd( struct glueCommands *data, int nextToken )
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
 	int args = stack - data->stack +1;
@@ -119,18 +119,9 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 		switch (args)
 		{
 			case 2:
-				switch (var->type)
 				{
-					case type_int:
-						_value = getStackNum( data -> stack + 2 ) + 1;
-						break;
-	
-					case type_int | type_array:
-						_value = getStackNum( data -> stack + 2 ) + 1;
-						break;
-	
-					default:
-						setError(ERROR_Type_mismatch);
+					int _inc = getStackNum( stack );
+					_value = getStackNum( stack - 1 ) + _inc;
 				}
 				break;
 
@@ -172,6 +163,8 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 				setError(ERROR_Type_mismatch);
 		}
 	}
+	else setError(22);
+
 
 	popStack(stack - data->stack);
 	return NULL;
