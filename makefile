@@ -25,18 +25,19 @@ main_objects = commands.cpp \
 			commandsText.cpp \
 			commandsKeyboard.cpp \
 			commandsSound.cpp \
+			commandsDisc.cpp \
+			commandsObjectControl.cpp \
+			commandsHardwareSprite.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
 			stack.cpp \
-			commandsDisc.cpp \
 			init.cpp \
 			cleanup.cpp \
 			readhunk.cpp \
 			engine.cpp \
-			commandsObjectControl.cpp \
 			bitmap_font.cpp \
-			var_helper.cpp
+			var_helper.cpp 
 
 main_SRCS = AmosKittens.cpp
 

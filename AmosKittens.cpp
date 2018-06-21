@@ -23,6 +23,7 @@
 #include "commandsKeyboard.h"
 #include "commandsObjectControl.h"
 #include "commandsSound.h"
+#include "commandsHardwareSprite.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -796,6 +797,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x196C,"Fsel$",0,cmdFselStr },
+	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
 	{0x1DE0, "Hide", 0, ocHide },						// hide mouse, (only dummy).
 	{0x1E02,"Change Mouse",0,ocChangeMouse },		// dummy
 	{0x1E16,"X Mouse",0,ocXMouse },
