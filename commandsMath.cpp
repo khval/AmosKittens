@@ -186,7 +186,6 @@ char *mathInc(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	stackCmdNormal( _mathInc, tokenBuffer );
-	stack++;
 	return tokenBuffer;
 }
 
@@ -197,7 +196,6 @@ char *mathDec(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	stackCmdNormal( _mathDec, tokenBuffer );
-	stack++;
 	return tokenBuffer;
 }
 
@@ -208,7 +206,6 @@ char *mathAdd(struct nativeCommand *cmd, char *tokenBuffer)
 	if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	stackCmdNormal( _mathAdd, tokenBuffer );
-	stack++;
 	return tokenBuffer;
 }
 
