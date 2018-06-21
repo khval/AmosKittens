@@ -34,7 +34,6 @@ char *_mathInc( struct glueCommands *data, int nextToken )
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
-	int args = stack - data->stack +1;
 	char *ptr = data -> tokenBuffer ;
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
@@ -69,7 +68,6 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *var = NULL;
-	int args = stack - data->stack ;
 	char *ptr = data -> tokenBuffer ;
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
@@ -95,7 +93,7 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack(args);
+	popStack(stack - data->stack);
 	return NULL;
 }
 
@@ -113,7 +111,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 		struct reference *ref = (struct reference *) (ptr + 2);
 		var = &globalVars[ref->ref-1].var;
 	}
-	
+
 	if (var)
 	{
 		int _value = 0;
@@ -175,7 +173,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack(args-1);
+	popStack(stack - data->stack);
 	return NULL;
 }
 
@@ -767,7 +765,6 @@ char *_mathFn( struct glueCommands *data, int nextToken )
 char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-
 
 	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )
 	{
