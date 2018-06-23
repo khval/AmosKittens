@@ -1156,31 +1156,62 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 	struct glueCommands data;
 	char *ptr = tokenBuffer ;
 	int args = 0;
-	int read_args = 0;
+	int read_args ;
+	int read_stack;
 	unsigned short token;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	args = stack - sdata->stack +1;
-	stack -= (args-1);	// move to start of args.
+
+	// the idea, stack to be read is stored first,
+
+	read_stack = sdata -> stack;
+	stack ++;					// prevent read stack form being trached.
+
+	read_args = 1;
 	token = *((unsigned short *) ptr);
 
-	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<args) ;)
+	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<=args) ;)
 	{
 		ptr+=2;	// skip token
 		ptr = executeToken( ptr, token );
 
 		if ((token == 0x005C) || (token == 0x0054) || (token == 0x0000 ))
 		{
+			// save stack
+			int tmp_stack = stack;
+			stack = read_stack;
 
-			printf("--- last_var %d ---\n", last_var);
-			dump_stack();
-			getchar();
+			// set var
+			data.lastVar = last_var;
+			_setVar( &data,0 );
+
+			// restore stack
+			stack = tmp_stack;
+
 			read_args ++;
+			read_stack ++;
 		}
 
-
 		token = *((unsigned short *) ptr);
+	}
+
+	if (read_args==args)
+	{
+		// save stack
+		int tmp_stack = stack;
+		stack = read_stack;
+
+		// set var
+		data.lastVar = last_var;
+		_setVar( &data,0 );
+
+		// restore stack
+		stack = tmp_stack;
+
+		read_args ++;
+		read_stack ++;
 	}
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );

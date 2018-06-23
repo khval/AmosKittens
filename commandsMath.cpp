@@ -472,11 +472,13 @@ char *_mathSwap( struct glueCommands *data, int nextToken )
 		kittyStack[stack]=tmp;
 
 		// read the stack back in.
-
+		// read kitty_args pop's stack.
 		read_kitty_args(data -> tokenBuffer, data);
 	}
-
-	popStack(args-1);
+	else
+	{
+		popStack(stack - data->stack);
+	}
 
 	return NULL;
 }
