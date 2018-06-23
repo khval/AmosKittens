@@ -773,12 +773,12 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	switch( type0 )
 	{
 		case type_int:
-			sprintf(buffer,"%d", item0->value );
+				sprintf(buffer,(item0->value>-1) ? " %d" : "%d", item0->value );
 			setStackStrDup(buffer);
 			break;
 
 		case type_float:
-			sprintf(buffer,"%d", item0->decimal );
+			sprintf(buffer,(item0->decimal>=0.0f) ? " %f" : "%f", item0->decimal );
 			setStackStrDup(buffer);
 			break;
 	}

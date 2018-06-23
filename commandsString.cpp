@@ -161,7 +161,7 @@ char *_cmdStr( struct glueCommands *data, int nextToken )
 				num = getStackNum( stack );
 				_str[0]=0;
 
-				if (num>0)
+				if (num>-1)
 					sprintf(_str," %d",num);
 				else
 					sprintf(_str,"%d",num);
