@@ -267,8 +267,6 @@ char *_repeat( struct glueCommands *data, int nextToken )
 	return 0;
 }
 
-
-
 BOOL setVarInt( struct kittyData *var )
 {
 	switch (kittyStack[stack].type)
@@ -2079,6 +2077,27 @@ char *cmdDirect(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdPop(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+
+char *cmdFlushStack ( struct glueCommands *data, int nextToken )
+{
+	popStack( stack - data -> stack );
+	return NULL;
+}
+
+
+char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	struct extension *ext = (struct extension *) tokenBuffer;
+	char *(*ext_cmd) ( struct glueCommands *data, int nextToken );
+
+	printf("*** warning extensions not yet supported, extention %d, token %04x ****\n", ext-> ext, ext-> token);
+
+	ext_cmd = cmdFlushStack;
+	stackCmdNormal( ext_cmd, tokenBuffer );
+
 	return tokenBuffer;
 }
 

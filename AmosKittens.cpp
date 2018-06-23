@@ -397,7 +397,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		{
 			int idx = ref->ref-1;
 
-			dprintf("varname: %s\n",globalVars[idx].varName);
+//			printf("varname: %s\n",globalVars[idx].varName);
 
 			switch (globalVars[idx].var.type & 7)
 			{
@@ -516,7 +516,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0036, "<Hex>",4,cmdNumber },		// hex
 	{0x003E, "<number>",4,cmdNumber },
 	{0x0046, "<float>",4,cmdFloat },
-	{0x004E,"Boom",4,soundBoom },
+	{0x004E, "Extension",4,cmdExtension },		// extention command 
 	{0x0054, ":", 0, nextCmd },
 	{0x005C, ",", 0, nextArg },
 	{0x0064, ";", 0, breakData },

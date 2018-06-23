@@ -108,6 +108,13 @@ struct proc
 	int ref;
 };
 
+struct extension 
+{
+	unsigned char ext;
+	unsigned char	__align__;
+	unsigned short token;
+} __attribute__((packed)) ;
+
 struct kittyData
 {
 	union		// we don't need to wast space.
