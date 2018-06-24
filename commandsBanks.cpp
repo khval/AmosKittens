@@ -296,17 +296,16 @@ char *cmdReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 
 
 const char *bankTypes[] = {
-	"NULL",
-	"Sprites",
-	"Icons",
-	"Music",
-	"Amal",
-	"Samples",
-	"Menu",
-	"Chip Work",
-	"Chip Data",
-	"Fast work",
-	"Fast Data",
+	"Chip work",		// 0
+	"Fast work",		// 1
+	"Sprites",			// 2
+	"Icons",			// 3
+	"Music",			// 4
+	"Amal",			// 5
+	"Samples",		// 6
+	"Menu",			// 7
+	"Chip Data",		// 8
+	"Fast Data",		// 9
 	"Code"
 };
 
