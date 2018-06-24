@@ -11,6 +11,7 @@
 #include "commands.h"
 #include "commandsBanks.h"
 #include "errors.h"
+#include "engine.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -309,6 +310,7 @@ const char *bankTypes[] = {
 	"Code"
 };
 
+
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	int n = 0;
@@ -368,6 +370,38 @@ char *cmdBload(nativeCommand *cmd, char *tokenBuffer)
 char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdBsave, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_cmdSave( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int n;
+	int args = stack - data->stack +1 ;
+	FILE *fd;
+	char *start, *to;
+
+	dump_stack();
+
+	if (args==3)
+	{
+		fd = fopen( getStackString( stack - 2 ) , "w");
+
+		if (fd)
+		{
+			fclose(fd);
+		}
+	}
+
+	getchar();
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *cmdSave(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdSave, tokenBuffer );
 	return tokenBuffer;
 }
 
