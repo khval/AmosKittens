@@ -125,7 +125,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 				}
 				break;
 
-			case 5:
+			case 4:
 				{
 					int _inc = getStackNum( stack - 2 );
 					int _from = getStackNum( stack - 1 );
