@@ -749,7 +749,7 @@ struct nativeCommand nativeCommands[]=
 	{0x14A2,"Shade Off",0,textShadeOff },
 	{0x14B2,"Shade On",0,textShadeOn },
 	{0x14E0,"Scroll",0,gfxScroll },
-	{0x1504,"Cleft",0,textCLeft },
+	{0x1504,"Cleft$",0,textCLeftStr },
 	{0x151E,"CUp",0,textCUp },
 	{0x1528,"CDown",0,textCDown },
 	{0x1534,"CLeft",0,textCLeft },

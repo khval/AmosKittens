@@ -40,4 +40,10 @@ extern char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textVscroll(struct nativeCommand *cmd, char *ptr);
 extern char *textHscroll(struct nativeCommand *cmd, char *ptr);
+extern char *textClw(struct nativeCommand *cmd, char *ptr);
+extern char *textCline(struct nativeCommand *cmd, char *ptr);
+extern char *textCUpStr(nativeCommand *cmd, char *ptr);
+extern char *textCDownStr(nativeCommand *cmd, char *ptr);
+extern char *textCLeftStr(nativeCommand *cmd, char *ptr);
+extern char *textCRightStr(nativeCommand *cmd, char *ptr);
 

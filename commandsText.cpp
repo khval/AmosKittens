@@ -955,3 +955,37 @@ char *textCline(struct nativeCommand *cmd, char *ptr)
 	setStackNone();
 	return ptr;
 }
+
+char *textCDownStr(nativeCommand *cmd, char *ptr)
+{
+	char str[] = {31,0};
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackStrDup(str);
+	return ptr;
+}
+
+char *textCUpStr(nativeCommand *cmd, char *ptr)
+{
+	char str[] = {30,0};
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackStrDup(str);
+	return ptr;
+}
+
+char *textCLeftStr(nativeCommand *cmd, char *ptr)
+{
+	char str[] = {29,0};
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackStrDup(str);
+	dump_stack();
+	return ptr;
+}
+
+char *textCRightStr(nativeCommand *cmd, char *ptr)
+{
+	char str[] = {28,0};
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackStrDup(str);
+	return ptr;
+}
+
