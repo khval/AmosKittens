@@ -373,6 +373,104 @@ char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+struct bankItemDisk
+{
+	char id[4];
+	unsigned short bank;
+	unsigned short type;
+	unsigned int length;
+	char name[8];
+} __attribute__((packed)) ;
+
+
+char *_cmdLoad( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int n;
+	int args = stack - data->stack +1 ;
+	FILE *fd;
+	int size;
+	char *adr = NULL;
+	struct bankItemDisk item;
+	char *mem;
+	char id[5];
+	unsigned short banks = 0;
+	id[4]=0;
+
+
+	dump_stack();
+
+	switch (args)
+	{
+		case 1:
+			fd = fopen( getStackString( stack ) , "r");
+			if (fd)
+			{
+				if (fread( &id, 4, 1, fd )==1)
+				{	
+					if (strcmp(id,"AmBs")==0)
+					{
+						fread( &banks, 2, 1, fd);
+					}
+				}
+
+				if (banks == 0) 
+				{
+					fseek( fd, 0, SEEK_SET );	// set set, to start no header found.
+					banks = 1;
+				}
+
+				for (n=0;n<banks;n++)
+				{
+					if (fread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
+					{
+						if (item.length & 0x80000000) item.type += 8;
+
+						item.length = (item.length & 0x7FFFFFF) - 8;
+
+						printf("id: %s, bank %02x type %02x length %04x\n", item.id, item.bank, item.type, item.length);
+
+						if (item.length >0 )
+						{
+							mem = (char *) malloc( item.length );
+							if (mem)
+							{
+								fread( mem, item.length, 1, fd );
+								if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+							}
+							else
+							{
+								printf("failed to alloc mem\n");
+							}
+						}
+					}
+				}
+
+				fclose(fd);
+			}
+			break;
+
+		case 2:
+			fd = fopen( getStackString( stack - 1 ) , "r");
+			if (fd)
+			{
+				n = getStackNum(stack);
+				fclose(fd);
+			}
+			break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *cmdLoad(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdLoad, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_cmdSave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
