@@ -283,6 +283,10 @@ char *_addDataToText( struct glueCommands *data, int nextToken );
 
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
+	int nextToken = *((short *) tokenBuffer );
+
+	flushCmdParaStack( nextToken );
+
 	stackCmdParm( _addDataToText, tokenBuffer );
 	stack++;
  	kittyStack[stack].type = type_none;
