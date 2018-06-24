@@ -28,6 +28,7 @@ main_objects = commands.cpp \
 			commandsDisc.cpp \
 			commandsObjectControl.cpp \
 			commandsHardwareSprite.cpp \
+			commandsBlitterObject.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \

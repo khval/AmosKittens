@@ -6,6 +6,7 @@
 #include <proto/dos.h>
 #include <vector>
 #include <math.h>
+#include <libraries/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -24,6 +25,7 @@
 #include "commandsObjectControl.h"
 #include "commandsSound.h"
 #include "commandsHardwareSprite.h"
+#include "commandsBlitterObject.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -67,6 +69,8 @@ void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
 
+struct retroSpriteObject Sprites[30];
+struct retroSpriteObject bobs[30];
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
@@ -797,7 +801,10 @@ struct nativeCommand nativeCommands[]=
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x196C,"Fsel$",0,cmdFselStr },
+	{0x1AA8,"Bob Off",0,boBobOff },
+	{0x1B9E,"Bob",0,boBob },
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
+	{0x1D40,"No Mask",0,boNoMask },
 	{0x1DE0, "Hide", 0, ocHide },						// hide mouse, (only dummy).
 	{0x1E02,"Change Mouse",0,ocChangeMouse },		// dummy
 	{0x1E16,"X Mouse",0,ocXMouse },
