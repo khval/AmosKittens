@@ -17,7 +17,12 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
+extern struct retroScreen *screens[8] ;
+extern struct retroVideo *video;
+extern struct retroRGB DefaultPalette[256];
+extern int current_screen;
 
+void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
 char *_cmdErase( struct glueCommands *data, int nextToken )
 {
@@ -312,21 +317,31 @@ const char *bankTypes[] = {
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	int n = 0;
+	char txt[1000];
+	struct retroScreen *screen;
 
-	printf("\nNumber  Type        Start          Length\n\n");
+	screen = screens[current_screen];
 
-	for (n=0;n<15;n++)
+	if (screen)
 	{
-		if (kittyBanks[n].type)
-		{
-			printf("%2d    - %-10s  S:$%04X    L:$%04X\n", n+1,
-				bankTypes[kittyBanks[n].type],
-				kittyBanks[n].start, 
-				kittyBanks[n].length);
-		}
-	}
+		clear_cursor( screen );
+		_my_print_text( screen, (char *) "Nr   Type       Start       Length\n\n", 0);
 
-	printf("\n");
+		for (n=0;n<15;n++)
+		{
+			if (kittyBanks[n].start)
+			{
+				sprintf(txt,"%2d - %-10s S:$%08X L:%d\n", 
+					n+1,
+					bankTypes[kittyBanks[n].type],
+					kittyBanks[n].start, 
+					kittyBanks[n].length);
+
+				_my_print_text( screen, txt, 0 );
+			}
+		}
+		_my_print_text( screen, (char *) "\n", 0 );
+	}
 
 	return tokenBuffer;
 }
