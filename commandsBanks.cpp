@@ -5,6 +5,7 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <proto/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -22,8 +23,38 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern int current_screen;
+extern struct retroSprite *sprite ;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
+
+#define type_work_or_data 0
+#define type_icons 2
+#define type_sprite 3
+
+const char *amos_file_ids[] =
+	{
+		"AmBk",		// work
+		"",			// chip work 
+		"AmIc",
+		"AmSp",
+		NULL
+	};
+
+
+const char *bankTypes[] = {
+	"Chip work",		// 0
+	"Fast work",		// 1
+	"Icons",			// 2
+	"Sprites",			// 3
+	"Music",			// 4
+	"Amal",			// 5
+	"Samples",		// 6
+	"Menu",			// 7
+	"Chip Data",		// 8
+	"Fast Data",		// 9
+	"Code"
+};
+
 
 char *_cmdErase( struct glueCommands *data, int nextToken )
 {
@@ -294,21 +325,6 @@ char *cmdReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 }
 
 
-const char *bankTypes[] = {
-	"Chip work",		// 0
-	"Fast work",		// 1
-	"Sprites",			// 2
-	"Icons",			// 3
-	"Music",			// 4
-	"Amal",			// 5
-	"Samples",		// 6
-	"Menu",			// 7
-	"Chip Data",		// 8
-	"Fast Data",		// 9
-	"Code"
-};
-
-
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	int n = 0;
@@ -373,13 +389,34 @@ char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
 
 struct bankItemDisk
 {
-	char id[4];
 	unsigned short bank;
 	unsigned short type;
 	unsigned int length;
 	char name[8];
 } __attribute__((packed)) ;
 
+
+
+void __load_work_data__(FILE *fd)
+{
+	struct bankItemDisk item;
+	char *mem;
+
+	if (fread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
+	{
+		if (item.length & 0x80000000) item.type += 8;
+		item.length = (item.length & 0x7FFFFFF) - 8;
+		if (item.length >0 )
+		{
+			mem = (char *) malloc( item.length );
+			if (mem)
+			{
+				fread( mem, item.length, 1, fd );
+				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+			}
+		}
+	}
+}
 
 char *_cmdLoad( struct glueCommands *data, int nextToken )
 {
@@ -388,12 +425,10 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	int size;
-	char *adr = NULL;
-	struct bankItemDisk item;
-	char *mem;
 	char id[5];
 	unsigned short banks = 0;
 	id[4]=0;
+	int type = -1;
 
 
 	dump_stack();
@@ -420,27 +455,40 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 
 				for (n=0;n<banks;n++)
 				{
-					if (fread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
-					{
-						if (item.length & 0x80000000) item.type += 8;
+					type = -1;
 
-						item.length = (item.length & 0x7FFFFFF) - 8;
+					if (fread( &id, 4, 1, fd )==1)
+					{	
+						int cnt = 0;
+						const char **idp;
 
-						printf("id: %s, bank %02x type %02x length %04x\n", item.id, item.bank, item.type, item.length);
-
-						if (item.length >0 )
+						for (idp = amos_file_ids; *idp ; idp++)
 						{
-							mem = (char *) malloc( item.length );
-							if (mem)
-							{
-								fread( mem, item.length, 1, fd );
-								if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
-							}
-							else
-							{
-								printf("failed to alloc mem\n");
-							}
+							if (strcmp(id,*idp)==0) { type = cnt; break; }
+							cnt++;
 						}
+					}
+					
+					switch (type)
+					{
+						case type_sprite:
+							if (sprite) retroFreeSprite(sprite);
+							// sprite = retroLoadSprite(fd);
+							printf("Can't load sprite. don't know how to do that :-(\n");
+							Delay(120);
+							break;
+	
+						case type_icons:
+							break;
+
+						case type_work_or_data:
+							__load_work_data__(fd);
+							break;
+
+						default:
+							printf("oh no!!... unexpected id: %s\n", id);
+							Delay(120);
+
 					}
 				}
 
