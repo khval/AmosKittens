@@ -193,8 +193,6 @@ bool __ReserveAs( int type, int bank, int length, char *name, char *mem )
 		kittyBanks[bank-1].length = length;
 		if (kittyBanks[bank-1].start) free( kittyBanks[bank-1].start );
 
-		printf("ok\n");
-
 		if (mem)
 		{
 			kittyBanks[bank-1].start = mem;
@@ -219,7 +217,7 @@ char *_cmdReserveAsWork( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		success = __ReserveAs( 9, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
+		success = __ReserveAs( 1, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
 	}
 
 	popStack( stack - data->stack );
@@ -234,7 +232,7 @@ char *_cmdReserveAsChipWork( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		success = __ReserveAs( 7, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
+		success = __ReserveAs( 0, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
 	}
 
 	popStack( stack - data->stack );
@@ -249,7 +247,7 @@ char *_cmdReserveAsData( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		success = __ReserveAs( 10, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
+		success = __ReserveAs( 8 | 1, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
 	}
 
 	popStack( stack - data->stack );
@@ -264,7 +262,7 @@ char *_cmdReserveAsChipData( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		success = __ReserveAs( 8, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
+		success = __ReserveAs( 8 | 0, getStackNum(stack-1) , getStackNum(stack), NULL, NULL );
 	}
 
 	popStack( stack - data->stack );
