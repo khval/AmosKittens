@@ -418,6 +418,19 @@ void __load_work_data__(FILE *fd)
 	}
 }
 
+// callback.
+
+int cust_fread (void *ptr, int size,int elements, FILE *fd)
+{
+//	printf("ptr %08x, size %d elements %d, FILE %08x\n",ptr,size,elements,fd);
+//	Delay(100);
+	if (ptr)
+	{
+		return fread(ptr,size,elements,fd);
+	}
+	else return 0;
+}
+
 char *_cmdLoad( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -473,9 +486,15 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 					{
 						case type_sprite:
 							if (sprite) retroFreeSprite(sprite);
-							// sprite = retroLoadSprite(fd);
-							printf("Can't load sprite. don't know how to do that :-(\n");
-							Delay(120);
+							sprite = retroLoadSprite(fd, cust_fread );
+
+							// 99 Bottles of beer. 
+							if (__ReserveAs( type_sprite, 2, 99,NULL, (char *) sprite ) == false)
+							{
+								retroFreeSprite(sprite);
+								sprite = NULL;
+							}
+
 							break;
 	
 						case type_icons:
