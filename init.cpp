@@ -15,23 +15,26 @@ struct AmosExtensionIFace	 *IAmosExtension = NULL;
 struct Library			*DataTypesBase = NULL;
 struct DataTypesIFace	*IDataTypes = NULL;
 
-extern struct Library 	 *DOSBase  ;
-extern struct DOSIFace	 *IDOS ;
+extern struct Library		 	*DOSBase;
+extern struct DOSIFace			*IDOS;
 
-struct Library 		 *AslBase = NULL;
-struct AslIFace 	 *IAsl = NULL;
+extern struct Library			*RetroModeBase;
+extern struct RetroModeIFace		*IRetroMode;
 
-struct LocaleIFace *ILocale  = NULL;
-struct Library *LocaleBase = NULL;
+struct Library 			*AslBase = NULL;
+struct AslIFace 		*IAsl = NULL;
 
-struct Library * DiskfontBase = NULL;
-struct DiskfontIFace *IDiskfont 	= NULL;
+struct LocaleIFace		*ILocale  = NULL;
+struct Library			*LocaleBase = NULL;
 
-struct KeymapIFace *IKeymap = NULL;
-struct Library *KeymapBase = NULL;
+struct Library			*DiskfontBase = NULL;
+struct DiskfontIFace		*IDiskfont = NULL;
 
-struct Locale *_locale = NULL;
-ULONG *codeset_page = NULL;
+struct KeymapIFace		*IKeymap = NULL;
+struct Library			*KeymapBase = NULL;
+
+struct Locale			*_locale = NULL;
+ULONG				*codeset_page = NULL;
 
 
 BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
@@ -54,9 +57,10 @@ BOOL init()
 {
 	if ( ! open_lib( "asl.library", 0L , "main", 1, &AslBase, (struct Interface **) &IAsl  ) ) return FALSE;
 	if ( ! open_lib( "datatypes.library", 0L , "main", 1, &DataTypesBase, (struct Interface **) &IDataTypes  ) ) return FALSE;
-	if ( !	open_lib( "locale.library", 53 , "main", 1, &LocaleBase, (struct Interface **) &ILocale  ) ) return FALSE;
-	if ( !	open_lib( "keymap.library", 53, "main", 1, &KeymapBase, (struct Interface **) &IKeymap) ) return FALSE;
+	if ( ! open_lib( "locale.library", 53 , "main", 1, &LocaleBase, (struct Interface **) &ILocale  ) ) return FALSE;
+	if ( ! open_lib( "keymap.library", 53, "main", 1, &KeymapBase, (struct Interface **) &IKeymap) ) return FALSE;
 	if ( ! open_lib( "diskfont.library", 50L, "main", 1, &DiskfontBase, (struct Interface **) &IDiskfont  ) ) return FALSE;
+	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -86,5 +90,8 @@ void closedown()
 
 	if (DiskfontBase) CloseLibrary(DiskfontBase); DiskfontBase = 0;
 	if (IDiskfont) DropInterface((struct Interface*) IDiskfont); IDiskfont = 0;
+
+	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
+	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
 }
 

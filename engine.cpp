@@ -130,7 +130,6 @@ bool init_engine()
 	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
 	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
-	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 	if ( ! open_window(640,480) ) return false;
 
 	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
@@ -177,9 +176,6 @@ void close_engine()
 
 	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
 	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
-
-	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
-	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
 
 	if (engine_mx) FreeSysObject(ASOT_MUTEX, engine_mx); engine_mx = 0;
 }
