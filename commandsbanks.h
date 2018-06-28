@@ -19,4 +19,6 @@ extern char *cmdStart(nativeCommand *cmd, char *ptr);
 extern char *cmdLength(nativeCommand *cmd, char *ptr);
 extern char *cmdBload(nativeCommand *cmd, char *ptr);
 extern char *cmdBsave(nativeCommand *cmd, char *ptr);
+extern char *cmdLoad(nativeCommand *cmd, char *ptr);
+extern char *cmdSave(nativeCommand *cmd, char *ptr);
 

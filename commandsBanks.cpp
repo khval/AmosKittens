@@ -440,7 +440,7 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 	int type = -1;
 
 
-	dump_stack();
+//	dump_stack();
 
 	switch (args)
 	{
@@ -481,8 +481,11 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 					switch (type)
 					{
 						case bank_type_sprite:
+
+							engine_lock();
 							if (sprite) retroFreeSprite(sprite);
 							sprite = retroLoadSprite(fd, cust_fread );
+							engine_unlock();
 
 							// 99 Bottles of beer. 
 							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) sprite ) == false)
