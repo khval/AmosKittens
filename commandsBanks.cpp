@@ -27,10 +27,6 @@ extern struct retroSprite *sprite ;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
-#define type_work_or_data 0
-#define type_icons 2
-#define type_sprite 3
-
 const char *amos_file_ids[] =
 	{
 		"AmBk",		// work
@@ -484,12 +480,12 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 					
 					switch (type)
 					{
-						case type_sprite:
+						case bank_type_sprite:
 							if (sprite) retroFreeSprite(sprite);
 							sprite = retroLoadSprite(fd, cust_fread );
 
 							// 99 Bottles of beer. 
-							if (__ReserveAs( type_sprite, 2, 99,NULL, (char *) sprite ) == false)
+							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) sprite ) == false)
 							{
 								retroFreeSprite(sprite);
 								sprite = NULL;
@@ -497,10 +493,10 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 
 							break;
 	
-						case type_icons:
+						case bank_type_icons:
 							break;
 
-						case type_work_or_data:
+						case bank_type_work_or_data:
 							__load_work_data__(fd);
 							break;
 

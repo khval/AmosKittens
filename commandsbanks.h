@@ -4,6 +4,10 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 
+#define bank_type_work_or_data 0
+#define bank_type_icons 2
+#define bank_type_sprite 3
+
 extern char *cmdReserveAsWork(nativeCommand *cmd, char *ptr);
 extern char *cmdReserveAsChipWork(nativeCommand *cmd, char *ptr);
 extern char *cmdReserveAsData(nativeCommand *cmd, char *ptr);
