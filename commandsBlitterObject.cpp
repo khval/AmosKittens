@@ -56,8 +56,25 @@ char *_boBob( struct glueCommands *data, int nextToken )
 			retroPasteSprite(screens[current_screen], sprite, bobs[num].x, bobs[num].y, image);
 		}
 	}
+char *_boBob( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int num;
+	struct retroSpriteObject *bob;
 
-	printf( "bob %d,%d,%d,%d\n", num,bobs[num].x,bobs[num].y,image );
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	num = getStackNum( stack - 3 );
+	bob = &bobs[num];
+
+	stack_get_if_int( stack - 2 , &bob->x );
+	stack_get_if_int( stack - 1 , &bob->y );
+
+	bob->image = getStackNum( stack );
+
+	bob->screen_id = current_screen;
+
+	printf( "bob %d,%d,%d,%d\n", num,bob->x,bob->y,bob->image);
 
 	popStack( stack - data->stack );
 	return NULL;
