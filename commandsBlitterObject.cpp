@@ -29,33 +29,96 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *sprite;
-extern struct retroSpriteObject bobs[30];
+extern struct retroSpriteObject bobs[64];
 
-char *_boBob( struct glueCommands *data, int nextToken )
+void clearBobs()
 {
-	int args = stack - data->stack +1 ;
-	int num,image;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int n;
+	struct retroScreen *screen;
+	struct retroSpriteObject *bob;
+	struct retroFrameHeader *frame;
+	struct retroSpriteClear *clear;
+	int image;
+	int x1,y1,x2,y2;
 
-	printf("args: %d\n",args);
+	if (!sprite) return;
+	if (!sprite -> frames) return;
 
-	num = getStackNum( stack - 3 );
-	stack_get_if_int( stack - 2 , &bobs[num].x );
-	stack_get_if_int( stack - 1 , &bobs[num].y );
-	image = getStackNum( stack );
-
-	if (sprite)
+	for (n=0;n<64;n++)
 	{
-		image = image % sprite -> number_of_frames;
+		bob = &bobs[n];
+		screen = screens[bob->screen_id];
 
-		bobs[num].sprite = sprite ;
-		bobs[num].frame = &sprite -> frames[image];
-
-		if (screens[current_screen])
+		if (screen)
 		{
-			retroPasteSprite(screens[current_screen], sprite, bobs[num].x, bobs[num].y, image);
+			clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
+
+			if (clear -> drawn == 1)
+			{
+				x1 = clear -> x;
+				y1 = clear -> y;
+				image = clear -> image;
+				clear -> drawn = 0;
+
+				if ((image<0) || (image >= sprite -> number_of_frames)) image = -1;	
+
+				if ( image > -1 )
+				{
+					frame = &sprite -> frames[ image ];
+
+						x1 -= frame -> XHotSpot;
+						y1 -= frame -> YHotSpot;
+						x2 = x1 + frame -> Width;
+						y2 = y1 + frame -> Height;
+
+//					printf("%d, retroBAR(%08x,%d,%d,%d,%d)\n",n ,screen, x1,y1,x2,y2,screen -> double_buffer_draw_frame);	
+
+						retroBAR( screen, x1,y1,x2,y2,screen -> double_buffer_draw_frame );
+				}
+			}
 		}
 	}
+}
+
+
+void drawBobs()
+{
+	int n;
+	struct retroScreen *screen;
+	struct retroSpriteObject *bob;
+	struct retroSpriteClear *clear;
+	int image;
+
+	if (!sprite) return;
+
+	for (n=0;n<64;n++)
+	{
+		bob = &bobs[n];
+		screen = screens[bob->screen_id];
+
+		if (screen)
+		{
+			image = bob->image;
+
+			if ((image<0) || (image >= sprite -> number_of_frames)) image = -1;	
+
+			if (( image > -1 ) && (sprite -> frames))
+			{
+				printf("%d retroPasteSprite(%08x,%08x,%d,%d,%d)\n",n, screen, sprite, bob->x, bob->y, image);	
+
+				clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
+
+				clear -> x = bob -> x;
+				clear -> y = bob -> y;
+				clear -> image = bob -> image;
+				clear -> drawn = 1;
+
+				retroPasteSprite(screen, sprite, bob->x, bob->y, image);
+			}
+		}
+	}
+}
+
 char *_boBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;

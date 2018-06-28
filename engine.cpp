@@ -36,6 +36,9 @@ int engine_mouse_y = 0;
 
 int cursor_color = 3;
 
+void clearBobs();
+void drawBobs();
+
 struct retroScreen *screens[8] ;
 struct retroRGB DefaultPalette[256] = 
 {
@@ -263,6 +266,7 @@ void main_engine()
 
 	if (init_engine())		// libs open her.
 	{
+		struct retroScreen *screen ;
 		ULONG Class;
 		UWORD Code;
 		UWORD Qualifier;
@@ -331,6 +335,8 @@ void main_engine()
 
 			engine_lock();
 			retroClearVideo( video );
+			drawBobs();
+
 			retroDrawVideo( video );
 			retroDmaVideo( video );
 			engine_unlock();
@@ -338,13 +344,19 @@ void main_engine()
 			WaitTOF();
 			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );
 
+			engine_lock();
 			for (n=0; n<8;n++)
 			{
-				if (n==1) if (screens[n])
+				screen = screens[n];
+
+				if (screen)
 				{
-					retroFadeScreen(screens[n]);
+					retroFadeScreen(screen);
+					if (screen -> Memory[1]) screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
 				}
 			}
+			clearBobs();
+			engine_unlock();
 
 			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, video->rp.BitMap,
