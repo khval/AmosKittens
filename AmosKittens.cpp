@@ -69,8 +69,8 @@ void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
 
-struct retroSpriteObject Sprites[30];
-struct retroSpriteObject bobs[30];
+struct retroSprite *sprite = NULL;
+struct retroSpriteObject bobs[65];
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
@@ -1105,6 +1105,12 @@ int main(char args, char **arg)
 	memset(globalVars,0,sizeof(globalVars));
 
 	sig_main_vbl = AllocSignal(-1);
+
+	for (n=0;n<64;n++)
+	{
+		bobs[n].image = -1;
+	}
+
 
 	if (init())
 	{
