@@ -1215,6 +1215,11 @@ char *_gfxAutoback( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
+		if (screens[current_screen])
+		{
+			screens[current_screen]->autoback = _set_rainbow_index = getStackNum( stack );
+		}
+
 	}
 	else setError(22);
 
