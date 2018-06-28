@@ -6,11 +6,14 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include <vector>
+#include <proto/retroMode.h>
+#include "commandsbanks.h"
 
 extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
 extern int global_var_count;
 extern char *dir_first_pattern ;
+extern struct retroSprite *sprite ;
 
 void clean_up_vars()
 {
@@ -76,6 +79,33 @@ void clean_up_files()
 
 void clean_up_special()
 {
+	int n;
+
+	printf("clean up banks!!");
+
+	for (n=0;n<15;n++)
+	{
+		if (kittyBanks[n].start)
+		{
+			switch ( kittyBanks[n].type )
+			{
+//				case bank_type_icons:
+//						break;
+
+				case bank_type_sprite:
+						retroFreeSprite( (struct retroSprite *) kittyBanks[n].start );
+						sprite = NULL;
+						break;
+
+				default:
+						free( kittyBanks[n].start );
+						break;
+			}
+
+			kittyBanks[n].start = NULL;
+		}
+	}
+
 	if (contextDir)
 	{
 		ReleaseDirContext(contextDir);
