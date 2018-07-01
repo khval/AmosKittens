@@ -199,6 +199,7 @@ struct zone
 	int y1;
 };
 
+
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\

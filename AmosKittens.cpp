@@ -70,7 +70,7 @@ void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 int tokenMode = mode_standard;
 
 struct retroSprite *sprite = NULL;
-struct retroSpriteObject bobs[65];
+struct retroSpriteObject bobs[64];
 struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[1000];	// 0 is not used.
 struct kittyBank kittyBanks[16];
@@ -802,10 +802,16 @@ struct nativeCommand nativeCommands[]=
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x196C,"Fsel$",0,cmdFselStr },
 	{0x1AA8,"Bob Off",0,boBobOff },
+	{0x1B5C,"Limit Bob",0,boLimitBob },
+	{0x1B8A,"Set Bob",0,boSetBob },
 	{0x1B9E,"Bob",0,boBob },
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
+	{0x1BFC,"Get Bob",0,boGetBob },
+	{0x1CF0,"Put Bob",0,boPutBob },
+	{0x1CFE,"Paste Bob",0,boPasteBob },
 	{0x1DD2,"Hide On",0,ocHideOn },
 	{0x1D40,"No Mask",0,boNoMask },
+	{0x1D90,"Hot Spot",0,boHotSpot },
 	{0x1DE0, "Hide", 0, ocHide },						// hide mouse, (only dummy).
 	{0x1DEA, "Show On",0,ocShowOn },
 	{0x1E02,"Change Mouse",0,ocChangeMouse },		// dummy
@@ -814,6 +820,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1E32,"Mouse Key",0,ocMouseKey },
 	{0x1E42,"Mouse Click",0,ocMouseClick },
 	{0x1E6E,"Limit Mouse",0,ocMouseLimit },
+	{0x20BA,"X Bob",0,boXBob},
+	{0x20C6,"Y Bob",0,boYBob},
 	{0x20F2,"",0,cmdReserveAsWork },
 	{0x210A,"",0,cmdReserveAsChipWork },
 	{0x2128,"",0, cmdReserveAsData },
