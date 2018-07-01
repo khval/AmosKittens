@@ -26,14 +26,26 @@ extern int current_screen;
 
 
 extern struct retroScreen *screens[8] ;
+extern struct retroSprite *sprite;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
 
 char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 {
+	int n;
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ((sprite)&&(screen))
+	{
+		for (n=0;n<256;n++)
+		{
+			retroScreenColor( screen, n, sprite -> palette[n].r, sprite -> palette[n].g, sprite -> palette[n].b );
+		}
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
