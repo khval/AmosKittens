@@ -666,61 +666,6 @@ char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_goto( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	return NULL ;
-}
-
-
-char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	char *ptr;
-	char *return_tokenBuffer;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (next_token)
-	{
-		case 0x0026:	// text
-
-					stackCmdNormal( _goto, tokenBuffer );
-					break;
-
-		case 0x0018:	// label
-		case 0x0006: 	// variable
-
-					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
-					{
-						case type_int:		// jump to label with same name as var.
-								return_tokenBuffer = tokenBuffer + 2 + ReferenceByteLength(tokenBuffer + 2) + sizeof(struct reference ) ;
-								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
-								break;
-
-						case type_string:	// jump to string.
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
-								stackCmdNormal( _goto, tokenBuffer );
-								break;
-
-						case type_float:
-
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
-								setError(22);
-								break;
-					}
-				
-					stackCmdNormal( _gosub, tokenBuffer );
-					break;
-
-		default:
-
-				printf("bad token: %04x\n", next_token);
-				setError(22);
-	}
-
-	return tokenBuffer;
-}
-
 char *_gosub_return( struct glueCommands *data, int nextToken )
 {
 	return data -> tokenBuffer;	// jumpBack.
@@ -777,6 +722,106 @@ char *_gosub( struct glueCommands *data, int nextToken )
 
 
 
+char *_goto( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	int args = stack - data -> stack + 1;
+	int ref_num = 0;
+
+	if (args != 1) setError(22);
+
+	switch (kittyStack[stack].type)
+	{
+		case type_int:	
+				{
+					char num[50];
+					printf("goto a int\n");
+					sprintf(num,"%d", kittyStack[stack].value );
+					ref_num = findLabelRef( num );
+				}
+				break;
+
+		case type_string:
+				{
+					char *txt = getStackString( stack );
+					ref_num = findLabelRef( txt );
+				}
+				break;
+
+		default:
+				setError(22);
+	}
+
+	if (ref_num)
+	{
+		char *return_tokenBuffer = data -> tokenBuffer;
+
+		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
+		return labels[ref_num-1].tokenLocation;
+	}
+	else
+	{
+		printf("oh no no ref_num\n");
+		dump_stack();
+		getchar();
+		setError(22);
+	}
+
+	return NULL ;
+}
+
+
+char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+	char *ptr;
+	char *return_tokenBuffer;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("next token %04x\n", next_token);
+
+	switch (next_token)
+	{
+		case 0x0026:	// text
+
+					stackCmdNormal( _goto, tokenBuffer );
+					break;
+
+		case 0x0018:	// label
+		case 0x0006: 	// variable
+
+					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
+					{
+						case type_int:		// jump to label with same name as var.
+
+								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
+								break;
+
+						case type_string:	// jump to string.
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								stackCmdNormal( _goto, tokenBuffer );
+								break;
+
+						case type_float:
+
+								printf("%s:%d\n",__FUNCTION__,__LINE__);
+								setError(22);
+								break;
+
+						default:
+								stackCmdNormal( _goto, tokenBuffer );
+					}
+					break;
+
+		default:
+
+				printf("bad token: %04x\n", next_token);
+				setError(22);
+	}
+
+	return tokenBuffer;
+}
 
 char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 {
