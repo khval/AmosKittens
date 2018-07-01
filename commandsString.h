@@ -24,4 +24,6 @@ extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer );
 extern char *cmdStr(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdRepeatStr(struct nativeCommand *cmd, char *tokenBuffer );
+extern char *cmdTabStr(struct nativeCommand *cmd, char *tokenBuffer );
 
