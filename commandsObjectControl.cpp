@@ -269,4 +269,14 @@ char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *ocShowOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
 
+char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
