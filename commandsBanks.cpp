@@ -490,10 +490,9 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 							// 99 Bottles of beer. 
 							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) sprite ) == false)
 							{
-								retroFreeSprite(sprite);
+								if (sprite) retroFreeSprite(sprite);
 								sprite = NULL;
 							}
-
 							break;
 	
 						case bank_type_icons:
