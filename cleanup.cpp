@@ -9,6 +9,7 @@
 #include <proto/retroMode.h>
 #include "commandsbanks.h"
 
+extern struct retroSpriteObject bobs[64];
 extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
 extern int global_var_count;
@@ -81,7 +82,14 @@ void clean_up_special()
 {
 	int n;
 
-	printf("clean up banks!!");
+	printf("clean up bobs!!\n");
+
+	for (n=0;n<64;n++)
+	{
+		retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
+	}
+
+	printf("clean up banks!!\n");
 
 	for (n=0;n<15;n++)
 	{
@@ -105,6 +113,8 @@ void clean_up_special()
 			kittyBanks[n].start = NULL;
 		}
 	}
+
+	printf("clean up file stuff!!\n");
 
 	if (contextDir)
 	{
