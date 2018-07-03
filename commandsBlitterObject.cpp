@@ -54,12 +54,12 @@ void clearBobs()
 
 		if (screen)
 		{
-			clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
+			clear = &bob -> clear[ 0 ];
 
 			if (clear -> mem)
 			{
 				copyClearTo(
-					(char *) screen -> Memory[screen -> double_buffer_draw_frame], 
+					(char *) screen -> Memory[ screen -> double_buffer_draw_frame ], 
 					clear -> mem , 
 					clear -> x, clear -> y, 
 					clear -> x + clear -> w, clear -> y + clear -> h, 
@@ -143,7 +143,7 @@ void drawBobs()
 			{
 				frame = &sprite -> frames[ image ];
 
-				clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
+				clear = &bob -> clear[ 0 ];
 
 				clear -> x = bob -> x - frame -> XHotSpot;
 				clear -> y = bob -> y - frame -> YHotSpot;
