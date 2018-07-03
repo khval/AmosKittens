@@ -666,6 +666,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0ADA,"Screen Show",0,gfxScreenShow },
 	{0x0AE2,"Screen Swap",0,gfxScreenSwap },	
 	{0x0AFC,"Save Iff",0,gfxSaveIff },
+	{0x0B16,"View",0,ocView },
+	{0x0B20,"Auto View Off", 0, ocAutoViewOff },
 	{0x0B58,"Screen Width", 0, gfxScreenWidth },
 	{0x0B74,"Screen Height", 0, gfxScreenHeight },
 	{0x0B90,"Get Palette",0,gfxGetPalette },

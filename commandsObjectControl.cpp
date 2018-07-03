@@ -23,7 +23,7 @@ extern int tokenMode;
 extern int tokenlength;
 
 extern int current_screen;
-
+extern int autoView;
 
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -280,3 +280,18 @@ char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
+
+char *ocAutoViewOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	autoView = 0;
+	return tokenBuffer;
+}
+
+char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	autoView =1;
+	return tokenBuffer;
+}
+
+
+

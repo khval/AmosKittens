@@ -34,6 +34,8 @@ int engine_mouse_key = 0;
 int engine_mouse_x = 0;
 int engine_mouse_y = 0;
 
+int autoView = 1;
+
 int cursor_color = 3;
 
 void clearBobs();
