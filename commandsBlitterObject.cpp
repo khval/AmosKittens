@@ -358,7 +358,15 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 					int x1 = getStackNum( stack-1 );
 					int y1 = getStackNum( stack );
 
-					retroGetSprite(screens[current_screen],sprite,image-1,x0,y0,x1,y1);
+					if (sprite==NULL)
+					{
+						sprite = (struct retroSprite *) AllocVecTags(  sizeof(struct retroSprite), AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
+					}
+
+					if (sprite)
+					{
+						retroGetSprite(screens[current_screen],sprite,image-1,x0,y0,x1,y1);
+					}
 				}
 				break;
 
