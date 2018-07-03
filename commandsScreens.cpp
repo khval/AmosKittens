@@ -310,7 +310,8 @@ char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(retroLowres);
+//	setStackNum(retroLowres); 
+	setStackNum(retroLowres_pixeld);
 	return tokenBuffer;
 }
 
