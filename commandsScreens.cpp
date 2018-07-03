@@ -853,7 +853,7 @@ char *_gfxXScreen( struct glueCommands *data, int nextToken )
 	int x = 0;
 	struct retroScreen *screen;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1) if (screen = screens[current_screen]) x = XScreen_formula( screen );
 
@@ -875,7 +875,7 @@ char *_gfxYScreen( struct glueCommands *data, int nextToken )
 	int y = 0;
 	struct retroScreen *screen;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1) if (screen = screens[current_screen]) y = YScreen_formula( screen );
 
