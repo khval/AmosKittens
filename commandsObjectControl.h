@@ -18,6 +18,10 @@ char *ocSetZone(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocShowOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocPriorityOn(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocPriorityOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocPriorityReverseOn(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocPriorityReverseOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocAutoViewOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocView(struct nativeCommand *cmd, char *tokenBuffer);
 
