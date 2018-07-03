@@ -415,12 +415,47 @@ char *boPutBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boHotSpot( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int num;
+	int image;
+	int p;
+	int x,y;
 	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	dump_stack();
+
+	switch (args)
+	{
+		case 2:
+				image = getStackNum( stack-1 );
+				p = getStackNum( stack );
+
+				if (sprite)
+				{
+					struct retroFrameHeader *frame = &sprite -> frames[image];
+					x = (p >> 4) & 0xF;
+					y = p & 0xF;
+					frame -> XHotSpot = (x * frame -> Width) >> 1;
+					frame -> YHotSpot = (y * frame -> Height) >> 1;
+				}
+
+				break;
+
+		case 3:
+				image = getStackNum( stack-2 );
+				x = getStackNum( stack-1 );
+				y = getStackNum( stack );
+
+				if (sprite)
+				{
+					struct retroFrameHeader *frame = &sprite -> frames[image];
+					frame -> XHotSpot = x;
+					frame -> YHotSpot = y;
+				}
+				break;
+
+	}
+
 
 	popStack( stack - data->stack );
 	return NULL;
