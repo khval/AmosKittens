@@ -851,6 +851,9 @@ struct nativeCommand nativeCommands[]=
 	{0x23AC,"Put f,n", 0, cmdPut },
 	{0x23B8,"Get f,n", 0, cmdGet },
 	{0x23D0,"Multi Wait",0,cmdMultiWait },		// dummy function.
+	{0x2476,"Hrev(n)",0,boHrev},
+	{0x2482,"Vrev(n)",0,boVrev},
+	{0x248e,"Rev(n)",0,boRev},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.

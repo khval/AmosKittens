@@ -15,4 +15,7 @@ char *boPutBob(struct nativeCommand *cmd, char *tokenBuffer);
 char *boGetBob(struct nativeCommand *cmd, char *tokenBuffer);
 char *boLimitBob(struct nativeCommand *cmd, char *tokenBuffer);
 char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer);
+char *boHrev(struct nativeCommand *cmd, char *tokenBuffer);
+char *boVrev(struct nativeCommand *cmd, char *tokenBuffer);
+char *boRev(struct nativeCommand *cmd, char *tokenBuffer);
 

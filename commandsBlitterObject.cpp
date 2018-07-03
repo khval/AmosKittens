@@ -122,7 +122,7 @@ void drawBobs()
 	struct retroSpriteObject *bob;
 	struct retroFrameHeader *frame;
 	struct retroSpriteClear *clear;
-	int image;
+	int image, flags;
 	int size;
 
 	if (!sprite) return;
@@ -134,7 +134,8 @@ void drawBobs()
 
 		if (screen)
 		{
-			image = bob->image;
+			image = bob->image & 0x3FFFF;
+			flags = bob -> image & 0xC000;
 
 			if ((image<0) || (image >= sprite -> number_of_frames)) image = -1;	
 
@@ -175,7 +176,7 @@ void drawBobs()
 						screen -> bytesPerRow, clear -> w);
 				}
 
-				retroPasteSprite(screen, sprite, bob->x, bob->y, image-1);
+				retroPasteSprite(screen, sprite, bob->x, bob->y, image-1, flags);
 			}
 		}
 	}
@@ -317,9 +318,11 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 					int x = getStackNum( stack-2 );
 					int y = getStackNum( stack-1 );
 					int image = getStackNum( stack );
+					int flags = image & 0xC000;
+					image &= 0x3FFF;
 
 					printf("PasteSprite %d,%d,%d\n",x,y,image);
-					retroPasteSprite(screens[current_screen],sprite,x,y,image-1);
+					retroPasteSprite(screens[current_screen],sprite,x,y,image-1,flags);
 				}
 				break;
 		default:
@@ -378,6 +381,7 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int n;
+	int image,flags;
 	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -385,11 +389,14 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	n = getStackNum( stack );
+				image  = bobs[ n & 63 ].image;
+				flags = image & 0xC000;
+				image &= image & 0x3FFF;
 
 				retroPasteSprite(screens[current_screen],sprite,
 						bobs[ n & 63 ].x,
 						bobs[ n & 63 ].y,
-						bobs[ n & 63 ].image -1);
+						image -1, flags);
 				break;
 	 }
 
@@ -445,3 +452,73 @@ char *boLimitBob(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _boLimitBob, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_boHrev( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		ret = getStackNum(stack) | 0x8000;
+	} else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boHrev(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boHrev, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_boVrev( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		ret = getStackNum(stack) | 0x4000;
+	} else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boVrev(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boVrev, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_boRev( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		ret = getStackNum(stack) | 0xC000;
+	} else setError(22);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boRev(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boRev, tokenBuffer );
+	return tokenBuffer;
+}
+
