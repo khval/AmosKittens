@@ -21,9 +21,9 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
+extern int priorityReverse;
 
 extern int current_screen;
-
 
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -47,7 +47,21 @@ void clearBobs()
 	if (!sprite) return;
 	if (!sprite -> frames) return;
 
-	for (n=63;n>-1;n--)
+	int start=0,end=0,dir=0;
+
+	if (!sprite) return;
+
+	switch ( priorityReverse )
+	{
+		case 0:
+			start = 63; end = -1; dir = -1;
+			break;
+		case 1:
+			start = 0; end = 64; dir = 1;
+			break;
+	}
+
+	for (n=start;n!=end;n+=dir)
 	{
 		bob = &bobs[n];
 		screen = screens[bob->screen_id];
@@ -124,10 +138,21 @@ void drawBobs()
 	struct retroSpriteClear *clear;
 	int image, flags;
 	int size;
+	int start=0,end=0,dir=0;
 
 	if (!sprite) return;
 
-	for (n=0;n<64;n++)
+	switch ( priorityReverse )
+	{
+		case 0:
+			start = 0; end = 64; dir = 1;
+			break;
+		case 1:
+			start = 63; end = -1; dir = -1;
+			break;
+	}
+
+	for (n=start;n!=end;n+=dir)
 	{
 		bob = &bobs[n];
 		screen = screens[bob->screen_id];

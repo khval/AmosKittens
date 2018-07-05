@@ -29,6 +29,8 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
+int priorityReverse = 0;
+
 char *ocXMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	setStackNum(engine_mouse_x);
@@ -296,12 +298,14 @@ char *ocPriorityOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *ocPriorityReverseOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	priorityReverse = 0;
 	return tokenBuffer;
 }
 
 char *ocPriorityReverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	priorityReverse = 1;
 	return tokenBuffer;
 }
 
