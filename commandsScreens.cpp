@@ -424,7 +424,13 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		int screen_num = getStackNum( stack );
+		int screen_num = 0;
+
+		if (kittyStack[stack].type != type_none)
+		{
+			screen_num = getStackNum( stack );
+		}
+		else screen_num = current_screen;
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
@@ -451,6 +457,7 @@ char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenToBack, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
