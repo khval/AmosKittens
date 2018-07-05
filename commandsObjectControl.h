@@ -23,5 +23,6 @@ char *ocPriorityOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocPriorityReverseOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocPriorityReverseOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocAutoViewOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocAutoViewOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocView(struct nativeCommand *cmd, char *tokenBuffer);
 
