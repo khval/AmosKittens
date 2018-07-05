@@ -530,20 +530,20 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 			}
 			break;
 
-		case 8:	// Screen Copy 1,x,y,w,h to 2,x,y
+		case 8:	// Screen Copy 1,x0,y0,x1,y1 to 2,x,y
 			{
 				int src_screen = getStackNum( stack-7 );
-				int src_x = getStackNum( stack-6 );
-				int src_y = getStackNum( stack-5 );
-				int src_w = getStackNum( stack-4 );
-				int src_h = getStackNum( stack-3 );
+				int src_x0 = getStackNum( stack-6 );
+				int src_y0 = getStackNum( stack-5 );
+				int src_x1 = getStackNum( stack-4 );
+				int src_y1 = getStackNum( stack-3 );
 				int dest_screen = getStackNum( stack-2 );
 				int dest_x = getStackNum( stack-1 );
 				int dest_y = getStackNum( stack );
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
-					retroScreenBlit( screens[src_screen], src_x, src_y, src_w, src_h,
+					retroScreenBlit( screens[src_screen], src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
 							screens[dest_screen],dest_x, dest_y);
 				}
 			}
