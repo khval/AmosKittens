@@ -1608,6 +1608,7 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 	unsigned short token = 0;
 	unsigned short next_token = 0;
 	unsigned int is_token = 0;
+	char *ret = NULL;
 
 	tokenBuffer += 4;	// skip crap, no idea what use this for... :-P
 
