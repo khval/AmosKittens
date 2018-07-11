@@ -16,6 +16,9 @@ extern int global_var_count;
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
 
+char *_ifThenSuccess(struct glueCommands *data, int nextToken) ;
+char *_ifThenNotSuccess(struct glueCommands *data, int nextToken) ;
+
 char *_textCentre (struct glueCommands *data, int nextToken);
 char *_mathSin (struct glueCommands *data, int nextToken);
 char *_addData (struct glueCommands *data, int nextToken);
@@ -78,6 +81,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_cmdStr,"Str$" },
 	{_ifSuccess,"if Success" },
 	{_ifNotSuccess,"if Not Success"},
+	{_ifThenSuccess,"if Then Success" },
+	{_ifThenNotSuccess,"if Then Not Success"},
 	{_repeat,"repeat"},
 	{_while,"while" },
 	{_gosub_return,"gosub_return" },
