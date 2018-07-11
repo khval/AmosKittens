@@ -409,7 +409,7 @@ char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -482,7 +482,7 @@ char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
