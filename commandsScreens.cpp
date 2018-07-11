@@ -29,7 +29,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==5)
 	{
@@ -75,7 +75,7 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -117,7 +117,7 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -164,7 +164,7 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==5)
 	{
@@ -235,7 +235,7 @@ char *_gfxScreen( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -260,7 +260,7 @@ char *_gfxScin( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = -1;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -395,7 +395,7 @@ char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -420,7 +420,7 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -448,7 +448,7 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 
 char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenToFront, tokenBuffer );
 	return tokenBuffer;
 }
@@ -466,7 +466,7 @@ char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -493,7 +493,7 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -520,7 +520,7 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
