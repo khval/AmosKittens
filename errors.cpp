@@ -7,6 +7,7 @@
 #include "amosKittens.h"
 #include "stack.h"
 #include "errors.h"
+#include "debug.h"
 
 struct errorAt kittyError = { 0, 0 };
 
@@ -29,7 +30,7 @@ void printError( struct errorAt *thisError, struct error *tab )
 	{
 		if (thisError -> code == e->errorCode)
 		{
-			printf("ERROR: %s\nAt line number: %d\n\n",e->errorText, thisError->line);
+			printf("ERROR: %s\nAt line number: %d\n\n",e->errorText, getLineFromPointer(thisError->pos));
 			break;
 		}
 	}
