@@ -357,7 +357,7 @@ void pass1var(char *ptr, bool is_proc )
 			{
 				var = &globalVars[found-1].var;
 				var -> type = type_proc;
-				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
+				var -> tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
 				globalVars[found-1].proc =  procCount;
 			}
 		}
@@ -370,7 +370,7 @@ void pass1var(char *ptr, bool is_proc )
 				globalVars[global_var_count-1].proc = procCount;
 
 				var = &globalVars[global_var_count-1].var;
-				var -> tokenBufferPos = ptr + sizeof(struct reference) + ref -> length ;
+				var -> tokenBufferPos = ptr + 2 +sizeof(struct reference) + ref -> length ;
 			}
 			else
 			{
@@ -420,13 +420,13 @@ void pass1label(char *ptr)
 			else
 			{
 				label tmp;
-				next = ptr + sizeof(struct reference) + ref->length;
+				next = ptr + sizeof(struct reference) + ref->length ; // next token after label
 
 				// skip all new lines..
 				while ( (*(unsigned short *) next) == 0x0000 ) next += 4;	// token and newline code
 
 				tmp.name = tmpName;
-				tmp.tokenLocation = next ;
+				tmp.tokenLocation = next +2 ;
 
 				labels.push_back(tmp);
 				ref -> ref = labels.size();
@@ -616,6 +616,8 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 	return 0;
 }
 
+int getLineFromPointer( char *address );
+
 void eol( char *ptr )
 {
 	unsigned short offset;
@@ -630,8 +632,10 @@ void eol( char *ptr )
 			case nested_then_else:
 			case nested_then_else_if:
 
-				offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
-				*((short *) (nested_command[ nested_count -1 ].ptr)) = offset-1;
+				{
+					offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
+					*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
+				}
 				nested_count --;
 				break;
 
@@ -688,6 +692,12 @@ void pass1_if_or_else( char *ptr )
 			case nested_then:
 			case nested_else:
 			case nested_else_if:
+
+
+				printf ("0x%08x - 0%08x ----- +0x%02x ------\n",
+					nested_command[ nested_count -1 ].ptr,
+					ptr,
+					(short) (int) (ptr - nested_command[ nested_count -1 ].ptr)) ;
 
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
 				nested_count --;
@@ -805,17 +815,17 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x25A4:	// ELSE IF
 							if LAST_TOKEN_(if)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_else_if );
 							}
 							else if LAST_TOKEN_(else_if)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_else_if );
 							}
 							else if LAST_TOKEN_(then)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_then_else_if );
 							}
 							else
@@ -829,22 +839,22 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x02D0:	// ELSE
 							if LAST_TOKEN_(if)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(else_if)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_else );
 							}
 							else if LAST_TOKEN_(then)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_then_else );
 							}
 							else if LAST_TOKEN_(then_else_if)
 							{
-								pass1_if_or_else(ptr-2);
+								pass1_if_or_else(ptr);
 								addNest( nested_then_else );
 							}
 
@@ -858,7 +868,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 							if ( LAST_TOKEN_(if) || LAST_TOKEN_(else_if) || LAST_TOKEN_(else) )
 							{
-								pass1_if_or_else( ptr-2 );
+								pass1_if_or_else( ptr );
 							}
 							else
 								setError( 23,ptr );
