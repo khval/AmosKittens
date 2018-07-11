@@ -1152,8 +1152,30 @@ char *cmdEnd(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub_return ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-	return tokenBuffer;
+	char *(*scmd) ( struct glueCommands *data, int nextToken ) = NULL;
+
+	// exit if's until we found a none if state.
+
+	while (cmdStack)
+	{
+		scmd = cmdTmp[cmdStack-1].cmd;
+		if ( (scmd==_ifSuccess) ||  (scmd==_ifNotSuccess) ||  (scmd==_ifThenSuccess) ||  (scmd==_ifThenNotSuccess) )
+		{
+			cmdStack --;
+		}
+		else break;
+	}
+
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub_return ) 
+	{
+		char *ptr = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+		printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, (int) tokenBuffer - (int) ptr);
+		return ptr-2;		// after cmdReturn +2 token
+	}
+
+	// should find _gosub_return, if not some thing is broken.
+	setError(22,tokenBuffer);
+	return NULL;
 }
 
 char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
