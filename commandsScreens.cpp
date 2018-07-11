@@ -63,7 +63,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -105,7 +105,7 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -151,7 +151,7 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -194,7 +194,7 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -223,7 +223,7 @@ char *_gfxScreenOffset( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -248,7 +248,7 @@ char *_gfxScreen( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -440,7 +440,7 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -509,7 +509,7 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -557,7 +557,7 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 			break;
 
 		default:
- 			setError(22);
+ 			setError(22,data->tokenBuffer);
 			break;
 	}
 

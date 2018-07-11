@@ -55,7 +55,7 @@ char *_mathInc( struct glueCommands *data, int nextToken )
 				break;
 	
 			default:
-				setError(ERROR_Type_mismatch);
+				setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 	}
 
@@ -89,7 +89,7 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 				break;
 	
 			default:
-				setError(ERROR_Type_mismatch);
+				setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 	}
 
@@ -160,10 +160,10 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 				break;
 	
 			default:
-				setError(ERROR_Type_mismatch);
+				setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 
 	popStack(stack - data->stack);

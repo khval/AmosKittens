@@ -89,7 +89,7 @@ char *_mid( struct glueCommands *data, int nextToken )
 			tmp = strndup(str + _start, _len );
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}	
 
 	popStack(stack - data->stack);
@@ -167,7 +167,7 @@ char *_cmdStr( struct glueCommands *data, int nextToken )
 					sprintf(_str,"%d",num);
 				break;
 		default:
-				setError(22);
+				setError(22,data->tokenBuffer);
 	}
 
 	popStack(stack - data->stack);
@@ -222,7 +222,7 @@ char *_bin( struct glueCommands *data, int nextToken )
 				len = getStackNum( stack );
 				break;
 		default: 
-				setError(22);
+				setError(22,data->tokenBuffer);
 	}
 	popStack(stack - data->stack);
 
@@ -755,7 +755,7 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-#define badSyntax() { setError(120); return NULL; }
+#define badSyntax() { setError(120,tokenBuffer); return NULL; }
 
 char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 {

@@ -256,7 +256,7 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 	}
 
 	setStackStrDup(tmp.c_str());
@@ -313,7 +313,7 @@ char *_cmdKeyState( struct glueCommands *data,int nextToken )
 		}
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -617,7 +617,7 @@ char *_cmdPutKey( struct glueCommands *data,int nextToken )
 	}
 	else
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data -> stack  );

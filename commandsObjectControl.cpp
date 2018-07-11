@@ -95,7 +95,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 			zones_allocated = (newzones+1);
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);;
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -131,9 +131,9 @@ char *_ocZoneStr( struct glueCommands *data, int nextToken )
 			}
 		}
 
-		if (newstr == NULL) setError(60);
+		if (newstr == NULL) setError(60,data->tokenBuffer);
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	if (newstr) setStackStr( newstr );
@@ -226,7 +226,7 @@ char *_ocSetZone( struct glueCommands *data, int nextToken )
 			zones[z].y1 = y1;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);;
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -257,7 +257,7 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 			zones[z].y1 = 0;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);;
 
 
 	popStack( stack - data->stack );

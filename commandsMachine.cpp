@@ -43,7 +43,7 @@ char *_machineCopy( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -72,7 +72,7 @@ char *_machinePoke( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -101,7 +101,7 @@ char *_machineDoke( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -130,7 +130,7 @@ char *_machineLoke( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -156,7 +156,7 @@ char *_machinePeek( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -182,7 +182,7 @@ char *_machineDeek( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -209,7 +209,7 @@ char *_machineLeek( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -318,7 +318,7 @@ char *_machineFill( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (success == false) setError(25);
+	if (success == false) setError(25,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -358,7 +358,7 @@ char *_machineHunt( struct glueCommands *data, int nextToken )
 			}
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -583,7 +583,7 @@ char *_machineBtst( struct glueCommands *data, int nextToken )
 			ret = var -> value & (1<<bit) ? true : false;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum( ret );
@@ -608,7 +608,7 @@ char *_machineBset( struct glueCommands *data, int nextToken )
 			var -> value |= (1<<bit) ;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -632,7 +632,7 @@ char *_machineBchg( struct glueCommands *data, int nextToken )
 			var -> value ^= (1<<bit) ;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -656,7 +656,7 @@ char *_machineBclr( struct glueCommands *data, int nextToken )
 			var -> value &= ~(1<<bit) ;
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -718,7 +718,7 @@ char *_machineAREG( struct glueCommands *data, int nextToken )
 		if ((reg>7)&&(reg<16)) setStackNum( regs[reg] );
 		_do_set = _set_reg;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -738,7 +738,7 @@ char *_machineDREG( struct glueCommands *data, int nextToken )
 		if ((reg>-1)&&(reg<8)) setStackNum( regs[reg] );
 		_do_set = _set_reg;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -789,7 +789,7 @@ char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -830,7 +830,7 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -880,7 +880,7 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 		}
 
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -917,7 +917,7 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 		}
 
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 	popStack( stack - data->stack );
 
 
@@ -939,7 +939,7 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 					TAG_END	 );
 		setStackNum(ret);
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	return NULL;
 }

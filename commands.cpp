@@ -63,14 +63,14 @@ char *_for( struct glueCommands *data, int nextToken )
 char *_ifSuccess( struct glueCommands *data, int nextToken ) 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	setError(22);	// shoud not be executed
+	setError(22,data -> tokenBuffer);	// shoud not be executed
 	return NULL;
 }
 
 char *_ifNotSuccess( struct glueCommands *data, int nextToken ) 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	setError(22);	// shoud not be executed
+	setError(22,data -> tokenBuffer);	// shoud not be executed
 	return NULL;
 }
 
@@ -162,7 +162,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	setError(22);
+	setError(22,data -> tokenBuffer);
 
 	return  NULL ;
 }
@@ -179,7 +179,7 @@ char *_if( struct glueCommands *data, int nextToken )
 	{
 		dump_stack();
 		dump_prog_stack();
-		setError(22);
+		setError(22,data -> tokenBuffer);
 	}
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
@@ -340,7 +340,7 @@ BOOL setVarIntArray( struct kittyData *var )
 				return TRUE;
 		}
 	}
-	else setError(25);
+	else setError(25,tokenBuffer);
 
 	return FALSE;
 }
@@ -362,12 +362,12 @@ BOOL setVarDecimalArray( struct kittyData *var )
 				return TRUE;
 		}
 	}
-	else setError(25);
+	else setError(25,tokenBuffer);
 
 	return FALSE;
 }
 
-BOOL setVarStringArray( struct kittyData *var )
+BOOL setVarStringArray( struct kittyData *var, char *tokenBuffer )
 {
 	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
@@ -381,7 +381,7 @@ BOOL setVarStringArray( struct kittyData *var )
 				return TRUE;
 		}
 	}
-	else setError(25);
+	else setError(25,tokenBuffer);
 
 	return FALSE;
 }
@@ -418,13 +418,13 @@ char *_setVar( struct glueCommands *data, int nextToken )
 			success = setVarString( var );
 			break;
 		case type_int | type_array:
-			success = setVarIntArray( var );
+			success = setVarIntArray( var, data -> tokenBuffer );
 			break;
 		case type_float | type_array:
-			success = setVarDecimalArray( var );
+			success = setVarDecimalArray( var, data -> tokenBuffer );
 			break;
 		case type_string | type_array:
-			success = setVarStringArray( var );
+			success = setVarStringArray( var, data -> tokenBuffer );
 			break;
 	}
 
@@ -438,12 +438,12 @@ char *_setVar( struct glueCommands *data, int nextToken )
 				data -> lastVar, 
 				var -> type & 7);
 			dump_stack();
-			setError(ERROR_Type_mismatch);
+			setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 
 		if (var -> type & type_array)
 		{
-			if (var -> count == 0) setError(27);
+			if (var -> count == 0) setError(27,data -> tokenBuffer);
 		}
 	}
 
@@ -698,7 +698,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 				break;
 
 		default:
-				setError(22);
+				setError(22,data -> tokenBuffer);
 	}
 
 	if (ref_num)
@@ -714,7 +714,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 	else
 	{
 		dump_stack();
-		setError(22);
+		setError(22,data -> tokenBuffer);
 	}
 
 	return NULL ;
@@ -729,7 +729,7 @@ char *_goto( struct glueCommands *data, int nextToken )
 	int args = stack - data -> stack + 1;
 	int ref_num = 0;
 
-	if (args != 1) setError(22);
+	if (args != 1) setError(22,data -> tokenBuffer);
 
 	switch (kittyStack[stack].type)
 	{
@@ -750,7 +750,7 @@ char *_goto( struct glueCommands *data, int nextToken )
 				break;
 
 		default:
-				setError(22);
+				setError(22,data -> tokenBuffer);
 	}
 
 	if (ref_num)
@@ -765,7 +765,7 @@ char *_goto( struct glueCommands *data, int nextToken )
 		printf("oh no no ref_num\n");
 		dump_stack();
 		getchar();
-		setError(22);
+		setError(22,data -> tokenBuffer);
 	}
 
 	return NULL ;
@@ -806,7 +806,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 						case type_float:
 
 								printf("%s:%d\n",__FUNCTION__,__LINE__);
-								setError(22);
+								setError(22,tokenBuffer);
 								break;
 
 						default:
@@ -817,7 +817,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 		default:
 
 				printf("bad token: %04x\n", next_token);
-				setError(22);
+				setError(22,tokenBuffer);
 	}
 
 	return tokenBuffer;
@@ -862,7 +862,7 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 
 						case type_float:
 
-								setError(22);
+								setError(22, tokenBuffer);
 								break;
 					}
 				
@@ -871,7 +871,7 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 		default:
 
 				printf("bad token: %04x\n", next_token);
-				setError(22);
+				setError(22, tokenBuffer);
 	}
 
 	return tokenBuffer;
@@ -1373,7 +1373,7 @@ char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 
 			default:
 					printf("bad exit on token %4x\n",token);
-					setError(22);
+					setError(22,tokenBuffer);
 					goto exit_for;
 		}
 
@@ -1641,7 +1641,7 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 								ref_num = ref -> ref;
 							}
 
-							if (ref_num == 0) setError(22);
+							if (ref_num == 0) setError(22,tokenBuffer);
 						}
 
 						tokenBuffer += sizeof(struct reference) + ref -> length;
@@ -1666,7 +1666,7 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 								ref_num = ref -> ref;
 							}
 
-							if (ref_num == 0) setError(22);
+							if (ref_num == 0) setError(22,tokenBuffer);
 						}
 
 						tokenBuffer += sizeof(struct reference) + ref -> length;
@@ -1688,7 +1688,7 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 						}
 
 						if (num == 0)	ref_num = ref -> ref;
-						if (ref_num == 0) setError(22);
+						if (ref_num == 0) setError(22,tokenBuffer);
 
 						tokenBuffer += sizeof(struct reference) + ref -> length;
 						break;

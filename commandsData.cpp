@@ -120,7 +120,7 @@ char *_equalData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -173,7 +173,7 @@ char *_equalData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -192,7 +192,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -247,7 +247,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -267,7 +267,7 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -319,7 +319,7 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -338,7 +338,7 @@ char *_moreData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -390,7 +390,7 @@ char *_moreData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -408,7 +408,7 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -462,7 +462,7 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -480,7 +480,7 @@ char *_orData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -528,7 +528,7 @@ char *_orData( struct glueCommands *data, int nextToken )
 	else
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -546,7 +546,7 @@ char *_andData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -594,7 +594,7 @@ char *_andData( struct glueCommands *data, int nextToken )
 	else
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -612,7 +612,7 @@ char *_xorData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -658,7 +658,7 @@ char *_xorData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -668,7 +668,7 @@ char *_xorData( struct glueCommands *data, int nextToken )
 
 char *_addData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	int args = stack - data -> stack + 1;
 	struct kittyData *item0;
@@ -678,7 +678,7 @@ char *_addData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -737,7 +737,7 @@ char *_addData( struct glueCommands *data, int nextToken )
 	else
 	{
 		dprintf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -798,7 +798,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	else
 	{
 		dprintf("%d != %d\n",type0, type1);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -853,7 +853,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -918,7 +918,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		dprintf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -936,7 +936,7 @@ char *_modData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -984,7 +984,7 @@ char *_modData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -1002,7 +1002,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -1050,7 +1050,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -1116,7 +1116,7 @@ char *_divData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 
@@ -1179,7 +1179,7 @@ char *_powerData( struct glueCommands *data, int nextToken )
 	if (success == FALSE)
 	{
 		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch);
+		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
 	return NULL;
@@ -1327,7 +1327,7 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 

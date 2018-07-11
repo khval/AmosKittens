@@ -1,8 +1,9 @@
 
 struct errorAt
 {
-	int line;
+//	int line;
 	int code;
+	char *pos;
 	bool newError;
 };
 
@@ -15,7 +16,7 @@ struct error
 extern struct error errorsTestTime[];
 extern struct error errorsRunTime[];
 
-#define setError( _code ) { kittyError.code = _code; kittyError.line = currentLine;  kittyError.newError = true; }
+#define setError( _code, _pos ) { kittyError.code = _code; kittyError.pos = _pos;  kittyError.newError = true; }
 
 extern struct errorAt kittyError;
 extern char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer);

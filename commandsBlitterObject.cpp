@@ -286,7 +286,7 @@ char *_boXBob( struct glueCommands *data, int nextToken )
 		int n;
 		n = getStackNum(stack);
 		x= bobs[ n & 63 ].x;
-	} else setError(22);
+	} else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(x);
@@ -312,7 +312,7 @@ char *_boYBob( struct glueCommands *data, int nextToken )
 		n = getStackNum(stack);
 		y= bobs[ n & 63 ].y;
 
-	} else setError(22);
+	} else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(y);
@@ -346,12 +346,11 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 					int flags = image & 0xC000;
 					image &= 0x3FFF;
 
-					printf("PasteSprite %d,%d,%d\n",x,y,image);
 					retroPasteSprite(screens[current_screen],sprite,x,y,image-1,flags);
 				}
 				break;
 		default:
-				setError(22);
+				setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -530,7 +529,7 @@ char *_boHrev( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		ret = getStackNum(stack) | 0x8000;
-	} else setError(22);
+	} else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -553,7 +552,7 @@ char *_boVrev( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		ret = getStackNum(stack) | 0x4000;
-	} else setError(22);
+	} else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -576,7 +575,7 @@ char *_boRev( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		ret = getStackNum(stack) | 0xC000;
-	} else setError(22);
+	} else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);

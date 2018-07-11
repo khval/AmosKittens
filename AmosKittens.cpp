@@ -937,7 +937,7 @@ char *executeToken( char *ptr, unsigned short token )
 
 	token_not_found = token;
 	currentLine = getLineFromPointer( ptr );
-	setError(23);
+	setError(23, ptr);
 	printf("Addr %08x, token not found %04X\n", ptr, token_not_found);
 
 	return NULL;

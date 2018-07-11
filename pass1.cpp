@@ -492,7 +492,7 @@ char *pass1_shared( char *ptr )
 			case 0x005C: break;
 
 			default:
-						setError(1);
+						setError(1,ptr);
 		}
 
 		ptr+=2;	// next token
@@ -552,12 +552,12 @@ char *pass1_global( char *ptr )
 			case 0x0074: count ++; break;
 			case 0x007C: count--;  break;
 
-			case 0x005C: 	if (count != 0) 	setError(1);
+			case 0x005C: 	if (count != 0) 	setError(1,ptr);
 						break;
 
 			default:
 						printf("%d\n",token);
-						setError(1);
+						setError(1,ptr);
 		}
 
 		ptr+=2;	// next token
@@ -639,9 +639,7 @@ void eol( char *ptr )
 
 				getchar();
 				nested_count --;
-
 				break;
-
 		}
 	}
 }
@@ -697,7 +695,7 @@ void pass1_if_or_else( char *ptr )
 
 			default:
 
-				setError( 25 );
+				setError( 25, ptr );
 		}
 	}
 }
@@ -761,7 +759,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0286:	if LAST_TOKEN_(do)
 								fix_token_short( nested_do, ptr+2 );
 							else
-								setError( 28 );
+								setError( 28, ptr );
 							break;
 
 				case 0x023C: addNest( nested_for );
@@ -771,7 +769,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0246:	if LAST_TOKEN_(for)
 								fix_token_short( nested_for, ptr+2 );
 							else
-								setError( 34 );
+								setError( 34,ptr );
 							break;
 
 				case 0x0250:	addNest( nested_repeat );
@@ -781,7 +779,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x025C:	if LAST_TOKEN_(repeat)
 								fix_token_short( nested_repeat, ptr+2 );
 							else
-								setError( 32 );
+								setError( 32,ptr );
 							break;
 
 				case 0x0268:	addNest( nested_while );
@@ -790,19 +788,18 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0274:	if LAST_TOKEN_(while)
 								fix_token_short( nested_while, ptr+2 );
 							else
-								setError( 30 );
+								setError( 30,ptr );
 							break;
 				// if
 				case 0x02BE:	addNest( nested_if );
 							ifCount ++;
-
 							break;
 
 				case 0x02C6:	// THEN
 							if LAST_TOKEN_(if)
 								nested_command[ nested_count -1 ].cmd = nested_then;
 							else
-								setError( 23 );
+								setError( 23,ptr );
 							break;
 
 				case 0x25A4:	// ELSE IF
@@ -825,7 +822,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							{
 								printf("ELSE IF -- GET_LAST_NEST %04x\n", GET_LAST_NEST );
 								dump_nest();
-								setError( 25 );
+								setError( 25,ptr );
 							}
 							break;
 
@@ -852,7 +849,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							}
 
 							else
-								setError( 25 );
+								setError( 25,ptr );
 							break;
 
 				case 0x02DA:	// END IF
@@ -864,7 +861,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								pass1_if_or_else( ptr-2 );
 							}
 							else
-								setError( 23 );
+								setError( 23,ptr );
  							break;
 
 				case 0x0376: // Procedure
@@ -881,7 +878,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								pass1_proc_end( ptr );
 							}
 							else
-								setError(11);
+								setError(11,ptr);
 							break;
 
 				case 0x039E:	// Shared
@@ -891,7 +888,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								ret = pass1_shared( ptr );
 							}
 							else
-								setError(11);
+								setError(11,ptr);
 							break;
 
 				case 0x03AA:	// Global
@@ -901,7 +898,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								ret = pass1_global( ptr );
 							}
 							else
-								setError(11);
+								setError(11,ptr);
 							break;
 
 				case 0x0404:	if (data_read_pointer == 0) data_read_pointer = ptr + 2;
@@ -917,7 +914,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
-setError(35);
+	setError(35,ret);
 
 	return NULL;
 }

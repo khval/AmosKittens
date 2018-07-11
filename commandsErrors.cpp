@@ -34,7 +34,7 @@ char *_cmdError( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		setError( getStackNum(stack));
+		setError( getStackNum(stack), data -> tokenBuffer );
 	}
 
 	popStack( stack - data->stack );

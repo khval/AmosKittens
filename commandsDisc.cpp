@@ -104,7 +104,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 			_str = getStackString( stack );
 			if (_str) kittyFiles[ num ].fd = fopen( _str, access );
 
-			if (kittyFiles[ num ].fd  == NULL) setError(81);
+			if (kittyFiles[ num ].fd  == NULL) setError(81,data->tokenBuffer);
 		}
 	}
 
@@ -173,7 +173,7 @@ char *_cmdKill( struct glueCommands *data, int nextToken )
 
 	if (success == false)
 	{
-		setError(81);
+		setError(81,data->tokenBuffer);
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -194,7 +194,7 @@ char *_cmdRename( struct glueCommands *data, int nextToken )
 
 	if (success == false)
 	{
-		setError(81);
+		setError(81,data->tokenBuffer);
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1017,7 +1017,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 		else
 		{
-			setError(23);	// "Illegal function call"
+			setError(23,tokenBuffer);	// "Illegal function call"
 			return;
 		}
 
@@ -1039,12 +1039,12 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 			}
 			else
 			{
-				setError(100);	// end of file
+				setError(100,tokenBuffer);	// end of file
 			}
 		}
 		else
 		{
-			setError(97); // file not open
+			setError(97,tokenBuffer); // file not open
 		}
 	}
 }
@@ -1082,7 +1082,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	else
 	{
-		setError(125);
+		setError(125,tokenBuffer);
 	}
 
 	return tokenBuffer;
@@ -1110,7 +1110,6 @@ char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
-
 		input_cmd_context.cmd = _cmdLineInputFile;
 		input_cmd_context.stack = stack;
 		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
@@ -1123,11 +1122,10 @@ char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 		tokenBuffer += 6;
 
 		if (NEXT_TOKEN( tokenBuffer ) == 0x005C) tokenBuffer += 2;
-
 	}
 	else
 	{
-		setError(23);
+		setError(23,tokenBuffer);
 	}
 
 	return tokenBuffer;
@@ -1173,9 +1171,9 @@ char *_cmdInputStrFile( struct glueCommands *data, int nextToken )
 
 				return NULL;
 			}
-			else	setError(97); // file not open
+			else	setError(97,data->tokenBuffer); // file not open
 		}
-		else	setError(23);	// "Illegal function call"
+		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1222,9 +1220,9 @@ char *_cmdLof( struct glueCommands *data, int nextToken )
 				setStackNum( len );
 				return NULL;
 			}
-			else	setError(97); // file not open
+			else	setError(97,data->tokenBuffer); // file not open
 		}
-		else	setError(23);	// "Illegal function call"
+		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1254,9 +1252,9 @@ char *_cmdPof( struct glueCommands *data, int nextToken )
 				setStackNum( ftell( fd ));
 				return NULL;
 			}
-			else	setError(97); // file not open
+			else	setError(97,data->tokenBuffer); // file not open
 		}
-		else	setError(23);	// "Illegal function call"
+		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1287,9 +1285,9 @@ char *_cmdEof( struct glueCommands *data, int nextToken )
 				setStackNum( feof( fd ));
 				return NULL;
 			}
-			else	setError(97); // file not open
+			else	setError(97,data->tokenBuffer); // file not open
 		}
-		else	setError(23);	// "Illegal function call"
+		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );

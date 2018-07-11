@@ -55,7 +55,7 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 		success = true;
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -82,7 +82,7 @@ char *_textHome( struct glueCommands *data, int nextToken )
 		success = true;
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -110,7 +110,7 @@ char *_textPen( struct glueCommands *data, int nextToken )
 		success = true;
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -136,7 +136,7 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 		success = true;
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -230,7 +230,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (args!=1) setError(22);
+	if (args!=1) setError(22,data->tokenBuffer);
 
 	if (engine_started)
 	{
@@ -405,9 +405,9 @@ char *_textBorderStr( struct glueCommands *data, int nextToken )
 			}
 		}
 
-		if (newstr == NULL) setError(60);
+		if (newstr == NULL) setError(60,data->tokenBuffer);
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	if (newstr) setStackStr( newstr );
@@ -444,7 +444,7 @@ char *_textAt( struct glueCommands *data, int nextToken )
 		if (x>-1) str[2]='0'+x;
 		if (y>-1) str[5]='0'+y;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackStrDup( str );
@@ -472,7 +472,7 @@ char *_textPenStr( struct glueCommands *data, int nextToken )
 		int n = getStackNum( stack );
 		if (n>-1) str[2]='0'+n;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackStrDup( str );
@@ -499,7 +499,7 @@ char *_textPaperStr( struct glueCommands *data, int nextToken )
 		int n = getStackNum( stack );
 		if (n>-1) str[2]='0'+n;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackStrDup( str );
@@ -605,7 +605,7 @@ char *_textXText( struct glueCommands *data, int nextToken )
 	{
 		n = getStackNum( stack ) / 8;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum( n  );
@@ -631,7 +631,7 @@ char *_textYText( struct glueCommands *data, int nextToken )
 	{
 		n = getStackNum( stack ) / 8;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum( n  );
@@ -672,7 +672,7 @@ char *_textCMove( struct glueCommands *data, int nextToken )
 			draw_cursor(screen);
 		}
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -745,7 +745,7 @@ char *_textSetTab( struct glueCommands *data, int nextToken )
 	{
 		_tab_size = getStackNum(stack);
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 

@@ -74,7 +74,7 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 		success = true;
 	}
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -123,7 +123,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 			break;
 
 		defaut:
-			setError(22);
+			setError(22,data->tokenBuffer);
 			popStack( stack - data->stack );
 	}
 
@@ -165,7 +165,7 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 
 		if (screens[current_screen]) retroBox( screens[current_screen], x0,y0,x1,y1,pen0 );
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -187,7 +187,7 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 
 		if (screens[current_screen]) retroBAR( screens[current_screen], x0,y0,x1,y1,pen0 );
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -245,7 +245,7 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 			}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 	popStack( stack - data->stack );
 
@@ -278,7 +278,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 			break;
 
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -304,7 +304,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 
 		retroPolyGonArray( screens[current_screen], pen0, args, array );
 	}
-	else	setError(22);
+	else	setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -353,7 +353,7 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 		}
 	}
 	
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -375,7 +375,7 @@ char *_gfxCircle( struct glueCommands *data, int nextToken )
 //		if (screens[current_screen])  retroEllipse( screens[current_screen], x0,y0,r,r,0,pen0 );
 		if (screens[current_screen])  retroCircle( screens[current_screen], x0,y0,r,pen0 );
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -397,7 +397,7 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 
 		if (screens[current_screen]) retroEllipse( screens[current_screen], x0,y0,r0,r1,0,pen0 );
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -460,7 +460,7 @@ char *_gfxInk( struct glueCommands *data, int nextToken )
 			stack_get_if_int( stack, &pen2 );
 			break;
 		default: 
-			setError(22);
+			setError(22,data->tokenBuffer);
 			break;
 	}
 
@@ -540,7 +540,7 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 			if (screens[current_screen]) retroPixel( screens[current_screen], x0,y0,c );
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -568,7 +568,7 @@ char *_gfxPaint( struct glueCommands *data, int nextToken )
 			if (screens[current_screen]) retroFill( screens[current_screen], x0,y0,c );
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -594,7 +594,7 @@ char *_gfxPoint( struct glueCommands *data, int nextToken )
 			break;
 		default:
 			popStack( stack - data->stack );
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	dprintf("%d=Point(%d,%d)\n",ret,x0,y0);
@@ -619,7 +619,7 @@ char *_gfxGrLocate( struct glueCommands *data, int nextToken )
 			ygr = getStackNum( stack );
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 	popStack( stack - data->stack );
 
@@ -650,7 +650,7 @@ char *_gfxGetColour( struct glueCommands *data, int nextToken )
 
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 	popStack( stack - data->stack );
 
@@ -782,7 +782,7 @@ char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 	}
 	popStack( stack - data->stack );
 
-	if (success == false) setError(22);
+	if (success == false) setError(22,data->tokenBuffer);
 
 	return NULL;
 }
@@ -884,7 +884,7 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 			}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 	popStack( stack - data->stack );
 
@@ -1023,7 +1023,7 @@ char *_gfxShiftUp( struct glueCommands *data, int nextToken )
 
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1054,7 +1054,7 @@ char *_gfxShiftDown( struct glueCommands *data, int nextToken )
 				}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1150,7 +1150,7 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 		engine_unlock();
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -1174,7 +1174,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		WaitTOF();
 		retroRainbow( video, rainbowNumber, base, verticalOffset, height);
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -1221,7 +1221,7 @@ char *_gfxAutoback( struct glueCommands *data, int nextToken )
 		}
 
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1241,7 +1241,7 @@ char *_gfxRain( struct glueCommands *data, int nextToken )
 		_set_rainbow_index = getStackNum( stack );
 		_do_set = _set_rain;
 	}
-	else setError(22);
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -1281,7 +1281,7 @@ char *_gfxZoom( struct glueCommands *data, int nextToken )
 			break;
 
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1298,7 +1298,7 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 0:
-				setError(22);
+				setError(22,data->tokenBuffer);
 				return NULL;
 		case 1:
 				if (screens[current_screen])
@@ -1443,7 +1443,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		setError(22);
+		setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1526,7 +1526,7 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 				}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1553,7 +1553,7 @@ char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 				}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1578,7 +1578,7 @@ char *_gfxSetTempras( struct glueCommands *data, int nextToken )
 		case 2:
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1603,7 +1603,7 @@ char *_gfxGrWriting( struct glueCommands *data, int nextToken )
 			GrWritingMode = getStackNum(stack);
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1645,7 +1645,7 @@ char *_gfxText( struct glueCommands *data, int nextToken )
 			}
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1673,7 +1673,7 @@ char *_gfxClip( struct glueCommands *data, int nextToken )
 		case 4:
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1699,7 +1699,7 @@ char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 		case 1:
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
@@ -1725,7 +1725,7 @@ char *_gfxSetLine( struct glueCommands *data, int nextToken )
 		case 1:
 			break;
 		default:
-			setError(22);
+			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
