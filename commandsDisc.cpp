@@ -388,60 +388,6 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 }
 
 
-char *_cmdDirFirstStr( struct glueCommands *data, int nextToken )
-{
-	char *str;
-	const char *_pattern;
-	char *outStr = NULL;
-
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (contextDir)
-	{
-		ReleaseDirContext(contextDir);
-		contextDir = NULL;
-	}
-
-	str  = getStackString( stack );
-	if (str == NULL) return NULL;
-
-	if (dir_first_path)
-	{
-		free(dir_first_path);
-		dir_first_path = NULL;
-	}
-
-	split_path_pattern(str, &dir_first_path, &_pattern);
-
-	if (dir_first_pattern) free(dir_first_pattern);
-	dir_first_pattern = amos_to_amiga_pattern( (char *) _pattern);
-
-	getchar();
-
-	contextDir = ObtainDirContextTags(EX_StringNameInput, dir_first_path,
-	                   EX_DoCurrentDir,TRUE, 
-	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
-
-
-	if( contextDir )
-	{
-		struct ExamineData *dat;
-
-		do
-		{
-			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
-			{
-				outStr = dir_item_formated(dat, dir_first_path, dir_first_pattern );
-
-			}
-		} while ((outStr == NULL) && (dat));
-	} 
-	
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	if (outStr) setStackStr(outStr);
-
-	return NULL;
-}
 
 char *_cmdDirNextStr( struct glueCommands *data, int nextToken )
 {
@@ -796,6 +742,61 @@ char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdExist, tokenBuffer );
 	return tokenBuffer;
+}
+
+char *_cmdDirFirstStr( struct glueCommands *data, int nextToken )
+{
+	char *str;
+	const char *_pattern;
+	char *outStr = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (contextDir)
+	{
+		ReleaseDirContext(contextDir);
+		contextDir = NULL;
+	}
+
+	str  = getStackString( stack );
+	if (str == NULL) return NULL;
+
+	if (dir_first_path)
+	{
+		free(dir_first_path);
+		dir_first_path = NULL;
+	}
+
+	split_path_pattern(str, &dir_first_path, &_pattern);
+
+	if (dir_first_pattern) free(dir_first_pattern);
+	dir_first_pattern = amos_to_amiga_pattern( (char *) _pattern);
+
+	getchar();
+
+	contextDir = ObtainDirContextTags(EX_StringNameInput, dir_first_path,
+	                   EX_DoCurrentDir,TRUE, 
+	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
+
+
+	if( contextDir )
+	{
+		struct ExamineData *dat;
+
+		do
+		{
+			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
+			{
+				outStr = dir_item_formated(dat, dir_first_path, dir_first_pattern );
+
+			}
+		} while ((outStr == NULL) && (dat));
+	} 
+	
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	if (outStr) setStackStr(outStr);
+
+	return NULL;
 }
 
 char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
