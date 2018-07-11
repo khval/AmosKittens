@@ -961,13 +961,13 @@ void pass1_reader( char *start, int tokenlength )
 	{
 		switch (nested_command[ nested_count - 1 ].cmd )
 		{
-			case nested_while:		setError(29); break;
-			case nested_if:		setError(22); break;
-			case nested_then:		setError(22); break;
-			case nested_then_else:	setError(22); 	printf("pass1 test error, should have been deleted by EOL");break;
-			case nested_else:		setError(22); break;
-			case nested_proc:		setError(17); break;
-			default:				setError(35); break;
+			case nested_while:		setError(29,ptr); break;
+			case nested_if:		setError(22,ptr); break;
+			case nested_then:		setError(22,ptr); break;
+			case nested_then_else:	setError(22,ptr); 	printf("pass1 test error, should have been deleted by EOL");break;
+			case nested_else:		setError(22,ptr); break;
+			case nested_proc:		setError(17,ptr); break;
+			default:				setError(35,ptr); break;
 		}
 		nested_count --;
 	}
