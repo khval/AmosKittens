@@ -1909,13 +1909,6 @@ char *_cmdEvery( struct glueCommands *data, int nextToken )
 	return  data -> tokenBuffer ;
 }
 
-char *_cmdWait( struct glueCommands *data, int nextToken )
-{
-	int args = stack - cmdTmp[cmdStack-1].stack +1;
-
-	Delay( getStackNum(data->stack) );
-
-	return  data -> tokenBuffer ;
 }
 
 char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer )
@@ -2005,6 +1998,15 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 	stackCmdNormal( _cmdEvery, tokenBuffer );
 
 	return tokenBuffer;
+}
+
+char *_cmdWait( struct glueCommands *data, int nextToken )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+
+	Delay( getStackNum(data->stack) );
+
+	return  NULL ;
 }
 
 char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer )
