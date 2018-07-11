@@ -22,6 +22,7 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 extern int priorityReverse;
+extern int bobUpdate;
 
 extern int current_screen;
 
@@ -586,6 +587,13 @@ char *boRev(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _boRev, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	bobUpdate = 0;
 	return tokenBuffer;
 }
 

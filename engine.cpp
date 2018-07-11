@@ -35,6 +35,7 @@ int engine_mouse_x = 0;
 int engine_mouse_y = 0;
 
 int autoView = 1;
+int bobUpdate = 1;
 
 int cursor_color = 3;
 
@@ -341,7 +342,8 @@ void main_engine()
 				retroClearVideo( video );
 
 				engine_lock();
-				drawBobs();
+
+				if (bobUpdate==1)	drawBobs();
 
 				for (n=0; n<8;n++)
 				{
@@ -349,22 +351,25 @@ void main_engine()
 
 					if (screen)
 					{
-						retroFadeScreen(screen);
-						if (screen -> Memory[1]) 
+						if (screen -> autoback!=0)
 						{
-							memcpy( 
-								screen -> Memory[1 - screen -> double_buffer_draw_frame], 
-								screen -> Memory[screen -> double_buffer_draw_frame],
-								screen -> bytesPerRow * screen -> realHeight );
+							retroFadeScreen(screen);
+							if (screen -> Memory[1]) 
+							{
+								memcpy( 
+									screen -> Memory[1 - screen -> double_buffer_draw_frame], 
+									screen -> Memory[screen -> double_buffer_draw_frame],
+									screen -> bytesPerRow * screen -> realHeight );
 
-							screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+								screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+							}
 						}
 					}
 				}
 
 				retroDrawVideo( video );
 
-				clearBobs();
+				if (bobUpdate==1) clearBobs();
 
 
 				engine_unlock();

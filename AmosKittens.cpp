@@ -808,6 +808,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x196C,"Fsel$",0,cmdFselStr },
 	{0x1AA8,"Bob Off",0,boBobOff },
+	{0x1ABE,"Bob Update Off",0,boBobUpdateOff },
 	{0x1B5C,"Limit Bob",0,boLimitBob },
 	{0x1B8A,"Set Bob",0,boSetBob },
 	{0x1B9E,"Bob",0,boBob },
