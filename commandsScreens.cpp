@@ -470,15 +470,22 @@ char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		int screen_num = getStackNum( stack );
-
-		if ((screen_num>-1)&&(screen_num<8))
+		if (kittyStack[stack].type == type_none)
 		{
-			printf("screen_num %d\n",screen_num);
-
-			if (screens[screen_num]) screens[screen_num]->flags &= ~retroscreen_flag_hide;
+			if (screens[current_screen]) screens[current_screen]->flags &= ~retroscreen_flag_hide;
 			video -> refreshAllScanlines = TRUE;
 			success = true;
+		}
+		else
+		{
+			int screen_num = getStackNum( stack );
+
+			if ((screen_num>-1)&&(screen_num<8))
+			{
+				if (screens[screen_num]) screens[screen_num]->flags &= ~retroscreen_flag_hide;
+				video -> refreshAllScanlines = TRUE;
+				success = true;
+			}
 		}
 	}
 
@@ -569,6 +576,7 @@ char *gfxScreenShow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenShow, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
