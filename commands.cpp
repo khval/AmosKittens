@@ -1906,9 +1906,7 @@ char *_cmdEvery( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	return  data -> tokenBuffer ;
-}
-
+	return  NULL;
 }
 
 char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer )
