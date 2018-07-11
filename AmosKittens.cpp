@@ -160,7 +160,8 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	tokenMode = mode_standard;
 	dprintf("setTokenMode = mode_standard\n");
 
-	if (ret) ptr = ret - 2;
+	if (ret) return ret -2;		// when exit +2 token 
+
 	return ptr;
 }
 
@@ -176,11 +177,10 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 		{
 			type = cmdTmp[cmdStack-1].flag;
 			if  ( (type == cmd_proc) || ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
+
 			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-			if (ret) 
-			{
-				return ret-2;
-			}
+			if (ret) return ret -4;		// when exit +2 token +2 data
+
 		} while (cmdStack);
 	}
 

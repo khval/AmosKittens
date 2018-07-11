@@ -198,26 +198,6 @@ char *_if( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_else_if( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	unsigned short token;
-	char *ptr;
-
-	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
-	{
-		int offset = *((unsigned short *) data -> tokenBuffer);
-
-		if (offset) 
-		{
-			ptr = data->tokenBuffer+(offset*2) ;
-			return ptr ;
-		}
-	}
-	else 	stackIfSuccess();
-
-	return NULL;
-}
 
 char *_while( struct glueCommands *data, int nextToken )	// jumps back to the token.
 {
@@ -263,7 +243,10 @@ char *_do( struct glueCommands *data, int nextToken )
 
 char *_repeat( struct glueCommands *data, int nextToken )
 {
-	if (kittyStack[stack].value == 0) return data -> tokenBuffer-2;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	// jump back to repeat, until true
+	if (kittyStack[stack].value == 0) return data -> tokenBuffer;
 	return 0;
 }
 
@@ -599,15 +582,20 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 		}
 	}
 
-	if (ret) tokenBuffer = ret;
+	if (ret) tokenBuffer = ret -2;	// on exit +2 token
 	tokenMode = mode_standard;
 
 	return tokenBuffer;
 }
 
+char *nextCmd(nativeCommand *cmd, char *ptr);
+
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
+
+	char *retTokenBuffer = nextCmd(NULL, tokenBuffer);
+	if (retTokenBuffer != tokenBuffer) tokenBuffer = retTokenBuffer + 2;	// nextCmd() should expect +2 token
 
 	if (cmdStack)
 	{
@@ -618,13 +606,40 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 
 			if (offset) 
 			{
-				ptr = tokenBuffer+(offset*2) -2;
-				return ptr;
+				ptr = tokenBuffer+(offset*2);
+				printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, offset*2);
+				return ptr-4; 	// on exit +2 token +2 data
 			}
 		}
 	}
 
 	return tokenBuffer;
+}
+
+char *_else_if( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	unsigned short token;
+	char *ptr;
+
+	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
+	{
+		int offset = *((unsigned short *) data -> tokenBuffer);
+
+		if (offset) 
+		{
+			ptr = data->tokenBuffer+(offset*2) ;
+			printf("0x%08x - 0x%08x -- jump +0x%02x\n", data->tokenBuffer, ptr, offset*2);
+			return ptr ;	// we don't know what command thats going to execute this code, do not subtract tokens!
+		}
+	}
+	else 	
+	{
+		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _ifNotSuccess) cmdStack--; 
+		stackIfSuccess();
+	}
+
+	return NULL;
 }
 
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
@@ -640,7 +655,7 @@ char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 
 			if (offset) 
 			{
-				ptr = tokenBuffer+(offset*2) -2;
+				ptr = tokenBuffer+(offset*2)-4;	// on exit +2 token +2 data	
 				return ptr;
 			}
 		}
@@ -1727,24 +1742,26 @@ exit_on_for_loop:
 				switch (token)
 				{
 					case 0x02A8:	// goto
-							tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+							ret = findLabel(globalVars[ref_num-1].varName);
 							break;
 
 					case 0x02B2:	// gosub
 
+							// we don't point at data so we -2 and point at token.
+
 							switch (is_token)
 							{
 								case 0x0006:
-										stackCmdLoop( _gosub_return, tokenBuffer );
-										tokenBuffer = findLabel(globalVars[ref_num-1].varName);
+										stackCmdLoop( _gosub_return, tokenBuffer-2 );
+										ret = findLabel(globalVars[ref_num-1].varName);
 										break;
 								case 0x0018:
-										stackCmdLoop( _gosub_return, tokenBuffer );
-										tokenBuffer = labels[ref_num-1].tokenLocation;
+										stackCmdLoop( _gosub_return, tokenBuffer-2 );
+										ret = labels[ref_num-1].tokenLocation;
 										break;
 								case 0x003E:
-										stackCmdLoop( _gosub_return, tokenBuffer );
-										tokenBuffer = labels[ref_num-1].tokenLocation;
+										stackCmdLoop( _gosub_return, tokenBuffer-2 );
+										ret = labels[ref_num-1].tokenLocation;
 										break;
 							}
 							break;
@@ -1752,14 +1769,14 @@ exit_on_for_loop:
 					case 0x0386:	// proc
 
 							stackCmdProc( _procedure, tokenBuffer);  
-							tokenBuffer = globalVars[ref_num-1].var.tokenBufferPos;
+							ret = globalVars[ref_num-1].var.tokenBufferPos;
 							break;
 				}
 			}
 		}
 	}
 
-	tokenBuffer -= 4;	// yes right, 4 will be added by main program.
+	if (ret) tokenBuffer = ret - 6;	// +2 token +data 4 on exit.
 
 	return tokenBuffer;
 }
@@ -1862,7 +1879,7 @@ char *_cmdExitIf(struct glueCommands *data, int nextToken)
 				cmdStack --;
 				proc_names_printf("exit from loop %04x\n", token);
 				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
-				return (ptr+2);
+				return ptr;
 				break;
 
 			default:
