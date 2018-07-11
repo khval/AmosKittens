@@ -306,7 +306,7 @@ BOOL setVarString( struct kittyData *var )
 	return FALSE;
 }
 
-BOOL setVarIntArray( struct kittyData *var )
+BOOL setVarIntArray( struct kittyData *var, char *tokenBuffer )
 {
 	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
@@ -328,7 +328,7 @@ BOOL setVarIntArray( struct kittyData *var )
 	return FALSE;
 }
 
-BOOL setVarDecimalArray( struct kittyData *var )
+BOOL setVarDecimalArray( struct kittyData *var, char *tokenBuffer )
 {
 	if ((_set_var_index>-1)&&(_set_var_index<var->count))
 	{
@@ -693,7 +693,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (args != 1) setError(22);
+	if (args != 1) setError(22,data -> tokenBuffer);
 
 	switch (kittyStack[stack].type)
 	{

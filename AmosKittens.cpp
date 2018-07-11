@@ -227,7 +227,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 		if ( (var -> type & type_array)  == 0)
 		{
 			popStack(stack - self -> stack);
-			setError(27);		// var is not a array
+			setError(27, self -> tokenBuffer);		// var is not a array
 			return 0;
 		}
 
@@ -331,7 +331,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 				var -> str_array = (char **) malloc( size ) ;
 				break;
 
-		default: setError(22);
+		default: setError(22, cmd -> tokenBuffer);
 	}
 
 	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
