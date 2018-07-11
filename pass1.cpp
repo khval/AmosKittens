@@ -18,6 +18,7 @@ extern int global_var_count;
 extern int globalVarsSize;
 extern int nativeCommandsSize;
 extern struct nativeCommand nativeCommands[];
+extern const char *TokenName( unsigned short token );
 
 extern std::vector<struct label> labels;
 extern std::vector<struct lineAddr> linesAddress;
@@ -720,8 +721,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id )
 		{
-			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
+			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x - name %s\n",
+						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token, TokenName(token));
 
 			ret = ptr;
 
