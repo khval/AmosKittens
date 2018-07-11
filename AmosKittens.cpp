@@ -824,6 +824,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1D90,"Hot Spot",0,boHotSpot },
 	{0x1DE0, "Hide", 0, ocHide },						// hide mouse, (only dummy).
 	{0x1DEA, "Show On",0,ocShowOn },
+	{0x1DF8, "Show",0,ocShow },
 	{0x1E02,"Change Mouse",0,ocChangeMouse },		// dummy
 	{0x1E16,"X Mouse",0,ocXMouse },
 	{0x1E24,"Y Mouse",0,ocYMouse },

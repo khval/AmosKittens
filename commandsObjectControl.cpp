@@ -321,6 +321,12 @@ char *ocAutoViewOn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	autoView = 1;
+	return tokenBuffer;
+}
+
 char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	autoView =1;
