@@ -738,6 +738,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1280,"Clear Key",0,cmdClearKey },
 	{0x1290,"Wait Key",0,cmdWaitKey },
 	{0x129E, "Wait", 0, cmdWait },
+	{0x12AA,"Key$",0, cmdKeyStr },
 	{0x12CE, "Timer", 0, cmdTimer },
 	{0x1378,"Locate",0, textLocate },
 	{0x1388,"Clw",0,textClw },

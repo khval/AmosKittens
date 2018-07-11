@@ -34,6 +34,7 @@ extern struct retroScreen *screens[8] ;
 extern int current_screen;
 
 extern bool next_print_line_feed;
+extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 
 char *_setVar( struct glueCommands *data,int nextToken );
 
@@ -629,6 +630,53 @@ char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdPutKey, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *F1_keys[20];
+
+int keyStr_index =0;
+
+char *_set_keyStr( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("keyStr_index %d\n",keyStr_index);
+	dump_stack();
+	getchar();
+
+	if ((keyStr_index>=1)&&(keyStr_index<=20))
+	{
+		if (F1_keys[keyStr_index-1])
+		{
+			free(F1_keys[keyStr_index-1]);
+			F1_keys[keyStr_index-1] = NULL;
+		}
+
+		F1_keys[keyStr_index-1] = strdup(getStackString(stack));
+	}
+
+	_do_set = _setVar;
+	return NULL;
+}
+
+char *_cmdKeyStr( struct glueCommands *data,int nextToken )
+{
+	int args = stack - data -> stack +1;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	keyStr_index = getStackNum( stack );
+	_do_set = _set_keyStr;
+
+	popStack( stack - data -> stack  );
+	return NULL;
+}
+
+char *cmdKeyStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdIndex( _cmdKeyStr, tokenBuffer );
 	return tokenBuffer;
 }
 

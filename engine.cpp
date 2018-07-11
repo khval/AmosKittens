@@ -11,6 +11,7 @@
 #include <proto/diskfont.h>
 #include <proto/layers.h>
 #include <proto/retroMode.h>
+#include <proto/keymap.h>
 
 #include "engine.h"
 #include "bitmap_font.h"
@@ -19,6 +20,7 @@ extern int sig_main_vbl;
 extern bool running;			// 
 extern bool interpreter_running;	// interprenter is really running.
 extern int keyState[256];
+extern char *F1_keys[20];
 
 bool engine_wait_key = false;
 bool engine_started = false;
@@ -328,7 +330,22 @@ void main_engine()
 							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
 							{
 								engine_wait_key = false;
-								atomic_add_to_keyboard_queue( Code & ~ IECODE_UP_PREFIX, Qualifier, 0 );
+								Code = Code & ~IECODE_UP_PREFIX;
+
+								if ((Qualifier & IEQUALIFIER_LCOMMAND) || (Qualifier & IEQUALIFIER_RCOMMAND))
+								{
+									if ((Code >= RAWKEY_F1) && (Code <= RAWKEY_F10))
+									{
+										int idx = Code - RAWKEY_F1 + (Qualifier & IEQUALIFIER_RCOMMAND ? 10 : 0);
+
+										if (F1_keys[idx])
+										{
+											char *p;
+											for (p=F1_keys[idx];*p;p++) atomic_add_to_keyboard_queue( 0, 0, *p );
+										}
+									}
+								}
+								else	atomic_add_to_keyboard_queue( Code, Qualifier, 0 );
 							}
 							break;
 				}
