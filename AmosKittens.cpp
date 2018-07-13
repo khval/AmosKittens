@@ -26,6 +26,7 @@
 #include "commandsSound.h"
 #include "commandsHardwareSprite.h"
 #include "commandsBlitterObject.h"
+#include "commandsBackgroundGraphics.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -817,8 +818,11 @@ struct nativeCommand nativeCommands[]=
 	{0x1B9E,"Bob",0,boBob },
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
 	{0x1BFC,"Get Bob",0,boGetBob },
+	{0x1CA6,"Get Icon Palette", 0, bgGetIconPalette },
+	{0x1CC6,"Get Icon", 0, bgGetIcon },
 	{0x1CF0,"Put Bob",0,boPutBob },
 	{0x1CFE,"Paste Bob",0,boPasteBob },
+	{0x1d12,"Paste Icon", 0, bgPasteIcon },
 	{0x1DAE,"Priority On",0,ocPriorityOn },
 	{0x1DC0,"Priority Off",0,ocPriorityOff },
 	{0x1DD2,"Hide On",0,ocHideOn },
