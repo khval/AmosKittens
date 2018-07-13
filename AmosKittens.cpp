@@ -69,6 +69,7 @@ void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
 
+struct retroSprite *icons = NULL;
 struct retroSprite *sprite = NULL;
 struct retroSpriteObject bobs[64];
 struct proc procStack[1000];	// 0 is not used.

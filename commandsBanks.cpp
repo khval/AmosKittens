@@ -24,6 +24,7 @@ extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern int current_screen;
 extern struct retroSprite *sprite ;
+extern struct retroSprite *icons ;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
@@ -488,7 +489,7 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 							engine_unlock();
 
 							// 99 Bottles of beer. 
-							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) sprite ) == false)
+							if (__ReserveAs( bank_type_sprite, 3, 99,NULL, (char *) sprite ) == false)
 							{
 								if (sprite) retroFreeSprite(sprite);
 								sprite = NULL;
@@ -496,6 +497,16 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 							break;
 	
 						case bank_type_icons:
+
+							if (icons) retroFreeSprite(icons);
+							icons = retroLoadSprite(fd, cust_fread );
+
+							// 99 Bottles of beer. 
+							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) icons ) == false)
+							{
+								if (icons) retroFreeSprite(icons);
+								icons = NULL;
+							}
 							break;
 
 						case bank_type_work_or_data:

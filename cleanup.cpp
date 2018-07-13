@@ -15,6 +15,7 @@ extern std::vector<struct label> labels;
 extern int global_var_count;
 extern char *dir_first_pattern ;
 extern struct retroSprite *sprite ;
+extern struct retroSprite *icons ;
 
 void clean_up_vars()
 {
@@ -93,14 +94,24 @@ void clean_up_special()
 
 	for (n=0;n<15;n++)
 	{
+		printf("%d\n",n);
+
 		if (kittyBanks[n].start)
 		{
 			switch ( kittyBanks[n].type )
 			{
-//				case bank_type_icons:
-//						break;
+				case bank_type_icons:
+
+						printf("try free icons\n");
+
+						retroFreeSprite( (struct retroSprite *) kittyBanks[n].start );
+						icons = NULL;
+						break;
 
 				case bank_type_sprite:
+
+						printf("try free sprite\n");
+
 						retroFreeSprite( (struct retroSprite *) kittyBanks[n].start );
 						sprite = NULL;
 						break;
