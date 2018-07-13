@@ -633,6 +633,21 @@ char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_cmdKeySpeed( struct glueCommands *data,int nextToken )
+{
+	int args = stack - data -> stack +1;
+
+	popStack( stack - data -> stack  );
+	return NULL;
+}
+
+char *cmdKeySpeed(struct nativeCommand *cmd, char *tokenBuffer)
+{
+		printf("%s:%d\n",__FUNCTION__,__LINE__);printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _cmdKeySpeed, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *F1_keys[20];
 
 int keyStr_index =0;
