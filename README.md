@@ -49,14 +49,14 @@ Partially implemented:
 * Chapter 8. Text & Windows
 * Chapter 18. The Keyboard
 * Chapter 19. Other commands
-
-Not Implemented:
-
 * Chapter 11. Hardware sprites
 * Chapter 12. Blitter objects
 * Chapter 13. Object control
-* Chapter 14. Amal
 * Chapter 15. Background graphics.
+
+Not Implemented:
+
+* Chapter 14. Amal
 * Chapter 16. Menus
 * Chapter 17. Sound and music
 * Chapter 21. Screen compaction.
