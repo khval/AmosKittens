@@ -863,7 +863,7 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					{
 						case type_int:		// jump to label with same name as var.
 
-								return_tokenBuffer = tokenBuffer + 2 + ReferenceByteLength(tokenBuffer + 2) + sizeof(struct reference ) ;
+								return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
 								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
 								if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
 
