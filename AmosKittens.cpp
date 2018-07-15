@@ -597,6 +597,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0476, "Print",0,textPrint },
 	{0x048E,"Input$(n)",0,cmdInputStrN },
 	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },
+	{0x04A6,"Using",0,textPrintUsing },
 	{0x04B2, "Input #",0,cmdInputIn },
 	{0x04BE, "Line Input #",0,cmdLineInputFile },
 	{0x04D0, "Input",0,cmdInput },

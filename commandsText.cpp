@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <proto/retroMode.h>
+#include <math.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -990,6 +991,157 @@ char *textCRightStr(nativeCommand *cmd, char *ptr)
 	char str[] = {28,0};
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setStackStrDup(str);
+	return ptr;
+}
+
+void _print_using_break( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stack++;
+	setStackNone();
+}
+
+int stringSymbCount(char *str, char c)
+{
+	int cnt = 0;
+	char *s;
+	for (s=str;*s;s++) if (*s==c) cnt++;
+	return cnt;
+}
+
+int numberCount(int n)
+{
+	int cnt =0;
+	while (n!=0) { n/=10; cnt++; } 
+	return cnt;
+}
+
+void write_format( bool sign, char *buf, char *dest )
+{
+	char *buf_end = NULL;
+	char *comma_dest = NULL, *comma_buf = NULL;
+	char *psign = NULL;
+	char *d,*s;
+
+	for (s=dest;*s;s++)
+	{
+		if ((*s=='+')||(*s=='-')) psign = s;
+
+		if ((*s=='.')||(*s==';')) 
+		{
+			comma_dest = s; 
+			if (*s==';') *s=' ';
+			break;
+		}
+	}
+
+	for (s=buf;*s;s++)
+	{
+		if ((*s=='.')||(*s==';')) { comma_buf = s; break; }
+	}
+
+	if ((comma_buf) && (comma_dest))
+	{
+		s=comma_buf-1;
+		for (d=comma_dest;d>=dest;d--)
+		{
+			if (*d=='#')
+			{
+				if (s>=buf)
+				{ *d=*s; s--; }
+				else *d=' ';
+			}
+		}
+
+		s=comma_buf+1;
+		buf_end = buf + strlen(buf);
+
+		for (d=comma_dest;*d;d++)
+		{
+			if (*d=='#')
+			{
+				if (s<buf_end)
+				{ *d=*s; s++; }
+				else *d='0'; 
+			}
+		}
+	}
+
+	if (psign)
+	{
+//		printf("sign\n");
+//		getchar();
+
+		if (*psign=='-') *psign = ' ';
+		if (sign) *psign = '-';
+	}
+}
+
+char *_textPrintUsing( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	char *dest = NULL;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		char *fmt = getStackString(stack-1);
+		dest = strdup(fmt);
+		char *d;
+		int numPos = 1;
+		int _div = 0;
+
+		switch(kittyStack[stack].type)
+		{
+			case type_string:
+					{
+						int fmtCount = stringSymbCount(fmt,'~');
+						char *str = getStackString(stack);
+						char *s = str;
+
+						for (d=dest;*d;d++)
+						{
+							switch (*d)
+							{
+								case '~':	if (*s) { *d = *s; s++; }	break;
+							}
+						}
+					}
+					break;
+
+			case type_float:
+					{
+						char buf[60];
+						double  decimal = getStackDecimal(stack);
+						sprintf(buf,"%lf",decimal);
+						write_format( decimal < 0.0f, buf, dest );
+					}
+					break;
+
+			case type_int:
+					{
+						char buf[60];
+						int num = getStackNum(stack);
+						sprintf(buf,"%d.0",num);
+						write_format( num<0, buf, dest );
+					}
+					break;
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	do_breakdata = NULL;	// done doing that.
+	if (dest) setStackStr( dest );
+
+	return NULL;
+}
+
+char *textPrintUsing(nativeCommand *cmd, char *ptr)
+{
+	stackCmdNormal( _textPrintUsing, ptr );
+	do_breakdata = _print_using_break;
+	setStackNone();
+
 	return ptr;
 }
 
