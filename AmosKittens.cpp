@@ -870,6 +870,8 @@ struct nativeCommand nativeCommands[]=
 	{0x2140,"", 0, cmdReserveAsChipData },
 	{0x215E, "", 0, cmdErase },
 	{0x216A,"", 0, cmdListBank },
+	{0x217A,"Chip Free",0,cmdChipFree },
+	{0x218A,"Fast Free",0,cmdFastFree },
 	{0x219A,"Fill",0,machineFill},
 	{0x21AA,"copy",0,machineCopy},
 	{0x21BA,"Hunt",0,machineHunt},

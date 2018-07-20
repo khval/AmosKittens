@@ -2186,3 +2186,15 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdChipFree( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	setStackNum( AvailMem(MEMF_CHIP) );
+	return tokenBuffer;
+}
+
+char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	setStackNum( AvailMem(MEMF_FAST) );
+	return tokenBuffer;
+}
+
