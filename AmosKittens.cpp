@@ -735,6 +735,8 @@ struct nativeCommand nativeCommands[]=
 	{0x10AC,"Set Tempras",0,gfxSetTempras },		// dummy function
 	{0x10B6,"Appear",0,gfxAppear },
 	{0x10D6,"zoom",0,gfxZoom },
+	{0x1146,"Get Block",0,bgGetBlock },
+	{0x1184,"Put Block",0,bgPutBlock },
 	{0x11C6,"Key Speed",0,cmdKeySpeed },
 	{0x11D8,"Key State",0,cmdKeyState },
 	{0x11E8,"Key Shift",0,cmdKeyShift },
