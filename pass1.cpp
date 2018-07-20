@@ -398,7 +398,7 @@ void pass1label(char *ptr)
 	struct kittyData *var;
 	char *next;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%d    --- ptr=%08x\n",__FUNCTION__,__LINE__,ptr);
 
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
@@ -625,6 +625,9 @@ void eol( char *ptr )
 
 	if (nested_count>0)
 	{
+		proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+		dprintf("nested command: %s\n",nest_names[ nested_command[ nested_count -1 ].cmd ]);
+
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
 			// IF can end at EOL if then is there. (command THEN should replace nested_if )
@@ -636,6 +639,10 @@ void eol( char *ptr )
 				{
 					offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
 					*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
+
+					printf(" *((short *) (nested_command[ %d -1 ].ptr)) = %08x\n",
+							nested_count,
+							*((short *) (nested_command[ nested_count -1 ].ptr)) );
 				}
 				nested_count --;
 				break;
@@ -930,16 +937,16 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	return NULL;
 }
 
-char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
+char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, char *file_end )
 {
 	ptr = nextToken_pass1( ptr, token );
 
-	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
+	if ( ptr  >= file_end ) return NULL;
 
 	return ptr;
 }
 
-void pass1_reader( char *start, int tokenlength )
+void pass1_reader( char *start, char *file_end )
 {
 	char *ptr;
 	int token = 0;
@@ -947,7 +954,7 @@ void pass1_reader( char *start, int tokenlength )
 
 	lastLineAddr = start;
 	ptr = start;
-	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, tokenlength ) ) && ( kittyError.code == 0))
+	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, file_end ) ) && ( kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
 
@@ -957,20 +964,25 @@ void pass1_reader( char *start, int tokenlength )
 	}
 	addLineAddress( lastLineAddr, ptr );
 
-	while (nested_count)
+	if (kittyError.code == 0)	// did not exit on error.
 	{
-		switch (nested_command[ nested_count - 1 ].cmd )
+		while (nested_count)
 		{
-			case nested_while:		setError(29,ptr); break;
-			case nested_if:		setError(22,ptr); break;
-			case nested_then:		setError(22,ptr); break;
-			case nested_then_else:	setError(22,ptr); 	printf("pass1 test error, should have been deleted by EOL");break;
-			case nested_else:		setError(22,ptr); break;
-			case nested_proc:		setError(17,ptr); break;
-			default:				setError(35,ptr); break;
+			switch (nested_command[ nested_count - 1 ].cmd )
+			{
+				case nested_while:		setError(29,ptr); break;
+				case nested_if:		setError(22,ptr); break;
+				case nested_then:		setError(22,ptr); break;
+				case nested_then_else:	setError(22,ptr); 	printf("pass1 test error, should have been deleted by EOL");break;
+				case nested_else:		setError(22,ptr); break;
+				case nested_proc:		setError(17,ptr); break;
+				default:				setError(35,ptr); break;
+			}
+			nested_count --;
 		}
-		nested_count --;
 	}
+
+	printf("lines: %d -- end of tokens shoud be at 0x%08x\n",linesAddress.size()-2,file_end);
 
 	nested_count = 0;
 }
