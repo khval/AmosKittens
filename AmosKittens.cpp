@@ -1205,7 +1205,7 @@ int main(char args, char **arg)
 				fread(data,amos_filesize,1,fd);
 
 				// snifff the tokens find labels, vars, functions and so on.
-				pass1_reader( data, tokenlength );
+				pass1_reader( data, _file_end_ );
 
 				if (kittyError.code == 0)
 				{
