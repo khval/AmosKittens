@@ -30,6 +30,7 @@ main_objects = commands.cpp \
 			commandsHardwareSprite.cpp \
 			commandsBlitterObject.cpp \
 			commandsBackgroundGraphics.cpp \
+			commandsAmal.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
