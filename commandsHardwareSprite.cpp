@@ -58,3 +58,59 @@ char *hsGetSpritePalette(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_hsSprite( struct glueCommands *data, int nextToken )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsSprite(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _hsSprite, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_hsGetSprite( struct glueCommands *data, int nextToken )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsGetSprite(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _hsSprite, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_hsSpriteOff( struct glueCommands *data, int nextToken )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsSpriteOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _hsSpriteOff, tokenBuffer );
+	return tokenBuffer;
+}
+

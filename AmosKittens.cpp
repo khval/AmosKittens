@@ -27,6 +27,7 @@
 #include "commandsHardwareSprite.h"
 #include "commandsBlitterObject.h"
 #include "commandsBackgroundGraphics.h"
+#include "commandsAmal.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -819,12 +820,15 @@ struct nativeCommand nativeCommands[]=
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x196C,"Fsel$",0,cmdFselStr },
+	{0x199E,"Sprite Off",0,hsSpriteOff },
+	{0x1A94,"Sprite",0,hsSprite },
 	{0x1AA8,"Bob Off",0,boBobOff },
 	{0x1ABE,"Bob Update Off",0,boBobUpdateOff },
 	{0x1B5C,"Limit Bob",0,boLimitBob },
 	{0x1B8A,"Set Bob",0,boSetBob },
 	{0x1B9E,"Bob",0,boBob },
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
+	{0x1BD0,"Get Sprite",0,hsGetSprite },
 	{0x1BFC,"Get Bob",0,boGetBob },
 	{0x1CA6,"Get Icon Palette", 0, bgGetIconPalette },
 	{0x1CC6,"Get Icon", 0, bgGetIcon },
