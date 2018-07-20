@@ -908,8 +908,8 @@ char *gfxPaint(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxPoint(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
 	stackCmdParm( _gfxPoint, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
