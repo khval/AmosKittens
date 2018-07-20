@@ -335,8 +335,6 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
 	switch (args)
 	{
 		case 3:	// past bob x,y,i
@@ -597,3 +595,63 @@ char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+
+char *_boBobCol( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boBobCol(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boBobCol, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_boCol( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boCol(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boCol, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_boDelBob( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _boDelBob, tokenBuffer );
+	return tokenBuffer;
+}
