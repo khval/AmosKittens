@@ -259,7 +259,6 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);;
 
-
 	popStack( stack - data->stack );
 	return NULL;
 }
@@ -333,5 +332,158 @@ char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+// lots of dummy functions don't do anything, I'm just trying to see, if can get something running!!.
 
+char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	return tokenBuffer;
+}
+
+char *_ocJUp( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocJUp(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocJUp, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocJDown( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocJDown(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocJDown, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocJLeft( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocJLeft(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocJLeft, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocJRight( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *ocJRight(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocJRight, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ocSynchro( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocSynchro, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *_ocFire( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocFire(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocFire, tokenBuffer );
+	return tokenBuffer;
+}
 
