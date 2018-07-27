@@ -488,7 +488,8 @@ char *pass1_shared( char *ptr )
 
 						if (tmp)
 						{
-							unsigned short next_token = *((unsigned short *) (ptr + sizeof(struct reference) + ref -> length) );
+							char *next_ptr = ptr + 2 + sizeof(struct reference *) + ref -> length + (ref -> length & 1);
+							unsigned short next_token = *((unsigned short *) next_ptr ) ;
 							int type = ref -> flags;
 
 							if ( next_token == 0x0074 ) type |= type_array;
@@ -538,8 +539,8 @@ char *pass1_global( char *ptr )
 
 						if (tmp)
 						{
-							char *next_ptr = ptr + sizeof(struct reference *) + ref -> length;
-							unsigned short next_token = *((unsigned short *) (ptr + sizeof(struct reference) + ref -> length) );
+							char *next_ptr = ptr + 2 + sizeof(struct reference *) + ref -> length + (ref -> length & 1);
+							unsigned short next_token = *((unsigned short *) next_ptr ) ;
 							int type = ref -> flags;
 
 							if ( next_token == 0x0074 ) type |= type_array;
