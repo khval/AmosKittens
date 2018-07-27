@@ -565,8 +565,8 @@ char *pass1_global( char *ptr )
 
 
 
-			case 0x0074: count ++; break;
-			case 0x007C: count--;  break;
+			case 0x0074: count ++; break;	// (
+			case 0x007C: count--;  break;		// )
 
 			case 0x005C: 	if (count != 0) 	setError(1,ptr);
 						break;
