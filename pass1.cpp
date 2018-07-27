@@ -159,8 +159,9 @@ int findVar( char *name, int type, int _proc )
 
 	for (n=0;n<global_var_count;n++)
 	{
-
 		if (globalVars[n].varName == NULL) return 0;
+
+		// look for any shared or local
 
 		if ((strcasecmp( globalVars[n].varName, name)==0) 
 			&& (globalVars[n].var.type == type)
@@ -171,6 +172,20 @@ int findVar( char *name, int type, int _proc )
 		{
 			return n+1;
 		}
+
+		// look for global vars.
+
+		if (
+			(strcasecmp( globalVars[n].varName, name)==0) 
+			&& (globalVars[n].var.type == type)
+			&& (globalVars[n].isGlobal == TRUE) 
+			&& (globalVars[n].proc == 0)
+			&& (_proc > 0)
+		)
+		{
+			return n+1;
+		}
+
 	}
 	return 0;
 }
