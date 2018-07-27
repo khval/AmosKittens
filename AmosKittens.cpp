@@ -318,34 +318,41 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	var -> cells = stack - cmd -> stack +1;
 
 	if (var -> sizeTab) free( var -> sizeTab);
+
+	printf("var -> cells = %d\n",var -> cells);
+
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
 
-	var -> count = 1;
-	for (n= 0; n<var -> cells; n++ ) 
+	if (var -> sizeTab)
 	{
-		var -> sizeTab[n] = kittyStack[cmd -> stack + n].value + 1;
-		var -> count *= var -> sizeTab[n];
-	}
+		var -> count = 1;
+		for (n= 0; n<var -> cells; n++ ) 
+		{
+			var -> sizeTab[n] = kittyStack[cmd -> stack + n].value + 1;
+			var -> count *= var -> sizeTab[n];
+		}
 
-	switch (var -> type)
-	{
-		case type_int | type_array:
+		switch (var -> type)
+		{
+			case type_int | type_array:
 				size = var -> count * sizeof(int);
 				var -> int_array = (int *) malloc( size ) ;
 				break;
-		case type_float | type_array:
+			case type_float | type_array:
 				size = var -> count * sizeof(double);
 				var -> float_array = (double *) malloc( size ) ;
 				break;
-		case type_string | type_array:
+			case type_string | type_array:
 				size = var -> count * sizeof(char *);
 				var -> str_array = (char **) malloc( size ) ;
 				break;
-
-		default: setError(22, cmd -> tokenBuffer);
+			default: setError(22, cmd -> tokenBuffer);
+		}
 	}
 
 	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
+
+	printf("type %d array %08x sizeTab %08x\n", var->type, var->str, var->sizeTab);
 
 	popStack(stack - cmd -> stack);
 
