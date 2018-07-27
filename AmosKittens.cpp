@@ -236,6 +236,12 @@ char *_get_var_index( glueCommands *self , int nextToken )
 			return 0;
 		}
 
+		if (var -> sizeTab == NULL)
+		{
+			setError(25, self -> tokenBuffer );
+			return NULL;
+		}
+
 		_last_var_index = 0; 
 		mul  = 1;
 		for (n = self -> stack;n<=stack; n++ )
