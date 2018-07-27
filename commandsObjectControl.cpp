@@ -357,14 +357,19 @@ char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocJUp( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int ret = FALSE;
 
 	if (args == 1)
 	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_up) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);;
-
 	popStack( stack - data->stack );
+	setStackNum( ret );
+
+	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	return NULL;
 }
 
@@ -378,14 +383,18 @@ char *ocJUp(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocJDown( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int ret = FALSE;
 
 	if (args == 1)
 	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_down) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);;
-
 	popStack( stack - data->stack );
+	setStackNum( ret );
+
+	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return NULL;
 }
 
@@ -399,14 +408,19 @@ char *ocJDown(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocJLeft( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int ret = FALSE;
 
 	if (args == 1)
 	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_left) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);;
-
 	popStack( stack - data->stack );
+	setStackNum( ret );
+
+	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	return NULL;
 }
 
@@ -420,17 +434,20 @@ char *ocJLeft(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocJRight( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int ret = FALSE;
 
 	if (args == 1)
 	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_right) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);;
-
 	popStack( stack - data->stack );
+	setStackNum( ret );
+	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	return NULL;
 }
-
 
 char *ocJRight(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -469,14 +486,18 @@ char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocFire( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int ret = 0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = amiga_joystick_button[j];
 	}
 	else setError(22,data->tokenBuffer);;
 
 	popStack( stack - data->stack );
+	setStackNum( ret );
 	return NULL;
 }
 

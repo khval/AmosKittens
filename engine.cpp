@@ -12,7 +12,9 @@
 #include <proto/layers.h>
 #include <proto/retroMode.h>
 #include <proto/keymap.h>
+#include <proto/Amigainput.h>
 
+#include "joysticks.h"
 #include "engine.h"
 #include "bitmap_font.h"
 
@@ -275,6 +277,9 @@ void main_engine()
 		ULONG Class;
 		UWORD Code;
 		UWORD Qualifier;
+		ULONG sigs;
+		ULONG joy_sig;
+		ULONG ret;
 		int n;
 		engine_started = true;
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
@@ -282,9 +287,29 @@ void main_engine()
 		retroClearVideo(video);
 		gfxDefault(NULL, NULL);
 
+		init_joysticks();
+
+		joy_sig = 1L << (joystick_msgport -> mp_SigBit);
+
+		sigs = SIGBREAKF_CTRL_C;
+		sigs |= joy_sig;
+
 		while (running)
 		{
-			if (SetSignal(0L, SIGBREAKF_CTRL_C) & SIGBREAKF_CTRL_C) running = false;
+			ret = SetSignal(0L, sigs);
+
+			if ( ret & SIGBREAKF_CTRL_C) running = false;
+
+			if ( ret & joy_sig )
+			{
+				for (n=0;n<4;n++)
+				{
+					if (joysticks[n].id>0)
+					{
+						joy_stick(n,joysticks[n].controller);
+					}
+				}
+			}
 
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
@@ -431,6 +456,8 @@ void main_engine()
 		engine_started = false;
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 	}
+
+	close_joysticks();
 
 	close_engine();
 	engine_started = false;

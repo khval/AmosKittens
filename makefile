@@ -40,7 +40,8 @@ main_objects = commands.cpp \
 			readhunk.cpp \
 			engine.cpp \
 			bitmap_font.cpp \
-			var_helper.cpp 
+			var_helper.cpp \
+			os4_joystick.cpp
 
 main_SRCS = AmosKittens.cpp
 

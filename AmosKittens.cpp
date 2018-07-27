@@ -55,6 +55,8 @@ unsigned short last_token = 0;
 int last_var = 0;
 int tokenlength;
 
+unsigned int amiga_joystick_dir[4];
+unsigned int amiga_joystick_button[4];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
@@ -1187,6 +1189,8 @@ int main(char args, char **arg)
 	if (init())
 	{
 		start_engine();
+
+		Delay(10);
 
 		fd = fopen(filename,"r");
 

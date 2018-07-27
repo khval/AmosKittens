@@ -7,13 +7,15 @@
 #include <diskfont/diskfonttag.h>
 #include <proto/keymap.h>
 #include <proto/AmosExtension.h>
+#include <proto/Amigainput.h>
 #include <string.h>
+#include "joysticks.h"
 
-struct Library 				 *AmosExtensionBase = NULL;
-struct AmosExtensionIFace	 *IAmosExtension = NULL;
+struct Library 					 *AmosExtensionBase = NULL;
+struct AmosExtensionIFace		 *IAmosExtension = NULL;
 
-struct Library			*DataTypesBase = NULL;
-struct DataTypesIFace	*IDataTypes = NULL;
+struct Library					*DataTypesBase = NULL;
+struct DataTypesIFace			*IDataTypes = NULL;
 
 extern struct Library		 	*DOSBase;
 extern struct DOSIFace			*IDOS;
@@ -61,6 +63,7 @@ BOOL init()
 	if ( ! open_lib( "keymap.library", 53, "main", 1, &KeymapBase, (struct Interface **) &IKeymap) ) return FALSE;
 	if ( ! open_lib( "diskfont.library", 50L, "main", 1, &DiskfontBase, (struct Interface **) &IDiskfont  ) ) return FALSE;
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
+	if ( ! open_lib( "AmigaInput.library", 50L , "main", 1, &AIN_Base, (struct Interface **) &IAIN  ) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -75,6 +78,9 @@ BOOL init()
 void closedown()
 {
 	if (_locale) CloseLocale(_locale); _locale = NULL;
+
+	if (IAIN) DropInterface((struct Interface*) IAIN); IAIN = 0;
+	if (AIN_Base) CloseLibrary(AIN_Base); AIN_Base = 0;
 
 	if (IAsl) DropInterface((struct Interface*) IAsl); IAsl = 0;
 	if (AslBase) CloseLibrary(AslBase); AslBase = 0;
