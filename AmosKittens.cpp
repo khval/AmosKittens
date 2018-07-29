@@ -250,8 +250,6 @@ char *_get_var_index( glueCommands *self , int nextToken )
 			mul *= var -> sizeTab[n- self -> stack -1];
 		}
 
-		dprintf("varname: %s(%d)\n",globalVars[varNum-1].varName, _last_var_index);
-
 		var -> index = _last_var_index;
 		popStack(stack - self -> stack);
 

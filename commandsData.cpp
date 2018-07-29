@@ -668,7 +668,7 @@ char *_xorData( struct glueCommands *data, int nextToken )
 
 char *_addData( struct glueCommands *data, int nextToken )
 {
-	printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	int args = stack - data -> stack + 1;
 	struct kittyData *item0;

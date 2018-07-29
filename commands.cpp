@@ -124,8 +124,6 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 	{
 		int idx = ref->ref-1;
 
-		printf("idx %d\n",idx);
-
 		if (data -> tokenBuffer2)	// has arguments.
 		{
 			switch (globalVars[idx].var.type & 7)
@@ -809,7 +807,6 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
 					{
 						case type_int:		// jump to label with same name as var.
-
 								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
 								break;
 
@@ -2171,7 +2168,6 @@ char *cmdFlushStack ( struct glueCommands *data, int nextToken )
 	popStack( stack - data -> stack );
 	return NULL;
 }
-
 
 char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 {

@@ -94,8 +94,6 @@ void clean_up_special()
 
 	for (n=0;n<15;n++)
 	{
-		printf("%d\n",n);
-
 		if (kittyBanks[n].start)
 		{
 			switch ( kittyBanks[n].type )
