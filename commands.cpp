@@ -807,7 +807,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
 					{
 						case type_int:		// jump to label with same name as var.
-								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
+								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) ) -2;		// after function, amos kittens try access next token and adds +2 (+0 data)
 								break;
 
 						case type_string:	// jump to string.
@@ -860,10 +860,13 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					{
 						case type_int:		// jump to label with same name as var.
 
-								return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
-								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) );
-								if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
 
+								// [next token][ref][data], 
+
+								return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
+								tokenBuffer = var_JumpToName( (struct reference *) (tokenBuffer+2) ) - 2; 			// after function, amos kittens try access next token and adds +2 (+0 data)
+
+								if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
 								break;
 
 						case type_string:	// jump to string.
