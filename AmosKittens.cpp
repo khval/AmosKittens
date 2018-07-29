@@ -434,7 +434,10 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					break;
 				case type_proc:
 					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
-					return globalVars[idx].var.tokenBufferPos ;					
+
+					// size of ref is added on exit, then +2 next token
+
+					return globalVars[idx].var.tokenBufferPos - sizeof(struct reference) -2;	
 			}
 		}
 		flushCmdParaStack(next_token);
