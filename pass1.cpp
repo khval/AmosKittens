@@ -10,6 +10,7 @@
 #include <vector>
 #include "AmosKittens.h"
 #include "errors.h"
+#include "var_helper.h"
 
 const char *types[]={"","#","$",""};
 
@@ -564,8 +565,6 @@ char *pass1_global( char *ptr )
 
 						break;
 
-
-
 			case 0x0074: count ++; break;	// (
 			case 0x007C: count--;  break;		// )
 
@@ -665,7 +664,6 @@ void eol( char *ptr )
 
 			case nested_defFn:
 
-				getchar();
 				nested_count --;
 				break;
 		}
@@ -746,6 +744,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 		{
 			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x - name %s\n",
 						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token, TokenName(token));
+
+
+			// ptr points to data of the token. (+2)
 
 			ret = ptr;
 
