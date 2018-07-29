@@ -998,6 +998,8 @@ void pass1_reader( char *start, char *file_end )
 		}
 	}
 
+	validate_and_fix_globals();
+
 	printf("lines: %d -- end of tokens shoud be at 0x%08x\n",linesAddress.size()-2,file_end);
 
 	nested_count = 0;
