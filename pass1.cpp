@@ -399,7 +399,7 @@ void pass1var(char *ptr, bool is_proc )
 	}
 }
 
-void next_var_should_be_proc_type( char *ptr )
+char *pass1_procedure( char *ptr )
 {
 	short token = *((short *) ptr);
 	if (token == 0x0006) pass1var(  ptr+2, true );
@@ -902,7 +902,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							procCount ++;
 							procStackCount++;
 							addNest( nested_proc );
-							next_var_should_be_proc_type( ptr + sizeof(struct procedure) );
+							ret = pass1_procedure( ptr + sizeof(struct procedure) ) - sizeof(struct procedure);
 							break;
 
 				case 0x0390: // End Proc
