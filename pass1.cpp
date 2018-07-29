@@ -403,7 +403,23 @@ void pass1var(char *ptr, bool is_proc )
 char *pass1_procedure( char *ptr )
 {
 	short token = *((short *) ptr);
-	if (token == 0x0006) pass1var(  ptr+2, true );
+	if (token == 0x0006)
+	{
+		pass1var( ptr +2, true );
+
+		// we like to skip the variable, so its not added as a local variable.
+		ptr += 2 + sizeof(struct reference) + ReferenceByteLength(ptr + 2) ;
+	}
+	else 
+	{
+		printf("bad token %04x\n",token);
+		setError(1,ptr);
+	}
+
+	token = *((short *) ptr);
+
+	// sizeof(struct procedure) will be added to move to next token, we don't wont that.
+	return ptr ;
 }
 
 void pass1label(char *ptr)
