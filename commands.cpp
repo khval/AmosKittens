@@ -138,7 +138,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
-					return globalVars[idx].var.tokenBufferPos   ;
+					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
 		else 	// no arguments
@@ -155,7 +155,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
-					return globalVars[idx].var.tokenBufferPos   ;
+					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
 	}
@@ -775,9 +775,6 @@ char *_goto( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		printf("oh no no ref_num\n");
-		dump_stack();
-		getchar();
 		setError(22,data -> tokenBuffer);
 	}
 
