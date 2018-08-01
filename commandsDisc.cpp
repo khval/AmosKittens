@@ -25,6 +25,10 @@ APTR contextDir = NULL;
 char *dir_first_pattern = NULL;
 char *dir_first_path = NULL;
 
+extern char *_setVar( struct glueCommands *data, int nextToken );
+extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
+
+
 char *_cmdInputIn( struct glueCommands *data, int nextToken );
 char *_cmdLineInputFile( struct glueCommands *data, int nextToken );
 
@@ -635,12 +639,18 @@ char *_cmdDirStr( struct glueCommands *data, int nextToken )
 }
 
 
-char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer)
+char *_set_dir_str( struct glueCommands *data, int nextToken )
 {
-	stackCmdNormal( _cmdDir, tokenBuffer );
+	char *_new_path = getStackString( stack );
 
-	return tokenBuffer;
+//	printf("%s\n",_new_path);
+
+	if (_new_path) { chdir(_new_path); }
+
+	_do_set = _setVar;
+	return NULL;
 }
+
 
 char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -649,10 +659,12 @@ char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 	dprintf("%08x - %08x\n", last_token, NEXT_TOKEN( tokenBuffer ) );
 
-	if (last_token == 0x0000) printf("last token 0x0000\n");
-	if (NEXT_TOKEN( tokenBuffer ) == 0xFFA2) printf("next token 0xFFA2\n");
-
-	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
+	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	{
+		tokenMode = mode_store;
+		_do_set = _set_dir_str;
+	}
+	else if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		stackCmdNormal( _cmdDirStr, tokenBuffer );
