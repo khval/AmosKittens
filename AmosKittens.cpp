@@ -816,6 +816,7 @@ struct nativeCommand nativeCommands[]=
 	{0x173E,"Dir Next$",0,cmdDirNextStr },
 	{0x174E,"Exist",0,cmdExist },
 	{0x175A,"Dir$",0,cmdDirStr },
+	{0x17A4,"Dir",0,cmdDir },		// no argument
 	{0x17AE,"Dir",0,cmdDir },
 	{0x17C4,"Set Dir",0,cmdSetDir },
 	{0x17D4,"Load iff",0, gfxLoadIff },
