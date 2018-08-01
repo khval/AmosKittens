@@ -563,7 +563,7 @@ char *pass1_global( char *ptr )
 						{
 							char *next_ptr = ptr + 2 + sizeof(struct reference *) + ref -> length + (ref -> length & 1);
 							unsigned short next_token = *((unsigned short *) next_ptr ) ;
-							int type = ref -> flags;
+							int type = ref -> flags & 7;
 
 							if ( next_token == 0x0074 ) type |= type_array;
 
