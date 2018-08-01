@@ -232,6 +232,8 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 				int x1 = getStackNum( stack -1 )-1;
 				int y1 = getStackNum( stack )-1;
 
+//				printf("CLS %d,%d,%d to %d,%d\n");
+
 				if ((color >-1)&&(color<256))
 				{
 					if (screen) 
@@ -609,8 +611,6 @@ char *_gfxGrLocate( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_stack();
 
 	switch (args)
 	{

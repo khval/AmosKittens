@@ -605,7 +605,7 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 			if (offset) 
 			{
 				ptr = tokenBuffer+(offset*2);
-				printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, offset*2);
+//				printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, offset*2);
 				return ptr-4; 	// on exit +2 token +2 data
 			}
 		}
@@ -627,7 +627,7 @@ char *_else_if( struct glueCommands *data, int nextToken )
 		if (offset) 
 		{
 			ptr = data->tokenBuffer+(offset*2) ;
-			printf("0x%08x - 0x%08x -- jump +0x%02x\n", data->tokenBuffer, ptr, offset*2);
+//			printf("0x%08x - 0x%08x -- jump +0x%02x\n", data->tokenBuffer, ptr, offset*2);
 			return ptr ;	// we don't know what command thats going to execute this code, do not subtract tokens!
 		}
 	}
@@ -689,7 +689,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 	int args = stack - data -> stack + 1;
 	int ref_num = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args != 1) setError(22,data -> tokenBuffer);
 
@@ -718,7 +718,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 	{
 		char *return_tokenBuffer = data -> tokenBuffer;
 
-		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
+//		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
 
 		while ( *((unsigned short *) return_tokenBuffer) != nextToken  ) return_tokenBuffer += 2;
 		stackCmdLoop( _gosub_return, return_tokenBuffer );
@@ -737,7 +737,7 @@ char *_gosub( struct glueCommands *data, int nextToken )
 
 char *_goto( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	int args = stack - data -> stack + 1;
 	int ref_num = 0;
@@ -749,7 +749,6 @@ char *_goto( struct glueCommands *data, int nextToken )
 		case type_int:	
 				{
 					char num[50];
-					printf("goto a int\n");
 					sprintf(num,"%d", kittyStack[stack].value );
 					ref_num = findLabelRef( num );
 				}
@@ -769,8 +768,7 @@ char *_goto( struct glueCommands *data, int nextToken )
 	if (ref_num)
 	{
 		char *return_tokenBuffer = data -> tokenBuffer;
-
-		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
+//		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
 		return labels[ref_num-1].tokenLocation;
 	}
 	else
@@ -787,9 +785,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
 	char *ptr;
 	char *return_tokenBuffer;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("next token %04x\n", next_token);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (next_token)
 	{
@@ -808,13 +804,10 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 								break;
 
 						case type_string:	// jump to string.
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
 								stackCmdNormal( _goto, tokenBuffer );
 								break;
 
 						case type_float:
-
-								printf("%s:%d\n",__FUNCTION__,__LINE__);
 								setError(22,tokenBuffer);
 								break;
 
@@ -837,16 +830,15 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
 	char *ptr;
 	char *return_tokenBuffer;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (next_token)
 	{
 		case 0x0026:	// text
-
 					stackCmdNormal( _gosub, tokenBuffer );
 					break;
 
-		case 0x0074:  // ( data )
+		case 0x0074:  // data
 					stackCmdNormal( _gosub,tokenBuffer );
 					break;
 
@@ -856,7 +848,6 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
 					{
 						case type_int:		// jump to label with same name as var.
-
 
 								// [next token][ref][data], 
 
@@ -959,7 +950,6 @@ char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 void do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
@@ -974,7 +964,6 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
-
 
 void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1041,7 +1030,6 @@ char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 extern char *executeToken( char *ptr, unsigned short token );
 
 #undef NEXT_INT
-
 
 int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 {
@@ -1166,7 +1154,7 @@ char *cmdReturn(struct nativeCommand *cmd, char *tokenBuffer )
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _gosub_return ) 
 	{
 		char *ptr = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-		printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, (int) tokenBuffer - (int) ptr);
+//		printf("0x%08x - 0x%08x -- jump +0x%02x\n", tokenBuffer, ptr, (int) tokenBuffer - (int) ptr);
 		return ptr-2;		// after cmdReturn +2 token
 	}
 
@@ -1180,7 +1168,7 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	struct procedure *proc = (struct procedure *) tokenBuffer;
 
-	proc_names_printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
+//	printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
 
 	return proc -> EndOfProc - sizeof(struct procedure);
 }
@@ -1237,7 +1225,7 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 	int read_stack;
 	unsigned short token;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	args = stack - sdata->stack +1;
 
@@ -1808,7 +1796,7 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 	unsigned short token;
 	char *ptr;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1) exit_loops = getStackNum(stack);
 	popStack( stack - data -> stack  );
@@ -1925,7 +1913,7 @@ char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer )
 char *_cmdEvery( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return  NULL;
 }
 
@@ -1943,7 +1931,7 @@ char *cmdEveryOff(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	on_every_proc_location = NULL;
 	on_every_gosub_location = NULL;
@@ -2007,7 +1995,7 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 					break;
 		}
 
-		printf("every timer: %d\n",every_timer);
+//		dprintf("every timer: %d\n",every_timer);
 
 	}
 

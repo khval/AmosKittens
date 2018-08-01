@@ -79,15 +79,9 @@ void validate_and_fix_globals()
 		switch (globalVars[n].var.type)
 		{
 			case type_int:
-
-//				printf( "%d: %s, %d\n", n, globalVars[n].varName, globalVars[n].var.type );
 				findProcAndFix( &globalVars[n] );
-//				printf( "%d: %s, %d\n", n, globalVars[n].varName, globalVars[n].var.type );
-
 				break;
 
 		}
 	}
-
-	getchar();
 }
