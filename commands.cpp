@@ -2052,7 +2052,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ((last_token == 0x0000) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_timer;
