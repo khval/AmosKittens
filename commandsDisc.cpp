@@ -609,9 +609,15 @@ char *_cmdDir( struct glueCommands *data, int nextToken )
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
 
-	return  data -> tokenBuffer ;
+	return  NULL ;
 }
 
+char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdDir, tokenBuffer );
+
+	return tokenBuffer;
+}
 
 char *_cmdDirStr( struct glueCommands *data, int nextToken )
 {
