@@ -35,6 +35,7 @@ int ifCount = 0;
 int endIfCount = 0;
 int currentLine = 0;
 
+bool pass1_inside_proc = false;
 int procCount = 0;
 
 enum
@@ -231,6 +232,7 @@ int ReferenceByteLength(char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short length = ref -> length;
+
 	length += (length & 1);		// align to 2 bytes
 	return length;
 }
@@ -365,7 +367,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 			if  (*((unsigned short *) next_ptr)  == 0x0074) type |= type_array;
 		}
 
-		found = findVar(tmp, type , is_proc ? 0 : procCount);
+		found = findVar(tmp, type , is_proc ? 0 : (pass1_inside_proc ? procCount : 0) );
 		if (found)
 		{
 			free(tmp);		//  don't need tmp
@@ -413,6 +415,7 @@ char *pass1_procedure( char *ptr )
 	if (token == 0x0006)
 	{
 		current_proc = pass1var( ptr +2, true );
+		pass1_inside_proc = true;
 
 		// we like to skip the variable, so its not added as a local variable.
 		ptr += 2 + sizeof(struct reference) + ReferenceByteLength(ptr + 2) ;
@@ -731,6 +734,7 @@ void pass1_proc_end( char *ptr )
 	}
 
 	nested_count --;
+	pass1_inside_proc = false;
 }
 
 void pass1_if_or_else( char *ptr )
