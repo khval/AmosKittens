@@ -1223,7 +1223,11 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 		else 	// End Proc
 		{
-			if (cmdTmp[cmdStack-1].cmd == _procedure ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+			if (cmdTmp[cmdStack-1].cmd == _procedure )
+			{
+				tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+				proc_stack_frame--;		// move stack frame down.
+			}
 		}
 	}
 
