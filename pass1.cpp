@@ -537,6 +537,7 @@ char *pass1_shared( char *ptr )
 		ptr+=2;	// next token
 		token = *((unsigned short *) ptr);
 	}
+
 	return ptr;
 }
 
@@ -548,7 +549,7 @@ char *pass1_global( char *ptr )
 	int var;
 	int count = 0;
 
-	// we only support two tokens as arguments for shared.
+	// we only support two tokens as arguments for global.
 
 	token = *((unsigned short *) ptr);
 

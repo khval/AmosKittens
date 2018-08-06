@@ -157,11 +157,14 @@ void dump_global()
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
-
+#ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
 					printf("[%d]=%d ,",i, globalVars[n].var.int_array[i]);
 				}
+#else
+				printf("...");
+#endif
 				printf("\n");
 
 				break;
@@ -172,11 +175,14 @@ void dump_global()
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
-
+#ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
 					printf("[%d]=%0.2f ,",i, globalVars[n].var.float_array[i]);
 				}
+#else
+				printf("...");
+#endif
 				printf("\n");
 
 				break;
@@ -187,11 +193,14 @@ void dump_global()
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
-
+#ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
 					printf("[%d]=%s ,",i, globalVars[n].var.str_array[i]);
 				}
+#else
+				printf("...");
+#endif
 				printf("\n");
 
 
