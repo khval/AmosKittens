@@ -40,6 +40,8 @@ bool interpreter_running = false;
 
 int sig_main_vbl = 0;
 
+int proc_stack_frame = 0;
+
 char *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
@@ -60,7 +62,7 @@ unsigned int amiga_joystick_button[4];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
-char *data_read_pointer = NULL;
+char *data_read_pointers[PROC_STACK_SIZE];
 
 char *_get_var_index( glueCommands *self, int nextToken);
 
@@ -76,8 +78,8 @@ int tokenMode = mode_standard;
 struct retroSprite *icons = NULL;
 struct retroSprite *sprite = NULL;
 struct retroSpriteObject bobs[64];
-struct proc procStack[1000];	// 0 is not used.
-struct globalVar globalVars[1000];	// 0 is not used.
+//struct proc procStack[1000];	// 0 is not used.
+struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
 struct kittyBank kittyBanks[16];
 struct kittyFile kittyFiles[10];
 struct zone *zones = NULL;
@@ -238,6 +240,9 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 		if (var -> sizeTab == NULL)
 		{
+			printf("varname: %s\n",globalVars[varNum-1].varName);
+			printf("var num: %d\n", varNum-1);
+
 			setError(25, self -> tokenBuffer );
 			return NULL;
 		}
@@ -361,6 +366,8 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (parenthesis_count == 0)
 	{
 		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
@@ -417,7 +424,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		{
 			int idx = ref->ref-1;
 
-//			printf("varname: %s\n",globalVars[idx].varName);
+			dprintf("varname: %s type: %d\n",globalVars[idx].varName, globalVars[idx].var.type & 7);
 
 			switch (globalVars[idx].var.type & 7)
 			{
@@ -552,6 +559,7 @@ struct nativeCommand nativeCommands[]=
 	{0x00A6,"Swap", 0, mathSwap},
 	{0x00b0, "Def fn", 0, mathDefFn },
 	{0x00bc, "Fn", 0, mathFn },
+	{0x00E0,"Resume Next",0,cmdResumeNext },
 	{0x00F2,"Inkey$",0,cmdInkey },
 	{0x00FE,"Repeat$",0, cmdRepeatStr },
 	{0x010E,"Zone$", 0, ocZoneStr },
@@ -612,6 +620,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0462, "Add var,n,f TO t", 0, mathAdd },
 	{0x046A, "Print #",0,cmdPrintOut },
 	{0x0476, "Print",0,textPrint },
+	{0x0482, "LPrint",0,textPrint },
 	{0x048E,"Input$(n)",0,cmdInputStrN },
 	{0x049C,"Input$(f,n)", 0, cmdInputStrFile },
 	{0x04A6,"Using",0,textPrintUsing },
@@ -752,7 +761,9 @@ struct nativeCommand nativeCommands[]=
 	{0x10B6,"Appear",0,gfxAppear },
 	{0x10D6,"zoom",0,gfxZoom },
 	{0x1146,"Get Block",0,bgGetBlock },
+	{0x1160,"Get Block [n,x,y,w,h,?] ",0,bgGetBlock },
 	{0x1184,"Put Block",0,bgPutBlock },
+	{0x11BE,"Del Block",0,bgDelBlock },
 	{0x11C6,"Key Speed",0,cmdKeySpeed },
 	{0x11D8,"Key State",0,cmdKeyState },
 	{0x11E8,"Key Shift",0,cmdKeyShift },
@@ -825,6 +836,7 @@ struct nativeCommand nativeCommands[]=
 	{0x181A, "Bsave", 0, cmdBsave },
 	{0x182A,"PLoad",0,machinePload},
 	{0x184E,"Load",0,cmdLoad },
+	{0x185A,"Load",0,cmdLoad },
 	{0x1864,"Dfree",0,cmdDfree },
 	{0x187C,"Lof(f)", 0, cmdLof },
 	{0x1886,"Eof(f)", 0, cmdEof },
@@ -860,6 +872,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1CF0,"Put Bob",0,boPutBob },
 	{0x1CFE,"Paste Bob",0,boPasteBob },
 	{0x1d12,"Paste Icon", 0, bgPasteIcon },
+	{0x1DA2,"Hot Spot", 0, boHotSpot },
 	{0x1DAE,"Priority On",0,ocPriorityOn },
 	{0x1DC0,"Priority Off",0,ocPriorityOff },
 	{0x1DD2,"Hide On",0,ocHideOn },
@@ -927,6 +940,8 @@ struct nativeCommand nativeCommands[]=
 	{0x23D0,"Multi Wait",0,cmdMultiWait },		// dummy function.
 	{0x23FC,"Priority Reverse On",0,ocPriorityReverseOn },
 	{0x2416,"Priority Reverse Off",0,ocPriorityReverseOff },
+	{0x2430,"Dev First$",0,cmdDevFirstStr },
+	{0x2442,"Dev Next$",0,cmdDevNextStr },
 	{0x2476,"Hrev(n)",0,boHrev},
 	{0x2482,"Vrev(n)",0,boVrev},
 	{0x248e,"Rev(n)",0,boRev},
@@ -1227,6 +1242,8 @@ int main(char args, char **arg)
 
 				// snifff the tokens find labels, vars, functions and so on.
 				pass1_reader( data, _file_end_ );
+
+				printf("done with pass1_reader\n");
 
 				if (kittyError.code == 0)
 				{

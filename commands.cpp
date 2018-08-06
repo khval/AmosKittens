@@ -110,7 +110,20 @@ char *_endProc( struct glueCommands *data, int nextToken )
 			break;
 	}
 
+	proc_stack_frame--;		// move stack frame down.
+
 	return  data -> tokenBuffer ;
+}
+
+
+void stack_frame_up(struct kittyData *var)
+{
+	proc_stack_frame++;		// move stack frame up.
+	if ( var -> procDataPointer )
+	{
+		data_read_pointers[proc_stack_frame]  = var -> procDataPointer;
+	}
+	else data_read_pointers[proc_stack_frame] = data_read_pointers[proc_stack_frame-1];
 }
 
 char *_procAndArgs( struct glueCommands *data, int nextToken )
@@ -138,6 +151,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
+					stack_frame_up(&globalVars[idx].var);
 					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
@@ -155,6 +169,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
+					stack_frame_up(&globalVars[idx].var);
 					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
@@ -1452,61 +1467,64 @@ void read_from_data()
 	unsigned short token;
 	int _len;
 
-		if (data_read_pointer)
+		if (data_read_pointers[proc_stack_frame])
 		{
 			bool try_next_token;
 	
 			do
 			{
 				try_next_token = false;
-				token = *((short *) data_read_pointer);
+				token = *((short *) data_read_pointers[proc_stack_frame]);
 
-				dprintf("data pointer %08x (line %d) - token %04x\n",data_read_pointer, getLineFromPointer(data_read_pointer), token);
+				printf("data pointers[%d] %08x (line %d) - token %04x\n",
+					proc_stack_frame,
+					data_read_pointers[proc_stack_frame], 
+					getLineFromPointer(data_read_pointers[proc_stack_frame]), token);
 
 				switch (token)
 				{
 					case 0x0404:	// data
-							data_read_pointer+=4;	// token + data size 2
+							data_read_pointers[proc_stack_frame]+=4;	// token + data size 2
 							try_next_token = true;
 							break;
 
 					case 0x003E: 	// num
-							setStackNum ( *((int *) (data_read_pointer + 2)) );
-							data_read_pointer +=6;
+							setStackNum ( *((int *) (data_read_pointers[proc_stack_frame] + 2)) );
+							data_read_pointers[proc_stack_frame] +=6;
 							break;
 	
 					case 0x0026:	// string
-							_len = *((unsigned short *) (data_read_pointer + 2));
+							_len = *((unsigned short *) (data_read_pointers[proc_stack_frame] + 2));
 							_len = _len + (_len & 1);
 							if (kittyStack[stack].str) free(kittyStack[stack].str);
-							kittyStack[stack].str = strndup( data_read_pointer + 4, _len );
+							kittyStack[stack].str = strndup( data_read_pointers[proc_stack_frame] + 4, _len );
 							kittyStack[stack].len = strlen( kittyStack[stack].str );
-							data_read_pointer +=4 + _len;
+							data_read_pointers[proc_stack_frame] +=4 + _len;
 							break;
 
 					case 0x000c:	// label
 							{
-								struct reference *ref = (struct reference *) (data_read_pointer + 2);
-								data_read_pointer += 2 + sizeof(struct reference) + ref -> length;
+								struct reference *ref = (struct reference *) (data_read_pointers[proc_stack_frame] + 2);
+								data_read_pointers[proc_stack_frame] += 2 + sizeof(struct reference) + ref -> length;
 							}
 							try_next_token = true;
 							break;
 
 					case 0x005C:	// comma
-							data_read_pointer +=2;
+							data_read_pointers[proc_stack_frame] +=2;
 							try_next_token = true;
 							break;
 
 					case 0x0000:	// new line
-							data_read_pointer +=4;
+							data_read_pointers[proc_stack_frame] +=4;
 							try_next_token = true;	
 							break;
 					default:
-							data_read_pointer = FinderTokenInBuffer( data_read_pointer, 0x0404 , -1, -1, _file_end_ );
+							data_read_pointers[proc_stack_frame] = FinderTokenInBuffer( data_read_pointers[proc_stack_frame], 0x0404 , -1, -1, _file_end_ );
 							try_next_token = true;	
 				}
 
-				if (data_read_pointer == 0x0000) break;
+				if (data_read_pointers[proc_stack_frame] == 0x0000) break;
 			} while ( try_next_token );
 		}
 }
@@ -1554,9 +1572,16 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	do_input = _read_arg;
-	do_breakdata = NULL;
-	stackCmdNormal( _cmdRead, tokenBuffer );
+	if (data_read_pointers[proc_stack_frame] == 0x0000) 
+	{
+		setError( 25, tokenBuffer);
+	}
+	else
+	{
+		do_input = _read_arg;
+		do_breakdata = NULL;
+		stackCmdNormal( _cmdRead, tokenBuffer );
+	}
 
 	return tokenBuffer;
 }
@@ -1569,7 +1594,7 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	if (name)
 	{
 		char *ptr = findLabel(name);
-		if (ptr) data_read_pointer = ptr;
+		if (ptr) data_read_pointers[proc_stack_frame] = ptr;
 	}
 
 	popStack( stack - data->stack  );
@@ -1590,7 +1615,7 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 		{
 			char *ptr = findLabel(name);
 
-			if (ptr) data_read_pointer = ptr;
+			if (ptr) data_read_pointers[proc_stack_frame] = ptr;
 			free(name);
 		}
 	}

@@ -342,11 +342,12 @@ char *pass1DefFn( char *ptr )
 	return ptr;
 }
 
-void pass1var(char *ptr, bool is_proc )
+
+struct kittyData * pass1var(char *ptr, bool is_proc )
 {
 	char *tmp;
 	int found = 0;
-	struct reference *ref = (struct reference *) ptr;
+	struct reference *ref = (struct reference *) (ptr);
 	struct kittyData *var;
 
 	tmp = dupRef( ref );
@@ -376,6 +377,8 @@ void pass1var(char *ptr, bool is_proc )
 				var -> type = type_proc;
 				var -> tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
 				globalVars[found-1].proc =  procCount;
+
+				return var;
 			}
 		}
 		else
@@ -383,11 +386,11 @@ void pass1var(char *ptr, bool is_proc )
 			if (is_proc)
 			{
 				add_var_from_ref( ref, tmp, type_proc );
-
-				globalVars[global_var_count-1].proc = procCount;
-
 				var = &globalVars[global_var_count-1].var;
 				var -> tokenBufferPos = ptr + 2 +sizeof(struct reference) + ref -> length ;
+				globalVars[global_var_count-1].proc = procCount;
+
+				return var;
 			}
 			else
 			{
@@ -398,14 +401,18 @@ void pass1var(char *ptr, bool is_proc )
 
 		// we should not free tmp, see code above.
 	}
+
+	return NULL;
 }
+
+static struct kittyData *current_proc;
 
 char *pass1_procedure( char *ptr )
 {
 	short token = *((short *) ptr);
 	if (token == 0x0006)
 	{
-		pass1var( ptr +2, true );
+		current_proc = pass1var( ptr +2, true );
 
 		// we like to skip the variable, so its not added as a local variable.
 		ptr += 2 + sizeof(struct reference) + ReferenceByteLength(ptr + 2) ;
@@ -508,7 +515,7 @@ char *pass1_shared( char *ptr )
 						{
 							char *next_ptr = ptr + 2 + sizeof(struct reference *) + ref -> length + (ref -> length & 1);
 							unsigned short next_token = *((unsigned short *) next_ptr ) ;
-							int type = ref -> flags;
+							int type = ref -> flags & 7;
 
 							if ( next_token == 0x0074 ) type |= type_array;
 
@@ -925,11 +932,14 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							procCount ++;
 							procStackCount++;
 							addNest( nested_proc );
+
 							ret = pass1_procedure( ptr + sizeof(struct procedure) ) - sizeof(struct procedure);
 							break;
 
 				case 0x0390: // End Proc
 							procStackCount--;
+							current_proc = NULL;
+
 							if LAST_TOKEN_(proc)
 							{
 								pass1_proc_end( ptr );
@@ -940,7 +950,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x039E:	// Shared
 
-							if (procStackCount)
+							if (procStackCount > 0)
 							{
 								ret = pass1_shared( ptr );
 							}
@@ -958,7 +968,14 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								setError(11,ptr);
 							break;
 
-				case 0x0404:	if (data_read_pointer == 0) data_read_pointer = ptr + 2;
+				case 0x0404:	// Data
+
+							if (current_proc)
+							{
+								if (current_proc -> procDataPointer == NULL) current_proc -> procDataPointer = ptr + 2;
+							}
+							else 	if (data_read_pointers[0] == NULL) data_read_pointers[0] = ptr + 2;
+
 							break;
 
 			}
@@ -971,7 +988,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
-	setError(35,ret);
+	setError(35,ptr);
 
 	return NULL;
 }

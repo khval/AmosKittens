@@ -145,9 +145,20 @@ void dump_global()
 					globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
 				break;
 			case type_proc:
-				printf("%d -- %d::%s%s[]=%04X\n",n,
-					globalVars[n].proc, "Proc ",
-					globalVars[n].varName, globalVars[n].var.tokenBufferPos );
+
+				if (globalVars[n].var.procDataPointer == 0)
+				{
+					printf("%d -- %d::%s%s[]=%04X\n",n,
+						globalVars[n].proc, "Proc ",
+						globalVars[n].varName, globalVars[n].var.tokenBufferPos );
+				}
+				else
+				{
+					printf("%d -- %d::%s%s[]=%04X  --- data read pointer %08x\n",n,
+						globalVars[n].proc, "Proc ",
+						globalVars[n].varName, globalVars[n].var.tokenBufferPos,
+						globalVars[n].var.procDataPointer);
+				}
 
 				break;
 			case type_int | type_array:
@@ -308,6 +319,12 @@ int getLineFromPointer( char *address )
 			return n-1;
 		}
 	}
+
+	if ( linesAddress.size() )
+	{
+		if ( linesAddress[linesAddress.size()-1].end < address ) return linesAddress.size()-2;
+	}
+
 	return -1;
 }
 

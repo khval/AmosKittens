@@ -2,6 +2,9 @@
 #ifndef __amoskittens_h__
 #define __amoskittens_h__
 
+#define PROC_STACK_SIZE 1000
+#define VAR_BUFFERS 1000
+
 #define token_semi	0x0064
 #define token_add		0xFFC0
 #define token_sub		0xFFCA
@@ -64,11 +67,11 @@ enum
 enum
 {
 	type_int = 0,
-	type_float,
-	type_string,
-	type_file,
-	type_proc,
-	type_none,
+	type_float,		// 1
+	type_string,		// 2
+	type_file,			// 3
+	type_proc,		// 4
+	type_none,		// 5
 	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
 };
 
@@ -143,7 +146,13 @@ struct kittyData
 
 	int index;
 	int cells;
-	int *sizeTab;
+
+	union
+	{
+		int *sizeTab;
+		char *procDataPointer;
+	};
+
 	double decimal;
 	int state;
 	int type;
@@ -296,7 +305,8 @@ extern char *var_param_str;
 extern int var_param_num;
 extern double var_param_decimal;
 
-extern char *data_read_pointer;
+extern int proc_stack_frame;
+extern char *data_read_pointers[PROC_STACK_SIZE];
 extern char *_file_start_;
 extern char *_file_end_;
 
