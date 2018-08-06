@@ -163,31 +163,46 @@ int findVar( char *name, int type, int _proc )
 	{
 		if (globalVars[n].varName == NULL) return 0;
 
-		// look for any shared or local
+		// look for any  local.
 
 		if ((strcasecmp( globalVars[n].varName, name)==0) 
 			&& (globalVars[n].var.type == type)
-			&& (
-				(globalVars[n].proc == _proc) ||
-				(globalVars[n].pass1_shared_to == _proc) )
-		)
+			&& (globalVars[n].proc == _proc))
 		{
 			return n+1;
 		}
 
-		// look for global vars.
+		// look for any shared.
+
+		if ((strcasecmp( globalVars[n].varName, name)==0) 
+			&& (globalVars[n].var.type == type)
+			&& (globalVars[n].pass1_shared_to > 0)
+			&& (globalVars[n].pass1_shared_to == _proc))
+		{
+			return n+1;
+		}
+
+		// look for any global.
 
 		if (
 			(strcasecmp( globalVars[n].varName, name)==0) 
 			&& (globalVars[n].var.type == type)
 			&& (globalVars[n].isGlobal == TRUE) 
 			&& (globalVars[n].proc == 0)
-			&& (_proc > 0)
-		)
+			&& (_proc > 0))
 		{
 			return n+1;
 		}
 
+		// look for any proc.
+
+		if (
+			(strcasecmp( globalVars[n].varName, name)==0) 
+			&& (globalVars[n].var.type == type)
+			&& ( type == type_proc ))
+		{
+			return n+1;
+		}
 	}
 	return 0;
 }
@@ -397,7 +412,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 			else
 			{
 				add_var_from_ref( ref, tmp, type );
-				globalVars[global_var_count-1].proc = procCount;
+				globalVars[global_var_count-1].proc = (pass1_inside_proc ? procCount : 0);
 			}
 		}
 
