@@ -251,7 +251,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 		for (n = self -> stack;n<=stack; n++ )
 		{
 			_last_var_index += (mul * kittyStack[n].value);
-			mul *= var -> sizeTab[n- self -> stack -1];
+			mul *= var -> sizeTab[n- self -> stack];
 		}
 
 		var -> index = _last_var_index;
