@@ -1074,9 +1074,8 @@ char *_cmdInputIn( struct glueCommands *data, int nextToken )
 {
 	getchar();
 
-	if (do_input) do_input( NULL, NULL );
-
-	do_input = NULL;
+	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
+	do_input[parenthesis_count] = NULL;
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 
@@ -1093,7 +1092,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 		input_cmd_context.tokenBuffer = tokenBuffer;
 		stackCmdNormal( _cmdInputIn, tokenBuffer );
 
-		do_input = file_input;
+		do_input[parenthesis_count] = file_input;
 
 		tokenBuffer += 6;
 
@@ -1115,9 +1114,8 @@ char *_cmdLineInputFile( struct glueCommands *data, int nextToken )
 
 	getchar();
 
-	if (do_input) do_input( NULL, NULL );
-
-	do_input = NULL;
+	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
+	do_input[parenthesis_count] = NULL;
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 
@@ -1137,7 +1135,7 @@ char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 
 		stackCmdNormal( _cmdLineInputFile, tokenBuffer );
 
-		do_input = file_line_input;
+		do_input[parenthesis_count] = file_line_input;
 
 		tokenBuffer += 6;
 

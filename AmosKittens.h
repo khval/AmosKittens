@@ -314,7 +314,7 @@ extern APTR contextDir;
 
 extern struct kittyFile kittyFiles[10];
 
-extern void (*do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern void (*do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
 

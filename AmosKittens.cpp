@@ -7,7 +7,6 @@
 #include <vector>
 #include <math.h>
 #include <libraries/retroMode.h>
-
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
@@ -70,7 +69,7 @@ void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 
 char *(*do_var_index) ( glueCommands *self, int nextToken ) = _get_var_index;
 void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
-void (*do_input) ( struct nativeCommand *, char * ) = NULL;
+void (**do_input) ( struct nativeCommand *, char * ) ;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
 int tokenMode = mode_standard;
@@ -297,7 +296,7 @@ char *_alloc_mode_off( glueCommands *self, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	do_input = NULL;
+	do_input[parenthesis_count] = NULL;
 	do_var_index = _get_var_index;
 
 	return NULL;
@@ -376,7 +375,7 @@ void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
 {
-	do_input = do_dim_next_arg;
+	do_input[parenthesis_count] = do_dim_next_arg;
 	do_var_index = do_var_index_alloc;
 
 	stackCmdNormal( _alloc_mode_off, ptr );
@@ -1218,6 +1217,9 @@ int main(char args, char **arg)
 
 	if (init())
 	{
+		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * 1000 );
+		if (do_input) memset( do_input, 0, sizeof(void *) * 1000 );
+
 		start_engine();
 
 		Delay(10);
@@ -1272,6 +1274,12 @@ int main(char args, char **arg)
 		else
 		{
 			printf("AMOS file not open/can't find it\n");
+		}
+
+		if (do_input)
+		{
+			free( (void *) do_input );
+			do_input = NULL;
 		}
 
 		clean_up_vars();
