@@ -51,7 +51,8 @@ enum
 	nested_do,
 	nested_for,
 	nested_proc,
-	nested_defFn
+	nested_defFn,
+	nested_data
 };
 
 const char *nest_names[] =
@@ -66,7 +67,8 @@ const char *nest_names[] =
 	"nested_repeat",
 	"nested_do",
 	"nested_for",
-	"nested_proc"
+	"nested_proc",
+	"nested_data"
 };
 
 
@@ -692,6 +694,8 @@ void eol( char *ptr )
 
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
+			case nested_data:
+
 			// IF can end at EOL if then is there. (command THEN should replace nested_if )
 
 			case nested_then:
@@ -994,6 +998,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 								if (current_proc -> procDataPointer == NULL) current_proc -> procDataPointer = ptr + 2;
 							}
 							else 	if (data_read_pointers[0] == NULL) data_read_pointers[0] = ptr + 2;
+
+							addNest( nested_data );
 
 							break;
 

@@ -1635,7 +1635,8 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	return tokenBuffer;
+	unsigned short jump = *((unsigned short *) tokenBuffer) * 2;
+	return tokenBuffer + jump - 4;	// next token (size 2) + data (size 2) will be added on exit.
 }
 
 
