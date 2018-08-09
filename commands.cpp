@@ -538,6 +538,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		stackCmdParm(_equalData, tokenBuffer);
 		stack++;
+		setStackNum(0);	// prevent random data from being on the stack.
 	}
 	else
 	{
