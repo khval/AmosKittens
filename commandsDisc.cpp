@@ -829,6 +829,33 @@ char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *_cmdDevFirstStr( struct glueCommands *data, int nextToken )
+{
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *cmdDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdDevFirstStr, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+char *_cmdDevNextStr( struct glueCommands *data, int nextToken )
+{
+	popStack( stack - cmdTmp[cmdStack].stack  );
+	return NULL;
+}
+
+char *cmdDevNextStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdDevNextStr, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 char *cmdSetDir(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdSetDir, tokenBuffer );

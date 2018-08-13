@@ -16,6 +16,8 @@ char *cmdFselStr(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdDevNextStr(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer);
