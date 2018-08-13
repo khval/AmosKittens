@@ -387,13 +387,15 @@ struct bankItemDisk
 
 
 
-void __load_work_data__(FILE *fd)
+void __load_work_data__(FILE *fd,int bank)
 {
 	struct bankItemDisk item;
 	char *mem;
 
 	if (fread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
 	{
+		if (bank>0) item.bank = bank;
+
 		if (item.length & 0x80000000) item.type += 8;
 		item.length = (item.length & 0x7FFFFFF) - 8;
 		if (item.length >0 )
@@ -421,25 +423,19 @@ int cust_fread (void *ptr, int size,int elements, FILE *fd)
 	else return 0;
 }
 
-char *_cmdLoad( struct glueCommands *data, int nextToken )
+extern void clean_up_banks();
+
+void __load_bank__(const char *name, int bank )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	int n;
-	int args = stack - data->stack +1 ;
 	FILE *fd;
 	int size;
 	char id[5];
 	unsigned short banks = 0;
 	id[4]=0;
 	int type = -1;
+	int n;
 
-
-//	dump_stack();
-
-	switch (args)
-	{
-		case 1:
-			fd = fopen( getStackString( stack ) , "r");
+			fd = fopen( name , "r");
 			if (fd)
 			{
 				if (fread( &id, 4, 1, fd )==1)
@@ -447,6 +443,7 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 					if (strcmp(id,"AmBs")==0)
 					{
 						fread( &banks, 2, 1, fd);
+						clean_up_banks();		
 					}
 				}
 
@@ -476,6 +473,8 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 					{
 						case bank_type_sprite:
 
+							// should append to end of sprite bank.
+
 							engine_lock();
 							if (sprite) retroFreeSprite(sprite);
 							sprite = retroLoadSprite(fd, cust_fread );
@@ -503,7 +502,7 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 							break;
 
 						case bank_type_work_or_data:
-							__load_work_data__(fd);
+							__load_work_data__(fd,bank);
 							break;
 
 						default:
@@ -515,15 +514,23 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 
 				fclose(fd);
 			}
+}
+
+char *_cmdLoad( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int n;
+	int args = stack - data->stack +1 ;
+
+
+	switch (args)
+	{
+		case 1:
+			__load_bank__(getStackString( stack  ), -1 );
 			break;
 
 		case 2:
-			fd = fopen( getStackString( stack - 1 ) , "r");
-			if (fd)
-			{
-				n = getStackNum(stack);
-				fclose(fd);
-			}
+			__load_bank__( getStackString(stack-1), getStackNum(stack) );
 			break;
 	}
 
