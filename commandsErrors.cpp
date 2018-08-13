@@ -138,6 +138,16 @@ char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *cmdResumeNext(nativeCommand *cmd, char *tokenBuffer)
+{
+	struct reference *ref;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	return tokenBuffer;
+}
+
+
 char *onErrorBreak(char *ptr)
 {
 	return kittyError.newError ? NULL : ptr;
