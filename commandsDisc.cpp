@@ -1203,10 +1203,10 @@ char *_cmdSetInput( struct glueCommands *data, int nextToken )
 
 char *_cmdLof( struct glueCommands *data, int nextToken )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack;
+	int args = stack - cmdTmp[cmdStack-1].stack + 1;
 	int channel = 0;
 	FILE *fd;
-	int pos,len;
+	int pos,len = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1220,15 +1220,10 @@ char *_cmdLof( struct glueCommands *data, int nextToken )
 
 			if (fd)
 			{
-				popStack( stack - cmdTmp[cmdStack].stack  );
-
 				pos = ftell( fd );
 				fseek( fd, 0, SEEK_END );
 				len = ftell(fd);
 				fseek( fd, pos, SEEK_SET );
-
-				setStackNum( len );
-				return NULL;
 			}
 			else	setError(97,data->tokenBuffer); // file not open
 		}
@@ -1236,14 +1231,17 @@ char *_cmdLof( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
+	setStackNum( len );
+
 	return NULL;
 }
 
 char *_cmdPof( struct glueCommands *data, int nextToken )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack;
+	int args = stack - cmdTmp[cmdStack-1].stack + 1;
 	int channel = 0;
 	FILE *fd;
+	int ret =0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1257,9 +1255,7 @@ char *_cmdPof( struct glueCommands *data, int nextToken )
 
 			if (fd)
 			{
-				popStack( stack - cmdTmp[cmdStack].stack  );
-				setStackNum( ftell( fd ));
-				return NULL;
+				ret = ftell( fd );
 			}
 			else	setError(97,data->tokenBuffer); // file not open
 		}
@@ -1267,6 +1263,10 @@ char *_cmdPof( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
+	setStackNum( ret );
+
+	dump_stack();
+	
 	return NULL;
 }
 
