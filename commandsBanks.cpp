@@ -53,6 +53,9 @@ const char *bankTypes[] = {
 };
 
 
+
+extern void clean_up_bank(int n);
+
 char *_cmdErase( struct glueCommands *data, int nextToken )
 {
 	int n;
@@ -61,17 +64,7 @@ char *_cmdErase( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		n = getStackNum(data->stack);
-
-		if ((n>0)&&(n<16))
-		{
-			if (kittyBanks[n-1].start)
-			{
-				free( kittyBanks[n-1].start );
-				kittyBanks[n-1].start = NULL;
-				kittyBanks[n-1].length = 0;
-				kittyBanks[n-1].type = 0;
-			}
-		} 
+		if ((n>0)&&(n<16))	clean_up_bank(n-1);		
 	}
 
 	popStack( stack - data->stack );

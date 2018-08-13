@@ -79,21 +79,8 @@ void clean_up_files()
 	}
 }
 
-void clean_up_special()
+void clean_up_bank(int n)
 {
-	int n;
-
-	printf("clean up bobs!!\n");
-
-	for (n=0;n<64;n++)
-	{
-		retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
-	}
-
-	printf("clean up banks!!\n");
-
-	for (n=0;n<15;n++)
-	{
 		if (kittyBanks[n].start)
 		{
 			switch ( kittyBanks[n].type )
@@ -119,9 +106,35 @@ void clean_up_special()
 						break;
 			}
 
-			kittyBanks[n].start = NULL;
+			kittyBanks[n-1].start = NULL;
+			kittyBanks[n-1].length = 0;
+			kittyBanks[n-1].type = 0;
 		}
+}
+
+void clean_up_banks()
+{
+	int n;
+	for (n=0;n<15;n++)
+	{
+		clean_up_bank(n);
 	}
+}
+
+void clean_up_special()
+{
+	int n;
+
+	printf("clean up bobs!!\n");
+
+	for (n=0;n<64;n++)
+	{
+		retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
+	}
+
+	printf("clean up banks!!\n");
+
+	clean_up_banks();
 
 	printf("clean up file stuff!!\n");
 

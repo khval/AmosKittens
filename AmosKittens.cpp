@@ -1179,6 +1179,27 @@ void set_default_filename()
 	filename = strdup("amos-test/not.amos");
 }
 
+void init_banks( char *data , int size)
+{
+	int i;
+	unsigned char c;
+
+	for (i=0;i<size;i++)
+	{
+		c = data[i];
+
+		if (((c>='a')&&(c<='z'))||((c>='A')&&(c<='Z')))
+		{
+			printf("%c", data[i]);
+		}
+//		else
+//		{
+//			printf(".");
+//		}
+	}
+
+	getchar();
+}
 
 int main(char args, char **arg)
 {
@@ -1237,10 +1258,12 @@ int main(char args, char **arg)
 			data = (char *) malloc(amos_filesize);
 			if (data)
 			{
+				int _file_code_start_ = ftell(fd);
+
 				_file_start_ = data;
 				_file_end_ = data + tokenlength;
 
-				fread(data,amos_filesize,1,fd);
+				fread(data,amos_filesize - _file_code_start_ ,1,fd);
 
 				// snifff the tokens find labels, vars, functions and so on.
 				pass1_reader( data, _file_end_ );
@@ -1253,6 +1276,10 @@ int main(char args, char **arg)
 
 					_file_start_ = data;
 					_file_end_ = data + tokenlength;
+
+					// init banks
+
+					init_banks( _file_end_ , amos_filesize - tokenlength - _file_code_start_ );
 
 					//  execute the code.
 					code_reader( data, tokenlength );

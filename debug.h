@@ -3,6 +3,7 @@ void dump_global();
 void dump_prog_stack();
 void dump_stack();
 void dump_labels();
+void dump_banks();
 void dump_end_of_program();
 void dumpLineAddress();
 int getLineFromPointer( char *address );
