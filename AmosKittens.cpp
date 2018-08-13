@@ -147,18 +147,19 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
-	unsigned int type;
+	unsigned int flag;
 
 	// we should empty stack, until first/normal command is not a parm command.
 
 	while (cmdStack)
 	{
-		type = cmdTmp[cmdStack-1].flag;
-		if  ( ( type == cmd_loop ) || ( type  == cmd_never ) || (type == cmd_eol) ) break;
-	
+		flag = cmdTmp[cmdStack-1].flag;
+
+		if  ( flag & (cmd_loop | cmd_never | cmd_onEol | cmd_onNextCmd )) break;
+
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
-		if (cmdTmp[cmdStack].flag == cmd_first) break;
+		if (cmdTmp[cmdStack].flag & cmd_normal) break;
 		if (ret) break;
 	}
 
@@ -178,11 +179,11 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	if (cmdStack)
 	{
 		char *ret = NULL;
-		unsigned int type;
+		unsigned int flag;
 		do 
 		{
-			type = cmdTmp[cmdStack-1].flag;
-			if  ( (type == cmd_proc) || ( type == cmd_loop ) || ( type  == cmd_never ) ) break;
+			flag = cmdTmp[cmdStack-1].flag;
+			if  ( flag & ( cmd_proc | cmd_loop | cmd_never ) ) break;
 
 			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 			if (ret) return ret -4;		// when exit +2 token +2 data

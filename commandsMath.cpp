@@ -738,7 +738,7 @@ char *_mathFn( struct glueCommands *data, int nextToken )
 
 			data -> tokenBuffer = _file_pos_;
 			data -> cmd = _mathFnReturn;
-			data -> cmd_type = cmd_eol;	// force flush to stop.
+			data -> cmd_type = cmd_onEol;	// force flush to stop.
 			cmdStack++;		// stop stack from being deleted
 
 			printf("args read, next addr: %08x\n",ptr);

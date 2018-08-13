@@ -53,16 +53,16 @@ enum
 	state_hidden_subData 
 };
 
-enum
-{
-	cmd_first = 0,
-	cmd_index, 
-	cmd_para,
-	cmd_loop,
-	cmd_proc,
-	cmd_never,
-	cmd_eol
-};
+#define cmd_normal		1
+#define cmd_index			2 
+#define cmd_para			4
+#define cmd_loop			8
+#define cmd_proc			16
+#define cmd_onEol			32
+#define cmd_onNextCmd	64
+#define cmd_onComma		128
+#define cmd_onBreak		256
+#define cmd_never			512
 
 enum
 {
@@ -232,7 +232,7 @@ struct zone
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_first;	\
+	cmdTmp[cmdStack].flag = cmd_normal;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
@@ -268,6 +268,15 @@ struct zone
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_para;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
+	cmdStack++; \
+
+#define stackCmdOnBreakOrNewCmd( fn, buf )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \

@@ -523,7 +523,8 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *breakData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+	if (cmdStack) if (cmdTmp[cmdStack-1].flag & (cmd_index | cmd_onBreak) ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+
 	if (do_breakdata) do_breakdata( cmd, tokenBuffer );
 	return tokenBuffer;
 }
@@ -589,12 +590,12 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdTmp[cmdStack-1].cmd == _ifSuccess) 
 		{
 			cmdTmp[cmdStack-1].cmd = _ifThenSuccess;
-			cmdTmp[cmdStack-1].flag = cmd_eol;			// should run at end of line
+			cmdTmp[cmdStack-1].flag = cmd_onEol;			// should run at end of line
 		}
 		else	if (cmdTmp[cmdStack-1].cmd == _ifNotSuccess) 
 		{
 			cmdTmp[cmdStack-1].cmd = _ifThenNotSuccess;
-			cmdTmp[cmdStack-1].flag = cmd_eol;			// should run at end of line
+			cmdTmp[cmdStack-1].flag = cmd_onEol;			// should run at end of line
 		}
 	}
 
@@ -948,7 +949,7 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
 
 	tokenMode = mode_logical;
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _repeat ) cmdTmp[cmdStack-1].flag = cmd_first;
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _repeat ) cmdTmp[cmdStack-1].flag = cmd_normal;
 	return tokenBuffer;
 }
 
@@ -995,7 +996,7 @@ void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
 
-		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_first ))
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_normal ))
 		{
 			cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
 			cmdTmp[cmdStack-1].cmd_type = cmd_loop;
