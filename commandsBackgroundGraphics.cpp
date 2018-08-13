@@ -229,7 +229,19 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 					block.y1 = getStackNum(stack);
 					blocks.push_back(block);
 				}
-			break;
+				break;
+		case 6:	{
+					struct retroBlock block;
+					int flags;
+					block.id = getStackNum(stack-5);
+					block.x0 = getStackNum(stack-4);
+					block.y0 = getStackNum(stack-3);
+					block.x1 = getStackNum(stack-2);
+					block.y1 = getStackNum(stack-1);
+					flags = getStackNum(stack);
+					blocks.push_back(block);
+				}
+				break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
