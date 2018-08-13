@@ -321,7 +321,7 @@ char *_asc( struct glueCommands *data, int nextToken )
 char *_val( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack  + 1;
-	int num = 0;
+	double num = 0.0f;
 	char *_str;
 
 	proc_names_printf("%s:%d args %d\n",__FUNCTION__,__LINE__,args);
@@ -329,12 +329,12 @@ char *_val( struct glueCommands *data, int nextToken )
 	_str = getStackString( stack  );
 	if (_str)
 	{
-		if (sscanf(_str,"%d",&num)==0) num=0;
+		if (sscanf(_str,"%lf",&num)==0) num=0.0f;
 	}
 
 	popStack(stack - data->stack);
 
-	setStackNum( num );
+	setStackDecimal( num );
 
 	return NULL;
 }
