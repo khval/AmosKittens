@@ -288,7 +288,7 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 
 	flushCmdParaStack( nextToken );
 
-	stackCmdParm( _addDataToText, tokenBuffer );
+	stackCmdOnBreakOrNewCmd( _addDataToText, tokenBuffer );
 	stack++;
  	kittyStack[stack].type = type_none;
 }
