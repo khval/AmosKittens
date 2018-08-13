@@ -791,7 +791,6 @@ char *_cmdDirFirstStr( struct glueCommands *data, int nextToken )
 	if (dir_first_pattern) free(dir_first_pattern);
 	dir_first_pattern = amos_to_amiga_pattern( (char *) _pattern);
 
-	getchar();
 
 	contextDir = ObtainDirContextTags(EX_StringNameInput, dir_first_path,
 	                   EX_DoCurrentDir,TRUE, 
@@ -1072,8 +1071,6 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdInputIn( struct glueCommands *data, int nextToken )
 {
-	getchar();
-
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
 	do_input[parenthesis_count] = NULL;
 
@@ -1109,10 +1106,7 @@ char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_cmdLineInputFile( struct glueCommands *data, int nextToken )
 {
-
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	getchar();
 
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
 	do_input[parenthesis_count] = NULL;
@@ -1202,7 +1196,6 @@ char *_cmdSetInput( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	dump_stack();
-	getchar();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -1216,7 +1209,6 @@ char *_cmdLof( struct glueCommands *data, int nextToken )
 	int pos,len;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	if (args == 1)
 	{
@@ -1254,7 +1246,6 @@ char *_cmdPof( struct glueCommands *data, int nextToken )
 	FILE *fd;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	if (args == 1)
 	{
@@ -1436,8 +1427,6 @@ char *_cmdPut( struct glueCommands *data, int nextToken )
 			printf("\n");
 		}
 	}
-
-	getchar();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
