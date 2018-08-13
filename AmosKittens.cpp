@@ -34,6 +34,8 @@
 #include "cleanup.h"
 #include "engine.h"
 
+#include "ext_compact.h"
+
 bool running = true;
 bool interpreter_running = false;
 
@@ -58,6 +60,8 @@ int tokenlength;
 
 unsigned int amiga_joystick_dir[4];
 unsigned int amiga_joystick_button[4];
+
+struct extension_lib	kitty_extensions[32];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
@@ -1239,6 +1243,14 @@ int main(char args, char **arg)
 
 	if (init())
 	{
+		// set up a fake extention lookup
+		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );
+		if (kitty_extensions[2].lookup)
+		{
+			memset(kitty_extensions[2].lookup,0,0xFFFF);
+			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
+		}
+
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * 1000 );
 		if (do_input) memset( do_input, 0, sizeof(void *) * 1000 );
 

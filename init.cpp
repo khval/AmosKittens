@@ -6,10 +6,10 @@
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
 #include <proto/keymap.h>
-#include <proto/AmosExtension.h>
 #include <proto/Amigainput.h>
 #include <string.h>
 #include "joysticks.h"
+#include "amoskittens.h"
 
 struct Library 					 *AmosExtensionBase = NULL;
 struct AmosExtensionIFace		 *IAmosExtension = NULL;
@@ -57,6 +57,17 @@ BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct L
 
 BOOL init()
 {
+	int i;
+
+	for (i=0;i<32;i++)
+	{
+		kitty_extensions[i].base = NULL;
+#ifdef amigaos4
+		kitty_extensions[i].interface = NULL;
+#endif
+		kitty_extensions[i].lookup = NULL;
+	}
+
 	if ( ! open_lib( "asl.library", 0L , "main", 1, &AslBase, (struct Interface **) &IAsl  ) ) return FALSE;
 	if ( ! open_lib( "datatypes.library", 0L , "main", 1, &DataTypesBase, (struct Interface **) &IDataTypes  ) ) return FALSE;
 	if ( ! open_lib( "locale.library", 53 , "main", 1, &LocaleBase, (struct Interface **) &ILocale  ) ) return FALSE;
@@ -77,6 +88,21 @@ BOOL init()
 
 void closedown()
 {
+	int i;
+
+	for (i=0;i<32;i++)
+	{
+#ifdef amigaos4
+		if (kitty_extensions[i].interface) DropInterface(kitty_extensions[i].interface);
+		kitty_extensions[i].interface = NULL;
+#endif
+		if (kitty_extensions[i].base) CloseLibrary(kitty_extensions[i].base);
+		kitty_extensions[i].base = NULL;
+
+		if (kitty_extensions[i].lookup) free(kitty_extensions[i].lookup);
+		kitty_extensions[i].lookup = NULL;
+	}
+
 	if (_locale) CloseLocale(_locale); _locale = NULL;
 
 	if (IAIN) DropInterface((struct Interface*) IAIN); IAIN = 0;

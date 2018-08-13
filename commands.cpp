@@ -1860,7 +1860,6 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 			default:
 				dump_prog_stack();
 				proc_names_printf("token was %08x\n", token);
-				getchar();
 		}
 	}
 
@@ -2194,12 +2193,27 @@ char *cmdFlushStack ( struct glueCommands *data, int nextToken )
 char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	struct extension *ext = (struct extension *) tokenBuffer;
-	char *(*ext_cmd) ( struct glueCommands *data, int nextToken );
+	char *(*ext_cmd)( struct nativeCommand *cmd, char *tokenBuffer ) = NULL;
+	struct extension_lib *_this = NULL;
 
-	printf("*** warning extensions not yet supported, extention %d, token %04x ****\n", ext-> ext, ext-> token);
+	_this = &kitty_extensions[ ext-> ext ];
+	if (_this) 
+	{
+		if (_this -> lookup)
+		{
+			ext_cmd = (char* (*)(nativeCommand*, char*)) *((void **) (kitty_extensions[2].lookup + ext -> token));
+		}
+	}
 
-	ext_cmd = cmdFlushStack;
-	stackCmdNormal( ext_cmd, tokenBuffer );
+	if (ext_cmd)
+	{
+		return ext_cmd(cmd, tokenBuffer);
+	}
+	else
+	{
+		printf("*** warning extensions not yet supported, extention %d, token %04x ****\n", ext-> ext, ext-> token);
+		stackCmdNormal( cmdFlushStack, tokenBuffer );
+	}
 
 	return tokenBuffer;
 }

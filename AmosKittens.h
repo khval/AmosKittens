@@ -126,6 +126,15 @@ struct extension
 	unsigned short token;
 } __attribute__((packed)) ;
 
+struct extension_lib
+{
+	struct Library *base;
+#ifdef amigaos4
+	struct Interface *interface;
+#endif
+	char	*lookup;
+};
+
 struct kittyData
 {
 	union		// we don't need to wast space.
@@ -299,6 +308,8 @@ extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
 extern struct proc procStack[];
 extern struct kittyBank kittyBanks[];
+
+extern struct extension_lib	kitty_extensions[32];
 
 extern int stack;
 extern int cmdStack;
