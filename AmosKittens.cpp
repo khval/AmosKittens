@@ -301,7 +301,7 @@ char *_alloc_mode_off( glueCommands *self, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 	do_var_index = _get_var_index;
 
 	return NULL;
@@ -368,9 +368,17 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	return NULL;
 }
 
+void do_std_next_arg(nativeCommand *cmd, char *ptr)
+{
+	stack++;
+	setStackNone();
+}
+
+
 void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d -- parenthesis_count %d\n",__FILE__,__FUNCTION__,__LINE__, parenthesis_count);
+	getchar();
 
 	if (parenthesis_count == 0)
 	{
@@ -1233,6 +1241,7 @@ int main(char args, char **arg)
 
 	memset(globalVars,0,sizeof(globalVars));
 
+
 	sig_main_vbl = AllocSignal(-1);
 
 	for (n=0;n<64;n++)
@@ -1252,7 +1261,11 @@ int main(char args, char **arg)
 		}
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * 1000 );
-		if (do_input) memset( do_input, 0, sizeof(void *) * 1000 );
+		if (do_input) 
+		{
+			int n; 
+			for (n=0;n<1000;n++) do_input[n] = do_std_next_arg;
+		}
 
 		start_engine();
 

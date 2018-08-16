@@ -470,10 +470,6 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 	flushCmdParaStack(0);
 	
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( cmd, tokenBuffer );	// read from keyboad or disk.
-
-	stack++;
-	kittyStack[stack].type = type_none; 
-
 	return tokenBuffer;
 }
 
@@ -509,7 +505,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		remove_parenthesis( parenthesis[parenthesis_count -1] );
 		parenthesis[parenthesis_count -1] = 255;
-		do_input[parenthesis_count] = NULL;
+		do_input[parenthesis_count] = do_std_next_arg;
 		parenthesis_count--;
 
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
@@ -1571,7 +1567,7 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 	int args = stack - data -> stack +1;
 	_read_arg( NULL, NULL );
 	popStack( stack - data -> stack  );
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 	return NULL;
 }
