@@ -108,6 +108,8 @@ const char *str_dump_stack = "dump stack";
 const char *str_breakpoint_on = "breakpoint on";
 const char *str_breakpoint_off = "breakpoint off";
 const char *str_warning = "warning";
+const char *str_pause = "pause";
+const char *str_hint = "hint ";
 
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
@@ -118,9 +120,20 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 		char *txt = strndup( ptr + 3, length );
 		if (txt)
 		{
+			if (strncmp(txt,str_hint,strlen(str_hint))==0)
+			{
+				printf("stack %d at line %d, hint: %s\n",stack, getLineFromPointer( ptr ), txt+strlen(str_hint));
+			}
+
 			if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
 				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
+			}
+
+			if (strncmp(txt,str_pause,strlen(str_pause))==0)
+			{
+				printf("line %d -- <press enter to continue>\n", getLineFromPointer( ptr ));
+				getchar();
 			}
 
 			if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
