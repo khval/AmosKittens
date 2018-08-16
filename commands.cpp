@@ -1379,7 +1379,44 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdShared(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	// we should not need to do anything here, but maybe good idea to jump over few tokens.
+	unsigned short token =*((short *) tokenBuffer);
+
+	for (;;)
+	{
+		switch (token)
+		{
+			case 0x0006:	// var
+					tokenBuffer +=2;
+					tokenBuffer += sizeof(struct reference) + ReferenceByteLength( tokenBuffer );
+					break;
+
+			case 0x005C:	// ,
+					tokenBuffer +=2;
+					break;
+
+			case 0x0074:	// (
+					tokenBuffer +=2;
+					break;
+
+			case 0x007C:	// )
+					tokenBuffer +=2;
+					break;
+
+			case 0x0054:
+			case 0x0000:
+					goto exit_for;
+
+			default:
+					printf("bad exit on token %4x\n",token);
+					setError(22,tokenBuffer);
+					goto exit_for;
+		}
+
+		token = *((unsigned short *) (tokenBuffer));
+	}
+
+exit_for:
+
 	return tokenBuffer;
 }
 
