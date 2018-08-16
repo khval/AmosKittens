@@ -119,6 +119,8 @@ int findVarPublic( char *name, int type )
 {
 	int n;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (n=0;n<global_var_count;n++)
 	{
 		if (globalVars[n].varName == NULL) return 0;
@@ -138,7 +140,7 @@ int findProc( char *name )
 {
 	int n;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -159,7 +161,7 @@ int findVar( char *name, int type, int _proc )
 {
 	int n;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
 	{
