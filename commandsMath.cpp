@@ -508,8 +508,8 @@ char *mathDegree(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	double to_rad_factor=2*M_PI/360.0f;
-	double to_degree_factor=360.0f/(2*M_PI) ;
+	to_rad_factor=M_PI/180.0f;
+	to_degree_factor=180.0f/M_PI ;
 
 	return tokenBuffer;
 }
@@ -518,8 +518,8 @@ char *mathRadian(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	double to_rad_factor=1.0f;
-	double to_degree_factor=1.0f ;
+	to_rad_factor=1.0f;
+	to_degree_factor=1.0f ;
 
 	return tokenBuffer;
 }
