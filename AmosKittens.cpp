@@ -110,6 +110,9 @@ const char *str_breakpoint_off = "breakpoint off";
 const char *str_warning = "warning";
 const char *str_pause = "pause";
 const char *str_hint = "hint ";
+const char *str_show_var = "show var ";
+
+int findVar( char *name, int type, int _proc );
 
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
@@ -134,6 +137,26 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			{
 				printf("line %d -- <press enter to continue>\n", getLineFromPointer( ptr ));
 				getchar();
+			}
+
+			if (strncmp(txt,str_show_var,strlen(str_show_var))==0)
+			{
+				char *var_name = txt +strlen(str_show_var);
+				char *c;
+				int ref;
+
+				for (c=var_name;*c;c++) if (*c==' ') *c = 0;
+
+				ref = findVar( var_name, type_int, 0 );
+
+				if (ref)
+				{
+					printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.value);
+				}
+				else
+				{
+					printf("line %d, int var: [%s] is not found\n",getLineFromPointer( ptr ), var_name);
+				}
 			}
 
 			if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
