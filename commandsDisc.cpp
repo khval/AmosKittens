@@ -1099,7 +1099,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 char *_cmdInputIn( struct glueCommands *data, int nextToken )
 {
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 
@@ -1136,7 +1136,7 @@ char *_cmdLineInputFile( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 
