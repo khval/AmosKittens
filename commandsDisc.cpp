@@ -1376,7 +1376,6 @@ char *_cmdGet( struct glueCommands *data, int nextToken )
 	char *str;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
 
 	if (args == 2)
 	{
@@ -1402,11 +1401,8 @@ char *_cmdGet( struct glueCommands *data, int nextToken )
 				
 				fields ++;
 			}
-			printf("\n");
 		}
 	}
-
-	getchar();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -1537,9 +1533,6 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 		kittyFiles[channel-1].fieldsCount = count ;
 		kittyFiles[channel-1].fieldsSize = size ;
 	}
-
-	dprintf("size %d, count %d\n", size, count);
-	getchar();
 
 	return ptr - 2;
 }

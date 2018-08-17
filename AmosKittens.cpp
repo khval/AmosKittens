@@ -413,9 +413,6 @@ void do_std_next_arg(nativeCommand *cmd, char *ptr)
 
 void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
-	printf("%s:%s:%d -- parenthesis_count %d\n",__FILE__,__FUNCTION__,__LINE__, parenthesis_count);
-	getchar();
-
 	if (parenthesis_count == 0)
 	{
 		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
