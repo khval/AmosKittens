@@ -893,11 +893,13 @@ struct nativeCommand nativeCommands[]=
 	{0x18BC,"Open In",0,cmdOpenIn },
 	{0x18CC,"Open Out",0,cmdOpenOut },
 	{0x18F0,"Append",0,cmdAppend },
+	{0x1900,"Close",0,cmdClose },	// token used in Help_69.Amos
 	{0x190C,"Close",0,cmdClose },
 	{0x1914,"Parent",0,cmdParent },
 	{0x1920,"Rename",0,cmdRename },
 	{0x1930,"Dfree",0,cmdKill },
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
+	{0x1954,"Fsel$",0,cmdFselStr },		// found in Help_72.amos
 	{0x196C,"Fsel$",0,cmdFselStr },
 	{0x199E,"Sprite Off",0,hsSpriteOff },
 	{0x1A94,"Sprite",0,hsSprite },
