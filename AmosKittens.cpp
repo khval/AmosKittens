@@ -880,6 +880,7 @@ struct nativeCommand nativeCommands[]=
 	{0x180C, "Bload",0,cmdBload },
 	{0x181A, "Bsave", 0, cmdBsave },
 	{0x182A,"PLoad",0,machinePload},
+	{0x1838,"Save",0,cmdSave },
 	{0x184E,"Load",0,cmdLoad },
 	{0x185A,"Load",0,cmdLoad },
 	{0x1864,"Dfree",0,cmdDfree },
