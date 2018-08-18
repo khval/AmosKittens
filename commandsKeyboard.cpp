@@ -333,7 +333,7 @@ char *_Input( struct glueCommands *data,int nextToken )
 	int args = stack - data -> stack +1;
 	_input_arg( NULL, NULL );
 	popStack( stack - data -> stack  );
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 	return NULL;
 }
@@ -343,7 +343,7 @@ char *_LineInput( struct glueCommands *data,int nextToken )
 	int args = stack - data -> stack +1;
 	_inputLine_arg( NULL, NULL );
 	popStack( stack - data -> stack  );
-	do_input[parenthesis_count] = NULL;
+	do_input[parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 	return NULL;
 }
