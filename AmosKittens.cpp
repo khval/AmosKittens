@@ -111,6 +111,7 @@ const char *str_warning = "warning";
 const char *str_pause = "pause";
 const char *str_hint = "hint ";
 const char *str_show_var = "show var ";
+const char *str_dump_banks = "dump banks";
 
 int findVar( char *name, int type, int _proc );
 
@@ -123,6 +124,12 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 		char *txt = strndup( ptr + 3, length );
 		if (txt)
 		{
+
+			if (strncmp(txt,str_dump_banks,strlen(str_dump_banks))==0)
+			{
+				dump_banks();
+			}
+
 			if (strncmp(txt,str_hint,strlen(str_hint))==0)
 			{
 				printf("stack %d at line %d, hint: %s\n",stack, getLineFromPointer( ptr ), txt+strlen(str_hint));
