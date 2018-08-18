@@ -54,7 +54,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 				retroFlash( screens[screen_num], 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
 
 				retroBAR( screens[screen_num], 0,0, screens[screen_num] -> realWidth,screens[screen_num]->realHeight, 1 );
-				draw_cursor(screens[0]);
+				draw_cursor(screens[screen_num]);
 			}
 
 			engine_unlock();
