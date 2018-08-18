@@ -32,110 +32,193 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 static int r[32]={0},g[32]={0},b[32]={0};
 
 // data to image 
-static unsigned char *data = NULL;
+// static unsigned char *data = NULL;
 
-int get2( int pos ) { 
-  int d = int(data[pos])*256 + int(data[pos+1]);
-  return d; // negative numbers?!
+#define get2( pos ) (int(data[pos])*256 + int(data[pos+1]))
+#define get4(  pos ) ( ( ( int(data[pos])*256 + int(data[pos+1]) )*256 + int(data[pos+2]) ) * 256 + int(data[pos+3]) )
+
+void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB converted to 0..255
+	r = (data[pos] & 0x0F) * 17;
+	g = ((data[pos+1] & 0xF0)/16) * 17;
+	b = (data[pos+1] & 0x0F) * 17;
 }
 
-int get4( int pos ) { 
-  int d = ( ( int(data[pos])*256 + int(data[pos+1]) )*256 + int(data[pos+2]) ) * 256 + int(data[pos+3]);
-  return d; // negative numbers?!
+void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, int *r, int *g, int *b, unsigned char *raw,bool ham )
+{
+	int n;
+	int row;
+	int byte;
+	int bit;
+	int color;
+	int d;
+	int planeOffset;
+	int bytesPerPlan;
+	int bytesPerPlane;
+	int colors = 1 << depth;
+	struct retroScreen *screen = NULL;
+
+	engine_lock();
+
+	if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
+	screens[screen_num] = retroOpenScreen( bytesPerRow * 8, height, retroLowres_pixeld );
+
+	if (screen = screens[screen_num])
+	{
+		retroApplyScreen( screen, video, 0, 0,	screen -> realWidth,screen->realHeight );
+
+		for (n=0;n<colors;n++)	
+		{
+			retroScreenColor( screen, n,r[n],g[n],b[n]);
+		}
+
+		retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
+
+		bytesPerPlan = bytesPerRow * height;
+
+		for (int y=0; y < screen -> realHeight; y++)
+		{
+			row = bytesPerRow * y;
+
+			for (int x=0; x < screen -> realWidth; x++)
+			{
+				byte = x / 8;
+				bit = 1<<(7-(x & 7));
+				planeOffset = 0;
+
+				color = 0;
+				for (d=0;d<depth;d++)
+				{
+					color += raw[ row + byte + planeOffset ] & bit ? 1<<d: 0 ;
+					planeOffset += bytesPerPlan;
+				}
+
+				retroPixel( screen, x,y, color );
+							
+			}
+		}
+	}
+
+	engine_unlock();
 }
 
-void getRGB( int pos, int &r, int &g, int &b ) { // get RGB converted to 0..255
-  r = (data[pos] & 0x0F) * 17;
-  g = ((data[pos+1] & 0xF0)/16) * 17;
-  b = (data[pos+1] & 0x0F) * 17;
-}
 
 // pac.pic. RLE decompressor
-void convertPacPic( const char *base ) {
-  int o = 20;
-  bool ham = false;
-  if( get4(o) == 0x12031990 ) {
-    // detect HAM
-    if( get2(o+20) & 0x800 ) {
-      ham = true;
-      printf("HAM data is not yet supported, output will look garbled!\n");
-    }
-    // fetch palette
-    for( int i=0; i<32; ++i ) { 
-      getRGB( o+26+i*2, r[i],g[i],b[i] ); 
-      printf( "color %d, (%d,%d,%d)\n", i, r[i],g[i],b[i] );
-    }
-    o+=90;
-  }
-  if( get4(o) != 0x06071963 ) {
-    printf("could not find picture header!\n");
-    exit(1);
-  }
+int convertPacPic( int screen, unsigned char *data, const char *name )
+{
+	//  int o = 20;
+	int o=0;
+
+	bool ham = false;
+	if( get4(o) == 0x12031990 )
+	{
+		// detect HAM
+		if( get2(o+20) & 0x800 )
+		{
+		      ham = true;
+		      printf("HAM data is not yet supported, output will look garbled!\n");
+		}
+		// fetch palette
+		for( int i=0; i<32; ++i )
+		{ 
+			getRGB( data, o+26+i*2, r[i],g[i],b[i] ); 
+		}
+		o+=90;
+	}
+
+	if( get4(o) != 0x06071963 )
+	{
+		printf("could not find picture header!\n");
+		printf("%08x\n",get4(o));
+		printf("%08x\n",get4(o+4));
+		printf("%08x\n",get4(o+8));
+		return 1;
+	}
 
   int w  = get2(o+8),
       h  = get2(o+10),
       ll = get2(o+12),
       d  = get2(o+14);
-  printf("width: %d bytes\nheight: %d linelumps a %d lines\n", w,h,ll);
 
-  // reserve bitplane memory
-  unsigned char* raw = (unsigned char*)calloc(w*h*ll*d,1);
-  unsigned char *picdata = &data[o+24];
-  unsigned char *rledata = &data[o+get4(o+16)];
-  unsigned char *points  = &data[o+get4(o+20)];
+	// reserve bitplane memory
+	unsigned char* raw = (unsigned char*) malloc(w*h*ll*d);
+	unsigned char *picdata = &data[o+24];
+	unsigned char *rledata = &data[o+get4(o+16)];
+	unsigned char *points  = &data[o+get4(o+20)];
 
-  int rrbit = 6, rbit = 7;
-  int picbyte = *picdata++;
-  int rlebyte = *rledata++;
-  if (*points & 0x80) rlebyte = *rledata++;
+	if (raw)
+	{
+		int rrbit = 6, rbit = 7;
+		int picbyte = *picdata++;
+		int rlebyte = *rledata++;
+		if (*points & 0x80) rlebyte = *rledata++;
 
-  for( int i = 0; i < d; i++) {
-    unsigned char *lump_start = &raw[i*w*h*ll];
-    for( int j = 0; j < h; j++ ) {
-      unsigned char *lump_offset = lump_start;
-      for( int k = 0; k < w; k++ ) {
-        unsigned char *dd = lump_offset;
-        for( int l = 0; l < ll; l++ ) {
-          /* if the current RLE bit is set to 1, read in a new picture byte */
-          if (rlebyte & (1 << rbit--)) picbyte = *picdata++;
+		for( int i = 0; i < d; i++)
+		{
+			unsigned char *lump_start = &raw[i*w*h*ll];
 
-          /* write picture byte and move down by one line in the picture */
-          *dd = picbyte;
-          dd += w;
+			for( int j = 0; j < h; j++ )
+			{
+				unsigned char *lump_offset = lump_start;
 
-          /* if we've run out of RLE bits, check the POINTS bits to see if a new RLE byte is needed */
-          if (rbit < 0) {
-            rbit = 7;
-            if (*points & (1 << rrbit--)) rlebyte = *rledata++;
-            if (rrbit < 0)  rrbit = 7, points++;
-          }
-        }
-        lump_offset++;
-      }
-      lump_start += w * ll;
-    }
-  }
+				for( int k = 0; k < w; k++ )
+				{
+					unsigned char *dd = lump_offset;
+					for( int l = 0; l < ll; l++ )
+					{
+						/* if the current RLE bit is set to 1, read in a new picture byte */
+						if (rlebyte & (1 << rbit--)) picbyte = *picdata++;
 
-  // save png
-  // char fname[1000];
-  // snprintf( fname, 1000, "%s.png", base );
-  // FILE* out = fopen( fname, "wb" );
-  // saveBitplanesAsPNG( w,h*ll,d, r,g,b, raw, out, false, ham );
-  // fclose(out);
+						/* write picture byte and move down by one line in the picture */
+						*dd = picbyte;
+         					dd += w;
+
+						/* if we've run out of RLE bits, check the POINTS bits to see if a new RLE byte is needed */
+						if (rbit < 0)
+						{
+							rbit = 7;
+							if (*points & (1 << rrbit--)) rlebyte = *rledata++;
+							if (rrbit < 0)  rrbit = 7, points++;
+						}
+					}
+					lump_offset++;
+				}
+				lump_start += w * ll;
+			}
+		}
+
+		printf ("%d,%d,%d\n",w*8,h*ll,1<<d);
+		openUnpackedScreen( screen, w, h*ll, d, r,g ,b,raw, ham );
+		free(raw);
+	}
+
+	return 0;
 }
 
 char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 {
+	int n;
+	int s;
+	unsigned char *adr;
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data -> stack  +1;
 
-	dump_banks();
-
 	if (args==2)
 	{
-	}
+		n = getStackNum(stack-1);
+		s = getStackNum(stack);
 
-	getchar();
+		if ((n>0)&&(n<16))
+		{
+			adr = (unsigned char *) kittyBanks[n-1].start;
+
+			dump_banks();
+
+//			printf("%08x\n",adr);
+//			getchar();
+
+			convertPacPic( s, adr, "dump" );
+		} 
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
