@@ -13,7 +13,7 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
-extern const char *bankTypes[] ;
+//extern const char *bankTypes[] ;
 
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
@@ -304,7 +304,7 @@ void dump_banks()
 		{
 			printf("%2d - %-10s S:$%08X L:%d\n", 
 				n+1,
-				bankTypes[kittyBanks[n].type],
+				(char *) kittyBanks[n].start-8,
 				kittyBanks[n].start, 
 				kittyBanks[n].length);
 		}

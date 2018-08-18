@@ -89,7 +89,7 @@ void clean_up_bank(int n)
 
 						printf("try free icons\n");
 
-						retroFreeSprite( (struct retroSprite *) kittyBanks[n].start );
+						retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
 						icons = NULL;
 						break;
 
@@ -97,18 +97,18 @@ void clean_up_bank(int n)
 
 						printf("try free sprite\n");
 
-						retroFreeSprite( (struct retroSprite *) kittyBanks[n].start );
+						retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
 						sprite = NULL;
 						break;
 
 				default:
-						free( kittyBanks[n].start );
+						free( kittyBanks[n].start - 8 );
 						break;
 			}
 
-			kittyBanks[n-1].start = NULL;
-			kittyBanks[n-1].length = 0;
-			kittyBanks[n-1].type = 0;
+			kittyBanks[n].start = NULL;
+			kittyBanks[n].length = 0;
+			kittyBanks[n].type = 0;
 		}
 }
 

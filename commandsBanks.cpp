@@ -151,9 +151,12 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 			{
 				if ((n>0)&&(n<16))
 				{
+					char *mem = (char *) malloc( size + 8 );
+
 					kittyBanks[n-1].length = size;
-					if (kittyBanks[n-1].start) free( kittyBanks[n-1].start );
-					kittyBanks[n-1].start = malloc( size );
+					if (kittyBanks[n-1].start) free( (char *) kittyBanks[n-1].start - 8 );
+
+					kittyBanks[n-1].start = mem ? mem+8 : NULL;
 					kittyBanks[n-1].type = 9;	
 					adr = (char *)  kittyBanks[n-1].start;
 				}
@@ -167,7 +170,6 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 
 			fclose(fd);
 		}
-
 	}
 
 	popStack( stack - data->stack );
@@ -176,13 +178,11 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 
 char *_cmdBsave( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	char *start, *to;
-
-	dump_stack();
 
 	if (args==3)
 	{
@@ -201,8 +201,6 @@ char *_cmdBsave( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	getchar();
-
 	popStack( stack - data->stack );
 	return NULL;
 }
@@ -211,16 +209,41 @@ bool __ReserveAs( int type, int bank, int length, char *name, char *mem )
 {
 	if ((bank>0)&&(bank<16))
 	{
+		printf("%s:%s:%d - bank %d\n",__FILE__,__FUNCTION__,__LINE__, bank);
+
 		kittyBanks[bank-1].length = length;
-		if (kittyBanks[bank-1].start) free( kittyBanks[bank-1].start );
+
+		if (kittyBanks[bank-1].start) 
+		{
+			free( (char *) kittyBanks[bank-1].start - 8 );
+			kittyBanks[bank-1].start = NULL;
+		}
 
 		if (mem)
 		{
-			kittyBanks[bank-1].start = mem;
+			kittyBanks[bank-1].start = mem+8;
 		}
 		else
 		{
-			kittyBanks[bank-1].start = malloc( kittyBanks[bank-1].length );
+			mem =  (char *) malloc( kittyBanks[bank-1].length + 8 );
+			kittyBanks[bank-1].start = mem ? mem+8 : NULL;
+		}
+
+		if (kittyBanks[bank-1].start) 
+		{
+			int n = 0;
+			const char *ptr;
+			char *dest = kittyBanks[bank-1].start-8;
+
+			for (ptr = bankTypes[type]; *ptr ; ptr++ )
+			{
+				dest[n]=*ptr;	n++;
+			}
+
+			while (n<8)
+			{
+				dest[n] = ' '; n++;
+			}
 		}
 
 		kittyBanks[bank-1].type = type;
@@ -315,6 +338,8 @@ char *cmdReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 }
 
 
+extern bool next_print_line_feed;
+
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	int n = 0;
@@ -326,23 +351,27 @@ char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 	if (screen)
 	{
 		clear_cursor( screen );
-		_my_print_text( screen, (char *) "Nr   Type       Start       Length\n\n", 0);
+	
+		if (next_print_line_feed) _my_print_text( screen, (char *) "\n", 0);
+
+		_my_print_text( screen, (char *) "Nr   Type     Start       Length\n\n", 0);
 
 		for (n=0;n<15;n++)
 		{
 			if (kittyBanks[n].start)
 			{
-				sprintf(txt,"%2d - %-10s S:$%08X L:%d\n", 
+				sprintf(txt,"%2d - %.8s S:$%08X L:%d\n", 
 					n+1,
-					bankTypes[kittyBanks[n].type],
+					(char *) kittyBanks[n].start-8,
 					kittyBanks[n].start, 
 					kittyBanks[n].length);
 
 				_my_print_text( screen, txt, 0 );
 			}
 		}
-		_my_print_text( screen, (char *) "\n", 0 );
+		next_print_line_feed = true;
 	}
+
 
 	return tokenBuffer;
 }
@@ -397,13 +426,20 @@ void __load_work_data__(FILE *fd,int bank)
 		if (bank>0) item.bank = bank;
 
 		if (item.length & 0x80000000) item.type += 8;
-		item.length = (item.length & 0x7FFFFFF) - 8;
+		item.length = (item.length & 0x7FFFFFF) -8;
 		if (item.length >0 )
 		{
-			mem = (char *) malloc( item.length );
+			mem = (char *) malloc( item.length + 8);
+
 			if (mem)
 			{
-				fread( mem, item.length, 1, fd );
+				memset( mem, 0, item.length + 8 );
+
+				printf("we have memory\n");
+
+				printf("loaded %d\n",fread( mem +8 , item.length, 1, fd ));
+
+
 				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
 			}
 		}
@@ -424,6 +460,26 @@ int cust_fread (void *ptr, int size,int elements, FILE *fd)
 }
 
 extern void clean_up_banks();
+
+
+void unload_sprite_from_bank( int bank, void **ptr)
+{
+	if (*ptr) 
+	{
+		printf("object exists\n");
+
+		if ((kittyBanks[bank-1].object_ptr == *ptr ) && (*ptr))
+		{
+			printf("it is this bank\n");
+
+			retroFreeSprite( (struct retroSprite *) *ptr);
+			kittyBanks[bank-1].object_ptr = NULL;
+			*ptr = NULL;
+
+			printf("we should be fine now\n");
+		}
+	}
+}
 
 void __load_bank__(const char *name, int bank )
 {
@@ -472,36 +528,53 @@ void __load_bank__(const char *name, int bank )
 					switch (type)
 					{
 						case bank_type_sprite:
-
-							// should append to end of sprite bank.
-
-							engine_lock();
-							if (sprite) retroFreeSprite(sprite);
-							sprite = retroLoadSprite(fd, cust_fread );
-							engine_unlock();
-
-							// 99 Bottles of beer. 
-							if (__ReserveAs( bank_type_sprite, 3, 99,NULL, (char *) sprite ) == false)
 							{
-								if (sprite) retroFreeSprite(sprite);
-								sprite = NULL;
+								int _bank = bank>-1 ? bank : 3;
+								char *mem = (char *) malloc(8+sizeof(void *));
+
+								engine_lock();
+								unload_sprite_from_bank( _bank, (void **) &sprite);
+								sprite = retroLoadSprite(fd, cust_fread );
+								engine_unlock();
+
+								// 4 Bottles of beer. 
+								if (__ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, (char *) mem -8 ))							
+								{
+									kittyBanks[bank-1].object_ptr = (char *) sprite;
+								} 
+								else
+								{
+									if (sprite) retroFreeSprite(sprite);
+									sprite = NULL;
+								}
 							}
 							break;
 	
 						case bank_type_icons:
-
-							if (icons) retroFreeSprite(icons);
-							icons = retroLoadSprite(fd, cust_fread );
-
-							// 99 Bottles of beer. 
-							if (__ReserveAs( bank_type_sprite, 2, 99,NULL, (char *) icons ) == false)
 							{
-								if (icons) retroFreeSprite(icons);
-								icons = NULL;
+								int _bank = bank>-1 ? bank : 2;
+								char *mem = (char *) malloc(8+sizeof(void *));
+
+								unload_sprite_from_bank( _bank, (void **) &icons);
+								icons = retroLoadSprite(fd, cust_fread );
+
+								// 99 Bottles of beer. 
+								if (__ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, (char *) mem ))
+								{
+									kittyBanks[bank-1].object_ptr = (char *) icons;
+								}
+								else
+								{
+									if (icons) retroFreeSprite(icons);
+									icons = NULL;
+								}
 							}
 							break;
 
 						case bank_type_work_or_data:
+
+							printf("we are here\n");
+
 							__load_work_data__(fd,bank);
 							break;
 

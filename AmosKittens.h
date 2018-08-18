@@ -192,7 +192,8 @@ struct defFn
 struct kittyBank 
 {
 	int type;
-	void *start;
+	char *start;
+	char *object_ptr;
 	int length;
 };
 
