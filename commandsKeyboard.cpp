@@ -215,6 +215,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else
 	{
+		printf("<engine has stoped press enter>");
 		getchar();
 	}
 
