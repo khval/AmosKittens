@@ -1620,7 +1620,7 @@ char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
