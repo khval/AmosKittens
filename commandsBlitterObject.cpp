@@ -32,8 +32,8 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *sprite;
 extern struct retroSpriteObject bobs[64];
 
-void copyToClear( char *src,char *dest , int x0, int y0, int x1, int y1, int srcbpr, int destbpr);
-void copyClearTo( char *dest,char *src , int x0, int y0, int x1, int y1, int destbpr, int srcbpr);
+void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
+void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
 
 void clearBobs()
 {
@@ -73,61 +73,84 @@ void clearBobs()
 
 			if (clear -> mem)
 			{
-				copyClearTo(
-					(char *) screen -> Memory[ screen -> double_buffer_draw_frame ], 
-					clear -> mem , 
-					clear -> x, clear -> y, 
-					clear -> x + clear -> w, clear -> y + clear -> h, 
-					screen -> bytesPerRow, clear -> w);
+				copyClearToScreen( clear,screen );
 			}
 		}
 	}
 }
 
-void copyToClear( char *src,char *dest , int x0, int y0, int x1, int y1, int srcbpr, int destbpr)
+void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear )
 {
+	bool newX = false;
+	bool newY = false;
 	int x,y;
 	int destX=0;
 	int destY=0;
-	
-	if (y0<0) { destY=-y0; y0=0; }
-	if (x0<0) { destX=-x0; x0=0; }
+	int _w = clear -> w;
+	int _h = clear -> h;
+	int x0 = clear -> x;
+	int y0 = clear -> y;
+	int x1 = x0 + clear -> w;
+	int y1 = y0 + clear -> h;
+	unsigned char *dest,*src;
 
-	dest += (destbpr * destY);
-	src += (srcbpr * y0) ;
+	if (y0<0) { destY=-y0; y0=0; newY = true; }
+	if (x0<0) { destX=-x0; x0=0; newX = true; }
+	if (y1>screen->realHeight) { y1=screen->realHeight; newY=true; }
+	if (x1>screen->realWidth) { x1=screen->realWidth; newX=true; }
+	if (newX) _w = x1-x0;
+	if (newY) _h = y1-y0;	
+
+	src = screen -> Memory[ screen -> double_buffer_draw_frame ] + ( screen -> bytesPerRow * y0 ) + x0;
+	dest = (unsigned char *) ( clear -> mem + (clear -> w * destY) + destX);
 
 	for (y=y0; y<y1;y++)
 	{
-		for (x=x0; x<x1;x++)
+		for (x=0; x<_w;x++)
 		{
-			dest[x-x0]=src[x];
+			dest[x]=src[x];
 		}
-		dest += destbpr;
-		src += srcbpr;
+		dest += clear -> w;
+		src += screen -> bytesPerRow;
 	}
 }
 
-void copyClearTo( char *src,char *dest , int x0, int y0, int x1, int y1, int srcbpr, int destbpr)
+void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen )
 {
+	bool newX = false;
+	bool newY = false;
 	int x,y;
-	int srcX=0;
-	int srcY=0;
-	
-	if (y0<0) { srcY=-y0; y0=0; }
-	if (x0<0) { srcX=-x0; x0=0; }
+	int destX=0;
+	int destY=0;
+	int _w = clear -> w;
+	int _h = clear -> h;
+	int x0 = clear -> x;
+	int y0 = clear -> y;
+	int x1 = x0 + clear -> w;
+	int y1 = y0 + clear -> h;
+	unsigned char *dest,*src;
 
-	src += (srcbpr * y0);
-	dest += (destbpr * srcY) ;
+	if (y0<0) { destY=-y0; y0=0; newY = true; }
+	if (x0<0) { destX=-x0; x0=0; newX = true; }
+	if (y1>screen->realHeight) { y1=screen->realHeight; newY=true; }
+	if (x1>screen->realWidth) { x1=screen->realWidth; newX=true; }
+	if (newX) _w = x1-x0;
+	if (newY) _h = y1-y0;	
+
+	dest = screen -> Memory[ screen -> double_buffer_draw_frame ] + ( screen -> bytesPerRow * y0 ) + x0;
+	src = (unsigned char *) ( clear -> mem + (clear -> w * destY) + destX);
 
 	for (y=y0; y<y1;y++)
 	{
-		for (x=x0; x<x1;x++)
+		for (x=0; x<_w;x++)
 		{
-			src[x]=dest[x-x0];
+			dest[x]= src[x];
 		}
-		src += srcbpr;
-		dest += destbpr;
+		src += clear -> w;
+		dest += screen -> bytesPerRow;
 	}
+
+	retroBox(screen,x0,y0,x1,y1,1);
 }
 
 void drawBobs()
@@ -180,10 +203,14 @@ void drawBobs()
 
 				size = clear -> w * clear -> h;
 
-				if (size > clear -> size) 
+				if (clear -> mem)
 				{
-					if (clear -> mem) FreeVec(clear -> mem);
+					FreeVec(clear -> mem);
+					clear -> mem = NULL;
+				}
 
+				if (size) 
+				{
 					clear -> mem = (char *) AllocVecTags( size, 
 							AVT_Type, MEMF_PRIVATE, 
 							AVT_ClearWithValue, 0,
@@ -194,12 +221,7 @@ void drawBobs()
 
 				if (clear -> mem)
 				{
-					copyToClear(
-						(char *) screen -> Memory[screen -> double_buffer_draw_frame], 
-						clear -> mem , 
-						clear -> x, clear -> y, 
-						clear -> x + clear -> w, clear -> y + clear -> h, 
-						screen -> bytesPerRow, clear -> w);
+					copyScreenToClear( screen,clear );
 				}
 
 				retroPasteSprite(screen, sprite, bob->x, bob->y, image-1, flags);
