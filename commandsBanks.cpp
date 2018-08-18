@@ -39,16 +39,16 @@ const char *amos_file_ids[] =
 
 
 const char *bankTypes[] = {
-	"Chip work",		// 0
-	"Fast work",		// 1
+	"ChipWork",		// 0
+	"FastWork",		// 1
 	"Icons",			// 2
 	"Sprites",			// 3
 	"Music",			// 4
 	"Amal",			// 5
 	"Samples",		// 6
 	"Menu",			// 7
-	"Chip Data",		// 8
-	"Fast Data",		// 9
+	"ChipData",		// 8
+	"FastData",		// 9
 	"Code"
 };
 
