@@ -1469,7 +1469,7 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
+char *do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	if (cmdStack)
 	{
@@ -1479,6 +1479,7 @@ void do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 	stack++;
+	return NULL;
 }
 
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)

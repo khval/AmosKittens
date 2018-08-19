@@ -69,10 +69,8 @@ char *data_read_pointers[PROC_STACK_SIZE];
 
 char *_get_var_index( glueCommands *self, int nextToken);
 
-void do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
-
 char *(*do_var_index) ( glueCommands *self, int nextToken ) = _get_var_index;
-void (*do_to) ( struct nativeCommand *, char * ) = do_to_default;
+char *(*do_to) ( struct nativeCommand *, char * ) = do_to_default;
 void (**do_input) ( struct nativeCommand *, char * ) ;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 

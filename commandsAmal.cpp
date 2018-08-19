@@ -18,7 +18,6 @@
 #include "engine.h"
 
 extern int last_var;
-extern unsigned short last_token;
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 

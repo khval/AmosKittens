@@ -975,7 +975,7 @@ char *cmdFalse(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
+char *do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -990,7 +990,7 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
+char *do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1009,17 +1009,24 @@ void do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 			popStack( stack - cmdTmp[cmdStack-1].stack );
 		}
 	}
+	return NULL;
 }
 
-void do_to_default( struct nativeCommand *, char * )
+char *do_to_default( struct nativeCommand *, char * )
 {
 	stack ++;
+	return NULL;
 }
 
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	if (do_to) do_to( cmd, tokenBuffer );	
+	if (do_to)
+	{
+		char *ret = do_to( cmd, tokenBuffer );	
+		if (ret) tokenBuffer = ret;
+	}
+
 	return tokenBuffer;
 }
 
