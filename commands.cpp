@@ -35,7 +35,6 @@ extern std::vector<struct label> labels;
 
 extern int last_var;
 extern struct globalVar globalVars[];
-extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 extern void setStackStr( char *str );
@@ -1065,7 +1064,7 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 			break;
 		}
 
-		last_token = token;
+		last_tokens[parenthesis_count] = token;
 		token = *( (short *) ptr);
 		ptr += 2;
 	};
@@ -2106,7 +2105,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( ((last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_timer;

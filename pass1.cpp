@@ -469,7 +469,7 @@ void pass1label(char *ptr)
 
 		// only add new labels if last token is 0.
 
-		if (last_token  == 0)
+		if (last_tokens[parenthesis_count]  == 0)
 		{
 
 			found_ref = findLabelRef(tmpName);
@@ -1033,15 +1033,15 @@ void pass1_reader( char *start, char *file_end )
 {
 	char *ptr;
 	int token = 0;
-	last_token = 0;
+	last_tokens[parenthesis_count] = 0;
 
 	lastLineAddr = start;
 	ptr = start;
-	while (( ptr = token_reader_pass1(  start, ptr,  last_token, token, file_end ) ) && ( kittyError.code == 0))
+	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
 
-		last_token = token;
+		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.
 	}

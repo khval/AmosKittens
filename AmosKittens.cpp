@@ -54,7 +54,7 @@ char *_file_end_ = NULL;
 int parenthesis_count = 0;
 int cmdStack = 0;
 int procStackCount = 0;
-unsigned short last_token = 0;
+unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 int last_var = 0;
 int tokenlength;
 
@@ -461,10 +461,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
-		if ( correct_order( last_token,  next_token ) == false )
+		if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 		{
-			dprintf("---hidden ( symbol \n");
-
 			// hidden ( condition.
 			kittyStack[stack].str = NULL;
 			kittyStack[stack].value = 0;
@@ -515,7 +513,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	length2 += (length & 1);		// align to 2 bytes
 	next_token = *((short *) (ptr+2+length2) );
 
-	if ( correct_order( last_token,  next_token ) == false )
+	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;
@@ -543,7 +541,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	// check if - or + comes before *, / or ; symbols
 
-	if ( correct_order( last_token,  next_token ) == false )
+	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
 		dprintf("---hidden ( symbol \n");
 
@@ -1098,13 +1096,13 @@ void code_reader( char *start, int tokenlength )
 {
 	char *ptr;
 	int token = 0;
-	last_token = 0;
+	last_tokens[parenthesis_count] = 0;
 	
 	interpreter_running = true;
 
 	currentLine = 0;
 	ptr = start;
-	while ( ptr = token_reader(  start, ptr,  last_token, token, tokenlength ) )
+	while ( ptr = token_reader(  start, ptr,  last_tokens[parenthesis_count], token, tokenlength ) )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
@@ -1139,7 +1137,7 @@ void code_reader( char *start, int tokenlength )
 			}
 		}
 
-		last_token = token;
+		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.		
 
@@ -1303,7 +1301,7 @@ int main(char args, char **arg)
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
 		}
 
-		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * 1000 );
+		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
 		if (do_input) 
 		{
 			int n; 

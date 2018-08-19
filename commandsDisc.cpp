@@ -19,7 +19,6 @@
 
 extern int last_var;
 extern struct globalVar globalVars[];
-extern unsigned short last_token;
 extern int tokenMode;
 
 APTR contextDir = NULL;
@@ -664,14 +663,12 @@ char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dprintf("%08x - %08x\n", last_token, NEXT_TOKEN( tokenBuffer ) );
-
-	if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( (( last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_dir_str;
 	}
-	else if ( ((last_token == 0x0000) || (last_token == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
+	else if ( (( last_tokens[parenthesis_count]== 0x0000) || ( last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		stackCmdNormal( _cmdDirStr, tokenBuffer );
@@ -1522,7 +1519,7 @@ char *cmdField(struct nativeCommand *cmd, char *ptr)
 				break;
 		}
 
-		last_token = token;
+		last_tokens[parenthesis_count] = token;
 		token = *( (short *) ptr);
 		ptr += 2;
 

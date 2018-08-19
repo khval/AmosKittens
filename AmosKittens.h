@@ -4,6 +4,7 @@
 
 #define PROC_STACK_SIZE 1000
 #define VAR_BUFFERS 1000
+#define MAX_PARENTHESIS_COUNT 1000
 
 #define token_semi	0x0064
 #define token_add		0xFFC0
@@ -270,7 +271,7 @@ struct zone
 	cmdTmp[cmdStack].flag = cmd_index;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].lastToken = last_token; \
+	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; } \
 
@@ -316,7 +317,7 @@ extern int stack;
 extern int cmdStack;
 extern int procStackCount;
 
-extern unsigned short last_token;
+extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 
 extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
