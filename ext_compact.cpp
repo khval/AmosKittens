@@ -228,7 +228,6 @@ char *ext_cmd_unpack(nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _ext_cmd_unpack, tokenBuffer );
-	getchar();
 	return tokenBuffer;
 }
 
