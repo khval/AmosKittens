@@ -154,9 +154,15 @@ char *_machinePeek( struct glueCommands *data, int nextToken )
 			ret = *adr;
 			success = true;
 		}
+		else
+		{
+			setError(25,data->tokenBuffer);
+		}
 	}
-
-	if (success == false) setError(25,data->tokenBuffer);
+	else
+	{
+		setError(22,data->tokenBuffer);
+	}
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
