@@ -375,7 +375,8 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 	char *tmp;
 	int found = 0;
 	struct reference *ref = (struct reference *) (ptr);
-	struct kittyData *var;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	tmp = dupRef( ref );
 	if (tmp)
@@ -395,38 +396,51 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 		found = findVar(tmp, type , is_proc ? 0 : (pass1_inside_proc ? procCount : 0) );
 		if (found)
 		{
-			free(tmp);		//  don't need tmp
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 			ref -> ref = found;
 
 			if (is_proc)
 			{
-				var = &globalVars[found-1].var;
-				var -> type = type_proc;
-				var -> tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
-				globalVars[found-1].proc =  procCount;
 
-				return var;
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+				struct globalVar *_old = &globalVars[found-1];
+				_old -> var.type = type_proc;
+				_old -> var.tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
+				_old -> proc =  procCount;
+				return &_old -> var;
 			}
 		}
 		else
 		{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 			if (is_proc)
 			{
-				add_var_from_ref( ref, tmp, type_proc );
-				var = &globalVars[global_var_count-1].var;
-				var -> tokenBufferPos = ptr + 2 +sizeof(struct reference) + ref -> length ;
-				globalVars[global_var_count-1].proc = procCount;
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-				return var;
+				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type_proc ))
+				{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+					_new -> var.tokenBufferPos = ptr + 2 +sizeof(struct reference) + ref -> length ;
+					_new -> proc = procCount;
+					return &_new -> var;
+				}
 			}
 			else
 			{
-				add_var_from_ref( ref, tmp, type );
-				globalVars[global_var_count-1].proc = (pass1_inside_proc ? procCount : 0);
+				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type ))
+				{
+					_new -> proc = (pass1_inside_proc ? procCount : 0);
+					return &_new -> var;
+				}
 			}
 		}
 
-		// we should not free tmp, see code above.
+		if (tmp) free(tmp); 
+		tmp= NULL;
 	}
 
 	return NULL;
