@@ -567,11 +567,19 @@ char *pass1_shared( char *ptr )
 								globalVars[var-1].pass1_shared_to = procCount;
 								ref->ref = var;
 							}
-							free(tmp);
+							else
+							{
+								if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type ))
+								{
+									_new -> pass1_shared_to = procCount;
+								}
+							}
+
+							if (tmp) free(tmp);
+							tmp = NULL;
 						}
 
 						ptr += sizeof(struct reference *) + ref -> length;
-
 						break;
 
 			case 0x0074: count ++; break;	// (
