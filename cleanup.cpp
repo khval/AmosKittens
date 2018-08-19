@@ -24,6 +24,9 @@ void clean_up_vars()
 
 	for (n=0;n<global_var_count;n++)
 	{
+//		printf("Free var %d -- type: %x is shared %d\n",n, globalVars[n].var.type, globalVars[n].pass1_shared_to);
+//		printf("--->name %s\n",globalVars[n].varName);
+
 		if (globalVars[n].varName) 
 		{
 			free(globalVars[n].varName);
@@ -37,12 +40,15 @@ void clean_up_vars()
 			case type_float | type_array:
 			case type_string | type_array:
 
+//				printf("--->Free array?");
+
 				// its a union, so any array or string will be freed.
 
  				if (globalVars[n].var.str) free (globalVars[n].var.str);
 				globalVars[n].var.str = NULL;
 				break;
 		}
+//		printf("--->Done :-)\n");
 	}
 
 	global_var_count = 0;
