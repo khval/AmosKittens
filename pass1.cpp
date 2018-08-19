@@ -256,19 +256,25 @@ int ReferenceByteLength(char *ptr)
 	return length;
 }
 
-void add_var_from_ref( struct reference *ref, char *tmp, int type )
+struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type )
 {
-	struct kittyData *var;
+	struct globalVar *_new = NULL;
 
-	global_var_count ++;
-	ref -> ref = global_var_count;
+	if ( global_var_count < VAR_BUFFERS )
+	{
+		global_var_count ++;
+		ref -> ref = global_var_count;
 
-	globalVars[global_var_count-1].varName = tmp;	// tmp is alloced and used here.
+		_new = &globalVars[global_var_count-1];
+		_new -> varName = *tmp;	// tmp is alloced and used here.
+		_new -> var.type = type;
+		_new -> var.len = 0;
+		if (_new -> var.type == type_string) _new -> var.str = strdup("");
 
-	var = &globalVars[global_var_count-1].var;
-	var->type = type;
-	var->len = 0;
-	if (var -> type == type_string) var->str = strdup("");
+		*tmp = NULL;
+	}
+
+	return _new;
 }
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
