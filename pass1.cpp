@@ -628,16 +628,17 @@ char *pass1_global( char *ptr )
 							var = findVarPublic(tmp, type );
 							if (var)
 							{
-								free(tmp);
 								globalVars[var-1].isGlobal = TRUE;
 								ref->ref = var;
 							}
 							else
 							{
-								add_var_from_ref( ref, tmp, FALSE );
+								add_var_from_ref( ref, &tmp, FALSE );
 								globalVars[global_var_count-1].isGlobal = TRUE;
 							}
-							// don't need to free tmp, we use or trow it away, see above
+							
+							if (tmp) free(tmp);
+							tmp = NULL;
 						}
 
 						ptr += sizeof(struct reference *) + ref -> length;
