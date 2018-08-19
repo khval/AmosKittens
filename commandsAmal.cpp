@@ -57,8 +57,58 @@ char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_amalChannel( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int channel = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	do_to = do_to_default;
+
+	switch (args)
+	{
+		case 2:	printf("Sorry Amal not yet working...\nBut it looks ok\n");
+				break;
+		defaut:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+
+	return NULL;
+}
+
+char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
+{
+	unsigned short token = *((unsigned short *) tokenbuffer);
+	char *ret = NULL;
+
+	switch (token)
+	{
+		case 0x1B9E: 	// Channel x To Bob y
+
+					stack ++;
+					setStackNum( token );
+					ret = tokenbuffer+2;
+					break;
+
+		default:
+			setError(22,tokenbuffer);
+	}
+
+	return ret;
+}
+
 char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 {
+//       Channel(A+3) To Bob A+3 
+
+	do_to = do_to_channel;
+
+	stackCmdNormal( _amalChannel, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
@@ -72,6 +122,8 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
+		case 2:	printf("Sorry Amal not yet working...\nBut it looks ok\n");
+				break;
 		defaut:
 			setError(22,data->tokenBuffer);
 	}
