@@ -968,7 +968,7 @@ char *_modData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			dprintf(" %d %% %d\n", item0->value , item1->value );
-			setStackNum( item0->value * item1->value );
+			setStackNum( item0->value % item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
