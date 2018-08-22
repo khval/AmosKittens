@@ -86,11 +86,11 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	int num = 0;
 	unsigned int color;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1:
+		case 1:	// get color
 			num = getStackNum( stack );
 			popStack( stack - data->stack );
 
@@ -101,18 +101,17 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 			}
 			break;
 
-		case 2:
+		case 2:	// set color
 			num = getStackNum( stack-1 );
+			color = getStackNum( stack );
 			popStack( stack - data->stack );
 
 			if ((num>-1)&&(num<256))
 			{
-				color = getStackNum( stack );
-
 				if (screens[current_screen])
 				{
 					retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
-					dprintf("Screen %d,Color %d,R %d,G %d,B %d\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
+					dprintf("Screen %d,Color %d,R %02x G %02x,B %02x\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
 
 				}
 				success = true;
@@ -1214,9 +1213,8 @@ char *_gfxAutoback( struct glueCommands *data, int nextToken )
 	{
 		if (screens[current_screen])
 		{
-			screens[current_screen]->autoback = _set_rainbow_index = getStackNum( stack );
+			screens[current_screen]->autoback = getStackNum( stack );
 		}
-
 	}
 	else setError(22,data->tokenBuffer);
 
