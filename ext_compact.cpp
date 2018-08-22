@@ -38,9 +38,9 @@ static int r[32]={0},g[32]={0},b[32]={0};
 #define get4(  pos ) ( ( ( int(data[pos])*256 + int(data[pos+1]) )*256 + int(data[pos+2]) ) * 256 + int(data[pos+3]) )
 
 void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB converted to 0..255
-	r = (data[pos] & 0x0F) * 17;
-	g = ((data[pos+1] & 0xF0)/16) * 17;
-	b = (data[pos+1] & 0x0F) * 17;
+	r = (data[pos] & 0x0F) * 0x11;
+	g = ((data[pos+1] & 0xF0)>>4) * 0x11;
+	b = (data[pos+1] & 0x0F) * 0x11;
 }
 
 void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, int *r, int *g, int *b, unsigned char *raw,bool ham )
@@ -92,8 +92,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 					planeOffset += bytesPerPlan;
 				}
 
-				retroPixel( screen, x,y, color );
-							
+				retroPixel( screen, x,y, color );					
 			}
 		}
 	}
@@ -210,12 +209,6 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		if ((n>0)&&(n<16))
 		{
 			adr = (unsigned char *) kittyBanks[n-1].start;
-
-			dump_banks();
-
-//			printf("%08x\n",adr);
-//			getchar();
-
 			convertPacPic( s, adr, "dump" );
 		} 
 	}
