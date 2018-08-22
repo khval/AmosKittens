@@ -94,7 +94,7 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 		if (screen_num == current_screen)
 		{
 			int n;
-			for (n=0; n<8;n++)
+			for (n=8; n>-1;n--)
 			{
 				if (screens[n])
 				{
