@@ -11,9 +11,6 @@
 extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
 
-extern int pen;
-extern int paper;
-
 void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph);
 
 struct _font_loc {
@@ -48,14 +45,14 @@ struct _font
 
 void draw_bit( struct retroScreen *screen, int x,int y)
 {
-	retroPixel( screen,x,y,pen);
+	retroPixel( screen,x,y,screen -> pen);
 }
 
 void draw_char(struct retroScreen *screen, int lX, int lY, char c )
 {
 	int x = lX * 8;
 	int y = lY * 8 ;
-	retroBAR( screen, x,y,x+7,y+7, paper);
+	retroBAR( screen, x,y,x+7,y+7, screen -> paper);
 	draw_glyph( screen, topaz8_font, x, y, c );
 }
 
@@ -199,17 +196,15 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 	}
 }
 
-extern int pen;
-extern int paper;
 
 void esc_paper (struct retroScreen *screen, char c )
 {
-	paper = c-'0';
+	screen -> paper = c-'0';
 }
 
 void esc_pen (struct retroScreen *screen, char c )
 {
-	pen = c-'0';
+	screen -> pen = c-'0';
 }
 
 void esc_x (struct retroScreen *screen, char c )
@@ -293,7 +288,7 @@ void limit_location(struct retroScreen *screen, int max_char_width )
 			retroBAR( screen,
 					0,paper_height-8,
 					screen->realWidth, screen-> realHeight, 
-					paper);
+					screen -> paper);
 		}
 }
 

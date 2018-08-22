@@ -225,8 +225,6 @@ void set_default_colors( struct retroScreen *screen )
 		retroScreenColor( screen, n,DefaultPalette[n].r,DefaultPalette[n].g,DefaultPalette[n].b);
 }
 
-extern int paper;
-
 void clear_cursor(struct retroScreen *screen)
 {
 	if (curs_on)
@@ -234,7 +232,7 @@ void clear_cursor(struct retroScreen *screen)
 		int gx,gy;
 		gx = screen -> locateX * 8;
 		gy = screen -> locateY * 8;
-		retroBAR( screen, gx,gy,gx+7,gy+7, paper);
+		retroBAR( screen, gx,gy,gx+7,gy+7, screen->paper);
 	}
 }
 

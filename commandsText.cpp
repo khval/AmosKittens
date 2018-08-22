@@ -28,8 +28,6 @@ extern int current_screen;
 extern int cursor_color;
 
 bool curs_on = true;
-int pen = 2;
-int paper = 1;
 int _tab_size = 3;
 
 bool next_print_line_feed = false;
@@ -110,8 +108,11 @@ char *_textPen( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		pen  = getStackNum( stack );
-		success = true;
+		if (screens[current_screen])
+		{
+			screens[current_screen] -> pen  = getStackNum( stack );
+			success = true;
+		}
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
@@ -136,8 +137,11 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		paper = getStackNum( stack );
-		success = true;
+		if (screens[current_screen])
+		{
+			screens[current_screen] -> paper = getStackNum( stack );
+			success = true;
+		}
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
@@ -949,7 +953,7 @@ char *_textCline( struct glueCommands *data, int nextToken )
 					break;
 		}
 		
-		retroBAR(screen,x0,y0,x1,y1,paper);
+		retroBAR(screen,x0,y0,x1,y1,screen -> paper);
 	}
 
 	popStack( stack - data->stack );

@@ -35,9 +35,6 @@ int xgr = 0,  ygr = 0;
 
 int GrWritingMode = 0;
 
-extern int pen ;
-extern int paper ;
-
 extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
@@ -205,7 +202,7 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 		case 1:
 			if (kittyStack[stack].type == type_none)
 			{
-				color = paper;
+				color = screen -> paper;
 			}
 			else
 			{
