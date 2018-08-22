@@ -302,7 +302,7 @@ void dump_banks()
 	{
 		if (kittyBanks[n].start)
 		{
-			printf("%2d - %-10s S:$%08X L:%d\n", 
+			printf("%2d - %.8s S:$%08X L:%d\n", 
 				n+1,
 				(char *) kittyBanks[n].start-8,
 				kittyBanks[n].start, 
