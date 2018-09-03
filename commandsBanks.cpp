@@ -529,7 +529,7 @@ void __load_bank__(const char *name, int bank )
 					{
 						case bank_type_sprite:
 							{
-								int _bank = bank>-1 ? bank : 3;
+								int _bank = bank>-1 ? bank : 1;
 								char *mem = (char *) malloc(8+sizeof(void *));
 
 								engine_lock();
