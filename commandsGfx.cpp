@@ -1283,94 +1283,6 @@ char *_gfxZoom( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_gfxFade( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	bool done = false;
-
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 0:
-				setError(22,data->tokenBuffer);
-				return NULL;
-		case 1:
-				if (screens[current_screen])
-				{
-					int n;
-					struct retroRGB *pal;
-
-					screens[current_screen] -> fade_count = 0;
-					screens[current_screen] -> fade_speed = getStackNum( stack );
-
-					n = 0;
-					pal = screens[current_screen] -> fadePalette;
-					while ( n++<256)
-					{
-						if (n!=2)
-						{
-							pal -> r = 0;
-							pal -> g = 0;
-							pal -> b = 0;
-						}
-						pal++;
-					}
-				}
-				done = true;
-
-				break;
-		case 2:
-				if (data->have_to == 1)
-				{
-					int source_screen = getStackNum( stack );
-
-					if ((screens[current_screen])&&(screens[source_screen]))
-					{
-						int n;
-						struct retroRGB *source_pal;
-						struct retroRGB *dest_pal;
-
-						screens[current_screen] -> fade_count = 0;
-						screens[current_screen] -> fade_speed = getStackNum( stack-1 );
-
-						source_pal = screens[source_screen] -> orgPalette;
-						dest_pal = screens[current_screen] -> fadePalette;
-						n = 0;
-						while ( n++<256)
-						{
-							*dest_pal++=*source_pal++;
-						}
-					}
-					done = true;
-				}
-				break;
-	}
-
-	if ((done == false) && (screens[current_screen] ))
-	{
-		int ecs_rgb = 0;
-		int s;
-		screens[current_screen] -> fade_speed = getStackNum( data -> stack );
-
-		struct retroRGB *opal= screens[current_screen] -> orgPalette;
-		struct retroRGB *fpal= screens[current_screen] -> fadePalette;
-
-		for ( s = data -> stack+1; s<=stack;s++ );
-		{
-			ecs_rgb = ((opal -> r & 0xF0) << 4) | (opal -> g & 0xF0 ) | ((opal ->b & 0xF0) >>4);
-			stack_get_if_int( s, &ecs_rgb );
-			fpal -> r =	((ecs_rgb & 0xF00) >> 8) * 0x11;
-			fpal -> g =	((ecs_rgb & 0x0F0) >> 4) * 0x11;
-			fpal -> b =	(ecs_rgb & 0x00F) * 0x11;
-			opal++;
-			fpal++;
-		}
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *_gfxAppear( struct glueCommands *data, int nextToken )
 {
@@ -1464,13 +1376,169 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
+char *_gfxFade( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool done = false;
+
+//	proc_names_
+printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 0:
+				setError(22,data->tokenBuffer);
+				return NULL;
+		case 1:
+				if (screens[current_screen])
+				{
+					int n;
+					struct retroRGB *pal;
+
+					screens[current_screen] -> fade_speed = 0; // disable fadeing...
+
+					n = 0;
+					pal = screens[current_screen] -> fadePalette;
+					while ( n<256)
+					{
+						pal -> r = 0;
+						pal -> g = 0;
+						pal -> b = 0;
+						pal++;
+						n++;
+					}
+
+					screens[current_screen] -> fade_count = 0;
+					screens[current_screen] -> fade_speed = getStackNum( stack );
+				}
+
+				done = true;
+				break;
+	}
+
+	if ((done == false) && (screens[current_screen] ))
+	{
+		int ecs_rgb = 0;
+		int s;
+		struct retroRGB *opal= screens[current_screen] -> orgPalette;
+		struct retroRGB *fpal= screens[current_screen] -> fadePalette;
+
+		screens[current_screen] -> fade_speed = 0;	 // disable fadeing...
+
+		for ( s = data -> stack+1; s<=stack;s++ );
+		{
+			ecs_rgb = ((opal -> r & 0xF0) << 4) | (opal -> g & 0xF0 ) | ((opal ->b & 0xF0) >>4);
+			stack_get_if_int( s, &ecs_rgb );
+			fpal -> r =	((ecs_rgb & 0xF00) >> 8) * 0x11;
+			fpal -> g =	((ecs_rgb & 0x0F0) >> 4) * 0x11;
+			fpal -> b =	(ecs_rgb & 0x00F) * 0x11;
+			opal++;
+			fpal++;
+		}
+
+		screens[current_screen] -> fade_speed = getStackNum( data -> stack );
+	}
+
+	popStack( stack - data->stack );
+
+//	getchar();
+
+	return NULL;
+}
+
+char *_gfxFadeTo( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int fade_speed = 0;
+	int mask = 0xFFFFFFFF;	// 8 bit set, all colors in use.
+	int source_screen = 0;
+	bool valid = true;
+
+//	proc_names_
+printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+				fade_speed = getStackNum( stack -1);
+				source_screen = getStackNum( stack );
+				break;
+		case 3:
+				fade_speed = getStackNum( stack -1);
+				source_screen = getStackNum( stack );
+				mask = getStackNum( stack );
+				break;
+		default:
+				valid = false;
+				setError(22,data->tokenBuffer);
+				return NULL;
+	}
+
+
+	if (valid)
+	{
+
+		printf("Fade %d TO %d,%08x\n",fade_speed,source_screen,mask);
+
+		if ((screens[current_screen])&&(screens[source_screen]))
+		{
+			int n;
+			int fade_speed = 0;
+			struct retroRGB *org_pal;
+			struct retroRGB *source_pal;
+			struct retroRGB *dest_pal;
+
+			fade_speed = getStackNum( data -> stack );
+
+			screens[current_screen] -> fade_count = 0;
+			screens[current_screen] -> fade_speed = 0;
+
+			org_pal = screens[current_screen] -> orgPalette;
+			source_pal = screens[source_screen] -> orgPalette;
+			dest_pal = screens[current_screen] -> fadePalette;
+
+			printf("setting fade pal\n");
+
+			n = 0;
+			while ( n<256)
+			{
+				if (n<32)		// we allow up to 32 colors mask, Amos Pro only 16 colors mask.
+				{
+//					printf ("%08x - %02x, %02x, %02x\n", (1<<n), source_pal -> r, source_pal -> g, source_pal -> b);
+					*dest_pal++=*source_pal;
+	//				*dest_pal++= (mask & (1<<n)) ? *source_pal : *org_pal;
+				}
+				else
+				{
+					*dest_pal++=*source_pal;
+				}
+
+				source_pal++;
+				org_pal++;
+				n++;
+			}
+
+			screens[current_screen] -> fade_count = 0;
+			screens[current_screen] -> fade_speed = fade_speed;
+
+			printf("fade speed is %d\n",screens[current_screen] -> fade_speed);
+		}
+	}
+
+	popStack( stack - data->stack );
+
+
+	return NULL;
+}
+
+
+char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	if (cmdStack)
 	{
 		if (cmdTmp[cmdStack-1].cmd == _gfxFade)
 		{
-			cmdTmp[cmdStack-1].have_to = 1;
+			cmdTmp[cmdStack-1].cmd = _gfxFadeTo;
 		}
 	}
 	stack++;
@@ -1479,7 +1547,7 @@ char *do_to_set_have_to( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	do_to = do_to_set_have_to;
+	do_to = do_to_fade;
 	stackCmdNormal( _gfxFade, tokenBuffer );
 	return tokenBuffer;
 }
