@@ -19,6 +19,7 @@
 #include "engine.h"
 #include "bitmap_font.h"
 #include "debug.h"
+#include "channel.h"
 
 extern int sig_main_vbl;
 extern bool running;			// 
@@ -37,6 +38,7 @@ extern int _keyshift;
 
 extern APTR engine_mx ;
 
+extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
 
 int engine_mouse_key = 0;
@@ -198,12 +200,21 @@ void main_engine();
 
 bool start_engine()
 {
+#ifdef enable_engine_debug_output_yes
+	BPTR engine_debug_output = Open("CON:660/50/600/480/Kittens engine",MODE_NEWFILE);
+#endif
+
+
 	MainTask = (struct Process *) FindTask(NULL);
 	EngineTask = CreateNewProcTags(
 				NP_Name, "Amos kittens graphics engine" ,
 				NP_Entry, main_engine, 
 				NP_Priority, 0, 
 				NP_Child, TRUE,
+
+#ifdef enable_engine_debug_output_yes
+				NP_Output, engine_debug_output,
+#endif
 				TAG_END);
 
 	Wait(SIGF_CHILD);
