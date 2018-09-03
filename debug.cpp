@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,13 +8,15 @@
 #include "commands.h"
 #include "debug.h"
 #include <vector>
+#include <proto/retroMode.h>
 
 extern struct globalVar globalVars[1000];
 extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern int global_var_count;
 
-//extern const char *bankTypes[] ;
+extern struct retroScreen *screens[8] ;
+extern int current_screen ;
 
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
@@ -357,4 +360,49 @@ void dumpLineAddress()
 		printf("Line %08d, start %08x end %08x\n", n-1, linesAddress[n].start , linesAddress[n].end );
 	}
 }
+
+void dumpScreenInfo()
+			{
+				int n;
+				struct retroScreen *s;
+
+				s = screens[current_screen];
+
+				printf("-- dump screen info --\n");
+				printf(" current screen %d\n",current_screen );
+				printf(" current screen hex %08x\n",s);
+
+
+				if (s -> fade_speed)
+				{
+					printf("fade speed: %d\n", s->fade_speed);
+
+					for (n=0;n<256;n++)
+					{
+						printf("%d, %02X,%02X,%02X --> %02X,%02X,%02X\n",
+							n,
+							s -> orgPalette[n].r,
+							s -> orgPalette[n].g,
+							s -> orgPalette[n].b,
+							s -> fadePalette[n].r,
+							s -> fadePalette[n].g,
+							s -> fadePalette[n].b );
+					}
+				}
+
+				printf("other screens:\n");
+				for (n=0;n<8;n++)
+				{
+					if (screens[n])
+					{
+						printf("screen %d, dw %d, dh %d, rw %d, rh %d, display x %d display y %d pen %d, paper %d, fade_speed %d\n", 
+							n,
+							screens[n]->displayWidth, screens[n]->displayHeight,
+							screens[n]->realWidth,screens[n]->realHeight,
+							screens[n]->scanline_x,screens[n]->scanline_y,
+							screens[n]->pen,screens[n]->paper,
+							screens[n]->fade_speed);							
+					}
+				}
+			};
 

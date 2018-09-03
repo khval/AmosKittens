@@ -110,8 +110,11 @@ const char *str_pause = "pause";
 const char *str_hint = "hint ";
 const char *str_show_var = "show var ";
 const char *str_dump_banks = "dump banks";
+const char *str_dump_screen_info = "dump screen info"; 
 
 int findVar( char *name, int type, int _proc );
+
+extern void dumpScreenInfo();
 
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
@@ -122,6 +125,10 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 		char *txt = strndup( ptr + 3, length );
 		if (txt)
 		{
+			if (strncmp(txt,str_dump_screen_info,strlen(str_dump_screen_info))==0)
+			{
+				dumpScreenInfo();
+			}
 
 			if (strncmp(txt,str_dump_banks,strlen(str_dump_banks))==0)
 			{
