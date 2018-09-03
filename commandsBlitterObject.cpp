@@ -669,11 +669,31 @@ char *boCol(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boDelBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int ret = 0;
+	int del = 0;
+	struct retroFrameHeader *frame;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (args==1)
+	{
+		del = getStackNum(stack);
+
+		if ((sprite->number_of_frames)&&(del<sprite->number_of_frames))
+		{
+			int f;
+
+			if (sprite -> frames[del].data) FreeVec(sprite -> frames[del].data);
+
+			for (f=sprite->number_of_frames-1;f>del;f--)
+			{
+				sprite -> frames[f-1] = sprite -> frames[f];
+			}
+			sprite->number_of_frames--;
+		}
+	}
+	else setError(22, data->tokenBuffer);
+
 	popStack( stack - data->stack );
-	setStackNum(ret);
 	return NULL;
 }
 
