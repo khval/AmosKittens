@@ -186,11 +186,11 @@ void drawBobs()
 			image = bob->image & 0x3FFFF;
 			flags = bob -> image & 0xC000;
 
-			if ((image<0) || (image >= sprite -> number_of_frames)) image = -1;	
+			if (image > sprite -> number_of_frames) image =0;	
 
-			if ( (image > -1) && (sprite -> frames) )
+			if ( (image > 0) && ( sprite -> frames) )
 			{
-				frame = &sprite -> frames[ image ];
+				frame = &sprite -> frames[ image-1 ];
 
 				clear = &bob -> clear[ 0 ];
 
