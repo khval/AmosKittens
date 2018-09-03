@@ -6,4 +6,5 @@
 #include "amosKittens.h"
 
 char *soundBoom(struct nativeCommand *cmd, char *tokenBuffer);
+char *soundTempo(struct nativeCommand *cmd, char *tokenBuffer);
 

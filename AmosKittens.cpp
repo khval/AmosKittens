@@ -778,6 +778,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0D62,"Shift Up",0,gfxShiftUp },
 	{0x0D78,"Shift Down",0,gfxShiftDown },
 	{0x0D90,"Set Rainbow",0,gfxSetRainbow },
+	{0x0DC2,"Tempo",0,soundTempo },
 	{0x0DDC,"Rainbow",0,gfxRainbow },
 	{0x0DF0,"Rain",0,gfxRain },
 	{0x0DFE,"Fade",0,gfxFade },
