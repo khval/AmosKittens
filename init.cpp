@@ -38,6 +38,8 @@ struct Library			*KeymapBase = NULL;
 struct Locale			*_locale = NULL;
 ULONG				*codeset_page = NULL;
 
+APTR engine_mx = 0;
+
 
 BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
 {
@@ -83,6 +85,9 @@ BOOL init()
 		codeset_page = (ULONG *) ObtainCharsetInfo(DFCS_NUMBER, (ULONG) _locale -> loc_CodeSet , DFCS_MAPTABLE);
 	}
 
+	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
+	if ( ! engine_mx) return FALSE;
+
 	return TRUE;
 }
 
@@ -125,5 +130,11 @@ void closedown()
 
 	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
 	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
+
+	if (engine_mx) 
+	{
+		FreeSysObject(ASOT_MUTEX, engine_mx); 
+		engine_mx = NULL;
+	}
 }
 

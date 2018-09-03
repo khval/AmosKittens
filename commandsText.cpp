@@ -152,7 +152,7 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 
 void __print_text(const char *txt, int maxchars)
 {
-	if (engine_started)
+	if (EngineTask)
 	{
 		if (screens[current_screen])
 		{
@@ -240,7 +240,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	if (args!=1) setError(22,data->tokenBuffer);
 
-	if (engine_started)
+	if (EngineTask)
 	{
 		if (screen = screens[current_screen])
 		{

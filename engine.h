@@ -13,7 +13,8 @@ extern bool engine_wait_key;
 extern int engine_mouse_key;
 extern int engine_mouse_x;
 extern int engine_mouse_y;
-extern bool engine_started;
+extern bool engine_stopped;
+extern Process *EngineTask;
 
 struct keyboard_buffer
 {

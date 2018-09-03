@@ -52,7 +52,7 @@ void atomic_get_char( char *buf)
 {
 	buf[0]=0;
 
-	if (engine_started)
+	if (EngineTask)
 	{
 		struct InputEvent event;
 		bzero(&event,sizeof(struct InputEvent));
@@ -119,7 +119,7 @@ void kitty_getline(string &input)
 
 	input = "";
 
-	if (engine_started)
+	if (EngineTask)
 	{
 		engine_lock();
 		draw_cursor( screens[current_screen] );
@@ -193,7 +193,7 @@ void kitty_getline(string &input)
 					break;	
 			}
 
-		} while ((done == false)&&(engine_started == true));
+		} while ((done == false)&&(EngineTask));
 	}
 	else
 	{
@@ -205,13 +205,13 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (engine_started)
+	if (EngineTask)
 	{
 		engine_wait_key = true;
 		do
 		{
 			Delay(1);
-		} while ((engine_wait_key == true) && (engine_started));
+		} while ((engine_wait_key == true) && (EngineTask));
 	}
 	else
 	{
@@ -387,7 +387,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && engine_started ) kitty_getline( input_str);
+			while (input_str.empty() && EngineTask ) kitty_getline( input_str);
 
 			i = input_str.find(",");	
 			if (i != std::string::npos)
@@ -399,7 +399,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 				arg = input_str; input_str = "";
 			}
 		}
-		while ( arg.empty() && engine_started );
+		while ( arg.empty() && EngineTask );
 
 		if (last_var)
 		{
@@ -414,7 +414,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 			}
 		}
 	}
-	while (!success && engine_started);
+	while (!success && EngineTask);
 
 	engine_lock();
 	clear_cursor( screens[current_screen] );
@@ -495,7 +495,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && engine_started ) kitty_getline(input_str);
+			while (input_str.empty() && EngineTask ) kitty_getline(input_str);
 
 			engine_lock();
 			clear_cursor( screens[current_screen] );
@@ -503,7 +503,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 			arg = input_str; input_str = "";
 		}
-		while ( arg.empty() && engine_started );
+		while ( arg.empty() && EngineTask );
 
 		if (last_var)
 		{
@@ -521,7 +521,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		printf("%s:%d -- success = %s\n",__FUNCTION__,__LINE__, success ? "True" : "False");
 
 	}
-	while (!success && engine_started );
+	while (!success && (EngineTask) );
 
 	__print_text( "\n" ,0 );
 

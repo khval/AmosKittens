@@ -14,9 +14,11 @@
 #include <proto/keymap.h>
 #include <proto/Amigainput.h>
 
+#include "amoskittens.h"
 #include "joysticks.h"
 #include "engine.h"
 #include "bitmap_font.h"
+#include "debug.h"
 
 extern int sig_main_vbl;
 extern bool running;			// 
@@ -24,13 +26,16 @@ extern bool interpreter_running;	// interprenter is really running.
 extern int keyState[256];
 extern char *F1_keys[20];
 
+static struct Process *MainTask = NULL;
+struct Process *EngineTask = NULL;
+
 bool engine_wait_key = false;
-bool engine_started = false;
+bool engine_stopped = false;
 
 extern bool curs_on;
 extern int _keyshift;
 
-APTR engine_mx = 0;
+extern APTR engine_mx ;
 
 std::vector<struct keyboard_buffer> keyboardBuffer;
 
@@ -186,20 +191,15 @@ void close_engine()
 
 	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
 	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
-
-	if (engine_mx) FreeSysObject(ASOT_MUTEX, engine_mx); engine_mx = 0;
 }
 
 void main_engine();
-
-static struct Process *MainTask = NULL;
-static struct Process *gfx_engine = NULL;
 
 
 bool start_engine()
 {
 	MainTask = (struct Process *) FindTask(NULL);
-	gfx_engine = CreateNewProcTags(
+	EngineTask = CreateNewProcTags(
 				NP_Name, "Amos kittens graphics engine" ,
 				NP_Entry, main_engine, 
 				NP_Priority, 0, 
@@ -207,15 +207,7 @@ bool start_engine()
 				TAG_END);
 
 	Wait(SIGF_CHILD);
-	return engine_started;
-}
-
-void wait_engine()
-{
-	do
-	{
-		Delay(1);
-	} while (engine_started);
+	return ((EngineTask) && (engine_stopped == false));
 }
 
 void set_default_colors( struct retroScreen *screen )
@@ -279,7 +271,7 @@ void main_engine()
 		ULONG joy_sig;
 		ULONG ret;
 		int n;
-		engine_started = true;
+		
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 
 		retroClearVideo(video);
@@ -376,7 +368,7 @@ void main_engine()
 				ReplyMsg( (Message*) msg );
 			}
 
-
+//			Printf("autoview\n");
 			if (autoView)
 			{
 				retroClearVideo( video );
@@ -436,32 +428,38 @@ void main_engine()
 						BLITA_DestY, My_Window->BorderTop,
 						TAG_END);
 		}
-	
-		// make sure interpenter is close before we start closing screens.
-		while (interpreter_running)
-		{
-			Delay(1);
-		}
 
 		for (n=0; n<8;n++)
 		{
 			if (screens[n]) retroCloseScreen(&screens[n]);
 		}
+
 		retroFreeVideo(video);
 	}
 	else
 	{
-		engine_started = false;
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 	}
 
 	close_joysticks();
-
 	close_engine();
-	engine_started = false;
+
 	if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
 
+	engine_stopped = true;
 }
+
+void wait_engine()
+{
+	do
+	{
+		Delay(1);
+	} while ((EngineTask)&&(engine_stopped == false));
+	Delay(1);
+
+	Printf("EngineTask %04lx, engine stopped: %s\n", EngineTask, engine_stopped ? "True" : "False" );
+}
+
 
 void engine_lock()
 {

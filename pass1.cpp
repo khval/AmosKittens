@@ -443,8 +443,10 @@ char *pass1_procedure( char *ptr )
 	if (token == 0x0006)
 	{
 		current_proc = pass1var( ptr +2, true );
-		pass1_inside_proc = true;
 
+//		getchar();
+
+		pass1_inside_proc = true;
 		// we like to skip the variable, so its not added as a local variable.
 		ptr += 2 + sizeof(struct reference) + ReferenceByteLength(ptr + 2) ;
 	}

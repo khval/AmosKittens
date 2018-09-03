@@ -1280,7 +1280,6 @@ int main(char args, char **arg)
 
 	memset(globalVars,0,sizeof(globalVars));
 
-
 	sig_main_vbl = AllocSignal(-1);
 
 	for (n=0;n<64;n++)
@@ -1368,6 +1367,9 @@ int main(char args, char **arg)
 			printf("AMOS file not open/can't find it\n");
 		}
 
+		running = false;
+		wait_engine();
+
 		if (do_input)
 		{
 			free( (void *) do_input );
@@ -1379,11 +1381,6 @@ int main(char args, char **arg)
 		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
 		if (zones) free(zones);
-
-//		dumpLineAddress();
-
-		running = false;
-		wait_engine();
 
 		closedown();
 	}

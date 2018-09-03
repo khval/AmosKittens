@@ -128,7 +128,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (( sig_main_vbl )&&( engine_started ))
+	if (( sig_main_vbl )&&( EngineTask ))
 	{
 		Wait(1<<sig_main_vbl);
 	}
