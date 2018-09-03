@@ -13,4 +13,7 @@ char *amalAmalOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalAnim(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalAnimOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalAmalFreeze(struct nativeCommand *cmd, char *tokenBuffer);
+char *amalMoveX(struct nativeCommand *cmd, char *tokenBuffer);
+char *amalMoveY(struct nativeCommand *cmd, char *tokenBuffer);
+char *amalMoveOn(struct nativeCommand *cmd, char *tokenBuffer);
 

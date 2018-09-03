@@ -952,6 +952,9 @@ struct nativeCommand nativeCommands[]=
 	{0x1E42,"Mouse Click",0,ocMouseClick },
 	{0x1E54,"Limit Mouse",0,ocMouseLimit },
 	{0x1E6E,"Limit Mouse",0,ocMouseLimit },
+	{0x1E8A,"Move X",0,amalMoveX },
+	{0x1EA6,"Move Y",0,amalMoveY },
+	{0x1EDA,"Move On",0,amalMoveOn },
 	{0x1F22,"Anim On",0,amalAnimOn },
 	{0x1F52,"Anim",0,amalAnim },
 	{0x1F94,"Channel",0,amalChannel },
@@ -1073,17 +1076,10 @@ char *executeToken( char *ptr, unsigned short token )
 		}
 	}
 
-#ifdef show_token_numbers_yes
-	printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					getLineFromPointer(ptr),
-					ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);	
-#endif
-
-
 	token_not_found = token;
 	currentLine = getLineFromPointer( ptr );
 	setError(23, ptr);
-	printf("Addr %08x, token not found %04X\n", ptr, token_not_found);
+	printf("Addr %08x, token not found %04X at line %d\n", ptr, token_not_found, getLineFromPointer(ptr));
 
 	return NULL;
 }
