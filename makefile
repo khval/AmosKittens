@@ -42,7 +42,8 @@ main_objects = commands.cpp \
 			engine.cpp \
 			bitmap_font.cpp \
 			var_helper.cpp \
-			os4_joystick.cpp
+			os4_joystick.cpp \
+			channel.cpp
 
 main_SRCS = AmosKittens.cpp
 

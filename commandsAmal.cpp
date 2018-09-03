@@ -8,6 +8,7 @@
 #include <string>
 #include <proto/dos.h>
 #include <vector>
+#include <proto/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -16,8 +17,17 @@
 #include "var_helper.h"
 #include "errors.h"
 #include "engine.h"
+#include "channel.h"
 
 extern int last_var;
+extern ChannelTableClass *channels;
+extern struct retroScreen *screens[8] ;
+extern struct retroVideo *video;
+
+extern struct retroSpriteObject bobs[64];
+
+void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str);
+void channel_do_object( struct kittyChannel *self );
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 
@@ -140,7 +150,6 @@ char *amalAmal(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 char *_amalAmalOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -251,7 +260,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 				break;
 
 		defaut:
-			setError(22,data->tokenBuffer);
+				setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );

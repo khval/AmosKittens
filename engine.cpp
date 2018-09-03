@@ -410,18 +410,38 @@ void main_engine()
 					}
 				}
 
+//				Printf("draw video\n");
+
 				retroDrawVideo( video );
+
+//				Printf("clear bobs\n");
 
 				if (bobUpdate==1) clearBobs();
 
+				if (channels)
+				{
+//					Printf("do channels %ld\n",channels -> _size());
+
+					struct kittyChannel *item;
+					int i;
+					for (i=0;i<channels -> _size();i++)
+					{
+						if (item = channels -> item(i))
+						{
+							if (item->cmd) item->cmd( item ) ;
+						}
+					}
+				}
 
 				engine_unlock();
 			}
 
+//			Printf("WaitTOF\n");
+
 			WaitTOF();
 			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );
 
-//			AfterEffectScanline( video );
+			AfterEffectScanline( video );
 //			AfterEffectAdjustRGB( video , 8, 0 , 4);
 			retroDmaVideo( video );
 

@@ -7,6 +7,7 @@
 #include <vector>
 #include <math.h>
 #include <libraries/retroMode.h>
+#include <proto/retroMode.h>
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
@@ -33,6 +34,7 @@
 #include "init.h"
 #include "cleanup.h"
 #include "engine.h"
+#include "channel.h"
 
 #include "ext_compact.h"
 
@@ -87,6 +89,8 @@ struct zone *zones = NULL;
 int zones_allocated = 0;
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
+
+ChannelTableClass *channels = NULL;
 
 std::vector<struct label> labels;	// 0 is not used.
 std::vector<struct lineAddr> linesAddress;
@@ -1296,8 +1300,9 @@ int main(char args, char **arg)
 		bobs[n].image = -1;
 	}
 
+	channels = new ChannelTableClass();
 
-	if (init())
+	if (init() && channels)
 	{
 		// set up a fake extention lookup
 		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );
@@ -1384,6 +1389,8 @@ int main(char args, char **arg)
 			free( (void *) do_input );
 			do_input = NULL;
 		}
+
+		if (channels) delete channels;
 
 		clean_up_vars();
 		clean_up_stack();
