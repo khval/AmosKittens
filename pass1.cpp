@@ -396,15 +396,10 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 		found = findVar(tmp, type , is_proc ? 0 : (pass1_inside_proc ? procCount : 0) );
 		if (found)
 		{
-
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 			ref -> ref = found;
 
 			if (is_proc)
 			{
-
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 				struct globalVar *_old = &globalVars[found-1];
 				_old -> var.type = type_proc;
 				_old -> var.tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
@@ -414,16 +409,10 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 		}
 		else
 		{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 			if (is_proc)
 			{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type_proc ))
 				{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 					_new -> var.tokenBufferPos = ptr + 2 +sizeof(struct reference) + ref -> length ;
 					_new -> proc = procCount;
 					return &_new -> var;
