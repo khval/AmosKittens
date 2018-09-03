@@ -931,6 +931,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1CF0,"Put Bob",0,boPutBob },
 	{0x1CFE,"Paste Bob",0,boPasteBob },
 	{0x1d12,"Paste Icon", 0, bgPasteIcon },
+	{0x1D28,"Make Mask", 0, ocMakeMask },
 	{0x1DA2,"Hot Spot", 0, boHotSpot },
 	{0x1DAE,"Priority On",0,ocPriorityOn },
 	{0x1DC0,"Priority Off",0,ocPriorityOff },
