@@ -19,6 +19,10 @@
 #include "engine.h"
 #include "channel.h"
 
+extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
+extern char *_setVar( struct glueCommands *data, int nextToken );
+int amreg[26];
+
 extern int last_var;
 extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
@@ -31,24 +35,72 @@ void channel_do_object( struct kittyChannel *self );
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 
-char *_amalAmReg( struct glueCommands *data, int nextToken )
+unsigned int _set_amreg_num = 0;
+int _set_amreg_channel = 0;
+
+char *_set_amreg_fn( struct glueCommands *data, int nextToken )
+{
+	// don't need to check num, was checked before.
+	amreg[ _set_amreg_num] = getStackNum( stack );
+	_do_set = _setVar;
+	return NULL;
+}
+
+char *_set_amreg_channel_fn( struct glueCommands *data, int nextToken )
+{
+	struct kittyChannel *item;
+
+	// don't need to check num, was checked before.
+
+	engine_lock();				// most be thread safe!!!
+	if (item = channels -> getChannel(_set_amreg_channel))
+	{
+		 item -> reg[_set_amreg_num] = getStackNum( stack );
+	}
+	else
+	{
+		if (item = channels -> newChannel( _set_amreg_channel ) )
+		{
+			item -> reg[_set_amreg_num] = getStackNum( stack );
+		}
+	}
+	engine_unlock();
+
+	_do_set = _setVar;
+	return NULL;
+}
+
+char *_amalSetAmReg( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int num = 0;
-	int channel = 0;
+
+	int ret = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
-			num = getStackNum( stack );
+			_set_amreg_num = getStackNum( stack );
+
+			if (_set_amreg_num<26)		// unsigned don't need to check, more then.
+			{
+				_do_set = _set_amreg_fn;
+			}
+			else setError(11, data->tokenBuffer);
 			break;
 
 		case 2:
-			num = getStackNum( stack-1 );
-			channel = getStackNum( stack );
+			{
+				_set_amreg_num = getStackNum( stack-1 );
+				_set_amreg_channel = getStackNum( stack );
+				if (_set_amreg_num<10)		// unsigned don't need to check, more then.
+				{
+					_do_set = _set_amreg_channel_fn;
+				}
+				else setError(11, data->tokenBuffer);
+			}
 			break;
 
 		defaut:
@@ -56,14 +108,83 @@ char *_amalAmReg( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
+	setStackNum( ret );
+
+	return NULL;
+}
+
+
+char *_amalGetAmReg( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	unsigned int num = 0;
+	int channel = 0;
+	int ret = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			num = getStackNum( stack );
+
+			if (num<26)		// unsigned don't need to check, more then.
+			{
+				ret = amreg[num];
+			}
+			else setError(11, data->tokenBuffer);
+
+			break;
+
+		case 2:
+			{
+				struct kittyChannel *item;
+
+				num = getStackNum( stack-1 );
+				channel = getStackNum( stack );
+
+				if (num<10)		// unsigned don't need to check, more then.
+				{
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						ret = item -> reg[num];
+					}
+					else
+					{
+						if (item = channels -> newChannel( channel ) )
+						{
+							ret = item -> reg[num];
+						}
+					}
+					engine_unlock();
+				}
+				else setError(11, data->tokenBuffer);
+			}
+			break;
+
+		defaut:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
 
 	return NULL;
 }
 
 char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _amalAmReg, tokenBuffer );
-	setStackNone();
+	if ((last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054))
+	{
+		stackCmdParm( _amalSetAmReg, tokenBuffer );
+	}
+	else
+	{
+		stackCmdParm( _amalGetAmReg, tokenBuffer );
+	}
+
 	return tokenBuffer;
 }
 

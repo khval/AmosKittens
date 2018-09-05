@@ -17,6 +17,7 @@ struct kittyChannel
 	int count_to;
 	int frame;
 	bool active;
+	int reg[10];	// local reg 0 to 9 
 };
 
 
