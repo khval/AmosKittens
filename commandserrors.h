@@ -11,7 +11,8 @@ extern char *onErrorGoto(char *ptr);
 extern char *onErrorProc(char *ptr);
 
 extern char *cmdError(nativeCommand *cmd, char *ptr);
-extern char *cmdOnError(nativeCommand *cmd, char *ptr);
-extern char *cmdResumeLabel(nativeCommand *cmd, char *ptr);
-extern char *cmdResumeNext(nativeCommand *cmd, char *ptr);
+extern char *errError(nativeCommand *err, char *ptr);
+extern char *errOnError(nativeCommand *err, char *ptr);
+extern char *errResumeLabel(nativeCommand *err, char *ptr);
+extern char *errResumeNext(nativeCommand *err, char *ptr);
 

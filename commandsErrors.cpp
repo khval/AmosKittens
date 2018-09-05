@@ -28,7 +28,7 @@ char *on_error_goto_location = NULL;
 char *on_error_proc_location = NULL;
 char *resume_location = NULL;
 
-char *_cmdError( struct glueCommands *data, int nextToken )
+char *_errError( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -41,7 +41,7 @@ char *_cmdError( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
+char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
 
@@ -98,9 +98,9 @@ extern char *cmdOnError(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer );
+char *errEndProc(struct nativeCommand *cmd, char *tokenBuffer );
 
-char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
+char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct reference *ref;
 	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
@@ -138,7 +138,7 @@ char *cmdResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *cmdResumeNext(nativeCommand *cmd, char *tokenBuffer)
+char *errResumeNext(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct reference *ref;
 
@@ -182,10 +182,10 @@ char *onErrorProc(char *ptr)
 	}
 }
 
-char *cmdError(struct nativeCommand *cmd, char *tokenBuffer)
+char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdNormal( _cmdError, tokenBuffer );
+	stackCmdNormal( _errError, tokenBuffer );
 	return tokenBuffer;
 }
 
