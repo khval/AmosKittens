@@ -301,6 +301,7 @@ void main_engine()
 
 			if ( ret & SIGBREAKF_CTRL_C) running = false;
 
+//			Printf("joy events\n");
 			if ( ret & joy_sig )
 			{
 				for (n=0;n<4;n++)
@@ -394,9 +395,11 @@ void main_engine()
 
 					if (screen)
 					{
+//						Printf("check fade count %ld speed %ld\n", screen -> fade_count, screen -> fade_speed);
+						retroFadeScreen(screen);
+
 						if (screen -> autoback!=0)
 						{
-							retroFadeScreen(screen);
 							if (screen -> Memory[1]) 
 							{
 								memcpy( 
