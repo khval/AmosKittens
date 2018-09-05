@@ -10,7 +10,7 @@ extern char *onErrorBreak(char *ptr);
 extern char *onErrorGoto(char *ptr);
 extern char *onErrorProc(char *ptr);
 
-extern char *cmdError(nativeCommand *cmd, char *ptr);
+extern char *errTrap(nativeCommand *err, char *ptr);
 extern char *errError(nativeCommand *err, char *ptr);
 extern char *errOnError(nativeCommand *err, char *ptr);
 extern char *errResumeLabel(nativeCommand *err, char *ptr);

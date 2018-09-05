@@ -189,4 +189,8 @@ char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
+char *errTrap(nativeCommand *err, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}

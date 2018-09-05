@@ -1014,8 +1014,9 @@ struct nativeCommand nativeCommands[]=
 	{0x248e,"Rev(n)",0,boRev},
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
-	{0x2516, "Ntsc", 0, gfxNtsc },		// only reports false.
-	{0x25A4, "Else If", 2, cmdElseIf },
+	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
+	{0x259A,"Trap", 0, errTrap },
+	{0x25A4,"Else If", 2, cmdElseIf },
 	{0xFF4C,"or",0, orData },
 	{0xFF58,"or",0, andData },
 	{0xFF66,"not equal",0,cmdNotEqual },
