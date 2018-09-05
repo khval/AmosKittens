@@ -247,6 +247,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 
 	switch (token)
 	{
+		case 0x1A94:	// Channel x To Sprite y
 		case 0x1B9E: 	// Channel x To Bob y
 		case 0x0A18:	// Channel x To Display y
 
@@ -276,6 +277,15 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void channel_amal( struct kittyChannel *self )
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	Printf("script: %s\n", self -> at);
+	Printf("frame %ld\n", self -> frame);
+	channel_do_object( self );
+}
+
+
 char *_amalAmal( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -295,13 +305,13 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 				engine_lock();				// most be thread safe!!!
 				if (item = channels -> getChannel(channel))
 				{
-					setChannel( item, NULL, strdup(script) );
+					setChannel( item, channel_amal, strdup(script) );
 				}
 				else
 				{
 					if (item = channels -> newChannel( channel ))
 					{
-						setChannel( item, NULL, strdup(script) );
+						setChannel( item, channel_amal, strdup(script) );
 					}
 				}
 				engine_unlock();	
