@@ -27,8 +27,9 @@ extern int last_var;
 extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
-
 extern struct retroSpriteObject bobs[64];
+
+extern void remove_lower_case(char *txt);
 
 void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str);
 void channel_do_object( struct kittyChannel *self );
@@ -301,17 +302,28 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 				struct kittyChannel *item;
 				int channel = getStackNum( stack -1 );
 				char *script = getStackString( stack );
+				char *nscript;
 
 				engine_lock();				// most be thread safe!!!
 				if (item = channels -> getChannel(channel))
 				{
-					setChannel( item, channel_amal, strdup(script) );
+					nscript = strdup(script);
+					if (nscript)
+					{
+						remove_lower_case( nscript );
+						setChannel( item, channel_amal, nscript  );
+					}
 				}
 				else
 				{
 					if (item = channels -> newChannel( channel ))
 					{
-						setChannel( item, channel_amal, strdup(script) );
+						nscript = strdup(script);
+						if (nscript)
+						{
+							remove_lower_case( nscript );
+							setChannel( item, channel_amal, nscript );
+						}
 					}
 				}
 				engine_unlock();	

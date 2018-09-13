@@ -1,6 +1,20 @@
 
 struct kittyChannel;
 
+
+
+struct amalCallBack
+{
+	void *at;
+	void *cmd;
+	void *ret;
+	int argStackCount;
+	int progStackCount;
+	int var[4];			// collect From, To, Steps, etc.
+};
+
+#define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
+
 struct kittyChannel
 {
 	unsigned short id;
@@ -18,6 +32,13 @@ struct kittyChannel
 	int frame;
 	bool active;
 	int reg[10];	// local reg 0 to 9 
+	int parenthses;
+	int *argStack;
+	struct amalBuf amalProg;
+	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
+	int argStackCount;
+	struct amalCallBack **progStack;
+	int progStackCount;
 };
 
 
@@ -37,8 +58,8 @@ public:
 
 	~ChannelTableClass()
 	{
-		if (*tab) free(*tab);
-		*tab = NULL;
+		if (tab) free(tab);
+		tab = NULL;
 	}
 
 	struct kittyChannel *newChannel( int channel );

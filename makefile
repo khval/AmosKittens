@@ -31,6 +31,7 @@ main_objects = commands.cpp \
 			commandsBlitterObject.cpp \
 			commandsBackgroundGraphics.cpp \
 			commandsAmal.cpp \
+			amalCompiler.cpp \
 			ext_compact.cpp \
 			debug.cpp \
 			pass1.cpp \

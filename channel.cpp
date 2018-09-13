@@ -5,8 +5,10 @@
 #include "debug.h"
 #include <string>
 #include <proto/dos.h>
-#include "amosKittens.h"
 
+
+#include "amosKittens.h"
+#include "amalCompiler.h"
 #include "channel.h"
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )
@@ -23,6 +25,11 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> at = NULL;
 		item -> count = 0;
 		item -> count_to = 0;
+		item -> progStack = NULL;
+		item -> progStackCount = 0;
+		item -> argStack = NULL;
+		item -> argStackCount = 0;
+		item -> parenthses = 0;
 	}
 
 	if (used < allocated )
