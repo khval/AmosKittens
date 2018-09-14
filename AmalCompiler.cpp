@@ -49,6 +49,92 @@ unsigned int stdAmalWriter (	struct amalTab *self,
 	return 1;
 }
 
+void *(*amal_cmd_equal) API_AMAL_CALL_ARGS = NULL;
+
+unsigned int (*amal_to_writer) ( struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num) = NULL;
+
+unsigned int stdAmalWriterEqual (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num)
+{
+	if (amal_cmd_equal)
+	{
+		printf("writing [code block] to %08x\n", &call_array[0]);
+		call_array[0] = amal_cmd_equal;
+		amal_cmd_equal = NULL;
+	}
+	else
+	{
+		printf("writing %08x to %08x\n", self -> call, &call_array[0]);
+		call_array[0] = self -> call;
+	}
+
+	return 1;
+}
+
+unsigned int amal_for_to (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num)
+{
+		printf("writing [code block] to %08x\n", &call_array[0]);
+		call_array[0] = amal_call_next_cmd;
+		call_array[1] = amal_call_while;
+
+		call_array[2] = amal_call_reg;
+		*((int *) &call_array[3]) = last_reg[nest];
+
+		call_array[4] = amal_call_less_or_equal;
+		amal_to_writer = NULL;
+		nest++;
+		return 5;
+}
+
+unsigned int stdAmalWriterFor (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num)
+{
+	amal_to_writer = amal_for_to;
+	return 0;
+}
+
+unsigned int stdAmalWriterTo (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num)
+{
+	unsigned int ret = 0;
+
+	if (amal_to_writer) 
+	{
+		ret = amal_to_writer( self, call_array, at_script, num );
+		amal_to_writer = NULL;
+	}
+
+	return ret;
+}
+
+unsigned int stdAmalWriterWend (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int num)
+{
+	nest--;
+
+	call_array[0] = amal_call_inc;
+	call_array[1] = amal_call_reg;
+	*((int *) &call_array[2]) = last_reg[nest];
+	call_array[3] = amal_call_next_cmd;
+	call_array[4] = amal_call_while;
+
+	return 5;
+}
+
 unsigned int stdAmalWriterReg (	struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				const char *at_script,
