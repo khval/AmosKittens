@@ -75,6 +75,42 @@ struct amalTab amalCmds[] =
 	{"AU",stdAmalWriter,NULL},	// AUtotest
 	{"M",stdAmalWriter,NULL},	// Move
 	{"A",stdAmalWriter,amal_call_anim},	// Anim
+	{"R0",stdAmalWriterReg,NULL },	// R0
+	{"R1",stdAmalWriterReg,NULL },	// R0
+	{"R2",stdAmalWriterReg,NULL },	// R0
+	{"R3",stdAmalWriterReg,NULL },	// R0
+	{"R4",stdAmalWriterReg,NULL },	// R0
+	{"R5",stdAmalWriterReg,NULL },	// R0
+	{"R6",stdAmalWriterReg,NULL },	// R0
+	{"R7",stdAmalWriterReg,NULL },	// R0
+	{"R8",stdAmalWriterReg,NULL },	// R0
+	{"R9",stdAmalWriterReg,NULL },	// R0
+	{"RA",stdAmalWriterReg,NULL },	// R0
+	{"RB",stdAmalWriterReg,NULL },	// R0
+	{"RC",stdAmalWriterReg,NULL },	// R0
+	{"RD",stdAmalWriterReg,NULL },	// R0
+	{"RE",stdAmalWriterReg,NULL },	// R0
+	{"RF",stdAmalWriterReg,NULL },	// R0
+	{"RG",stdAmalWriterReg,NULL },	// R0
+	{"RH",stdAmalWriterReg,NULL },	// R0
+	{"RI",stdAmalWriterReg,NULL },	// R0
+	{"RJ",stdAmalWriterReg,NULL },	// R0
+	{"RK",stdAmalWriterReg,NULL },	// R0
+	{"RL",stdAmalWriterReg,NULL },	// R0
+	{"RM",stdAmalWriterReg,NULL },	// R0
+	{"RN",stdAmalWriterReg,NULL },	// R0
+	{"RO",stdAmalWriterReg,NULL },	// R0
+	{"RP",stdAmalWriterReg,NULL },	// R0
+	{"RQ",stdAmalWriterReg,NULL },	// R0
+	{"RR",stdAmalWriterReg,NULL },	// R0
+	{"RS",stdAmalWriterReg,NULL },	// R0
+	{"RT",stdAmalWriterReg,NULL },	// R0
+	{"RU",stdAmalWriterReg,NULL },	// R0
+	{"RV",stdAmalWriterReg,NULL },	// R0
+	{"RW",stdAmalWriterReg,NULL },	// R0
+	{"RX",stdAmalWriterReg,NULL },	// R0
+	{"RY",stdAmalWriterReg,NULL },	// R0
+	{"RZ",stdAmalWriterReg,NULL },	// R0
 	{"+",stdAmalWriter,NULL},	// +
 	{"-",stdAmalWriter,NULL},	// -
 	{"*",stdAmalWriter,NULL},	// *
@@ -83,10 +119,10 @@ struct amalTab amalCmds[] =
 	{"<>",stdAmalWriter,NULL},	// <>
 	{"<",stdAmalWriter,NULL},	// <
 	{">",stdAmalWriter,NULL},	// >
-	{"=",stdAmalWriter,NULL},	// =
-	{"F",stdAmalWriter,NULL},	// For
-	{"T",stdAmalWriter,NULL},	// To
-	{"N",stdAmalWriter,NULL},	// Next
+	{"=",stdAmalWriterEqual,amal_call_set},	// =
+	{"F",stdAmalWriterFor,NULL},				// For
+	{"T",stdAmalWriterTo,amal_call_nextArg},	// To
+	{"N",stdAmalWriterWend,amal_call_wend},		// Next
 	{"PL",stdAmalWriter,NULL},	// Play
 	{"E",stdAmalWriter,NULL},	// End
 	{"XM",stdAmalWriter,NULL},	// XM
@@ -106,7 +142,7 @@ struct amalTab amalCmds[] =
 	{"SC",stdAmalWriter,NULL},	// Sprite Col(m,s,e)	// only with Synchro
 	{"C",stdAmalWriter,NULL},	// Col
 	{"V",stdAmalWriter,NULL},	// Vumeter
-	{";",stdAmalWriter,NULL },
+	{";",stdAmalWriter,amal_call_next_cmd },
 	{"(",stdAmalWriter,amal_call_parenthses_start },
 	{")",stdAmalWriter,amal_call_parenthses_end },
 	{":",stdAmalWriter,NULL },

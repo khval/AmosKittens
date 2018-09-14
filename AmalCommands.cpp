@@ -23,6 +23,17 @@ void *amal_set_num API_AMAL_CALL_ARGS
 	return code+1;
 }
 
+void *amal_call_reg API_AMAL_CALL_ARGS
+{
+	int num;
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	num = (int) code[1];
+	printf("reg %c\n",num);
+
+	return code+1;
+}
+
 void *amal_call_on API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
@@ -120,6 +131,18 @@ void *amal_call_less API_AMAL_CALL_ARGS
 }
 
 void *amal_call_more API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *amal_call_less_or_equal API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
@@ -251,7 +274,7 @@ void *amal_call_vumeter API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_nextCmd API_AMAL_CALL_ARGS
+void *amal_call_next_cmd API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
@@ -287,4 +310,34 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 //	pushBackAmalCmd( self, NULL ) ;
 	return NULL;
 }
+
+void *amal_call_while API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *amal_call_wend API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *(set_reg)  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+}
+
+void *amal_call_set API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *amal_call_inc API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
 

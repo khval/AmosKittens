@@ -1,5 +1,6 @@
 
 void *amal_set_num API_AMAL_CALL_ARGS;
+void *amal_call_reg API_AMAL_CALL_ARGS;
 void *amal_call_on API_AMAL_CALL_ARGS;
 void *amal_call_direct API_AMAL_CALL_ARGS;
 void *amal_call_wait API_AMAL_CALL_ARGS;
@@ -17,6 +18,8 @@ void *amal_call_and API_AMAL_CALL_ARGS;
 void *amal_call_not_equal API_AMAL_CALL_ARGS;
 void *amal_call_less API_AMAL_CALL_ARGS;
 void *amal_call_more API_AMAL_CALL_ARGS;
+void *amal_call_less_or_equal API_AMAL_CALL_ARGS;
+void *amal_call_more_or_equal API_AMAL_CALL_ARGS;
 void *amal_call_equal API_AMAL_CALL_ARGS;
 void *amal_call_for API_AMAL_CALL_ARGS;
 void *amal_call_to API_AMAL_CALL_ARGS;
@@ -38,9 +41,14 @@ void *amal_call_bobCol API_AMAL_CALL_ARGS;
 void *amal_call_spriteCol API_AMAL_CALL_ARGS;
 void *amal_call_Col API_AMAL_CALL_ARGS;
 void *amal_call_vumeter API_AMAL_CALL_ARGS;
-void *amal_call_nextCmd API_AMAL_CALL_ARGS;
 void *amal_call_parenthses_start API_AMAL_CALL_ARGS;
 void *amal_call_parenthses_end API_AMAL_CALL_ARGS;
 void *amal_call_end_label API_AMAL_CALL_ARGS;
 void *amal_call_nextArg API_AMAL_CALL_ARGS;
 void *amal_call_anim API_AMAL_CALL_ARGS;
+void *amal_call_while API_AMAL_CALL_ARGS;
+void *amal_call_wend API_AMAL_CALL_ARGS;
+void *amal_call_set API_AMAL_CALL_ARGS;
+void *amal_call_inc API_AMAL_CALL_ARGS;
+void *amal_call_next_cmd API_AMAL_CALL_ARGS;
+
