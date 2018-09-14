@@ -277,6 +277,18 @@ void *amal_call_vumeter API_AMAL_CALL_ARGS
 void *amal_call_next_cmd API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (self -> progStackCount)
+	{
+		struct amalCallBack *cb;
+
+		self -> progStackCount --;
+		cb = &self -> progStack[ self -> progStackCount ];
+		cb -> cmd( self, cb );
+	}
+
+	printf("----\n");
+
 	return NULL;
 }
 
@@ -331,6 +343,9 @@ void *(set_reg)  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_set API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	pushBackAmalCmd( self, set_reg ); 
+
 	return NULL;
 }
 

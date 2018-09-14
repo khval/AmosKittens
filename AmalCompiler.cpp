@@ -7,13 +7,14 @@
 #include "channel.h"
 #include "AmalCommands.h"
 
-void pushBackAmalCmd( struct kittyChannel *channel, void *cmd ) 
+int nest = 0;
 char last_reg[1000] ;
 
+void pushBackAmalCmd( struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) 
 {
 	if (channel -> progStack)
 	{
-		struct amalCallBack *CallBack = channel -> progStack[ channel -> progStackCount ];
+		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];
 		if (CallBack)
 		{
 			CallBack -> cmd = cmd;
@@ -21,23 +22,6 @@ char last_reg[1000] ;
 			CallBack -> progStackCount = channel -> progStackCount;
 			channel -> progStackCount ++;
 			return;
-		}
-	}
-	else
-	{
-		channel -> progStack = (struct amalCallBack **) malloc(sizeof(struct amalCallBack *)*500);
-
-		if (channel -> progStack)
-		{
-			struct amalCallBack *CallBack = channel -> progStack[ channel -> progStackCount ];
-			if (CallBack)
-			{
-				CallBack -> cmd = cmd;
-				CallBack -> argStackCount = channel -> argStackCount;
-				CallBack -> progStackCount = channel -> progStackCount;
-				channel -> progStackCount ++;
-				return;
-			}
 		}
 	}
 }
@@ -342,7 +326,11 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 
 	}
+	amalProg -> call_array[pos++] = amal_call_next_cmd;
 	amalProg -> call_array[pos] = 0;
+	channel -> progStack = (struct amalCallBack *) malloc(sizeof(struct amalCallBack *)*500);
+	channel -> progStackCount = 0;
+
 	return true;
 }
 

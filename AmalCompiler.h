@@ -22,3 +22,5 @@ struct amalTab
 	void *(*call) API_AMAL_CALL_ARGS;
 };
 
+extern void pushBackAmalCmd( struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
+

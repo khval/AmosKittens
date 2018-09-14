@@ -1,12 +1,12 @@
 
 struct kittyChannel;
 
-
+struct amalCallBack;
 
 struct amalCallBack
 {
 	void *at;
-	void *cmd;
+	void *(*cmd) (struct kittyChannel *self, struct amalCallBack *cb);
 	void *ret;
 	int argStackCount;
 	int progStackCount;
@@ -37,7 +37,7 @@ struct kittyChannel
 	struct amalBuf amalProg;
 	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
 	int argStackCount;
-	struct amalCallBack **progStack;
+	struct amalCallBack *progStack;
 	int progStackCount;
 };
 
