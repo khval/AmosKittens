@@ -16,6 +16,7 @@ struct amalTab
 
 	unsigned int (*write) (	struct amalTab *self, 
 				void *(**call_array) API_AMAL_CALL_ARGS, 
+				const char *at_script,
 				unsigned int);
 
 	void *(*call) API_AMAL_CALL_ARGS;

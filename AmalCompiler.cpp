@@ -8,6 +8,8 @@
 #include "AmalCommands.h"
 
 void pushBackAmalCmd( struct kittyChannel *channel, void *cmd ) 
+char last_reg[1000] ;
+
 {
 	if (channel -> progStack)
 	{
@@ -42,6 +44,7 @@ void pushBackAmalCmd( struct kittyChannel *channel, void *cmd )
 
 unsigned int numAmalWriter (	struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
 				unsigned int num)
 {
 	call_array[0] = self -> call;
@@ -54,11 +57,27 @@ unsigned int numAmalWriter (	struct amalTab *self,
 
 unsigned int stdAmalWriter (	struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
-				unsigned int)
+				const char *at_script,
+				unsigned int num)
 {
 	printf("writing %08x to %08x\n", self -> call, &call_array[0]);
 	call_array[0] = self -> call;
 	return 1;
+}
+
+unsigned int stdAmalWriterReg (	struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				const char *at_script,
+				unsigned int )
+{
+	int num = *(at_script + 1);
+	printf("writing %08x to %08x\n", amal_call_reg, &call_array[0]);
+	call_array[0] = amal_call_reg;
+	*((int *) &call_array[1]) = num;
+
+	last_reg[nest] =num;
+
+	return 2;
 }
 
 struct amalTab amalCmds[] =
@@ -249,7 +268,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	const char *script = channel -> script;
 	struct amalBuf *amalProg = &channel -> amalProg;
 
-	allocAmalBuf( amalProg, 10 );
+	allocAmalBuf( amalProg, 20 );
 
 	s=script;
 	while (*s)
@@ -260,7 +279,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		{
 			printf("Command found\n");
 
-			pos += found -> write( found, &amalProg -> call_array[pos], 0 );
+			pos += found -> write( found, &amalProg -> call_array[pos], s, 0 );
 			s += strlen(found -> name);
 		}
 		else 	if (*s == ' ') 
@@ -281,7 +300,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			}
 
 			found = &amalCmds[1];
-			pos += found -> write( found, &amalProg -> call_array[pos], num );
+			pos += found -> write( found, &amalProg -> call_array[pos], s, num );
 		}
 		else if ((*s >= 'A')&&(*s<='Z'))
 		{
