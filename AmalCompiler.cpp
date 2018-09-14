@@ -200,7 +200,7 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 {
 	void *(**new_array) API_AMAL_CALL_ARGS;
 	int new_elements = i -> elements + e;
-	int new_size = sizeof(void *) * i -> elements;
+	int new_size = sizeof(void *) * new_elements;
 
 	new_array = (void *(**) API_AMAL_CALL_ARGS) malloc( new_size );
 
@@ -208,33 +208,23 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 	if (i -> call_array)
 	{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		if (new_array)
 		{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 			memcpy( new_array, i -> call_array, i->size );
 			i->elements = new_elements;
 			i->size = new_size;
 		}
 		else
 		{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 			new_elements = 0;
 			new_size = 0;
 		}
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 		free((void *) i -> call_array);
-
 		i -> call_array = new_array;
 	}
 	else
 	{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		new_elements = 0;
 		new_size = 0;
 	}
