@@ -14,7 +14,9 @@ struct amalTab
 {
 	const char *name;
 
-	unsigned int (*write) (	struct amalTab *self, 
+	unsigned int (*write) (
+				struct kittyChannel *channel,
+				struct amalTab *self, 
 				void *(**call_array) API_AMAL_CALL_ARGS, 
 				const char *at_script,
 				unsigned int);
@@ -22,5 +24,6 @@ struct amalTab
 	void *(*call) API_AMAL_CALL_ARGS;
 };
 
-extern void pushBackAmalCmd( struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
+extern void pushBackAmalCmd( void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
+extern void dumpAmalStack( struct kittyChannel *channel );
 
