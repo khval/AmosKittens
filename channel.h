@@ -1,19 +1,30 @@
 
 struct kittyChannel;
-
 struct amalCallBack;
+
+#define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
 
 struct amalCallBack
 {
-	void *at;
+	void **code ;
 	void *(*cmd) (struct kittyChannel *self, struct amalCallBack *cb);
 	void *ret;
+	unsigned char last_reg;
 	int argStackCount;
 	int progStackCount;
-	int var[4];			// collect From, To, Steps, etc.
 };
 
-#define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
+
+namespace channel_status
+{
+	enum status
+	{
+		done,	// amal program si done.
+		active,	// amal program is running.
+		paused,	// same as exit amal prgram at VBL
+		forzen	// stops the amal program, until its unfrozen.
+	};
+};
 
 struct kittyChannel
 {
@@ -30,7 +41,7 @@ struct kittyChannel
 	int count;
 	int count_to;
 	int frame;
-	bool active;
+	channel_status::status status;
 	int reg[10];	// local reg 0 to 9 
 	int parenthses;
 	int *argStack;
@@ -39,6 +50,7 @@ struct kittyChannel
 	int argStackCount;
 	struct amalCallBack *progStack;
 	int progStackCount;
+	unsigned char last_reg;
 };
 
 

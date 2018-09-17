@@ -512,16 +512,14 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	return true;
 }
 
-#ifdef test_app
-
-void test_run(struct kittyChannel  *channel)
+void amal_run_one_cycle(struct kittyChannel  *channel)
 {
 	void *ret;
 	void *(**call) ( struct kittyChannel *self, void **code, unsigned int opt );
 
 	printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
 
-	for (call = channel -> amalProg.call_array ;  *call ; call ++ )
+	for (call = channel -> amalProgCounter ;  *call ; call ++ )
 	{
 		printf("%08x\n",call);
 		ret = (*call) ( channel, (void **) call, 0 );
@@ -530,8 +528,35 @@ void test_run(struct kittyChannel  *channel)
 			printf("code offset set %08x\n",ret);
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
+
+		if (channel -> status == channel_status::paused) 	// if amal program gets paused, we break loop
+		{
+			channel -> status = channel_status::active;
+			break;
+		}
 	}
 	channel -> amalProgCounter = call;	// save counter.
+	if (*call == NULL) channel -> status = channel_status::done;
+
+}
+
+
+#ifdef test_app
+
+void test_run(struct kittyChannel  *channel)
+{
+	printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
+
+	// init amal Prog Counter.
+	channel -> status = channel_status::active;
+	channel -> amalProgCounter = channel -> amalProg.call_array;
+
+	while ( channel -> status == channel_status::active )
+	{
+		amal_run_one_cycle(channel);
+		dumpAmalRegs();
+		getchar();
+	}
 }
 
 int main(int args, char **arg)

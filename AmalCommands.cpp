@@ -516,8 +516,6 @@ void *while_status  (struct kittyChannel *self, struct amalCallBack *cb)
 		return start_location + offset_location + 4;
 	}
 
-	getchar();
-
 	return NULL;
 }
 
@@ -538,6 +536,8 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 	
 	location = (char *) self -> amalProg.call_array;
 	location += (int) code[1];
+
+	self -> status = channel_status::paused;
 
 	return location - sizeof(void *) ;
 }
