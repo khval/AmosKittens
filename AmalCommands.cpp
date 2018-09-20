@@ -14,6 +14,12 @@ extern void pushBackAmalCmd( struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
 
+void *amal_call_pause API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> status = channel_status::paused;
+	return NULL;
+}
 
 void *amal_set_num API_AMAL_CALL_ARGS
 {
@@ -70,8 +76,18 @@ void *amal_call_if API_AMAL_CALL_ARGS
 
 void *amal_call_jump API_AMAL_CALL_ARGS
 {
+	void **ret;
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
+
+	ret = (void **) code[1];
+
+	if (ret)
+	{
+		return ret-1;
+		printf("jump to %08x\n",ret);
+	}
+
+	return code+1;
 }
 
 void *amal_call_exit API_AMAL_CALL_ARGS
