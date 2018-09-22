@@ -17,6 +17,7 @@
 #include "var_helper.h"
 #include "errors.h"
 #include "engine.h"
+#include "AmalCompiler.h"
 #include "channel.h"
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
@@ -362,7 +363,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					item -> active = true;
+					item -> status = channel_status::active;
 				}
 			}
 			break;
@@ -400,7 +401,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					item -> active = false;
+					item -> status = channel_status::done;
 				}
 			}
 			break;
@@ -803,7 +804,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 		case 0:
 			{
 				int n;
-				for (n=0;n<channels -> _size();n++) channels -> item(n) -> active = true;
+				for (n=0;n<channels -> _size();n++) channels -> item(n) -> status = channel_status::active;
 			}
 			break;
 		case 1:
@@ -813,7 +814,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					item -> active = true;
+					item -> status = channel_status::active;
 				}
 			}
 			break;
