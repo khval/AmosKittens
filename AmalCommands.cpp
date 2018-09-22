@@ -18,6 +18,7 @@ void *amal_call_pause API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> status = channel_status::paused;
+	self -> loopCount = 0;
 	return NULL;
 }
 
@@ -80,11 +81,19 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	ret = (void **) code[1];
-
 	if (ret)
 	{
-		return ret-1;
-		printf("jump to %08x\n",ret);
+		if (self -> loopCount>9)
+		{
+			self -> status = channel_status::paused;
+			self -> loopCount = 0;
+			return ret-1;
+		}
+		else
+		{
+			self -> loopCount++;
+			return ret-1;
+		}
 	}
 
 	return code+1;
