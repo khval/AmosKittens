@@ -11,9 +11,6 @@
 int nest = 0;
 char last_reg[1000] ;
 
-#ifdef test_app
-int amreg[26];
-
 struct AmalLabelRef
 {
 	unsigned int pos;
@@ -24,6 +21,8 @@ std::vector<void **> amalloops;
 static std::vector<struct AmalLabelRef> looking_for_labels;
 static std::vector<struct AmalLabelRef> found_labels;
 
+#ifdef test_app
+int amreg[26];
 
 void print_code( void **adr );
 
@@ -247,13 +246,6 @@ unsigned int stdAmalWriterWend (  struct kittyChannel *channel,struct amalTab *s
 		elements = (int) (current_location - ((char*) code)) / sizeof(void *);
 
 		code[1] = (void *) (current_location - start_location) ;
-
-		for (i=0;i<=elements;i++)
-		{
-			print_code(&code[i]);
-		}
-
-		getchar();
 
 		*((void **) &call_array[5]) = (void **) rel_location;
 		amalloops.pop_back();
