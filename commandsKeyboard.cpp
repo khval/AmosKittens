@@ -211,7 +211,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 		do
 		{
 			Delay(1);
-		} while ((engine_wait_key == true) && (EngineTask));
+		} while ((engine_wait_key == true) && (engine_stopped==false));
 	}
 	else
 	{
@@ -221,6 +221,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
 
 char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 {
