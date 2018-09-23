@@ -51,4 +51,5 @@ void *amal_call_wend API_AMAL_CALL_ARGS;
 void *amal_call_set API_AMAL_CALL_ARGS;
 void *amal_call_inc API_AMAL_CALL_ARGS;
 void *amal_call_next_cmd API_AMAL_CALL_ARGS;
+void *amal_call_pause API_AMAL_CALL_ARGS;
 

@@ -47,10 +47,11 @@ struct kittyChannel
 	int *argStack;
 	struct amalBuf amalProg;
 	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
-	int argStackCount;
+	unsigned int argStackCount;
 	struct amalCallBack *progStack;
-	int progStackCount;
-	unsigned char last_reg;
+	unsigned int progStackCount;
+	unsigned int loopCount; 
+	unsigned int last_reg;
 };
 
 
