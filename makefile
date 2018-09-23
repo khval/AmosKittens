@@ -54,12 +54,12 @@ main_SRCS = AmosKittens.cpp
 objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
 
-all:	 $(programs) $(objects_in_dir)
+all:	 $(objects_in_dir) $(programs) 
 
-${objects_dir}%.o:		debug.h $(@:${objects_dir}%.o=%.cpp)
+$(objects_dir)%.o:	%.cpp debug.h 
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
 
-AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
+ccmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
