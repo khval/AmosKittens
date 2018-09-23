@@ -28,6 +28,10 @@ extern bool interpreter_running;	// interprenter is really running.
 extern int keyState[256];
 extern char *F1_keys[20];
 
+
+extern struct retroSprite *sprite;
+extern struct retroSpriteObject sprites[64];
+
 static struct Process *MainTask = NULL;
 struct Process *EngineTask = NULL;
 
@@ -152,9 +156,10 @@ bool init_engine()
 
 	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
 
+	retroAllocSpriteObjects(video,64);
+
 	topaz8_font =  open_font( "topaz.font" ,  8);
 	if ( ! topaz8_font ) return FALSE;
-
 
 	InitRastPort(&font_render_rp);
 	font_render_rp.BitMap = AllocBitMapTags( 800, 50, 256, 
@@ -533,6 +538,22 @@ void main_engine()
 					}
 				}
 
+				if ((sprite)&&(video -> sprites))
+				{
+					Printf("draw sprites\n");
+
+					for (n=0;n<64;n++)
+					{
+						video -> sprites[n].sprite = sprite;
+
+						if (sprites[n].image>0)
+						{
+							retroSprite( video, n, sprites[n].x, sprites[n].y, sprites[n].image );
+							Printf("sprite %ld,%ld,%ld,%ld\n",n, sprites[n].x, sprites[n].y, sprites[n].image);
+						}
+					}
+				}
+		
 				engine_unlock();
 			}
 
