@@ -33,6 +33,7 @@ main_objects = commands.cpp \
 			commandsBackgroundGraphics.cpp \
 			commandsAmal.cpp \
 			AmalCompiler.cpp \
+			AmalCommands.cpp \
 			ext_compact.cpp \
 			debug.cpp \
 			pass1.cpp \
@@ -58,8 +59,8 @@ all:	 $(programs) $(objects_in_dir)
 ${objects_dir}%.o:		debug.h $(@:${objects_dir}%.o=%.cpp)
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
 
-%.exe:		%.cpp $(objects)
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects) -o $@
+AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
+	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@

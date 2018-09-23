@@ -19,6 +19,7 @@
 #include "engine.h"
 #include "bitmap_font.h"
 #include "debug.h"
+#include "amalcompiler.h"
 #include "channel.h"
 
 extern int sig_main_vbl;
@@ -264,6 +265,89 @@ void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 	engine_unlock();
 }
 
+void retroFadeScreen_beta(struct retroScreen * screen)
+{
+	if (screen -> fade_speed)
+	{
+		printf("is fading\n");
+
+		if (screen -> fade_count < screen -> fade_speed)
+		{
+			screen -> fade_count++;
+		}
+		else
+		{
+			printf("is here\n");
+			int changed_at = -1;
+			int n = 0;
+			struct retroRGB *opal = screen -> orgPalette;
+			struct retroRGB *rpal = screen -> rowPalette;
+			struct retroRGB *npal = screen -> fadePalette;
+
+			for (n=0;n<256;n++)
+			{
+
+				if (npal -> r < 256)	// valid colour most be set.
+				{
+					if (npal->r > opal->r)
+					{
+						opal -> r +=  0x11;	
+						changed_at = n | 0x1000;
+					}
+					else if ((npal->r < opal -> r))
+					{
+						opal -> r -=  0x11;	
+						changed_at = n | 0x1000;
+					}
+				}
+
+				if (npal -> g < 256)	// valid colour most be set.
+				{
+					if (npal->g > opal->g)
+					{
+						opal->g += 0x11;
+						changed_at = n | 0x2000;
+					}
+					else if ((npal->g < opal -> g))
+					{
+						opal->g -= 0x11;
+						changed_at = n | 0x2000;
+					}
+				}
+
+				if (npal -> b < 256)	// valid colour most be set.
+				{
+					if (npal->b > opal->b)
+					{
+						opal->b +=  0x11;
+						changed_at = n | 0x3000;
+					}
+					else if ((npal->b < opal->b))
+					{
+						opal->b -=  0x11;
+						changed_at = n | 0x3000;
+					}
+				}
+
+				*rpal =*opal;
+
+				opal++;
+				rpal++;
+				npal++;
+			}
+
+			screen -> fade_count = 0;
+			if (changed_at == -1)
+			{
+				printf("fading done....\n");
+				screen -> fade_speed = 0;
+			}
+		}
+	}
+}
+
+
+
 void main_engine()
 {
 	struct RastPort scroll_rp;
@@ -272,8 +356,12 @@ void main_engine()
 	retroRGB color;
 	double start_sync;
 
+	Printf("init engine\n");
+
 	if (init_engine())		// libs open her.
 	{
+		Printf("init engine done..\n");
+		
 		struct retroScreen *screen ;
 		ULONG Class;
 		UWORD Code;
@@ -285,15 +373,19 @@ void main_engine()
 		
 		Signal( &MainTask->pr_Task, SIGF_CHILD );
 
+		Printf("clear video\n");
 		retroClearVideo(video);
 		gfxDefault(NULL, NULL);
 
+		Printf("init joysticks..\n");
 		init_joysticks();
 
 		joy_sig = 1L << (joystick_msgport -> mp_SigBit);
 
 		sigs = SIGBREAKF_CTRL_C;
 		sigs |= joy_sig;
+
+		Printf("main loop\n");
 
 		while (running)
 		{
@@ -313,6 +405,7 @@ void main_engine()
 				}
 			}
 
+//			Printf("window events\n");
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
 				Qualifier = msg -> Qualifier;
@@ -387,7 +480,11 @@ void main_engine()
 
 				engine_lock();
 
+//				Printf("draw bobs\n");
+
 				if (bobUpdate==1)	drawBobs();
+
+//				Printf("draw screens\n");
 
 				for (n=0; n<8;n++)
 				{

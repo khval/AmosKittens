@@ -34,6 +34,7 @@
 #include "init.h"
 #include "cleanup.h"
 #include "engine.h"
+#include "AmalCompiler.h"
 #include "channel.h"
 
 #include "ext_compact.h"
@@ -1157,6 +1158,7 @@ void code_reader( char *start, int tokenlength )
 
 char *filename = NULL;
 
+/*
 void set_default_filename()
 {
 	if (filename) return;
@@ -1240,6 +1242,7 @@ void set_default_filename()
 //	filename = strdup("amos-test/restore.amos");
 	filename = strdup("amos-test/not.amos");
 }
+*/
 
 void init_banks( char *data , int size)
 {
@@ -1275,11 +1278,6 @@ int main(char args, char **arg)
 	if (args == 2)
 	{
 		filename = strdup(arg[1]);
-	}
-
-	if (filename == NULL)
-	{
-		set_default_filename();
 	}
 
 	amosid[16] = 0;	// /0 string.
@@ -1387,18 +1385,24 @@ int main(char args, char **arg)
 			do_input = NULL;
 		}
 
-		if (channels) delete channels;
+		printf("clean up vars\n");
 
 		clean_up_vars();
+
+		printf("clean up stack\n");
+
 		clean_up_stack();
 		clean_up_files();
 		clean_up_special();	// we add other stuff to this one.
-		if (zones) free(zones);
 
 		closedown();
 	}
 
-	if (sig_main_vbl) FreeSignal(sig_main_vbl);
+	if (sig_main_vbl) 
+	{
+		FreeSignal(sig_main_vbl);
+		sig_main_vbl = 0;
+	}
 	
 	if (filename) free(filename);
 

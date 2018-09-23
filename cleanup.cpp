@@ -8,7 +8,10 @@
 #include <vector>
 #include <proto/retroMode.h>
 #include "commandsbanks.h"
+#include "amalcompiler.h"
+#include "channel.h"
 
+extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
 extern struct globalVar globalVars[1000];
 extern std::vector<struct label> labels;
@@ -16,6 +19,7 @@ extern int global_var_count;
 extern char *dir_first_pattern ;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
+extern ChannelTableClass *channels;
 
 void clean_up_vars()
 {
@@ -87,35 +91,35 @@ void clean_up_files()
 
 void clean_up_bank(int n)
 {
-		if (kittyBanks[n].start)
+	if (kittyBanks[n].start)
+	{
+		switch ( kittyBanks[n].type )
 		{
-			switch ( kittyBanks[n].type )
-			{
-				case bank_type_icons:
+			case bank_type_icons:
 
-						printf("try free icons\n");
+					printf("try free icons\n");
 
-						retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
-						icons = NULL;
-						break;
+					retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
+					icons = NULL;
+					break;
 
-				case bank_type_sprite:
+			case bank_type_sprite:
 
-						printf("try free sprite\n");
+					printf("try free sprite\n");
 
-						retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
-						sprite = NULL;
-						break;
+					retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
+					sprite = NULL;
+					break;
 
-				default:
-						free( kittyBanks[n].start - 8 );
-						break;
-			}
-
-			kittyBanks[n].start = NULL;
-			kittyBanks[n].length = 0;
-			kittyBanks[n].type = 0;
+			default:
+					free( kittyBanks[n].start - 8 );
+					break;
 		}
+
+		kittyBanks[n].start = NULL;
+		kittyBanks[n].length = 0;
+		kittyBanks[n].type = 0;
+	}
 }
 
 void clean_up_banks()
@@ -131,6 +135,14 @@ void clean_up_special()
 {
 	int n;
 
+	printf("clean up channels!!\n");
+
+	if (channels) 
+	{
+		delete channels;
+		channels = NULL;
+	}
+
 	printf("clean up bobs!!\n");
 
 	for (n=0;n<64;n++)
@@ -142,7 +154,7 @@ void clean_up_special()
 
 	clean_up_banks();
 
-	printf("clean up file stuff!!\n");
+	printf("clean up contextDir\n");
 
 	if (contextDir)
 	{
@@ -154,6 +166,12 @@ void clean_up_special()
 	{
 		free(dir_first_pattern);
 		dir_first_pattern = NULL;
+	}
+
+	if (zones)
+	{
+		free(zones);
+		zones = NULL;
 	}
 }
 
