@@ -318,6 +318,9 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 				{
 					if (item = channels -> newChannel( channel ))
 					{
+						item -> token = 0x1A94;	// default to sprite token
+						item -> number = channel;	// default to srpite 
+
 						nscript = strdup(script);
 						if (nscript)
 						{
@@ -555,9 +558,14 @@ void channel_do_object( struct kittyChannel *self )
 {
 	switch (self -> token)
 	{
+		case 0x1A94:	// Channel x To Sprite y
+
+			Printf("Channel %ld to sprite %ld\n",self -> id, self -> number);
+			break; 
+
 		case 0x1B9E: 	// Channel x To Bob y
 
-			Printf("Channel %d to Bob %d\n",self -> id, self -> number);
+			Printf("Channel %ld to Bob %ld\n",self -> id, self -> number);
 
 			if (self -> number<64)
 			{
@@ -571,7 +579,7 @@ void channel_do_object( struct kittyChannel *self )
 
 		case 0x0A18:	// Channel x To Display y
 
-			Printf("Channel %d to Display %d\n",self -> id, self -> number);
+			Printf("Channel %ld to Display %ld\n",self -> id, self -> number);
 			{
 				struct retroScreen *screen =	screens[self -> number] ;
 
@@ -586,7 +594,7 @@ void channel_do_object( struct kittyChannel *self )
 			break;
 
 		default: 
-			Printf("wrong object %04x, object not set\n", self -> token);
+			Printf("wrong object %04lx, object not set\n", self -> token);
 	}
 }
 
