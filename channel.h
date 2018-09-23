@@ -26,21 +26,37 @@ namespace channel_status
 	};
 };
 
+struct channelAPI
+{
+	int (*getMax) ( void );
+	int (*getImage) (int object);
+	int (*getX) (int object);
+	int (*getY) (int object);
+	void (*setImage) (int object,int);
+	void (*setX) (int object,int);
+	void (*setY) (int object,int);
+};
+
 struct kittyChannel
 {
 	unsigned short id;
 	unsigned short token;
 	unsigned short number;
-	void (*cmd) (struct kittyChannel *self);
-	char *script;
-	char *at;
+	char *amal_script;
+	char *amal_at;
+	char *anim_script;
+	char *anim_at;
+	char *movex_script;
+	char *movex_at;
+	char *movey_script;
+	char *movey_at;
 	int deltax;
 	int deltay;
 	int sleep;
 	int sleep_to;
 	int count;
 	int count_to;
-	int frame;
+	struct channelAPI *objectAPI;
 	channel_status::status status;
 	int reg[10];	// local reg 0 to 9 
 	int parenthses;
@@ -81,5 +97,8 @@ public:
 	int _size();
 };
 
-extern void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str);
+extern void setChannelAmal( struct kittyChannel *item, char *str);
+extern void setChannelAnim( struct kittyChannel *item, char *str);
+extern void setChannelMoveX( struct kittyChannel *item, char *str);
+extern void setChannelMoveY( struct kittyChannel *item, char *str);
 

@@ -477,7 +477,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	const char *s;
 	struct amalTab *found;
 	char txt[30];
-	const char *script = channel -> script;
+	const char *script = channel -> amal_script;
 	struct amalBuf *amalProg = &channel -> amalProg;
 	struct amalWriterData data;
 
@@ -490,8 +490,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		
 		if (found)
 		{
-			printf("Command found\n");
-
 			data.at_script = s;
 			data.command_len = strlen(found -> name);
 			data.arg_len = 0;
@@ -501,8 +499,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 		else 	if (*s == ' ') 
 		{
-			printf("skip a space...\n");
-
 			s++;	// skip space..
 		}
 		else if ((*s >= '0')&&(*s<='9'))
@@ -541,31 +537,21 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 				label.name = strdup( txt );
 				found_labels.push_back( label );
 				s = l+1;
-
-				printf("found label at pos %d\n",pos);
-
-				getchar();
 			}
 			else
 			{
-				printf("unkown data at %s\n",s);
 				amalProg -> call_array[pos] = 0;
 				return false;
 			}
 		}
 		else
 		{
-			printf("unkown data at %s\n",s);
 			amalProg -> call_array[pos] = 0;
 			return false;
 		}
 
 		if (pos > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
 		{
-			printf("%d > %d\n", pos , amalProg -> elements - 6);
-
-			printf("overflow\n");
-
 			reAllocAmalBuf(amalProg,20);	// add another 20 elements if buffer is low.
 		}
 

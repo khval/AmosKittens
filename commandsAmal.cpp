@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +27,7 @@ extern int last_var;
 extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
+extern struct retroSpriteObject sprites[64];
 extern struct retroSpriteObject bobs[64];
 
 extern void remove_lower_case(char *txt);
@@ -220,7 +220,7 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 
 					if (item = channels -> newChannel( channel ))
 					{
-						setChannel( item, NULL, NULL );
+						setChannelAmal( item,  NULL );
 						item -> token = token;
 						item -> number = number;
 
@@ -260,7 +260,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 					break;
 		default:
 			printf("bad token for TO command %04x\n",token);
-
+			getchar();
 			setError(22,tokenbuffer);
 	}
 
@@ -281,8 +281,7 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 void channel_amal( struct kittyChannel *self )
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	Printf("script: %s\n", self -> at);
-	Printf("frame %ld\n", self -> frame);
+	Printf("script: %s\n", self -> amal_at);
 	channel_do_object( self );
 }
 
@@ -311,7 +310,8 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 					if (nscript)
 					{
 						remove_lower_case( nscript );
-						setChannel( item, channel_amal, nscript  );
+						setChannelAmal( item, nscript  );
+						asc_to_amal_tokens( item );
 					}
 				}
 				else
@@ -325,9 +325,12 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 						if (nscript)
 						{
 							remove_lower_case( nscript );
-							setChannel( item, channel_amal, nscript );
+							setChannelAmal( item, nscript );
+							asc_to_amal_tokens( item );
 						}
 					}
+
+					getchar();
 				}
 				engine_unlock();	
 			}
@@ -426,6 +429,9 @@ char *amalAmalOff(struct nativeCommand *cmd, char *tokenBuffer)
 
 void channel_anim( struct kittyChannel *self )
 {
+	struct channelAPI *api = self -> objectAPI;
+	if (api == NULL) return;
+
 	if (self -> sleep >= self -> sleep_to )
 	{
 		int sign = 1;
@@ -434,9 +440,9 @@ void channel_anim( struct kittyChannel *self )
 		int para = 0;
 		char *c;
 
-		for (c=self->at;*c;c++)
+		for (c=self->anim_at;*c;c++)
 		{
-			if (*c=='L') c = self -> script;
+			if (*c=='L') c = self -> anim_script;
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
@@ -444,7 +450,7 @@ void channel_anim( struct kittyChannel *self )
 			{
 				switch (arg)
 				{
-					case 0: self -> frame = num;  break;
+					case 0: api -> setImage( self -> number,  num );  break;
 					case 1: self -> sleep_to = num; self -> sleep = 0; break;
 				}
 
@@ -457,7 +463,7 @@ void channel_anim( struct kittyChannel *self )
 			}
 		}
 
-		self -> at = c;
+		self -> anim_at = c;
 	}
 	else
 	{
@@ -465,8 +471,7 @@ void channel_anim( struct kittyChannel *self )
 		if (self -> sleep == self -> sleep_to)
 		{
 			Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-			Printf("script: %s\n", self -> at);
-			Printf("frame %ld\n", self -> frame);
+			Printf("script: %s\n", self -> anim_at);
 			channel_do_object( self );
 		}
 	}
@@ -491,7 +496,7 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					setChannel( item, channel_anim, strdup( script ) );
+					setChannelAnim( item, strdup( script ) );
 				}
 			}
 			break;
@@ -556,45 +561,14 @@ char *amalAmalFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 // we are in a engine lock in channel_do_object, do not try to lock again!
 void channel_do_object( struct kittyChannel *self )
 {
-	switch (self -> token)
+	int objectNumber = self -> number;
+	struct channelAPI *api = self -> objectAPI;
+	if (api == NULL) return;
+
+	if (self -> number< api -> getMax())
 	{
-		case 0x1A94:	// Channel x To Sprite y
-
-			Printf("Channel %ld to sprite %ld\n",self -> id, self -> number);
-			break; 
-
-		case 0x1B9E: 	// Channel x To Bob y
-
-			Printf("Channel %ld to Bob %ld\n",self -> id, self -> number);
-
-			if (self -> number<64)
-			{
-				struct retroSpriteObject *bob = &bobs[self -> number];
-
-				bob -> y += self -> deltay;
-				bob -> x += self -> deltax;
-				if (self -> frame>0) bob -> image = self->frame;
-			}
-			break;
-
-		case 0x0A18:	// Channel x To Display y
-
-			Printf("Channel %ld to Display %ld\n",self -> id, self -> number);
-			{
-				struct retroScreen *screen =	screens[self -> number] ;
-
-				if (screen)
-				{
-					screen -> scanline_y += self -> deltay;
-					screen -> scanline_x += self -> deltax;
-					video -> refreshAllScanlines = TRUE;
-				}
-			}
-
-			break;
-
-		default: 
-			Printf("wrong object %04lx, object not set\n", self -> token);
+		api -> setX ( objectNumber, api -> getX( objectNumber ) + self -> deltax );
+		api -> setY ( objectNumber, api -> getY( objectNumber ) + self -> deltay );
 	}
 }
 
@@ -608,9 +582,9 @@ void channel_movex( struct kittyChannel *self )
 		int para = 0;
 		char *c;
 
-		for (c=self->at;*c;c++)
+		for (c=self->movex_at;*c;c++)
 		{
-			if (*c=='L') c = self -> script;
+			if (*c=='L') c = self -> movex_script;
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
@@ -632,7 +606,7 @@ void channel_movex( struct kittyChannel *self )
 			}
 		}
 
-		if (self -> count != self -> count_to) self -> at = c;
+		if (self -> count != self -> count_to) self -> movex_at = c;
 	}
 	else
 	{
@@ -657,9 +631,9 @@ void channel_movey( struct kittyChannel *self )
 		int para = 0;
 		char *c;
 
-		for (c=self->at;*c;c++)
+		for (c=self->movey_at;*c;c++)
 		{
-			if (*c=='L') c = self -> script;
+			if (*c=='L') c = self -> movey_script;
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
@@ -681,7 +655,7 @@ void channel_movey( struct kittyChannel *self )
 			}
 		}
 
-		if (self -> count != self -> count_to) self -> at = c;
+		if (self -> count != self -> count_to) self -> movey_at = c;
 	}
 	else
 	{
@@ -713,13 +687,13 @@ char *_amalMoveX( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						setChannel( item, channel_movex, strdup(txt) );
+						setChannelMoveX( item, strdup(txt) );
 					}
 					else
 					{
 						if (item = channels -> newChannel( channel ) )
 						{
-							setChannel( item, channel_movex, strdup(txt) );
+							setChannelMoveX( item, strdup(txt) );
 						}
 					}
 					engine_unlock();
@@ -761,13 +735,13 @@ char *_amalMoveY( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						setChannel( item, channel_movey, strdup(txt) );
+						setChannelMoveY( item, strdup(txt) );
 					}
 					else
 					{
 						if (item = channels -> newChannel( channel ) )
 						{
-							setChannel( item, channel_movey, strdup(txt) );
+							setChannelMoveY( item, strdup(txt) );
 						}
 					}
 					engine_unlock();

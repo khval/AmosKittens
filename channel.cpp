@@ -20,9 +20,15 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> id = channel;
 		item -> token = 0;
 		item -> number = 0;
-		item -> cmd = NULL;
-		item -> script = NULL;
-		item -> at = NULL;
+		item -> amal_script = NULL;
+		item -> amal_at = NULL;
+		item -> anim_script = NULL;
+		item -> anim_at = NULL;
+		item -> movex_script = NULL;
+		item -> movex_at = NULL;
+		item -> movey_script = NULL;
+		item -> movey_at = NULL;
+
 		item -> count = 0;
 		item -> count_to = 0;
 		item -> progStack = NULL;
@@ -30,6 +36,7 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> argStack = NULL;
 		item -> argStackCount = 0;
 		item -> parenthses = 0;
+		item -> objectAPI = NULL;
 	}
 
 	if (used < allocated )
@@ -86,13 +93,33 @@ int ChannelTableClass::_size()
 	return used;
 }
 
-void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str)
+void setChannelAnim( struct kittyChannel *item, char *str)
 {
-	if (item -> script) free(item -> script);
-	item -> cmd = cmd;
-	item -> script = str;
-	item -> at = str;
+	if (item -> anim_script) free(item -> anim_script);
+	item -> anim_script = str;
+	item -> anim_at = str;
+}
+
+void setChannelAmal( struct kittyChannel *item, char *str)
+{
+	if (item -> amal_script) free(item -> amal_script);
+	item -> amal_script = str;
+	item -> amal_at = str;
+}
+
+void setChannelMoveX( struct kittyChannel *item, char *str)
+{
+	if (item -> movex_script) free(item -> movex_script);
+	item -> movex_script = str;
+	item -> movex_at = str;
 	item -> deltax = 0;
+}
+
+void setChannelMoveY( struct kittyChannel *item, char *str)
+{
+	if (item -> movey_script) free(item -> movey_script);
+	item -> movey_script = str;
+	item -> movey_at = str;
 	item -> deltay = 0;
 }
 

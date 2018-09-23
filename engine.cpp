@@ -58,6 +58,11 @@ int cursor_color = 3;
 void clearBobs();
 void drawBobs();
 
+extern void channel_amal( struct kittyChannel *self );
+extern void channel_anim( struct kittyChannel *self );
+extern void channel_movex( struct kittyChannel *self );
+extern void channel_movey( struct kittyChannel *self );
+
 struct retroScreen *screens[8] ;
 struct retroRGB DefaultPalette[256] = 
 {
@@ -533,7 +538,10 @@ void main_engine()
 					{
 						if (item = channels -> item(i))
 						{
-							if (item->cmd) item->cmd( item ) ;
+							if (item->amal_script) channel_amal( item );
+							if (item->anim_script) channel_anim( item );
+							if (item->movex_script) channel_movex( item );
+							if (item->movey_script) channel_movey( item );
 						}
 					}
 				}
@@ -549,7 +557,7 @@ void main_engine()
 						if (sprites[n].image>0)
 						{
 							retroSprite( video, n, sprites[n].x, sprites[n].y, sprites[n].image );
-							Printf("sprite %ld,%ld,%ld,%ld\n",n, sprites[n].x, sprites[n].y, sprites[n].image);
+							Printf("sprite %ld,%ld,%ld,%ld\n",n, sprites[n].x, sprites[n].y, (int) sprites[n].image);
 						}
 					}
 				}
