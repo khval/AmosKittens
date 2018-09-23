@@ -80,3 +80,5 @@ public:
 	int _size();
 };
 
+extern void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str);
+

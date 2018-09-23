@@ -86,3 +86,14 @@ int ChannelTableClass::_size()
 	return used;
 }
 
+void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str)
+{
+	if (item -> script) free(item -> script);
+	item -> cmd = cmd;
+	item -> script = str;
+	item -> at = str;
+	item -> deltax = 0;
+	item -> deltay = 0;
+}
+
+

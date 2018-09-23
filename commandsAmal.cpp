@@ -32,7 +32,6 @@ extern struct retroSpriteObject bobs[64];
 
 extern void remove_lower_case(char *txt);
 
-void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str);
 void channel_do_object( struct kittyChannel *self );
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
@@ -549,15 +548,6 @@ char *amalAmalFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void setChannel( struct kittyChannel *item, void (*cmd) (struct kittyChannel *) ,char *str)
-{
-	if (item -> script) free(item -> script);
-	item -> cmd = cmd;
-	item -> script = str;
-	item -> at = str;
-	item -> deltax = 0;
-	item -> deltay = 0;
-}
 
 
 // we are in a engine lock in channel_do_object, do not try to lock again!
