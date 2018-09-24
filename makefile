@@ -46,7 +46,12 @@ main_objects = commands.cpp \
 			bitmap_font.cpp \
 			var_helper.cpp \
 			os4_joystick.cpp \
-			channel.cpp
+			channel.cpp \
+			amal_object_bob.cpp \
+			amal_object_sprite.cpp \
+			amal_object_screen_display.cpp \
+			amal_object_screen_offset.cpp 
+
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
