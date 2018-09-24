@@ -30,6 +30,22 @@ void *amal_set_num API_AMAL_CALL_ARGS
 	return code+1;
 }
 
+void *amal_call_x API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> last_reg = 5;
+	self -> argStack [ self -> argStackCount ] = self -> objectAPI -> getX( self -> number );
+	return NULL;
+}
+
+void *amal_call_y API_AMAL_CALL_ARGS
+{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> last_reg = 6;
+	self -> argStack [ self -> argStackCount ] = self -> objectAPI -> getY( self -> number );
+	return NULL;
+}
+
 void *amal_call_reg API_AMAL_CALL_ARGS
 {
 	unsigned char c;
@@ -566,13 +582,23 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 
 void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 {
-	unsigned char c;
+	unsigned int c;
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	printf("args: %d\n", self -> argStackCount - cb -> argStackCount + 1 );
 
+	printf("c = %d\n",  cb-> last_reg);
+
 	c = cb-> last_reg;
 
+	if (c==5)
+	{
+		self -> objectAPI -> setX( self -> number, self -> argStack [ self -> argStackCount ] );
+	}
+	else if (c==6)
+	{
+		self -> objectAPI -> setY( self -> number, self -> argStack [ self -> argStackCount ] );
+	}
 	if ((c>='0')&&(c<='9'))
 	{
 		self -> reg[ c - '0' ] = self -> argStack [ self -> argStackCount ];

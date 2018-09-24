@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <proto/dos.h>
 
 #include "AmalCompiler.h"
 #include "channel.h"
@@ -74,7 +75,7 @@ unsigned int numAmalWriter (	struct kittyChannel *channel, struct amalTab *self,
 {
 	call_array[0] = self -> call;
 
-	printf("saves num %d\n",num);
+	printf("Writing %-8d to %08x - num\n",num, &call_array[1]);
 
 	*((int *) &call_array[1]) = num;
 	return 2;
@@ -134,6 +135,46 @@ unsigned int stdAmalWriterIgnore ( struct kittyChannel *channel, struct amalTab 
 {
 	printf("data ignored\n");
 	return 0;
+}
+
+bool let = false;
+
+unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	let = true;
+	return 0;
+}
+
+unsigned int stdAmalWriterExit_Or_X ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	if (let)
+	{
+		printf("writing %08x to %08x - X\n", amal_call_x, &call_array[0]);
+		call_array[0] = amal_call_x;
+	}
+	else
+	{
+		printf("writing %08x to %08x - exit\n", amal_call_exit, &call_array[0]);
+		call_array[0] = amal_call_exit;
+	}
+	return 1;
+}
+
+unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %08x - ;\n", self -> call, &call_array[0]);
+	call_array[0] = self -> call;
+	let = false;
+	return 1;
 }
 
 unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self, 
@@ -277,8 +318,9 @@ struct amalTab amalCmds[] =
 	{"D",stdAmalWriter,NULL},	// Direct
 	{"W",stdAmalWriter,NULL},	// Wait
 	{"I",stdAmalWriter,NULL},	 // If
-	{"X",stdAmalWriter,NULL},	// eXit
-	{"L",stdAmalWriterIgnore,NULL},	// Let
+	{"X",stdAmalWriterExit_Or_X,NULL},	// eXit
+	{"Y",stdAmalWriter,amal_call_y},	// eXit
+	{"L",stdAmalWriterLet,NULL},	// Let
 	{"AU",stdAmalWriter,NULL},	// AUtotest
 	{"A",stdAmalWriter,amal_call_anim},	// Anim
 	{"M",stdAmalWriter,NULL},	// Move
@@ -351,7 +393,7 @@ struct amalTab amalCmds[] =
 	{"SC",stdAmalWriter,NULL},	// Sprite Col(m,s,e)	// only with Synchro
 	{"C",stdAmalWriter,NULL},	// Col
 	{"V",stdAmalWriter,NULL},	// Vumeter
-	{";",stdAmalWriter,amal_call_next_cmd },
+	{";",stdAmalWriterNextCmd,amal_call_next_cmd },
 	{"(",stdAmalWriter,amal_call_parenthses_start },
 	{")",stdAmalWriter,amal_call_parenthses_end },
 	{",",stdAmalWriter,amal_call_nextArg },
@@ -410,7 +452,7 @@ void remove_lower_case(char *txt)
 	for (c=txt;*c;c++)
 	{
 		// remove noice.
-		while ((*c>='a')&&(*c<='z'))	c++;
+		while ((*c>='a')&&(*c<='z'))	{ c++; printf("skip\n"); }
 		
 		space_repeat = false;
 		if (d!=txt) 
@@ -540,6 +582,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			}
 			else
 			{
+				printf("code bad at: %s\n",s);
+
 				amalProg -> call_array[pos] = 0;
 				return false;
 			}
@@ -604,6 +648,56 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 
 #ifdef test_app
 
+int obj_x = 100, obj_y = 50, obj_image = 20;
+
+int getMax ( void )
+{
+	return 1;
+}
+
+int getImage (int object)
+{
+	return obj_image;
+}
+
+int getX (int object)
+{
+	return obj_x;
+}
+
+int getY (int object)
+{
+	return obj_y;
+}
+
+void setImage (int object,int image)
+{
+	obj_image = image;
+}
+
+void setX (int object,int x)
+{
+	obj_x = x;
+}
+
+void setY (int object,int y)
+{
+	obj_y = y;
+}
+
+struct channelAPI test_api = 
+{
+	getMax,
+	getImage,
+	getX,
+	getY,
+	setImage,
+	setX,
+	setY
+};
+
+void dump_object();
+
 void test_run(struct kittyChannel  *channel)
 {
 	printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
@@ -611,13 +705,22 @@ void test_run(struct kittyChannel  *channel)
 	// init amal Prog Counter.
 	channel -> status = channel_status::active;
 	channel -> amalProgCounter = channel -> amalProg.call_array;
+	channel -> objectAPI = &test_api;
 
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
 	{
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 		amal_run_one_cycle(channel);
+		dump_object();
 		dumpAmalRegs();
 		getchar();
 	}
+}
+
+void dump_object()
+{
+	printf("x: %d, y: %d\n", obj_x, obj_y);
 }
 
 void dump_labels()
@@ -661,8 +764,6 @@ void fix_labels( void **code )
 
 	for (i=0;i<looking_for_labels.size();i++)
 	{
-		 
-
 		if (find_label(looking_for_labels[i].name,pos))
 		{
 			printf("fix pos %d\n",pos);
@@ -686,24 +787,25 @@ int main(int args, char **arg)
 
 	if (args==2)
 	{
-		channel.script = strdup( (char *) arg[1]);
+		channel.amal_script = strdup( (char *) arg[1]);
 
-		if (channel.script)
+		if (channel.amal_script)
 		{
-			remove_lower_case(channel.script);
-			printf("%s\n",channel.script);
+			remove_lower_case(channel.amal_script);
+			printf("amal script: %s\n",channel.amal_script);
 
 			if (asc_to_amal_tokens( &channel ))
 			{
 				fix_labels( (void **) amalProg -> call_array );
 
+				dump_object();
 				dump_labels();
 				getchar();
 
 				test_run( &channel );
 			}
 
-			free(channel.script);
+			free(channel.amal_script);
 
 			dumpAmalRegs();
 		}
