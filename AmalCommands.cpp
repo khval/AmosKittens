@@ -137,7 +137,6 @@ static void *add (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_add API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
 	pushBackAmalCmd( code, self, add ); 
 	return NULL;
@@ -157,7 +156,6 @@ static void *sub (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_sub API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
 	pushBackAmalCmd( code, self, sub ); 
 	return NULL;
@@ -177,7 +175,6 @@ static void *mul (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_mul API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
 	pushBackAmalCmd( code, self, mul ); 
 	return NULL;
