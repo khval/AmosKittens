@@ -82,7 +82,6 @@ int tokenMode = mode_standard;
 struct retroSprite *icons = NULL;
 struct retroSprite *sprite = NULL;
 
-struct retroSpriteObject sprites[64];
 struct retroSpriteObject bobs[64];
 
 //struct proc procStack[1000];	// 0 is not used.

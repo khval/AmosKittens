@@ -30,7 +30,6 @@ extern char *F1_keys[20];
 
 
 extern struct retroSprite *sprite;
-extern struct retroSpriteObject sprites[64];
 
 static struct Process *MainTask = NULL;
 struct Process *EngineTask = NULL;
@@ -548,16 +547,20 @@ void main_engine()
 
 				if ((sprite)&&(video -> sprites))
 				{
+					struct retroSpriteObject *item;
+
 					Printf("draw sprites\n");
 
 					for (n=0;n<64;n++)
 					{
-						video -> sprites[n].sprite = sprite;
+						item = &video -> sprites[n];
 
-						if (sprites[n].image>0)
+						item -> sprite = sprite;
+
+						if (item -> image>0)
 						{
-							retroSprite( video, n, sprites[n].x, sprites[n].y, sprites[n].image );
-							Printf("sprite %ld,%ld,%ld,%ld\n",n, sprites[n].x, sprites[n].y, (int) sprites[n].image);
+							retroSprite( video, n, item -> x, item -> y, item -> image );
+							Printf("sprite %ld,%ld,%ld,%ld\n",n, item -> x, item -> y, item -> image);
 						}
 					}
 				}

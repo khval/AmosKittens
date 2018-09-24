@@ -30,8 +30,6 @@ extern struct retroSprite *sprite;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
-extern struct retroSpriteObject sprites[64];
-
 char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 {
 	int n;
@@ -68,7 +66,7 @@ char *_hsSprite( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	num = getStackNum( stack - 3 );
-	sprite = &sprites[num];
+	sprite = &video -> sprites[num];
 
 	stack_get_if_int( stack - 2 , &sprite->x );
 	stack_get_if_int( stack - 1 , &sprite->y );
