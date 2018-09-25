@@ -194,13 +194,13 @@ unsigned int stdAmalWriterEqual ( struct kittyChannel *channel, struct amalTab *
 {
 	if (amal_cmd_equal)
 	{
-		printf("writing [code block] to %08x\n", &call_array[0]);
+		printf("writing [code block] to %08x ==\n", &call_array[0]);
 		call_array[0] = amal_cmd_equal;
 		amal_cmd_equal = NULL;
 	}
 	else
 	{
-		printf("writing %08x to %08x\n", self -> call, &call_array[0]);
+		printf("writing %08x to %08x =\n", self -> call, &call_array[0]);
 		call_array[0] = self -> call;
 	}
 
@@ -212,7 +212,7 @@ unsigned int amal_for_to ( struct kittyChannel *channel, struct amalTab *self,
 				struct amalWriterData *data,
 				unsigned int num)
 {
-		printf("writing [code block] to %08x\n", &call_array[0]);
+		printf("writing [code block] to %08x - for \n", &call_array[0]);
 		char *current_location = (char *) (&call_array[1]);
 		char *start_location = (char *) channel -> amalProg.call_array;
 
