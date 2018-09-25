@@ -646,6 +646,46 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 }
 
 
+bool amal_find_label(char *name, unsigned int &pos)
+{
+	int i;
+
+	for (i=0;i<found_labels.size();i++)
+	{
+		if (strcmp(found_labels[i].name, name)==0)
+		{
+			pos = found_labels[i].pos;
+			return true;
+		}
+	}
+	return false;
+}
+
+void amal_fix_labels( void **code )
+{
+	int i;
+	unsigned int pos;
+
+	for (i=0;i<looking_for_labels.size();i++)
+	{
+		if (amal_find_label(looking_for_labels[i].name,pos))
+		{
+			printf("fix pos %d\n",pos);
+			getchar();
+
+			code[ looking_for_labels[i].pos + 1] = &code[pos];
+		}
+	}
+}
+
+void amal_clean_up_labels( )
+{
+	int i;
+	unsigned int pos;
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("I'm not doing a jack ass\n");
+}
+
 #ifdef test_app
 
 int obj_x = 100, obj_y = 50, obj_image = 20;
@@ -742,38 +782,6 @@ void dump_labels()
 	}
 }
 
-bool find_label(char *name, unsigned int &pos)
-{
-	int i;
-
-	for (i=0;i<found_labels.size();i++)
-	{
-		if (strcmp(found_labels[i].name, name)==0)
-		{
-			pos = found_labels[i].pos;
-			return true;
-		}
-	}
-	return false;
-}
-
-void fix_labels( void **code )
-{
-	int i;
-	unsigned int pos;
-
-	for (i=0;i<looking_for_labels.size();i++)
-	{
-		if (find_label(looking_for_labels[i].name,pos))
-		{
-			printf("fix pos %d\n",pos);
-			getchar();
-
-			code[ looking_for_labels[i].pos + 1] = &code[pos];
-		}
-	}
-}
-
 
 int main(int args, char **arg)
 {
@@ -796,7 +804,8 @@ int main(int args, char **arg)
 
 			if (asc_to_amal_tokens( &channel ))
 			{
-				fix_labels( (void **) amalProg -> call_array );
+				amal_fix_labels( (void **) amalProg -> call_array );
+				amal_clean_up_labels( );
 
 				dump_object();
 				dump_labels();
@@ -806,8 +815,8 @@ int main(int args, char **arg)
 			}
 
 			free(channel.amal_script);
-
 			dumpAmalRegs();
+			amal_clean_up_labels( );
 		}
 	}
 

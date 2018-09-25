@@ -9,10 +9,22 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
+#include "amal_object.h"
 
 extern void pushBackAmalCmd( struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
+
+#ifdef test_app
+	#define amal_mouse_x 1000
+	#define amal_mouse_y 2000
+#else
+	extern int engine_mouse_x;
+	extern int engine_mouse_y;
+
+	#define amal_mouse_x engine_mouse_x
+	#define amal_mouse_y engine_mouse_y
+#endif
 
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
@@ -179,6 +191,9 @@ void *amal_call_sub API_AMAL_CALL_ARGS
 
 static void *mul (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	dumpAmalStack( self );
+	getchar();
+
 	if (self -> argStackCount+1 >= 2)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] * self -> argStack [ cb -> argStackCount ]);
@@ -393,12 +408,14 @@ void *amal_call_end API_AMAL_CALL_ARGS
 void *amal_call_xm API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStack [ self -> argStackCount + 1 ] = amal_mouse_x;	
 	return NULL;
 }
 
 void *amal_call_ym API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStack [ self -> argStackCount + 1 ] = amal_mouse_y;	
 	return NULL;
 }
 
@@ -431,6 +448,7 @@ void *amal_call_z API_AMAL_CALL_ARGS
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
 }
+
 
 void *amal_call_xh API_AMAL_CALL_ARGS
 {
@@ -488,10 +506,20 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 	while (self -> progStackCount)
 	{
 		struct amalCallBack *cb;
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 		self -> progStackCount --;
+
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
 		cb = &self -> progStack[ self -> progStackCount ];
+
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
 		ret =cb -> cmd( self, cb );
+
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
 		if (ret) return ret;
 	}
 

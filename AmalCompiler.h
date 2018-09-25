@@ -36,4 +36,7 @@ extern void pushBackAmalCmd( void **code, struct kittyChannel *channel, void *(*
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
 extern void amal_run_one_cycle( struct kittyChannel  *channel );
+extern void amal_fix_labels( void **code );
+extern void amal_clean_up_labels();
+
 
