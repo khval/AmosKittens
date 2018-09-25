@@ -37,6 +37,9 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> argStackCount = 0;
 		item -> parenthses = 0;
 		item -> objectAPI = NULL;
+		item -> deltax = 0;
+		item -> deltay = 0;
+		item -> status = channel_status::active;
 	}
 
 	if (used < allocated )
