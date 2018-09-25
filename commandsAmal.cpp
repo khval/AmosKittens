@@ -18,6 +18,7 @@
 #include "engine.h"
 #include "AmalCompiler.h"
 #include "channel.h"
+#include "amal_object.h"
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
@@ -32,6 +33,7 @@ extern struct retroSpriteObject bobs[64];
 
 extern void remove_lower_case(char *txt);
 
+void setChannelToken(struct kittyChannel *item,int token, int number);
 void channel_do_object( struct kittyChannel *self );
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
@@ -62,6 +64,7 @@ char *_set_amreg_channel_fn( struct glueCommands *data, int nextToken )
 	{
 		if (item = channels -> newChannel( _set_amreg_channel ) )
 		{
+			setChannelToken(item,0x1A94,_set_amreg_channel); // default to sprite token
 			item -> reg[_set_amreg_num] = getStackNum( stack );
 		}
 	}
@@ -156,6 +159,7 @@ char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 					{
 						if (item = channels -> newChannel( channel ) )
 						{
+							setChannelToken(item,0x1A94,channel); // default to sprite token
 							ret = item -> reg[num];
 						}
 					}
@@ -189,6 +193,26 @@ char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void setChannelToken(struct kittyChannel *item,int token, int number)
+{
+	item -> objectAPI = NULL;
+	item -> token = 0;
+	item -> number = 0;
+
+	switch (token)
+	{
+		case 0x1A94:	item -> objectAPI = &sprite_api; break;
+		case 0x1B9E: 	item -> objectAPI = &bob_api; break;
+		case 0x0A18:	item -> objectAPI = &screen_display_api; break;
+	}
+
+	if (item -> objectAPI) 
+	{
+		item -> token = token;
+		item -> number = number;
+	}
+}
+
 char *_amalChannel( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -209,10 +233,7 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 				engine_lock();	
 				if (item = channels -> getChannel(channel))
 				{
-					printf("change the one we have\n");
-
-					item -> token = token;
-					item -> number = number;
+					setChannelToken(item,token,number);
 				}
 				else
 				{
@@ -220,11 +241,8 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 
 					if (item = channels -> newChannel( channel ))
 					{
-						setChannelAmal( item,  NULL );
-						item -> token = token;
-						item -> number = number;
-
-						printf("we have a new item\n");
+						setChannelToken(item,token,number);
+						setChannelAmal( item,  NULL );	// no script yet.
 					}
 				}
 				engine_unlock();	
@@ -278,11 +296,16 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void channel_amal( struct kittyChannel *self )
+void channel_amal( struct kittyChannel *channel )
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	Printf("script: %s\n", self -> amal_at);
-	channel_do_object( self );
+
+	Printf("channel -> status = %ld\n", channel -> status );
+
+	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
+	{
+		amal_run_one_cycle(channel);
+	}
 }
 
 
@@ -312,14 +335,15 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 						remove_lower_case( nscript );
 						setChannelAmal( item, nscript  );
 						asc_to_amal_tokens( item );
+						amal_fix_labels( (void **) item -> amalProg.call_array );
+						amal_clean_up_labels( );
 					}
 				}
 				else
 				{
 					if (item = channels -> newChannel( channel ))
 					{
-						item -> token = 0x1A94;	// default to sprite token
-						item -> number = channel;	// default to srpite 
+						setChannelToken(item,0x1A94,channel); // default to sprite token
 
 						nscript = strdup(script);
 						if (nscript)
@@ -327,6 +351,8 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 							remove_lower_case( nscript );
 							setChannelAmal( item, nscript );
 							asc_to_amal_tokens( item );
+							amal_fix_labels( (void **) item -> amalProg.call_array );
+							amal_clean_up_labels( );
 						}
 					}
 
