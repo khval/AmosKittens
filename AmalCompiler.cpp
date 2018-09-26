@@ -744,7 +744,6 @@ void test_run(struct kittyChannel  *channel)
 
 	// init amal Prog Counter.
 	channel -> status = channel_status::active;
-	channel -> amalProgCounter = channel -> amalProg.call_array;
 	channel -> objectAPI = &test_api;
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);

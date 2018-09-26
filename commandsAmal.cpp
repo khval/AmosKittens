@@ -302,9 +302,13 @@ void channel_amal( struct kittyChannel *channel )
 
 	Printf("channel -> status = %ld\n", channel -> status );
 
-	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
+	if (channel -> amalProgCounter)	// safety first.
 	{
-		amal_run_one_cycle(channel);
+		// channel status can change while AMAL program runs.
+		while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
+		{
+			amal_run_one_cycle(channel);
+		}
 	}
 }
 

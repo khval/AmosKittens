@@ -29,16 +29,20 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> movey_script = NULL;
 		item -> movey_at = NULL;
 
-		item -> count = 0;
-		item -> count_to = 0;
 		item -> progStack = NULL;
 		item -> progStackCount = 0;
 		item -> argStack = NULL;
 		item -> argStackCount = 0;
+		item -> amalProgCounter = NULL;
+
 		item -> parenthses = 0;
 		item -> objectAPI = NULL;
+
+		item -> count = 0;
+		item -> count_to = 0;
 		item -> deltax = 0;
 		item -> deltay = 0;
+
 		item -> status = channel_status::active;
 	}
 
