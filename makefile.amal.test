@@ -31,8 +31,8 @@ all:	  show $(programs) $(objects_in_dir)
 show:
 	@echo $(objects_in_dir)
 
-${objects_dir}%.o:		debug.h $(@:${objects_dir}%.o=%.cpp)
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
+${objects_dir}%.o:		%.cpp	debug.h 
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ ${opt} $(@:${objects_dir}%.o=%.cpp) -o $@
 
 AmalCompiler.exe:		AmalCompiler.cpp  ${objects_in_dir} AmalCompiler.h
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
