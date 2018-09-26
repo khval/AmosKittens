@@ -92,8 +92,7 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	const char *s;
 	char *d;
 
-	printf("jump\n");
-	printf("writing %08x to %08x\n", self -> call, &call_array[0]);
+	printf("writing %08x to %08x - jump\n", self -> call, &call_array[0]);
 
 	call_array[0] = self -> call;
 
@@ -310,6 +309,24 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 	return 2;
 }
 
+struct amalTab amalSymbols[] =
+{
+	{";",stdAmalWriterNextCmd,amal_call_next_cmd },
+	{"(",stdAmalWriter,amal_call_parenthses_start },
+	{")",stdAmalWriter,amal_call_parenthses_end },
+	{",",stdAmalWriter,amal_call_nextArg },
+	{"+",stdAmalWriter,amal_call_add},		// +
+	{"-",stdAmalWriter,amal_call_sub},			// -
+	{"*",stdAmalWriter,amal_call_mul},		// *
+	{"/",stdAmalWriter,amal_call_div},			// /
+	{"&",stdAmalWriter,amal_call_and},		// &
+	{"<>",stdAmalWriter,amal_call_not_equal},	// <>
+	{"<",stdAmalWriter,amal_call_less},		// <
+	{">",stdAmalWriter,amal_call_more},		// >
+	{"=",stdAmalWriterEqual,amal_call_set},	// =
+	{NULL, NULL,NULL }
+};
+
 struct amalTab amalCmds[] =
 {
 	{"@{never used}",stdAmalWriter,NULL},
@@ -361,30 +378,19 @@ struct amalTab amalCmds[] =
 	{"RX",stdAmalWriterReg,NULL },	// R0
 	{"RY",stdAmalWriterReg,NULL },	// R0
 	{"RZ",stdAmalWriterReg,NULL },	// R0
-	{"+",stdAmalWriter,amal_call_add},		// +
-	{"-",stdAmalWriter,amal_call_sub},			// -
-	{"*",stdAmalWriter,amal_call_mul},		// *
-	{"/",stdAmalWriter,amal_call_div},			// /
-	{"&",stdAmalWriter,amal_call_and},		// &
-	{"<>",stdAmalWriter,amal_call_not_equal},	// <>
-	{"<",stdAmalWriter,amal_call_less},		// <
-	{">",stdAmalWriter,amal_call_more},		// >
-	{"=",stdAmalWriterEqual,amal_call_set},	// =
 	{"F",stdAmalWriterFor,NULL},				// For
 	{"T",stdAmalWriterTo,amal_call_nextArg},	// To
 	{"N",stdAmalWriterWend,amal_call_wend},	// Next
 	{"PL",stdAmalWriter,NULL},	// Play
 	{"E",stdAmalWriter,NULL},	// End
-	{"XM",stdAmalWriter,NULL},	// XM
-	{"YM",stdAmalWriter,NULL},	// YM
-
+	{"XM",stdAmalWriter,amal_call_xm},	// XM
+	{"YM",stdAmalWriter,amal_call_ym},	// YM
 	{"K1",stdAmalWriter,NULL},	// k1		mouse key 1
 	{"K2",stdAmalWriter,NULL},	// k2		mouse key 2
 	{"J0",stdAmalWriter,NULL},	// j0		joy0
 	{"J1",stdAmalWriter,NULL},	// J1		Joy1
 	{"J",stdAmalWriterJump,amal_call_jump},	// Jump
 	{"Z",stdAmalWriter,NULL},	// Z(n)	random number
-
 	{"XH",stdAmalWriter,NULL},	// x hardware
 	{"YH",stdAmalWriter,NULL},	// y hardware
 	{"XS",stdAmalWriter,NULL},	// screen x
@@ -393,10 +399,6 @@ struct amalTab amalCmds[] =
 	{"SC",stdAmalWriter,NULL},	// Sprite Col(m,s,e)	// only with Synchro
 	{"C",stdAmalWriter,NULL},	// Col
 	{"V",stdAmalWriter,NULL},	// Vumeter
-	{";",stdAmalWriterNextCmd,amal_call_next_cmd },
-	{"(",stdAmalWriter,amal_call_parenthses_start },
-	{")",stdAmalWriter,amal_call_parenthses_end },
-	{",",stdAmalWriter,amal_call_nextArg },
 	{"@while",stdAmalWriter,amal_call_while },
 	{"@set",stdAmalWriter,amal_call_set },
 	{"@reg",stdAmalWriter,amal_call_reg },
@@ -433,11 +435,40 @@ void print_code( void **adr )
 
 	}}
 
+struct amalTab *find_amal_symbol(const char *str)
+{
+	char next_c;
+	int l;
+
+	for (struct amalTab *tab = amalSymbols; tab -> name ; tab++ )
+	{
+		l = strlen(tab->name);
+
+		if (strncasecmp(str, tab -> name, l) == 0) return tab;
+	}
+	return NULL;
+}
+
 struct amalTab *find_amal_command(const char *str)
 {
+	char next_c;
+	int l;
+	struct amalTab *symbol = NULL;
+
 	for (struct amalTab *tab = amalCmds; tab -> name ; tab++ )
 	{
-		if (strncasecmp(str, tab -> name, strlen(tab->name)) == 0) return tab;
+		l = strlen(tab->name);
+
+		if (strncasecmp(str, tab -> name, l) == 0)
+		{
+			next_c = *(str+l);
+			symbol = find_amal_symbol( str + l );
+
+			if ((next_c == ' ') || (symbol) || (next_c == 0))
+			{
+				 return tab;
+			}
+		}
 	}
 	return NULL;
 }
@@ -529,6 +560,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	while (*s)
 	{
 		found = find_amal_command(s);
+
+		if (!found) found = find_amal_symbol(s);
 		
 		if (found)
 		{
@@ -590,6 +623,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 		else
 		{
+			printf("script: %s\n",channel -> amal_script);
+			printf("code bad at: %s\n",s);
 			amalProg -> call_array[pos] = 0;
 			return false;
 		}
@@ -600,6 +635,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 
 	}
+
 	amalProg -> call_array[pos++] = amal_call_next_cmd;
 	amalProg -> call_array[pos] = 0;
 
@@ -612,6 +648,9 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 
 	channel -> progStack = (struct amalCallBack *) malloc(sizeof(struct amalCallBack *)*500);
 	channel -> progStackCount = 0;
+	channel -> amalProgCounter = channel -> amalProg.call_array;
+
+	Printf("channel -> amalProgCounter = %08lx\n",channel -> amalProgCounter);
 
 	return true;
 }
@@ -621,15 +660,15 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 	void *ret;
 	void *(**call) ( struct kittyChannel *self, void **code, unsigned int opt );
 
-	printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
+	Printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
 
 	for (call = channel -> amalProgCounter ;  *call ; call ++ )
 	{
-		printf("%08x\n",call);
+		Printf("%08lx\n",call);
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret) 
 		{
-			printf("code offset set %08x\n",ret);
+			Printf("code offset set %08lx\n",ret);
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
 
