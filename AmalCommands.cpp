@@ -408,14 +408,15 @@ void *amal_call_end API_AMAL_CALL_ARGS
 void *amal_call_xm API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = amal_mouse_x;	
+	self -> argStack [ self -> argStackCount  ] = amal_mouse_x;
+	getchar();	
 	return NULL;
 }
 
 void *amal_call_ym API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = amal_mouse_y;	
+	self -> argStack [ self -> argStackCount  ] = amal_mouse_y;	
 	return NULL;
 }
 
