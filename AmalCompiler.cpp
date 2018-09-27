@@ -22,6 +22,9 @@ std::vector<void **> amalloops;
 static std::vector<struct AmalLabelRef> looking_for_labels;
 static std::vector<struct AmalLabelRef> found_labels;
 
+
+void dump_amal_labels();
+
 #ifdef test_app
 int amreg[26];
 
@@ -715,6 +718,7 @@ void amal_fix_labels( void **code )
 			code[ looking_for_labels[i].pos + 1] = &code[pos];
 		}
 	}
+	dump_amal_labels();
 }
 
 void amal_clean_up_labels( )
@@ -724,6 +728,26 @@ void amal_clean_up_labels( )
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	printf("I'm not doing a jack ass\n");
 }
+
+void dump_amal_labels()
+{
+	int i;
+
+	printf("looking for labels\n");
+
+	for (i=0;i<looking_for_labels.size();i++)
+	{
+		printf("pos 0x%08x, name %s\n",looking_for_labels[i].pos,looking_for_labels[i].name);
+	}
+
+	printf("found labels\n");
+
+	for (i=0;i<found_labels.size();i++)
+	{
+		printf("pos 0x%08x, name %s\n",found_labels[i].pos,found_labels[i].name);
+	}
+}
+
 
 #ifdef test_app
 
@@ -801,24 +825,6 @@ void dump_object()
 	printf("x: %d, y: %d\n", obj_x, obj_y);
 }
 
-void dump_labels()
-{
-	int i;
-
-	printf("looking for labels\n");
-
-	for (i=0;i<looking_for_labels.size();i++)
-	{
-		printf("pos 0x%08x, name %s\n",looking_for_labels[i].pos,looking_for_labels[i].name);
-	}
-
-	printf("found labels\n");
-
-	for (i=0;i<found_labels.size();i++)
-	{
-		printf("pos 0x%08x, name %s\n",found_labels[i].pos,found_labels[i].name);
-	}
-}
 
 
 int main(int args, char **arg)
