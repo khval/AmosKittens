@@ -361,8 +361,8 @@ void *more_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
+	self -> argStack [ self -> argStackCount ] = 0;
 	pushBackAmalCmd( code, self, more_or_equal ); 
 	return NULL;
 }
@@ -370,8 +370,7 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 void *amal_call_equal API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
-	self -> argStackCount  ++;
+	self -> argStack [ self -> argStackCount ] = 0;	
 	return NULL;
 }
 
