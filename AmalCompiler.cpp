@@ -105,7 +105,7 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 
 	le = 0;
 	d = labelname;
-	while ((*s != 0)&&( *s != ';')&&(le<18)) { *d++=*s++; le++; }
+	while ((*s != 0)&&(*s != ' ')&&( *s != ';')&&(le<18)) { *d++=*s++; le++; }
 	*d = 0;
 
 	data -> arg_len = le ? le+1 : 0;
