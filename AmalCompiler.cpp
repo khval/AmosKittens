@@ -688,15 +688,17 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 }
 
 
-bool amal_find_label(char *name, unsigned int &pos)
+bool amal_find_label(char *name, unsigned int *ref_pos)
 {
 	int i;
+	*ref_pos = 0xFFFFFFFF;
 
 	for (i=0;i<found_labels.size();i++)
 	{
 		if (strcmp(found_labels[i].name, name)==0)
 		{
-			pos = found_labels[i].pos;
+
+			*ref_pos = found_labels[i].pos;
 			return true;
 		}
 	}
@@ -706,16 +708,20 @@ bool amal_find_label(char *name, unsigned int &pos)
 void amal_fix_labels( void **code )
 {
 	int i;
-	unsigned int pos;
+	unsigned int ref_pos = 0xFFFFFFFE;
 
 	for (i=0;i<looking_for_labels.size();i++)
 	{
-		if (amal_find_label(looking_for_labels[i].name,pos))
+		if (amal_find_label(looking_for_labels[i].name,&ref_pos))
 		{
-			printf("fix pos %d\n",pos);
+			printf("fix ref_pos %08x\n",ref_pos);
 			getchar();
 
-			code[ looking_for_labels[i].pos + 1] = &code[pos];
+			if (ref_pos != 0xFFFFFFFF)
+			{
+				code[ looking_for_labels[i].pos + 1] = &code[ref_pos];
+			}
+			return;
 		}
 	}
 	dump_amal_labels();
