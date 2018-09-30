@@ -301,14 +301,13 @@ void channel_amal( struct kittyChannel *channel )
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	Printf("channel -> status = %ld\n", channel -> status );
+	Printf("channel -> amalProgCounter = %08lx\n",channel -> amalProgCounter);
 
-	if (channel -> amalProgCounter)	// safety first.
+	// channel status can change while AMAL program runs.
+	if ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
 	{
-		// channel status can change while AMAL program runs.
-		while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
-		{
-			amal_run_one_cycle(channel);
-		}
+		amal_run_one_cycle(channel);
+		Printf("In the loop\n");
 	}
 }
 
