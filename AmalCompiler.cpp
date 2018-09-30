@@ -84,6 +84,50 @@ unsigned int numAmalWriter (	struct kittyChannel *channel, struct amalTab *self,
 	return 2;
 }
 
+int amalStringLength( const char *str )
+{
+	const char *c;
+	int l = 0;
+	for (c = str ; (*c==0) | (*c==';') ; c++) l ++;
+	return l;
+}
+
+const char *AmalAtStringArg( const char  *at_script )
+{
+	const char *s = at_script;
+	while ((*s != 0)&&(*s != ' ')) s++;
+	while (*s == ' ') s++;
+	return s;
+}
+
+int writeAmalStringToBuffer( const char *s, char *d )
+{
+	int le = 0;
+	while ((*s != 0)&&(*s != ' ')&&( *s != ';')) { *d++=*s++; le++; }
+	*d = 0;
+	return le;
+}
+
+unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	const char *s;
+	int le;
+	call_array[0] = self -> call;
+
+	printf("Writing %-8d to %08x - script\n",num, &call_array[1]);
+
+	s = AmalAtStringArg( data -> at_script );
+	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) );
+	data -> arg_len = le ? le+1 : 0;
+	*((int *) &call_array[1]) = ((le + sizeof(void *)) / sizeof(void *) ) ;
+
+	return 2 + ((le + sizeof(void *)) / sizeof(void *) );
+}
+
+
 
 unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
@@ -342,7 +386,7 @@ struct amalTab amalCmds[] =
 	{"Y",stdAmalWriter,amal_call_y},	// eXit
 	{"L",stdAmalWriterLet,NULL},	// Let
 	{"AU",stdAmalWriter,NULL},	// AUtotest
-	{"A",stdAmalWriter,amal_call_anim},	// Anim
+	{"A",stdAmalWriterScript,amal_call_anim},	// Anim
 	{"M",stdAmalWriter,NULL},	// Move
 	{"P",stdAmalWriter,amal_call_pause},	// Pause
 	{"R0",stdAmalWriterReg,NULL },	// R0
@@ -682,8 +726,16 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 			break;
 		}
 	}
+
+	Printf("<temp exit loop>\n");
+
 	channel -> amalProgCounter = call;	// save counter.
-	if (*call == NULL) channel -> status = channel_status::done;
+	if (*call == NULL) 
+	{
+		Printf("%s - no more data\n",__FUNCTION__);
+		channel -> status = channel_status::done;
+		getchar();
+	}
 
 }
 
@@ -709,6 +761,11 @@ void amal_fix_labels( void **code )
 {
 	int i;
 	unsigned int ref_pos = 0xFFFFFFFE;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("found_labels.size() -> %d: looking_for_labels.size() -> %d\n",found_labels.size(), looking_for_labels.size());
+
 
 	for (i=0;i<looking_for_labels.size();i++)
 	{
@@ -858,7 +915,7 @@ int main(int args, char **arg)
 				amal_clean_up_labels( );
 
 				dump_object();
-				dump_labels();
+				dump_amal_labels();
 				getchar();
 
 				test_run( &channel );

@@ -561,7 +561,16 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 {
 	int le;
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
+
+	le = (int) code[1];
+
+	printf("le %d\n",le);
+	printf("str: %s\n", (char *) &code[2]);
+
+	getchar();
+
+
+	return code+1+(le*2);
 }
 
 void *while_status  (struct kittyChannel *self, struct amalCallBack *cb)
