@@ -355,6 +355,93 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 	}
 }
 
+void DrawSprite(
+	struct retroSprite * sprite,
+	int x,
+	int y,
+	int image,
+	int flags)
+{
+	int width;
+	int height;
+	int ypos;
+	int source_x0 = 0,source_y0 = 0;
+	unsigned int *destination_row_ptr;
+	unsigned int *destination_row_ptr2;
+	unsigned int *destination_row_start;
+	unsigned char *source_row_start;
+	unsigned char *source_row_ptr;
+	unsigned char *source_row_end ;
+	struct retroRGB *rgb;
+	struct retroRGB *rgb2;
+	unsigned int color;
+
+	if (image > sprite -> number_of_frames) image = sprite -> number_of_frames;
+	if (image < 0) image = 0;
+
+	struct retroFrameHeader *frame = sprite -> frames + image;
+
+	width = frame -> Width ;
+	height = frame -> Height ;
+
+	x -= frame -> XHotSpot;
+	y -= frame -> YHotSpot;	
+
+	if (y>0)
+	{
+		if (y+height>(video->height/2)) height = (video->height/2) - y;
+	}
+	else
+	{
+		 source_y0 = -y; y = 0; height -= source_y0;
+	}
+
+	if (x>0)
+	{
+		if (x+width>(video->width/2)) width =(video->width/2) - x;
+	}
+	else
+	{
+		source_x0 = -x; x = 0; width -= source_x0;
+	}
+
+	destination_row_start = video -> Memory + (video -> width * (y*2)) + (x*2);
+	source_row_start = (unsigned char *) frame -> data + (source_y0 * frame -> bytesPerRow ) + source_x0;
+	source_row_end = source_row_start + width;
+
+	for ( ypos = 0; ypos < height; ypos++ )
+	{
+		destination_row_ptr = destination_row_start;
+		destination_row_ptr2 = destination_row_start + video -> width;
+
+		rgb = video -> scanlines[0].orgPalette;
+
+		for ( source_row_ptr = source_row_start;  source_row_ptr < source_row_end ; source_row_ptr++ )
+		{
+			if (rgb) 
+			{
+				rgb2 = &rgb[*source_row_ptr];
+				color = (rgb2->r << 16) | (rgb2->g<<8) | rgb2->b;
+			}
+			else color = 0;
+
+			if (*source_row_ptr) 
+			{
+				*destination_row_ptr= color;
+				*(destination_row_ptr+1)= color;
+				*destination_row_ptr2= color;
+				*(destination_row_ptr2+1)= color;
+			}
+			destination_row_ptr+=2;
+		}
+
+		destination_row_start += (video -> width*2);
+		source_row_start += frame -> bytesPerRow;
+		source_row_end += frame -> bytesPerRow;
+	}
+
+}
+
 
 
 void main_engine()
@@ -559,7 +646,10 @@ void main_engine()
 
 						if (item -> image>0)
 						{
-							retroSprite( video, n, item -> x, item -> y, item -> image );
+							//retroSprite( video, n, item -> x, item -> y, item -> image );
+
+							DrawSprite( sprite, item -> x, item -> y, item -> image, 0 );
+
 							Printf("sprite %ld,%ld,%ld,%ld\n",n, item -> x, item -> y, item -> image);
 						}
 					}
