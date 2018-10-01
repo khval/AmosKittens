@@ -194,8 +194,7 @@ void *amal_call_sub API_AMAL_CALL_ARGS
 
 static void *mul (struct kittyChannel *self, struct amalCallBack *cb)
 {
-	dumpAmalStack( self );
-	getchar();
+//	dumpAmalStack( self );
 
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -411,7 +410,6 @@ void *amal_call_xm API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount  ] = amal_mouse_x;
-	getchar();	
 	return NULL;
 }
 
