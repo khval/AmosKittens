@@ -46,6 +46,7 @@ struct kittyChannel
 	char *amal_at;
 	char *anim_script;
 	char *anim_at;
+	int anim_loops;
 	char *movex_script;
 	char *movex_at;
 	char *movey_script;

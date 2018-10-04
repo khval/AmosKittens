@@ -558,15 +558,20 @@ void *amal_call_nextArg API_AMAL_CALL_ARGS
 void *amal_call_anim API_AMAL_CALL_ARGS
 {
 	int le;
+	char *animCode ;
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	le = (int) code[1];
+	animCode = (char *) &code[2];
 
-	printf("le %d\n",le);
-	printf("str: %s\n", (char *) &code[2]);
+#ifdef test_app
 
-	getchar();
+	Printf("le %ld\n",le);
+	Printf("str: %s\n", animCode);
 
+#else 
+	setChannelAnim( self, strdup(  animCode ) );
+#endif
 
 	return code+1+(le*2);
 }

@@ -461,6 +461,21 @@ void channel_anim( struct kittyChannel *self )
 	struct channelAPI *api = self -> objectAPI;
 	if (api == NULL) return;
 
+	// we are at end of anim, what to do...
+	if (*self->anim_at == 0)
+	{
+		if (self->anim_loops>0)
+		{
+			self->anim_loops--;
+			if (self->anim_loops==0) self->anim_loops==-1;	// done.
+		}
+
+		if (self->anim_loops==-1)	// infinity.
+		{
+			self->anim_at = self -> anim_script;
+		}
+	}
+
 	if (self -> sleep >= self -> sleep_to )
 	{
 		int sign = 1;
@@ -471,19 +486,35 @@ void channel_anim( struct kittyChannel *self )
 
 		for (c=self->anim_at;*c;c++)
 		{
-			if (*c=='L') c = self -> anim_script;
+			if (*c=='L') c = self -> anim_script;	//  when using normal anim command, "L" loops back to start.
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
-			if ((*c==',')||(*c==')'))
-			{
-				switch (arg)
-				{
-					case 0: api -> setImage( self -> number,  num );  break;
-					case 1: self -> sleep_to = num; self -> sleep = 0; break;
-				}
 
-				arg ++;num = 0;sign = 1;
+			switch (para)
+			{
+				case 0:	// outside
+		
+						if (*c==',')
+						{
+							// 0 is normaly infinity loops, but -1 is better for infinity, 0 now becomes, no more loops.
+							self -> anim_loops = num==0 ? -1 :  num ;
+						}
+						break;
+
+				case 1:	// insinde 
+
+						if ((*c==',')||(*c==')'))
+						{
+							switch (arg)
+							{
+								case 0: api -> setImage( self -> number,  num );  break;
+								case 1: self -> sleep_to = num; self -> sleep = 0; break;
+							}
+
+							arg ++;num = 0;sign = 1;
+						}
+						break;
 			}
 
 			if (*c==')') 

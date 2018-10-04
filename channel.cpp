@@ -105,6 +105,7 @@ void setChannelAnim( struct kittyChannel *item, char *str)
 	if (item -> anim_script) free(item -> anim_script);
 	item -> anim_script = str;
 	item -> anim_at = str;
+	item -> anim_loops = 0;
 }
 
 void setChannelAmal( struct kittyChannel *item, char *str)
