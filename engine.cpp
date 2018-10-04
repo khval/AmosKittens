@@ -648,7 +648,7 @@ void main_engine()
 						{
 							//retroSprite( video, n, item -> x, item -> y, item -> image );
 
-							DrawSprite( sprite, item -> x, item -> y, item -> image, 0 );
+							DrawSprite( sprite, item -> x, item -> y, item -> image -1, 0 );
 
 							Printf("sprite %ld,%ld,%ld,%ld\n",n, item -> x, item -> y, item -> image);
 						}
