@@ -47,4 +47,5 @@ extern char *textCDownStr(nativeCommand *cmd, char *ptr);
 extern char *textCLeftStr(nativeCommand *cmd, char *ptr);
 extern char *textCRightStr(nativeCommand *cmd, char *ptr);
 extern char *textPrintUsing(nativeCommand *cmd, char *ptr);
+extern char *textWindow(nativeCommand *cmd, char *ptr);
 

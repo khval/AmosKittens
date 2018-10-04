@@ -1152,3 +1152,22 @@ char *textPrintUsing(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *_textWindow( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	Printf("Amos Kittens don't support Windows yet, but kittens are brave, and try\n");
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textWindow(nativeCommand *cmd, char *ptr)
+{
+	stackCmdNormal( _textWindow, ptr );
+	setStackNone();
+
+	return ptr;
+}
+

@@ -534,3 +534,22 @@ char *ocMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_ocHZone( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	Printf("Sorry HZone out of order, comeback when it works :-)\n");
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *ocHZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocHZone, tokenBuffer );
+	return tokenBuffer;
+}
