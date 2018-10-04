@@ -162,7 +162,6 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int ret = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -172,24 +171,31 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			if (kittyStack[stack-3].type ==  type_int) screens[screen_num] -> scanline_x = getStackNum( stack-3 );
-			if (kittyStack[stack-2].type ==  type_int) screens[screen_num] -> scanline_y = (getStackNum( stack-2 ) *2) - 80;
-			if (kittyStack[stack-1].type ==  type_int) screens[screen_num] -> displayWidth = getStackNum( stack-1 );
-			if (kittyStack[stack].type ==  type_int) screens[screen_num] -> displayHeight = getStackNum( stack );
+			struct retroScreen *screen; 
 
 			engine_lock();
 
-			if (screens[screen_num])
-				retroApplyScreen( screens[screen_num], video, 
-					screens[screen_num] -> scanline_x,
-					screens[screen_num] -> scanline_y,
-					screens[screen_num] -> displayWidth,
-					screens[screen_num] -> displayHeight );
+			if (screen = screens[screen_num])
+			{
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+				if (kittyStack[stack-3].type ==  type_int) screen -> scanline_x = getStackNum( stack-3 );
+				if (kittyStack[stack-2].type ==  type_int) screen -> scanline_y = (getStackNum( stack-2 ) *2) - 80;
+				if (kittyStack[stack-1].type ==  type_int) screen -> displayWidth = getStackNum( stack-1 );
+				if (kittyStack[stack].type ==  type_int) screen -> displayHeight = getStackNum( stack );
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+				retroApplyScreen( screen, video, 
+					screen -> scanline_x,
+					screen -> scanline_y,
+					screen -> displayWidth,
+					screen -> displayHeight );
+			}
 
 			video -> refreshAllScanlines = TRUE;
-
 			engine_unlock();
-
 			success = true;
 		}
 	}
@@ -197,7 +203,6 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(ret);
 	return NULL;
 }
 
