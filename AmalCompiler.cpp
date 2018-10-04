@@ -4,6 +4,7 @@
 #include <string.h>
 #include <vector>
 #include <proto/dos.h>
+#include <proto/exec.h>
 
 #include "AmalCompiler.h"
 #include "channel.h"
@@ -22,8 +23,16 @@ std::vector<void **> amalloops;
 static std::vector<struct AmalLabelRef> looking_for_labels;
 static std::vector<struct AmalLabelRef> found_labels;
 
-
+void reAllocAmalBuf( struct amalBuf *i, int e );
 void dump_amal_labels();
+
+void *amalAllocBuffer( int size ) 
+{
+	printf("AllocVecTags %d\n",size); 
+	return AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END );
+}
+
+#define amalFreeBuffer( ptr ) { FreeVec( ptr ); ptr = NULL; }
 
 #ifdef test_app
 int amreg[26];
@@ -114,12 +123,34 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 				unsigned int num)
 {
 	const char *s;
+	int anim_script_len;
+	int size;
 	int le;
+
 	call_array[0] = self -> call;
+
+	struct amalBuf *amalProg = &channel -> amalProg;
 
 	printf("Writing %-8d to %08x - script\n",num, &call_array[1]);
 
+// find script find the size
+
 	s = AmalAtStringArg( data -> at_script );
+	anim_script_len =amalStringLength( s );
+	size = 2 + ((anim_script_len + sizeof(void *)) / sizeof(void *) );
+
+// check if size is ok, or need a new buffer.
+
+	if (data -> pos > amalProg -> elements - size )	// larger writer, takes max 6 elements.
+	{
+		reAllocAmalBuf(amalProg,size + 20);	// add another 20 elements if buffer is low.
+
+		// now that call array is new, need to reset it.
+		call_array = &amalProg -> call_array[data -> pos];
+	}
+
+// write the script into buffer.
+
 	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) );
 	data -> arg_len = le ? le+1 : 0;
 	*((int *) &call_array[1]) = ((le + sizeof(void *)) / sizeof(void *) ) ;
@@ -551,7 +582,7 @@ void allocAmalBuf( struct amalBuf *i, int e )
 {
 	i -> elements = e;
 	i -> size = sizeof(void *) * i -> elements;
-	i -> call_array = (void *(**) API_AMAL_CALL_ARGS) malloc(i -> size);
+	i -> call_array = (void *(**) API_AMAL_CALL_ARGS) amalAllocBuffer(i -> size);
 }
 
 void reAllocAmalBuf( struct amalBuf *i, int e )
@@ -560,14 +591,18 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 	int new_elements = i -> elements + e;
 	int new_size = sizeof(void *) * new_elements;
 
-	new_array = (void *(**) API_AMAL_CALL_ARGS) malloc( new_size );
+	new_array = (void *(**) API_AMAL_CALL_ARGS) amalAllocBuffer  ( new_size );
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (i -> call_array)
 	{
+
 		if (new_array)
 		{
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 			memcpy( new_array, i -> call_array, i->size );
 			i->elements = new_elements;
 			i->size = new_size;
@@ -578,8 +613,15 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 			new_size = 0;
 		}
 
-		free((void *) i -> call_array);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+		printf(" i -> call_array = %08x\n", i -> call_array );
+		//	amalFreeBuffer(i -> call_array);
+
+		amalFreeBuffer(i->call_array);
+
 		i -> call_array = new_array;
+
 	}
 	else
 	{
@@ -593,7 +635,6 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 bool asc_to_amal_tokens( struct kittyChannel  *channel )
 {
-	int pos = 0;
 	const char *s;
 	struct amalTab *found;
 	char txt[30];
@@ -602,6 +643,10 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	struct amalWriterData data;
 
 	allocAmalBuf( amalProg, 60 );
+
+	printf("script: '%s'\n",script);
+
+	data.pos = 0;
 
 	s=script;
 	while (*s)
@@ -616,7 +661,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.command_len = strlen(found -> name);
 			data.arg_len = 0;
 
-			pos += found -> write( channel, found, &amalProg -> call_array[pos], &data, 0 );
+			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, 0 );
 			s += data.command_len + data.arg_len;
 		}
 		else 	if (*s == ' ') 
@@ -639,7 +684,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.command_len =0;
 			data.arg_len = 0;
 
-			pos += found -> write( channel, found, &amalProg -> call_array[pos], &data, num );
+			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, num );
 		}
 		else if ((*s >= 'A')&&(*s<='Z'))
 		{
@@ -655,7 +700,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			if (*l==':')
 			{
 				struct AmalLabelRef label;
-				label.pos = pos;
+				label.pos = data.pos;
 				label.name = strdup( txt );
 				found_labels.push_back( label );
 				s = l+1;
@@ -664,7 +709,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			{
 				printf("code bad at: %s\n",s);
 
-				amalProg -> call_array[pos] = 0;
+				amalProg -> call_array[data.pos] = 0;
 				return false;
 			}
 		}
@@ -672,19 +717,19 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		{
 			printf("script: %s\n",channel -> amal_script);
 			printf("code bad at: %s\n",s);
-			amalProg -> call_array[pos] = 0;
+			amalProg -> call_array[data.pos] = 0;
 			return false;
 		}
 
-		if (pos > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
+		if (data.pos > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
 		{
 			reAllocAmalBuf(amalProg,20);	// add another 20 elements if buffer is low.
 		}
 
 	}
 
-	amalProg -> call_array[pos++] = amal_call_next_cmd;
-	amalProg -> call_array[pos] = 0;
+	amalProg -> call_array[data.pos++] = amal_call_next_cmd;
+	amalProg -> call_array[data.pos] = 0;
 
 	// setup default stack of 500.
 
@@ -747,8 +792,12 @@ bool amal_find_label(char *name, unsigned int *ref_pos)
 
 	for (i=0;i<found_labels.size();i++)
 	{
+		printf("'%'s == '%s'?\n", found_labels[i].name, name);
+
 		if (strcmp(found_labels[i].name, name)==0)
 		{
+
+			printf("found label pos is %d\n",found_labels[i].pos);
 
 			*ref_pos = found_labels[i].pos;
 			return true;
@@ -781,6 +830,9 @@ void amal_fix_labels( void **code )
 			return;
 		}
 	}
+
+	printf("nothing to fix, or this is broken\n");
+
 	dump_amal_labels();
 }
 
