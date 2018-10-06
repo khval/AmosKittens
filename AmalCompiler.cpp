@@ -62,13 +62,14 @@ void dumpAmalStack( struct kittyChannel *channel )
 	for (s=0;s<=channel -> argStackCount;s++) printf("stack %d: value %d\n",s, channel -> argStack[s] );
 }
 
-void pushBackAmalCmd( void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) 
+void pushBackAmalCmd( amal::flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) 
 {
 	if (channel -> progStack)
 	{
 		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];
 		if (CallBack)
 		{
+			CallBack -> flags = amal::flag_cmd;
 			CallBack -> cmd = cmd;
 			CallBack -> argStackCount = channel -> argStackCount;
 			CallBack -> progStackCount = channel -> progStackCount;

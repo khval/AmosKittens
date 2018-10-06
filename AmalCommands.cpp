@@ -11,7 +11,7 @@
 #include "AmalCommands.h"
 #include "amal_object.h"
 
-extern void pushBackAmalCmd( struct kittyChannel *channel, void *cmd ) ;
+extern void pushBackAmalCmd( amal::flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
 
@@ -222,7 +222,7 @@ void *amal_call_add API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, add ); 
+	pushBackAmalCmd( amal::flag_para, code, self, add ); 
 	return NULL;
 }
 
@@ -241,7 +241,7 @@ void *amal_call_sub API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, sub ); 
+	pushBackAmalCmd( amal::flag_para, code, self, sub ); 
 	return NULL;
 }
 
@@ -262,7 +262,7 @@ void *amal_call_mul API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, mul ); 
+	pushBackAmalCmd( amal::flag_para, code, self, mul ); 
 	return NULL;
 }
 
@@ -282,7 +282,7 @@ void *amal_call_div API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, div ); 
+	pushBackAmalCmd( amal::flag_para, code, self, div ); 
 	return NULL;
 }
 
@@ -314,7 +314,7 @@ void *amal_call_not_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, not_equal ); 
+	pushBackAmalCmd( amal::flag_para, code, self, not_equal ); 
 	return NULL;
 }
 
@@ -340,7 +340,7 @@ void *amal_call_less API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, less ); 
+	pushBackAmalCmd( amal::flag_para, code, self, less ); 
 	return NULL;
 }
 
@@ -366,7 +366,7 @@ void *amal_call_more API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, more ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, more ); 
 	return NULL;
 }
 
@@ -392,7 +392,7 @@ void *amal_call_less_or_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( code, self, less_or_equal ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, less_or_equal ); 
 	return NULL;
 }
 
@@ -418,7 +418,7 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStackCount  ++;
 	self -> argStack [ self -> argStackCount ] = 0;
-	pushBackAmalCmd( code, self, more_or_equal ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, more_or_equal ); 
 	return NULL;
 }
 
@@ -657,7 +657,7 @@ void *amal_call_while API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( code, self, while_status ); 
+	pushBackAmalCmd( amal::flag_cmd ,code, self, while_status ); 
 	printf("ptr %08x\n",code[1]);
 	return code +1;
 }
@@ -714,7 +714,7 @@ void *amal_call_set API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( code, self, set_reg ); 
+	pushBackAmalCmd( amal::flag_para ,code, self, set_reg ); 
 	return NULL;
 }
 
@@ -740,7 +740,7 @@ void *callback_inc  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_inc API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	pushBackAmalCmd( code, self, callback_inc ); 
+	pushBackAmalCmd( amal::flag_para ,code, self, callback_inc ); 
 	return NULL;
 }
 

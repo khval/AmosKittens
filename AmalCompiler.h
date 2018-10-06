@@ -1,6 +1,16 @@
 
 struct kittyChannel;
 
+namespace amal
+{
+	enum flags
+	{
+		flag_none,
+		flag_cmd,
+		flag_para
+	};
+};
+
 #define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
 
 struct amalBuf
@@ -33,7 +43,7 @@ struct amalTab
 	void *(*call) API_AMAL_CALL_ARGS;
 };
 
-extern void pushBackAmalCmd( void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
+extern void pushBackAmalCmd( amal::flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
 extern void amal_run_one_cycle( struct kittyChannel  *channel );
