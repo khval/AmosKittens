@@ -23,12 +23,12 @@ static int getImage (int object)
 
 static int getX (int object)
 {
-	return video -> sprites[object].x*2;
+	return video -> sprites[object].x;
 }
 
 static int getY (int object)
 {
-	return video -> sprites[object].y*2;
+	return video -> sprites[object].y;
 }
 
 static void setImage (int object,int image)
@@ -38,12 +38,12 @@ static void setImage (int object,int image)
 
 static void setX (int object,int x)
 {
-	video -> sprites[object].x = x/2;
+	video -> sprites[object].x = x;
 }
 
 static void setY (int object,int y)
 {
-	video -> sprites[object].y = y/2;
+	video -> sprites[object].y = y;
 }
 
 struct channelAPI sprite_api = 

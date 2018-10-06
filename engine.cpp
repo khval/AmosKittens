@@ -357,11 +357,11 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 
 void DrawSprite(
 	struct retroSprite * sprite,
-	int x,
-	int y,
+	struct retroSpriteObject *item,
 	int image,
 	int flags)
 {
+	int x,y;
 	int width;
 	int height;
 	int ypos;
@@ -384,8 +384,8 @@ void DrawSprite(
 	width = frame -> Width ;
 	height = frame -> Height ;
 
-	x -= frame -> XHotSpot;
-	y -= frame -> YHotSpot;	
+	x = (item -> x / 2) -  frame -> XHotSpot;
+	y = (item -> y / 2) - frame -> YHotSpot;	
 
 	if (y>0)
 	{
@@ -439,7 +439,6 @@ void DrawSprite(
 		source_row_start += frame -> bytesPerRow;
 		source_row_end += frame -> bytesPerRow;
 	}
-
 }
 
 
@@ -648,7 +647,7 @@ void main_engine()
 						{
 							//retroSprite( video, n, item -> x, item -> y, item -> image );
 
-							DrawSprite( sprite, item -> x, item -> y, item -> image -1, 0 );
+							DrawSprite( sprite, item, item -> image -1, 0 );
 
 							Printf("sprite %ld,%ld,%ld,%ld\n",n, item -> x, item -> y, item -> image);
 						}
