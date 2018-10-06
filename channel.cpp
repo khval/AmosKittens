@@ -11,12 +11,8 @@
 #include "amalCompiler.h"
 #include "channel.h"
 
-struct kittyChannel * ChannelTableClass::newChannel(  int channel )
+void initChannel( struct kittyChannel *item, int channel )
 {
-	struct kittyChannel *item = (struct kittyChannel *) malloc(sizeof(struct kittyChannel));
-
-	if (item)
-	{
 		item -> id = channel;
 		item -> token = 0;
 		item -> number = 0;
@@ -43,8 +39,17 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		item -> deltax = 0;
 		item -> deltay = 0;
 
+		item -> move_count = 0; 
+		item -> move_count_to = 0; 
+
 		item -> status = channel_status::active;
-	}
+}
+
+struct kittyChannel * ChannelTableClass::newChannel(  int channel )
+{
+	struct kittyChannel *item = (struct kittyChannel *) malloc(sizeof(struct kittyChannel));
+
+	if (item) initChannel( item, channel );
 
 	if (used < allocated )
 	{

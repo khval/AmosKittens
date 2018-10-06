@@ -47,6 +47,8 @@ struct kittyChannel
 	char *anim_script;
 	char *anim_at;
 	int anim_loops;
+
+	// move x and move y
 	char *movex_script;
 	char *movex_at;
 	char *movey_script;
@@ -57,6 +59,15 @@ struct kittyChannel
 	int sleep_to;
 	int count;
 	int count_to;
+	
+	// amal move
+	int move_from_x;
+	int move_from_y;
+	int move_delta_x;
+	int move_delta_y;
+	int move_count;
+	int move_count_to;
+
 	struct channelAPI *objectAPI;
 	channel_status::status status;
 	int reg[10];	// local reg 0 to 9 
@@ -102,4 +113,5 @@ extern void setChannelAmal( struct kittyChannel *item, char *str);
 extern void setChannelAnim( struct kittyChannel *item, char *str);
 extern void setChannelMoveX( struct kittyChannel *item, char *str);
 extern void setChannelMoveY( struct kittyChannel *item, char *str);
+extern void initChannel( struct kittyChannel *item, int channel );
 

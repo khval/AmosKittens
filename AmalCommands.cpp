@@ -148,9 +148,62 @@ void *amal_call_autotest API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	Printf("self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
+	Delay(2);
+
+	if (args == 3)
+	{
+		if (( self -> move_count == 0)&&( self -> move_count_to == 0))
+		{
+			self -> move_from_x = self -> objectAPI -> getX( self -> number );
+			self -> move_from_y = self -> objectAPI -> getY( self -> number );
+
+			self -> move_delta_x = self -> argStack [ self -> argStackCount - 2 ];
+			self -> move_delta_y = self -> argStack [ self -> argStackCount - 1 ];
+			self -> move_count = 0;
+			self -> move_count_to = self -> argStack [self -> argStackCount ];
+
+			Printf("after read: self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
+			Delay(60);
+
+			// reset stack
+			self -> argStackCount = cb -> argStackCount;
+			return cb -> code - 1;
+		}
+		else	if (self -> move_count < self -> move_count_to)
+		{
+			int dxp,dyp;
+			self -> move_count ++;
+
+			dxp = self -> move_delta_x * self -> move_count / self -> move_count_to;
+			dyp = self -> move_delta_y * self -> move_count / self -> move_count_to;
+			self -> objectAPI -> setX( self -> number, self -> move_from_x + dxp );
+			self -> objectAPI -> setY( self -> number, self -> move_from_y + dyp );
+
+			self -> status = channel_status::paused;
+
+			// reset stack
+			self -> argStackCount = cb -> argStackCount;
+			return cb -> code - 1;
+		}
+	}
+
+	self -> move_count = 0;
+	self -> move_count_to = 0;
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	return NULL;
+}	
+
 void *amal_call_move API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	pushBackAmalCmd( amal::flag_cmd, code, self, callback_move ); 
 	return NULL;
 }
 

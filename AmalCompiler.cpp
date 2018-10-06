@@ -418,7 +418,7 @@ struct amalTab amalCmds[] =
 	{"L",stdAmalWriterLet,NULL},	// Let
 	{"AU",stdAmalWriter,NULL},	// AUtotest
 	{"A",stdAmalWriterScript,amal_call_anim},	// Anim
-	{"M",stdAmalWriter,NULL},	// Move
+	{"M",stdAmalWriter,amal_call_move},	// Move
 	{"P",stdAmalWriter,amal_call_pause},	// Pause
 	{"R0",stdAmalWriterReg,NULL },	// R0
 	{"R1",stdAmalWriterReg,NULL },	// R0
@@ -945,6 +945,8 @@ void dump_object()
 int main(int args, char **arg)
 {
 	struct kittyChannel  channel;
+
+	initChannel( &channel, 999 );
 
 	amalBuf *amalProg = &channel.amalProg;
 
