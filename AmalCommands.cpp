@@ -15,6 +15,9 @@ extern void pushBackAmalCmd( amal::flags flags, struct kittyChannel *channel, vo
 extern int amreg[26];
 extern void dumpAmalRegs();
 
+void *amalFlushParaCmds( struct kittyChannel *self );
+void *amalFlushAllCmds( struct kittyChannel *self );
+
 #ifdef test_app
 	#define amal_mouse_x 1000
 	#define amal_mouse_y 2000
@@ -41,6 +44,8 @@ void *amal_set_num API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount ] = (int) code[1];
+
+	amalFlushParaCmds( self );
 
 	return code+1;
 }
@@ -77,7 +82,7 @@ void *amal_call_reg API_AMAL_CALL_ARGS
 		self -> argStack [ self -> argStackCount ] = amreg[ c - 'A'];
 	}
 
-	printf("R%c is %d\n",c, self -> argStack [ self -> argStackCount ]);
+	amalFlushParaCmds( self );
 
 	return code+1;
 }
@@ -552,34 +557,55 @@ void *amal_call_vumeter API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_next_cmd API_AMAL_CALL_ARGS
+void *amalFlushParaCmds( struct kittyChannel *self )
 {
 	void *ret;
+
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	while (self -> progStackCount)
 	{
 		struct amalCallBack *cb;
+		cb = &self -> progStack[ self -> progStackCount -1 ];
+
+		Printf("cmd flag: %lx\n",cb -> flags);
+
+		if (cb -> flags & amal::flag_para)
+		{
+			Printf("found a command to flush\n");
+			self -> progStackCount --;
+			ret =cb -> cmd( self, cb );
+			if (ret) return ret;
+		}
+		else break;
+	}
+	return NULL;
+}
+
+void *amalFlushAllCmds( struct kittyChannel *self )
+{
+	void *ret;
+
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
+	while (self -> progStackCount)
+	{
+		struct amalCallBack *cb;
 		self -> progStackCount --;
-
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 		cb = &self -> progStack[ self -> progStackCount ];
-
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 		ret =cb -> cmd( self, cb );
-
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 		if (ret) return ret;
 	}
-
-	printf("----\n");
-
 	return NULL;
+}
+
+void *amal_call_next_cmd API_AMAL_CALL_ARGS
+{
+	void *ret;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	ret = amalFlushAllCmds( self );
+	return ret ? ret : NULL;
 }
 
 void *amal_call_parenthses_start API_AMAL_CALL_ARGS
