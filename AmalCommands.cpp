@@ -209,6 +209,7 @@ void *amal_call_move API_AMAL_CALL_ARGS
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	pushBackAmalCmd( amal::flag_cmd, code, self, callback_move ); 
+	self -> argStack [ self -> argStackCount ] = 0;	// 
 	return NULL;
 }
 
@@ -629,8 +630,8 @@ void *amal_call_end_label API_AMAL_CALL_ARGS
 void *amal_call_nextArg API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
+	self -> argStack [ self -> argStackCount ] = 0;	// 
 	return NULL;
 }
 
