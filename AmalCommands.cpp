@@ -355,8 +355,6 @@ void *more (struct kittyChannel *self, struct amalCallBack *cb)
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 
-	dumpAmalStack( self );
-
 	if (self -> argStackCount+1 >= 2)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] > self -> argStack [ cb -> argStackCount ]);
@@ -708,9 +706,6 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 	unsigned int c;
 
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	printf("args: %d\n", self -> argStackCount - cb -> argStackCount + 1 );
-
-	printf("c = %d\n",  cb-> last_reg);
 
 	c = cb-> last_reg;
 
