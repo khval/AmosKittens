@@ -69,7 +69,7 @@ void pushBackAmalCmd( amal::flags flags, void **code, struct kittyChannel *chann
 		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];
 		if (CallBack)
 		{
-			CallBack -> flags = amal::flag_cmd;
+			CallBack -> flags = flags;
 			CallBack -> cmd = cmd;
 			CallBack -> argStackCount = channel -> argStackCount;
 			CallBack -> progStackCount = channel -> progStackCount;
