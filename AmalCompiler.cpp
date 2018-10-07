@@ -59,7 +59,20 @@ void dumpAmalStack( struct kittyChannel *channel )
 {
 	int s;
 	printf("Amal Stack\n");
-	for (s=0;s<=channel -> argStackCount;s++) printf("stack %d: value %d\n",s, channel -> argStack[s] );
+	for (s=0;s<=channel -> argStackCount;s++) 
+	{
+		Printf("stack %ld: value %ld\n",s, channel -> argStack[s] );
+	}
+}
+
+void dumpAmalProgStack( struct kittyChannel *channel )
+{
+	int s;
+	printf("Amal Stack\n");
+	for (s=0;s<=channel -> progStackCount;s++) 
+	{
+		Printf("stack %ld: flags %lx\n",s, channel -> progStack[s].flags );
+	}
 }
 
 void pushBackAmalCmd( amal::flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) 
