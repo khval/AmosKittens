@@ -20,10 +20,12 @@ namespace channel_status
 {
 	enum status
 	{
-		done,	// amal program si done.
-		active,	// amal program is running.
-		paused,	// same as exit amal prgram at VBL
-		forzen	// stops the amal program, until its unfrozen.
+		uninitialized,	// No amal program.
+		initialized,		// Have amal program
+		done,		// Amal program is done.
+		active,		// Amal program is running.
+		paused,		// Same as exit amal prgram at VBL
+		frozen		// Stops the amal program, until its unfrozen.
 	};
 };
 
