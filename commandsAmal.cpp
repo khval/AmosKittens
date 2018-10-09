@@ -631,8 +631,31 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	channel = getStackNum( stack );
-				// we should freeze amal channel, we don't yet excute amal code!.
+		case 1:	 if (kittyStack[stack].type == type_none )	// arg 1 not set.
+				{
+					int index = 0;
+					struct kittyChannel *item;
+					int channel = getStackNum( stack );
+
+					engine_lock();				// most be thread safe!!!
+					for (index = 0; index < channels -> _size(); index++)
+					{
+						(channels -> item(index)) -> status = channel_status::frozen;
+					}
+					engine_unlock();
+				}
+				else
+				{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack );
+
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						item -> status = channel_status::frozen;
+					}
+					engine_unlock();
+				}
 				break;
 
 		defaut:
