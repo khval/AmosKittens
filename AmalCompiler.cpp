@@ -633,6 +633,14 @@ void allocAmalBuf( struct amalBuf *i, int e )
 	i -> call_array = (void *(**) API_AMAL_CALL_ARGS) amalAllocBuffer(i -> size);
 }
 
+void freeAmalBuf( struct amalBuf *i)
+{
+	i -> elements = 0;
+	i -> size = 0;
+	if ( i -> call_array ) amalFreeBuffer( i -> call_array );
+	i -> call_array = NULL;
+}
+
 void reAllocAmalBuf( struct amalBuf *i, int e )
 {
 	void *(**new_array) API_AMAL_CALL_ARGS;
