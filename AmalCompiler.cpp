@@ -58,7 +58,7 @@ unsigned int (*amal_to_writer) ( struct kittyChannel *channel, struct amalTab *s
 void dumpAmalStack( struct kittyChannel *channel )
 {
 	int s;
-	printf("Amal Stack\n");
+	Printf("Amal Stack\n");
 	for (s=0;s<=channel -> argStackCount;s++) 
 	{
 		Printf("stack %ld: value %ld\n",s, channel -> argStack[s] );
