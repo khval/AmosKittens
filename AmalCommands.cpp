@@ -158,7 +158,6 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	Printf("self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
-	Delay(2);
 
 	if (args == 3)
 	{
@@ -173,7 +172,6 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 			self -> move_count_to = self -> argStack [self -> argStackCount ];
 
 			Printf("after read: self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
-			Delay(60);
 
 			// reset stack
 			self -> argStackCount = cb -> argStackCount;

@@ -1441,8 +1441,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 
-//	getchar();
-
 	return NULL;
 }
 

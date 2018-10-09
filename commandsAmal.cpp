@@ -251,8 +251,6 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 		defaut:	setError(22,data->tokenBuffer);
 	}
 
-	getchar();
-
 	popStack( stack - data->stack );
 	return NULL;
 }

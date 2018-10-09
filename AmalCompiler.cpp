@@ -630,10 +630,8 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		printf(" i -> call_array = %08x\n", i -> call_array );
-		//	amalFreeBuffer(i -> call_array);
 
 		amalFreeBuffer(i->call_array);
-
 		i -> call_array = new_array;
 
 	}
@@ -798,7 +796,6 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 
 }
 
-
 bool amal_find_label(char *name, unsigned int *ref_pos)
 {
 	int i;
@@ -806,13 +803,8 @@ bool amal_find_label(char *name, unsigned int *ref_pos)
 
 	for (i=0;i<found_labels.size();i++)
 	{
-		printf("'%'s == '%s'?\n", found_labels[i].name, name);
-
 		if (strcmp(found_labels[i].name, name)==0)
 		{
-
-			printf("found label pos is %d\n",found_labels[i].pos);
-
 			*ref_pos = found_labels[i].pos;
 			return true;
 		}
@@ -827,16 +819,10 @@ void amal_fix_labels( void **code )
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("found_labels.size() -> %d: looking_for_labels.size() -> %d\n",found_labels.size(), looking_for_labels.size());
-
-
 	for (i=0;i<looking_for_labels.size();i++)
 	{
 		if (amal_find_label(looking_for_labels[i].name,&ref_pos))
 		{
-			printf("fix ref_pos %08x\n",ref_pos);
-			getchar();
-
 			if (ref_pos != 0xFFFFFFFF)
 			{
 				code[ looking_for_labels[i].pos + 1] = &code[ref_pos];
@@ -845,18 +831,9 @@ void amal_fix_labels( void **code )
 		}
 	}
 
-	printf("nothing to fix, or this is broken\n");
-
-	dump_amal_labels();
+	Printf("labels %ld, Fixed labels %ld\n",looking_for_labels.size(), fixed );
 }
 
-void amal_clean_up_labels( )
-{
-	int i;
-	unsigned int pos;
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	printf("I'm not doing a jack ass\n");
-}
 
 void dump_amal_labels()
 {
@@ -980,11 +957,10 @@ int main(int args, char **arg)
 			if (asc_to_amal_tokens( &channel ))
 			{
 				amal_fix_labels( (void **) amalProg -> call_array );
-				amal_clean_up_labels( );
 
 				dump_object();
 				dump_amal_labels();
-				getchar();
+
 
 				test_run( &channel );
 			}
