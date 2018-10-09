@@ -172,6 +172,40 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 	return 2 + ((le + sizeof(void *)) / sizeof(void *) );
 }
 
+void amal_clean_up_labels( )
+{
+	int i;
+	unsigned int pos;
+	struct AmalLabelRef label;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	while ( ! found_labels.empty() )
+	{
+		label = found_labels.back();
+
+		if (label.name)
+		{
+			free(label.name);
+			label.name = NULL;
+		}
+
+		found_labels.pop_back();
+	}
+
+	while ( ! looking_for_labels.empty() )
+	{
+		label = looking_for_labels.back();
+
+		if (label.name)
+		{
+			free(label.name);
+			label.name = NULL;
+		}
+
+		looking_for_labels.pop_back();
+	}
+}
 
 
 unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *self, 
@@ -962,6 +996,7 @@ int main(int args, char **arg)
 				dump_object();
 				dump_amal_labels();
 
+				amal_clean_up_labels( );
 
 				test_run( &channel );
 			}
