@@ -816,6 +816,7 @@ void amal_fix_labels( void **code )
 {
 	int i;
 	unsigned int ref_pos = 0xFFFFFFFE;
+	int fixed = 0;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -826,8 +827,8 @@ void amal_fix_labels( void **code )
 			if (ref_pos != 0xFFFFFFFF)
 			{
 				code[ looking_for_labels[i].pos + 1] = &code[ref_pos];
+				fixed ++;
 			}
-			return;
 		}
 	}
 
