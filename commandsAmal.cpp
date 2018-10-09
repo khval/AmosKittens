@@ -388,20 +388,33 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:
-			{
-				struct kittyChannel *item;
-				int channel = getStackNum( stack  );
-
-				if (item = channels -> getChannel(channel))
+		case 1:	if (kittyStack[stack].type == type_none )	// arg 1 not set.
 				{
-					item -> status = channel_status::active;
+					int index = 0;
+					struct kittyChannel *item;
+					int channel = getStackNum( stack );
+
+					engine_lock();				// most be thread safe!!!
+					for (index = 0; index < channels -> _size(); index++)
+					{
+						(channels -> item(index)) -> status = channel_status::active;
+					}
+					engine_unlock();
 				}
-			}
-			break;
+				else
+				{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack  );
+
+					if (item = channels -> getChannel(channel))
+					{
+						item -> status = channel_status::active;
+					}
+				}
+				break;
 
 		defaut:
-			setError(22,data->tokenBuffer);
+				setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
