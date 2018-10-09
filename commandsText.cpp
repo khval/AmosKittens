@@ -1171,3 +1171,18 @@ char *textWindow(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+char *textXCurs(nativeCommand *cmd, char *ptr)
+{
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen) setStackNum( screen -> locateX);
+	return NULL;
+}
+
+char *textYCurs(nativeCommand *cmd, char *ptr)
+{
+	struct retroScreen *screen = screens[current_screen];
+	if (screen) setStackNum( screen -> locateY);
+	return NULL;
+}
+

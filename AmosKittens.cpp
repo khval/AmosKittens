@@ -881,6 +881,8 @@ struct nativeCommand nativeCommands[]=
 	{0x15AC,"Vscroll",0,textVscroll },		// dummy command.
 	{0x15BA,"Set Tab",0,textSetTab },
 	{0x15C8,"Set Curs",0,textSetCurs },
+	{0x15E6,"X Curs",0,textXCurs },
+	{0x15F2,"Y Curs",0,textYCurs },
 	{0x1632,"Reserve Zone", 0, ocReserveZone },
 	{0x1646,"Reserve Zone", 0, ocReserveZone },
 	{0x164E,"Reset Zone", 0, ocResetZone },

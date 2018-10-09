@@ -10,6 +10,8 @@ extern char *textPaper(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPen(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCentre(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textPrint(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textYCurs(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textXCurs(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer);
 extern char *textCursPen(struct nativeCommand *cmd, char *tokenBuffer);
