@@ -516,14 +516,14 @@ struct amalTab amalCmds[] =
 	{"J0",stdAmalWriter,amal_call_j0},			// j0		joy0
 	{"J1",stdAmalWriter,amal_call_j1},			// J1		Joy1
 	{"J",stdAmalWriterJump,amal_call_jump},	// Jump
-	{"Z",stdAmalWriter,NULL},	// Z(n)	random number
-	{"XH",stdAmalWriter,NULL},	// x hardware
-	{"YH",stdAmalWriter,NULL},	// y hardware
-	{"XS",stdAmalWriter,NULL},	// screen x
-	{"YS",stdAmalWriter,NULL},	// screen y
-	{"BC",stdAmalWriter,NULL},	// Bob Col(n,s,e)	// only with Synchro
-	{"SC",stdAmalWriter,NULL},	// Sprite Col(m,s,e)	// only with Synchro
-	{"C",stdAmalWriter,NULL},	// Col
+	{"Z",stdAmalWriter,amal_call_z},			// Z(n)	random number
+	{"XH",stdAmalWriter,amal_call_xh},		// x hardware
+	{"YH",stdAmalWriter,amal_call_yh},		// y hardware
+	{"XS",stdAmalWriter,amal_call_sx},		// screen x
+	{"YS",stdAmalWriter,amal_call_sy},		// screen y
+	{"BC",stdAmalWriter,amal_call_bobCol},	// Bob Col(n,s,e)	// only with Synchro
+	{"SC",stdAmalWriter,amal_call_spriteCol},	// Sprite Col(m,s,e)	// only with Synchro
+	{"C",stdAmalWriter,amal_call_col},			// Col
 	{"V",stdAmalWriter,NULL},	// Vumeter
 	{"@while",stdAmalWriter,amal_call_while },
 	{"@set",stdAmalWriter,amal_call_set },
