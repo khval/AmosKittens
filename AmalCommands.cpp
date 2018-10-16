@@ -546,7 +546,7 @@ void *amal_call_spriteCol API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_Col API_AMAL_CALL_ARGS
+void *amal_call_col API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
