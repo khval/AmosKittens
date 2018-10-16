@@ -513,8 +513,8 @@ struct amalTab amalCmds[] =
 	{"YM",stdAmalWriter,amal_call_ym},	// YM
 	{"K1",stdAmalWriter,NULL},	// k1		mouse key 1
 	{"K2",stdAmalWriter,NULL},	// k2		mouse key 2
-	{"J0",stdAmalWriter,NULL},	// j0		joy0
-	{"J1",stdAmalWriter,NULL},	// J1		Joy1
+	{"J0",stdAmalWriter,amal_call_j0},			// j0		joy0
+	{"J1",stdAmalWriter,amal_call_j1},			// J1		Joy1
 	{"J",stdAmalWriterJump,amal_call_jump},	// Jump
 	{"Z",stdAmalWriter,NULL},	// Z(n)	random number
 	{"XH",stdAmalWriter,NULL},	// x hardware
@@ -900,6 +900,9 @@ void dump_amal_labels()
 
 #ifdef test_app
 
+ unsigned int amiga_joystick_dir[4];
+ unsigned int amiga_joystick_button[4];
+
 int obj_x = 100, obj_y = 50, obj_image = 20;
 
 int getMax ( void )
@@ -987,6 +990,8 @@ int main(int args, char **arg)
 	amalProg->call_array = NULL;
 	amalProg->size = 0;
 	amalProg->elements = 0;
+
+	amiga_joystick_dir[0] = 7;
 
 	if (args==2)
 	{

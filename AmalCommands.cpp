@@ -10,6 +10,7 @@
 #include "channel.h"
 #include "AmalCommands.h"
 #include "amal_object.h"
+#include "amoskittens.h"
 
 extern void pushBackAmalCmd( amal::flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
@@ -40,6 +41,21 @@ void *amal_call_pause API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *amal_call_j0 API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStack [ self -> argStackCount ] = amiga_joystick_dir[0] | (amiga_joystick_button[0] << 4);
+	amalFlushParaCmds( self );
+	return NULL;
+}
+
+void *amal_call_j1 API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStack [ self -> argStackCount ] = amiga_joystick_dir[1] | (amiga_joystick_button[1] << 4);
+	amalFlushParaCmds( self );
+	return NULL;
+}
 void *amal_set_num API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
@@ -482,18 +498,6 @@ void *amal_call_k1 API_AMAL_CALL_ARGS
 }
 
 void *amal_call_k2 API_AMAL_CALL_ARGS
-{
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
-}
-
-void *amal_call_j0 API_AMAL_CALL_ARGS
-{
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
-}
-
-void *amal_call_j1 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;

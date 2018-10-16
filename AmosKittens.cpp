@@ -832,6 +832,7 @@ struct nativeCommand nativeCommands[]=
 	{0x11C6,"Key Speed",0,cmdKeySpeed },
 	{0x11D8,"Key State",0,cmdKeyState },
 	{0x11E8,"Key Shift",0,cmdKeyShift },
+	{0x11F8,"Joy",0,ocJoy },
 	{0x1202,"JUp",0,ocJUp },
 	{0x120C,"JDown",0,ocJDown },
 	{0x1218,"JLeft",0,ocJLeft },
