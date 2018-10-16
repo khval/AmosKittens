@@ -460,6 +460,8 @@ void *amal_call_equal API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+/*
+
 void *amal_call_for API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
@@ -477,6 +479,8 @@ void *amal_call_next API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
 }
+
+*/
 
 void *amal_call_play API_AMAL_CALL_ARGS
 {
