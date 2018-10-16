@@ -976,6 +976,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1FD2,"Amal Off",0,amalAmalOff },
 	{0x1FEA,"Amal Freeze",0,amalAmalFreeze },
 	{0x1FFC,"Amal Freeze",0,amalAmalFreeze },
+	{0x2004,"AmalErr",0,amalAmalErr },
 	{0x2012,"Amal",0,amalAmal },
 	{0x204A,"Synchro On",0,ocSynchroOn },
 	{0x205A,"Synchro Off",0,ocSynchroOff },
