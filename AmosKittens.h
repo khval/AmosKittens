@@ -26,8 +26,8 @@
 #define token_less				0xFFAC
 
 #define joy_up 1
-#define joy_left 2
-#define joy_down 4
+#define joy_down 2
+#define joy_left 4
 #define joy_right 8
 
 extern unsigned int amiga_joystick_dir[4];

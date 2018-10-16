@@ -553,3 +553,28 @@ char *ocHZone(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _ocHZone, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ocJoy( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		int j = getStackNum( stack );
+		if ((j>-1)&&(j<4)) ret = amiga_joystick_dir[j] | (amiga_joystick_button[j] << 4);
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocJoy, tokenBuffer );
+	return tokenBuffer;
+}

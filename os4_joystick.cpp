@@ -187,8 +187,6 @@ void joy_stick(int joy,void *controller)
 					break;
 
 			case AINET_HAT:
-					printf("joystick hat %d\n", ain_mess -> Value );
-
 					amiga_joystick_dir[j] = dir[ ain_mess -> Value ];
 					break;
 		}
