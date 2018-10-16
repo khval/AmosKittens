@@ -56,6 +56,19 @@ void *amal_call_j1 API_AMAL_CALL_ARGS
 	amalFlushParaCmds( self );
 	return NULL;
 }
+
+void *amal_call_screen_x API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *amal_call_screen_y API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
 void *amal_set_num API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
