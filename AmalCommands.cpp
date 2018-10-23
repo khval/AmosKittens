@@ -421,8 +421,8 @@ void *less_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_less_or_equal API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
+	self -> argStack [ self -> argStackCount ] = 0;	// 
 	pushBackAmalCmd( amal::flag_cmd, code, self, less_or_equal ); 
 	return NULL;
 }
