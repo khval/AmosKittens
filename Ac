@@ -2,6 +2,11 @@
 ;AmalCompiler.exe "R: ; L RA=RA+2; P; J R;"
 ;AmalCompiler.exe "R: ; L X=10; L Y=X**2; P; J R"
 ;AmalCompiler.exe "A 0,(1,4)(2,4)(3,4)(4,4) ;L: L X=XM ;L Y=YM ;P ;J L"
-
-AmalCompiler.exe "S: L R0=2 ;A 0,(25,R0)(26,R0)(27,R0)(28,R0)(29,R0)(30,R0)(31,R0)(32,R0)(33,R0) ;L: I BC(1,60,61) J D ;L X=X+ 0 ;L Y=Y+ 0 ;P I X> 25 J M ;I X<-25 J N ;I Y> 29 J G ;I Y<-29 J T ;J L ;M: L X=-25 ;J L ;N: L X= 25 ;J L ;G: L Y=-29 ;J LT: L Y= 29 ;J L ;D: L RA= 501A 1,(17,1)(18,1)(19,1)(20,1)(21,1)(22,1)(23,1)(24,1) P P P P P P P P P ;L RA= 1 ;"
+;AmalCompiler.exe "S: L R0=2 ;A 0,(25,R0)(26,R0)(27,R0)(28,R0)(29,R0)(30,R0)(31,R0)(32,R0)(33,R0) ;L: I BC(1,60,61) J D ;L X=X+ 0 ;L Y=Y+ 0 ;P I X> 25 J M ;I X<-25 J N ;I Y> 29 J G ;I Y<-29 J T ;J L ;M: L X=-25 ;J L ;N: L X= 25 ;J L ;G: L Y=-29 ;J LT: L Y= 29 ;J L ;D: L RA= 501A 1,(17,1)(18,1)(19,1)(20,1)(21,1)(22,1)(23,1)(24,1) P P P P P P P P P ;L RA= 1 ;"
+;AmalCompiler.exe "Anim 0,(1,4)(2,4)(3,4)(4,4);L: L RA=0; Move  250,    0, 50 ;   L RA=1; Move    0,  150, 50 ;   L RA=2; Move -250,    0, 50 ;   L RA=3; Move    0, -150, 50 ; Jump Loop "
+;AmalCompiler.exe " M -10,-20,30"
+;AmalCompiler.exe "Anim 0,(1,4)(2,4)(3,4)(4,4); L: L RA=J0; L RB=J1; L RC=0;  L RD=0; Jump Loop " 
+;AmalCompiler.exe "Anim 0,(1,4)(2,4)(3,4)(4,4); L: L RA=Z(100); P;P;P;P;P;P; Jump Loop " 
+AmalCompiler.exe "C: L X=96 ;A 6,(13,2)(14,2)(15,2)(14,2) ;M 112,0,56 ;A 6,(10,2)(11,2)(12,2)(11,2) ;M -112,0,56 ; P; J C"
+;AmalCompiler.exe "A 1;P;A 12;P;A 123;P;A 1234;P;A 12345;P"
 
