@@ -63,6 +63,16 @@ void dumpAmalStack( struct kittyChannel *channel )
 	{
 		Printf("stack %ld: value %ld\n",s, channel -> argStack[s] );
 	}
+
+	if (channel -> argStackCount>50)
+	{
+		Printf("Amal sick puppy :-(, stack is growing too quickly... \n");
+
+		if (channel -> amal_script)
+		{
+			Printf("script '%s'\n", channel -> amal_script);
+		}
+	}
 }
 
 void dumpAmalProgStack( struct kittyChannel *channel )
