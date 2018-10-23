@@ -498,12 +498,24 @@ void *amal_call_k2 API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_z API_AMAL_CALL_ARGS
+void *callback_z  (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	unsigned char c = self -> last_reg;
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	Printf("callback %ld\n",self -> argStack [ self -> argStackCount ]);
+
+	self -> argStack [ self -> argStackCount ] = rand() % (self -> argStack [ self -> argStackCount ]+1);
+
 	return NULL;
 }
 
+void *amal_call_z API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	pushBackAmalCmd( amal::flag_para ,code, self, callback_z ); 
+	return NULL;
+}
 
 void *amal_call_xh API_AMAL_CALL_ARGS
 {
