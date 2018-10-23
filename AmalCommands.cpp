@@ -660,7 +660,7 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 	setChannelAnim( self, strdup(  animCode ) );
 #endif
 
-	return code+(le*2) -4;	// 
+	return code+1+le;	// 
 }
 
 void *while_status  (struct kittyChannel *self, struct amalCallBack *cb)
