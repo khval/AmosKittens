@@ -101,7 +101,7 @@ unsigned int numAmalWriter (	struct kittyChannel *channel, struct amalTab *self,
 {
 	call_array[0] = self -> call;
 
-	printf("Writing %-8d to %08x - num\n",num, &call_array[1]);
+	printf("Writing %-8d to %08x/%08x - num\n",num, &call_array[0], &call_array[1]);
 
 	*((int *) &call_array[1]) = num;
 	return 2;
@@ -145,7 +145,7 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 	struct amalBuf *amalProg = &channel -> amalProg;
 
-	printf("Writing %-8d to %08x - script\n",num, &call_array[1]);
+	printf("Writing %-8d to %08x/%08x - script\n",num, &call_array[0],&call_array[1]);
 
 // find script find the size
 
@@ -307,7 +307,7 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x\n", self -> call, &call_array[0]);
+	printf("writing %08x to %08x - %s\n", self -> call, &call_array[0], self->name);
 	call_array[0] = self -> call;
 	return 1;
 }
@@ -826,14 +826,11 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 		}
 	}
 
-	Printf("<temp exit loop>\n");
-
 	channel -> amalProgCounter = call;	// save counter.
 	if (*call == NULL) 
 	{
-		Printf("%s - no more data\n",__FUNCTION__);
+		Printf("%s:%s:%ld - amal program ended\n",__FILE__,__FUNCTION__,__LINE__);
 		channel -> status = channel_status::done;
-		getchar();
 	}
 
 }
