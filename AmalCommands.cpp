@@ -637,8 +637,12 @@ void *amal_call_end_label API_AMAL_CALL_ARGS
 void *amal_call_nextArg API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	amalFlushParaCmds( self );
+
 	self -> argStackCount  ++;
 	self -> argStack [ self -> argStackCount ] = 0;	// 
+
 	return NULL;
 }
 
