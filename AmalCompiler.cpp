@@ -140,6 +140,7 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 	int anim_script_len;
 	int size;
 	int le;
+	unsigned int offset;
 
 	call_array[0] = self -> call;
 
@@ -167,9 +168,10 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) );
 	data -> arg_len = le ? le+1 : 0;
-	*((int *) &call_array[1]) = ((le + sizeof(void *)) / sizeof(void *) ) ;
 
-	return 2 + ((le + sizeof(void *)) / sizeof(void *) );
+	offset = ((le + sizeof(void *)) / sizeof(void *) );
+	*((int *) &call_array[1]) = offset ;
+	return 2 + offset;
 }
 
 void amal_clean_up_labels( )
