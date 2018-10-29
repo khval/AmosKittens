@@ -9,6 +9,12 @@ namespace amal
 		flag_cmd,
 		flag_para
 	};
+
+	enum Class
+	{
+		class_cmd_arg,
+		class_cmd_normal
+	};
 };
 
 #define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
@@ -31,6 +37,8 @@ struct amalWriterData
 struct amalTab
 {
 	const char *name;
+
+	amal::Class Class;
 
 	unsigned int (*write) (
 				struct kittyChannel *channel,
