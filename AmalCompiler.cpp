@@ -722,7 +722,13 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	struct amalBuf *amalProg = &channel -> amalProg;
 	struct amalWriterData data;
 
+#ifdef test_app
+// 1000 to avoid reallocs.
+// 20 to test reallocs.
+	allocAmalBuf( amalProg, 1000 );	
+#else
 	allocAmalBuf( amalProg, 60 );
+#endif
 
 	printf("script: '%s'\n",script);
 
@@ -840,7 +846,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret) 
 		{
-			Printf("code offset set %08lx\n",ret);
+//			Printf("code offset set %08lx\n",ret);
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
 
