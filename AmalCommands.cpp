@@ -143,6 +143,8 @@ void *amal_call_if API_AMAL_CALL_ARGS
 void *amal_call_jump API_AMAL_CALL_ARGS
 {
 	void **ret;
+
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	ret = (void **) code[1];
@@ -166,12 +168,14 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 
 void *amal_call_exit API_AMAL_CALL_ARGS
 {
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
 }
 
 void *amal_call_let API_AMAL_CALL_ARGS
 {
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	return NULL;
 }
@@ -234,6 +238,8 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_move API_AMAL_CALL_ARGS
 {
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
+
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	pushBackAmalCmd( amal::flag_cmd, code, self, callback_move ); 
 	self -> argStack [ self -> argStackCount ] = 0;	// 
@@ -774,6 +780,7 @@ void *callback_inc  (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_inc API_AMAL_CALL_ARGS
 {
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	pushBackAmalCmd( amal::flag_para ,code, self, callback_inc ); 
 	return NULL;
