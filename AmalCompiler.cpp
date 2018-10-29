@@ -621,7 +621,7 @@ void remove_lower_case(char *txt)
 	for (c=txt;*c;c++)
 	{
 		// remove noice.
-		while ((*c>='a')&&(*c<='z'))	{ c++; printf("skip\n"); }
+		while (((*c>='a')&&(*c<='z'))||(*c=='#'))	{ c++;  }
 		
 		space_repeat = false;
 		if (d!=txt) 
