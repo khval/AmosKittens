@@ -134,10 +134,19 @@ void *amal_call_wait API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *callback_amal_if  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	unsigned char c = self -> last_reg;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	return NULL;
+}	
+
 void *amal_call_if API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
+	pushBackAmalCmd( amal::flag_para ,code, self, callback_amal_if ); 
+	return code+1;
 }
 
 void *amal_call_jump API_AMAL_CALL_ARGS
