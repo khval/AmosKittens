@@ -198,8 +198,8 @@ void *amal_call_autotest API_AMAL_CALL_ARGS
 void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	Printf("self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
 
 	if (args == 3)
 	{
@@ -242,6 +242,7 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 
 	// reset stack
 	self -> argStackCount = cb -> argStackCount;
+
 	return NULL;
 }	
 
