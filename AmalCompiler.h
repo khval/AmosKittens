@@ -3,7 +3,7 @@ struct kittyChannel;
 
 namespace amal
 {
-	enum flags
+	enum Flags
 	{
 		flag_none,
 		flag_cmd,
@@ -43,7 +43,7 @@ struct amalTab
 	void *(*call) API_AMAL_CALL_ARGS;
 };
 
-extern void pushBackAmalCmd( amal::flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
+extern void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
 extern void amal_run_one_cycle( struct kittyChannel  *channel );

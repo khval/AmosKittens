@@ -12,7 +12,7 @@ struct amalCallBack
 	unsigned char last_reg;
 	int argStackCount;
 	int progStackCount;
-	amal::flags flags;
+	amal::Flags Flags;
 };
 
 

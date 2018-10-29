@@ -12,7 +12,7 @@
 #include "amal_object.h"
 #include "amoskittens.h"
 
-extern void pushBackAmalCmd( amal::flags flags, struct kittyChannel *channel, void *cmd ) ;
+extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
 
@@ -591,9 +591,9 @@ void *amalFlushParaCmds( struct kittyChannel *self )
 		struct amalCallBack *cb;
 		cb = &self -> progStack[ self -> progStackCount -1 ];
 
-		Printf("cmd flag: %lx\n",cb -> flags);
+		Printf("cmd flag: %lx\n",cb -> Flags);
 
-		if (cb -> flags & amal::flag_para)
+		if (cb -> Flags & amal::flag_para)
 		{
 			Printf("found a command to flush\n");
 			self -> progStackCount --;
