@@ -467,15 +467,15 @@ struct amalTab amalSymbols[] =
 	{"(",amal::class_cmd_arg,stdAmalWriter,amal_call_parenthses_start },
 	{")",amal::class_cmd_arg,stdAmalWriter,amal_call_parenthses_end },
 	{",",amal::class_cmd_arg,stdAmalWriter,amal_call_nextArg },
-	{"+",amal::class_cmd_arg,stdAmalWriter,amal_call_add},		// +
+	{"+",amal::class_cmd_arg,stdAmalWriter,amal_call_add},			// +
 	{"-",amal::class_cmd_arg,stdAmalWriter,amal_call_sub},			// -
-	{"*",amal::class_cmd_arg,stdAmalWriter,amal_call_mul},		// *
+	{"*",amal::class_cmd_arg,stdAmalWriter,amal_call_mul},			// *
 	{"/",amal::class_cmd_arg,stdAmalWriter,amal_call_div},			// /
-	{"&",amal::class_cmd_arg,stdAmalWriter,amal_call_and},		// &
+	{"&",amal::class_cmd_arg,stdAmalWriter,amal_call_and},			// &
 	{"<>",amal::class_cmd_arg,stdAmalWriter,amal_call_not_equal},	// <>
-	{"<",amal::class_cmd_arg,stdAmalWriter,amal_call_less},		// <
-	{">",amal::class_cmd_arg,stdAmalWriter,amal_call_more},		// >
-	{"=",amal::class_cmd_arg,stdAmalWriterEqual,amal_call_set},	// =
+	{"<",amal::class_cmd_arg,stdAmalWriter,amal_call_less},			// <
+	{">",amal::class_cmd_arg,stdAmalWriter,amal_call_more},			// >
+	{"=",amal::class_cmd_arg,stdAmalWriterEqual,amal_call_set},		// =
 	{NULL, amal::class_cmd_arg,NULL,NULL }
 };
 
@@ -483,17 +483,17 @@ struct amalTab amalCmds[] =
 {
 	{"@{never used}",amal::class_cmd_arg,stdAmalWriter,NULL},
 	{"@{number}",amal::class_cmd_arg,AmalWriterNum,amal_set_num},	//number token, reserved.
-	{"O",amal::class_cmd_normal,stdAmalWriter,amal_call_on},	// On
-	{"D",amal::class_cmd_normal,stdAmalWriter,NULL},	// Direct
-	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},	// Wait
-	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},	 // If
-	{"X",amal::class_cmd_normal,stdAmalWriterExit_Or_X,NULL},	// eXit
-	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},	// eXit
-	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},	// Let
-	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},	// AUtotest
+	{"O",amal::class_cmd_normal,stdAmalWriter,amal_call_on},		// On
+	{"D",amal::class_cmd_normal,stdAmalWriter,NULL},				// Direct
+	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},				// Wait
+	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},			 // If
+	{"X",amal::class_cmd_normal,stdAmalWriterExit_Or_X,NULL},		// X
+	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
+	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},			// Let
+	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},				// AUtotest
 	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},	// Anim
-	{"M",amal::class_cmd_normal,stdAmalWriter,amal_call_move},	// Move
-	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},	// Pause
+	{"M",amal::class_cmd_normal,stdAmalWriter,amal_call_move},		// Move
+	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},		// Pause
 	{"R0",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R0
 	{"R1",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R1
 	{"R2",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R2
@@ -530,25 +530,25 @@ struct amalTab amalCmds[] =
 	{"RX",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RX
 	{"RY",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RY
 	{"RZ",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RZ
-	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},				// For (should be null)
-	{"T",amal::class_cmd_arg,stdAmalWriterTo,amal_call_nextArg},	// To
+	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},			// For (should be null)
+	{"T",amal::class_cmd_arg,stdAmalWriterTo,amal_call_nextArg},		// To
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},	// Next (should be null)
 	{"PL",amal::class_cmd_normal,stdAmalWriter,NULL},				// Play
 	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
-	{"XM",amal::class_cmd_arg,stdAmalWriter,amal_call_xm},		// XM
-	{"YM",amal::class_cmd_arg,stdAmalWriter,amal_call_ym},		// YM
-	{"K1",amal::class_cmd_arg,stdAmalWriter,NULL},				// k1		mouse key 1
-	{"K2",amal::class_cmd_arg,stdAmalWriter,NULL},				// k2		mouse key 2
+	{"XM",amal::class_cmd_arg,stdAmalWriter,amal_call_xm},			// XM
+	{"YM",amal::class_cmd_arg,stdAmalWriter,amal_call_ym},			// YM
+	{"K1",amal::class_cmd_arg,stdAmalWriter,NULL},					// k1		mouse key 1
+	{"K2",amal::class_cmd_arg,stdAmalWriter,NULL},					// k2		mouse key 2
 	{"J0",amal::class_cmd_arg,stdAmalWriter,amal_call_j0},			// j0		joy0
 	{"J1",amal::class_cmd_arg,stdAmalWriter,amal_call_j1},			// J1		Joy1
 	{"J",amal::class_cmd_normal,stdAmalWriterJump,amal_call_jump},	// Jump
-	{"Z",amal::class_cmd_arg,stdAmalWriter,amal_call_z},			// Z(n)	random number
-	{"XH",amal::class_cmd_arg,stdAmalWriter,amal_call_xh},		// x hardware
-	{"YH",amal::class_cmd_arg,stdAmalWriter,amal_call_yh},		// y hardware
-	{"XS",amal::class_cmd_arg,stdAmalWriter,amal_call_sx},		// screen x
-	{"YS",amal::class_cmd_arg,stdAmalWriter,amal_call_sy},		// screen y
-	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},	// Bob Col(n,s,e)	// only with Synchro
-	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},	// Sprite Col(m,s,e)	// only with Synchro
+	{"Z",amal::class_cmd_arg,stdAmalWriter,amal_call_z},				// Z(n)	random number
+	{"XH",amal::class_cmd_arg,stdAmalWriter,amal_call_xh},			// x hardware
+	{"YH",amal::class_cmd_arg,stdAmalWriter,amal_call_yh},			// y hardware
+	{"XS",amal::class_cmd_arg,stdAmalWriter,amal_call_sx},			// screen x
+	{"YS",amal::class_cmd_arg,stdAmalWriter,amal_call_sy},			// screen y
+	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},		// Bob Col(n,s,e)	// only with Synchro
+	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
 	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
 	{"V",amal::class_cmd_normal,stdAmalWriter,NULL},				// Vumeter
 	{"@while",amal::class_normal_arg,stdAmalWriter,amal_call_while },
