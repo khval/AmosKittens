@@ -552,7 +552,7 @@ struct amalTab amalCmds[] =
 	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
 	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
 	{"V",amal::class_cmd_normal,stdAmalWriter,NULL},				// Vumeter
-	{"@while",amal::class_normal_arg,stdAmalWriter,amal_call_while },
+	{"@while",amal::class_cmd_normal,stdAmalWriter,amal_call_while },
 	{"@set",amal::class_cmd_arg,stdAmalWriter,amal_call_set },
 	{"@reg",amal::class_cmd_arg,stdAmalWriter,amal_call_reg },
 	{NULL, amal::class_cmd_arg,NULL,NULL }
