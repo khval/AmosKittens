@@ -29,8 +29,8 @@ void *amalFlushAllCmds( struct kittyChannel *self );
 
 	#define amal_mouse_x engine_mouse_x
 	#define amal_mouse_y engine_mouse_y
-
-	#define AmalPrintf(fmt,...)
+	#define AmalPrintf Printf
+	//define AmalPrintf(fmt,...)
 #endif
 
 void *amal_call_pause API_AMAL_CALL_ARGS
@@ -629,6 +629,10 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	ret = amalFlushAllCmds( self );
+
+	Printf("<next cmd>\n");
+	getchar();
+
 	return ret ? ret : NULL;
 }
 
@@ -733,6 +737,7 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	unsigned int c;
+	char chr[2] = {0,0};
 
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -749,12 +754,14 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 	if ((c>='0')&&(c<='9'))
 	{
 		self -> reg[ c - '0' ] = self -> argStack [ self -> argStackCount ];
-		printf("R%c=%d\n",c, self -> reg[ c - '0' ]);
+		chr[0] = c;
+		Printf("R%s=%ld\n", chr, self -> reg[ c - '0' ]);
 	}
 	else if ((c>='A')&&(c<='Z'))
 	{
 		amreg[ c - 'A' ] = self -> argStack [ self -> argStackCount ];
-		printf("R%c=%d\n",c, amreg[ c - 'A' ]);
+		chr[0]=c;
+		Printf("R%s=%ld\n",chr, amreg[ c - 'A' ]);
 	}
 
 	return NULL;
@@ -769,20 +776,23 @@ void *amal_call_set API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+
 void *callback_inc  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	unsigned char c = self -> last_reg;
+	char chr[2] = {c,0};
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((c>='0')&&(c<='9'))
 	{
 		self -> reg[ c - '0' ] ++;
-		printf("R%c=%d\n",c, self -> reg[ c - '0' ]);
+		Printf("R%c=%ld\n",c, self -> reg[ c - '0' ]);
 	}
 	else 	if ((c>='A')&&(c<='Z'))
 	{
 		amreg[ c - 'A' ] ++;
-		printf("R%c=%d\n",c, amreg[ c - 'A' ]);
+		chr[0]=c;
+		Printf("R%c=%ld\n",c, amreg[ c - 'A' ]);
 	}
 
 	return NULL;
