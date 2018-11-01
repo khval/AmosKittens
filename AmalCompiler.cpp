@@ -324,6 +324,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 {
 	printf("writing %08x to %08x - ;\n", self -> call, &call_array[0]);
 	call_array[0] = self -> call;
+	amal_cmd_equal = NULL;
 	let = false;
 	return 1;
 }
@@ -347,12 +348,12 @@ unsigned int stdAmalWriterEqual ( struct kittyChannel *channel, struct amalTab *
 	{
 		printf("writing [code block] to %08x ==\n", &call_array[0]);
 		call_array[0] = amal_cmd_equal;
-		amal_cmd_equal = NULL;
 	}
 	else
 	{
 		printf("writing %08x to %08x =\n", self -> call, &call_array[0]);
 		call_array[0] = self -> call;
+		amal_cmd_equal = amal_call_equal;
 	}
 
 	return 1;

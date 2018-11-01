@@ -469,13 +469,6 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_equal API_AMAL_CALL_ARGS
-{
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount ] = 0;	
-	return NULL;
-}
-
 void *amal_call_play API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
@@ -772,7 +765,37 @@ void *amal_call_set API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( amal::flag_para ,code, self, set_reg ); 
+	pushBackAmalCmd( amal::flag_cmd ,code, self, set_reg ); 
+	return NULL;
+}
+
+void *equal_reg (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	dumpAmalStack( self );
+	Printf("self -> argStackCount %ld\n",self -> argStackCount);
+
+	if (self -> argStackCount+1 >= 2)
+	{
+		int ret = (self -> argStack [ cb -> argStackCount - 1 ] == self -> argStack [ cb -> argStackCount ]);
+		self -> argStackCount -= 1;
+		self -> argStack[ self -> argStackCount ] = ret;
+
+		Printf("Ret %ld\n",ret);
+	}
+	return NULL;
+}
+
+
+void *amal_call_equal API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStackCount ++;
+	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
+	pushBackAmalCmd( amal::flag_para ,code, self, equal_reg ); 
 	return NULL;
 }
 
