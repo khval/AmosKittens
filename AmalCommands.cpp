@@ -134,18 +134,10 @@ void *amal_call_wait API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *callback_amal_if  (struct kittyChannel *self, struct amalCallBack *cb)
-{
-	unsigned char c = self -> last_reg;
-	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
-	return NULL;
-}	
-
 void *amal_call_if API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	pushBackAmalCmd( amal::flag_para ,code, self, callback_amal_if ); 
+	self -> argStack [ self -> argStackCount ] = 0;
 	return code+1;
 }
 
@@ -829,4 +821,33 @@ void *amal_call_inc API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *amal_call_then API_AMAL_CALL_ARGS
+{
+	void **new_code;
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	dumpAmalStack( self );
+
+	if (self -> argStack [ self -> argStackCount ] == 0)
+	{
+		new_code = (void **) code[1];
+		Printf("new code is %lx\n",new_code);
+		if (new_code) return new_code-1;
+	}
+
+	return code+1;
+}
+
+void *amal_call_else API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	void **new_code;
+
+	new_code = (void **) code[1];
+	Printf("new code is %lx\n",new_code);
+	if (new_code) return new_code-1;
+
+	return code + 1;
+}
 

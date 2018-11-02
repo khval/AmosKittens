@@ -122,9 +122,30 @@ unsigned int AmalWriterIf (	struct kittyChannel *channel, struct amalTab *self,
 	printf("Writing %-8d to %08x/%08x - If\n",num, &call_array[0], &call_array[1]);
 
 	*((int *) &call_array[1]) = 0;
+
+	addNestAmal( if, &call_array[1] );
+
 	return 2;
 }
 
+// DO NOT ADD TO TABLE.
+unsigned int AmalWriterCondition (	struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	call_array[0] = self -> call;
+
+	printf("Writing %-8d to %08x/%08x - Condition\n",0, &call_array[0], &call_array[1]);
+
+	*((int *) &call_array[1]) = 0;
+
+	// modify the nest.
+	nested_command[ nested_count -1 ].cmd = num;
+	nested_command[ nested_count -1 ].ptr = (char *) &call_array[1];
+
+	return 2;
+}
 
 unsigned int AmalWriterNum (	struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
@@ -325,12 +346,32 @@ unsigned int stdAmalWriterExit_Or_X ( struct kittyChannel *channel, struct amalT
 	return 1;
 }
 
+
+void fix_condition_branch( void *adr )
+{
+	void **ptr = (void **) nested_command[ nested_count-1 ].ptr;
+	*ptr = adr;
+}
+
 unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				struct amalWriterData *data,
 				unsigned int num)
 {
 	printf("writing %08x to %08x - ;\n", self -> call, &call_array[0]);
+
+	// this command doubles as "end if"
+
+	switch (GET_LAST_NEST)
+	{
+		case nested_if:
+		case nested_then:
+		case nested_else:
+			fix_condition_branch( (void *) &call_array[0] );
+			nested_count --;
+			break;
+	}
+
 	call_array[0] = self -> call;
 	amal_cmd_equal = NULL;
 	let = false;
@@ -726,6 +767,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 {
 	const char *s;
 	struct amalTab *found;
+	struct amalTab write_cmd;
 	char txt[30];
 	const char *script = channel -> amal_script;
 	struct amalBuf *amalProg = &channel -> amalProg;
@@ -757,6 +799,26 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.at_script = s;
 			data.command_len = strlen(found -> name);
 			data.arg_len = 0;
+
+			if ( found -> Class == amal::class_cmd_normal  )
+			{
+				switch (GET_LAST_NEST)
+				{
+					case nested_if:
+						fix_condition_branch( &amalProg -> call_array[data.pos] );
+						write_cmd.call = amal_call_then; 
+						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_then);
+						amal_cmd_equal = NULL;
+						break;
+
+					case nested_then:
+						fix_condition_branch( &amalProg -> call_array[data.pos] + 2 );	// skip over else
+						write_cmd.call = amal_call_else; 
+						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
+						amal_cmd_equal = NULL;
+						break;
+				}
+			}
 
 			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, 0 );
 			data.lastClass = found -> Class;
