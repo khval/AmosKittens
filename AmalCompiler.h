@@ -32,6 +32,7 @@ struct amalWriterData
 	const char *at_script;
 	unsigned int command_len;
 	unsigned int arg_len;
+	amal::Class lastClass;
 };
 
 struct amalTab

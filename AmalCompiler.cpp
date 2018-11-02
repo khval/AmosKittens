@@ -759,6 +759,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.arg_len = 0;
 
 			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, 0 );
+			data.lastClass = found -> Class;
 			s += data.command_len + data.arg_len;
 		}
 		else 	if (*s == ' ') 
@@ -782,6 +783,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.arg_len = 0;
 
 			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, num );
+			data.lastClass = found -> Class;
 		}
 		else if ((*s >= 'A')&&(*s<='Z'))
 		{
