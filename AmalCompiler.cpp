@@ -9,9 +9,12 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
+#include "pass1.h"
+#include "AmosKittens.h"
 
 int nest = 0;
 char last_reg[1000] ;
+
 
 struct AmalLabelRef
 {
@@ -35,6 +38,11 @@ void *amalAllocBuffer( int size )
 #define amalFreeBuffer( ptr ) { FreeVec( ptr ); ptr = NULL; }
 
 #ifdef test_app
+
+struct nested nested_command[ max_nested_commands ];
+int nested_count = 0;
+
+int parenthesis_count;
 int amreg[26];
 
 void print_code( void **adr );
@@ -722,6 +730,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	const char *script = channel -> amal_script;
 	struct amalBuf *amalProg = &channel -> amalProg;
 	struct amalWriterData data;
+
+	nested_count = 0;
 
 #ifdef test_app
 // 1000 to avoid reallocs.
