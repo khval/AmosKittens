@@ -368,7 +368,7 @@ void *less (struct kittyChannel *self, struct amalCallBack *cb)
 
 	if (self -> argStackCount+1 >= 2)
 	{
-		int ret = (self -> argStack [ cb -> argStackCount - 1 ] > self -> argStack [ cb -> argStackCount ]);
+		int ret = (self -> argStack [ cb -> argStackCount - 1 ] < self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
 		self -> argStack[ self -> argStackCount ] = ret;
 	}
