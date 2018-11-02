@@ -7,6 +7,13 @@
 ;AmalCompiler.exe " M -10,-20,30"
 ;AmalCompiler.exe "Anim 0,(1,4)(2,4)(3,4)(4,4); L: L RA=J0; L RB=J1; L RC=0;  L RD=0; Jump Loop " 
 ;AmalCompiler.exe "Anim 0,(1,4)(2,4)(3,4)(4,4); L: L RA=Z(100); P;P;P;P;P;P; Jump Loop " 
-AmalCompiler.exe "C: L X=96 ;A 6,(13,2)(14,2)(15,2)(14,2) ;M 112,0,56 ;A 6,(10,2)(11,2)(12,2)(11,2) ;M -112,0,56 ; P; J C"
+;AmalCompiler.exe "C: L X=96 ;A 6,(13,2)(14,2)(15,2)(14,2) ;M 112,0,56 ;A 6,(10,2)(11,2)(12,2)(11,2) ;M -112,0,56 ; P; J C"
 ;AmalCompiler.exe "A 1;P;A 12;P;A 123;P;A 1234;P;A 12345;P"
+
+;AmalCompiler.exe "L R3=2 ;L RX=0 ;L RZ=0 ;L RY=0 ;L RV=0 ;L R3=0L: L R1=J1 ;L R9=RV=0 ;L R8=RW=5 ;L R7=R9&BC(60,1,59) ;I R7 J U ;I R8 J U ;P ;L A=R3+RV ;L X=X+RZ ;L Y=Y+RY ;;I X> 0 J R ;I X<-31 J Q ;I Y> 0 J T ;I Y<-31 J S ;W: I R1&8 J A ;I R1&4 J C ;I R1&1 J D ;Y: I R1&16 J P ;L RV=0 ;V: I R3>8 J E ;I R3<1 J F ;I R3=1 J G ;I R3=5 J H ;I R3=3 J I ;I R3=7 J J ;I R3=2 J K ;I R3=4 J M ;I R3=6 J N ;I R3=8 J O ;J L ;A: L R3=R3+1 ;J Y ;C: L R3=R3-1 ;J Y ;D: L RX=RX+1 ;;J Y ;E: L R3=1 ;J L ;F: L R3=8 ;J L ;G: L RZ=0 ;L RY=0-RX ;J L ;H: L RZ=0 ;L RY=RX ;J L ;I: L RZ=RX ;L RY=0 ;J L ;J: L RZ=0-RX ;L RY=0 ;J L ;K: L RZ=RX ;L RY=0-RX ;J L ;M: L RZ=RX ;L RY=RX ;J L ;N: L RZ=0-RX ;L RY=RX ;J L ;O: L RZ=0-RX ;L RY=0-RX ;J L ;P: L RV=8 ;;J V ;Q: L X= 0 ;J WR: L X=-31 ;J WS: L Y= 0 ;J WT: L Y=-31 ;J WU: L RW=8 A 1,(17,1)(18,1)(19,1)(20,1)(21,1)(22,1)(23,1)(24,1) ;P P P P P P P P P ;L RW=10"
+
+; Amos Kittens only: "complex amal If" only works in AMOS kittens! (Amos kittens know the difference between etch command, know where to insert Then and Else)
+; Amos has "mute else" but only works if used with command Jump, exit, see Amos manual if written there, think you need to look up some source codes!.
+
+AmalCompiler.exe "If 5<5 then L RD=8+2 else L RD=80**2; "
 
