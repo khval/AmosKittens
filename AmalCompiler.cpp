@@ -395,7 +395,7 @@ unsigned int stdAmalWriterEqual ( struct kittyChannel *channel, struct amalTab *
 {
 	if (amal_cmd_equal)
 	{
-		printf("writing [code block] to %08x ==\n", &call_array[0]);
+		printf("writing %08x to %08x ==\n", amal_cmd_equal, &call_array[0]);
 		call_array[0] = amal_cmd_equal;
 	}
 	else
@@ -921,7 +921,6 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret) 
 		{
-//			Printf("code offset set %08lx\n",ret);
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
 
