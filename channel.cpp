@@ -33,6 +33,7 @@ void initChannel( struct kittyChannel *item, int channel )
 
 		item -> parenthses = 0;
 		item -> objectAPI = NULL;
+		item -> pushBackFunction = NULL;
 
 		item -> count = 0;
 		item -> count_to = 0;
@@ -42,7 +43,8 @@ void initChannel( struct kittyChannel *item, int channel )
 		item -> move_count = 0; 
 		item -> move_count_to = 0; 
 
-		item -> status = channel_status::active;
+		item -> status = channel_status::uninitialized;
+
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )

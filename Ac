@@ -15,5 +15,9 @@
 ; Amos Kittens only: "complex amal If" only works in AMOS kittens! (Amos kittens know the difference between etch command, know where to insert Then and Else)
 ; Amos has "mute else" but only works if used with command Jump, exit, see Amos manual if written there, think you need to look up some source codes!.
 
-AmalCompiler.exe "If 5<5 then L RD=8+2 else L RD=80**2; "
+;AmalCompiler.exe "If 5<5 then L RD=8+2 else L RD=80**2; "
+
+; testing paranteces and math.
+
+AmalCompiler.exe "L RA=8+(2**10) ; L RB=8+(-3**10) "
 

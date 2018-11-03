@@ -6,8 +6,9 @@ namespace amal
 	enum Flags
 	{
 		flag_none,
-		flag_cmd,
-		flag_para
+		flag_cmd = 1,
+		flag_para = 2,
+		flag_parenthses =4
 	};
 
 	enum Class

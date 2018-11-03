@@ -18,6 +18,7 @@ extern void dumpAmalRegs();
 
 void *amalFlushParaCmds( struct kittyChannel *self );
 void *amalFlushAllCmds( struct kittyChannel *self );
+void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 
 #ifdef test_app
 	#define amal_mouse_x 1000
@@ -542,9 +543,22 @@ void *amal_call_sy API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *callback_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	unsigned char c = self -> last_reg;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	Printf("callback %ld\n",self -> argStack [ self -> argStackCount ]);
+
+	self -> argStack [ self -> argStackCount ] = rand() % (self -> argStack [ self -> argStackCount ]+1);
+
+	return NULL;
+}
+
 void *amal_call_bobCol API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> pushBackFunction = callback_bobCol;
 	return NULL;
 }
 
@@ -591,6 +605,31 @@ void *amalFlushParaCmds( struct kittyChannel *self )
 	return NULL;
 }
 
+void *amalFlushAllParenthsesCmds( struct kittyChannel *self )
+{
+	void *ret;
+
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	while (self -> progStackCount)
+	{
+		struct amalCallBack *cb;
+		cb = &self -> progStack[ self -> progStackCount -1 ];
+
+		Printf("cmd flag: %lx\n",cb -> Flags);
+
+		if (cb -> Flags & (amal::flag_para | amal::flag_parenthses))
+		{
+			Printf("found a command to flush\n");
+			self -> progStackCount --;
+			ret =cb -> cmd( self, cb );
+			if (ret) return ret;
+		}
+		else break;
+	}
+	return NULL;
+}
+
 void *amalFlushAllCmds( struct kittyChannel *self )
 {
 	void *ret;
@@ -621,15 +660,36 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 	return ret ? ret : NULL;
 }
 
+
+void *callback_parenthses_default  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	dumpAmalStack( self );
+	return NULL;
+}
+
 void *amal_call_parenthses_start API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (self -> pushBackFunction)
+	{
+		pushBackAmalCmd( amal::flag_parenthses ,code, self, self -> pushBackFunction ); 
+		self -> pushBackFunction = NULL;
+	}
+	else
+	{
+		pushBackAmalCmd( amal::flag_parenthses ,code, self, callback_parenthses_default ); 
+		self -> argStack [ self -> argStackCount ] = 0;	// 
+	}
+
 	return NULL;
 }
 
 void *amal_call_parenthses_end API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	amalFlushAllParenthsesCmds( self );	
 	return NULL;
 }
 
