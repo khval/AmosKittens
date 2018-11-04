@@ -11,6 +11,7 @@
 #include "AmalCommands.h"
 #include "amal_object.h"
 #include "amoskittens.h"
+#include "commandsScreens.h"
 
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];

@@ -853,18 +853,17 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-int XScreen_formula( struct retroScreen *screen )
+char *_gfxXScreen( struct glueCommands *data, int nextToken )
 {
-	int 	x = engine_mouse_x - screen -> scanline_x 	- screen -> offset_x;
-	if ( (screen -> videomode & retroHires) == 0 ) x /= 2;
-	return x;
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int s,x = 0;
 }
 
-int YScreen_formula( struct retroScreen *screen )
+char *gfxYScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int y = engine_mouse_y - screen -> scanline_y - screen -> offset_y;
-	if ( (screen -> videomode & retroInterlaced) == 0 ) y /= 2;
-	return y;
+	stackCmdParm( _gfxYScreen, tokenBuffer );
+	return tokenBuffer;
 }
 
 char *_gfxXScreen( struct glueCommands *data, int nextToken )

@@ -11,6 +11,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsGfx.h"
+#include "commandsScreens.h"
 #include "errors.h"
 #include "engine.h"
 

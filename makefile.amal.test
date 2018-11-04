@@ -17,7 +17,8 @@ opt=-Dtest_app
 objects_dir = objs_amalcompiler/
 
 main_objects = AmalCommands.cpp \
-			channel.cpp 
+			channel.cpp \
+			screen_helper.cpp
 
 main_SRCS = AmalCompiler.cpp
 
