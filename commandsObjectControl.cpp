@@ -151,9 +151,6 @@ char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-int XScreen_formula( struct retroScreen *screen );
-int YScreen_formula( struct retroScreen *screen );
-
 char *_ocMouseZone( struct glueCommands *data, int nextToken )
 {
 	struct retroScreen *s;
@@ -168,8 +165,8 @@ char *_ocMouseZone( struct glueCommands *data, int nextToken )
 		{
 			if (s = screens[zones[z].screen])
 			{
-				int x = XScreen_formula( s );
-				int y = YScreen_formula( s );
+				int x = XScreen_formula( s, engine_mouse_x );
+				int y = YScreen_formula( s, engine_mouse_y );
 				zz = &zones[z];
 				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	rz = z;
 			}
