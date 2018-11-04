@@ -16,6 +16,7 @@
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
+extern struct retroScreen *screens[8] ;
 
 void *amalFlushParaCmds( struct kittyChannel *self );
 void *amalFlushAllCmds( struct kittyChannel *self );
@@ -148,13 +149,16 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 	void **ret;
 
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
+
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("self -> loopCount %ld\n", self -> loopCount);
 
 	ret = (void **) code[1];
 	if (ret)
 	{
 		if (self -> loopCount>9)
 		{
+			AmalPrintf("self -> status = channel_status::paused\n");
 			self -> status = channel_status::paused;
 			self -> loopCount = 0;
 			return ret-1;
@@ -162,6 +166,7 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 		else
 		{
 			self -> loopCount++;
+			AmalPrintf("[exit] self -> loopCount %ld\n", self -> loopCount);
 			return ret-1;
 		}
 	}
@@ -252,6 +257,9 @@ void *amal_call_move API_AMAL_CALL_ARGS
 
 static void *add (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	dumpAmalStack( self );
+
 	if (self -> argStackCount+1 >= 2)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] + self -> argStack [ cb -> argStackCount ]);
@@ -271,6 +279,9 @@ void *amal_call_add API_AMAL_CALL_ARGS
 
 static void *sub (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	dumpAmalStack( self );
+
 	if (self -> argStackCount+1 >= 2)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] - self -> argStack [ cb -> argStackCount ]);
@@ -290,7 +301,8 @@ void *amal_call_sub API_AMAL_CALL_ARGS
 
 static void *mul (struct kittyChannel *self, struct amalCallBack *cb)
 {
-//	dumpAmalStack( self );
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	dumpAmalStack( self );
 
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -520,39 +532,135 @@ void *amal_call_z API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *callback_xh  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	struct retroScreen *screen;
+	int s,x = 0;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			s = self -> argStack [ self -> argStackCount  ];			
+			x = self -> argStack [ self -> argStackCount -1  ];
+			if (screen = screens[s]) x = XHard_formula( screen, x );
+			break;
+	}
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = x;
+	return NULL;
+}
+
 void *amal_call_xh API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> pushBackFunction = callback_xh;
+	return NULL;
+}
+
+void *callback_yh  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	struct retroScreen *screen;
+	int s,y = 0;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	dumpAmalStack( self );
+	switch (args)
+	{
+		case 2:
+			s = self -> argStack [ self -> argStackCount -1 ];			
+			y = self -> argStack [ self -> argStackCount ];
+			if (screen = screens[s]) y = YHard_formula( screen, y );
+			break;
+	}
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = y;
 	return NULL;
 }
 
 void *amal_call_yh API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> pushBackFunction = callback_yh;
+	return NULL;
+}
+
+void *callback_sx  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	struct retroScreen *screen;
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	int s,x = 0;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			s = self -> argStack [ self -> argStackCount -1 ];			
+			x = self -> argStack [ self -> argStackCount  ];
+			if (screen = screens[s]) x = XScreen_formula( screen, x );
+			break;
+	}
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = x;
 	return NULL;
 }
 
 void *amal_call_sx API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> pushBackFunction = callback_sx;
+	return NULL;
+}
+
+void *callback_sy  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	struct retroScreen *screen;
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	int s,y = 0;
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			s = self -> argStack [ self -> argStackCount -1 ];			
+			y = self -> argStack [ self -> argStackCount  ];
+			if (screen = screens[s]) y = YScreen_formula( screen, y );
+			break;
+	}
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = y;
 	return NULL;
 }
 
 void *amal_call_sy API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> pushBackFunction = callback_sy;
 	return NULL;
 }
 
 void *callback_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 {
-	unsigned char c = self -> last_reg;
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
-	Printf("callback %ld\n",self -> argStack [ self -> argStackCount ]);
+	dumpAmalStack( self );
+	if (args == 3)
+	{
+	}
 
-	self -> argStack [ self -> argStackCount ] = rand() % (self -> argStack [ self -> argStackCount ]+1);
-
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
 	return NULL;
 }
 
@@ -656,7 +764,6 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 	ret = amalFlushAllCmds( self );
 
 	Printf("<next cmd>\n");
-	getchar();
 
 	return ret ? ret : NULL;
 }
@@ -887,8 +994,6 @@ void *amal_call_then API_AMAL_CALL_ARGS
 	void **new_code;
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
-	dumpAmalStack( self );
 
 	if (self -> argStack [ self -> argStackCount ] == 0)
 	{

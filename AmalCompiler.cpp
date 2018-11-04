@@ -1003,8 +1003,9 @@ void dump_amal_labels()
 
 #ifdef test_app
 
- unsigned int amiga_joystick_dir[4];
- unsigned int amiga_joystick_button[4];
+unsigned int amiga_joystick_dir[4];
+unsigned int amiga_joystick_button[4];
+struct retroScreen *screens[8];
 
 int obj_x = 100, obj_y = 50, obj_image = 20;
 
