@@ -921,3 +921,9 @@ char *amalMoveOn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackNum(0);	// should return error pos in string.
+	return tokenBuffer;
+}
