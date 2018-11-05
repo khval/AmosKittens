@@ -481,6 +481,27 @@ char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_ocUpdateEvery( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ocUpdateEvery(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _ocUpdateEvery, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_ocFire( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;

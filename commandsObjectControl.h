@@ -30,6 +30,7 @@ char *ocAutoViewOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocView(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocUpdateEvery(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer);
