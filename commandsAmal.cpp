@@ -267,6 +267,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 		case 0x1A94:	// Channel x To Sprite y
 		case 0x1B9E: 	// Channel x To Bob y
 		case 0x0A18:	// Channel x To Display y
+		case 0x0DDC:  // Channel x to Rainbow y
 
 					stack ++;
 					setStackNum( token );
