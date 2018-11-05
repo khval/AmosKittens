@@ -299,14 +299,11 @@ void channel_amal( struct kittyChannel *channel )
 {
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
-	Printf("channel -> status = %ld\n", channel -> status );
-	Printf("channel -> amalProgCounter = %08lx\n",channel -> amalProgCounter);
-
-	// channel status can change while AMAL program runs.
-	if ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
+	// check if program is ready to run, and it has program.
+	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProgCounter ) )
 	{
-		amal_run_one_cycle(channel);
-		Printf("In the loop\n");
+		// Check that program has not ended.
+		if ( *channel -> amalProgCounter )	amal_run_one_cycle(channel);
 	}
 }
 
@@ -675,8 +672,6 @@ char *amalAmalFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNone();
 	return tokenBuffer;
 }
-
-
 
 // we are in a engine lock in channel_do_object, do not try to lock again!
 void channel_do_object( struct kittyChannel *self )
