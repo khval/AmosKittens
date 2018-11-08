@@ -267,6 +267,8 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 
 	if ((stack - data -> stack + 1)!=2)
 	{
+		printf("stack - data -> stack + 1 is %d\n",stack - data -> stack + 1);
+
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
@@ -1190,7 +1192,8 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	stackCmdParm( _addData, tokenBuffer );
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1198,7 +1201,8 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm(_subData,tokenBuffer);
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1206,7 +1210,8 @@ char *modData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _modData, tokenBuffer );
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1214,7 +1219,8 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _mulData, tokenBuffer );
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1222,7 +1228,8 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _divData, tokenBuffer );
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1230,7 +1237,7 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	stackCmdParm( _powerData, tokenBuffer );
-	stack++;
+	incStack;
 
 	return tokenBuffer;
 }
@@ -1252,7 +1259,7 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	flushCmdParaStack( NEXT_TOKEN(tokenBuffer) );
 	stackCmdParm( _andData, tokenBuffer );
-	stack++;
+	incStack;
 
 	return tokenBuffer;
 }
@@ -1263,7 +1270,8 @@ char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	flushCmdParaStack( NEXT_TOKEN(tokenBuffer) );
 	stackCmdParm( _xorData, tokenBuffer );
-	stack++;
+	incStack;
+
 	return tokenBuffer;
 }
 
@@ -1299,6 +1307,7 @@ char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer)
 
 	flushCmdParaStack( NEXT_TOKEN(tokenBuffer) );
 	stackCmdParm(_lessOrEqualData, tokenBuffer);
+	incStack;
 
 	return tokenBuffer;
 }
@@ -1311,7 +1320,7 @@ char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
 
 	flushCmdParaStack( NEXT_TOKEN(tokenBuffer) );
 	stackCmdParm(_moreOrEqualData, tokenBuffer);
-	stack++;
+	incStack;
 
 	return tokenBuffer;
 }
