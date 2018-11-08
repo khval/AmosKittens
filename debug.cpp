@@ -52,6 +52,7 @@ char *_repeat(struct glueCommands *data, int nextToken);
 char *_gosub_return(struct glueCommands *data, int nextToken);
 char *_get_var_index(struct glueCommands *data, int nextToken);
 char *_alloc_mode_off(struct glueCommands *data, int nextToken);
+char *_procAndArgs (struct glueCommands *data, int nextToken);
 
 struct stackDebugSymbol
 {
@@ -94,6 +95,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_get_var_index,"get var(index,...)" },
 	{_textCentre, "Centre" },
 	{_alloc_mode_off,"_alloc_mode_off"},
+	{_procedure,"procedure"},
+	{_procAndArgs,"procedure with args"},
 	{NULL, NULL}
 };
 
@@ -153,16 +156,18 @@ void dump_global()
 
 				if (globalVars[n].var.procDataPointer == 0)
 				{
-					printf("%d -- %d::%s%s[]=%04X\n",n,
+					printf("%d -- %d::%s%s[]=%04X (line %d)\n",n,
 						globalVars[n].proc, "Proc ",
-						globalVars[n].varName, globalVars[n].var.tokenBufferPos );
+						globalVars[n].varName, 
+						globalVars[n].var.tokenBufferPos, getLineFromPointer( globalVars[n].var.tokenBufferPos ) );
 				}
 				else
 				{
-					printf("%d -- %d::%s%s[]=%04X  --- data read pointer %08x\n",n,
+					printf("%d -- %d::%s%s[]=%04X (line %d)  --- data read pointer %08x (line %d)\n",n,
 						globalVars[n].proc, "Proc ",
-						globalVars[n].varName, globalVars[n].var.tokenBufferPos,
-						globalVars[n].var.procDataPointer);
+						globalVars[n].varName, 
+						globalVars[n].var.tokenBufferPos, getLineFromPointer( globalVars[n].var.tokenBufferPos ),
+						globalVars[n].var.procDataPointer, getLineFromPointer( globalVars[n].var.procDataPointer ) );
 				}
 
 				break;
@@ -238,7 +243,7 @@ void dump_prog_stack()
 		name = findDebugSymbolName( cmdTmp[n].cmd );
 
 		printf("cmdTmp[%d].cmd = %08x (%s) \n", n, cmdTmp[n].cmd, name ? name : "?????" );
-		printf("cmdTmp[%d].tokenBuffer = %08x\n", n, cmdTmp[n].tokenBuffer);
+		printf("cmdTmp[%d].tokenBuffer = %08x  - at line: %d \n", n, cmdTmp[n].tokenBuffer, getLineFromPointer(cmdTmp[n].tokenBuffer));
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
 		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
