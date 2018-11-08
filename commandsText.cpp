@@ -1171,18 +1171,20 @@ char *textWindow(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *textXCurs(nativeCommand *cmd, char *ptr)
+char *textXCurs(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 
 	if (screen) setStackNum( screen -> locateX);
-	return NULL;
+	return tokenBuffer;
 }
 
-char *textYCurs(nativeCommand *cmd, char *ptr)
+char *textYCurs(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 	if (screen) setStackNum( screen -> locateY);
+	return tokenBuffer;
+}
 
 char *_textWindOpen( struct glueCommands *data, int nextToken )
 {
