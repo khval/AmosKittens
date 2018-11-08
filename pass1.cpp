@@ -338,7 +338,7 @@ char *pass1DefFn( char *ptr )
 }
 
 
-struct kittyData * pass1var(char *ptr, bool is_proc )
+struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 {
 	char *tmp;
 	int found = 0;
@@ -351,7 +351,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 	{
 		int type = ref -> flags & 7;
 
-		if (is_proc)
+		if (is_proc_call | is_procedure)
 		{
 			type = type_proc;
 		}
@@ -361,12 +361,12 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 			if  (*((unsigned short *) next_ptr)  == 0x0074) type |= type_array;
 		}
 
-		found = findVar(tmp, type , is_proc ? 0 : (pass1_inside_proc ? procCount : 0) );
+		found = findVar(tmp, type , ( is_proc_call | is_procedure )  ? 0 : (pass1_inside_proc ? procCount : 0) );
 		if (found)
 		{
 			ref -> ref = found;
 
-			if (is_proc)
+			if (is_procedure)
 			{
 				struct globalVar *_old = &globalVars[found-1];
 				_old -> var.type = type_proc;
@@ -377,7 +377,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc )
 		}
 		else
 		{
-			if (is_proc)
+			if (is_procedure)
 			{
 				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type_proc ))
 				{
@@ -410,11 +410,11 @@ char *pass1_procedure( char *ptr )
 	short token = *((short *) ptr);
 	if (token == 0x0006)
 	{
-		current_proc = pass1var( ptr +2, true );
+		current_proc = pass1var( ptr +2, false, true );
 
 		printf("current_proc %08x\n", current_proc);
 
-//		getchar();
+		getchar();
 
 		pass1_inside_proc = true;
 		// we like to skip the variable, so its not added as a local variable.
@@ -802,7 +802,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							lastLineAddr = ptr;
 							break;
 
-				case 0x0006:	pass1var( ptr, false );
+				case 0x0006:	pass1var( ptr, false, false );
 							ret += ReferenceByteLength(ptr);
 							break;
 
@@ -819,7 +819,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x0012:	pass1var( ptr, true );
+				case 0x0012:	pass1var( ptr, true, false );
 							ret += ReferenceByteLength(ptr);
 							break;
 
@@ -944,6 +944,9 @@ char *nextToken_pass1( char *ptr, unsigned short token )
  							break;
 
 				case 0x0376: // Procedure
+
+							printf("last token: %d\n", last_tokens[parenthesis_count] );
+
 							procCount ++;
 							procStackCount++;
 							addNest( nested_proc );
