@@ -206,15 +206,17 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 char *nextCmd(nativeCommand *cmd, char *ptr)
 {
 	char *ret = NULL;
-	unsigned int flag;
+	unsigned int flags;
 
 	// we should empty stack, until first/normal command is not a parm command.
 
 	while (cmdStack)
 	{
-		flag = cmdTmp[cmdStack-1].flag;
+		flags = cmdTmp[cmdStack-1].flag;
 
-		if  ( flag & (cmd_loop | cmd_never | cmd_onEol | cmd_onNextCmd )) break;
+		if  ( flags & (cmd_loop | cmd_never | cmd_onEol | cmd_onNextCmd | cmd_proc )) break;
+
+		printf("flags %08x\n",flags);
 
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
