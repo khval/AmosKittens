@@ -23,6 +23,9 @@ extern struct retroVideo *video;
 int current_screen = 0;
 extern struct retroRGB DefaultPalette[256];
 
+extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
+extern void freeAllTextWindows(struct retroScreen *screen);
+
 char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -45,16 +48,34 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),getStackNum( stack ));
 
-			if (screens[screen_num])
+			screen = screens[screen_num];
+
+			if (screen)
 			{
-				retroApplyScreen( screens[screen_num], video, 0, 0,
-					screens[screen_num] -> realWidth,screens[screen_num]->realHeight );
+				struct retroTextWindow *textWindow = NULL;
+
+				screen->paper = 1;
+				screen->pen = 2;
+
+				retroApplyScreen( screen, video, 0, 0,
+					screen -> realWidth,screen->realHeight );
+
+				if (textWindow = newTextWindow( screen, 0 ))
+				{
+					textWindow -> charsPerRow = screen -> realWidth / 8;
+					textWindow -> rows = screen -> realHeight / 8;
+
+					screen -> currentTextWindow = textWindow;
+
+					printf("screen -> allocatedTextWindows %d\n",screen -> allocatedTextWindows);
+					getchar();
+				}
 
 				set_default_colors( screens[screen_num] );
-				retroFlash( screens[screen_num], 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
+				retroFlash( screen, 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
 
-				retroBAR( screens[screen_num], 0,0, screens[screen_num] -> realWidth,screens[screen_num]->realHeight, 1 );
-				draw_cursor(screens[screen_num]);
+				retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
+				draw_cursor(screen);
 			}
 
 			engine_unlock();
@@ -84,6 +105,10 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			engine_lock();
+
+			freeAllTextWindows( screens[screen_num]  );
+
+
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			engine_unlock();
 

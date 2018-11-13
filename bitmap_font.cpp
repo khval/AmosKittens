@@ -13,6 +13,137 @@ extern struct TextFont *topaz8_font;
 
 void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph);
 
+
+void freeAllTextWindows(struct retroScreen *screen)
+{
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		if (screen -> textWindows)
+		{
+			for (tab = screen -> textWindows; tab < eot ; tab++)
+			{
+				if (*tab) FreeVec(*tab);
+				*tab = NULL;
+			}
+
+			FreeVec(screen -> textWindows);
+			screen -> textWindows = NULL;
+		}
+
+	}
+}
+
+struct retroTextWindow **allocRetroTextWindows( int n )
+{
+	return (struct retroTextWindow **) AllocVecTags( sizeof( struct retroTextWindow * ) * n, 
+		AVT_Type, MEMF_SHARED, 	// is used by more then one thread.
+		AVT_ClearWithValue, 0,		// should be empty
+		TAG_END );
+}
+
+struct retroTextWindow *new_text_window ( int id )
+{
+	struct retroTextWindow *textWindow = (struct retroTextWindow *) AllocVecTags( sizeof( struct retroTextWindow  ) , 
+		AVT_Type, MEMF_SHARED, 	// is used by more then one thread.
+		AVT_ClearWithValue, 0,		// should be empty
+		TAG_END );
+
+	if (textWindow) textWindow -> id = id;
+
+	return textWindow;
+}
+
+
+struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id)
+{
+	printf("findTextWindow\n");
+
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		printf("looking into tabel %08x, %08x, %d\n",tab,eot, screen -> allocatedTextWindows);
+
+		for (tab = screen -> textWindows; tab < eot ; tab++)
+		{
+			printf("tab %08x\n",*tab);
+
+			if (*tab) 
+			{
+				printf("tab id %d == find id %d\n", (*tab)->id, id );
+				if ( (*tab)->id == id) return *tab;
+			}
+		}
+	}
+	return NULL;
+}
+
+struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
+{
+	int _to_alloc_ = screen -> allocatedTextWindows +1;
+
+	struct retroTextWindow **_new_tab_ = allocRetroTextWindows( _to_alloc_ );
+
+	if (_new_tab_)
+	{
+		if (screen -> textWindows) 
+		{
+			printf("copy old ptrs\n");
+			memcpy( _new_tab_, screen -> textWindows, sizeof( struct retroTextWindow * ) * screen -> allocatedTextWindows );
+			FreeVec(screen -> textWindows );
+			screen -> textWindows = NULL;
+		}
+
+		printf("store at %d\n",_to_alloc_-1);
+
+		_new_tab_[_to_alloc_-1] = new_text_window( id ) ;
+		screen -> textWindows = _new_tab_;
+		screen -> allocatedTextWindows = _to_alloc_;
+
+		return _new_tab_[_to_alloc_-1];
+	}
+
+	return NULL;
+}
+
+void delTextWindow( struct retroScreen *screen, int id )
+{
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **src = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		for (tab = screen -> textWindows; tab < eot ; tab++)
+		{
+			if (tab) if ( (*tab)->id == id) 
+			{
+				FreeVec( *tab );
+				screen -> allocatedTextWindows --;
+
+				for (src = tab+1; src < eot ; tab++)
+				{
+					*tab = *src;
+					tab++;
+				}
+
+				break;
+			}
+		}
+
+		if (screen -> allocatedTextWindows == 0)
+		{
+			if (screen -> textWindows) FreeVec( screen -> textWindows );
+			screen -> textWindows = NULL;
+		}
+	}
+}
+
+
 struct _font_loc {
 	short bit_start;
 	short bit_width;
@@ -45,13 +176,20 @@ struct _font
 
 void draw_bit( struct retroScreen *screen, int x,int y)
 {
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
+
 	retroPixel( screen,x,y,screen -> pen);
 }
 
 void draw_char(struct retroScreen *screen, int lX, int lY, char c )
 {
-	int x = lX * 8;
-	int y = lY * 8 ;
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
+
+	int x = (textWindow -> x + lX) * 8;
+	int y = (textWindow -> y + lY) * 8 ;
+
 	retroBAR( screen, x,y,x+7,y+7, screen -> paper);
 	draw_glyph( screen, topaz8_font, x, y, c );
 }
@@ -209,14 +347,18 @@ void esc_pen (struct retroScreen *screen, char c )
 
 void esc_x (struct retroScreen *screen, char c )
 {
-	if (screens[current_screen]) screens[current_screen] -> locateX = c-'0';
-}
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
 
+	textWindow -> locateX = c-'0';
+}
 
 void esc_y (struct retroScreen *screen, char c )
 {
-	if (screens[current_screen]) screens[current_screen] -> locateY = c-'0';
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
 
+	textWindow -> locateY = c-'0';
 }
 
 
@@ -249,32 +391,35 @@ int what_esc_code(const char *txt)
 }
 
 
-void limit_location(struct retroScreen *screen, int max_char_width )
+void limit_location(struct retroScreen *screen )
 {
  	int x;
 	int y;
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
 
-		if (screen-> locateX>=max_char_width)
-		{
-			screen -> locateX = screen -> locateX % max_char_width;
-			screen -> locateY++;
-		}
+	if (textWindow -> locateX>= textWindow -> charsPerRow)
+	{
+		textWindow -> locateX = textWindow -> locateX % textWindow -> charsPerRow;
+		textWindow -> locateY++;
+	}
 
-		if (screen-> locateY>=screen -> realHeight /8)
+		if (textWindow -> locateY >= textWindow -> rows)
 		{
 			unsigned char *src = screen -> Memory[ screen -> double_buffer_draw_frame ] + ( screen -> bytesPerRow * 8 );
 			unsigned char *des = screen -> Memory[ screen -> double_buffer_draw_frame ];
-			screen -> locateY--;
-			int intsPerRow = screen ->bytesPerRow / 4;
+
+			textWindow -> locateY--;
+			int intsPerRow = textWindow ->charsPerRow * 2;		// 1 char = 8 pixels/bytes  -> 8/4 bytes = 2
+			int intsStart = textWindow -> x * 2;
 			int *isrc;
 			int *ides;
-			int paper_rows = screen -> realHeight / 8;
-			int paper_height = paper_rows * 8;
+			int paper_height = textWindow -> rows * 8;
 
 			for (y=0;y<paper_height-8;y++)
 			{	
-				isrc = (int *) src;
-				ides = (int *) des;
+				isrc = (int *) src + intsStart;
+				ides = (int *) des + intsStart;
 
 				for (x=0;x<intsPerRow; x++)
 				{
@@ -286,34 +431,40 @@ void limit_location(struct retroScreen *screen, int max_char_width )
 			}
 
 			retroBAR( screen,
-					0,paper_height-8,
-					screen->realWidth, screen-> realHeight, 
+					textWindow -> x * 8,paper_height-8,
+					(textWindow -> x + textWindow -> charsPerRow) * 8, screen-> realHeight, 
 					screen -> paper);
 		}
 }
 
 extern int _tab_size ;
 
-void draw_tab(struct retroScreen *screen,  int max_char_width)
+void draw_tab(struct retroScreen *screen)
 {
 	int n = 0;
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
 
 	while (n<_tab_size)
 	{
-		draw_char(screen, screen -> locateX , screen -> locateY , 20);
-		screen -> locateX ++;
-		limit_location(screen,  max_char_width );
+		draw_char(screen, 
+			textWindow -> locateX,
+			textWindow -> locateY , 20);
+
+		textWindow -> locateX ++;
+		limit_location(screen);
 		n++;
 	}
 }
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 {
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
 
 	char c;
 	int cnt = 0;
 	int esc_count = 0;
-	int max_char_width = screen -> realWidth / 8;
 
 	while (c =*text ++) 
 	{
@@ -338,8 +489,8 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 										if (esc_count)
 										{
 											esc_count --;
-											printf("%s: %d,%d to %d,%d, return %c\n",  esc_data_tab[esc_count].esc, esc_data_tab[esc_count].x, esc_data_tab[esc_count].y, screen -> locateX, screen -> locateY, *text);
-											if (esc_data_tab[esc_count].fn) esc_data_tab[esc_count].fn( screen, &esc_data_tab[esc_count], screen -> locateX, screen -> locateY, *text);
+											printf("%s: %d,%d to %d,%d, return %c\n",  esc_data_tab[esc_count].esc, esc_data_tab[esc_count].x, esc_data_tab[esc_count].y, textWindow -> locateX, textWindow -> locateY, *text);
+											if (esc_data_tab[esc_count].fn) esc_data_tab[esc_count].fn( screen, &esc_data_tab[esc_count], textWindow -> locateX, textWindow -> locateY, *text);
 										}
 										text++;
 									}
@@ -373,26 +524,29 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 									text += strlen(esc_codes[code].name);
 									esc_data_tab[esc_count].esc = esc_codes[code].name;
 									esc_data_tab[esc_count].fn = esc_codes[code].fn;
-									esc_data_tab[esc_count].x = screen -> locateX;
-									esc_data_tab[esc_count].y = screen -> locateY;
+									esc_data_tab[esc_count].x = textWindow -> locateX;
+									esc_data_tab[esc_count].y = textWindow -> locateY;
 									esc_count++;
 									break;
 						}
 					}
 					break;
 
-			case 9:	draw_tab(screen, max_char_width);
+			case 9:	draw_tab(screen);
 					break;
 
-			case 10:	screen -> locateX = 0;
-					screen -> locateY++;
+			case 10:	textWindow -> locateX = 0;
+					textWindow -> locateY++;
 					break;
 			default:
-					draw_char(screen, screen -> locateX , screen -> locateY , c);
-					screen -> locateX ++;
+					draw_char(screen, 
+						textWindow -> locateX ,
+						textWindow -> locateY , c);
+
+					textWindow -> locateX ++;
 		}
 
-		limit_location( screen, max_char_width );
+		limit_location( screen );
 	}
 }
 

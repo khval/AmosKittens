@@ -38,6 +38,7 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
 	bool success = false;
+	struct retroTextWindow *textWindow = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -48,10 +49,15 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 	{
 		if (screen=screens[current_screen])
 		{
-			clear_cursor(screen);
-			screen -> locateX = getStackNum( stack-1 );
-			screen -> locateY = getStackNum( stack );
-			draw_cursor(screen);
+			textWindow = screen -> currentTextWindow;
+
+			if (textWindow)
+			{
+				clear_cursor(screen);
+				textWindow -> locateX = getStackNum( stack-1 );
+				textWindow -> locateY = getStackNum( stack );
+				draw_cursor(screen);
+			}
 		}
 		next_print_line_feed = false;
 		success = true;
@@ -68,6 +74,7 @@ char *_textHome( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
 	bool success = false;
+	struct retroTextWindow *textWindow = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -75,10 +82,15 @@ char *_textHome( struct glueCommands *data, int nextToken )
 	{
 		if (screen=screens[current_screen])
 		{
-			clear_cursor(screen);
-			screen -> locateX = 0;
-			screen -> locateY = 0;
-			draw_cursor(screen);
+			textWindow = screen -> currentTextWindow;
+
+			if (textWindow)
+			{
+				clear_cursor(screen);
+				textWindow -> locateX = 0;
+				textWindow -> locateY = 0;
+				draw_cursor(screen);
+			}
 		}
 		next_print_line_feed = false;
 		success = true;
@@ -108,9 +120,11 @@ char *_textPen( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		if (screens[current_screen])
+		struct retroScreen *screen = screens[current_screen];
+
+		if (screen)
 		{
-			screens[current_screen] -> pen  = getStackNum( stack );
+			screen -> pen  = getStackNum( stack );
 			success = true;
 		}
 	}
@@ -137,9 +151,11 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		if (screens[current_screen])
+		struct retroScreen *screen = screens[current_screen];
+
+		if (screen)
 		{
-			screens[current_screen] -> paper = getStackNum( stack );
+			screen -> paper  = getStackNum( stack );
 			success = true;
 		}
 	}
@@ -244,19 +260,20 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 	{
 		if (screen = screens[current_screen])
 		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
 			txt = getStackString(stack);
 			charsPerLine = screen -> realWidth / 8;
 
 			clear_cursor(screen);
 
-			if (txt)
+			if ((txt)&&(textWindow))
 			{
-				screen -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
+				textWindow -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
 
-				if (screen -> locateX<0)
+				if (textWindow -> locateX<0)
 				{
-					txt -= screen -> locateX;	// its read only.
-					screen -> locateX = 0;
+					txt -= textWindow -> locateX;	// its read only.
+					textWindow -> locateX = 0;
 				}
 			}
 		}
@@ -440,10 +457,16 @@ char *_textAt( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		if (screens[current_screen])
+		struct retroScreen *screen = screens[current_screen];
+
+		if (screen)
 		{
-			x = screens[current_screen] -> locateX ;
-			y = screens[current_screen] -> locateY ;
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+			if (textWindow)
+			{
+				x = textWindow -> locateX ;
+				y = textWindow -> locateY ;
+			}
 		}
 		
 		 stack_get_if_int( stack -1,&x);
@@ -656,7 +679,6 @@ char *textYText(nativeCommand *cmd, char *ptr)
 
 char *_textCMove( struct glueCommands *data, int nextToken )
 {
-	struct retroScreen *screen; 
 	int args = stack - data->stack +1 ;
 	int x = 0, y = 0;
 
@@ -664,20 +686,27 @@ char *_textCMove( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		if (screen = screens[current_screen])
+		struct retroScreen *screen = screens[current_screen]; 
+
+		if (screen)
 		{
-			clear_cursor(screen);
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	
+			if (textWindow)
+			{
+				clear_cursor(screen);
 
-			x = screen -> locateX ;
-			y = screen -> locateY ;
+				x = textWindow -> locateX ;
+				y = textWindow -> locateY ;
 
-			x += getStackNum( stack - 1 ) ;
-			y += getStackNum( stack ) ;
+				x += getStackNum( stack - 1 ) ;
+				y += getStackNum( stack ) ;
 
-			screen -> locateX = x;
-			screen -> locateY = y;
+				textWindow -> locateX = x;
+				textWindow -> locateY = y;
 
-			draw_cursor(screen);
+				draw_cursor(screen);
+			}
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -697,35 +726,56 @@ char *textCMove(nativeCommand *cmd, char *ptr)
 
 char *textCLeft(nativeCommand *cmd, char *ptr)
 {
-	if (screens[current_screen])
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
 	{
-		clear_cursor(screens[current_screen]);
-		screens[current_screen] -> locateX-- ;
-		if (screens[current_screen] -> locateX<0) screens[current_screen] -> locateX = screens[current_screen] -> realWidth / 8;
-		draw_cursor(screens[current_screen]);
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	
+		if (textWindow)
+		{
+			clear_cursor(screens[current_screen]);
+			textWindow-> locateX-- ;
+			if (textWindow -> locateX<0) textWindow -> locateX = screens[current_screen] -> realWidth / 8;
+			draw_cursor(screens[current_screen]);
+		}
 	}
 	return ptr;
 }
 
 char *textCRight(nativeCommand *cmd, char *ptr)
 {
-	if (screens[current_screen])
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
 	{
-		clear_cursor(screens[current_screen]);
-		screens[current_screen] -> locateX++ ;
-		draw_cursor(screens[current_screen]);
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	
+		if (textWindow)
+		{
+			clear_cursor(screens[current_screen]);
+			textWindow -> locateX++ ;
+			draw_cursor(screens[current_screen]);
+		}
 	}
 	return ptr;
 }
 
 char *textCUp(nativeCommand *cmd, char *ptr)
 {
-	if (screens[current_screen])
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
 	{
-		clear_cursor(screens[current_screen]);
-		screens[current_screen] -> locateY--;
-		if (screens[current_screen] -> locateY<0) screens[current_screen] -> locateY = 0;
-		draw_cursor(screens[current_screen]);
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	
+		if (textWindow)
+		{
+			clear_cursor(screens[current_screen]);
+			textWindow -> locateY--;
+			if (textWindow -> locateY<0) textWindow -> locateY = 0;
+			draw_cursor(screens[current_screen]);
+		}
 	}
 	return ptr;
 }
@@ -733,11 +783,18 @@ char *textCUp(nativeCommand *cmd, char *ptr)
 
 char *textCDown(nativeCommand *cmd, char *ptr)
 {
-	if (screens[current_screen])
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
 	{
-		clear_cursor(screens[current_screen]);
-		screens[current_screen] -> locateY++ ;
-		draw_cursor(screens[current_screen]);
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	
+		if (textWindow)
+		{
+			clear_cursor(screens[current_screen]);
+			textWindow -> locateY++ ;
+			draw_cursor(screens[current_screen]);
+		}
 	}
 	return ptr;
 }
@@ -841,32 +898,36 @@ char *_textHscroll( struct glueCommands *data, int nextToken )
 	{
 		struct retroScreen *screen = screens[current_screen];
 
-		switch (getStackNum( stack ))
-		{
-			case 1:	y0 = screen -> locateY * 8;
-					y1 = y0+8;
-					dx = -8;
-					break;
-			case 2:	y0 = 0;
-					y1 = screen -> realHeight;
-					dx = -8;
-					break;
-			case 3:	y0 = screen -> locateY * 8;
-					y1 = y0+8;
-					dx = 8;
-					break;
-			case 4:	y0 = 0;
-					y1 = screen -> realHeight;
-					dx = 8;
-					break;
-		}
-
 		if (screen)
 		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
 			unsigned char *mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
 			unsigned char *src,*des;
 			int bytesPerRow = screen -> bytesPerRow;
 			int x,y;
+
+			if (textWindow)
+			{
+				switch (getStackNum( stack ))
+				{
+					case 1:	y0 = textWindow -> locateY * 8;
+							y1 = y0+8;
+							dx = -8;
+							break;
+					case 2:	y0 = 0;
+							y1 = screen -> realHeight;
+							dx = -8;
+							break;
+					case 3:	y0 = textWindow -> locateY * 8;
+							y1 = y0+8;
+							dx = 8;
+							break;
+					case 4:	y0 = 0;
+							y1 = screen -> realHeight;
+							dx = 8;
+							break;
+				}
+			}
 
 			if (dx>0)
 			{
@@ -935,25 +996,30 @@ char *_textCline( struct glueCommands *data, int nextToken )
 
 	if ((args==1) && (screen))
 	{
-		y0 = screen -> locateY *8;
-		y1 = y0+7;
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
 
-		switch(kittyStack[stack].type)
+		if (textWindow)
 		{
-			case type_none:
+			y0 = textWindow -> locateY *8;
+			y1 = y0+7;
+
+			switch(kittyStack[stack].type)
+			{
+				case type_none:
 					x0 = 0;
 					x1 = screen -> realWidth;
 					break;
-			case type_int:
+				case type_int:
 					chars = getStackNum( stack );
-					x0 = screen -> locateY *8;
+					x0 = textWindow -> locateY *8;
 					x1 = x0 + 7;
 					if (chars<0) x0 += chars * 8;
 					if (chars>0) x1 += chars * 8;
 					break;
+			}
+
+			retroBAR(screen,x0,y0,x1,y1,screen -> paper);
 		}
-		
-		retroBAR(screen,x0,y0,x1,y1,screen -> paper);
 	}
 
 	popStack( stack - data->stack );
@@ -1152,12 +1218,39 @@ char *textPrintUsing(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
+
 char *_textWindow( struct glueCommands *data, int nextToken )
 {
+	struct retroScreen *screen = screens[current_screen];
 	int args = stack - data->stack +1 ;
+	int id;
+	struct retroTextWindow *textWindow = NULL;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't support Windows yet, but kittens are brave, and try\n");
+	if (screen)
+	{
+		printf("pen is %d, paper is %d\n", screen -> pen, screen -> paper);
+
+		switch (args)
+		{
+			case 1:	id = getStackNum( stack );
+
+					textWindow = findTextWindow(screen,id);
+					if (textWindow)
+					{
+						clear_cursor(screens[current_screen]);
+						screen -> currentTextWindow = textWindow;
+						draw_cursor(screens[current_screen]);
+					}
+					else printf("not found id: %d\n",id);
+					break;
+			default:
+				setError(22, data->tokenBuffer);
+		}
+	}
+	getchar();
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1175,23 +1268,75 @@ char *textXCurs(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 
-	if (screen) setStackNum( screen -> locateX);
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+		if (textWindow)	 setStackNum( textWindow -> locateX);
+	}
 	return tokenBuffer;
 }
 
 char *textYCurs(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
-	if (screen) setStackNum( screen -> locateY);
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+		if (textWindow)	setStackNum( textWindow -> locateY);
+	}
 	return tokenBuffer;
 }
+
+struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 
 char *_textWindOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen ;
+	struct retroTextWindow *textWindow = NULL;
+	int id=0,x=0,y=0,w=0,h=0,b=0;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't support Wind Open yet, but kittens are brave, and try\n");
+	screen = screens[current_screen];
+	if (screen)
+	{
+		switch (args)
+		{
+			case 5:
+					id = getStackNum( stack -4);
+					x = getStackNum( stack -3 );
+					y = getStackNum( stack -2 );
+					w = getStackNum( stack -1 );
+					h = getStackNum( stack );
+
+					textWindow = newTextWindow( screen, id );
+					break;
+
+			case 6:
+					id = getStackNum( stack -5 );
+					x = getStackNum( stack -4 );
+					y = getStackNum( stack -3 );
+					w = getStackNum( stack -2 );
+					h = getStackNum( stack -1 );
+					b = getStackNum( stack );
+
+					textWindow = newTextWindow( screen, id );
+					break;		
+		}
+	}
+
+	if (textWindow)
+	{
+		textWindow -> x = x / 8;
+		textWindow -> y = y / 8; 
+		textWindow -> charsPerRow = w;
+		textWindow -> rows = h; 
+	}
+	else
+	{
+		setError(22,data->tokenBuffer);
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1208,7 +1353,7 @@ char *_textXGraphic( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't support X Graphic yet, but kittens are brave, and try\n");
+	Printf("Amos Kittens don't not support X Graphic yet, but kittens are brave, and try\n");
 
 	if (args == 1)
 	{
@@ -1222,7 +1367,7 @@ char *_textXGraphic( struct glueCommands *data, int nextToken )
 
 char *textXGraphic(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _textWindOpen, tokenBuffer );
+	stackCmdNormal( _textXGraphic, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -1231,7 +1376,7 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't support X Graphic yet, but kittens are brave, and try\n");
+	Printf("Amos Kittens don't not support X Graphic yet, but kittens are brave, and try\n");
 
 	if (args == 1)
 	{
@@ -1245,9 +1390,33 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 
 char *textYGraphic(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _textWindOpen, tokenBuffer );
+	stackCmdNormal( _textYGraphic, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_textTitleTop( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(0);
+	return NULL;
+}
+
+char *textTitleTop(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textTitleTop, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
 

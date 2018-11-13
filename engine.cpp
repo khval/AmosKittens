@@ -238,24 +238,28 @@ void set_default_colors( struct retroScreen *screen )
 		retroScreenColor( screen, n,DefaultPalette[n].r,DefaultPalette[n].g,DefaultPalette[n].b);
 }
 
-void clear_cursor(struct retroScreen *screen)
+void clear_cursor( struct retroScreen *screen )
 {
-	if (curs_on)
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+	if ((curs_on)&&(textWindow))
 	{
 		int gx,gy;
-		gx = screen -> locateX * 8;
-		gy = screen -> locateY * 8;
+		gx = (textWindow -> x + textWindow -> locateX) * 8;
+		gy = (textWindow -> y + textWindow -> locateY) * 8;
 		retroBAR( screen, gx,gy,gx+7,gy+7, screen->paper);
 	}
 }
 
 void draw_cursor(struct retroScreen *screen)
 {
-	if (curs_on)
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+	if ((curs_on)&&(textWindow))
 	{
 		int gx,gy;
-		gx = screen -> locateX * 8;
-		gy = screen -> locateY * 8;
+		gx = (textWindow -> x + textWindow -> locateX) * 8;
+		gy = (textWindow -> y + textWindow -> locateY) * 8;
 		retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
 	}
 }

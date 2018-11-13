@@ -194,33 +194,44 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int color = 0;
 	struct retroScreen *screen = screens[current_screen];
+	struct retroTextWindow *textWindow = NULL;
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (screen)
+	{
+		textWindow = screen -> currentTextWindow;
+	}
 
 	switch (args)
 	{
 		case 1:
-			if (kittyStack[stack].type == type_none)
-			{
-				color = screen -> paper;
-			}
-			else
-			{
-				 color = getStackNum( stack );
-			}
 
-			if ((color >-1)&&(color<256))
+			if (textWindow)
 			{
-				if (screen) 
+				if (kittyStack[stack].type == type_none)
 				{
+					color = screen -> paper;
+				}
+				else
+				{
+					 color = getStackNum( stack );
+				}
+
+				if ((color >-1)&&(color<256))
+				{
+
 					retroBAR( screen,0,0,screen->realWidth,screen->realHeight,color );
-					screen -> locateX = 0;
-					screen -> locateY = 0;
+					textWindow -> locateX = 0;
+					textWindow -> locateY = 0;
 					next_print_line_feed = false;
 				}
 			}
 			break;
 
 		case 5:
+
+			if (textWindow)
 			{
 				int color = getStackNum( stack -4 );
 				int x0 = getStackNum( stack -3 );
@@ -228,17 +239,12 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 				int x1 = getStackNum( stack -1 )-1;
 				int y1 = getStackNum( stack )-1;
 
-//				printf("CLS %d,%d,%d to %d,%d\n");
-
 				if ((color >-1)&&(color<256))
 				{
-					if (screen) 
-					{
-						retroBAR( screen, x0,y0,x1,y1,color );
-						screen -> locateX = 0;
-						screen -> locateY = 0;
-						next_print_line_feed = false;
-					}
+					retroBAR( screen, x0,y0,x1,y1,color );
+					textWindow -> locateX = 0;
+					textWindow -> locateY = 0;
+					next_print_line_feed = false;
 				}
 			}
 			break;
@@ -1828,6 +1834,32 @@ char *gfxRainbowDel(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	// some thing to do with drawing, not sure.
 	stackCmdNormal( _gfxRainbowDel, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxScrollOff( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxScrollOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdNormal( _gfxScrollOff, tokenBuffer );
 	return tokenBuffer;
 }
 

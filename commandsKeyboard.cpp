@@ -118,15 +118,21 @@ void kitty_getline(string &input)
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	input = "";
+	
+	retroScreen *screen = screens[current_screen];
+	retroTextWindow *textWindow = NULL;
 
-	if (EngineTask)
+	if (screen)
 	{
-		engine_lock();
-		draw_cursor( screens[current_screen] );
-		rightx = screens[current_screen]->locateX;
-		charsPerRow = (screens[current_screen]-> realWidth / 8);
+		textWindow = screen -> currentTextWindow;
+	}
+
+	if ((EngineTask)&&(textWindow))
+	{
+		draw_cursor( screen );
+		rightx = textWindow -> locateX;
+		charsPerRow = textWindow -> charsPerRow;
 		charspace = charsPerRow-rightx - 1;
-		engine_unlock();
 
 		done = false;
 
@@ -143,7 +149,6 @@ void kitty_getline(string &input)
 					break;
 
 				case 8:
-					printf("<backspace>\n");
 
 					if (input.length()>0)
 					{
@@ -153,18 +158,14 @@ void kitty_getline(string &input)
 							input.erase(cursx,1);
 						}
 
-						engine_lock();
 						clear_cursor( screens[current_screen] );
-						screens[current_screen]->locateX = rightx;
-						engine_unlock();
+						textWindow -> locateX = rightx;
 
 						if (cursx - scrollx < 0) scrollx--;
 
 						__print_text(input.c_str() + scrollx,charspace);
-						engine_lock();
 						clear_cursor( screens[current_screen] );
 						draw_cursor( screens[current_screen] );
-						engine_unlock();
 					}
 
 					break;
@@ -178,22 +179,22 @@ void kitty_getline(string &input)
 					input += buf;
 					cursx ++;
 
-					engine_lock();
+
 					clear_cursor( screens[current_screen] );
-					screens[current_screen]->locateX = rightx;
-					engine_unlock();
+					textWindow -> locateX = rightx;
+
 
 					if (cursx - scrollx > charspace) scrollx++;
 					__print_text(input.c_str() + scrollx,charspace);
 
-					engine_lock();
+
 					draw_cursor( screens[current_screen] );
-					engine_unlock();
+
 
 					break;	
 			}
 
-		} while ((done == false)&&(EngineTask));
+		} while ( (done == false) && (engine_stopped==false) );
 	}
 	else
 	{
