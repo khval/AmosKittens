@@ -1250,7 +1250,6 @@ char *_textWindow( struct glueCommands *data, int nextToken )
 				setError(22, data->tokenBuffer);
 		}
 	}
-	getchar();
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1294,13 +1293,15 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen ;
 	struct retroTextWindow *textWindow = NULL;
-	int id=0,x=0,y=0,w=0,h=0,b=0;
+	int id=0,x=0,y=0,w=0,h=0,b=0,s=0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	screen = screens[current_screen];
 	if (screen)
 	{
+		printf("args: %d\n",args);
+
 		switch (args)
 		{
 			case 5:
@@ -1322,6 +1323,18 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 					b = getStackNum( stack );
 
 					textWindow = newTextWindow( screen, id );
+					break;	
+
+			case 7:
+					id = getStackNum( stack -6 );
+					x = getStackNum( stack -5 );
+					y = getStackNum( stack -4 );
+					w = getStackNum( stack -3 );
+					h = getStackNum( stack -2 );
+					b = getStackNum( stack -1 );
+					s = getStackNum( stack );
+
+					textWindow = newTextWindow( screen, id );
 					break;		
 		}
 	}
@@ -1332,6 +1345,28 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 		textWindow -> y = y / 8; 
 		textWindow -> charsPerRow = w;
 		textWindow -> rows = h; 
+		textWindow -> border = b;
+		textWindow -> set = s;
+		screen -> currentTextWindow = textWindow;
+
+		if (b)
+		{
+			int x0,y0,x1,y1;
+			x0 = textWindow -> x*8;
+			y0 = textWindow -> y*8;
+			x1 = x0 + (textWindow -> charsPerRow*8)-1;
+			y1 = y0 + (textWindow -> rows*8)-1;
+
+			retroBAR( screen, x0,y0,x1,y1,screen -> paper);
+
+			x0+=2;
+			y0+=2;
+			x1-=2;
+			y1-=2;
+
+			retroBox( screen, x0,y0,x1,y1, 2 );
+			retroBox( screen, x0+1,y0+1,x1-1,y1-1, 2 );
+		}
 	}
 	else
 	{

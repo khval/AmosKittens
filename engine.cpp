@@ -245,8 +245,10 @@ void clear_cursor( struct retroScreen *screen )
 	if ((curs_on)&&(textWindow))
 	{
 		int gx,gy;
-		gx = (textWindow -> x + textWindow -> locateX) * 8;
-		gy = (textWindow -> y + textWindow -> locateY) * 8;
+		int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+		int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+		gx=8*x;	gy=8*y;
+
 		retroBAR( screen, gx,gy,gx+7,gy+7, screen->paper);
 	}
 }
@@ -258,8 +260,10 @@ void draw_cursor(struct retroScreen *screen)
 	if ((curs_on)&&(textWindow))
 	{
 		int gx,gy;
-		gx = (textWindow -> x + textWindow -> locateX) * 8;
-		gy = (textWindow -> y + textWindow -> locateY) * 8;
+		int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+		int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+		gx=8*x;	gy=8*y;
+
 		retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
 	}
 }

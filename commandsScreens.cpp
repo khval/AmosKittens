@@ -40,6 +40,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
+			struct retroScreen *screen;
 			current_screen = screen_num;
 
 			// Kitty ignores colors we don't care, allways 256 colors.
@@ -64,11 +65,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 				{
 					textWindow -> charsPerRow = screen -> realWidth / 8;
 					textWindow -> rows = screen -> realHeight / 8;
-
 					screen -> currentTextWindow = textWindow;
-
-					printf("screen -> allocatedTextWindows %d\n",screen -> allocatedTextWindows);
-					getchar();
 				}
 
 				set_default_colors( screens[screen_num] );
@@ -202,15 +199,17 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 
 			if (screen = screens[screen_num])
 			{
-
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 				if (kittyStack[stack-3].type ==  type_int) screen -> scanline_x = getStackNum( stack-3 );
 				if (kittyStack[stack-2].type ==  type_int) screen -> scanline_y = (getStackNum( stack-2 ) *2) - 80;
 				if (kittyStack[stack-1].type ==  type_int) screen -> displayWidth = getStackNum( stack-1 );
 				if (kittyStack[stack].type ==  type_int) screen -> displayHeight = getStackNum( stack );
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+				printf( "retroApplyScreen( screen %08x, video %08x, screen -> scanline_x %d, screen -> scanline_y, %d,	screen -> displayWidth %d, screen -> displayHeight  %d );\n",
+					screen, video, 
+					screen -> scanline_x,
+					screen -> scanline_y,
+					screen -> displayWidth,
+					screen -> displayHeight );
 
 				retroApplyScreen( screen, video, 
 					screen -> scanline_x,
@@ -652,6 +651,9 @@ void LoadIff( char *name, const int n )
 		{
 			struct RastPort rp;
 			int x,y,c;
+			
+			screens[n]->paper = 1;
+			screens[n]->pen = 2;
 
 			retroApplyScreen( screens[n], video, 0, 20, screens[n] -> realWidth,screens[n]->realHeight );
 			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, 1 );

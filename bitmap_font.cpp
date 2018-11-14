@@ -187,8 +187,12 @@ void draw_char(struct retroScreen *screen, int lX, int lY, char c )
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
 	if (!textWindow) return;
 
-	int x = (textWindow -> x + lX) * 8;
-	int y = (textWindow -> y + lY) * 8 ;
+	int b = (textWindow -> border ? 1 : 0);
+	int x = textWindow -> x + lX + b;
+	int y = textWindow -> y + lY + b;
+
+	x *= 8;
+	y *= 8;
 
 	retroBAR( screen, x,y,x+7,y+7, screen -> paper);
 	draw_glyph( screen, topaz8_font, x, y, c );
@@ -320,7 +324,6 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 		if ( y1>-1) draw_char(screen, x1 , y1 , '\'');
 	}
 
-
 	for (y=data->y+1;y<y1;y++)
 	{
 		if (data -> x>-1) draw_char(screen, data -> x ,  y , '|');
@@ -396,25 +399,43 @@ void limit_location(struct retroScreen *screen )
  	int x;
 	int y;
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	int _has_border ;
+	int charsPerRow ;
+
 	if (!textWindow) return;
 
-	if (textWindow -> locateX>= textWindow -> charsPerRow)
+	_has_border =(textWindow -> border ? 1 : 0);
+
+	int _x = textWindow -> x + _has_border;
+	int _y = textWindow -> y + _has_border;
+	int _w = textWindow -> charsPerRow - (2*_has_border);
+	int _h = textWindow -> rows - (2*_has_border);
+
+
+	charsPerRow = textWindow -> charsPerRow - (_has_border * 2);
+
+	if (textWindow -> locateX>=  charsPerRow )
 	{
-		textWindow -> locateX = textWindow -> locateX % textWindow -> charsPerRow;
+		textWindow -> locateX = textWindow -> locateX % charsPerRow;
 		textWindow -> locateY++;
 	}
 
-		if (textWindow -> locateY >= textWindow -> rows)
+		if (textWindow -> locateY >= textWindow -> rows-(_has_border*2) )
 		{
-			unsigned char *src = screen -> Memory[ screen -> double_buffer_draw_frame ] + ( screen -> bytesPerRow * 8 );
-			unsigned char *des = screen -> Memory[ screen -> double_buffer_draw_frame ];
 
-			textWindow -> locateY--;
-			int intsPerRow = textWindow ->charsPerRow * 2;		// 1 char = 8 pixels/bytes  -> 8/4 bytes = 2
-			int intsStart = textWindow -> x * 2;
+			unsigned char *src = screen -> Memory[ screen -> double_buffer_draw_frame ] ;
+			unsigned char *des = screen -> Memory[ screen -> double_buffer_draw_frame ];
 			int *isrc;
 			int *ides;
-			int paper_height = textWindow -> rows * 8;
+
+			textWindow -> locateY--;
+
+			int intsPerRow = _w * 2;		// 1 char = 8 pixels/bytes  -> 8/4 bytes = 2
+			int intsStart = _x * 2;
+			int paper_height = _h * 8;
+
+			src += ( screen -> bytesPerRow * (8 * (_y+1)) );
+			des += ( screen -> bytesPerRow * (8 * _y) );
 
 			for (y=0;y<paper_height-8;y++)
 			{	
@@ -423,17 +444,25 @@ void limit_location(struct retroScreen *screen )
 
 				for (x=0;x<intsPerRow; x++)
 				{
-					ides[x]=isrc[x];
+					ides[x]= isrc[x];
 				}
 
 				src += screen -> bytesPerRow;
 				des += screen -> bytesPerRow;
 			}
 
-			retroBAR( screen,
-					textWindow -> x * 8,paper_height-8,
-					(textWindow -> x + textWindow -> charsPerRow) * 8, screen-> realHeight, 
+			{
+				int gx = _x * 8; 
+				int gy = _y * 8;
+				int gw = _w * 8;
+
+				retroBAR( screen, 
+					gx, gy + paper_height-8,
+					gx + gw, gy + paper_height,
 					screen -> paper);
+
+			}
+
 		}
 }
 
