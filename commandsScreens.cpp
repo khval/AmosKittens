@@ -26,6 +26,33 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
+void init_amos_kittens_screen_default_text_window( struct retroScreen *screen )
+{
+	struct retroTextWindow *textWindow = NULL;
+
+	screen->paper = 1;
+	screen->pen = 2;
+
+	retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+
+	if (textWindow = newTextWindow( screen, 0 ))
+	{
+		textWindow -> charsPerRow = screen -> realWidth / 8;
+		textWindow -> rows = screen -> realHeight / 8;
+
+		screen -> currentTextWindow = textWindow;
+	}
+
+	draw_cursor(screen);
+}
+
+void init_amos_kittens_screen_default_colors(struct retroScreen *screen)
+{
+	set_default_colors( screen );
+	retroFlash( screen, 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
+	retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
+}
+
 char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -48,31 +75,11 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),getStackNum( stack ));
-
-			screen = screens[screen_num];
-
-			if (screen)
+	
+			if (screens[screen_num])
 			{
-				struct retroTextWindow *textWindow = NULL;
-
-				screen->paper = 1;
-				screen->pen = 2;
-
-				retroApplyScreen( screen, video, 0, 0,
-					screen -> realWidth,screen->realHeight );
-
-				if (textWindow = newTextWindow( screen, 0 ))
-				{
-					textWindow -> charsPerRow = screen -> realWidth / 8;
-					textWindow -> rows = screen -> realHeight / 8;
-					screen -> currentTextWindow = textWindow;
-				}
-
-				set_default_colors( screens[screen_num] );
-				retroFlash( screen, 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
-
-				retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
-				draw_cursor(screen);
+				init_amos_kittens_screen_default_text_window(screens[screen_num]);
+				init_amos_kittens_screen_default_colors(screens[screen_num]);
 			}
 
 			engine_unlock();
@@ -870,11 +877,8 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (screens[0])
 	{
-		set_default_colors( screens[0] );
-		retroFlash( screens[0], 3, (char *) "(110,5),(220,5),(330,5),(440,5),(550,5),(660,5)(770,5),(880,5),(990,5),(AA0,5),(BB0,5),(CC0,5),(DD0,5),(CC0,5),(BB0,5),(AA0,5),(990,5),(880,5),(770,5),(660,5),(550,5)(440,5),(330,5),(220,5)");
-		retroBAR( screens[0], 0,0, screens[0] -> realWidth, screens[0] -> realHeight, 1 );
-		draw_cursor(screens[0]);
-		retroApplyScreen( screens[0], video, 0, 0,320,200 );
+		init_amos_kittens_screen_default_text_window(screens[0]);
+		init_amos_kittens_screen_default_colors(screens[0]);
 	}
 
 	return tokenBuffer;
