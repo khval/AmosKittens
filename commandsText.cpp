@@ -970,9 +970,47 @@ char *_textClw( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	struct retroScreen *screen ;
+	struct retroTextWindow *textWindow = NULL;
+	int x=0,y=0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	screen = screens[current_screen];
+
 	if (args==1)
 	{
+		if (screen)
+		{
+			if (textWindow = screen -> currentTextWindow)
+			{
+				int _has_border =(textWindow -> border ? 1 : 0);
+				int _x = textWindow -> x + _has_border;
+				int _y = textWindow -> y + _has_border;
+				int _w = textWindow -> charsPerRow - (2*_has_border);
+				int _h = textWindow -> rows - (2*_has_border);
+				int gx = _x * 8; 
+				int gy = _y * 8;
+				int gw = _w * 8 - 1;
+				int gh = _h * 8  -1;
+
+				textWindow -> locateX = 0;
+				textWindow -> locateY = 0;
+
+				retroBAR( screen, 
+					gx, gy ,
+					gx + gw, gy + gh,
+					screen -> paper);
+			}
+		}		
 	}
+	else 
+	{
+		printf("args: %d\n",args);
+
+		setError(22,data->tokenBuffer );
+	}
+	
 
 	popStack( stack - data->stack );
 	return NULL;
