@@ -1421,6 +1421,52 @@ char *textWindOpen(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textWindMove( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen ;
+	struct retroTextWindow *textWindow = NULL;
+	int x=0,y=0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	screen = screens[current_screen];
+	if (screen)
+	{
+		printf("args: %d\n",args);
+
+		switch (args)
+		{
+			case 2:
+					x = getStackNum( stack -1 );
+					y = getStackNum( stack  );
+					textWindow = screen -> currentTextWindow;
+					break;
+		}
+	}
+
+	if (textWindow)
+	{
+		clear_cursor(screens[current_screen]);
+		textWindow -> x = x /8;
+		textWindow -> y = y /8; 
+		draw_cursor(screens[current_screen]);
+	}
+	else
+	{
+		setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+char *textWindMove(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textWindMove, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 char *_textXGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;

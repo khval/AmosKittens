@@ -855,6 +855,7 @@ struct nativeCommand nativeCommands[]=
 	{0x12CE, "Timer", 0, cmdTimer },
 	{0x12DA,"Wind Open",0,textWindOpen },
 	{0x12F4,"Wind Open",0,textWindOpen },	// Wind Open n,x,y,w,h,border
+	{0x133A,"Wind Move",0,textWindMove },	// Wind Move x,y
 	{0x135E,"Window",0,textWindow },
 	{0x1378,"Locate",0, textLocate },
 	{0x1388,"Clw",0,textClw },
