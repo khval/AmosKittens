@@ -1324,7 +1324,8 @@ char *textYCurs(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
+extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
+extern void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window );
 
 char *_textWindOpen( struct glueCommands *data, int nextToken )
 {
@@ -1536,7 +1537,50 @@ char *textTitleTop(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textWindClose( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
+
+	if (args == 1)
+	{
+		struct retroScreen *screen = screens[current_screen];
+		if (screen)
+		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+			if (textWindow -> id !=  0)	// ID 0 can't not be deleted.
+			{
+				int gx = textWindow -> x * 8; 
+				int gy = textWindow -> y * 8;
+				int gw = textWindow -> charsPerRow * 8 - 1;
+				int gh = textWindow -> rows * 8  -1;
+
+				retroBAR( screen, 
+					gx, gy ,
+					gx + gw, gy + gh,
+					screen -> paper);
+
+				delTextWindow( screen, textWindow );
+				screen -> currentTextWindow = screen -> textWindows[0];
+			}
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *textWindClose(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textWindClose, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
 
 
 

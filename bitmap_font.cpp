@@ -110,7 +110,7 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 	return NULL;
 }
 
-void delTextWindow( struct retroScreen *screen, int id )
+void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window )
 {
 	if (screen)
 	{
@@ -120,7 +120,7 @@ void delTextWindow( struct retroScreen *screen, int id )
 
 		for (tab = screen -> textWindows; tab < eot ; tab++)
 		{
-			if (tab) if ( (*tab)->id == id) 
+			if (tab) if ( *tab == window ) 
 			{
 				FreeVec( *tab );
 				screen -> allocatedTextWindows --;
