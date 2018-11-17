@@ -1485,46 +1485,59 @@ char *textWindMove(nativeCommand *cmd, char *tokenBuffer)
 char *_textXGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int x=0,b=0;
 
-	Printf("Amos Kittens don't not support X Graphic yet, but kittens are brave, and try\n");
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
+		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
+		if (textWindow)
+		{
+			b = textWindow -> border ? 1 : 0;
+			x = textWindow -> x + b + textWindow -> locateX;
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(0);
+	setStackNum(x * 8);
 	return NULL;
 }
 
 char *textXGraphic(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _textXGraphic, tokenBuffer );
+	stackCmdParm( _textXGraphic, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *_textYGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int y=0,b=0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	Printf("Amos Kittens don't not support X Graphic yet, but kittens are brave, and try\n");
 
 	if (args == 1)
 	{
+		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
+		if (textWindow)
+		{
+			b = textWindow -> border ? 1 : 0;
+			y = textWindow -> y + b + textWindow -> locateY;
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(0);
+	setStackNum(y*8);
 	return NULL;
 }
 
 char *textYGraphic(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _textYGraphic, tokenBuffer );
+	stackCmdParm( _textYGraphic, tokenBuffer );
 	return tokenBuffer;
 }
 
