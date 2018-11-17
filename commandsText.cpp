@@ -628,18 +628,25 @@ char *textUnderOn(nativeCommand *cmd, char *ptr)
 char *_textXText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int n = 0;
+	int gx = 0, x=0, b=0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		n = getStackNum( stack ) / 8;
+		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
+
+		if (textWindow)
+		{
+			b = textWindow -> border ? 1 : 0;
+			gx = getStackNum( stack );
+			x = (gx/8) - textWindow -> x - b ;
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum( n  );
+	setStackNum( x );
 
 	return NULL;
 }
@@ -654,18 +661,25 @@ char *textXText(nativeCommand *cmd, char *ptr)
 char *_textYText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int n = 0;
+	int gy = 0, y=0, b=0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		n = getStackNum( stack ) / 8;
+		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
+
+		if (textWindow)
+		{
+			b = textWindow -> border ? 1 : 0;
+			gy = getStackNum( stack );
+			y = (gy/8) - textWindow -> y - b ;
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum( n  );
+	setStackNum( y );
 
 	return NULL;
 }
