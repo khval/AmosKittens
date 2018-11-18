@@ -1525,6 +1525,7 @@ void read_from_data()
 {
 	unsigned short token;
 	int _len;
+	bool neg = false;
 
 		if (data_read_pointers[proc_stack_frame])
 		{
@@ -1544,11 +1545,21 @@ void read_from_data()
 				{
 					case 0x0404:	// data
 							data_read_pointers[proc_stack_frame]+=4;	// token + data size 2
+							neg = false;
 							try_next_token = true;
 							break;
 
+					case 0xFFCA:	// negative number.
+							data_read_pointers[proc_stack_frame] +=2;
+							neg = true;
+							try_next_token = true;	
+							break;
+
 					case 0x003E: 	// num
-							setStackNum ( *((int *) (data_read_pointers[proc_stack_frame] + 2)) );
+							{
+								int num = *((int *) (data_read_pointers[proc_stack_frame] + 2));
+								setStackNum ( neg ? -num :  num );
+							}
 							data_read_pointers[proc_stack_frame] +=6;
 							break;
 	
@@ -1571,6 +1582,7 @@ void read_from_data()
 
 					case 0x005C:	// comma
 							data_read_pointers[proc_stack_frame] +=2;
+							neg = false;
 							try_next_token = true;
 							break;
 
