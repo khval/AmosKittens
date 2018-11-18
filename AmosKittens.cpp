@@ -671,6 +671,7 @@ struct nativeCommand nativeCommands[]=
 	{0x039E, "Shared", 0, cmdShared },
 	{0x03AA, "Global", 0, cmdGlobal },
 	{0x03B6, "End",0,cmdEnd },
+	{0x03C0, "Stop", 0, cmdStop },
 	{0x03CA, "Param#",0,cmdParamFloat },
 	{0x03D6, "Param$",0,cmdParamStr },
 	{0x03E2, "Param",0,cmdParam },

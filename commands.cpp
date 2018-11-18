@@ -2293,3 +2293,8 @@ char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	return tokenBuffer;
+}
+
