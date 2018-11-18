@@ -320,12 +320,14 @@ char *ocAutoViewOn(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	autoView = 1;
 	return tokenBuffer;
 }
 
 char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	autoView =1;
 	return tokenBuffer;
 }
@@ -597,3 +599,28 @@ char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _ocJoy, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ocIconMakeMask( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		int n = getStackNum( stack );
+	}
+	else setError(22,data->tokenBuffer);;
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *ocIconMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _ocIconMakeMask, tokenBuffer );
+	return tokenBuffer;
+}
+

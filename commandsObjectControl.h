@@ -42,4 +42,5 @@ char *ocFire(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocMakeMask(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer);
+char *ocIconMakeMask(struct nativeCommand *cmd, char *tokenBuffer);
 
