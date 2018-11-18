@@ -32,6 +32,7 @@ main_objects = commands.cpp \
 			commandsBlitterObject.cpp \
 			commandsBackgroundGraphics.cpp \
 			commandsAmal.cpp \
+			commandsMenu.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \

@@ -28,6 +28,7 @@
 #include "commandsBlitterObject.h"
 #include "commandsBackgroundGraphics.h"
 #include "commandsAmal.h"
+#include "commandsMenu.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -748,6 +749,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0772,"Log",0,mathLog},
 	{0x077C,"Ln",0,mathLn},
 	{0x0786,"Exp",0,mathExp},
+	{0x0970,"Choice",0,menuChoice },
 	{0x0986,"Screen Copy",0,gfxScreenCopy },
 	{0x09A8,"Screen Copy",0,gfxScreenCopy },
 	{0x09D6,"Screen Clone",0,gfxScreenClone },
