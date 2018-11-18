@@ -1211,6 +1211,7 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 	struct reference *ref = (struct reference *) (tokenBuffer);
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
+	cmdTmp[cmdStack-1].tokenBuffer2  = NULL;	// must be reset, is used
 	tokenBuffer += ref -> length ;
 
 	return tokenBuffer;
