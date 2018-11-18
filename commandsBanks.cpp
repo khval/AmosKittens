@@ -37,6 +37,20 @@ const char *amos_file_ids[] =
 		NULL
 	};
 
+enum
+{
+	type_ChipWork,	// 0
+	type_FastWork,	// 1
+	type_Icons,		// 2
+	type_Sprites,		// 3
+	type_Music,		// 4
+	type_Amal,		// 5
+	type_Samples,		// 6
+	type_Menu,		// 7
+	type_ChipData,	// 8
+	type_FastData,	// 9
+	type_Code
+};
 
 const char *bankTypes[] = {
 	"ChipWork",		// 0
@@ -340,6 +354,18 @@ char *cmdReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 
 extern bool next_print_line_feed;
 
+int _banks_count_()
+{
+	int n;
+	int banks = 0;
+	for (n=0;n<15;n++)
+	{
+		if (kittyBanks[n].start) banks ++;
+	}
+
+	return banks;
+}
+
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	int n = 0;
@@ -414,6 +440,26 @@ struct bankItemDisk
 	char name[8];
 } __attribute__((packed)) ;
 
+void __save_work_data__(FILE *fd,struct kittyBank *bank)
+{
+	struct bankItemDisk item;
+	int type = bank -> type;
+	uint32 flags = 0;
+
+	switch (type)
+	{
+		case 8:	type-=8;	flags = 0x80000000; break;
+		case 9:	type-=8;	flags = 0x80000000; break;
+	}
+
+	item.type = type;
+	item.length = bank -> length | flags;
+
+	memcpy( item.name, bank->start, 8 );
+
+	fwrite( &item, sizeof(struct bankItemDisk), 1, fd );
+	fwrite( bank -> start, bank -> length, 1, fd );
+}
 
 
 void __load_work_data__(FILE *fd,int bank)
@@ -450,8 +496,6 @@ void __load_work_data__(FILE *fd,int bank)
 
 int cust_fread (void *ptr, int size,int elements, FILE *fd)
 {
-//	printf("ptr %08x, size %d elements %d, FILE %08x\n",ptr,size,elements,fd);
-//	Delay(100);
 	if (ptr)
 	{
 		return fread(ptr,size,elements,fd);
@@ -479,6 +523,15 @@ void unload_sprite_from_bank( int bank, void **ptr)
 			printf("we should be fine now\n");
 		}
 	}
+}
+
+void __write_ambs__( FILE *fd, uint32 banks)
+{
+	char id[4]={'A','m','B','s'};
+
+	fwrite( id, 4,1, fd );
+	fwrite( &banks, 4,1, fd );
+
 }
 
 void __load_bank__(const char *name, int bank )
@@ -618,27 +671,82 @@ char *cmdLoad(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void __write_banks__( FILE *fd )
+{
+	int n=0;
+
+	for (n=0;n<15;n++)
+	{
+		if (kittyBanks[n].start)
+		{
+			switch (kittyBanks[n].type)
+			{
+				case type_ChipWork:
+				case type_FastWork:
+				case type_ChipData:
+				case type_FastData:
+				case type_Music:
+				case type_Amal:
+				case type_Samples:
+				case type_Menu:
+				case type_Code:
+						__save_work_data__(fd,&kittyBanks[n]);
+						break;
+/*
+				case type_Icons:
+				case type_Sprites:
+						break;
+*/
+				default: printf("can't save bank, not supported yet\n");
+			}
+		}
+	}
+}
+
 char *_cmdSave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int n;
 	int args = stack - data->stack +1 ;
 	FILE *fd;
-	char *start, *to;
+	char *filename = NULL;
+	int banknr = 0;
 
 	dump_stack();
 
-	if (args==3)
+	switch (args)
 	{
-		fd = fopen( getStackString( stack - 2 ) , "w");
+		case 1:
 
-		if (fd)
-		{
-			fclose(fd);
-		}
+			filename = getStackString( stack );
+
+			fd = fopen( filename , "w");
+			if (fd)
+			{
+				__write_ambs__( fd, _banks_count_() );
+				__write_banks__(fd);
+				fclose(fd);
+			}
+			break;
+
+		case 2:
+
+			filename = getStackString( stack - 1 );
+			banknr = getStackNum( stack );
+
+			fd = fopen( filename , "w");
+
+			if (fd)
+			{
+				fclose(fd);
+			}
+
+			break;
+
+		default:
+
+			setError(22, data -> tokenBuffer );
 	}
-
-	getchar();
 
 	popStack( stack - data->stack );
 	return NULL;
