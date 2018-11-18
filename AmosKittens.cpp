@@ -923,6 +923,7 @@ struct nativeCommand nativeCommands[]=
 	{0x181A, "Bsave", 0, cmdBsave },
 	{0x182A,"PLoad",0,machinePload},
 	{0x1838,"Save",0,cmdSave },
+	{0x1844,"Save",0,cmdSave },	// save name,bank
 	{0x184E,"Load",0,cmdLoad },
 	{0x185A,"Load",0,cmdLoad },
 	{0x1864,"Dfree",0,cmdDfree },
@@ -941,6 +942,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1948,"Field f,size as nane$,...", 0, cmdField },
 	{0x1954,"Fsel$",0,cmdFselStr },		// found in Help_72.amos
 	{0x196C,"Fsel$",0,cmdFselStr },
+	{0x1978,"Fsel$",0,cmdFselStr },
 	{0x199E,"Sprite Off",0,hsSpriteOff },
 	{0x1A94,"Sprite",0,hsSprite },
 	{0x1AA8,"Bob Off",0,boBobOff },
@@ -961,7 +963,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1CC6,"Get Icon", 0, bgGetIcon },
 	{0x1CF0,"Put Bob",0,boPutBob },
 	{0x1CFE,"Paste Bob",0,boPasteBob },
-	{0x1d12,"Paste Icon", 0, bgPasteIcon },
+	{0x1D12,"Paste Icon", 0, bgPasteIcon },
 	{0x1D28,"Make Mask", 0, ocMakeMask },
 	{0x1DA2,"Hot Spot", 0, boHotSpot },
 	{0x1DAE,"Priority On",0,ocPriorityOn },
