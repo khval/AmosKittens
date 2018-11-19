@@ -1863,7 +1863,61 @@ char *gfxScrollOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxPhysic( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1: ret = getStackNum( stack ) | 0xC0000000;
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
 
 
+char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxPhysic, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
 
+char *_gfxLogic( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1: ret = getStackNum( stack ) | 0x80000000;
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+
+char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxLogic, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
 

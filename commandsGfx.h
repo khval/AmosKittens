@@ -27,6 +27,7 @@ char *gfxDefaultPalette(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDefScroll(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScrollOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScroll(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxShiftUp(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer);
@@ -49,5 +50,7 @@ char *gfxText(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer);
 
 
