@@ -470,4 +470,35 @@ char *bgDelCBlock(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_bgIconBase( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int pick = 0;
+	struct retroFrameHeader *frame;
+	void *ret = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		pick = getStackNum(stack)-1;
+
+		if ((pick>0)&&(icons->number_of_frames)&&(pick<icons->number_of_frames))
+		{
+			ret = &icons -> frames[pick-1] ;
+		}
+	}
+	else setError(22, data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum( (int) ret );
+	return NULL;
+}
+
+char *bgIconBase(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _bgIconBase, tokenBuffer );
+	return tokenBuffer;
+}
 

@@ -949,6 +949,8 @@ struct nativeCommand nativeCommands[]=
 	{0x196C,"Fsel$",0,cmdFselStr },
 	{0x1978,"Fsel$",0,cmdFselStr },
 	{0x199E,"Sprite Off",0,hsSpriteOff },
+	{0x1A72,"Sprite Base",0,hsSpriteBase },
+	{0x1A84,"Icon Base",0,bgIconBase },
 	{0x1A94,"Sprite",0,hsSprite },
 	{0x1AA8,"Bob Off",0,boBobOff },
 	{0x1AB6,"Bob Off [number]",0,boBobOff },

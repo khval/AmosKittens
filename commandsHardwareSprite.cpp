@@ -122,3 +122,34 @@ char *hsSpriteOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_hsSpriteBase( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int pick = 0;
+	struct retroFrameHeader *frame;
+	void *ret = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		pick = getStackNum(stack);
+
+		if ((pick>0)&&(sprite->number_of_frames)&&(pick<sprite->number_of_frames))
+		{
+			ret = &sprite -> frames[pick-1] ;
+		}
+	}
+	else setError(22, data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum( (int) ret );
+	return NULL;
+}
+
+char *hsSpriteBase(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _hsSpriteBase, tokenBuffer );
+	return tokenBuffer;
+}
