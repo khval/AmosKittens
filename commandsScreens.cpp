@@ -417,6 +417,8 @@ char *gfxGetScreen(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		setStackNum(current_screen);
 	}
+	else 	setStackNum(-1);
+
 	return tokenBuffer;
 }
 
