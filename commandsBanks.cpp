@@ -687,14 +687,15 @@ void __write_banks__( FILE *fd )
 				case type_FastWork:
 				case type_ChipData:
 				case type_FastData:
+						fwrite("AmBk",4,1,fd);
+						__save_work_data__(fd,n+1,&kittyBanks[n]);
+						break;
+/*
 				case type_Music:
 				case type_Amal:
 				case type_Samples:
 				case type_Menu:
 				case type_Code:
-						__save_work_data__(fd,&kittyBanks[n]);
-						break;
-/*
 				case type_Icons:
 				case type_Sprites:
 						break;
