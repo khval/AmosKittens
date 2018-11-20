@@ -241,6 +241,9 @@ bool __ReserveAs( int type, int bank, int length, char *name, char *mem )
 		{
 			mem =  (char *) malloc( kittyBanks[bank-1].length + 8 );
 			kittyBanks[bank-1].start = mem ? mem+8 : NULL;
+
+			if (mem) memset( mem , 0, kittyBanks[bank-1].length + 8 );
+
 		}
 
 		if (kittyBanks[bank-1].start) 
