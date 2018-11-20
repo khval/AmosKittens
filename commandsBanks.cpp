@@ -476,6 +476,9 @@ void __load_work_data__(FILE *fd,int bank)
 
 		if (item.length & 0x80000000) item.type += 8;
 		item.length = (item.length & 0x7FFFFFF) -8;
+
+		printf("item.bank %d\n", item.bank);
+	
 		if (item.length >0 )
 		{
 			mem = (char *) malloc( item.length + 8);
@@ -483,11 +486,7 @@ void __load_work_data__(FILE *fd,int bank)
 			if (mem)
 			{
 				memset( mem, 0, item.length + 8 );
-
-				printf("we have memory\n");
-
-				printf("loaded %d\n",fread( mem +8 , item.length, 1, fd ));
-
+				fread( mem +8 , item.length, 1, fd );
 
 				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
 			}
