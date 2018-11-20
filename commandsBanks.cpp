@@ -527,12 +527,12 @@ void unload_sprite_from_bank( int bank, void **ptr)
 	}
 }
 
-void __write_ambs__( FILE *fd, uint32 banks)
+void __write_ambs__( FILE *fd, uint16 banks)
 {
 	char id[4]={'A','m','B','s'};
 
 	fwrite( id, 4,1, fd );
-	fwrite( &banks, 4,1, fd );
+	fwrite( &banks, 2,1, fd );
 
 }
 
