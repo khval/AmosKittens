@@ -2204,6 +2204,18 @@ char *_cmdNot( struct glueCommands *data, int nextToken )
 char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( last_tokens[parenthesis_count] == 0x02BE )
+	{
+		int nextToken = *((unsigned short *) tokenBuffer);
+
+		if (nextToken != 0x0074)
+		{
+			stackCmdFlags( _cmdNot, tokenBuffer, cmd_onNextCmd );
+			return tokenBuffer;
+		}
+	}
+
 	stackCmdParm( _cmdNot, tokenBuffer );
 	return tokenBuffer;
 }

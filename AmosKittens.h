@@ -65,6 +65,7 @@ enum
 #define cmd_onBreak		256
 #define cmd_never			512
 
+
 enum
 {
 	type_int = 0,
@@ -227,7 +228,6 @@ struct zone
 	int y1;
 };
 
-
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
@@ -261,6 +261,14 @@ struct zone
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
 	cmdTmp[cmdStack].flag = cmd_proc;	\
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdStack++; \
+
+#define stackCmdFlags( fn, buf, flags )				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = buf;	\
+	cmdTmp[cmdStack].flag = flags;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdStack++; \
