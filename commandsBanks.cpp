@@ -443,7 +443,7 @@ struct bankItemDisk
 	char name[8];
 } __attribute__((packed)) ;
 
-void __save_work_data__(FILE *fd,struct kittyBank *bank)
+void __save_work_data__(FILE *fd,int bankno,struct kittyBank *bank)
 {
 	struct bankItemDisk item;
 	int type = bank -> type;
@@ -455,10 +455,10 @@ void __save_work_data__(FILE *fd,struct kittyBank *bank)
 		case 9:	type-=8;	flags = 0x80000000; break;
 	}
 
+	item.bank = bankno;
 	item.type = type;
-	item.length = bank -> length | flags;
-
-	memcpy( item.name, bank->start, 8 );
+	item.length = (bank -> length + 8) | flags;
+	memcpy( item.name, bank->start-8, 8 );
 
 	fwrite( &item, sizeof(struct bankItemDisk), 1, fd );
 	fwrite( bank -> start, bank -> length, 1, fd );
