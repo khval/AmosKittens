@@ -1057,6 +1057,7 @@ struct nativeCommand nativeCommands[]=
 	{0x23AC,"Put f,n", 0, cmdPut },
 	{0x23B8,"Get f,n", 0, cmdGet },
 	{0x23D0,"Multi Wait",0,cmdMultiWait },		// dummy function.
+	{0x23C4,"System",0,cmdEnd },
 	{0x23FC,"Priority Reverse On",0,ocPriorityReverseOn },
 	{0x2416,"Priority Reverse Off",0,ocPriorityReverseOff },
 	{0x2430,"Dev First$",0,cmdDevFirstStr },
