@@ -209,7 +209,12 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		if ((n>0)&&(n<16))
 		{
 			adr = (unsigned char *) kittyBanks[n-1].start;
-			convertPacPic( s, adr, "dump" );
+
+			if (adr)
+			{
+				convertPacPic( s, adr, "dump" );
+			}
+			else setError(36,data->tokenBuffer);
 		} 
 	}
 
