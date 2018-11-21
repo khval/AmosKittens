@@ -29,6 +29,7 @@
 #include "commandsBackgroundGraphics.h"
 #include "commandsAmal.h"
 #include "commandsMenu.h"
+#include "commandsFonts.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -829,6 +830,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
 	{0x0F4A,"Text",0,gfxText },	
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
+	{0x0F9E,"Get Rom Fonts",0,fontsGetRomFonts },
+	{0x0FB2,"Set Font",0,fontsSetFont },
 	{0x1022,"Set Pattern",0,gfxSetPattern },
 	{0x1034,"Set Line",0,gfxSetLine },
 	{0x1044,"Ink",0,gfxInk },
