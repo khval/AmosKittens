@@ -482,6 +482,7 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 
 	setParenthesis();
 	stack++;
+	setStackNone();
 
 	return tokenBuffer;
 }

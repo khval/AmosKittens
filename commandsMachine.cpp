@@ -806,6 +806,13 @@ char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineDOSCALL, tokenBuffer );
+	setStackNum(0);	// do not remove.
+	return tokenBuffer;
+}
+
 char *_machineEXECALL( struct glueCommands *data, int nextToken )
 {
 	int libVec;
@@ -850,16 +857,10 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdParm( _machineDOSCALL, tokenBuffer );
-	return tokenBuffer;
-}
-
-
 char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineEXECALL, tokenBuffer );
+	setStackNum(0);	// do not remove.
 	return tokenBuffer;
 }
 
@@ -961,6 +962,7 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 char *machineCall(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _machineCall, tokenBuffer );
+	setStackNum(0);	// do not remove.
 	return tokenBuffer;
 }
 
