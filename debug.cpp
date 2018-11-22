@@ -149,10 +149,10 @@ void dump_global()
 					globalVars[n].varName, globalVars[n].var.decimal );
 				break;
 			case type_string:
-				printf("%d -- %d::%s%s=%s\n",n,
+				printf("%d -- %d::%s%s=%c%s%c\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, globalVars[n].var.str ? globalVars[n].var.str : "NULL" );
+					globalVars[n].varName, 34, globalVars[n].var.str ? globalVars[n].var.str : "NULL", 34 );
 				break;
 			case type_proc:
 
