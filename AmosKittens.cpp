@@ -718,6 +718,7 @@ struct nativeCommand nativeCommands[]=
 	{0x05E4, "Instr",0, cmdInstr },
 	{0x05F4, "Instr",0, cmdInstr },	// POS=Instr(ITEM$,"@",CHARNUM)
 	{0x0600,"Tab$",0,cmdTabStr },
+	{0x060A,"Free",0,machineFree },
 	{0x0614,"Varptr",0,machineVarPtr},
 	{0x0620,"Remember X",0,textRememberX },
 	{0x0630,"Remember Y",0,textRememberY },

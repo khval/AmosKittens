@@ -42,3 +42,5 @@ char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *machinePload(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineCall(struct nativeCommand *cmd, char *tokenBuffer);
+
+char *machineFree(struct nativeCommand *cmd, char *tokenBuffer);

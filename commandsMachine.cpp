@@ -970,3 +970,29 @@ char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 */
+
+char *_machineFree( struct glueCommands *data, int nextToken )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	unsigned int ret = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
+	{
+		ret = AvailMem(MEMF_ANY);
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *machineFree(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineFree, tokenBuffer );
+	return tokenBuffer;
+}
+
