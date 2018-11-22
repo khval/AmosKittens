@@ -1475,9 +1475,29 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 	popStack( stack - data->stack );
 	return NULL;
 }
+
 char *textWindMove(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _textWindMove, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+char *_textWindSize( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen ;
+	struct retroTextWindow *textWindow = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textWindSize(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textWindSize, tokenBuffer );
 	return tokenBuffer;
 }
 
