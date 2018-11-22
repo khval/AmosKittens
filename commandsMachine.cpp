@@ -777,6 +777,8 @@ char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 		{
 			ret = libVec;
 
+			regs[8+6] = (unsigned int) DOSBase;
+
 			ret = EmulateTags( 
 					DOSBase,
 					ET_Offset, libVec,
@@ -788,9 +790,10 @@ char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 					ET_RegisterD5,regs[5],
 					ET_RegisterD6,regs[6],
 					ET_RegisterD7,regs[7],
-					ET_RegisterA0,regs[8],
-					ET_RegisterA1,regs[9],
-					ET_RegisterA2,regs[10],
+					ET_RegisterA0,regs[8+0],
+					ET_RegisterA1,regs[8+1],
+					ET_RegisterA2,regs[8+2],
+					ET_RegisterA6,regs[8+6],
 					TAG_END	 );
 
 		}
@@ -818,6 +821,8 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 		{
 			ret = libVec;
 
+			regs[8+6] = (unsigned int) SysBase;
+
 			ret = EmulateTags( 
 					SysBase,
 					ET_Offset, libVec,
@@ -829,9 +834,10 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 					ET_RegisterD5,regs[5],
 					ET_RegisterD6,regs[6],
 					ET_RegisterD7,regs[7],
-					ET_RegisterA0,regs[8],
-					ET_RegisterA1,regs[9],
-					ET_RegisterA2,regs[10],
+					ET_RegisterA0,regs[8+0],
+					ET_RegisterA1,regs[8+1],
+					ET_RegisterA2,regs[8+2],
+					ET_RegisterA6,regs[8+6],
 					TAG_END	 );
 
 		}
@@ -939,9 +945,10 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 					ET_RegisterD5,regs[5],
 					ET_RegisterD6,regs[6],
 					ET_RegisterD7,regs[7],
-					ET_RegisterA0,regs[8],
-					ET_RegisterA1,regs[9],
-					ET_RegisterA2,regs[10],
+					ET_RegisterA0,regs[8+0],
+					ET_RegisterA1,regs[8+1],
+					ET_RegisterA2,regs[8+2],
+					ET_RegisterA6,regs[8+6],
 					TAG_END	 );
 		setStackNum(ret);
 	}
