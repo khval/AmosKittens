@@ -932,6 +932,7 @@ struct nativeCommand nativeCommands[]=
 	{0x175A,"Dir$",0,cmdDirStr },
 	{0x17A4,"Dir",0,cmdDir },		// no argument
 	{0x17AE,"Dir",0,cmdDir },
+	{0x17B6,"Set Dir",0,cmdSetDir },
 	{0x17C4,"Set Dir",0,cmdSetDir },
 	{0x17D4,"Load iff",0, gfxLoadIff },
 	{0x17E4,"Load Iff",0, gfxLoadIff },
