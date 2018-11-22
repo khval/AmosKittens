@@ -1609,5 +1609,37 @@ char *textWindClose(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_textWindon( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
+
+	if (args == 1)
+	{
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+		setStackNum(textWindow -> id);
+	}
+
+	return NULL;
+}
+
+
+char *textWindon(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textWindon, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
