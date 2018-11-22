@@ -632,12 +632,12 @@ char *_xorData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackDecimal( item0->decimal + (double) item1->value );
+			setStackNum( ((int) item0->decimal) ^ item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackDecimal( item0->decimal + item1->decimal );
+			setStackNum( ((int) item0->decimal) ^ ((int) (item1->decimal)) );
 			success = TRUE;
 		}
 	}
@@ -645,12 +645,12 @@ char *_xorData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( item0->value + item1->value );
+			setStackNum( item0->value ^ item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackDecimal( (double) item0->value + item1->decimal );
+			setStackNum( item0->value ^ ((int) item1->decimal) );
 			success = TRUE;
 		}
 	}

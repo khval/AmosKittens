@@ -1073,6 +1073,7 @@ struct nativeCommand nativeCommands[]=
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0xFF4C,"or",0, orData },
+	{0xFF3E,"xor",0,xorData },
 	{0xFF58,"or",0, andData },
 	{0xFF66,"not equal",0,cmdNotEqual },
 	{0xFF7A,"<=",0,lessOrEqualData },
