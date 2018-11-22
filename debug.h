@@ -6,6 +6,7 @@ void dump_labels();
 void dump_banks();
 void dump_end_of_program();
 void dumpLineAddress();
+void dump_680x0_regs();
 int getLineFromPointer( char *address );
 
 // --------- debug options ---------------

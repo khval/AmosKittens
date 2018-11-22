@@ -18,6 +18,8 @@ extern int global_var_count;
 extern struct retroScreen *screens[8] ;
 extern int current_screen ;
 
+extern int regs[16];
+
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
 
@@ -364,6 +366,15 @@ void dumpLineAddress()
 	{
 		printf("Line %08d, start %08x end %08x\n", n-1, linesAddress[n].start , linesAddress[n].end );
 	}
+}
+
+void dump_680x0_regs()
+{
+	int n;
+	for(n=0;n<8;n++) printf("D%d=%08X ",n,regs[n]);
+	printf("\n");
+	for(n=0;n<8;n++) printf("A%d=%08X ",n,regs[n+8]);
+	printf("\n");
 }
 
 void dumpScreenInfo()
