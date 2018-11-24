@@ -32,6 +32,9 @@ struct Library			*LocaleBase = NULL;
 struct Library			*DiskfontBase = NULL;
 struct DiskfontIFace		*IDiskfont = NULL;
 
+struct Library			*GadToolsBase = NULL;
+struct DiskfontIFace		*IGadTools = NULL;
+
 struct KeymapIFace		*IKeymap = NULL;
 struct Library			*KeymapBase = NULL;
 
@@ -77,6 +80,7 @@ BOOL init()
 	if ( ! open_lib( "diskfont.library", 50L, "main", 1, &DiskfontBase, (struct Interface **) &IDiskfont  ) ) return FALSE;
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 	if ( ! open_lib( "AmigaInput.library", 50L , "main", 1, &AIN_Base, (struct Interface **) &IAIN  ) ) return FALSE;
+	if ( ! open_lib( "gadtools.library", 53L , "main", 1, &GadToolsBase, (struct Interface **) &IGadTools  ) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 

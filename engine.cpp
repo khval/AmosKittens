@@ -28,6 +28,7 @@ extern bool interpreter_running;	// interprenter is really running.
 extern int keyState[256];
 extern char *F1_keys[20];
 
+extern struct Menu *amiga_menu;
 
 extern struct retroSprite *sprite;
 
@@ -44,6 +45,8 @@ extern APTR engine_mx ;
 
 extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
+std::vector<struct amos_selected> amosSelected;
+
 
 int engine_mouse_key = 0;
 int engine_mouse_x = 0;
@@ -101,7 +104,7 @@ struct retroRGB DefaultPalette[256] =
 
 #define IDCMP_COMMON IDCMP_MOUSEBUTTONS | IDCMP_INACTIVEWINDOW | IDCMP_ACTIVEWINDOW  | \
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
-	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS
+	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS | IDCMP_MENUPICK
 
 struct retroVideo *video = NULL;
 struct Window *My_Window = NULL;
@@ -142,8 +145,10 @@ bool open_window( int window_width, int window_height )
 			WA_Activate, TRUE,
 
 			WA_IDCMP,           IDCMP_COMMON,
-			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP ,
+			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP |  WFLG_NEWLOOKMENUS ,
 			TAG_DONE);
+
+
 
 	return (My_Window != NULL) ;
 }
@@ -449,12 +454,14 @@ void DrawSprite(
 	}
 }
 
-
-
 void main_engine()
 {
 	struct RastPort scroll_rp;
 	struct IntuiMessage *msg;
+	struct MenuItem *item;
+	UWORD menuNumber;
+
+	struct amos_selected selected;
 
 	retroRGB color;
 	double start_sync;
@@ -518,7 +525,8 @@ void main_engine()
 				switch (Class) 
 				{
 					case IDCMP_CLOSEWINDOW: 
-							running = false; break;
+							running = false;
+							break;
 
 					case IDCMP_MOUSEBUTTONS:
 							switch (Code)
@@ -533,6 +541,31 @@ void main_engine()
 					case IDCMP_MOUSEMOVE:
 							engine_mouse_x = msg -> MouseX - video -> window -> BorderLeft;
 							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
+							break;
+
+					case IDCMP_MENUPICK:
+
+							menuNumber = msg -> Code;
+							while (menuNumber != MENUNULL)
+							{
+								item = ItemAddress(amiga_menu, menuNumber);
+
+								Printf("%08x\n", item);
+
+								if (item)
+								{
+									selected.menu = MENUNUM(menuNumber);
+									selected.item = ITEMNUM(menuNumber);
+									selected.sub = SUBNUM(menuNumber);
+									amosSelected.push_back(selected);
+									menuNumber = item -> NextSelect;
+
+
+									Printf("selected %ld\n",amosSelected.size());
+								} else break;
+							}
+							
+
 							break;
 
 					case IDCMP_RAWKEY:

@@ -23,3 +23,17 @@ struct keyboard_buffer
 	char	Char;
 };
 
+struct amos_selected
+{
+	ULONG menu;
+	ULONG item;
+	ULONG sub;
+};
+
+struct amosMenuItem
+{
+	int levels;
+	int index[3];
+	char *str;
+};
+
