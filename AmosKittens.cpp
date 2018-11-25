@@ -1119,8 +1119,6 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
-	currentLine = getLineFromPointer( ptr );	// maybe slow!!!
-
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
