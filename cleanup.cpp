@@ -135,6 +135,8 @@ void clean_up_special()
 {
 	int n;
 
+	printf("should clean up menus here, don't forget me\n");
+
 	printf("clean up channels!!\n");
 
 	if (channels) 
@@ -162,11 +164,15 @@ void clean_up_special()
 		contextDir = NULL;
 	}
 
+	printf("clean up dir first pattern");
+
 	if (dir_first_pattern)
 	{
 		free(dir_first_pattern);
 		dir_first_pattern = NULL;
 	}
+
+	printf("clean up zones\n");
 
 	if (zones)
 	{
