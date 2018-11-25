@@ -34,6 +34,7 @@ main_objects = commands.cpp \
 			commandsAmal.cpp \
 			commandsMenu.cpp \
 			commandsFonts.cpp \
+			commandsRead.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
