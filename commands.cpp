@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include <proto/exec.h>
 #include "debug.h"
-#include <string>
 #include <proto/dos.h>
-#include <vector>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -194,7 +193,7 @@ char *_if( struct glueCommands *data, int nextToken )
 		setError(22,data -> tokenBuffer);
 	}
 
-	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
+	if (kittyStack[stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
 
@@ -206,7 +205,6 @@ char *_if( struct glueCommands *data, int nextToken )
 		}
 	}
 	else 	stackIfSuccess();
-
 	return NULL;
 }
 
