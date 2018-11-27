@@ -55,7 +55,7 @@ struct amos_selected _selected_;
 char *_menuChoice( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int i;
+	int i = 0;
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
