@@ -167,10 +167,6 @@ void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 	_setVar( &data,0 );
-/*
-	dump_global();
-	getchar();
-*/
 }
 
 char *_cmdRead( struct glueCommands *data, int nextToken )

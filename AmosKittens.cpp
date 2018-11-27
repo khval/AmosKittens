@@ -217,9 +217,6 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 		flags = cmdTmp[cmdStack-1].flag;
 
 		if  ( flags & (cmd_loop | cmd_never | cmd_onEol | cmd_onNextCmd | cmd_proc )) break;
-
-		printf("flags %08x\n",flags);
-
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
 		if (cmdTmp[cmdStack].flag & cmd_normal) break;
