@@ -107,7 +107,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 	return NULL;
 }
 
-void collect_data()
+static void collect_data()
 {
 	unsigned short token;
 	char *ptr = data_read_pointers[proc_stack_frame];

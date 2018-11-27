@@ -1578,7 +1578,7 @@ char *cmdData(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer + jump - 4;	// next token (size 2) + data (size 2) will be added on exit.
 }
 
-
+/*
 char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int num = 0;
@@ -1759,6 +1759,7 @@ exit_on_for_loop:
 
 	return tokenBuffer;
 }
+*/
 
 char *_cmdExit(struct glueCommands *data, int nextToken )
 {
