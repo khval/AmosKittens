@@ -55,6 +55,8 @@ char *_gosub_return(struct glueCommands *data, int nextToken);
 char *_get_var_index(struct glueCommands *data, int nextToken);
 char *_alloc_mode_off(struct glueCommands *data, int nextToken);
 char *_procAndArgs (struct glueCommands *data, int nextToken);
+char *_endProc (struct glueCommands *data, int nextToken);
+
 
 struct stackDebugSymbol
 {
@@ -99,6 +101,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_alloc_mode_off,"_alloc_mode_off"},
 	{_procedure,"procedure"},
 	{_procAndArgs,"procedure with args"},
+	{_endProc,"end proc"},
 	{NULL, NULL}
 };
 

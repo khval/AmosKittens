@@ -32,6 +32,13 @@ void addLineAddress( char *_start, char *_end );
 int ifCount = 0;
 int endIfCount = 0;
 int currentLine = 0;
+int pass1_bracket_for;
+
+enum
+{
+	pass1_bracket_none,
+	pass1_bracket_end_proc
+};
 
 bool pass1_inside_proc = false;
 int procCount = 0;
@@ -730,22 +737,24 @@ void fix_token_short( int cmd, char *ptr )
 void pass1_proc_end( char *ptr )
 {
 	char *ret;
+	procStackCount--;
 
-	if ( *((short *) ptr) == 0x0084 )
-	{
-		ret = FinderTokenInBuffer( ptr, 0x008C , 0x0000, 0x0000, _file_end_ );
-		if (ret)
-		{
-			((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ret;
-		}
-	}
-	else
-	{
-		((struct procedure *) (nested_command[ nested_count -1 ].ptr)) -> EndOfProc = ptr-2;
-	}
+	((struct procedure *) (nested_command[ nested_count -1 ].ptr )) -> EndOfProc = ptr-2;
 
 	nested_count --;
 	pass1_inside_proc = false;
+}
+
+void pass1_bracket_end( char *ptr )
+{
+	switch (pass1_bracket_for)
+	{
+		case pass1_bracket_end_proc:
+			pass1_proc_end( ptr );
+			break;
+	}
+
+	pass1_bracket_for = pass1_bracket_none;	// reset.
 }
 
 void pass1_if_or_else( char *ptr )
@@ -955,15 +964,27 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x0390: // End Proc
-							procStackCount--;
 							current_proc = NULL;
 
 							if IS_LAST_NEST_TOKEN(proc)
 							{
-								pass1_proc_end( ptr );
+								short next_token = *((short *) ptr);
+
+								if (next_token == 0x0084)
+								{
+									pass1_bracket_for = pass1_bracket_end_proc;
+								}
+								else 
+								{
+									pass1_proc_end( ptr );
+								}
 							}
 							else
 								setError(11,ptr);
+							break;
+
+				case 0x008C:
+							pass1_bracket_end( ptr );
 							break;
 
 				case 0x039E:	// Shared

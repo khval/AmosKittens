@@ -90,28 +90,6 @@ char *_procedure( struct glueCommands *data, int nextToken )
 	return  data -> tokenBuffer ;
 }
 
-char *_endProc( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (kittyStack[stack].type)
-	{
-		case type_int:
-			var_param_num = kittyStack[stack].value;
-			break;
-		case type_float:
-			var_param_decimal = kittyStack[stack].decimal;
-			break;
-		case type_string:
-			if (var_param_str) free(var_param_str);
-			var_param_str = strdup(kittyStack[stack].str);
-			break;
-	}
-
-	proc_stack_frame--;		// move stack frame down.
-
-	return  data -> tokenBuffer ;
-}
 
 
 void stack_frame_up(struct kittyData *var)
@@ -1222,13 +1200,43 @@ char *cmdProc(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+void _set_return_param( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (kittyStack[stack].type)
+	{
+		case type_int:
+			var_param_num = kittyStack[stack].value;
+			break;
+		case type_float:
+			var_param_decimal = kittyStack[stack].decimal;
+			break;
+		case type_string:
+			if (var_param_str) free(var_param_str);
+			var_param_str = strdup(kittyStack[stack].str);
+			break;
+	}
+}
+
+char *_endProc( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	_set_return_param( NULL, NULL );
+	do_input[parenthesis_count] = do_std_next_arg;	// restore normal operations.
+	proc_stack_frame--;		// move stack frame down.
+
+	return  data -> tokenBuffer ;
+}
+
 char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
-		proc_names_printf("%04x\n",NEXT_TOKEN(tokenBuffer));
+		printf("next token is %04x\n",NEXT_TOKEN(tokenBuffer));
 
 		if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
 		{
@@ -1236,7 +1244,13 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 			// changes function pointer only so that ']' don't think its end of proc by accident.
 			// we aslo push result of stack into Param.
+
 			if (cmdTmp[cmdStack-1].cmd == _procedure ) cmdTmp[cmdStack-1].cmd = _endProc;
+
+			// _endProc -- calls "proc_stack_frame--"
+
+			do_input[parenthesis_count] = _set_return_param;
+
 		}
 		else 	// End Proc
 		{
