@@ -807,13 +807,18 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_subStr( struct glueCommands *data, int nextToken )
+bool _subStr( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	char *find;
- 	int find_len;
+	char *string;
+	char *remove;
+ 	int remove_len;
 	char *d,*s;
+
+	stack++;	// subdata has -1 stack.
+
+	dump_stack();
 
 	if (stack==0) 
 	{
@@ -821,27 +826,33 @@ char *_subStr( struct glueCommands *data, int nextToken )
 		return NULL;
 	}
 
-	stack--;
+	string = getStackString(stack-1);
+	remove = getStackString(stack);
 
-	find = kittyStack[stack+1].str;
- 	find_len = kittyStack[stack+1].len;
-
-	s=d= kittyStack[stack].str;
-
-	for(;*s;s++)
+	if ((string)&&(remove))
 	{
-		if (strncmp(s,find,find_len)==0) s+=find_len;
-		if (*s) *d++=*s;
+		int new_len = kittyStack[stack-1].len;
+	 	remove_len = kittyStack[stack].len;
+
+		s=d=string;
+		for(;*s;s++)
+		{
+			if (strncmp(s,remove,remove_len)==0) 
+			{
+				s+=remove_len;
+				new_len -= remove_len;
+			}
+
+			if (*s) *d++=*s;
+		}
+		*d = 0;
+
+		kittyStack[stack-1].len = new_len;
+		popStack(1);
+		return true;
 	}
-	*d = 0;
 
-	kittyStack[stack].len = d - kittyStack[stack].str;
-
-	// delete string from above.
-	if (kittyStack[stack+1].str) free( kittyStack[stack+1].str );
-	kittyStack[stack+1].str = NULL;
-
-	return NULL;
+	return false;
 }
 
 char *_subData( struct glueCommands *data, int nextToken )
