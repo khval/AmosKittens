@@ -807,7 +807,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-bool _subStr( struct glueCommands *data, int nextToken )
+bool _subStr( void )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
@@ -817,14 +817,6 @@ bool _subStr( struct glueCommands *data, int nextToken )
 	char *d,*s;
 
 	stack++;	// subdata has -1 stack.
-
-	dump_stack();
-
-	if (stack==0) 
-	{
-		dprintf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
-		return NULL;
-	}
 
 	string = getStackString(stack-1);
 	remove = getStackString(stack);
@@ -922,7 +914,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 	{
 		switch (type1)
 		{
-			case type_string:	success = _subStr( data, nextToken ); break;
+			case type_string:	success = _subStr(); break;
 		}
 	}
 
