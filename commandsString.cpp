@@ -64,7 +64,7 @@ char *_mid( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1;
 	char *str;
 	char *tmp = NULL;
-	int _start, _len;
+	int _start=0, _len = 0;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -90,7 +90,9 @@ char *_mid( struct glueCommands *data, int nextToken )
 			break;
 		default:
 			setError(22,data->tokenBuffer);
-	}	
+	}
+
+	if ((_start<0)||(_len<0)) setError(23,data->tokenBuffer);
 
 	popStack(stack - data->stack);
 
@@ -126,18 +128,42 @@ char *_right( struct glueCommands *data, int nextToken )
 char *_instr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
-	char *str,*find, *ret;
+	char *_str,*_find, *ret;
 	char *tmp = NULL;
 	int  _pos = 0;
+	int _start = 0;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	if (args == 2)
+	switch (args)
 	{
-		str = getStackString( stack - 1 );
-		find = getStackString( stack );
-		ret = strstr( str, find );
-		_pos = ret ? (unsigned int) (ret - str) +1 : 0;
+		case 2:
+				_str = getStackString( stack - 1 );
+				_find = getStackString( stack );
+
+				if ((_str)&&(_find))
+				{
+					ret = strstr( _str, _find );
+					_pos = ret ? (unsigned int) (ret - _str) +1 : 0;
+				}
+				break;
+		case 3:
+				_str = getStackString( stack - 2 );
+				_find = getStackString( stack -1 );
+				_start = getStackNum( stack ) -1;
+
+				if ((_str)&&(_find)&&(_start>-1) )
+				{
+					int str_len = kittyStack[stack-2].len;
+
+					if (_start >= str_len) _start = str_len-1;
+
+					ret = strstr( _str + _start, _find );
+					_pos = ret ? (unsigned int) (ret - _str) +1 + _start : 0;
+				}
+				break;
+		default:
+				setError(22,data->tokenBuffer);
 	}	
 
 	popStack(stack - data->stack);
