@@ -1210,92 +1210,6 @@ void code_reader( char *start, int tokenlength )
 
 char *filename = NULL;
 
-/*
-void set_default_filename()
-{
-	if (filename) return;
-
-//	filename = strdup("amos-test/var.amos");
-//	filename = strdup("amos-test/var_num.amos");
-//	filename = strdup("amos-test/math.amos");
-//	filename = strdup("amos-test/dim2.amos");
-//	filename = strdup("amos-test/input.amos");
-//	filename = strdup("amos-test/goto.amos");
-//	filename = strdup("amos-test/if.amos");
-//	filename = strdup("amos-test/goto2.amos");
-//	filename = strdup("amos-test/do-loop.amos");
-//	filename = strdup("amos-test/repeat-until.amos");
-//	filename = strdup("amos-test/legal-ilegal-if.amos");
-//	filename = strdup("amos-test/while-wend.amos");
-//	filename = strdup("amos-test/for-to-step-next.amos");
-//	filename = strdup("amos-test/for-to-next.amos");
-//	filename = strdup("amos-test/for-to-next2.amos");
-//	filename = strdup("amos-test/gosub-return.amos");
-//	filename = strdup("amos-test/left-mid-right.amos");
-//	filename = strdup("amos-test/instr.amos");
-//	filename = strdup("amos-test/upper-lower-flip-spaces.amos");
-//	filename = strdup("amos-test/str-chr-asc-len.amos");
-//	filename = strdup("amos-test/hex-bin-val-str.amos");
-//	filename = strdup("amos-test/casting_int_float.amos");
-//	filename = strdup("amos-test/arithmetic.amos");
-//	filename = strdup("amos-test/inc-dec-add.amos");
-//	filename = strdup("amos-test/compare-strings.amos");
-//	filename = strdup("amos-test/procedure.amos");
-//	filename = strdup("amos-test/procedure2.amos");
-//	filename = strdup("amos-test/procedure_with_paramiters_x.amos");
-//	filename = strdup("amos-test/procedure-shared.amos");
-//	filename = strdup("amos-test/procedure-global.amos");
-//	filename = strdup("amos-test/procedure_return_value.amos");
-//	filename = strdup("amos-test/procedure_all_params.amos");
-//	filename = strdup("amos-test/procedure_pop_proc.amos");
-//	filename = strdup("amos-test/reserve.amos");
-//	filename = strdup("amos-test/erase-start-length-bsave-bload.amos");
-//	filename = strdup("amos-test/sort.amos");
-//	filename = strdup("amos-test/or.amos");
-//	filename = strdup("amos-test/logical1.amos");
-//	filename = strdup("amos-test/match.amos");
-//	filename = strdup("amos-test/dir.amos");
-//	filename = strdup("amos-test/dir_str.amos");
-//	filename = strdup("amos-test/parent-set-dir.amos");
-//	filename = strdup("amos-test/fsel_exits_dir_first_dir_next.amos");
-//	filename = strdup("amos-test/open-out.amos");
-//	filename = strdup("amos-test/open-in.amos");
-//	filename = strdup("amos-test/line_input_file.amos");
-//	filename = strdup("amos-test/line-input.amos");
-//	filename = strdup("amos-test/set-input-input-eof-pof.amos");
-//	filename = strdup("amos-test/open_random.amos");
-//	filename = strdup("amos-test/dir_first_dir_next.amos");
-//	filename = strdup("amos-test/on_error_goto.amos");
-//	filename = strdup("amos-test/on_error_proc.amos");
-//	filename = strdup("amos-test/on_gosub.amos");
-//	filename = strdup("amos-test/input_two_args.amos");
-//	filename = strdup("amos-test/exit.amos");
-//	filename = strdup("amos-test/exit2.amos");
-//	filename = strdup("amos-test/exit-if.amos");
-//	filename = strdup("amos-test/every.amos");
-//	filename = strdup("amos-test/timer.amos");
-//	filename = strdup("amos-test/string_compare.amos");
-//	filename = strdup("amos-test/close-wb-editor-break.amos");
-//	filename = strdup("amos-test/if-then-else-if-end-if.amos");
-//	filename = strdup("amos-test/sin.amos");
-//	filename = strdup("amos-test/m.amos");
-//	filename = strdup("amos-test/varptr.amos");
-//	filename = strdup("amos-test/fill.amos");
-//	filename = strdup("amos-test/hunt.amos");
-//	filename = strdup("amos-test/rol-ror.amos");
-//	filename = strdup("amos-test/bit.amos");
-//	filename = strdup("amos-test/asm.amos");
-//	filename = strdup("amos-test/doscall.amos");
-//	filename = strdup("amos-test/execall.amos");
-//	filename = strdup("amos-test/pload.amos");
-//	filename = strdup("amos-test/def-fn.amos");
-//	filename = strdup("amos-test/swap.amos");
-//	filename = strdup("amos-test/data.amos");
-//	filename = strdup("amos-test/restore.amos");
-	filename = strdup("amos-test/not.amos");
-}
-*/
-
 void init_banks( char *data , int size)
 {
 	int i;
@@ -1367,7 +1281,6 @@ int main(char args, char **arg)
 		}
 
 		start_engine();
-
 		Delay(10);
 
 		fd = fopen(filename,"r");
