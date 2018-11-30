@@ -1266,6 +1266,7 @@ int main(char args, char **arg)
 	if (init() && channels)
 	{
 		// set up a fake extention lookup
+
 		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );
 		if (kitty_extensions[2].lookup)
 		{
@@ -1283,13 +1284,14 @@ int main(char args, char **arg)
 		start_engine();
 		Delay(10);
 
-		fd = fopen(filename,"r");
+		fd = filename ? fopen(filename,"r") : NULL;
 
 		if (fd)
 		{
 			fseek(fd, 0, SEEK_END);
 			amos_filesize = ftell(fd);
 			fseek(fd, 0, SEEK_SET);
+
 			fread( amosid, 16, 1, fd );
 			fread( &tokenlength, 4, 1, fd );
 
