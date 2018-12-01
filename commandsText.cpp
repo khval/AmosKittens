@@ -451,34 +451,53 @@ char *_textAt( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x =-1,y= -1;
-	char str[] = {27,'X','0',27,'Y','0',0};
+	int index = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		struct retroScreen *screen = screens[current_screen];
-
-		if (screen)
+		if (kittyStack[stack-1].type == type_int ) 
 		{
-			struct retroTextWindow *textWindow = screen -> currentTextWindow;
-			if (textWindow)
-			{
-				x = textWindow -> locateX ;
-				y = textWindow -> locateY ;
-			}
+			x = kittyStack[stack-1].value;
+			index = 1;
 		}
-		
-		 stack_get_if_int( stack -1,&x);
-		 stack_get_if_int( stack,&y);
 
-		if (x>-1) str[2]='0'+x;
-		if (y>-1) str[5]='0'+y;
+		if (kittyStack[stack].type == type_int )
+		{
+			y = kittyStack[stack].value;
+			index |= 2;
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackStrDup( str );
+
+	switch (index)
+	{
+		case 1:
+				{
+					char str[] = {27,'X','0',0};
+					if (x>-1) str[2]='0'+x;
+					setStackStrDup( str );
+				}
+				break;
+		case 2:
+				{
+					char str[] = {27,'Y','0',0};
+					if (y>-1) str[2]='0'+y;
+					setStackStrDup( str );
+				}
+				break;
+		case 3:
+				{
+					char str[] = {27,'X','0',27,'Y','0',0};
+					if (x>-1) str[2]='0'+x;
+					if (y>-1) str[6]='0'+y;
+					setStackStrDup( str );
+				}
+				break;
+	}
 
 	return NULL;
 }
