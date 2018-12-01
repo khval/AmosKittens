@@ -244,6 +244,9 @@ char *_print( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+int strlen_no_esc(const char *txt);
+
+
 char *_textCentre( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -268,7 +271,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 			if ((txt)&&(textWindow))
 			{
-				textWindow -> locateX = (charsPerLine/2) - (strlen( txt ) / 2);
+				textWindow -> locateX = (charsPerLine/2) - (strlen_no_esc( txt ) / 2);
 
 				if (textWindow -> locateX<0)
 				{

@@ -579,3 +579,63 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 	}
 }
 
+int strlen_no_esc(const char *txt)
+{
+	int _l = 0;
+	const char *c;
+	char buffer[1000];
+
+	printf("****** START STRLEN ***\n");
+
+	for (c=txt;*c;c++)
+	{
+		switch (*c)
+		{
+			case 27:	// ESC code sequence.
+					{
+						printf("%s\n",c+1);
+
+						int code = what_esc_code( c+1 );
+						bool not_found = false;
+
+						if (code>-1) c += strlen(esc_codes[code].name);
+
+						printf("code: %d\n",code);
+
+						switch (code)
+						{
+							case -1:	break;
+							case 0:	if (*c)	// not \0
+									{
+										c++;
+									}
+									break;
+							case 2:	if (*c) c++;	// border
+									break;
+							case 3:	if (*c) c++;	// Paper
+									break;
+							case 4:	if (*c) c++;	// Pen
+									break;
+							case 5:	if (*c) c++;	// X
+									break;
+							case 6:	if (*c) c++;	// Y
+									break;
+							default: 	
+									break;
+						}
+					}
+					break;
+			default:
+					buffer[_l]=*c;
+					_l++;
+		}
+	}
+	buffer[_l] = 0;
+
+	printf("text '%s' strlen %d\n",buffer, _l);
+	printf("****** END STRLEN ***\n");
+
+
+	return _l;
+}
+
