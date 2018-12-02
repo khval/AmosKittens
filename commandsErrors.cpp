@@ -237,3 +237,11 @@ char *errTrap(nativeCommand *err, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *errErrn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackNum( kittyError.code );
+	return tokenBuffer;
+}
+

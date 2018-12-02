@@ -675,6 +675,7 @@ struct nativeCommand nativeCommands[]=
 	{0x03D6, "Param$",0,cmdParamStr },
 	{0x03E2, "Param",0,cmdParam },
 	{0x03EE, "Error", 0, errError },
+	{0x03FA, "Errn",0,errErrn },
 	{0x0404,"data", 2, cmdData },		
 	{0x040E,"read",0,cmdRead },
 	{0x0418,"Restore", 0, cmdRestore },
