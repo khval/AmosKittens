@@ -83,7 +83,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 					// printf("** SKIP DATA CMD **\n");
 
 					// data is expected
-					return ptr+4;	// valid
+					return ptr+2;	// valid
 	}
 
 	// find the token
