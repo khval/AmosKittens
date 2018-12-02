@@ -1562,9 +1562,10 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 
 char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	unsigned short next_token = NEXT_TOKEN(tokenBuffer);
 	proc_names_printf("%s:%d\n", __FUNCTION__,__LINE__);
 
-	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
+	if ((next_token == 0x0006 ) || (next_token == 0x0018))
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
 
@@ -1588,8 +1589,10 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 							}
 							else 	setError( 40, tokenBuffer );
 						}
-						return tokenBuffer + 2 + ref -> length;
+						return tokenBuffer + 2 + sizeof(struct reference) + ref -> length;
 			}
+
+			printf("type: %d\n",globalVars[idx].var.type & 7);
 		}
 	}
 
