@@ -29,9 +29,22 @@ char *on_error_goto_location = NULL;
 char *on_error_proc_location = NULL;
 char *resume_location = NULL;
 
+void name_from_ref( char **tokenBuffer, char **name_out)
+{
+	unsigned short next_token = NEXT_TOKEN(*tokenBuffer );
+
+	if ((next_token == 0x006) || (next_token == 0x0018))
+	{
+		char *name;
+		struct reference *ref = (struct reference *) (*tokenBuffer + 2);
+		*name_out = strndup( *tokenBuffer + 2 + sizeof(struct reference), ref->length );
+		*tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
+	}	
+}
 
 char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 {
+	char *name = NULL;
 	unsigned short next_token; 
 
 	onError = onErrorBreak;	// default.
@@ -42,28 +55,14 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 
 				printf("On Error ... Goto ...\n");
 
-				tokenBuffer += 2;
-				
-				next_token = NEXT_TOKEN(tokenBuffer );
-
-				printf("Next token %04x\n",next_token);
-
-				if ((next_token == 0x006) || (next_token == 0x0018))
+				tokenBuffer += 2;				
+				name_from_ref(&tokenBuffer, &name);
+				if (name)
 				{
-					char *name;
-					struct reference *ref = (struct reference *) (tokenBuffer + 2);
-					name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );
-
-					if (name)
-					{
-						printf("name %s\n",name);
-
-						on_error_goto_location = findLabel(name);
-						onError = onErrorGoto;
-						free(name);
-					}
-
-					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;		
+					printf("name %s\n",name);
+					on_error_goto_location = findLabel(name);
+					onError = onErrorGoto;
+					free(name);
 				}
 				break;
 
@@ -191,24 +190,40 @@ char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_errResume( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-
-	if (args == 1)
-	{
-
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	char *name = NULL;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdNormal( _errResume, tokenBuffer );
-	setStackNone();
+
+	name_from_ref(&tokenBuffer, &name);
+
+	if (name)	// has args
+	{
+		char *ret;
+
+		ret = findLabel(name);
+		free(name);
+
+		if (ret) 
+		{
+			kittyError.code = 0;
+			kittyError.pos = 0;  
+			kittyError.newError = false;
+			return ret -2;
+		}
+	}
+	else	// has no args, return to error.
+	{
+		if (kittyError.pos)
+		{
+			kittyError.code = 0;
+			kittyError.pos = 0;  
+			kittyError.newError = false;
+			return kittyError.pos-2;
+		}
+	}
+
 	return tokenBuffer;
 }
 
