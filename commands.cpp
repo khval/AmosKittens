@@ -728,7 +728,11 @@ char *_gosub( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		dump_stack();
+		if (kittyStack[stack].type == type_string)
+		{
+			printf("gosub can't find string '%s'\n",kittyStack[stack].str);
+		}
+
 		setError(22,data -> tokenBuffer);
 	}
 
@@ -1551,7 +1555,6 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	{
 		if (name) 	printf("find name: '%s'\n",name);
 		setError( 40, data->tokenBuffer );
-		getchar();
 	}
 
 	return NULL;

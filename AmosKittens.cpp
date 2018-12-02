@@ -1285,7 +1285,6 @@ int main(char args, char **arg)
 		Delay(10);
 
 		fd = filename ? fopen(filename,"r") : NULL;
-
 		if (fd)
 		{
 			fseek(fd, 0, SEEK_END);
@@ -1307,8 +1306,6 @@ int main(char args, char **arg)
 
 				// snifff the tokens find labels, vars, functions and so on.
 				pass1_reader( data, _file_end_ );
-
-				printf("done with pass1_reader\n");
 
 				if (kittyError.code == 0)
 				{
