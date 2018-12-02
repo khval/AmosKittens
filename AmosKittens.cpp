@@ -1167,8 +1167,11 @@ void code_reader( char *start, int tokenlength )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
-		ptr = onError( ptr );
-		if (ptr == NULL) break;
+		if (kittyError.newError)
+		{
+			ptr = onError( ptr );
+			if (ptr == NULL) break;
+		}
 
 		if (every_on)
 		{
