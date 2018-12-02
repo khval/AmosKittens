@@ -23,36 +23,32 @@ extern char *findLabel( char *name );
 extern int findVarPublic( char *name, int type );
 extern std::vector<struct label> labels;
 
+char *(*onErrorTemp)(char *ptr) = NULL;
 char *(*onError)(char *ptr) = NULL;
 char *on_error_goto_location = NULL;
 char *on_error_proc_location = NULL;
 char *resume_location = NULL;
 
-char *_errError( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-
-	if (args == 1)
-	{
-		setError( getStackNum(stack), data -> tokenBuffer );
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
+	unsigned short next_token; 
 
 	onError = onErrorBreak;	// default.
 
 	switch ( NEXT_TOKEN(tokenBuffer ))
 	{
 		case 0x02A8:	// Goto
+
+				printf("On Error ... Goto ...\n");
+
 				tokenBuffer += 2;
 				
-				if (NEXT_TOKEN(tokenBuffer ) == 0x006)	// label
+				next_token = NEXT_TOKEN(tokenBuffer );
+
+				printf("Next token %04x\n",next_token);
+
+				if ((next_token == 0x006) || (next_token == 0x0018))
 				{
 					char *name;
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
@@ -60,16 +56,21 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 
 					if (name)
 					{
+						printf("name %s\n",name);
+
 						on_error_goto_location = findLabel(name);
 						onError = onErrorGoto;
 						free(name);
 					}
 
-					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;					
+					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;		
 				}
 				break;
 
 		case 0x0386:	// Proc
+
+				printf("On Error ... Gosub ...\n");
+
 				tokenBuffer += 2;
 
 				if (NEXT_TOKEN(tokenBuffer ) == 0x0012)	// proc
@@ -94,7 +95,6 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				}
 				break;
 	}
-
 	return tokenBuffer;
 }
 
@@ -141,45 +141,47 @@ char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 char *errResumeNext(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct reference *ref;
-
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
+	printf("this command is not yet working!!!\n");
+	getchar();
 	return tokenBuffer;
 }
 
 
 char *onErrorBreak(char *ptr)
 {
-	return kittyError.newError ? NULL : ptr;
+	return NULL;
+}
+
+char *onErrorIgnore(char *ptr)
+{
+	return ptr;
 }
 
 char *onErrorGoto(char *ptr)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if ( kittyError.newError )
-	{
-		kittyError.newError = false;
-		return on_error_goto_location;
-	}
-	else
-	{
-		return ptr;
-	}
+	kittyError.newError = false;
+	return on_error_goto_location -2;
 }
 
 char *onErrorProc(char *ptr)
 {
-	if ( kittyError.newError )
+	kittyError.newError = false;
+	stackCmdLoop( _procedure, ptr);
+	return on_error_proc_location -2;
+}
+
+char *_errError( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	if (args == 1)
 	{
-		kittyError.newError = false;
-		stackCmdLoop( _procedure, ptr);
-		return on_error_proc_location;
+		setError( getStackNum(stack), data -> tokenBuffer );
 	}
-	else
-	{
-		return ptr;
-	}
+
+	popStack( stack - data->stack );
+	return NULL;
 }
 
 char *errError(struct nativeCommand *cmd, char *tokenBuffer)
@@ -187,6 +189,8 @@ char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _errError, tokenBuffer );
 	return tokenBuffer;
+}
+
 char *_errResume( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -208,8 +212,28 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *_errTrap( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (onErrorTemp)
+	{
+		onError = onErrorTemp;
+		onErrorTemp = NULL;
+	}
+
+	return NULL;
+}
+
 char *errTrap(nativeCommand *err, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	onErrorTemp = onError;
+	onError = onErrorIgnore;
+	stackCmdFlags( _errTrap, tokenBuffer, cmd_onNextCmd | cmd_onEol );
+
 	return tokenBuffer;
 }
+
