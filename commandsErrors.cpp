@@ -187,6 +187,25 @@ char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _errError, tokenBuffer );
 	return tokenBuffer;
+char *_errResume( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	if (args == 1)
+	{
+
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdNormal( _errResume, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
 }
 
 char *errTrap(nativeCommand *err, char *tokenBuffer)

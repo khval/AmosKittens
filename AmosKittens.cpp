@@ -658,7 +658,7 @@ struct nativeCommand nativeCommands[]=
 	{0x02E6, "on error", 0, errOnError },
 	{0x0316, "On", 4, cmdOn },
 	{0x031E, "Resume Label", 0, errResumeLabel },
-	{0x0330, "Resume Label", 0, errResumeLabel }, 
+	{0x0330, "Resume", 0, errResume }, 
 	{0x033C, "Pop Proc",0,cmdPopProc },
 	{0x034A, "Every ...",  0, cmdEvery },
 	{0x0356, "Step",0,cmdStep },

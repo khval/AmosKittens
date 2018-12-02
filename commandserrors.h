@@ -15,4 +15,5 @@ extern char *errError(nativeCommand *err, char *ptr);
 extern char *errOnError(nativeCommand *err, char *ptr);
 extern char *errResumeLabel(nativeCommand *err, char *ptr);
 extern char *errResumeNext(nativeCommand *err, char *ptr);
+extern char *errResume(nativeCommand *err, char *ptr);
 
