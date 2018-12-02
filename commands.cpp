@@ -1531,18 +1531,28 @@ char *cmdPopProc(struct nativeCommand *cmd, char *tokenBuffer )
 }
 
 
+extern char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
+
 char *_cmdRestore( struct glueCommands *data, int nextToken )
 {
+	char *ptr = NULL;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	char *name = getStackString( stack );
-	if (name)
-	{
-		char *ptr = findLabel(name);
-		if (ptr) data_read_pointers[proc_stack_frame] = ptr;
-	}
-
+	if (name)	ptr = findLabel(name);
 	popStack( stack - data->stack  );
+
+	if (ptr)
+	{
+		ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
+		data_read_pointers[proc_stack_frame] = ptr;
+	}
+	else
+	{
+		if (name) 	printf("find name: '%s'\n",name);
+		setError( 40, data->tokenBuffer );
+		getchar();
+	}
 
 	return NULL;
 }
@@ -1554,20 +1564,34 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )	// next is variable
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
-		char *name = dupRef( ref );
 
-		if (name)
+		if (ref -> ref)
 		{
-			char *ptr = findLabel(name);
+			char *name;
+			int idx = ref->ref-1;
+			switch (globalVars[idx].var.type & 7 )
+			{
+				case type_int:
+				case type_proc:
+						if (name = dupRef( ref ))
+						{
+							char *ptr = findLabel(name);
+							free(name);
 
-			if (ptr) data_read_pointers[proc_stack_frame] = ptr;
-			free(name);
+							if (ptr) 
+							{
+								ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
+								data_read_pointers[proc_stack_frame] = ptr;
+							}
+							else 	setError( 40, tokenBuffer );
+						}
+						return tokenBuffer + 2 + ref -> length;
+			}
 		}
 	}
-	else
-	{
-		stackCmdNormal( _cmdRestore, tokenBuffer );
-	}
+
+	// if we are here, then we did not use name of var as label name.
+	stackCmdNormal( _cmdRestore, tokenBuffer );
 
 	return tokenBuffer;
 }
