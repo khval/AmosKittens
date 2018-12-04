@@ -761,3 +761,19 @@ char *cmdSave(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_bankBGrab( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int n;
+	int args = stack - data->stack +1 ;
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *bankBGrab(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _bankBGrab, tokenBuffer );
+	return tokenBuffer;
+}
+

@@ -1062,6 +1062,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2288,"rol.l",0,machineRolL},
 	{0x2296,"AREG",0,machineAREG},
 	{0x22A2,"DREG",0,machineDREG},
+	{0x23A0,"BGrab", 0, bankBGrab },
 	{0x23AC,"Put f,n", 0, cmdPut },
 	{0x23B8,"Get f,n", 0, cmdGet },
 	{0x23D0,"Multi Wait",0,cmdMultiWait },		// dummy function.
