@@ -1676,12 +1676,28 @@ char *_textWindon( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
 char *textWindon(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _textWindon, tokenBuffer );
 	return tokenBuffer;
 }
 
+char *_textWindSave( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	Printf("Amos Kittens don't not support textWindSave yet, but kittens are brave, and try\n");
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textWindSave, tokenBuffer );
+	return tokenBuffer;
+}
 

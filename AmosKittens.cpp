@@ -873,6 +873,7 @@ struct nativeCommand nativeCommands[]=
 	{0x12DA,"Wind Open",0,textWindOpen },
 	{0x12F4,"Wind Open",0,textWindOpen },	// Wind Open n,x,y,w,h,border
 	{0x131A,"Wind Close",0,textWindClose },	// Wind Close
+	{0X132A,"Wind Save",0,textWindSave },	// Wind Save
 	{0x133A,"Wind Move",0,textWindMove },	// Wind Move x,y
 	{0x134C,"Wind Size",0,textWindSize },
 	{0x136C,"=Windon",0,textWindon },					// Windon returns current window number.

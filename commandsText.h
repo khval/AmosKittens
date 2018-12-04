@@ -53,6 +53,7 @@ extern char *textWindow(nativeCommand *cmd, char *ptr);
 extern char *textWindClose(nativeCommand *cmd, char *ptr);
 extern char *textWindOpen(nativeCommand *cmd, char *ptr);
 extern char *textWindMove(nativeCommand *cmd, char *ptr);
+extern char *textWindSave(nativeCommand *cmd, char *ptr);
 extern char *textWindSize(nativeCommand *cmd, char *ptr);
 extern char *textWindon(nativeCommand *cmd, char *ptr);
 extern char *textXGraphic(nativeCommand *cmd, char *ptr);
