@@ -47,6 +47,8 @@ char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetTempras(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxText(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxTextLength(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer);

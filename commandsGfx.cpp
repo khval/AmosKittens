@@ -1731,6 +1731,78 @@ char *gfxText(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxTextLength( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	unsigned short ret = 0;
+	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			{
+				char *txt = getStackString( stack );
+
+				if (txt)
+				{
+					ret = TextLength( &font_render_rp, txt, strlen( txt) );
+				}
+			}
+			break;
+
+			default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *gfxTextLength(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdParm( _gfxTextLength, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxTextBase( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			{
+				char *txt = getStackString( stack );
+
+				if (txt)
+				{
+					struct TextExtent te;
+					TextExtent( &font_render_rp, txt, strlen( txt), &te );
+					ret = -te.te_Extent.MinY;
+				}
+			}
+			break;
+
+			default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdParm( _gfxTextBase, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_gfxClip( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
