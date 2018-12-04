@@ -284,7 +284,6 @@ extern struct Window *My_Window ;
 char *menuMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	uint32 wa_flags;
-//	uint32 idcmp_flags;
 	detach_menu(My_Window);	// safty.
 
 	sort_menu();
@@ -328,6 +327,9 @@ char *_menuMenuInactive( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
+
+	setError(23,data->tokenBuffer);	// not implemented
+
 	return NULL;
 }
 
@@ -335,6 +337,50 @@ char *menuMenuInactive(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdParm( _menuMenuInactive, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *menuMenuCalc(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	setError(23,tokenBuffer);		// not implemented
+
+	return tokenBuffer;
+}
+
+char *_menuMenuToBank( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			break;
+	}
+
+	popStack( stack - data->stack );
+
+	setError(23,data->tokenBuffer);	// not implemented
+
+	return NULL;
+}
+
+char *menuMenuToBank(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _menuMenuToBank, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *menuMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _menuMenuToBank, tokenBuffer );
+
+	setError(23,tokenBuffer);		// not implemented
+
 	return tokenBuffer;
 }
 
