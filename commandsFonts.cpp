@@ -41,7 +41,28 @@ char *_fontsSetFont( struct glueCommands *data, int nextToken )
 
 char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _fontsSetFont, tokenBuffer );
+	stackCmdNormal( _fontsSetFont, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
 }
+
+char *_fontsFontsStr( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	setError(33,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackStrDup("");
+	return NULL;
+}
+
+char *fontsFontsStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _fontsFontsStr, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
+
