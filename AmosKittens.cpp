@@ -633,7 +633,8 @@ struct nativeCommand nativeCommands[]=
 	{0x015A,"Doke",0,machineDoke},
 	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x01AA, "Every Off", 0, cmdEveryOff },
-	{0x01D4,"Logic",0,gfxLogic },
+	{0x01C8,"Logic",0,gfxLogic },	// current screen
+	{0x01D4,"Logic",0,gfxLogic },	// =Logic(screen)
 	{0x01dc, "Asc",0, cmdAsc },
 	{0x01E6,"At",0,cmdAt },
 	{0x01EE,"Call",0,machineCall},	
