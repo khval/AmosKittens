@@ -145,27 +145,7 @@ char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxBox( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	int x0 = xgr ,y0 = ygr,x1,y1;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (args==4)
-	{
-		stack_get_if_int( stack-3, &x0 );
-		stack_get_if_int( stack-2, &y0 );
-		xgr = x1 = getStackNum( stack-1 );
-		ygr = y1 = getStackNum( stack );
-
-		if (screens[current_screen]) retroBox( screens[current_screen], x0,y0,x1,y1,pen0 );
-	}
-	else setError(22,data->tokenBuffer);
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *_gfxBar( struct glueCommands *data, int nextToken )
 {
@@ -400,6 +380,28 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 		r1 = getStackNum( stack );
 
 		if (screens[current_screen]) retroEllipse( screens[current_screen], x0,y0,r0,r1,0,pen0 );
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *_gfxBox( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int x0 = xgr ,y0 = ygr,x1,y1;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==4)
+	{
+		stack_get_if_int( stack-3, &x0 );
+		stack_get_if_int( stack-2, &y0 );
+		xgr = x1 = getStackNum( stack-1 );
+		ygr = y1 = getStackNum( stack );
+
+		if (screens[current_screen]) retroBox( screens[current_screen], x0,y0,x1,y1,pen0 );
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -1990,6 +1992,125 @@ char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _gfxLogic, tokenBuffer );
 	setStackNone();
+	return tokenBuffer;
+}
+
+char *_gfxSetText( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("%s:%s:%d -> dummy command ignored\n",__FILE__,__FUNCTION__,__LINE__);	
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *gfxSetText(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdParm( _gfxSetText, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxHslider( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int x1 ,y1,x2,y2,total,pos,size;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==7)
+	{
+		x1 = getStackNum( stack-6 );
+		y1 = getStackNum( stack-5 );
+		x2 = getStackNum( stack-4 );
+		y2 = getStackNum( stack-3 );
+		total = getStackNum( stack-2 );
+		pos = getStackNum( stack-1 );
+		size = getStackNum( stack );
+
+		if (screens[current_screen])
+		{
+			int xpos1,xpos2;
+
+			xpos1 =  (x2-x1) * pos / total;
+			xpos2 =  (x2-x1) * (pos+size) / total;
+
+			retroBox( screens[current_screen], x1,y1,x2,y2,pen0 );
+			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,pen1 );
+
+			retroBox( screens[current_screen], x1+xpos1+2,y1+2,x1+xpos2-2,y2-2,pen0 );
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxHslider(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxHslider, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfsVslider( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int x1 ,y1,x2,y2,total,pos,size;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==7)
+	{
+		x1 = getStackNum( stack-6 );
+		y1 = getStackNum( stack-5 );
+		x2 = getStackNum( stack-4 );
+		y2 = getStackNum( stack-3 );
+		total = getStackNum( stack-2 );
+		pos = getStackNum( stack-1 );
+		size = getStackNum( stack );
+
+		if (screens[current_screen])
+		{
+			int ypos1,ypos2;
+
+			ypos1 =  (y2-y1) * pos / total;
+			ypos2 =  (y2-y1) * (pos+size) / total;
+
+			retroBox( screens[current_screen], x1,y1,x2,y2,pen0 );
+			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,pen1 );
+
+			retroBox( screens[current_screen], x1+2,y1+ypos1+2,x2-2,y1+ypos2-2,pen0 );
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfsVslider(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfsVslider, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_gfxSetSlider( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxSetSlider, tokenBuffer );
 	return tokenBuffer;
 }
 

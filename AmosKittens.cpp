@@ -567,6 +567,8 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	setStackNum( *((int *) ptr) );
 
+	printf("num is %d\n",*((int *) ptr) );
+
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack( next_token );
 
@@ -839,12 +841,16 @@ struct nativeCommand nativeCommands[]=
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
 	{0x0F16,"Text Length",0,gfxTextLength },
 	{0x0F3A,"Text Base",0,gfxTextBase },
-	{0x0F4A,"Text",0,gfxText },	
+	{0x0F4A,"Text",0,gfxText },
+	{0x0F5A,"Set Text",0,gfxSetText },
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
 	{0x0F7A,"Get Fonts",0,fontsGetRomFonts },
-	{0x0FC2,"Fonts$",0,fontsFontsStr },
 	{0x0F9E,"Get Rom Fonts",0,fontsGetRomFonts },
 	{0x0FB2,"Set Font",0,fontsSetFont },
+	{0x0FC2,"Fonts$",0,fontsFontsStr },
+	{0x0FCE,"Hslider",0,gfxHslider },
+	{0x0FE8,"Vslider",0,gfsVslider },
+	{0x1002,"Set Slider",0,gfxSetSlider },
 	{0x1022,"Set Pattern",0,gfxSetPattern },
 	{0x1034,"Set Line",0,gfxSetLine },
 	{0x1044,"Ink",0,gfxInk },
@@ -1168,6 +1174,7 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 void code_reader( char *start, int tokenlength )
 {
 	char *ptr;
+	char *errPtr;
 	int token = 0;
 	last_tokens[parenthesis_count] = 0;
 	
@@ -1246,6 +1253,8 @@ void init_banks( char *data , int size)
 
 	getchar();
 }
+
+#define DLINE printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 int main(char args, char **arg)
 {
