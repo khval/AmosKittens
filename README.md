@@ -54,10 +54,10 @@ Partially implemented:
 * Chapter 13. Object control
 * Chapter 14. Amal
 * Chapter 15. Background graphics.
+* Chapter 16. Menus
 
 Not Implemented:
 
-* Chapter 16. Menus
 * Chapter 17. Sound and music
 * Chapter 21. Screen compaction.
 
