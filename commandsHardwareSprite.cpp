@@ -135,10 +135,12 @@ char *_hsSpriteBase( struct glueCommands *data, int nextToken )
 	{
 		pick = getStackNum(stack);
 
-		if ((pick>0)&&(sprite->number_of_frames)&&(pick<sprite->number_of_frames))
+		if (sprite)	if ((pick>0)&&(pick<sprite->number_of_frames))
 		{
 			ret = &sprite -> frames[pick-1] ;
 		}
+
+		if (NULL == ret) setError(23,data->tokenBuffer);
 	}
 	else setError(22, data->tokenBuffer);
 
