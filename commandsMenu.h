@@ -14,4 +14,7 @@ char *menuMenuInactive(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuCalc(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuToBank(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuDel(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuMenuX(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuMenuY(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuMenuActive(struct nativeCommand *cmd, char *tokenBuffer);
 

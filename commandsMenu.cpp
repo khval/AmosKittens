@@ -340,6 +340,31 @@ char *menuMenuInactive(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_menuMenuActive( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			break;
+	}
+
+	popStack( stack - data->stack );
+
+	setError(23,data->tokenBuffer);	// not implemented
+
+	return NULL;
+}
+
+char *menuMenuActive(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	stackCmdParm( _menuMenuActive, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *menuMenuCalc(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -383,4 +408,48 @@ char *menuMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
 
 	return tokenBuffer;
 }
+
+
+char *_menuMenuX( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int i = 0;
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	setError(23,data->tokenBuffer);		// not implemented
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *menuMenuX(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _menuMenuX, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
+
+char *_menuMenuY( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int i = 0;
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	setError(23,data->tokenBuffer);		// not implemented
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *menuMenuY(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _menuMenuY, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
+
 
