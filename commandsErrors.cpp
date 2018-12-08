@@ -236,6 +236,7 @@ char *_errTrap( struct glueCommands *data, int nextToken )
 	{
 		onError = onErrorTemp;
 		onErrorTemp = NULL;
+		kittyError.newError = false;
 	}
 
 	return NULL;
