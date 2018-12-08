@@ -492,11 +492,15 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 
 				if (sprite)
 				{
-					struct retroFrameHeader *frame = &sprite -> frames[image];
-					x = (p >> 4) & 0xF;
-					y = p & 0xF;
-					frame -> XHotSpot = (x * frame -> Width) >> 1;
-					frame -> YHotSpot = (y * frame -> Height) >> 1;
+					if (image < sprite -> number_of_frames)
+					{
+						struct retroFrameHeader *frame = &sprite -> frames[image];
+						x = (p >> 4) & 0xF;
+						y = p & 0xF;
+						frame -> XHotSpot = (x * frame -> Width) >> 1;
+						frame -> YHotSpot = (y * frame -> Height) >> 1;
+					}
+					else setError( 23, data -> tokenBuffer );
 				}
 
 				break;
@@ -508,11 +512,19 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 
 				if (sprite)
 				{
-					struct retroFrameHeader *frame = &sprite -> frames[image];
-					frame -> XHotSpot = x;
-					frame -> YHotSpot = y;
+					if (image < sprite -> number_of_frames)
+					{
+						struct retroFrameHeader *frame = &sprite -> frames[image];
+						frame -> XHotSpot = x;
+						frame -> YHotSpot = y;
+					}
+					else setError( 23, data -> tokenBuffer );
 				}
 				break;
+
+		default:
+				printf("args: %d\n",args);
+				setError(22,data->tokenBuffer);
 
 	}
 
@@ -704,3 +716,4 @@ char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _boDelBob, tokenBuffer );
 	return tokenBuffer;
 }
+
