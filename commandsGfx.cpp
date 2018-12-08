@@ -34,6 +34,7 @@ int pen0=2, pen1,pen2;
 int xgr = 0,  ygr = 0;
 
 int GrWritingMode = 0;
+int sliderBPen,	sliderBPaper, sliderBOutline, sliderBStyle, sliderSPen, sliderSPaper, sliderSOutline, sliderSStyle;
 
 extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
@@ -2039,10 +2040,11 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 			xpos1 =  (x2-x1) * pos / total;
 			xpos2 =  (x2-x1) * (pos+size) / total;
 
-			retroBox( screens[current_screen], x1,y1,x2,y2,pen0 );
-			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,pen1 );
+			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
+			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,sliderBPaper );
 
-			retroBox( screens[current_screen], x1+xpos1+2,y1+2,x1+xpos2-2,y2-2,pen0 );
+			retroBox( screens[current_screen], x1+xpos1+2,y1+2,x1+xpos2-2,y2-2,sliderSOutline );
+			retroBAR( screens[current_screen], x1+xpos1+3,y1+3,x1+xpos2-3,y2-3,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -2081,10 +2083,11 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 			ypos1 =  (y2-y1) * pos / total;
 			ypos2 =  (y2-y1) * (pos+size) / total;
 
-			retroBox( screens[current_screen], x1,y1,x2,y2,pen0 );
-			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,pen1 );
+			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
+			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,sliderBPaper );
 
-			retroBox( screens[current_screen], x1+2,y1+ypos1+2,x2-2,y1+ypos2-2,pen0 );
+			retroBox( screens[current_screen], x1+2,y1+ypos1+2,x2-2,y1+ypos2-2,sliderSOutline );
+			retroBAR( screens[current_screen], x1+3,y1+ypos1+3,x2-3,y1+ypos2-3,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -2103,6 +2106,20 @@ char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	if (args==8)
+	{
+		sliderBPen = getStackNum( stack-7 );
+		sliderBPaper = getStackNum( stack-6 );
+		sliderBOutline = getStackNum( stack-5 );
+		sliderBStyle = getStackNum( stack-4 );
+		sliderSPen = getStackNum( stack-3 );
+		sliderSPaper = getStackNum( stack-2 );
+		sliderSOutline = getStackNum( stack-1 );
+		sliderSStyle = getStackNum( stack );
+	}
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
