@@ -573,11 +573,16 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 			{
 				int src_screen = getStackNum( stack-1 );
 				int dest_screen = getStackNum( stack );
+				unsigned int src_mode = ((src_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+				unsigned int dest_mode = ((dest_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+
+				src_screen &=0xFF;
+				dest_screen &= 0xFF;
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
-					retroScreenBlit( screens[src_screen], 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
-							screens[dest_screen],0, 0);
+					retroScreenBlit( screens[src_screen],src_mode, 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
+							screens[dest_screen],dest_mode, 0, 0);
 				}
 			}
 			break;
@@ -592,11 +597,16 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 				int dest_screen = getStackNum( stack-2 );
 				int dest_x = getStackNum( stack-1 );
 				int dest_y = getStackNum( stack );
+				unsigned int src_mode = ((src_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+				unsigned int dest_mode = ((dest_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+
+				src_screen &=0xFF;
+				dest_screen &= 0xFF;
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
-					retroScreenBlit( screens[src_screen], src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
-							screens[dest_screen],dest_x, dest_y);
+					retroScreenBlit( screens[src_screen], src_mode ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
+							screens[dest_screen], dest_mode, dest_x, dest_y);
 				}
 			}
 			break;
