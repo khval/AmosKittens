@@ -28,6 +28,8 @@ extern struct retroSprite *icons ;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
+extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
+
 // palette data for RLE
 static int r[32]={0},g[32]={0},b[32]={0};
 
@@ -56,6 +58,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	int bytesPerPlane;
 	int colors = 1 << depth;
 	struct retroScreen *screen = NULL;
+	struct retroTextWindow *textWindow = NULL;
 
 	engine_lock();
 
@@ -65,6 +68,14 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	if (screen = screens[screen_num])
 	{
 		retroApplyScreen( screen, video, 0, 0,	screen -> realWidth,screen->realHeight );
+
+		if (textWindow = newTextWindow( screen, 0 ))
+		{
+			textWindow -> charsPerRow = screen -> realWidth / 8;
+			textWindow -> rows = screen -> realHeight / 8;
+
+			screen -> currentTextWindow = textWindow;
+		}
 
 		for (n=0;n<colors;n++)	
 		{
