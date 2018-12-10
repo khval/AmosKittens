@@ -150,7 +150,7 @@ void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *scre
 		dest += screen -> bytesPerRow;
 	}
 
-	retroBox(screen,x0,y0,x1,y1,1);
+//	retroBox(screen,x0,y0,x1,y1,1);
 }
 
 void drawBobs()
