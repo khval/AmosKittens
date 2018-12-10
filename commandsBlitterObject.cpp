@@ -479,15 +479,16 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 	int p;
 	int x,y;
 	struct retroSpriteObject *bob;
+	bool success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	dump_stack();
+	printf("sprite -> number_of_frames: %d\n",sprite -> number_of_frames);
 
 	switch (args)
 	{
 		case 2:
-				image = getStackNum( stack-1 );
+				image = getStackNum( stack-1 )-1;
 				p = getStackNum( stack );
 
 				if (sprite)
@@ -495,18 +496,23 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 					if (image < sprite -> number_of_frames)
 					{
 						struct retroFrameHeader *frame = &sprite -> frames[image];
-						x = (p >> 4) & 0xF;
-						y = p & 0xF;
-						frame -> XHotSpot = (x * frame -> Width) >> 1;
-						frame -> YHotSpot = (y * frame -> Height) >> 1;
+
+						if (frame)
+						{
+							x = (p >> 4) & 0xF;
+							y = p & 0xF;
+							frame -> XHotSpot = (x * frame -> Width) >> 1;
+							frame -> YHotSpot = (y * frame -> Height) >> 1;
+							success = true;
+						}
 					}
-					else setError( 23, data -> tokenBuffer );
 				}
 
+				 if (success == false) setError( 23, data -> tokenBuffer );
 				break;
 
 		case 3:
-				image = getStackNum( stack-2 );
+				image = getStackNum( stack-2 )-1;
 				x = getStackNum( stack-1 );
 				y = getStackNum( stack );
 
@@ -515,11 +521,17 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 					if (image < sprite -> number_of_frames)
 					{
 						struct retroFrameHeader *frame = &sprite -> frames[image];
-						frame -> XHotSpot = x;
-						frame -> YHotSpot = y;
+
+						if (frame)
+						{
+							frame -> XHotSpot = x;
+							frame -> YHotSpot = y;
+							success = true;
+						}
 					}
-					else setError( 23, data -> tokenBuffer );
 				}
+
+				 if (success == false) setError( 23, data -> tokenBuffer );
 				break;
 
 		default:
