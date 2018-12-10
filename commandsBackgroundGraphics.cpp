@@ -212,6 +212,33 @@ char *bgMaskIconMask(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+
+void del_block(int id)
+{
+	int _index = -1;
+	int b;
+
+	for (b=0;b<blocks.size();b++)
+	{
+		if (blocks[b].id == id) 
+		{
+			_index = b;
+			break;
+		}	
+	}
+
+	if (_index>-1)
+	{
+		if (blocks[_index].mem) 
+		{
+			free(blocks[_index].mem);
+			blocks[_index].mem = NULL;
+		}
+		blocks.erase(blocks.begin()+_index);
+	}
+}
+
 void get_block(struct retroScreen *screen,struct retroBlock *block,  int x, int y)
 {
 	int _x,_y;
@@ -230,23 +257,64 @@ void get_block(struct retroScreen *screen,struct retroBlock *block,  int x, int 
 			for (_x=0;_x<block->w;_x++)
 			{
 				sx = _x+x;
-
 				if ((sx>=0)&&(sx<screen->realWidth))
 				{
 					dslice[_x]= sslice[sx];
+				}
+				else dslice[_x] = 0;
+			}
+		}
+		else
+		{
+			dslice = block->mem + (block->w * _y);
+
+			for (_x=0;_x<block->w;_x++)
+			{
+				dslice[_x]= 0;
+			}
+		}
+	}
+}
+
+void put_block(struct retroScreen *screen,int id,  int x, int y)
+{
+	struct retroBlock *block = NULL;
+	unsigned char *sslice,*dslice;
+	int _x,_y,dx,dy;
+	int b;
+
+	for (b=0;b<blocks.size();b++)
+	{
+		if (blocks[b].id == id) block = &blocks[b];
+	}
+	if (NULL == block) return;
+
+	for (_y=0;_y<block->h;_y++)
+	{
+		dy = _y+y;
+		if ((dy>=0)&&(dy<screen->realHeight))
+		{
+			dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
+			sslice = block->mem + (block->w * _y);
+
+			for (_x=0;_x<block->w;_x++)
+			{
+				dx = _x+x;
+
+				if ((dx>=0)&&(dx<screen->realWidth))
+				{
+					dslice[dx]= sslice[_x];
 				}
 			}
 		}
 	}
 }
 
-
 char *_bgGetBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int x2,y2;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("args: %d\n",args);
 
 	switch (args)
 	{
@@ -257,11 +325,11 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 					block.y = getStackNum(stack-2);
 					block.w = getStackNum(stack-1);
 					block.h = getStackNum(stack);
+
+					del_block( block.id );
 					block.mem  = (unsigned char *) malloc( block.w * block.h );		
-					blocks.push_back(block);
-
 					get_block(screens[current_screen],&block, block.x, block.y);
-
+					blocks.push_back(block);
 				}
 				break;
 		case 6:	{
@@ -273,9 +341,13 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 					block.w = getStackNum(stack-2);
 					block.h = getStackNum(stack-1);
 					flags = getStackNum(stack);
+
+					del_block( block.id );	// delete old
 					block.mem  = (unsigned char *) malloc( block.w * block.h );
+					get_block(screens[current_screen],&block, block.x, block.y);
 
 					blocks.push_back(block);
+
 				}
 				break;
 		default:
@@ -314,40 +386,8 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 
 				printf("%d,%d,%d\n",id,x,y);
 
-				if (screen = screens[current_screen])
-				{
-					for (b=0;b<blocks.size();b++)
-					{
-						if (blocks[b].id == id)
-						{
-							block = &blocks[b];
-							unsigned char *sslice,*dslice;
-							int _x,_y,dx,dy;
-
-							for (_y=0;_y<block->h;_y++)
-							{
-								dy = _y+y;
-
-								if ((dy>=0)&&(dy<screen->realHeight))
-								{
-									dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
-									sslice = block->mem + (block->w * _y);
-
-									for (_x=0;_x<block->w;_x++)
-									{
-										dx = _x+x;
-
-										if ((dx>=0)&&(dx<screen->realWidth))
-										{
-											dslice[dx]= sslice[_x];
-										}
-									}
-								}
-							}
-							break;
-						}
-					}
-				}
+				screen = screens[ current_screen ];
+				if (screen) put_block(screen, id,x,y);
 			}		
 
 			break;
@@ -369,6 +409,8 @@ char *bgPutBlock(struct nativeCommand *cmd, char *tokenBuffer)
 char *_bgDelBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int id;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	printf("args: %d\n",args);
@@ -376,6 +418,8 @@ char *_bgDelBlock( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
+			id = getStackNum(stack);
+			del_block(id);
 			break;
 		default:
 			setError(22,data->tokenBuffer);
