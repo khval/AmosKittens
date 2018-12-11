@@ -500,6 +500,9 @@ char *_textAt( struct glueCommands *data, int nextToken )
 					setStackStrDup( str );
 				}
 				break;
+		default:
+				setStackStrDup("");
+				break;
 	}
 
 	return NULL;
