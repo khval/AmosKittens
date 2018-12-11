@@ -40,6 +40,7 @@ struct retroBlock
 	int y;
 	int w;
 	int h;
+	int mask;
 	unsigned char *mem;
 };
 
@@ -276,12 +277,13 @@ void get_block(struct retroScreen *screen,struct retroBlock *block,  int x, int 
 	}
 }
 
-void put_block(struct retroScreen *screen,int id,  int x, int y)
+void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char bitmask)
 {
 	struct retroBlock *block = NULL;
 	unsigned char *sslice,*dslice;
 	int _x,_y,dx,dy;
 	int b;
+	unsigned char s;
 
 	for (b=0;b<blocks.size();b++)
 	{
@@ -297,13 +299,26 @@ void put_block(struct retroScreen *screen,int id,  int x, int y)
 			dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
 			sslice = block->mem + (block->w * _y);
 
-			for (_x=0;_x<block->w;_x++)
+			if (block->mask)
 			{
-				dx = _x+x;
-
-				if ((dx>=0)&&(dx<screen->realWidth))
+				for (_x=0;_x<block->w;_x++)
 				{
-					dslice[dx]= sslice[_x];
+					dx = _x+x;
+					if ((dx>=0)&&(dx<screen->realWidth))
+					{
+						if (sslice[_x]) dslice[dx]= sslice[_x] & bitmask;
+					}
+				}
+			}
+			else
+			{
+				for (_x=0;_x<block->w;_x++)
+				{
+					dx = _x+x;
+					if ((dx>=0)&&(dx<screen->realWidth))
+					{
+						dslice[dx]= sslice[_x] & bitmask;
+					}
 				}
 			}
 		}
@@ -325,6 +340,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 					block.y = getStackNum(stack-2);
 					block.w = getStackNum(stack-1);
 					block.h = getStackNum(stack);
+					block.mask = 0;
 
 					del_block( block.id );
 					block.mem  = (unsigned char *) malloc( block.w * block.h );		
@@ -334,13 +350,12 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 				break;
 		case 6:	{
 					struct retroBlock block;
-					int flags;
 					block.id = getStackNum(stack-5);
 					block.x = getStackNum(stack-4);
 					block.y = getStackNum(stack-3);
 					block.w = getStackNum(stack-2);
 					block.h = getStackNum(stack-1);
-					flags = getStackNum(stack);
+					block.mask = getStackNum(stack);
 
 					del_block( block.id );	// delete old
 					block.mem  = (unsigned char *) malloc( block.w * block.h );
@@ -387,7 +402,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 				printf("%d,%d,%d\n",id,x,y);
 
 				screen = screens[ current_screen ];
-				if (screen) put_block(screen, id,x,y);
+				if (screen) put_block(screen, id,x,y, 255);
 			}		
 
 			break;
