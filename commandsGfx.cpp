@@ -1710,12 +1710,12 @@ char *_gfxText( struct glueCommands *data, int nextToken )
 					int l = strlen(txt);
 					int tl;
 
-					SetAPen( &font_render_rp, 4 );
+					SetAPen( &font_render_rp, pen0 );
 					Move( &font_render_rp, 0,10 );
 					Text( &font_render_rp, txt, l );
 					tl = TextLength(&font_render_rp, txt, l );
 
-					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screens[current_screen], x , y);
+					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screens[current_screen], x , y-10);
 				}
 			}
 			break;
