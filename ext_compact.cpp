@@ -45,7 +45,7 @@ void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB
 	b = (data[pos+1] & 0x0F) * 0x11;
 }
 
-void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, int *r, int *g, int *b, unsigned char *raw,bool ham )
+void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, int *r, int *g, int *b, unsigned char *raw, unsigned short mode)
 {
 	int n;
 	int row;
@@ -57,22 +57,34 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	int bytesPerPlan;
 	int bytesPerPlane;
 	int colors = 1 << depth;
+	unsigned int videomode = retroLowres_pixeld;
 	struct retroScreen *screen = NULL;
 	struct retroTextWindow *textWindow = NULL;
 
+	if (mode & 0x8000) videomode = retroHires; 
+
 	engine_lock();
 
-	if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
-	screens[screen_num] = retroOpenScreen( bytesPerRow * 8, height, retroLowres_pixeld );
+	if (screens[screen_num]) 
+	{
+		videomode = screens[screen_num] -> videomode;
+		retroCloseScreen(&screens[screen_num]);
+	}
+
+	screens[screen_num] = retroOpenScreen( bytesPerRow * 8, height, videomode );
 
 	if (screen = screens[screen_num])
 	{
+		current_screen = screen_num;
+
 		retroApplyScreen( screen, video, 0, 0,	screen -> realWidth,screen->realHeight );
 
 		if (textWindow = newTextWindow( screen, 0 ))
 		{
 			textWindow -> charsPerRow = screen -> realWidth / 8;
 			textWindow -> rows = screen -> realHeight / 8;
+			screen -> pen = 2;
+			screen -> paper = 1;
 
 			screen -> currentTextWindow = textWindow;
 		}
@@ -113,20 +125,19 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 
 
 // pac.pic. RLE decompressor
-int convertPacPic( int screen, unsigned char *data, const char *name )
+int convertPacPic( int screen, unsigned char *data, const char *name  )
 {
 	//  int o = 20;
 	int o=0;
+	unsigned short mode = 0;
 
-	bool ham = false;
+
 	if( get4(o) == 0x12031990 )
 	{
-		// detect HAM
-		if( get2(o+20) & 0x800 )
-		{
-		      ham = true;
-		      printf("HAM data is not yet supported, output will look garbled!\n");
-		}
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+		mode = get2(o+20);
+
 		// fetch palette
 		for( int i=0; i<32; ++i )
 		{ 
@@ -197,7 +208,7 @@ int convertPacPic( int screen, unsigned char *data, const char *name )
 		}
 
 		printf ("%d,%d,%d\n",w*8,h*ll,1<<d);
-		openUnpackedScreen( screen, w, h*ll, d, r,g ,b,raw, ham );
+		openUnpackedScreen( screen, w, h*ll, d, r,g ,b,raw, mode );
 		free(raw);
 	}
 
