@@ -1528,23 +1528,26 @@ char *textWindSize(nativeCommand *cmd, char *tokenBuffer)
 char *_textXGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int gx=0;
 	int x=0,b=0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
+		gx = getStackNum( stack  )*8;
+
 		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
 		if (textWindow)
 		{
 			b = textWindow -> border ? 1 : 0;
-			x = textWindow -> x + b + textWindow -> locateX;
+			gx = gx - (textWindow -> x + (b * 8));
 		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(x * 8);
+	setStackNum(gx);
 	return NULL;
 }
 
@@ -1557,6 +1560,7 @@ char *textXGraphic(nativeCommand *cmd, char *tokenBuffer)
 char *_textYGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int gy=0;
 	int y=0,b=0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1564,17 +1568,19 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
+		gy = getStackNum( stack  )*8;
+
 		struct retroTextWindow *textWindow = screens[current_screen]->currentTextWindow;
 		if (textWindow)
 		{
 			b = textWindow -> border ? 1 : 0;
-			y = textWindow -> y + b + textWindow -> locateY;
+			gy = gy - (textWindow -> y + (b*8));
 		}
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(y*8);
+	setStackNum(gy);
 	return NULL;
 }
 
