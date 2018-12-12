@@ -252,8 +252,8 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
 	int n;
-	int charsPerLine = 100;
 	const char *txt = NULL;
+	struct retroTextWindow *textWindow = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -265,13 +265,11 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 		{
 			struct retroTextWindow *textWindow = screen -> currentTextWindow;
 			txt = getStackString(stack);
-			charsPerLine = screen -> realWidth / 8;
 
 			clear_cursor(screen);
-
 			if ((txt)&&(textWindow))
 			{
-				textWindow -> locateX = (charsPerLine/2) - (strlen_no_esc( txt ) / 2);
+				textWindow -> locateX = (textWindow -> charsPerRow/2) - (strlen_no_esc( txt ) / 2);
 
 				if (textWindow -> locateX<0)
 				{
