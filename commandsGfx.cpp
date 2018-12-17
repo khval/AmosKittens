@@ -1390,7 +1390,7 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool done = false;
 
-#if 0
+
 
 //	proc_names_
 printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1449,8 +1449,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 		screens[current_screen] -> fade_speed = getStackNum( data -> stack );
 	}
-
-#endif
 
 	popStack( stack - data->stack );
 
