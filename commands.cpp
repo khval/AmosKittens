@@ -487,8 +487,6 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
 	}
 
-	printf("correct_order(%08x, %08x)\n", last_tokens[parenthesis_count],  nextToken );
-
 	if ( correct_order( last_tokens[parenthesis_count],  nextToken ) == false )
 	{
 		// hidden ( condition.

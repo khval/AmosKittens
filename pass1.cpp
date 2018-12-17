@@ -351,8 +351,6 @@ struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 	int found = 0;
 	struct reference *ref = (struct reference *) (ptr);
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	tmp = dupRef( ref );
 	if (tmp)
 	{
@@ -419,10 +417,6 @@ char *pass1_procedure( char *ptr )
 	{
 		current_proc = pass1var( ptr +2, false, true );
 
-		printf("current_proc %08x\n", current_proc);
-
-		getchar();
-
 		pass1_inside_proc = true;
 		// we like to skip the variable, so its not added as a local variable.
 		ptr += 2 + sizeof(struct reference) + ReferenceByteLength(ptr + 2) ;
@@ -446,8 +440,6 @@ void pass1label(char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	struct kittyData *var;
 	char *next;
-
-	printf("%s:%d    --- ptr=%08x\n",__FUNCTION__,__LINE__,ptr);
 
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)

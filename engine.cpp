@@ -503,7 +503,6 @@ void main_engine()
 
 			if ( ret & SIGBREAKF_CTRL_C) running = false;
 
-//			Printf("joy events\n");
 			if ( ret & joy_sig )
 			{
 				for (n=0;n<4;n++)
@@ -515,7 +514,6 @@ void main_engine()
 				}
 			}
 
-//			Printf("window events\n");
 			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
 			{
 				Qualifier = msg -> Qualifier;
@@ -550,8 +548,6 @@ void main_engine()
 							{
 								item = ItemAddress(amiga_menu, menuNumber);
 
-								Printf("%08x\n", item);
-
 								if (item)
 								{
 									selected.menu = MENUNUM(menuNumber);
@@ -559,7 +555,6 @@ void main_engine()
 									selected.sub = SUBNUM(menuNumber);
 									amosSelected.push_back(selected);
 									menuNumber = item -> NextSelect;
-
 
 									Printf("selected %ld\n",amosSelected.size());
 								} else break;
@@ -609,18 +604,13 @@ void main_engine()
 				ReplyMsg( (Message*) msg );
 			}
 
-//			Printf("autoview\n");
 			if (autoView)
 			{
 				retroClearVideo( video );
 
 				engine_lock();
 
-//				Printf("draw bobs\n");
-
 				if (bobUpdate==1)	drawBobs();
-
-//				Printf("draw screens\n");
 
 				for (n=0; n<8;n++)
 				{
@@ -646,18 +636,12 @@ void main_engine()
 					}
 				}
 
-//				Printf("draw video\n");
-
 				retroDrawVideo( video );
-
-//				Printf("clear bobs\n");
 
 				if (bobUpdate==1) clearBobs();
 
 				if (channels)
 				{
-//					Printf("do channels %ld\n",channels -> _size());
-
 					struct kittyChannel *item;
 					int i;
 					for (i=0;i<channels -> _size();i++)
@@ -675,30 +659,20 @@ void main_engine()
 				if ((sprite)&&(video -> sprites))
 				{
 					struct retroSpriteObject *item;
-
-					Printf("draw sprites\n");
-
 					for (n=0;n<64;n++)
 					{
 						item = &video -> sprites[n];
-
 						item -> sprite = sprite;
 
 						if (item -> image>0)
 						{
-							//retroSprite( video, n, item -> x, item -> y, item -> image );
-
 							DrawSprite( sprite, item, item -> image -1, 0 );
-
-							Printf("sprite %ld,%ld,%ld,%ld\n",n, item -> x, item -> y, item -> image);
 						}
 					}
 				}
 		
 				engine_unlock();
 			}
-
-//			Printf("WaitTOF\n");
 
 			WaitTOF();
 			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );

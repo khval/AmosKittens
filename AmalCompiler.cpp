@@ -31,7 +31,6 @@ void dump_amal_labels();
 
 void *amalAllocBuffer( int size ) 
 {
-	printf("AllocVecTags %d\n",size); 
 	return AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END );
 }
 
@@ -913,11 +912,10 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 	void *ret;
 	void *(**call) ( struct kittyChannel *self, void **code, unsigned int opt );
 
-	Printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
+//	Printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
 
 	for (call = channel -> amalProgCounter ;  *call ; call ++ )
 	{
-		Printf("%08lx\n",call);
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret) 
 		{
@@ -1059,13 +1057,10 @@ void dump_object();
 
 void test_run(struct kittyChannel  *channel)
 {
-	printf("%s\n", channel -> amalProg.call_array ? "has amal program code" : "do not have amal program code");
-
 	// init amal Prog Counter.
 	channel -> status = channel_status::active;
 	channel -> objectAPI = &test_api;
 
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
 	{
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);

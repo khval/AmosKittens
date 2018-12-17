@@ -171,9 +171,6 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 
 				engine_unlock();
 
-				printf("screen clone %d at %04x org screen %d\n",screen_num, screens[screen_num], current_screen);
-//				getchar();
-
 				current_screen = screen_num;
 				success = true;
 			}

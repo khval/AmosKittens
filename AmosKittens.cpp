@@ -1046,7 +1046,6 @@ struct nativeCommand nativeCommands[]=
 	{0x20AE,"Update",0,ocUpdate },
 	{0x20BA,"X Bob",0,boXBob},
 	{0x20C6,"Y Bob",0,boYBob},
-
 	{0x20F2,"Reserve As Work",0,cmdReserveAsWork },
 	{0x210A,"Reserve As Chip Work",0,cmdReserveAsChipWork },
 	{0x2128,"Reserve As Data",0, cmdReserveAsData },
