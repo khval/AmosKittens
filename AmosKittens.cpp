@@ -1092,6 +1092,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
+	{0x26D8,"Erase All", 0, cmdEraseAll },
 	{0xFF4C,"or",0, orData },
 	{0xFF3E,"xor",0,xorData },
 	{0xFF58,"or",0, andData },
