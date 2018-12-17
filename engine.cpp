@@ -21,6 +21,8 @@
 #include "debug.h"
 #include "amalcompiler.h"
 #include "channel.h"
+#include "spawn.h"
+#include "init.h"
 
 extern int sig_main_vbl;
 extern bool running;			// 
@@ -32,7 +34,6 @@ extern struct Menu *amiga_menu;
 
 extern struct retroSprite *sprite;
 
-static struct Process *MainTask = NULL;
 struct Process *EngineTask = NULL;
 
 bool engine_wait_key = false;
@@ -115,8 +116,7 @@ struct IntuitionIFace *IIntuition = NULL;
 struct Library * GraphicsBase = NULL;
 struct GraphicsIFace *IGraphics = NULL;
 
-struct Library * RetroModeBase = NULL;
-struct RetroModeIFace *IRetroMode = NULL;
+
 
 struct Library * LayersBase = NULL;
 struct LayersIFace *ILayers = NULL;
@@ -217,20 +217,12 @@ bool start_engine()
 {
 #ifdef enable_engine_debug_output_yes
 	BPTR engine_debug_output = Open("CON:660/50/600/480/Kittens engine",MODE_NEWFILE);
+#else
+	BPTR engine_debug_output = NULL;
 #endif
 
-
-	MainTask = (struct Process *) FindTask(NULL);
-	EngineTask = CreateNewProcTags(
-				NP_Name, "Amos kittens graphics engine" ,
-				NP_Entry, main_engine, 
-				NP_Priority, 0, 
-				NP_Child, TRUE,
-
-#ifdef enable_engine_debug_output_yes
-				NP_Output, engine_debug_output,
-#endif
-				TAG_END);
+	main_task = (struct Process *) FindTask(NULL);
+	EngineTask = spawn( main_engine, "Amos kittens graphics engine",engine_debug_output);
 
 	Wait(SIGF_CHILD);
 	return ((EngineTask) && (engine_stopped == false));
@@ -481,7 +473,7 @@ void main_engine()
 		ULONG ret;
 		int n;
 		
-		Signal( &MainTask->pr_Task, SIGF_CHILD );
+		Signal( &main_task->pr_Task, SIGF_CHILD );
 
 		Printf("clear video\n");
 		retroClearVideo(video);
@@ -675,7 +667,7 @@ void main_engine()
 			}
 
 			WaitTOF();
-			if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );
+			if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 
 			AfterEffectScanline( video );
 //			AfterEffectAdjustRGB( video , 8, 0 , 4);
@@ -705,26 +697,15 @@ void main_engine()
 	}
 	else
 	{
-		Signal( &MainTask->pr_Task, SIGF_CHILD );
+		Signal( &main_task->pr_Task, SIGF_CHILD );
 	}
 
 	close_joysticks();
 	close_engine();
 
-	if (sig_main_vbl) Signal( &MainTask->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
+	if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
 
 	engine_stopped = true;
-}
-
-void wait_engine()
-{
-	do
-	{
-		Delay(1);
-	} while ((EngineTask)&&(engine_stopped == false));
-	Delay(1);
-
-	Printf("EngineTask %04lx, engine stopped: %s\n", EngineTask, engine_stopped ? "True" : "False" );
 }
 
 

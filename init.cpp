@@ -11,6 +11,8 @@
 #include "joysticks.h"
 #include "amoskittens.h"
 
+struct Process *main_task = NULL;
+
 struct Library 					 *AmosExtensionBase = NULL;
 struct AmosExtensionIFace		 *IAmosExtension = NULL;
 
@@ -40,6 +42,9 @@ struct Library			*KeymapBase = NULL;
 
 struct Locale			*_locale = NULL;
 ULONG				*codeset_page = NULL;
+
+struct Library 			* RetroModeBase = NULL;
+struct RetroModeIFace 	*IRetroMode = NULL;
 
 APTR engine_mx = 0;
 

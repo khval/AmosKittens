@@ -55,7 +55,8 @@ main_objects = commands.cpp \
 			amal_object_sprite.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
-			screen_helper.cpp
+			screen_helper.cpp \
+			spawn.cpp
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}

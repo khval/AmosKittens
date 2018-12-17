@@ -1,4 +1,6 @@
 
+extern struct Process *main_task ;
+
 extern struct Library 			 *AmosExtensionBase ;
 extern struct AmosExtensionIFace	 *IAmosExtension ;
 

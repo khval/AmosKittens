@@ -38,6 +38,7 @@
 #include "engine.h"
 #include "AmalCompiler.h"
 #include "channel.h"
+#include "spawn.h"
 
 #include "ext_compact.h"
 
@@ -1367,7 +1368,7 @@ int main(char args, char **arg)
 		}
 
 		running = false;
-		wait_engine();
+		wait_spawns();
 
 		if (do_input)
 		{
