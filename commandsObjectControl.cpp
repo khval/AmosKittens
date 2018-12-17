@@ -32,6 +32,50 @@ extern struct retroRGB DefaultPalette[256];
 
 int priorityReverse = 0;
 
+int find_zone_in_any_screen( int hx, int hy)
+{
+	int z,x,y;
+	struct zone *zz;
+	struct retroScreen *s;
+
+	for (z=0;z<zones_allocated;z++)
+	{
+		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		{
+			if (s = screens[zones[z].screen])
+			{
+				x = XScreen_formula( s, hx );
+				y = YScreen_formula( s, hy );
+				zz = &zones[z];
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+			}
+		}
+	}
+	return -1;
+}
+
+int find_zone_in_only_screen( int screen, int hx, int hy)
+{
+	int z,x,y;
+	struct zone *zz;
+	struct retroScreen *s;
+
+	for (z=0;z<zones_allocated;z++)
+	{
+		if (zones[z].screen == screen)
+		{
+			if (s = screens[zones[z].screen])
+			{
+				x = XScreen_formula( s, hx );
+				y = YScreen_formula( s, hy );
+				zz = &zones[z];
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+			}
+		}
+	}
+	return -1;
+}
+
 char *ocXMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	setStackNum(engine_mouse_x);
@@ -153,25 +197,11 @@ char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocMouseZone( struct glueCommands *data, int nextToken )
 {
-	struct retroScreen *s;
-	struct zone *zz;
 	int args = stack - data->stack +1 ;
-	int z,rz = -1;
+	int rz;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	for (z=0;z<zones_allocated;z++)
-	{
-		if ((zones[z].screen>-1) && (zones[z].screen<8))
-		{
-			if (s = screens[zones[z].screen])
-			{
-				int x = XScreen_formula( s, engine_mouse_x );
-				int y = YScreen_formula( s, engine_mouse_y );
-				zz = &zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	rz = z;
-			}
-		}
-	}
+	rz = find_zone_in_any_screen( engine_mouse_x, engine_mouse_y );
 
 	popStack( stack - data->stack );
 	setStackNum( rz );
@@ -555,13 +585,33 @@ char *ocMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+
 char *_ocHZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int ret = 0;
+	int ret = -1;
+	int s=-1,x=-1,y=-1;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Sorry HZone out of order, comeback when it works :-)\n");
+	switch (args)
+	{
+		case 2:
+				x = getStackNum( stack-1 );
+				y = getStackNum( stack );
+				ret = find_zone_in_any_screen( x,y );
+				break;
+		case 3:
+				s = getStackNum( stack-2 );
+				x = getStackNum( stack-1 );	
+				y = getStackNum( stack );
+				ret = find_zone_in_only_screen( s, x,y );
+				break;
+		default:
+				setError(22, data-> tokenBuffer);
+	}
+
+	printf("HZone(%d,%d,%d) is %d\n",s,x,y,ret);
 
 	popStack( stack - data->stack );
 	setStackNum( ret );
