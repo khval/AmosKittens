@@ -163,7 +163,22 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 
 				if (screens[screen_num])
 				{
-					set_default_colors( screens[screen_num] );
+					struct retroRGB *source_pal;
+					struct retroRGB *dest_pal;
+					int n;
+
+					source_pal = screens[current_screen] -> orgPalette;
+					dest_pal = screens[screen_num] -> orgPalette;
+
+					n = 0;
+					while ( n<256)
+					{
+						*dest_pal=*source_pal;
+
+						source_pal++;
+						dest_pal++;
+						n++;
+					}
 
 					retroApplyScreen( screens[screen_num], video, 0, 100, screens[screen_num]->displayWidth, screens[screen_num]->displayHeight );
 					video -> refreshAllScanlines = TRUE;
