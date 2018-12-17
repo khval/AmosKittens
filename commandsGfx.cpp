@@ -1511,19 +1511,11 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 			n = 0;
 			while ( n<256)
 			{
-				if (n<32)		// we allow up to 32 colors mask, Amos Pro only 16 colors mask.
-				{
-//					printf ("%08x - %02x, %02x, %02x\n", (1<<n), source_pal -> r, source_pal -> g, source_pal -> b);
-					*dest_pal++=*source_pal;
-	//				*dest_pal++= (mask & (1<<n)) ? *source_pal : *org_pal;
-				}
-				else
-				{
-					*dest_pal++=*source_pal;
-				}
+				*dest_pal=*source_pal;
 
 				source_pal++;
-				org_pal++;
+				dest_pal++;
+//				org_pal++;
 				n++;
 			}
 
