@@ -12,6 +12,7 @@
 #include "amal_object.h"
 #include "amoskittens.h"
 #include "commandsScreens.h"
+#include "debug.h"
 
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
@@ -25,16 +26,13 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 #ifdef test_app
 	#define amal_mouse_x 1000
 	#define amal_mouse_y 2000
-	#define AmalPrintf Printf
 #else
 	extern int engine_mouse_x;
 	extern int engine_mouse_y;
-
 	#define amal_mouse_x engine_mouse_x
 	#define amal_mouse_y engine_mouse_y
-	#define AmalPrintf Printf
-	//define AmalPrintf(fmt,...)
 #endif
+
 
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
@@ -198,7 +196,7 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 3)
 	{
@@ -249,7 +247,7 @@ void *amal_call_move API_AMAL_CALL_ARGS
 {
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	pushBackAmalCmd( amal::flag_cmd, code, self, callback_move ); 
 	self -> argStack [ self -> argStackCount ] = 0;	// 
 	return NULL;
@@ -258,7 +256,7 @@ void *amal_call_move API_AMAL_CALL_ARGS
 static void *add (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	dumpAmalStack( self );
+//	dumpAmalStack( self );
 
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -890,13 +888,13 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		self -> reg[ c - '0' ] = self -> argStack [ self -> argStackCount ];
 		chr[0] = c;
-		Printf("R%s=%ld\n", chr, self -> reg[ c - '0' ]);
+		AmalPrintf("R%s=%ld\n", chr, self -> reg[ c - '0' ]);
 	}
 	else if ((c>='A')&&(c<='Z'))
 	{
 		amreg[ c - 'A' ] = self -> argStack [ self -> argStackCount ];
 		chr[0]=c;
-		Printf("R%s=%ld\n",chr, amreg[ c - 'A' ]);
+		AmalPrintf("R%s=%ld\n",chr, amreg[ c - 'A' ]);
 	}
 
 	return NULL;

@@ -297,7 +297,7 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 
 void channel_amal( struct kittyChannel *channel )
 {
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// check if program is ready to run, and it has program.
 	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProgCounter ) )

@@ -49,7 +49,7 @@ void print_code( void **adr );
 void dumpAmalRegs()
 {
 	int i;
-	for (i=0;i<26;i++) printf("R%c is %d\n", 'A'+i,amreg[i]);
+	for (i=0;i<26;i++) Printf("R%c is %ld\n", 'A'+i,amreg[i]);
 }
 
 #endif
