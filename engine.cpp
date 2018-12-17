@@ -279,28 +279,7 @@ void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 	engine_unlock();
 }
 
-void retroFadeScreen_beta(struct retroScreen * screen)
-{
-	if (screen -> fade_speed)
-	{
-		printf("is fading\n");
-
-		if (screen -> fade_count < screen -> fade_speed)
-		{
-			screen -> fade_count++;
-		}
-		else
-		{
-			printf("is here\n");
-			int changed_at = -1;
-			int n = 0;
-			struct retroRGB *opal = screen -> orgPalette;
-			struct retroRGB *rpal = screen -> rowPalette;
-			struct retroRGB *npal = screen -> fadePalette;
-
-			for (n=0;n<256;n++)
-			{
-
+/*
 				if (npal -> r < 256)	// valid colour most be set.
 				{
 					if (npal->r > opal->r)
@@ -342,6 +321,57 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 						changed_at = n | 0x3000;
 					}
 				}
+*/
+
+#define limit_step( step ) \
+		if ( step <-0x11) step=-0x11; \
+		if ( step >0x11) step=0x11; \
+
+
+void retroFadeScreen_beta(struct retroScreen * screen)
+{
+	int dr,dg,db;
+
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen -> fade_speed)
+	{
+		Printf("Fading\n");
+
+		if (screen -> fade_count < screen -> fade_speed)
+		{
+			screen -> fade_count++;
+		}
+		else
+		{
+			Printf("dump fade\n");
+			int changed_at = 0;
+			int n = 0;
+			struct retroRGB *opal = screen -> orgPalette;
+			struct retroRGB *rpal = screen -> rowPalette;
+			struct retroRGB *npal = screen -> fadePalette;
+
+			for (n=0;n<256;n++)
+			{
+				dr = (int) npal->r - (int) opal->r;
+				dg = (int) npal->g - (int) opal->g;
+				db = (int) npal->b - (int) opal->b;
+
+				limit_step(dr);
+				limit_step(dg);
+				limit_step(db);
+
+				Printf("%ld: %ld,%ld,%ld - %ld,%ld,%ld - %ld,%ld,%ld\n", 
+						n,
+						npal->r,npal->g,npal->b,
+						opal->r,opal->g,opal->b,
+						dr,dg,db);
+				
+				changed_at = dr | dg | db;
+
+				opal->r += dr;
+				opal->g += dg;
+				opal->b += db;
 
 				*rpal =*opal;
 
@@ -350,10 +380,9 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 				npal++;
 			}
 
-			screen -> fade_count = 0;
-			if (changed_at == -1)
+			screen -> fade_count = 1;
+			if (changed_at == 0)
 			{
-				printf("fading done....\n");
 				screen -> fade_speed = 0;
 			}
 		}
@@ -561,7 +590,7 @@ void main_engine()
 
 							if (Qualifier & IEQUALIFIER_REPEAT)
 							{
-								printf("we have a repeat key\n");
+								Printf("we have a repeat key\n");
 							}
 							 
 							{
@@ -610,8 +639,7 @@ void main_engine()
 
 					if (screen)
 					{
-//						Printf("check fade count %ld speed %ld\n", screen -> fade_count, screen -> fade_speed);
-						retroFadeScreen(screen);
+						retroFadeScreen_beta(screen);
 
 						if (screen -> autoback!=0)
 						{
