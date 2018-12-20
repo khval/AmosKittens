@@ -96,7 +96,7 @@ char *_bgGetIcon( struct glueCommands *data, int nextToken )
 	int num;
 	struct retroSpriteObject *bob;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -140,7 +140,7 @@ char *_bgGetIconPalette( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((icons)&&(screen))
 	{

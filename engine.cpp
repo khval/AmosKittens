@@ -332,19 +332,14 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 {
 	int dr,dg,db;
 
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 	if (screen -> fade_speed)
 	{
-		Printf("Fading\n");
-
 		if (screen -> fade_count < screen -> fade_speed)
 		{
 			screen -> fade_count++;
 		}
 		else
 		{
-			Printf("dump fade\n");
 			int changed_at = 0;
 			int n = 0;
 			struct retroRGB *opal = screen -> orgPalette;
@@ -361,12 +356,6 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 				limit_step(dg);
 				limit_step(db);
 
-				Printf("%ld: %ld,%ld,%ld - %ld,%ld,%ld - %ld,%ld,%ld\n", 
-						n,
-						npal->r,npal->g,npal->b,
-						opal->r,opal->g,opal->b,
-						dr,dg,db);
-				
 				changed_at = dr | dg | db;
 
 				opal->r += dr;

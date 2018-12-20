@@ -146,8 +146,6 @@ char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-
 char *_gfxBar( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1366,7 +1364,6 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
 char *gfxSetRainbow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxSetRainbow, tokenBuffer );
@@ -1389,8 +1386,6 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool done = false;
-
-
 
 //	proc_names_
 printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1486,7 +1481,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (valid)
 	{
-
 		printf("Fade %d TO %d,%08x\n",fade_speed,source_screen,mask);
 
 		if ((screens[current_screen])&&(screens[source_screen]))
@@ -1528,10 +1522,8 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 
-
 	return NULL;
 }
-
 
 char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -1949,7 +1941,6 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
 char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _gfxPhysic, tokenBuffer );
@@ -2096,7 +2087,6 @@ char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 
 	if (args==8)
 	{
