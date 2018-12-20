@@ -140,6 +140,17 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+void copy_pal(	struct retroRGB *source_pal,	struct retroRGB *dest_pal)
+{
+	int n;
+	for (n=0; n<256;n++)
+	{
+		*dest_pal=*source_pal;
+		source_pal++;
+		dest_pal++;
+	}
+}
+
 char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -163,22 +174,12 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 
 				if (screens[screen_num])
 				{
-					struct retroRGB *source_pal;
-					struct retroRGB *dest_pal;
-					int n;
+					screens[screen_num] -> fade_speed = 0;
+					screens[screen_num] -> fade_count = 0;
 
-					source_pal = screens[current_screen] -> orgPalette;
-					dest_pal = screens[screen_num] -> orgPalette;
-
-					n = 0;
-					while ( n<256)
-					{
-						*dest_pal=*source_pal;
-
-						source_pal++;
-						dest_pal++;
-						n++;
-					}
+					copy_pal( screens[current_screen] -> orgPalette, screens[screen_num] -> orgPalette );
+					copy_pal( screens[current_screen] -> rowPalette, screens[screen_num] -> rowPalette );
+					copy_pal( screens[current_screen] -> fadePalette, screens[screen_num] -> fadePalette );
 
 					retroApplyScreen( screens[screen_num], video, 0, 100, screens[screen_num]->displayWidth, screens[screen_num]->displayHeight );
 					video -> refreshAllScanlines = TRUE;
@@ -235,6 +236,10 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 					screen -> scanline_y,
 					screen -> displayWidth,
 					screen -> displayHeight );
+			}
+			else
+			{
+				setError(47,data->tokenBuffer);	// Screen not open.
 			}
 
 			video -> refreshAllScanlines = TRUE;
