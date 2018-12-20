@@ -1299,6 +1299,7 @@ int main(char args, char **arg)
 		if (kitty_extensions[2].lookup)
 		{
 			memset(kitty_extensions[2].lookup,0,0xFFFF);
+			*((void **) (kitty_extensions[2].lookup + 0x0048)) = (void *) ext_cmd_unpack;
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
 		}
 
