@@ -380,48 +380,69 @@ void dump_680x0_regs()
 	printf("\n");
 }
 
+void dump_pal(struct retroScreen *s, int colors)
+{
+	int n;
+	Printf("      ");
+
+	for (n =0;n<colors;n++)
+	{
+		Printf("%02lX%02lX%02lX ",
+			n,
+			s -> orgPalette[n].r,
+			s -> orgPalette[n].g,
+			s -> orgPalette[n].b);
+	}
+	Printf("\n");
+}
+
 void dumpScreenInfo()
+{
+	int n;
+/*
+		struct retroScreen *s;
+		s = screens[current_screen];
+
+		Printf("-- dump screen info --\n");
+		Printf(" current screen %ld\n",current_screen );
+		Printf(" current screen hex %08lx\n",s);
+
+
+		if (s -> fade_speed)
+		{
+			Printf("fade speed: %ld\n", s->fade_speed);
+
+			for (n=0;n<256;n++)
 			{
-				int n;
-				struct retroScreen *s;
+				Printf("%ld, %02lX,%02lX,%02lX --> %02lX,%02lX,%02lX\n",
+					n,
+					s -> orgPalette[n].r,
+					s -> orgPalette[n].g,
+					s -> orgPalette[n].b,
+					s -> fadePalette[n].r,
+					s -> fadePalette[n].g,
+					s -> fadePalette[n].b );
+			}
+		}
+*/
+	Printf("Screens:\n");
+	for (n=0;n<8;n++)
+	{
+		if (screens[n])
+		{
+			Printf("screen %3ld, dw %3ld, dh %3ld, rw %3ld, rh %3ld, display %4ld,%4ld, offset %4ld,%4ld, db %s, frame %ld, autoback %ld, fade_speed %ld\n", 
+				n,
+				screens[n]->displayWidth, screens[n]->displayHeight,
+				screens[n]->realWidth,screens[n]->realHeight,
+				screens[n]->scanline_x,screens[n]->scanline_y,
+				screens[n]->offset_x,screens[n]->offset_y,
+				screens[n]->Memory[1] ? "Yes" : "No ",
+				screens[n]->double_buffer_draw_frame,
+				screens[n]->autoback,
+				screens[n]->fade_speed);
 
-				s = screens[current_screen];
-
-				printf("-- dump screen info --\n");
-				printf(" current screen %d\n",current_screen );
-				printf(" current screen hex %08x\n",s);
-
-
-				if (s -> fade_speed)
-				{
-					printf("fade speed: %d\n", s->fade_speed);
-
-					for (n=0;n<256;n++)
-					{
-						printf("%d, %02X,%02X,%02X --> %02X,%02X,%02X\n",
-							n,
-							s -> orgPalette[n].r,
-							s -> orgPalette[n].g,
-							s -> orgPalette[n].b,
-							s -> fadePalette[n].r,
-							s -> fadePalette[n].g,
-							s -> fadePalette[n].b );
-					}
-				}
-
-				printf("other screens:\n");
-				for (n=0;n<8;n++)
-				{
-					if (screens[n])
-					{
-						printf("screen %d, dw %d, dh %d, rw %d, rh %d, display x %d display y %d pen %d, paper %d, fade_speed %d\n", 
-							n,
-							screens[n]->displayWidth, screens[n]->displayHeight,
-							screens[n]->realWidth,screens[n]->realHeight,
-							screens[n]->scanline_x,screens[n]->scanline_y,
-							screens[n]->pen,screens[n]->paper,
-							screens[n]->fade_speed);							
-					}
-				}
-			};
+				dump_pal( screens[n] , 8 );						
+		}
+	}
+};
 
