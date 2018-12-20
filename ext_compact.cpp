@@ -85,6 +85,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 			textWindow -> rows = screen -> realHeight / 8;
 			screen -> pen = 2;
 			screen -> paper = 1;
+			screen -> autoback = 2;
 
 			screen -> currentTextWindow = textWindow;
 		}
@@ -120,6 +121,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 		}
 	}
 
+	video -> refreshAllScanlines = TRUE;
 	engine_unlock();
 }
 
