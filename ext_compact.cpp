@@ -228,6 +228,8 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		n = getStackNum(stack-1);
 		s = getStackNum(stack);
 
+		printf("unpack %d to %d\n",n,s);
+
 		if ((n>0)&&(n<16))
 		{
 			adr = (unsigned char *) kittyBanks[n-1].start;
@@ -235,10 +237,14 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 			if (adr)
 			{
 				convertPacPic( s, adr, "dump" );
+
+				if (screens[s] == NULL) setError(47,data->tokenBuffer );
 			}
-			else setError(36,data->tokenBuffer);
-		} 
+			else setError(36,data->tokenBuffer);	// Bank not reserved
+		}
+		else setError(25, data->tokenBuffer);
 	}
+	else setError(22, data->tokenBuffer);	// wrong number of args.
 
 	popStack( stack - data->stack );
 	return NULL;
