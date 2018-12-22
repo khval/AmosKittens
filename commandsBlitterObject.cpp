@@ -245,8 +245,13 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	stack_get_if_int( stack - 1 , &bob->y );
 
 	bob->image = getStackNum( stack );
-
 	bob->screen_id = current_screen;
+
+
+	if (screens[current_screen])
+	{
+		screens[current_screen] -> force_swap = TRUE;
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
