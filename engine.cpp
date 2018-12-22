@@ -576,7 +576,11 @@ void main_engine()
 
 				engine_lock();
 
-				if (bobUpdate==1)	drawBobs();
+				if ((bobUpdate==1)||(screen -> force_swap))
+				{
+					Printf("drawBobs()\n");
+					drawBobs();
+				}
 
 				for (n=0; n<8;n++)
 				{
@@ -586,10 +590,17 @@ void main_engine()
 					{
 						retroFadeScreen_beta(screen);
 
-						if (screen -> autoback!=0)
+						if (screen -> Memory[1]) 	// has double buffer
 						{
-							if (screen -> Memory[1]) 
+							Printf("screen %ld - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
+							Printf("Trying to swap\n");
+
+							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
+								screen -> force_swap = FALSE;
+
+								Printf("swapping\n");
+
 								memcpy( 
 									screen -> Memory[1 - screen -> double_buffer_draw_frame], 
 									screen -> Memory[screen -> double_buffer_draw_frame],
@@ -603,7 +614,11 @@ void main_engine()
 
 				retroDrawVideo( video );
 
-				if (bobUpdate==1) clearBobs();
+				if ((bobUpdate==1)||(screen -> force_swap))
+				{
+					clearBobs();
+					Printf("Clear bobs\n");
+				}
 
 				if (channels)
 				{
@@ -646,7 +661,9 @@ void main_engine()
 //			AfterEffectAdjustRGB( video , 8, 0 , 4);
 			retroDmaVideo( video );
 
-			Delay(1);
+			dumpScreenInfo();
+
+			Delay(10);
 
 			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, video->rp.BitMap,
