@@ -16,6 +16,7 @@ extern std::vector<struct label> labels;
 extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
+extern struct retroSpriteObject bobs[64];
 extern int current_screen ;
 
 extern int regs[16];
@@ -388,7 +389,6 @@ void dump_pal(struct retroScreen *s, int colors)
 	for (n =0;n<colors;n++)
 	{
 		Printf("%02lX%02lX%02lX ",
-			n,
 			s -> orgPalette[n].r,
 			s -> orgPalette[n].g,
 			s -> orgPalette[n].b);
@@ -396,35 +396,33 @@ void dump_pal(struct retroScreen *s, int colors)
 	Printf("\n");
 }
 
+void dump_bobs(int screen_id)
+{
+	int n;
+	Printf("      ");
+
+	for (n =0;n<64;n++)
+	{
+		if (screen_id == bobs[n].screen_id)
+		{
+			if (bobs[n].image != -1)
+			{
+				Printf("[ %ld, %4ld,%4ld,%4ld ] ",
+					n,
+					bobs[n].x,
+					bobs[n].y,
+					bobs[n].image);
+			}
+		}
+	}
+	Printf("\n");
+}
+
+
 void dumpScreenInfo()
 {
 	int n;
-/*
-		struct retroScreen *s;
-		s = screens[current_screen];
 
-		Printf("-- dump screen info --\n");
-		Printf(" current screen %ld\n",current_screen );
-		Printf(" current screen hex %08lx\n",s);
-
-
-		if (s -> fade_speed)
-		{
-			Printf("fade speed: %ld\n", s->fade_speed);
-
-			for (n=0;n<256;n++)
-			{
-				Printf("%ld, %02lX,%02lX,%02lX --> %02lX,%02lX,%02lX\n",
-					n,
-					s -> orgPalette[n].r,
-					s -> orgPalette[n].g,
-					s -> orgPalette[n].b,
-					s -> fadePalette[n].r,
-					s -> fadePalette[n].g,
-					s -> fadePalette[n].b );
-			}
-		}
-*/
 	Printf("Screens:\n");
 	for (n=0;n<8;n++)
 	{
@@ -441,7 +439,8 @@ void dumpScreenInfo()
 				screens[n]->autoback,
 				screens[n]->fade_speed);
 
-				dump_pal( screens[n] , 8 );						
+//				dump_pal( screens[n] , 8 );						
+				dump_bobs( n );
 		}
 	}
 };
