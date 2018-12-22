@@ -10,6 +10,7 @@
 #include "channel.h"
 
 extern struct retroSpriteObject bobs[64];
+extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
 {
@@ -29,21 +30,34 @@ static int getX (int object)
 static int getY (int object)
 {
 	return bobs[object].y;
+
 }
 
 static void setImage (int object,int image)
 {
+	struct retroScreen *s;
 	bobs[object].image = image;
+	s = screens[ bobs[object].screen_id ];
+	if (s) s -> force_swap = TRUE;
+	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,image);
 }
 
 static void setX (int object,int x)
 {
+	struct retroScreen *s;
 	bobs[object].x = x;
+	s = screens[ bobs[object].screen_id ];
+	if (s) s -> force_swap = TRUE;
+	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,x);
 }
 
 static void setY (int object,int y)
 {
+	struct retroScreen *s;
 	bobs[object].y = y;
+	s = screens[ bobs[object].screen_id ];
+	if (s) s -> force_swap = TRUE;
+	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,y);
 }
 
 struct channelAPI bob_api = 
