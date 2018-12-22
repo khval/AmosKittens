@@ -279,50 +279,6 @@ void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 	engine_unlock();
 }
 
-/*
-				if (npal -> r < 256)	// valid colour most be set.
-				{
-					if (npal->r > opal->r)
-					{
-						opal -> r +=  0x11;	
-						changed_at = n | 0x1000;
-					}
-					else if ((npal->r < opal -> r))
-					{
-						opal -> r -=  0x11;	
-						changed_at = n | 0x1000;
-					}
-				}
-
-				if (npal -> g < 256)	// valid colour most be set.
-				{
-					if (npal->g > opal->g)
-					{
-						opal->g += 0x11;
-						changed_at = n | 0x2000;
-					}
-					else if ((npal->g < opal -> g))
-					{
-						opal->g -= 0x11;
-						changed_at = n | 0x2000;
-					}
-				}
-
-				if (npal -> b < 256)	// valid colour most be set.
-				{
-					if (npal->b > opal->b)
-					{
-						opal->b +=  0x11;
-						changed_at = n | 0x3000;
-					}
-					else if ((npal->b < opal->b))
-					{
-						opal->b -=  0x11;
-						changed_at = n | 0x3000;
-					}
-				}
-*/
-
 #define limit_step( step ) \
 		if ( step <-0x11) step=-0x11; \
 		if ( step >0x11) step=0x11; \
