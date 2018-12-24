@@ -54,8 +54,17 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 			if (textWindow)
 			{
 				clear_cursor(screen);
-				textWindow -> locateX = getStackNum( stack-1 );
-				textWindow -> locateY = getStackNum( stack );
+
+				if (kittyStack[stack-1].type == type_int ) 
+				{
+					textWindow -> locateX = kittyStack[stack-1].value;
+				}
+		
+				if (kittyStack[stack].type == type_int )
+				{
+					textWindow -> locateY = kittyStack[stack].value;
+				}
+
 				draw_cursor(screen);
 			}
 		}
@@ -67,6 +76,13 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	return NULL;
+}
+
+char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textLocate, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
 }
 
 char *_textHome( struct glueCommands *data, int nextToken )
