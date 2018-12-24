@@ -1091,18 +1091,23 @@ char *_textCline( struct glueCommands *data, int nextToken )
 
 		if (textWindow)
 		{
-			y0 = textWindow -> locateY *8;
+			int _has_border =(textWindow -> border ? 1 : 0);
+			int _x = textWindow -> x + _has_border;
+			int _y = textWindow -> y + _has_border;
+			int _w = textWindow -> charsPerRow - (_has_border * 2);
+
+			y0 = (textWindow -> locateY + _y )*8;
 			y1 = y0+7;
 
 			switch(kittyStack[stack].type)
 			{
 				case type_none:
-					x0 = 0;
-					x1 = screen -> realWidth;
+					x0 = _x * 8;
+					x1 = x0 + (_w * 8);
 					break;
 				case type_int:
 					chars = getStackNum( stack );
-					x0 = textWindow -> locateY *8;
+					x0 = (textWindow -> locateY + _x ) *8;;
 					x1 = x0 + 7;
 					if (chars<0) x0 += chars * 8;
 					if (chars>0) x1 += chars * 8;
