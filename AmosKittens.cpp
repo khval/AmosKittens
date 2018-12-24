@@ -568,7 +568,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	setStackNum( *((int *) ptr) );
 
-	printf("num is %d\n",*((int *) ptr) );
+//	printf("num is %d\n",*((int *) ptr) );
 
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack( next_token );
