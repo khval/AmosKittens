@@ -510,7 +510,7 @@ char *_textAt( struct glueCommands *data, int nextToken )
 				{
 					char str[] = {27,'X','0',27,'Y','0',0};
 					if (x>-1) str[2]='0'+x;
-					if (y>-1) str[6]='0'+y;
+					if (y>-1) str[5]='0'+y;
 					setStackStrDup( str );
 				}
 				break;
