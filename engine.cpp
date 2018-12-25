@@ -654,16 +654,12 @@ void main_engine()
 				engine_unlock();
 			}
 
-			WaitTOF();
-			if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
-
 			AfterEffectScanline( video );
 //			AfterEffectAdjustRGB( video , 8, 0 , 4);
 			retroDmaVideo( video );
 
-			dumpScreenInfo();
-
-			Delay(10);
+			WaitTOF();
+			if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 
 			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, video->rp.BitMap,
@@ -676,7 +672,10 @@ void main_engine()
 						BLITA_DestX, My_Window->BorderLeft,
 						BLITA_DestY, My_Window->BorderTop,
 						TAG_END);
+
+			Delay(1);
 		}
+
 
 		for (n=0; n<8;n++)
 		{
