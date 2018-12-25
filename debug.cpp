@@ -19,6 +19,8 @@ extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
 extern int current_screen ;
 
+// _lessOrEqualData
+
 extern int regs[16];
 
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
@@ -57,7 +59,9 @@ char *_get_var_index(struct glueCommands *data, int nextToken);
 char *_alloc_mode_off(struct glueCommands *data, int nextToken);
 char *_procAndArgs (struct glueCommands *data, int nextToken);
 char *_endProc (struct glueCommands *data, int nextToken);
-
+char *_len (struct glueCommands *data, int nextToken);
+char *_lessOrEqualData (struct glueCommands *data, int nextToken);
+char *_moreOrEqualData (struct glueCommands *data, int nextToken);
 
 struct stackDebugSymbol
 {
@@ -103,6 +107,10 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_procedure,"procedure"},
 	{_procAndArgs,"procedure with args"},
 	{_endProc,"end proc"},
+	{_len,"len"},
+	{_lessOrEqualData,"<="},
+	{_moreOrEqualData,">="},
+
 	{NULL, NULL}
 };
 
@@ -127,6 +135,34 @@ void dump_labels()
 		printf("%d: tokenLocation: %08x, Name: %s\n" ,n, labels[n].tokenLocation, labels[n].name);
 
 	}
+}
+
+unsigned int str_crc( char *name )
+{
+	char *s;
+	unsigned int crc;
+	int cnt;
+
+	cnt = 0;
+	for (s=name;*s;s++)
+	{
+		crc ^= (*s) << ((cnt%4)*8);
+		cnt++;
+	}
+	return crc;
+}
+
+unsigned int vars_crc()
+{
+	int n;
+	unsigned int crc = 0;
+
+	for (n=0;n<global_var_count;n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+		crc ^= str_crc( globalVars[n].varName );
+	}
+	return crc;
 }
 
 void dump_global()
@@ -252,6 +288,7 @@ void dump_prog_stack()
 		printf("cmdTmp[%d].tokenBuffer = %08x  - at line: %d \n", n, cmdTmp[n].tokenBuffer, getLineFromPointer(cmdTmp[n].tokenBuffer));
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
+		printf("cmdTmp[%d].lastToken = %04x\n", n, cmdTmp[n].lastToken);
 		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
 	}
 }
