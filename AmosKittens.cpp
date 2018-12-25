@@ -1095,7 +1095,7 @@ struct nativeCommand nativeCommands[]=
 	{0x26D8,"Erase All", 0, cmdEraseAll },
 	{0xFF4C,"or",0, orData },
 	{0xFF3E,"xor",0,xorData },
-	{0xFF58,"or",0, andData },
+	{0xFF58,"and",0, andData },
 	{0xFF66,"not equal",0,cmdNotEqual },
 	{0xFF7A,"<=",0,lessOrEqualData },
 	{0xFF84,"<=",0,lessOrEqualData },
