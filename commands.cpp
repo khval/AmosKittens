@@ -15,6 +15,8 @@
 #include "errors.h"
 #include "engine.h"
 
+extern void clear_local_vars( int proc );
+
 bool every_on = true;
 int every_timer = 0;
 char *on_every_gosub_location = NULL;
@@ -1179,19 +1181,40 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	struct procedure *proc = (struct procedure *) tokenBuffer;
 
-//	printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
+	printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
 
 	return proc -> EndOfProc - sizeof(struct procedure);
 }
 
+int get_proc_num_from_ref(int ref)
+{
+	if (ref)
+	{
+		return globalVars[ref-1].proc;
+	}
+	return 0;
+}
+
 char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	int proc;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	struct reference *ref = (struct reference *) (tokenBuffer);
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
 	cmdTmp[cmdStack-1].tokenBuffer2  = NULL;	// must be reset, is used
+
 	tokenBuffer += ref -> length ;
+
+	dump_global();
+
+	proc = get_proc_num_from_ref(ref->ref);
+
+	if (proc)
+	{
+		printf("proc num %d\n",proc);
+		clear_local_vars( proc );
+	}
 
 	return tokenBuffer;
 }

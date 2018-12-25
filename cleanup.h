@@ -1,4 +1,5 @@
 
+void clear_local_vars( int proc );
 void clean_up_vars();
 void clean_up_files();
 void clean_up_stack();

@@ -21,8 +21,58 @@ extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
 extern ChannelTableClass *channels;
 
+
+void clear_local_vars( int proc )
+{
+	int n;
+	int i;
+	struct kittyData *var;
+
+	printf("%s;%s\n",__FILE__,__FUNCTION__);
+
+	for (n=0;n<global_var_count;n++)
+	{
+		if (globalVars[n].proc == proc)
+		{
+			printf("clear %s\n",globalVars[n].varName);
+
+			var = &globalVars[n].var;
+
+			switch (var->type)
+			{
+				case type_int:
+					var -> value = 0;
+					break;
+
+				case type_float:
+					var -> decimal = 0;
+					break;
+
+				case type_string:
+					if (var->str) var->str[0] = 0;
+					var->len = 0;
+					break;
+
+				case type_int | type_array:
+				case type_float | type_array:
+				case type_string | type_array:
+
+					if (var -> sizeTab) free( var -> sizeTab);
+	 				if (var->str) free (var->str);
+					var -> sizeTab = NULL;
+					var->str = NULL;
+					break;
+
+			}
+		}
+	}
+
+	Delay(5);
+}
+
 void clean_up_vars()
 {
+	struct kittyData *var;
 	int n;
 	int i;
 
@@ -37,22 +87,27 @@ void clean_up_vars()
 			globalVars[n].varName = NULL;
 		}
 
-		switch (globalVars[n].var.type)
+		var = &globalVars[n].var;
+
+		switch (var -> type)
 		{
 			case type_string:
+ 				if (var->str) free (var->str);
+				break;
+
 			case type_int | type_array:
 			case type_float | type_array:
 			case type_string | type_array:
 
-//				printf("--->Free array?");
-
-				// its a union, so any array or string will be freed.
-
- 				if (globalVars[n].var.str) free (globalVars[n].var.str);
-				globalVars[n].var.str = NULL;
+				// free
+				if (var -> sizeTab) free( var -> sizeTab);
+ 				if (var->str) free (var->str);
 				break;
 		}
-//		printf("--->Done :-)\n");
+
+		// reset
+		var -> sizeTab = NULL;
+		var->str = NULL;
 	}
 
 	global_var_count = 0;
