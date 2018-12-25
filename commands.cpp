@@ -2032,7 +2032,7 @@ char *_cmdWait( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 
-	Delay( getStackNum(data->stack) );
+	Delay( getStackNum(data->stack) / 2 );
 
 	return  NULL ;
 }
