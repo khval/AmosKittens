@@ -115,15 +115,9 @@ char *_textHome( struct glueCommands *data, int nextToken )
 	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
+
+
 	return NULL;
-}
-
-
-char *textLocate(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _textLocate, tokenBuffer );
-	setStackNone();
-	return tokenBuffer;
 }
 
 char *_textPen( struct glueCommands *data, int nextToken )
