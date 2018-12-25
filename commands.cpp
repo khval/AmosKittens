@@ -471,12 +471,13 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	char *ret;
 	int nextToken = *((unsigned short *) tokenBuffer);
+	int lastToken;
 
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_file_pos_ = tokenBuffer;		// needed by "Fn", need to return End Bracket after Fn call.
 
-	ret = flushCmdParaStack(0);
+	ret = flushCmdParaStack(nextToken);
 	if (ret) return ret;
 
 	if (parenthesis_count)
@@ -489,7 +490,15 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
 	}
 
-	if ( correct_order( last_tokens[parenthesis_count],  nextToken ) == false )
+/*
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+printf("next token is %04x\n",nextToken);
+dump_prog_stack();
+*/
+
+	lastToken = last_tokens[parenthesis_count];
+
+	if ( correct_order( lastToken ,  nextToken ) == false )
 	{
 		// hidden ( condition.
 		kittyStack[stack].str = NULL;

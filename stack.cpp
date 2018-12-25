@@ -11,6 +11,8 @@
 int stack = 0;
 struct kittyData kittyStack[100];
 
+bool correct_order( int last_token, int next_token );
+
 bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken) )
 {
 	while (cmdStack > 0)
@@ -80,6 +82,7 @@ char *flushCmdParaStack( int nextToken )
 {
 	struct glueCommands *cmd;
 	char *ret = NULL;
+	unsigned short tmp_lastToken;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -91,8 +94,17 @@ char *flushCmdParaStack( int nextToken )
 
 			if ( isArgsClean( cmd ) ) 
 			{
+
 				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
+
+				last_tokens[parenthesis_count] = cmd -> lastToken;
 				cmdStack--;
+
+				if ( correct_order( last_tokens[parenthesis_count] ,  nextToken ) == false )
+				{
+					printf("**** Looks like I need to exit here, not the correct order ***\n");
+					return ret;		// exit here.
+				}
 			}
 			else	break;
 		}

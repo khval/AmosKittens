@@ -289,6 +289,7 @@ struct zone
 	cmdTmp[cmdStack].flag = cmd_para;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
