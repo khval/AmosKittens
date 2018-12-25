@@ -79,22 +79,19 @@ void atomic_get_char( char *buf)
 					event.ie_Qualifier = keyboardBuffer[0].Qualifier;
 					actual = MapRawKey(&event, buffer, 20, 0);
 
-					printf("event code %d\n",event.ie_Code);
 
 					if (actual)
 					{
-						printf("set ascii - %d\n", buffer[0]);
-
 						buf[0] = buffer[0];
 						buf[1]=0;
-
-						if (buf[0]==13) buf[0]=10;
+//						if (buf[0]==13) buf[0]=10;
 					}
 				}
 			}
 			else
 			{
 				buf[0] = keyboardBuffer[0].Char;
+//				if (buf[0]==13) buf[0]=10;
 			}
 
 			keyboardBuffer.erase(keyboardBuffer.begin());
