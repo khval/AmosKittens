@@ -681,7 +681,6 @@ void eol( char *ptr )
 	if (nested_count>0)
 	{
 		proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-		dprintf("nested command: %s\n",nest_names[ nested_command[ nested_count -1 ].cmd ]);
 
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
@@ -696,10 +695,6 @@ void eol( char *ptr )
 				{
 					offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
 					*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
-
-					printf(" *((short *) (nested_command[ %d -1 ].ptr)) = %08x\n",
-							nested_count,
-							*((short *) (nested_command[ nested_count -1 ].ptr)) );
 				}
 				nested_count --;
 				break;
