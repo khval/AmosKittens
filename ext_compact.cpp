@@ -11,6 +11,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsBanks.h"
+#include "commandsBlitterObject.h"
 #include "errors.h"
 #include "engine.h"
 
@@ -26,9 +27,10 @@ extern int current_screen;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
 
-void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
+extern void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
+extern void freeAllTextWindows(struct retroScreen *screen);
 
 // palette data for RLE
 static int r[32]={0},g[32]={0},b[32]={0};
@@ -68,6 +70,9 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	if (screens[screen_num]) 
 	{
 		videomode = screens[screen_num] -> videomode;
+
+		freeScreenBobs(screen_num);
+		freeAllTextWindows( screens[screen_num] );
 		retroCloseScreen(&screens[screen_num]);
 	}
 

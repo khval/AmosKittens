@@ -23,3 +23,7 @@ char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *boCol(struct nativeCommand *cmd, char *tokenBuffer);
 char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer);
+
+void freeScreenBobs( int screen_id );
+void freeBobClear( struct retroSpriteObject *bob );
+

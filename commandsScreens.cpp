@@ -13,6 +13,8 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsScreens.h"
+#include "commandsBlitterObject.h"
+
 #include "errors.h"
 #include "engine.h"
 
@@ -111,7 +113,7 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 			engine_lock();
 
 			freeAllTextWindows( screens[screen_num]  );
-
+			freeScreenBobs( screen_num );
 
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			engine_unlock();
@@ -866,6 +868,8 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (screen)
 	{
+		freeScreenBobs( current_screen );
+
 		engine_lock();
 		retroAllocDoubleBuffer( screen );
 		video -> refreshAllScanlines = TRUE;

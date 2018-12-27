@@ -11,6 +11,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsGfx.h"
+#include "commandsBlitterObject.h"
 #include "errors.h"
 #include "engine.h"
 
@@ -77,6 +78,38 @@ void clearBobs()
 			}
 		}
 	}
+}
+
+
+void freeScreenBobs( int screen_id )
+{
+	int n;
+	struct retroSpriteObject *bob;
+
+	for (n=0;n<64;n++)
+	{
+		bob = &bobs[n];
+
+		bob -> x = 0;
+		bob -> y = 0;
+		bob -> image = 0;
+
+		if (bob->screen_id == screen_id)
+		{
+			freeBobClear( bob );
+		}
+	}
+}
+
+void freeBobClear( struct retroSpriteObject *bob )
+{
+	struct retroSpriteClear *clear = bob -> clear;
+
+	if (clear -> mem)
+	{
+		FreeVec(clear -> mem);
+		clear -> mem = NULL;
+	}	
 }
 
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear )
@@ -149,8 +182,6 @@ void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *scre
 		src += clear -> w;
 		dest += screen -> bytesPerRow;
 	}
-
-//	retroBox(screen,x0,y0,x1,y1,1);
 }
 
 void drawBobs()
