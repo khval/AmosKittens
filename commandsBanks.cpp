@@ -85,6 +85,35 @@ char *_cmdErase( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+
+char *cmdEraseAll(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdErase, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_cmdEraseAll( struct glueCommands *data, int nextToken )
+{
+	int n;
+	int args = stack - data->stack +1 ;
+
+	if (args==1)
+	{
+		for (n=0;n<16;n++)clean_up_bank(n-1);		
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdErase, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_cmdStart( struct glueCommands *data, int nextToken )
 {
 	int n;
@@ -405,11 +434,6 @@ char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _cmdErase, tokenBuffer );
-	return tokenBuffer;
-}
 
 char *cmdStart(nativeCommand *cmd, char *tokenBuffer)
 {
