@@ -104,30 +104,16 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_gfxScreenClose( struct glueCommands *data, int nextToken )
+// make sure there is standard way to close screens, that take care of clean up.
+
+bool kitten_screen_close(int screen_num)
 {
-	int args = stack - data->stack +1 ;
-	bool success = false;
-	int ret = 0;
-
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (args==1)
+	if ((screen_num>-1)&&(screen_num<8))
 	{
-		int screen_num = getStackNum( stack );
-
-		if ((screen_num>-1)&&(screen_num<8))
-		{
-			engine_lock();
-
-			freeAllTextWindows( screens[screen_num]  );
-			freeScreenBobs( screen_num );
-
-			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
-			engine_unlock();
-
-			success = true;
-		}
+		engine_lock();
+		freeAllTextWindows( screens[screen_num]  );
+		freeScreenBobs( screen_num );
+		if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 
 		// find a open screen, and set current screen to that.
 		if (screen_num == current_screen)
@@ -142,6 +128,25 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 				}
 			}
 		}
+		engine_unlock();
+		return true;
+	}
+
+	return false;
+}
+
+char *_gfxScreenClose( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = getStackNum( stack );
+		success = kitten_screen_close( screen_num );
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
