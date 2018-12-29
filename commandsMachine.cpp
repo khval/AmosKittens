@@ -1005,3 +1005,59 @@ char *machineFree(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+struct LVO 
+{
+	const char *name;
+	int lvo ;
+};
+
+struct LVO lvos[]= {
+					{NULL,0}	// End of list
+				};
+
+int findLVO( const char *name )
+{
+	int ret = 0;
+	struct LVO *lvop;
+
+	for ( lvop = lvos; lvop->lvo; lvop++ )
+	{
+		if (strcmp(name,lvop->name)==0)
+		{
+			return lvop->lvo;
+		}
+	}
+
+	return 0;
+}
+
+char *_machineLvo( struct glueCommands *data, int nextToken )
+{
+	unsigned int bit;
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
+	{
+		ret = findLVO( getStackString(stack) );
+
+		if ( ret == 0x00000)
+		{
+			setError( 40, data->tokenBuffer);	// yes I know its not correct error ;-)
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineLvo, tokenBuffer );
+	return tokenBuffer;
+}
+

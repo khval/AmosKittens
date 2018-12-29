@@ -1094,6 +1094,7 @@ struct nativeCommand nativeCommands[]=
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
+	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
 	{0xFF4C,"or",0, orData },
 	{0xFF3E,"xor",0,xorData },
 	{0xFF58,"and",0, andData },
