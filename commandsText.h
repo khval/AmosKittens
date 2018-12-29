@@ -59,4 +59,4 @@ extern char *textWindon(nativeCommand *cmd, char *ptr);
 extern char *textXGraphic(nativeCommand *cmd, char *ptr);
 extern char *textYGraphic(nativeCommand *cmd, char *ptr);
 extern char *textTitleTop(nativeCommand *cmd, char *ptr);
-
+extern char *textAt(struct nativeCommand *disc, char *tokenBuffer);
