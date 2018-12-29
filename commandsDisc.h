@@ -5,37 +5,38 @@
 #include <proto/exec.h>
 #include "amosKittens.h"
 
-char *cmdDir(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDirStr(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdParent(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdSetDir(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDfree(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdKill(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdRename(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdFselStr(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdExist(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDirNextStr(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdDevNextStr(struct nativeCommand *cmd, char *tokenBuffer);
+char *discDir(struct nativeCommand *disc, char *tokenBuffer);
+char *discDirStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discParent(struct nativeCommand *disc, char *tokenBuffer);
+char *discSetDir(struct nativeCommand *disc, char *tokenBuffer);
+char *discDfree(struct nativeCommand *disc, char *tokenBuffer);
+char *discKill(struct nativeCommand *disc, char *tokenBuffer);
+char *discRename(struct nativeCommand *disc, char *tokenBuffer);
+char *discFselStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discExist(struct nativeCommand *disc, char *tokenBuffer);
+char *discDirFirstStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discDirNextStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discDevFirstStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discDevNextStr(struct nativeCommand *disc, char *tokenBuffer);
 
-char *cmdPrintOut(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdInputIn(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdLineInputFile(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdOpenIn(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdOpenOut(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdAppend(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdClose(struct nativeCommand *cmd, char *tokenBuffer);
+char *discPrintOut(struct nativeCommand *disc, char *tokenBuffer);
+char *discInputIn(struct nativeCommand *disc, char *tokenBuffer);
+char *discLineInputFile(struct nativeCommand *disc, char *tokenBuffer);
+char *discOpenIn(struct nativeCommand *disc, char *tokenBuffer);
+char *discOpenOut(struct nativeCommand *disc, char *tokenBuffer);
+char *discAppend(struct nativeCommand *disc, char *tokenBuffer);
+char *discClose(struct nativeCommand *disc, char *tokenBuffer);
 
-char *cmdInputStrFile(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdSetInput(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdLof(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdPof(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdEof(struct nativeCommand *cmd, char *tokenBuffer);
+char *discInputStrFile(struct nativeCommand *disc, char *tokenBuffer);
+char *discSetInput(struct nativeCommand *disc, char *tokenBuffer);
+char *discLof(struct nativeCommand *disc, char *tokenBuffer);
+char *discPof(struct nativeCommand *disc, char *tokenBuffer);
+char *discEof(struct nativeCommand *disc, char *tokenBuffer);
 
-char *cmdOpenRandom(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdField(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdGet(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdPut(struct nativeCommand *cmd, char *tokenBuffer);
-char *cmdAt(struct nativeCommand *cmd, char *tokenBuffer);
+char *discOpenRandom(struct nativeCommand *disc, char *tokenBuffer);
+char *discField(struct nativeCommand *disc, char *tokenBuffer);
+char *discGet(struct nativeCommand *disc, char *tokenBuffer);
+char *discPut(struct nativeCommand *disc, char *tokenBuffer);
+
+char *discMakedir(struct nativeCommand *disc, char *tokenBuffer);
 
