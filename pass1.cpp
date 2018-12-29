@@ -680,8 +680,6 @@ void eol( char *ptr )
 
 	if (nested_count>0)
 	{
-		proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
 			case nested_data:
