@@ -100,7 +100,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 			retroScreenColor( screen, n,r[n],g[n],b[n]);
 		}
 
-		retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
+		retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 
 		bytesPerPlan = bytesPerRow * height;
 
