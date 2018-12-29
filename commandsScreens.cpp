@@ -28,24 +28,27 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
-void init_amos_kittens_screen_default_text_window( struct retroScreen *screen )
+void init_amos_kittens_screen_default_text_window( struct retroScreen *screen, int colors )
 {
 	struct retroTextWindow *textWindow = NULL;
 
-	screen->paper = 1;
-	screen->pen = 2;
-
-	retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+	if (colors == 2)
+	{
+		screen->paper = 0;
+		screen->pen = 1;
+	}
+	else
+	{
+		screen->paper = 1;
+		screen->pen = 2;
+	}
 
 	if (textWindow = newTextWindow( screen, 0 ))
 	{
 		textWindow -> charsPerRow = screen -> realWidth / 8;
 		textWindow -> rows = screen -> realHeight / 8;
-
 		screen -> currentTextWindow = textWindow;
 	}
-
-	draw_cursor(screen);
 }
 
 void init_amos_kittens_screen_default_colors(struct retroScreen *screen)
@@ -60,6 +63,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
+	int colors = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -74,16 +78,20 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 			// Kitty ignores colors we don't care, allways 256 colors.
 
+			colors = getStackNum( stack-1 );
+
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),getStackNum( stack ));
 	
-			if (screens[screen_num])
+			if (screen = screens[screen_num])
 			{
-				init_amos_kittens_screen_default_text_window(screens[screen_num]);
-				init_amos_kittens_screen_default_colors(screens[screen_num]);
+				init_amos_kittens_screen_default_text_window(screen, colors);
+				init_amos_kittens_screen_default_colors(screen);
+				draw_cursor(screen);
 			}
 
+			retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
 			engine_unlock();
 
 			success = true;
@@ -682,19 +690,18 @@ void LoadIff( char *name, const int n )
 
 		engine_lock();
 
-		if (screens[n]) retroCloseScreen(&screens[n]);
+		if (screens[n]) 	kitten_screen_close( n );
 		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height,1);
 
 		if (screens[n])
 		{
 			struct RastPort rp;
 			int x,y,c;
-			
-			screens[n]->paper = 1;
-			screens[n]->pen = 2;
+
+			init_amos_kittens_screen_default_text_window(screens[n], 256);
 
 			retroApplyScreen( screens[n], video, 0, 20, screens[n] -> realWidth,screens[n]->realHeight );
-			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, 1 );
+			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, screens[n] -> paper );
 			set_default_colors( screens[n] );
 
 			current_screen = n;
@@ -910,7 +917,7 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (screens[0])
 	{
-		init_amos_kittens_screen_default_text_window(screens[0]);
+		init_amos_kittens_screen_default_text_window(screens[0],256);
 		init_amos_kittens_screen_default_colors(screens[0]);
 	}
 
