@@ -94,7 +94,7 @@ int findVarPublic( char *name, int type )
 {
 	int n;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -136,7 +136,7 @@ int findVar( char *name, int type, int _proc )
 {
 	int n;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -709,7 +709,7 @@ void eol( char *ptr )
 
 void fix_token_short( int cmd, char *ptr )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	pass1_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (nested_count>0)
 	{
