@@ -2245,3 +2245,10 @@ char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackStrDup("");
+	return tokenBuffer;
+}
+
