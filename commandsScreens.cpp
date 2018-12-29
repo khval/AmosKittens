@@ -894,19 +894,47 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int screen_num;
+	struct retroScreen *screen;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+
+			if (kittyStack[stack].type == type_int)
+			{
+				screen_num = kittyStack[stack].value;
+			}
+			else screen_num = current_screen;
+
+			if (screen = screens[screen_num]) 
+			{
+				engine_lock();
+				if (screen -> Memory[1])		// have buffer2
+				{
+					screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+				}
+				engine_unlock();
+			}
+			break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 
-	if (screen) 
-	{
-		engine_lock();
-		if (screen -> Memory[1])		// have buffer2
-		{
-			screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
-		}
-		engine_unlock();
-	}
+	stackCmdNormal( _gfxScreenSwap, tokenBuffer );
+	setStackNone();
 
 	return tokenBuffer;
 }
