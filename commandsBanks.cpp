@@ -85,8 +85,7 @@ char *_cmdErase( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
-char *cmdEraseAll(nativeCommand *cmd, char *tokenBuffer)
+char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _cmdErase, tokenBuffer );
 	return tokenBuffer;
@@ -107,10 +106,9 @@ char *_cmdEraseAll( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
-char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
+char *cmdEraseAll(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdErase, tokenBuffer );
+	stackCmdNormal( _cmdEraseAll, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -166,7 +164,6 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 	setStackNum(ret);
 	return NULL;
 }
-
 
 char *_cmdBload( struct glueCommands *data, int nextToken )
 {
