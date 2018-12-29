@@ -150,6 +150,12 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxScreenClose, tokenBuffer );
+	return tokenBuffer;
+}
+
 void copy_pal(	struct retroRGB *source_pal,	struct retroRGB *dest_pal)
 {
 	int n;
@@ -390,11 +396,7 @@ char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _gfxScreenClose, tokenBuffer );
-	return tokenBuffer;
-}
+
 
 char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -731,6 +733,33 @@ void LoadIff( char *name, const int n )
 	}
 }
 
+char *_gfxLoadIff( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	// load iff image to current screen.
+				{
+					char *name= getStackString( stack );
+					if (name)	LoadIff(name,current_screen);
+				}
+				break;
+		case 2:	// load iff image to new screen.
+				{
+					char *name= getStackString( stack -1);
+					int screen_num = getStackNum( stack );
+					if (name)	LoadIff(name,screen_num);
+				}
+				break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 void SaveIff( char *name, const int n )
 {
 	struct DataType *dto = NULL;
@@ -802,32 +831,6 @@ void SaveIff( char *name, const int n )
 	else 	if (dt_bitmap) FreeBitMap(dt_bitmap);
 }
 
-char *_gfxLoadIff( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 1:	// load iff image to current screen.
-				{
-					char *name= getStackString( stack );
-					if (name)	LoadIff(name,current_screen);
-				}
-				break;
-		case 2:	// load iff image to new screen.
-				{
-					char *name= getStackString( stack -1);
-					int screen_num = getStackNum( stack );
-					if (name)	LoadIff(name,screen_num);
-				}
-				break;
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 {
