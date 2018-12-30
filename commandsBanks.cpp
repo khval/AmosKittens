@@ -296,6 +296,7 @@ bool __ReserveAs( int type, int bank, int length, char *name, char *mem )
 		kittyBanks[bank-1].type = type;
 		return true;
 	}
+
 	return false;
 }
 
@@ -803,4 +804,46 @@ char *bankBGrab(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _bankBGrab, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_bankBankSwap( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int b1,b2;
+
+	struct kittyBank tempBank;
+	struct kittyBank *bank1;
+	struct kittyBank *bank2;
+	
+	switch (args)
+	{
+		case 2:	b1 = getStackNum(stack-1);
+				b2 = getStackNum(stack);
+
+				bank1 = findBank(b1);
+				bank2 = findBank(b2);
+
+				if ((bank1)&&(bank2))
+				{
+					tempBank = *bank1;
+					*bank1 = *bank2;
+					*bank2 = tempBank;
+				}
+				else setError(22,data->tokenBuffer);
+
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *bankBankSwap(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _bankBankSwap, tokenBuffer );
+	return tokenBuffer;
+}
+
 

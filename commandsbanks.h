@@ -22,6 +22,6 @@ extern char *cmdBload(nativeCommand *cmd, char *ptr);
 extern char *cmdBsave(nativeCommand *cmd, char *ptr);
 extern char *cmdLoad(nativeCommand *cmd, char *ptr);
 extern char *cmdSave(nativeCommand *cmd, char *ptr);
-
+extern char *bankBankSwap(nativeCommand *cmd, char *ptr);
 extern char *bankBGrab(nativeCommand *cmd, char *ptr);
 
