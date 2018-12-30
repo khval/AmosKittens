@@ -1,8 +1,8 @@
 
 struct errorAt
 {
-//	int line;
 	int code;
+	int trapCode;
 	char *pos;
 	bool newError;
 };
