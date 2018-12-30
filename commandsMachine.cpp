@@ -1061,3 +1061,54 @@ char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_machinePeekStr( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	char *ret = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		char *adr = (char *) getStackNum(stack-1);
+		char *term = getStackString(stack);
+
+		if (adr)
+		{
+			char *c;
+			char t = term[0];	// get first char form termination string.
+			int size = 0;
+
+			for (c=adr;*c!=t;c++) size++;
+			ret = (char *) malloc(size+1);
+
+			if (ret)
+			{
+				char *d = ret;
+				for (c=adr;*c!=t;c++)
+				{
+					*d=*c;
+					d++;
+				}
+				*d= 0;
+			}
+		}
+	}
+
+	if (ret == NULL)
+	{
+		setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackStr(ret);
+
+	return NULL;
+}
+
+char *machinePeekStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machinePeekStr, tokenBuffer );
+	return tokenBuffer;
+}
+
