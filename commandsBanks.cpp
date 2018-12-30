@@ -785,8 +785,10 @@ char *cmdSave(nativeCommand *cmd, char *tokenBuffer)
 char *_bankBGrab( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	int n;
 	int args = stack - data->stack +1 ;
+
+	printf("Not yet working, sorry only a dummy command.\n");
+
 	popStack( stack - data->stack );
 	return NULL;
 }
