@@ -70,15 +70,31 @@ const char *bankTypes[] = {
 
 extern void clean_up_bank(int n);
 
+// stupid version of findBank, need to change when we change list for vector class.
+
+struct kittyBank *findBank( int banknr )
+{
+	if ((banknr>0)&&(banknr<16))
+	{
+		return & kittyBanks[banknr-1];
+	} 
+
+	return NULL;
+}
+
+
 char *_cmdErase( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
+	struct kittyBank *bank = NULL;
 
 	if (args==1)
 	{
 		n = getStackNum(data->stack);
-		if ((n>0)&&(n<16))	clean_up_bank(n-1);		
+
+		bank = findBank(n);
+		if (bank) clean_up_bank(n-1);		
 	}
 
 	popStack( stack - data->stack );
@@ -116,23 +132,18 @@ char *_cmdStart( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int ret = 0;
+	struct kittyBank *bank = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
 		n = getStackNum(stack);
-
-		if ((n>0)&&(n<16))
-		{
-			ret = (int) kittyBanks[n-1].start;
-			success = true;
-		} 
+		if ( bank = findBank(n))	ret = (int) bank -> start;
 	}
 
-	if (success == false ) ret = 0;
+	if (bank == NULL) ret = 0;
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -143,7 +154,7 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
-	bool success = false;
+	struct kittyBank *bank;
 	int ret = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -151,14 +162,8 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		n = getStackNum(stack);
-		if ((n>0)&&(n<16))
-		{
-			ret = (int)  kittyBanks[n-1].length;
-			success = true;
-		} 
+		if ( bank = findBank(n))	ret = (int) bank -> length;
 	}
-
-	if (success == false ) ret = 0;
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -269,7 +274,6 @@ bool __ReserveAs( int type, int bank, int length, char *name, char *mem )
 			kittyBanks[bank-1].start = mem ? mem+8 : NULL;
 
 			if (mem) memset( mem , 0, kittyBanks[bank-1].length + 8 );
-
 		}
 
 		if (kittyBanks[bank-1].start) 

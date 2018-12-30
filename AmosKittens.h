@@ -193,6 +193,7 @@ struct defFn
 
 struct kittyBank 
 {
+	// should add ID here, AMOS pro supports more then 15 banks :-/
 	int type;
 	char *start;
 	char *object_ptr;
