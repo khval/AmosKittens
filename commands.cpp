@@ -2111,6 +2111,12 @@ char *cmdCloseEditor(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdKillEditor(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
 char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

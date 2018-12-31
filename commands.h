@@ -59,6 +59,7 @@ char *cmdBreakOff(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdBreakOn(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdCloseWorkbench(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdCloseEditor(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdKillEditor(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer );
