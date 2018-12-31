@@ -14,6 +14,7 @@
 #include "commandsMachine.h"
 #include "errors.h"
 #include "readhunk.h"
+#include "var_helper.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -175,6 +176,12 @@ char *_machinePeek( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *machinePeek(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machinePeek, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_machineDeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -230,11 +237,6 @@ char *_machineLeek( struct glueCommands *data, int nextToken )
 
 
 
-char *machinePeek(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdParm( _machinePeek, tokenBuffer );
-	return tokenBuffer;
-}
 
 char *machineDoke(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1072,27 +1074,19 @@ char *_machinePeekStr( struct glueCommands *data, int nextToken )
 	if (args==2)
 	{
 		char *adr = (char *) getStackNum(stack-1);
-		char *term = getStackString(stack);
 
-		if (adr)
+		switch ( kittyStack[stack].type )
 		{
-			char *c;
-			char t = term[0];	// get first char form termination string.
-			int size = 0;
+			case type_int:
+				ret = _copy_to_len(adr,kittyStack[stack].value);
+				break;
 
-			for (c=adr;*c!=t;c++) size++;
-			ret = (char *) malloc(size+1);
-
-			if (ret)
-			{
-				char *d = ret;
-				for (c=adr;*c!=t;c++)
+			case type_string:
 				{
-					*d=*c;
-					d++;
+					char *term = getStackString(stack);
+					ret = _copy_to_char(adr, term[0] );
 				}
-				*d= 0;
-			}
+				break;
 		}
 	}
 

@@ -66,7 +66,6 @@ int findProcAndFix( struct globalVar *toFind )
 	}
 }
 
-
 void validate_and_fix_globals()
 {
 	int n;
@@ -85,3 +84,45 @@ void validate_and_fix_globals()
 		}
 	}
 }
+
+char *_copy_to_len(char *adr, int _len)
+{
+	char *ret;
+	char *c;
+	char *str_end = adr + _len;
+
+	ret = (char *) malloc(_len+1);
+	if (ret)
+	{
+		char *d = ret;
+		for (c=adr;c<str_end;c++)
+		{
+			*d=*c;
+			d++;
+		}
+		*d= 0;
+	}
+}
+
+char *_copy_to_char(char *adr, char t)
+{
+	char *ret;
+	char *c;
+	int size = 0;
+
+	for (c=adr;*c!=t;c++) size++;
+	ret = (char *) malloc(size+1);
+
+	if (ret)
+	{
+		char *d = ret;
+		for (c=adr;*c!=t;c++)
+		{
+			*d=*c;
+			d++;
+		}
+		*d= 0;
+	}
+	return ret;
+}
+
