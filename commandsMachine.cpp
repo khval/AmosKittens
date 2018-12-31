@@ -79,6 +79,12 @@ char *_machinePoke( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *machinePoke(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machinePoke, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_machineDoke( struct glueCommands *data, int nextToken )
 {
 	short *adr;
@@ -223,11 +229,6 @@ char *_machineLeek( struct glueCommands *data, int nextToken )
 }
 
 
-char *machinePoke(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _machinePoke, tokenBuffer );
-	return tokenBuffer;
-}
 
 char *machinePeek(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1111,4 +1112,54 @@ char *machinePeekStr(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _machinePeekStr, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_machinePokeStr( struct glueCommands *data, int nextToken )
+{
+	char *dest;
+	char *src;
+	int args = stack - data->stack +1 ;
+	bool success = false;
+	int ret = 0;
+	int _len;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==2)
+	{
+		dest = (char *) getStackNum(stack-1);
+
+		if (kittyStack[stack].type == type_string)
+		{
+			char *s, *end_string;
+			src = kittyStack[stack].str;
+			_len = kittyStack[stack].len;
+
+			if (dest)	// we can only Poke positive addresses
+			{
+				end_string = dest + _len;
+
+				for (s=src;s<end_string;s++)
+				{
+					*s = *dest;
+					dest++;
+				}
+
+				success = true;
+			}
+		}
+	}
+
+	if (success == false) setError(25,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *machinePokeStr(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machinePokeStr, tokenBuffer );
+	return tokenBuffer;
+}
+
 
