@@ -843,7 +843,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0EBA,"Polygon",0,gfxPolygon },
 	{0x0EC8,"Bar",0,gfxBar },
 	{0x0ED8,"Box",0,gfxBox },
-	{0x0EE8, "Paint",0, gfxPaint },
+	{0x0EE8,"Paint",0, gfxPaint },
+	{0x0EF8,"Paint",0,gfxPaint },		// Paint n,n,n
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
 	{0x0F16,"Text Length",0,gfxTextLength },
 	{0x0F3A,"Text Base",0,gfxTextBase },
@@ -1002,6 +1003,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
 	{0x1BD0,"Get Sprite",0,hsGetSprite },
 	{0x1BFC,"Get Bob",0,boGetBob },
+	{0x1C14,"Get Bob",0,boGetBob },	// get bob 0,0,0,0 to 0,0
 	{0x1C42,"Del Bob",0,boDelBob },
 	{0x1CA6,"Get Icon Palette", 0, bgGetIconPalette },
 	{0x1CC6,"Get Icon", 0, bgGetIcon },
@@ -1095,6 +1097,7 @@ struct nativeCommand nativeCommands[]=
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
+	{0x2520,"Laced",0, gfxLaced },
 	{0x253C,"Command Line$", 0, cmdCommandLineStr },
 	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
