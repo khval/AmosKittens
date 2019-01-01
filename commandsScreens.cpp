@@ -1092,5 +1092,33 @@ char *gfxYHard(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxScreenMode( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+	else setError(22,data->tokenBuffer);
+
+	if (screens[current_screen])
+	{
+		ret = screens[current_screen]->videomode;
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdParm( _gfxScreenMode, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 

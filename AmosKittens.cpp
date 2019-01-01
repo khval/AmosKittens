@@ -1104,6 +1104,7 @@ struct nativeCommand nativeCommands[]=
 	{0x28BE,"Peek$",0,machinePeekStr },	// Peek$(adr, termChar) // returns string
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
 	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
+	{0x2B58,"Screen Mode",0,gfxScreenMode },
 	{0x2B72,"Kill Editor",0,cmdKillEditor },
 	{0x2BAE,"Get Bob Palette",0,hsGetSpritePalette },
 	{0xFF4C,"or",0, orData },
