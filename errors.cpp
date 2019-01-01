@@ -317,4 +317,6 @@ struct error errorsRunTime[]= {
 // Misc
 // ~~~~
 	{ 200,"Cannot open powerpacker.library (v35)"},
+// Kitty errors 
+	{ 1000,"Amos Kittens don't support this command" },
 	{ 0,NULL }};
