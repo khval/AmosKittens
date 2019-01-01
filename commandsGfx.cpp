@@ -2107,6 +2107,7 @@ char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 
 char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _gfxSetSlider, tokenBuffer );
 	return tokenBuffer;
 }
@@ -2117,4 +2118,12 @@ char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
 	setError(1000,tokenBuffer);
 	return tokenBuffer;
 }
+
+char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setStackNum(retroInterlaced);
+	return tokenBuffer;
+}
+
 
