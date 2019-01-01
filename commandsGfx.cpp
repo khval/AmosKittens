@@ -2111,3 +2111,10 @@ char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	setError(1000,tokenBuffer);
+	return tokenBuffer;
+}
+

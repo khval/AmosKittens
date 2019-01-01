@@ -55,8 +55,8 @@ char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *gfxHslider(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfsVslider(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer);
 
