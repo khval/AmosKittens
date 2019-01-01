@@ -74,6 +74,7 @@ char *cmdChipFree( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdExec(struct nativeCommand *cmd, char *tokenBuffer);
 
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data, int nextToken );

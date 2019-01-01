@@ -2258,3 +2258,31 @@ char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdExec( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack + 1;
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	char *cmd;
+
+	switch (args)
+	{
+		case 1:	cmd = getStackString(stack);
+
+				if (cmd) SystemTags( cmd, 
+							SYS_Asynch, FALSE, 
+							TAG_END);
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	return NULL;
+}
+
+char *cmdExec( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _cmdExec, tokenBuffer );
+	return tokenBuffer;
+}
+
+
