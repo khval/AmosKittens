@@ -2285,4 +2285,8 @@ char *cmdExec( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdSetAccessory( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	return tokenBuffer;
+}
 

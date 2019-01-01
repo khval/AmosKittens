@@ -1096,6 +1096,7 @@ struct nativeCommand nativeCommands[]=
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
 	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
 	{0x253C,"Command Line$", 0, cmdCommandLineStr },
+	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
