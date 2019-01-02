@@ -12,6 +12,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsMachine.h"
+#include "commandsBanks.h"
 #include "errors.h"
 #include "readhunk.h"
 #include "var_helper.h"
@@ -870,6 +871,7 @@ char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 char *_machinePload( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct kittyBank *bank;
 	char *keep_code = NULL;
 	int code_size;
 
@@ -878,23 +880,22 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 	if (args==2)
 	{
 		char *name = getStackString(stack-1);
-		int bank = getStackNum(stack);
+		int bankNr = getStackNum(stack);
 		FILE *fd;
 
 		if (name)	readhunk( name, &keep_code, &code_size );
 
-		if ((bank>0)&&(bank<16)&&(keep_code))
+		freeBank(bankNr);
+
+		bank = __ReserveAs( 11, bankNr, code_size, "Code", NULL );
+
+		if ((bank)&&(keep_code))
 		{
-			kittyBanks[bank-1].length = code_size;
-			if (kittyBanks[bank-1].start) free( kittyBanks[bank-1].start );
-			kittyBanks[bank-1].start = keep_code;
-			kittyBanks[bank-1].type = 11;	
-		}
-		else
-		{
-			if (keep_code) free(keep_code);
+			memcpy( bank->start, keep_code, code_size );
 		}
 
+		// we can now delete it, as we made a copy.
+		if (keep_code) free(keep_code);
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -902,7 +903,6 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 
 	return NULL;
 }
-
 
 char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -913,29 +913,18 @@ char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
 char *_machineCall( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct kittyBank *bank;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	void *code = NULL;
 
 	if (args==1)
 	{
-		int bank = getStackNum(stack);
-
-		if ((bank>0)&&(bank<16))
-		{
-			if (kittyBanks[bank-1].type == 11)
-			{
-				code = kittyBanks[bank-1].start;
-			}
-		}
-		else
-		{
-			code = (void *) bank;
-		}
-
+		int bankNr = getStackNum(stack);
+		bank = findBank(bankNr);
+		if (bank) if (bank -> type == 11) code = bank -> start;
 	}
-	else setError(22,data->tokenBuffer);
-	popStack( stack - data->stack );
 
+	popStack( stack - data->stack );
 
 	if (code)
 	{
@@ -1063,6 +1052,8 @@ char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _machineLvo, tokenBuffer );
 	return tokenBuffer;
 }
+
+
 
 char *_machinePeekStr( struct glueCommands *data, int nextToken )
 {

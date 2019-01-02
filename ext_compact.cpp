@@ -226,7 +226,7 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int s;
-	unsigned char *adr;
+	struct kittyBank *bank;
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data -> stack  +1;
 
@@ -237,13 +237,14 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 
 		printf("unpack %d to %d\n",n,s);
 
-		if ((n>0)&&(n<16))
-		{
-			adr = (unsigned char *) kittyBanks[n-1].start;
+		dump_banks();
 
-			if (adr)
+		bank = findBank(n);
+		if (bank)
+		{
+			if (bank -> start)
 			{
-				convertPacPic( s, adr, "dump" );
+				convertPacPic( s, (unsigned char *) bank -> start, "dump" );
 
 				if (screens[s] == NULL) setError(47,data->tokenBuffer );
 			}

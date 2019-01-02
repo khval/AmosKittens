@@ -13,6 +13,7 @@
 extern struct globalVar globalVars[1000];
 extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
+extern std::vector<struct kittyBank> kittyBankList;
 extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
@@ -347,17 +348,20 @@ void dump_stack()
 void dump_banks()
 {
 	int n = 0;
+	struct kittyBank *bank;
 	printf( "%s\n", "Nr   Type       Start       Length\n\n");
 
-	for (n=0;n<15;n++)
+	for (n=0;n<kittyBankList.size();n++)
 	{
-		if (kittyBanks[n].start)
+		bank = &kittyBankList[n];
+
+		if (bank -> start)
 		{
 			printf("%2d - %.8s S:$%08X L:%d\n", 
 				n+1,
-				(char *) kittyBanks[n].start-8,
-				kittyBanks[n].start, 
-				kittyBanks[n].length);
+				(char *) bank->start-8,
+				bank -> start, 
+				bank -> length);
 		}
 	}
 }

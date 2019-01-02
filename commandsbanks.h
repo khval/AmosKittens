@@ -8,6 +8,10 @@
 #define bank_type_icons 2
 #define bank_type_sprite 3
 
+void freeBank( int banknr );
+struct kittyBank *findBank( int bankNr );
+struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem );
+
 extern char *cmdReserveAsWork(nativeCommand *cmd, char *ptr);
 extern char *cmdReserveAsChipWork(nativeCommand *cmd, char *ptr);
 extern char *cmdReserveAsData(nativeCommand *cmd, char *ptr);

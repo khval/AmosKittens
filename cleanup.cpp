@@ -21,6 +21,8 @@ extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
 extern ChannelTableClass *channels;
 
+extern std::vector<struct kittyBank> kittyBankList;
+
 
 void clear_local_vars( int proc )
 {
@@ -144,45 +146,15 @@ void clean_up_files()
 	}
 }
 
-void clean_up_bank(int n)
-{
-	if (kittyBanks[n].start)
-	{
-		switch ( kittyBanks[n].type )
-		{
-			case bank_type_icons:
-
-					printf("try free icons\n");
-
-					retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
-					icons = NULL;
-					break;
-
-			case bank_type_sprite:
-
-					printf("try free sprite\n");
-
-					retroFreeSprite( (struct retroSprite *) kittyBanks[n].object_ptr );
-					sprite = NULL;
-					break;
-
-			default:
-					free( kittyBanks[n].start - 8 );
-					break;
-		}
-
-		kittyBanks[n].start = NULL;
-		kittyBanks[n].length = 0;
-		kittyBanks[n].type = 0;
-	}
-}
+extern void freeBank( int banknr );
 
 void clean_up_banks()
 {
+	struct kittyBank *bank = NULL;
 	int n;
-	for (n=0;n<15;n++)
+	for (n=0;n<kittyBankList.size();n++)
 	{
-		clean_up_bank(n);
+		freeBank(n);
 	}
 }
 
