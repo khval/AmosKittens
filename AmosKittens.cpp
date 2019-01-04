@@ -47,8 +47,13 @@ bool interpreter_running = false;
 
 int sig_main_vbl = 0;
 
-int proc_stack_frame = 0;
+#define enable_vars_crc
 
+#ifdef enable_vars_crc
+unsigned int _vars_crc = 0;
+unsigned int str_crc( char *name );
+unsigned int vars_crc();
+#endif 
 char *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
@@ -1179,6 +1184,8 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
+#define enable_vars_crc
+
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
 	ptr = executeToken( ptr, token );
@@ -1188,6 +1195,13 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 		printf("dog fart, stinky fart at line %d, stack is %d\n",getLineFromPointer(ptr),stack);
 		return NULL;
 	}
+
+#ifdef enable_vars_crc
+	if (_vars_crc != vars_crc())
+	{
+		printf("vars are corrupted at line: %d\n", getLineFromPointer(ptr));
+	}
+#endif
 
 	if ( ( (long long int) ptr - (long long int) start)  >= tokenlength ) return NULL;
 
@@ -1358,6 +1372,10 @@ int main(char args, char **arg)
 
 				if (kittyError.code == 0)
 				{
+#ifdef enable_vars_crc
+					_vars_crc = vars_crc();
+#endif
+
 					runtime = TRUE;
 
 					_file_start_ = data;
