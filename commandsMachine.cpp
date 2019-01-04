@@ -1058,27 +1058,45 @@ char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer)
 char *_machinePeekStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int len;
 	char *ret = NULL;
+	char *adr ;
+	char *term;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (args==2)
+	dump_stack();
+
+	switch (args)
 	{
-		char *adr = (char *) getStackNum(stack-1);
+		case 2:
+				adr = (char *) getStackNum(stack-1);
 
-		switch ( kittyStack[stack].type )
-		{
-			case type_int:
-				ret = _copy_to_len(adr,kittyStack[stack].value);
-				break;
-
-			case type_string:
+				switch ( kittyStack[stack].type )
 				{
-					char *term = getStackString(stack);
-					ret = _copy_to_char(adr, term[0] );
+					case type_int:
+						printf("copy %d chars\n",kittyStack[stack].value);
+						ret = _copy_until_len(adr,kittyStack[stack].value);
+						break;
+
+					case type_string:
+						term = getStackString(stack);
+						ret = _copy_until_char(adr, term ? term[0] : 0 );
+						break;
 				}
 				break;
-		}
+		case 3:
+				adr = (char *) getStackNum(stack-2);
+				len = getStackNum(stack-1);
+				term = getStackString(stack);		
+				ret = _copy_until_len_or_char(adr, len, term ? term[0] : 0 );
+				break;
+
+		default:
+				setError(22,data->tokenBuffer);
+
+				break;
+
 	}
 
 	if (ret == NULL)
@@ -1111,19 +1129,21 @@ char *_machinePokeStr( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
+		dump_stack();
+
 		dest = (char *) getStackNum(stack-1);
 
 		if (kittyStack[stack].type == type_string)
 		{
-			char *s, *end_string;
+			char *s, *src_end;
 			src = kittyStack[stack].str;
 			_len = kittyStack[stack].len;
 
 			if (dest)	// we can only Poke positive addresses
 			{
-				end_string = dest + _len;
+				src_end = src + _len;
 
-				for (s=src;s<end_string;s++)
+				for (s=src;s<src_end;s++)
 				{
 					*s = *dest;
 					dest++;
