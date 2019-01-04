@@ -85,7 +85,7 @@ void validate_and_fix_globals()
 	}
 }
 
-char *_copy_to_len(char *adr, int _len)
+char *_copy_until_len(char *adr, int _len)
 {
 	char *ret;
 	char *c;
@@ -104,19 +104,43 @@ char *_copy_to_len(char *adr, int _len)
 	}
 }
 
-char *_copy_to_char(char *adr, char t)
+char *_copy_until_char(char *adr, char t)
 {
 	char *ret;
 	char *c;
 	int size = 0;
 
 	for (c=adr;*c!=t;c++) size++;
-	ret = (char *) malloc(size+1);
 
+	ret = (char *) malloc(size+1);
 	if (ret)
 	{
 		char *d = ret;
 		for (c=adr;*c!=t;c++)
+		{
+			*d=*c;
+			d++;
+		}
+		*d= 0;
+	}
+	return ret;
+}
+
+char *_copy_until_len_or_char(char *adr, int len, char t)
+{
+	char *ret;
+	char *c;
+	char *adr_end;
+	int size = 0;
+
+	for (c=adr;*c!=t;c++) size++;
+
+	ret = (char *) malloc(size+1);
+	if (ret)
+	{
+		char *d = ret;
+		adr_end = adr + len;
+		for (c=adr;((c<adr_end) && (*c!=t));c++)
 		{
 			*d=*c;
 			d++;
