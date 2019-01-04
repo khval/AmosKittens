@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <proto/exec.h>
+#include <vector>
 #include <string>
 #include <iostream>
 #include <proto/asl.h>
@@ -21,13 +22,14 @@ extern int last_var;
 extern struct globalVar globalVars[];
 extern int tokenMode;
 
+std::vector<std::string> devList;
+
 APTR contextDir = NULL;
 char *dir_first_pattern = NULL;
 char *dir_first_path = NULL;
 
 extern char *_setVar( struct glueCommands *data, int nextToken );
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
-
 
 char *_discInputIn( struct glueCommands *data, int nextToken );
 char *_discLineInputFile( struct glueCommands *data, int nextToken );
@@ -826,10 +828,56 @@ char *discDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void init_dev_first()
+{
+	char buffer[1000];
+	struct DosList *dl;
+	ULONG flags;
+	int n;
+
+	flags = LDF_DEVICES|LDF_READ;
+	dl = LockDosList(flags);
+
+	devList.clear();
+
+	while(( dl = NextDosEntry(dl,flags) ))
+	{
+		if (dl -> dol_Port)
+		{
+			int32 success = DevNameFromPort(dl -> dol_Port,  buffer, sizeof(buffer), TRUE);
+
+			if (success)
+			{
+				devList.push_back(buffer);
+			}
+		}
+	}
+
+	UnLockDosList(flags);
+
+	for (n=0;n<devList.size();n++) printf( "%s\n",devList[n].c_str() );
+}
+
+
+int dev_index = 0;
 
 char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 {
+	dev_index = 0;
+	init_dev_first();
+
 	popStack( stack - cmdTmp[cmdStack].stack  );
+
+	if (devList.size())
+	{
+		setStackStrDup( devList[0].c_str() );
+		dev_index++;
+	}
+	else
+	{
+		setStackStrDup( "" );
+	}
+
 	return NULL;
 }
 
@@ -843,6 +891,19 @@ char *discDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
 char *_discDevNextStr( struct glueCommands *data, int nextToken )
 {
 	popStack( stack - cmdTmp[cmdStack].stack  );
+
+	if (dev_index<devList.size())
+	{
+		setStackStrDup( devList[dev_index].c_str() );
+		dev_index++;
+	}
+	else
+	{
+		setStackStrDup( "" );
+		devList.clear();
+		dev_index = 0;
+	}
+
 	return NULL;
 }
 
