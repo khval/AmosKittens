@@ -1540,7 +1540,7 @@ char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	do_to = do_to_fade;
+	do_to[parenthesis_count] = do_to_fade;
 	stackCmdNormal( _gfxFade, tokenBuffer );
 	return tokenBuffer;
 }

@@ -350,8 +350,10 @@ extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
 extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 
 extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
+
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
-extern char *(*do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
+
 
 extern struct glueCommands input_cmd_context;
 

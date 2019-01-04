@@ -973,7 +973,7 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 
 	stackCmdNormal( _for, tokenBuffer );
 	cmdTmp[cmdStack-1].step = 1;		// set default counter step
-	do_to = do_for_to;
+	do_to[parenthesis_count] = do_for_to;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1011,9 +1011,9 @@ char *do_to_default( struct nativeCommand *, char * )
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	if (do_to)
+	if (do_to[parenthesis_count])
 	{
-		char *ret = do_to( cmd, tokenBuffer );	
+		char *ret = do_to[parenthesis_count]( cmd, tokenBuffer );	
 		if (ret) tokenBuffer = ret;
 	}
 

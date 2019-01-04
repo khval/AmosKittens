@@ -218,7 +218,7 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	do_to = do_to_default;
+	do_to[parenthesis_count] = do_to_default;
 	switch (args)
 	{
 		case 3:
@@ -288,7 +288,7 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 {
 //       Channel(A+3) To Bob A+3 
 
-	do_to = do_to_channel;
+	do_to[parenthesis_count] = do_to_channel;
 
 	stackCmdNormal( _amalChannel, tokenBuffer );
 	setStackNone();

@@ -76,7 +76,7 @@ char *data_read_pointers[PROC_STACK_SIZE];
 char *_get_var_index( glueCommands *self, int nextToken);
 
 char *(*do_var_index) ( glueCommands *self, int nextToken ) = _get_var_index;
-char *(*do_to) ( struct nativeCommand *, char * ) = do_to_default;
+char *(**do_to) ( struct nativeCommand *, char * ) ;
 void (**do_input) ( struct nativeCommand *, char * ) ;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
@@ -224,7 +224,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 		if (ret) break;
 	}
 
-	do_to = do_to_default;
+	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
 	dprintf("setTokenMode = mode_standard\n");
 
@@ -252,7 +252,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 		} while (cmdStack);
 	}
 
-	do_to = do_to_default;
+	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
 	dprintf("setTokenMode = mode_standard\n");
 
@@ -1324,9 +1324,10 @@ int main(char args, char **arg)
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
 		if (do_input) 
+		for (n=0;n<MAX_PARENTHESIS_COUNT;n++) 
 		{
-			int n; 
-			for (n=0;n<1000;n++) do_input[n] = do_std_next_arg;
+			if (do_input) do_input[n] = do_std_next_arg;
+			if (do_to) do_to[n] = do_to_default;
 		}
 
 		start_engine();
