@@ -47,6 +47,7 @@ bool running = true;
 bool interpreter_running = false;
 
 int sig_main_vbl = 0;
+int proc_stack_frame = 0;
 
 #define enable_vars_crc
 
