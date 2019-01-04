@@ -1751,11 +1751,16 @@ char *gfxTextLength(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+/*
+
+// I don't think this command takes arguments, must check manuall.
+
 char *_gfxTextBase( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1772,19 +1777,38 @@ char *_gfxTextBase( struct glueCommands *data, int nextToken )
 			}
 			break;
 
-			default:
+		default:
 			setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
+
+	dump_stack();
+
 	return NULL;
 }
+*/
+
 
 char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	// some thing to do with drawing, not sure.
-	stackCmdParm( _gfxTextBase, tokenBuffer );
+	int ret = 0;
+	proc_names_printf("%s:s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	const char *txt="abcdefghijklmnopqrstuvwxyz";
+
+	if (txt)
+	{
+		struct TextExtent te;
+		TextExtent( &font_render_rp, txt, strlen( txt), &te );
+		ret = -te.te_Extent.MinY;
+	}
+
+	setStackNum(ret);
+
+//	stackCmdParm( _gfxTextBase, tokenBuffer );
+
 	return tokenBuffer;
 }
 
