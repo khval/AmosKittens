@@ -222,8 +222,18 @@ void setStackStr( char *str)
 		if (kittyStack[stack].str) free(kittyStack[stack].str);	
 	}
 
-	kittyStack[stack].str = str ;
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	if (str)
+	{
+		kittyStack[stack].str = str ;
+		kittyStack[stack].len = strlen( str );
+	}
+	else
+	{
+		printf("setStackStr(): string is a NULL pointer??\n");
+		kittyStack[stack].str = 0 ;
+		kittyStack[stack].len = 0;
+	}
+
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
