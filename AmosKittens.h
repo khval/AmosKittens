@@ -193,7 +193,7 @@ struct defFn
 
 struct kittyBank 
 {
-	// should add ID here, AMOS pro supports more then 15 banks :-/
+	int id;
 	int type;
 	char *start;
 	char *object_ptr;
@@ -319,7 +319,6 @@ extern int commandCnt;
 extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
 extern struct proc procStack[];
-extern struct kittyBank kittyBanks[];
 
 extern struct extension_lib	kitty_extensions[32];
 

@@ -142,13 +142,13 @@ void freeBank( int banknr )
 			{
 				case bank_type_sprite:
 
-					if (bank_is_object(bank,&sprite)) sprite = NULL;			
+					if (bank_is_object(bank,&sprite)) sprite = NULL;
 					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
 					break;
 
 				case bank_type_icons:
 
-					if (bank_is_object(bank,&icons)) icons = NULL;		
+					if (bank_is_object(bank,&icons)) icons = NULL;
 					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
 					break;
 			}
@@ -164,14 +164,17 @@ void freeBank( int banknr )
 
 char *_cmdErase( struct glueCommands *data, int nextToken )
 {
-	int n;
+	int bankNr;
 	int args = stack - data->stack +1 ;
 	struct kittyBank *bank = NULL;
 
 	if (args==1)
 	{
-		n = getStackNum(data->stack);
-		freeBank(n);
+		bankNr = getStackNum(data->stack);
+
+		engine_lock();
+		freeBank( bankNr );
+		engine_unlock();
 	}
 
 	popStack( stack - data->stack );
@@ -891,14 +894,15 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 				bank1 = findBank(b1);
 				bank2 = findBank(b2);
 
-				if ((bank1)&&(bank2))
+				printf("bank1: %08x bank2: %08x \n",bank1,bank2);
+
+				if (bank1)
 				{
 					tempBank = *bank1;
-					*bank1 = *bank2;
-					*bank2 = tempBank;
+					bank1 -> id = b2;
 				}
-				else setError(22,data->tokenBuffer);
 
+				if (bank2)	bank2 -> id = b1;
 				break;
 		default:
 				setError(22,data->tokenBuffer);

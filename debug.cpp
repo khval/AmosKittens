@@ -358,7 +358,7 @@ void dump_banks()
 		if (bank -> start)
 		{
 			printf("%2d - %.8s S:$%08X L:%d\n", 
-				n+1,
+				bank -> id,
 				(char *) bank->start-8,
 				bank -> start, 
 				bank -> length);

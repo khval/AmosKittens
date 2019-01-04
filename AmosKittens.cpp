@@ -94,7 +94,7 @@ struct retroSpriteObject bobs[64];
 
 //struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
-struct kittyBank kittyBanks[16];
+
 struct kittyFile kittyFiles[10];
 struct zone *zones = NULL;
 int zones_allocated = 0;
@@ -106,6 +106,7 @@ ChannelTableClass *channels = NULL;
 std::vector<struct label> labels;	// 0 is not used.
 std::vector<struct lineAddr> linesAddress;
 std::vector<struct defFn> defFns;
+std::vector<struct kittyBank> kittyBankList;
 
 int global_var_count = 0;
 int labels_count = 0;
