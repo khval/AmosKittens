@@ -39,6 +39,7 @@ main_objects = commands.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
+			ext_turbo.cpp \
 			debug.cpp \
 			pass1.cpp \
 			errors.cpp \
