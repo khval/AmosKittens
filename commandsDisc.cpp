@@ -288,9 +288,9 @@ char *_discExist( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	if (!lock) setStackNum( false );
-
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	setStackNum( lock ? true : false );
+
 	return NULL;
 }
 
