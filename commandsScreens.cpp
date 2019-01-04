@@ -941,7 +941,11 @@ char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int n;
+	int n,screen_num;
+	struct retroScreen *screen;
+
+	engine_lock();
+
 	for (n=0; n<8;n++)
 	{
 		if (screens[n]) retroCloseScreen(&screens[n]);
@@ -949,13 +953,18 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 
 	current_screen = 0;
+	screen_num = 0;
 	screens[0] = retroOpenScreen(320,200,retroLowres);
 
-	if (screens[0])
+	if (screen = screens[screen_num])
 	{
-		init_amos_kittens_screen_default_text_window(screens[0],256);
-		init_amos_kittens_screen_default_colors(screens[0]);
+		init_amos_kittens_screen_default_text_window(screen, 256);
+		init_amos_kittens_screen_default_colors(screen);
+		draw_cursor(screen);
 	}
+	retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+
+	engine_unlock();
 
 	return tokenBuffer;
 }
