@@ -1337,7 +1337,8 @@ int main(char args, char **arg)
 		}
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
-		if (do_input) 
+		do_to = (char *(**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
+
 		for (n=0;n<MAX_PARENTHESIS_COUNT;n++) 
 		{
 			if (do_input) do_input[n] = do_std_next_arg;
