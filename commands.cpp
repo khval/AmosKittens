@@ -1215,8 +1215,6 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 
 	tokenBuffer += ref -> length ;
 
-	dump_global();
-
 	proc = get_proc_num_from_ref(ref->ref);
 
 	if (proc)
