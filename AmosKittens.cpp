@@ -43,8 +43,10 @@
 #include "ext_compact.h"
 #include "ext_turbo.h"
 
+
 bool running = true;
 bool interpreter_running = false;
+
 
 int sig_main_vbl = 0;
 int proc_stack_frame = 0;
@@ -56,6 +58,7 @@ unsigned int _vars_crc = 0;
 unsigned int str_crc( char *name );
 unsigned int vars_crc();
 #endif 
+
 char *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
@@ -1403,6 +1406,12 @@ int main(char args, char **arg)
 		{
 			free( (void *) do_input );
 			do_input = NULL;
+		}
+
+		if (do_to)
+		{
+			free( (void *) do_to );
+			do_to = NULL;
 		}
 
 		printf("clean up vars\n");
