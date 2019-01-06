@@ -1272,28 +1272,6 @@ void code_reader( char *start, int tokenlength )
 
 char *filename = NULL;
 
-void init_banks( char *data , int size)
-{
-	int i;
-	unsigned char c;
-
-	for (i=0;i<size;i++)
-	{
-		c = data[i];
-
-		if (((c>='a')&&(c<='z'))||((c>='A')&&(c<='Z')))
-		{
-			printf("%c", data[i]);
-		}
-//		else
-//		{
-//			printf(".");
-//		}
-	}
-
-	getchar();
-}
-
 #define DLINE printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 int main(char args, char **arg)

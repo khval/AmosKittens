@@ -69,7 +69,33 @@ const char *bankTypes[] = {
 };
 
 
-// stupid version of findBank, need to change when we change list for vector class.
+int hook_mread( char *dest, int size, int e, struct retroMemFd *fd )
+{
+	void *ret = NULL;
+	if (fd->off + (size+e) <= fd->size)
+	{
+		ret = memcpy(  dest,  (fd->mem + fd->off), (size+e) );
+		if (ret)
+		{
+			fd->off += (size*e);
+		}
+	}
+	return ret ? e : 0;
+}
+
+#define mread( dest, size, e, fd ) hook_mread( (char *) dest, size, e, &fd )
+
+int mseek( struct retroMemFd &fd, int off, unsigned mode )
+{
+	switch (mode)
+	{
+		case SEEK_SET:
+			fd.off = off;
+			return 0;
+	}
+
+	return 1;
+}
 
 struct kittyBank *findBank( int banknr )
 {
@@ -575,8 +601,6 @@ void __load_work_data__(FILE *fd,int bank)
 		if (item.length & 0x80000000) item.type += 8;
 		item.length = (item.length & 0x7FFFFFF) -8;
 
-		printf("item.bank %d\n", item.bank);
-	
 		if (item.length >0 )
 		{
 			mem = (char *) malloc( item.length + 8);
@@ -585,6 +609,31 @@ void __load_work_data__(FILE *fd,int bank)
 			{
 				memset( mem, 0, item.length + 8 );
 				fread( mem +8 , item.length, 1, fd );
+
+				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+			}
+		}
+	}
+}
+
+void __load_work_data_mem__(struct retroMemFd &fd)
+{
+	struct bankItemDisk item;
+	char *mem;
+
+	if (mread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
+	{
+		if (item.length & 0x80000000) item.type += 8;
+		item.length = (item.length & 0x7FFFFFF) -8;
+
+		if (item.length >0 )
+		{
+			mem = (char *) malloc( item.length + 8);
+
+			if (mem)
+			{
+				memset( mem, 0, item.length + 8 );
+				mread( mem +8 , item.length, 1, fd );
 
 				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
 			}
@@ -623,8 +672,110 @@ void __write_ambs__( FILE *fd, uint16 banks)
 
 	fwrite( id, 4,1, fd );
 	fwrite( &banks, 2,1, fd );
-
 }
+
+void init_banks( char *data , int size)
+{
+	struct retroMemFd fd;
+	char id[5];
+	unsigned short banks = 0;
+	int n, bankNr;
+	int type = -1;
+	struct kittyBank *bank = NULL;
+
+	if (data)
+	{
+		fd.mem = data;
+		fd.off = 0;
+		fd.size = size;
+
+				if (mread( &id, 4, 1, fd )==1)
+				{	
+					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+					if (strcmp(id,"AmBs")==0)
+					{
+						mread( &banks, 2, 1, fd);
+					}
+				}
+
+				if (banks == 0) 
+				{
+					mseek( fd, 0, SEEK_SET );	// set set, to start no header found.
+					banks = 1;
+				}
+
+				for (n=0;n<banks;n++)
+				{
+					type = -1;
+					printf("bank %d of %d\n",n+1,banks);
+
+					if (mread( &id, 4, 1, fd )==1)
+					{	
+						int cnt = 0;
+						const char **idp;
+
+						for (idp = amos_file_ids; *idp ; idp++)
+						{
+							if (strcmp(id,*idp)==0) { type = cnt; break; }
+							cnt++;
+						}
+						printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+					}
+
+					switch (type)
+					{
+						case bank_type_sprite:
+							{
+								engine_lock();
+								freeBank( 1 );
+								sprite = retroLoadSprite( &fd, (cust_fread_t) hook_mread );
+								engine_unlock();
+
+								// 4 Bottles of beer. 
+								if (bank = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
+								{
+									bank -> object_ptr = (char *) sprite;
+								} 
+								else
+								{
+									if (sprite) retroFreeSprite(sprite);
+									sprite = NULL;
+								}
+							}
+							break;
+	
+						case bank_type_icons:
+							{
+								freeBank( 2);
+								icons = retroLoadSprite( &fd, (cust_fread_t) hook_mread );
+
+								// 99 Bottles of beer. 
+								if (bank = __ReserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL ))
+								{
+									bank -> object_ptr = (char *) icons;
+								}
+								else
+								{
+									if (icons) retroFreeSprite(icons);
+									icons = NULL;
+								}
+							}
+							break;
+
+						case bank_type_work_or_data:
+							__load_work_data_mem__(fd);
+							break;
+
+						default:
+							printf("oh no!!... unexpected id: %s\n", id);
+							Delay(120);
+
+					}
+					getchar();
+				}
+	}
+}
+
 
 void __load_bank__(const char *name, int bankNr )
 {
@@ -676,15 +827,13 @@ void __load_bank__(const char *name, int bankNr )
 						case bank_type_sprite:
 							{
 								int _bank = bankNr>-1 ? bankNr : 1;
-								char *mem = (char *) malloc(8+sizeof(void *));
 
 								engine_lock();
 								freeBank( _bank );
-								sprite = retroLoadSprite(fd, cust_fread );
+								sprite = retroLoadSprite(fd, (cust_fread_t) cust_fread );
 								engine_unlock();
 
-								// 4 Bottles of beer. 
-								if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, (char *) mem -8 ))							
+								if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
 								{
 									bank -> object_ptr = (char *) sprite;
 								} 
@@ -699,14 +848,12 @@ void __load_bank__(const char *name, int bankNr )
 						case bank_type_icons:
 							{
 								int _bank = bankNr>-1 ? bankNr : 2;
-								char *mem = (char *) malloc(8+sizeof(void *));
 
 								freeBank( _bank );
-
-								icons = retroLoadSprite(fd, cust_fread );
+								icons = retroLoadSprite(fd, (cust_fread_t) cust_fread );
 
 								// 99 Bottles of beer. 
-								if (bank = __ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, (char *) mem ))
+								if (bank = __ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, NULL ))
 								{
 									bank -> object_ptr = (char *) icons;
 								}
@@ -898,7 +1045,7 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 
 				if (bank1)
 				{
-					tempBank = *bank1;
+					printf("bank1 from id %d to id %d\n", bank1-> id, b2);
 					bank1 -> id = b2;
 				}
 

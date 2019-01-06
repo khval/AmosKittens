@@ -8,6 +8,8 @@
 #define bank_type_icons 2
 #define bank_type_sprite 3
 
+void init_banks( char *data , int size);
+
 void freeBank( int banknr );
 struct kittyBank *findBank( int bankNr );
 struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem );
