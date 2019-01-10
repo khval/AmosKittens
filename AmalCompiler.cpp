@@ -48,10 +48,10 @@ void dump_amal_labels();
 
 void *amalAllocBuffer( int size ) 
 {
-	return AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END );
+	return sys_alloc(size);
 }
 
-#define amalFreeBuffer( ptr ) { FreeVec( ptr ); ptr = NULL; }
+#define amalFreeBuffer( ptr ) { sys_free( ptr ); ptr = NULL; }
 
 #ifdef test_app
 
