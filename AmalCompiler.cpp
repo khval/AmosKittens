@@ -81,7 +81,7 @@ unsigned int (*amal_to_writer) ( struct kittyChannel *channel, struct amalTab *s
 
 void dumpAmalStack( struct kittyChannel *channel )
 {
-	int s;
+	unsigned int s;
 	Printf("Amal Stack\n");
 	for (s=0;s<=channel -> argStackCount;s++) 
 	{
@@ -101,8 +101,8 @@ void dumpAmalStack( struct kittyChannel *channel )
 
 void dumpAmalProgStack( struct kittyChannel *channel )
 {
-	int s;
-	printf("Amal Stack\n");
+	unsigned int s;
+	Printf("Amal Stack\n");
 	for (s=0;s<=channel -> progStackCount;s++) 
 	{
 		Printf("stack %ld: flags %lx\n",s, channel -> progStack[s].Flags );
@@ -207,7 +207,7 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 {
 	const char *s;
 	int anim_script_len;
-	int size;
+	unsigned int size;
 	int le;
 	unsigned int offset;
 
@@ -245,8 +245,6 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 void amal_clean_up_labels( )
 {
-	int i;
-	unsigned int pos;
 	struct AmalLabelRef label;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -491,7 +489,6 @@ unsigned int stdAmalWriterWend (  struct kittyChannel *channel,struct amalTab *s
 
 	if (!amalloops.empty())
 	{
-		int i;
 		int elements;
 		void **code;
 		int rel_location = (int) amalloops.back() ;
@@ -655,7 +652,6 @@ void print_code( void **adr )
 
 struct amalTab *find_amal_symbol(const char *str)
 {
-	char next_c;
 	int l;
 
 	for (struct amalTab *tab = amalSymbols; tab -> name ; tab++ )
@@ -958,7 +954,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 
 bool amal_find_label(char *name, unsigned int *ref_pos)
 {
-	int i;
+	unsigned int i;
 	*ref_pos = 0xFFFFFFFF;
 
 	for (i=0;i<found_labels.size();i++)
@@ -974,7 +970,7 @@ bool amal_find_label(char *name, unsigned int *ref_pos)
 
 void amal_fix_labels( void **code )
 {
-	int i;
+	unsigned int i;
 	unsigned int ref_pos = 0xFFFFFFFE;
 	int fixed = 0;
 
@@ -998,7 +994,7 @@ void amal_fix_labels( void **code )
 
 void dump_amal_labels()
 {
-	int i;
+	unsigned int i;
 
 	printf("looking for labels\n");
 

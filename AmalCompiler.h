@@ -29,7 +29,7 @@ struct amalBuf
 
 struct amalWriterData
 {
-	int pos;
+	unsigned int pos;
 	const char *at_script;
 	unsigned int command_len;
 	unsigned int arg_len;
