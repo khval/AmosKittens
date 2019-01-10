@@ -1,10 +1,27 @@
 
+
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <vector>
+
+#if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>
 #include <proto/exec.h>
+#include <string.h>
+#define sys_alloc(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END )
+#else
+#define sys_alloc(size) malloc(size)
+#define sys_free(ptr) free(ptr)
+#define Printf printf
+#endif
+
+#ifdef _MSC_VER
+#include <string.h>
+#include "vs_missing_string_functions.h"
+#define strdup _strdup
+#endif
 
 #include "AmalCompiler.h"
 #include "channel.h"

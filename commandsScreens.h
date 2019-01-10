@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(__amigaos4__)
 #include <proto/exec.h>
+#endif
 #include "amosKittens.h"
 
 int XScreen_formula( struct retroScreen *screen, int x );

@@ -1,5 +1,15 @@
 
 #ifndef __amoskittens_h__
+
+#ifdef _MSC_VER
+#define BOOL bool
+#define PACKED
+typedef void * APTR;
+#else
+#define PACKED __attribute__ ((__packed__))
+#endif
+
+
 #define __amoskittens_h__
 
 #define PROC_STACK_SIZE 1000
@@ -121,12 +131,18 @@ struct proc
 	int ref;
 };
 
-struct extension 
+struct extension
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	unsigned char ext;
 	unsigned char	__align__;
 	unsigned short token;
-} __attribute__((packed)) ;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct extension_lib
 {
