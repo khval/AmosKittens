@@ -196,6 +196,7 @@ void drawBobs()
 	int start=0,end=0,dir=0;
 
 	if (!sprite) return;
+	if (!sprite -> frames) return;
 
 	switch ( priorityReverse )
 	{
