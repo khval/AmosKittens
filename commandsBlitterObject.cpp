@@ -211,17 +211,18 @@ void drawBobs()
 	for (n=start;n!=end;n+=dir)
 	{
 		bob = &bobs[n];
+
 		screen = screens[bob->screen_id];
 
 		if (screen)
 		{
-			image = bob->image & 0x3FFFF;
+			image = (bob->image & 0x3FFFF) - 1;
 			flags = bob -> image & 0xC000;
 
-			if (image > sprite -> number_of_frames) image =0;	
-
-			if ( (image > 0) && ( sprite -> frames) )
+			if ( (image >= 0 ) && (image < sprite -> number_of_frames) )
 			{
+				Printf("screens[%ld] -> Bob[%ld] -> frames[%ld] \n",bob->screen_id, n, image);
+
 				frame = &sprite -> frames[ image-1 ];
 
 				clear = &bob -> clear[ 0 ];
@@ -251,11 +252,7 @@ void drawBobs()
 					clear -> size = size;
 				}
 
-				if (clear -> mem)
-				{
-					copyScreenToClear( screen,clear );
-				}
-
+				if (clear -> mem) copyScreenToClear( screen,clear );
 				retroPasteSprite(screen, sprite, bob->x, bob->y, image-1, flags);
 			}
 		}
