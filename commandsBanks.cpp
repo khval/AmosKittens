@@ -767,8 +767,8 @@ void init_banks( char *data , int size)
 							break;
 
 						default:
-							printf("oh no!!... unexpected id: %s\n", id);
-							Delay(120);
+							printf("oh no!!... unexpected id: '%c%c%c%c'\n",id[0],id[1],id[2],id[3]);
+							n = banks; // exit for loop.
 
 					}
 					getchar();
