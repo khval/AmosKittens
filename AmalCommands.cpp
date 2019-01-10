@@ -818,8 +818,8 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 
 #ifdef test_app
 
-	Printf("le %ld\n",le);
-	Printf("str: %s\n", animCode);
+	printf("le %d\n",le);
+	printf("str: %s\n", animCode);
 
 #else 
 	setChannelAnim( self, strdup(  animCode ) );
