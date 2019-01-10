@@ -719,7 +719,8 @@ void init_banks( char *data , int size)
 							if (strcmp(id,*idp)==0) { type = cnt; break; }
 							cnt++;
 						}
-						printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+
+						if (type != -1) 	printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 					}
 
 					switch (type)
