@@ -1312,19 +1312,27 @@ int main(char args, char **arg)
 	{
 		// set up a fake extention lookup
 
+		// set default values.
+		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
+
+		// alloc tabels for 2 fake extentions
 		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );		// compat.lib
+		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
+
+		// init default values for fake extentions
+		for (n=0;n<32;n++) if (kitty_extensions[n].lookup) memset(kitty_extensions[n].lookup,0,0xFFFF);
+
+		// function table init.
 		if (kitty_extensions[2].lookup)
-		{
-			memset(kitty_extensions[2].lookup,0,0xFFFF);
+		{	
 			*((void **) (kitty_extensions[2].lookup + 0x0048)) = (void *) ext_cmd_unpack;
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
 		}
 
-		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
+		// function table init.
 		if (kitty_extensions[12].lookup)
 		{
-			memset(kitty_extensions[2].lookup,0,0xFFFF);
-			*((void **) (kitty_extensions[2].lookup + 0x0A08)) = (void *) ext_cmd_range;
+			*((void **) (kitty_extensions[12].lookup + 0x0A08)) = (void *) ext_cmd_range;
 		}
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
