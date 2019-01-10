@@ -880,7 +880,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			}
 			else
 			{
-				printf("code bad at: %s\n",s);
+				printf("code bad at: '%s'\n",s);
+				printf("*l was %c\n",*l);
 
 				amalProg -> call_array[data.pos] = 0;
 				return false;
@@ -889,7 +890,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		else
 		{
 			printf("script: %s\n",channel -> amal_script);
-			printf("code bad at: %s\n",s);
+			printf("code bad at: '%s'\n",s);
 			amalProg -> call_array[data.pos] = 0;
 			return false;
 		}
