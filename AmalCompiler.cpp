@@ -1,6 +1,10 @@
 
-
+#ifdef _MSC_VER
 #include "stdafx.h"
+#include <string.h>
+#include "vs_missing_string_functions.h"
+#define strdup _strdup
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,16 +15,11 @@
 #include <proto/exec.h>
 #include <string.h>
 #define sys_alloc(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END )
+#define sys_free(ptr) FreeVec(ptr)
 #else
 #define sys_alloc(size) malloc(size)
 #define sys_free(ptr) free(ptr)
 #define Printf printf
-#endif
-
-#ifdef _MSC_VER
-#include <string.h>
-#include "vs_missing_string_functions.h"
-#define strdup _strdup
 #endif
 
 #include "AmalCompiler.h"

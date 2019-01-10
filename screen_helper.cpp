@@ -1,5 +1,7 @@
 
+#ifdef _MSC_VER
 #include "stdafx.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
