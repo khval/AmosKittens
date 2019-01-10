@@ -682,6 +682,14 @@ struct amalTab *find_amal_command(const char *str)
 			{
 				 return tab;
 			}
+			else if (find_amal_command(str+l))	// if there no space between this command and the next
+			{
+				return tab;
+			}
+			else if (*str=='J')	// if command is jump.
+			{
+				return tab;
+			}
 		}
 	}
 	return NULL;
