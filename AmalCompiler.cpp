@@ -283,27 +283,27 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 				unsigned int num)
 {
 	char labelname[20];
-	int le;
+	int le = 0;
 	const char *s;
 	char *d;
 
 	printf("writing %08x to %08x - jump\n", self -> call, &call_array[0]);
 
 	call_array[0] = self -> call;
+	s = data -> at_script + data -> command_len;
 
-	s = data -> at_script;
-	while ((*s != 0)&&(*s != ' ')) s++;
-	while (*s == ' ') s++;
+	while (*s == ' ') 
+	{
+		s++; le++;
+	}
 
-	le = 0;
 	d = labelname;
-	while ((*s != 0)&&(*s != ' ')&&( *s != ';')&&(le<18)) { *d++=*s++; le++; }
+	while ((*s != 0) && (*s != ' ') && (*s != ';') && (le < 18)) { printf("data: %c\n", *s); *d++ = *s++; le++; }
 	*d = 0;
 
-	data -> arg_len = le ? le+1 : 0;
+	if (*s == ';') le++;	// if next command is ; we can skip it.
 
-	printf("label: %s\n",labelname);
-
+	data -> arg_len = le ;
 	{
 		struct AmalLabelRef label;
 		char *current_location;
