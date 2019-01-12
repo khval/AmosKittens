@@ -13,8 +13,8 @@ namespace amal
 
 	enum Class
 	{
-		class_cmd_arg,
-		class_cmd_normal
+		class_cmd_arg = 1,
+		class_cmd_normal = 2
 	};
 };
 

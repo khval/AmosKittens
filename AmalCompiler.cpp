@@ -28,6 +28,9 @@
 #include "pass1.h"
 #include "AmosKittens.h"
 
+bool let = false;
+bool next_arg = false;
+
 int nest = 0;
 char last_reg[1000] ;
 
@@ -53,14 +56,14 @@ void *amalAllocBuffer( int size )
 #define amalFreeBuffer( ptr ) { sys_free( ptr ); ptr = NULL; }
 
 #ifdef test_app
-
-struct nested nested_command[ max_nested_commands ];
-int nested_count = 0;
-
-int parenthesis_count;
-int amreg[26];
-
-void print_code( void **adr );
+	struct nested nested_command[ max_nested_commands ];
+	int nested_count = 0;
+	int parenthesis_count;
+	int amreg[26];
+	void print_code( void **adr );
+#else
+	extern int amreg[26];
+#endif
 
 void dumpAmalRegs(struct kittyChannel *channel)
 {
@@ -81,7 +84,6 @@ void dumpAmalRegs(struct kittyChannel *channel)
 	}
 }
 
-#endif
 
 void *(*amal_cmd_equal) API_AMAL_CALL_ARGS = NULL;
 
@@ -150,8 +152,12 @@ unsigned int AmalWriterIf (	struct kittyChannel *channel, struct amalTab *self,
 	printf("Writing %-8d to %08x/%08x - If\n",num, &call_array[0], &call_array[1]);
 
 	*((int *) &call_array[1]) = 0;
-
 	addNestAmal( if, &call_array[1] );
+	amal_cmd_equal = amal_call_equal;
+
+	next_arg =true;
+
+	getchar();
 
 	return 2;
 }
@@ -172,6 +178,8 @@ unsigned int AmalWriterCondition (	struct kittyChannel *channel, struct amalTab 
 	nested_command[ nested_count -1 ].cmd = num;
 	nested_command[ nested_count -1 ].ptr = (char *) &call_array[1];
 
+	let =false;
+
 	return 2;
 }
 
@@ -185,6 +193,8 @@ unsigned int AmalWriterNum (	struct kittyChannel *channel, struct amalTab *self,
 	printf("Writing %-8d to %08x/%08x - num\n",num, &call_array[0], &call_array[1]);
 
 	*((int *) &call_array[1]) = num;
+	let = false;
+	next_arg = false;
 	return 2;
 }
 
@@ -310,10 +320,10 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	}
 
 	d = labelname;
-	while ((*s != 0) && (*s != ' ') && (*s != ';') && (le < 18)) { printf("data: %c\n", *s); *d++ = *s++; le++; }
+	while ((*s != 0) && (*s != ' ') && (*s != ';') && (*s != ':') && (le < 18)) { printf("data: %c\n", *s); *d++ = *s++; le++; }
 	*d = 0;
 
-	if (*s == ';') le++;	// if next command is ; we can skip it.
+	if ((*s == ';') || (*s ==':')) le++;	// if next command is ; we can skip it.
 
 	data -> arg_len = le ;
 	{
@@ -343,8 +353,6 @@ unsigned int stdAmalWriterIgnore ( struct kittyChannel *channel, struct amalTab 
 	return 0;
 }
 
-bool let = false;
-
 unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				struct amalWriterData *data,
@@ -354,21 +362,25 @@ unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *se
 	return 0;
 }
 
-unsigned int stdAmalWriterExit_Or_X ( struct kittyChannel *channel, struct amalTab *self, 
+unsigned int stdAmalWriterX ( struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	if (let)
-	{
-		printf("writing %08x to %08x - X\n", amal_call_x, &call_array[0]);
-		call_array[0] = amal_call_x;
-	}
-	else
-	{
-		printf("writing %08x to %08x - exit\n", amal_call_exit, &call_array[0]);
-		call_array[0] = amal_call_exit;
-	}
+	printf("writing %08x to %08x - X\n", amal_call_x, &call_array[0]);
+	call_array[0] = amal_call_x;
+
+	return 1;
+}
+
+unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %08x - exit\n", amal_call_exit, &call_array[0]);
+	call_array[0] = amal_call_exit;
+
 	return 1;
 }
 
@@ -413,6 +425,18 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 	call_array[0] = self -> call;
 	return 1;
 }
+
+unsigned int stdAmalWriterSymbol ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %08x - %s\n", self -> call, &call_array[0], self->name);
+	call_array[0] = self -> call;
+	next_arg = true;
+	return 1;
+}
+
 
 unsigned int stdAmalWriterEqual ( struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
@@ -539,17 +563,17 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 struct amalTab amalSymbols[] =
 {
 	{";",amal::class_cmd_normal,stdAmalWriterNextCmd,amal_call_next_cmd },
-	{"(",amal::class_cmd_arg,stdAmalWriter,amal_call_parenthses_start },
-	{")",amal::class_cmd_arg,stdAmalWriter,amal_call_parenthses_end },
-	{",",amal::class_cmd_arg,stdAmalWriter,amal_call_nextArg },
-	{"+",amal::class_cmd_arg,stdAmalWriter,amal_call_add},			// +
-	{"-",amal::class_cmd_arg,stdAmalWriter,amal_call_sub},			// -
-	{"*",amal::class_cmd_arg,stdAmalWriter,amal_call_mul},			// *
-	{"/",amal::class_cmd_arg,stdAmalWriter,amal_call_div},			// /
-	{"&",amal::class_cmd_arg,stdAmalWriter,amal_call_and},			// &
-	{"<>",amal::class_cmd_arg,stdAmalWriter,amal_call_not_equal},	// <>
-	{"<",amal::class_cmd_arg,stdAmalWriter,amal_call_less},			// <
-	{">",amal::class_cmd_arg,stdAmalWriter,amal_call_more},			// >
+	{"(",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_parenthses_start },
+	{")",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_parenthses_end },
+	{",",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_nextArg },
+	{"+",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_add},			// +
+	{"-",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_sub},			// -
+	{"*",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_mul},			// *
+	{"/",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_div},			// /
+	{"&",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_and},			// &
+	{"<>",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_not_equal},	// <>
+	{"<",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_less},			// <
+	{">",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_more},			// >
 	{"=",amal::class_cmd_arg,stdAmalWriterEqual,amal_call_set},		// =
 	{NULL, amal::class_cmd_arg,NULL,NULL }
 };
@@ -562,13 +586,17 @@ struct amalTab amalCmds[] =
 	{"D",amal::class_cmd_normal,stdAmalWriter,NULL},				// Direct
 	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},				// Wait
 	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},			 // If
-	{"X",amal::class_cmd_normal,stdAmalWriterExit_Or_X,NULL},		// X
+
+	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
+	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
+
 	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
 	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},			// Let
 	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},				// AUtotest
 	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},	// Anim
 	{"M",amal::class_cmd_normal,stdAmalWriter,amal_call_move},		// Move
 	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},		// Pause
+
 	{"R0",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R0
 	{"R1",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R1
 	{"R2",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R2
@@ -605,6 +633,7 @@ struct amalTab amalCmds[] =
 	{"RX",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RX
 	{"RY",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RY
 	{"RZ",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RZ
+
 	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},			// For (should be null)
 	{"T",amal::class_cmd_arg,stdAmalWriterTo,amal_call_nextArg},		// To
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},	// Next (should be null)
@@ -675,7 +704,7 @@ struct amalTab *find_amal_symbol(const char *str)
 	return NULL;
 }
 
-struct amalTab *find_amal_command(const char *str)
+struct amalTab *find_amal_command(const char *str , int class_flags )
 {
 	char next_c;
 	int l;
@@ -685,22 +714,30 @@ struct amalTab *find_amal_command(const char *str)
 	{
 		l = strlen(tab->name);
 
-		if (strncasecmp(str, tab -> name, l) == 0)
-		{
-			next_c = *(str+l);
-			symbol = find_amal_symbol( str + l );
+//		printf("tab -> Class: %d, class_flags %d \n", tab -> Class , class_flags);
 
-			if ((next_c == ' ') || (symbol) || (next_c == 0))
+		if ( tab -> Class & class_flags )
+		{
+			if (strncasecmp(str, tab -> name, l) == 0)
 			{
-				 return tab;
-			}
-			else if (find_amal_command(str+l))	// if there no space between this command and the next
-			{
-				return tab;
-			}
-			else if (*str=='J')	// if command is jump.
-			{
-				return tab;
+				next_c = *(str+l);
+				symbol = find_amal_symbol( str + l );
+
+				if (next_c != ':')	// chack if its a label
+				{	
+					if ((next_c == ' ') || (symbol) || (next_c == 0))
+					{
+						 return tab;
+					}
+					else if (find_amal_command(str+l, (int) amal::class_cmd_arg | (int) amal::class_cmd_normal))	
+					{
+						return tab;
+					}
+					else if (*str=='J')	// if command is jump.
+					{
+						return tab;
+					}
+				}
 			}
 		}
 	}
@@ -764,7 +801,7 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 		if (new_array)
 		{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+			printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 			memcpy( new_array, i -> call_array, i->size );
 			i->elements = new_elements;
@@ -776,7 +813,7 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 			new_size = 0;
 		}
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		printf(" i -> call_array = %08x\n", i -> call_array );
 
@@ -820,7 +857,16 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	s=script;
 	while (*s)
 	{
-		found = find_amal_command(s);
+		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");
+
+		if ((let)||(next_arg))
+		{
+			found = find_amal_command(s, amal::class_cmd_arg);
+		}
+		else
+		{
+			found = find_amal_command(s, amal::class_cmd_normal);
+		}
 
 		if (!found) found = find_amal_symbol(s);
 		
@@ -842,9 +888,13 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 						break;
 
 					case nested_then:
-						fix_condition_branch( &amalProg -> call_array[data.pos] + 2 );	// skip over else
+						fix_condition_branch( &amalProg -> call_array[data.pos]  );	// skip over else
 						write_cmd.call = amal_call_else; 
-						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
+
+//						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
+
+						nested_count--;
+
 						amal_cmd_equal = NULL;
 						break;
 				}
