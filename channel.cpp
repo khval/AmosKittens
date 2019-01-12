@@ -50,7 +50,6 @@ void initChannel( struct kittyChannel *item, int channel )
 		item -> move_count_to = 0; 
 
 		item -> status = channel_status::uninitialized;
-
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )

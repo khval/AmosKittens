@@ -162,7 +162,6 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 char *_if( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	unsigned short token;
 	char *ptr;
 	int args = stack - data -> stack + 1;
 
@@ -562,7 +561,6 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	void *fn;
 	char *ret = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -628,7 +626,6 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 char *_else_if( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-	unsigned short token;
 	char *ptr;
 
 	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
@@ -782,8 +779,6 @@ char *_goto( struct glueCommands *data, int nextToken )
 
 	if (ref_num)
 	{
-		char *return_tokenBuffer = data -> tokenBuffer;
-//		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
 		return labels[ref_num-1].tokenLocation;
 	}
 	else
@@ -799,7 +794,6 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
 	char *ptr;
-	char *return_tokenBuffer;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (next_token)

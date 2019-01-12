@@ -508,7 +508,6 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 			case 27:	// ESC code sequence.
 					{
 						int code = what_esc_code( (const char *) text);
-						bool not_found = false;
 						switch (code)
 						{
 							case -1:	break;
@@ -593,14 +592,9 @@ int strlen_no_esc(const char *txt)
 		{
 			case 27:	// ESC code sequence.
 					{
-						printf("%s\n",c+1);
-
 						int code = what_esc_code( c+1 );
-						bool not_found = false;
 
 						if (code>-1) c += strlen(esc_codes[code].name);
-
-						printf("code: %d\n",code);
 
 						switch (code)
 						{

@@ -69,7 +69,6 @@ int findProcAndFix( struct globalVar *toFind )
 void validate_and_fix_globals()
 {
 	int n;
-	int i;
 
 	for (n=0;n<global_var_count;n++)
 	{

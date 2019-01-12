@@ -377,11 +377,9 @@ char *_alloc_mode_off( glueCommands *self, int nextToken )
 
 char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 {
-	int args = stack - cmd -> stack + 1;
 	int size = 0;
 	int n;
 	int varNum;
-	int count;
 	struct kittyData *var;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -474,7 +472,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
-	struct kittyData *var;
 	
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -531,7 +528,6 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	unsigned short length = *((unsigned short *) ptr);
 	unsigned short length2 = length;
 	unsigned short next_token;
-	char *txt;
 
 	// check if - or + comes before *, / or ; symbols
 	
@@ -1217,7 +1213,6 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 void code_reader( char *start, int tokenlength )
 {
 	char *ptr;
-	char *errPtr;
 	int token = 0;
 	last_tokens[parenthesis_count] = 0;
 	

@@ -27,7 +27,6 @@ extern std::vector<struct kittyBank> kittyBankList;
 void clear_local_vars( int proc )
 {
 	int n;
-	int i;
 	struct kittyData *var;
 
 	printf("%s;%s\n",__FILE__,__FUNCTION__);
@@ -76,7 +75,6 @@ void clean_up_vars()
 {
 	struct kittyData *var;
 	int n;
-	int i;
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -150,7 +148,6 @@ extern void freeBank( int banknr );
 
 void clean_up_banks()
 {
-	struct kittyBank *bank = NULL;
 	int n;
 	for (n=0;n<kittyBankList.size();n++)
 	{

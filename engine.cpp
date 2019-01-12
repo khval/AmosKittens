@@ -422,15 +422,11 @@ void DrawSprite(
 
 void main_engine()
 {
-	struct RastPort scroll_rp;
 	struct IntuiMessage *msg;
 	struct MenuItem *item;
 	UWORD menuNumber;
 
 	struct amos_selected selected;
-
-	retroRGB color;
-	double start_sync;
 
 	Printf("init engine\n");
 
