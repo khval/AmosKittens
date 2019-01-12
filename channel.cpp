@@ -17,6 +17,8 @@
 #include "amalCompiler.h"
 #include "channel.h"
 
+extern void *set_reg (struct kittyChannel *self, struct amalCallBack *cb);
+
 void initChannel( struct kittyChannel *item, int channel )
 {
 		item -> id = channel;

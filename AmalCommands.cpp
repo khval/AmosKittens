@@ -354,7 +354,6 @@ void *amal_call_and API_AMAL_CALL_ARGS
 void *not_equal (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 
 	dumpAmalStack( self );
 
@@ -396,8 +395,8 @@ void *less (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_less API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
+	self -> argStack [ self -> argStackCount ] = 0;	
 	pushBackAmalCmd( amal::flag_para, code, self, less ); 
 	return NULL;
 }
@@ -905,9 +904,9 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_set API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( amal::flag_cmd ,code, self, set_reg ); 
+	pushBackAmalCmd( amal::flag_cmd ,code, self,  set_reg ); 
+
 	return NULL;
 }
 
