@@ -1298,6 +1298,7 @@ int main(char args, char **arg)
 
 	for (n=0;n<64;n++)
 	{
+		bobs[n].screen_id = -1;
 		bobs[n].image = -1;
 	}
 
