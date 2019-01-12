@@ -62,10 +62,23 @@ int amreg[26];
 
 void print_code( void **adr );
 
-void dumpAmalRegs()
+void dumpAmalRegs(struct kittyChannel *channel)
 {
+	char a[2]={0,0};
+	char b[2]={0,0};
+
 	int i;
-	for (i=0;i<26;i++) Printf("R%c is %ld\n", 'A'+i,amreg[i]);
+	for (i=0;i<26;i++) 
+	{
+		a[0]='A'+i;
+		b[0]='0'+i;
+
+		if (i<10)
+		{
+			Printf("R%s is %3ld    R%s is %3ld\n",a, amreg[i], b, channel -> reg[i] );
+		}
+		else	Printf("R%s is %3ld\n",a, amreg[i]);
+	}
 }
 
 #endif
@@ -751,7 +764,6 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 		if (new_array)
 		{
-
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 			memcpy( new_array, i -> call_array, i->size );
@@ -770,7 +782,6 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 		amalFreeBuffer(i->call_array);
 		i -> call_array = new_array;
-
 	}
 	else
 	{
@@ -906,7 +917,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		{
 			reAllocAmalBuf(amalProg,20);	// add another 20 elements if buffer is low.
 		}
-
 	}
 
 	amalProg -> call_array[data.pos++] = amal_call_next_cmd;
@@ -1087,7 +1097,7 @@ void test_run(struct kittyChannel  *channel)
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 		amal_run_one_cycle(channel);
 		dump_object();
-		dumpAmalRegs();
+		dumpAmalRegs( channel );
 		getchar();
 	}
 }
@@ -1097,11 +1107,12 @@ void dump_object()
 	printf("x: %d, y: %d\n", obj_x, obj_y);
 }
 
-
-
 int main(int args, char **arg)
 {
+	int n;
 	struct kittyChannel  channel;
+
+	for (n=0;n<10;n++) channel.reg[n]=0;
 
 	initChannel( &channel, 999 );
 
@@ -1135,7 +1146,7 @@ int main(int args, char **arg)
 			}
 
 			free(channel.amal_script);
-			dumpAmalRegs();
+			dumpAmalRegs( &channel );
 			amal_clean_up_labels( );
 		}
 	}

@@ -55,6 +55,7 @@ struct amalTab
 
 extern void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
 extern void dumpAmalStack( struct kittyChannel *channel );
+extern void dumpAmalRegs(struct kittyChannel *channel);
 extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
 extern void amal_run_one_cycle( struct kittyChannel  *channel );
 extern void amal_fix_labels( void **code );
