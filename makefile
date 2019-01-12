@@ -10,7 +10,7 @@ VERSION = 1
 #RM     = delete
 # RM     = rm
 
-warnings = -wall -Wuninitialized
+warnings = -wall -Wuninitialized -Wsign-compare -Wunused-variable
 
 objects_dir = objs_amoskittens/
 
