@@ -46,10 +46,15 @@ int YHard_formula( struct retroScreen *screen, int y )
 
 #else
 
+#ifdef _MSC_VER
+
 struct retroScreen
 {
 	void *ptr;
 };
+
+#endif
+
 
 
 int XScreen_formula(struct retroScreen *screen, int x)
@@ -72,5 +77,5 @@ int YHard_formula(struct retroScreen *screen, int y)
 	return y;
 }
 
-
 #endif
+
