@@ -49,7 +49,7 @@ char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer)
 char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int ret = 0;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	setError(33,data->tokenBuffer);

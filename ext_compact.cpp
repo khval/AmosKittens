@@ -57,7 +57,6 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	int d;
 	int planeOffset;
 	int bytesPerPlan;
-	int bytesPerPlane;
 	int colors = 1 << depth;
 	unsigned int videomode = retroLowres_pixeld;
 	struct retroScreen *screen = NULL;

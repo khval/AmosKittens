@@ -129,7 +129,7 @@ const char *findDebugSymbolName( char *(*fn) (struct glueCommands *data, int nex
 
 void dump_labels()
 {
-	int n;
+	unsigned int n;
 
 	for (n=0;n<labels.size();n++)
 	{
@@ -141,7 +141,7 @@ void dump_labels()
 unsigned int str_crc( char *name )
 {
 	char *s;
-	unsigned int crc;
+	unsigned int crc = 0;
 	int cnt;
 
 	cnt = 0;
@@ -169,7 +169,6 @@ unsigned int vars_crc()
 void dump_global()
 {
 	int n;
-	int i;
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -347,7 +346,7 @@ void dump_stack()
 
 void dump_banks()
 {
-	int n = 0;
+	unsigned int n = 0;
 	struct kittyBank *bank;
 	printf( "%s\n", "Nr   Type       Start       Length\n\n");
 
@@ -385,7 +384,7 @@ void dump_end_of_program()
 
 int getLineFromPointer( char *address )
 {
-	int n = 0;
+	unsigned int n = 0;
 
 	for (n=0;n<linesAddress.size();n++)
 	{
@@ -405,7 +404,7 @@ int getLineFromPointer( char *address )
 
 void dumpLineAddress()
 {
-	int n = 0;
+	unsigned int n = 0;
 
 	for (n=0;n<linesAddress.size();n++)
 	{

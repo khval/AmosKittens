@@ -134,12 +134,9 @@ void _exit_read_data( struct nativeCommand *cmd, char *tokenBuffer )
 void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int args = 0;
-	int num = 0;
-	double des = -1.0f;
 	struct glueCommands data;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 
 	if (cmd == NULL)
 	{
@@ -173,7 +170,6 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	int args = stack - data -> stack +1;
 	_read_arg( NULL, NULL );
 	popStack( stack - data -> stack  );
 	do_input[parenthesis_count] = do_std_next_arg;

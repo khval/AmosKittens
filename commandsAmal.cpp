@@ -312,7 +312,6 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int channel = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -354,8 +353,6 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 							amal_clean_up_labels( );
 						}
 					}
-
-					getchar();
 				}
 				engine_unlock();	
 			}
@@ -365,6 +362,8 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
+
+	getchar();
 
 	return NULL;
 }
@@ -380,7 +379,6 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int channel = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -389,13 +387,12 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 		case 1:	if (kittyStack[stack].type == type_none )	// arg 1 not set.
 				{
 					int index = 0;
-					struct kittyChannel *item;
-					int channel = getStackNum( stack );
 
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
 					{
 						(channels -> item(index)) -> status = channel_status::active;
+						success = true;
 					}
 					engine_unlock();
 				}
@@ -407,6 +404,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> status = channel_status::active;
+						success = true;
 					}
 				}
 				break;
@@ -415,7 +413,12 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
+	if (success == false) setError(22, data-> tokenBuffer);
+
+
 	popStack( stack - data->stack );
+
+	getchar();
 
 	return NULL;
 }
@@ -431,7 +434,6 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int channel = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -441,7 +443,6 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 				{
 					int index = 0;
 					struct kittyChannel *item;
-					int channel = getStackNum( stack );
 
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
@@ -452,7 +453,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
 						freeAmalBuf( &item -> amalProg );
-						
+						success = true;
 					}
 					engine_unlock();
 				}
@@ -469,6 +470,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
 						freeAmalBuf( &item -> amalProg );
+						success = true;
 					}
 					engine_unlock();
 				}
@@ -477,6 +479,8 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 		defaut:
 				setError(22,data->tokenBuffer);
 	}
+
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -576,7 +580,6 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int channel = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -591,12 +594,15 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 				if (item = channels -> getChannel(channel))
 				{
 					setChannelAnim( item, strdup( script ) );
+					success = true;
 				}
 			}
 			break;
 		defaut:
 			setError(22,data->tokenBuffer);
 	}
+
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 
@@ -623,7 +629,6 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int channel = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -632,13 +637,12 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 		case 1:	 if (kittyStack[stack].type == type_none )	// arg 1 not set.
 				{
 					int index = 0;
-					struct kittyChannel *item;
-					int channel = getStackNum( stack );
 
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
 					{
 						(channels -> item(index)) -> status = channel_status::frozen;
+						success = true;
 					}
 					engine_unlock();
 				}
@@ -651,6 +655,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> status = channel_status::frozen;
+						success = true;
 					}
 					engine_unlock();
 				}
@@ -660,7 +665,11 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
+	if (success == false) setError(22,data->tokenBuffer);
+
 	popStack( stack - data->stack );
+
+
 
 	return NULL;
 }

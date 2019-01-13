@@ -148,7 +148,7 @@ extern void freeBank( int banknr );
 
 void clean_up_banks()
 {
-	int n;
+	unsigned int n;
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		freeBank(n);
