@@ -15,6 +15,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdint.h>
+#include "os/linux/stuff.h"
 #endif
 
 #include "debug.h"
@@ -2239,13 +2240,28 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdChipFree( struct nativeCommand *cmd, char *tokenBuffer )
 {
+#ifdef __amigaos4__
 	setStackNum( AvailMem(MEMF_CHIP) );
+#endif
+
+#ifdef __linux__
+	setStackNum( memavail() );
+#endif
+
 	return tokenBuffer;
 }
 
 char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer )
 {
+
+#ifdef __amigaos4__
 	setStackNum( AvailMem(MEMF_FAST) );
+#endif
+
+#ifdef __linux__
+	setStackNum( memavail() );
+#endif
+
 	return tokenBuffer;
 }
 
@@ -2271,10 +2287,17 @@ char *_cmdExec( struct glueCommands *data, int nextToken )
 	{
 		case 1:	cmd = getStackString(stack);
 
+#ifdef __amigaos4__
 				if (cmd) SystemTags( cmd, 
 							SYS_Asynch, FALSE, 
 							TAG_END);
+#endif
+
+#ifdef __linux__
+				if (cmd) system( cmd );
+#endif
 				break;
+
 		default:
 				setError(22,data->tokenBuffer);
 	}
