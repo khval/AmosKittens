@@ -1,6 +1,7 @@
 
-#ifdef _MSC_VER
 #include "stdafx.h"
+
+#ifdef _MSC_VER
 #include <string.h>
 #include "vs_missing_string_functions.h"
 #define strdup _strdup
