@@ -77,7 +77,7 @@ ccmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 clean:
-	@delete $(programs) $(objects_in_dir)
+	@rm $(programs) $(objects_in_dir)
 
 .PHONY: revision 
 revision:
