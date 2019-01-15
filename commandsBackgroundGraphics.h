@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <proto/exec.h>
 #include "amosKittens.h"
 
 

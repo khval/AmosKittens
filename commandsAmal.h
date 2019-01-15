@@ -2,8 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/retroMode.h>
+#endif
 
 char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer);

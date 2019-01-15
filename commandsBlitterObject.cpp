@@ -244,11 +244,7 @@ void drawBobs()
 
 				if (size) 
 				{
-					clear -> mem = (char *) AllocVecTags( size, 
-							AVT_Type, MEMF_PRIVATE, 
-							AVT_ClearWithValue, 0,
-							TAG_END );
-
+					clear -> mem = (char *) sys_public_alloc_clear(size);
 					clear -> size = size;
 				}
 

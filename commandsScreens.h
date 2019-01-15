@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#if defined(__amigaos4__)
+#if defined(__amigaos4__) || defined(__morphos__)
 #include <proto/exec.h>
 #endif
 #include "amosKittens.h"

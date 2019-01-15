@@ -14,7 +14,11 @@ extern int engine_mouse_key;
 extern int engine_mouse_x;
 extern int engine_mouse_y;
 extern bool engine_stopped;
+
+
+#ifdef __amigaos4__
 extern Process *EngineTask;
+#endif
 
 struct keyboard_buffer
 {
