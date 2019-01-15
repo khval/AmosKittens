@@ -15,6 +15,13 @@
 #include <proto/retroMode.h>
 #endif
 
+#ifdef __linux__
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#endif
+
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
