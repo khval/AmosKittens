@@ -52,14 +52,13 @@ main_objects = commands.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
 			screen_helper.cpp \
-			os\amigaos\engine.cpp \
-			os\amigaos\bitmap_font.cpp \
-			os\amigaos\init.cpp \
-			os\amigaos\cleanup.cpp \
-			os\amigaos\joystick.cpp \
-			os\amigaos\spawn.cpp
-
-objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
+			os\linux\engine.cpp \
+			os\linux\bitmap_font.cpp \
+			os\linux\init.cpp \
+			os\linux\cleanup.cpp \
+			os\linux\joystick.cpp \
+			os\linux\spawn.cpp
+linuxs_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
 
 objects = $(main_objects:.cpp=.o)
