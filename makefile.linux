@@ -69,7 +69,7 @@ all:	 $(objects_in_dir) $(programs)
 $(objects_dir)%.o:	%.cpp debug.h 
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
 
-ccmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
+AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
