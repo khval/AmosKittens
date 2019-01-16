@@ -16,10 +16,14 @@
 #endif
 
 #ifdef __linux__
+
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <signal.h>
 #include "os/linux/stuff.h"
+#include <retromodelib.h>
+#include <retromode.h>
 #endif
 
 #include "stack.h"
@@ -1308,7 +1312,13 @@ int main(char args, char **arg)
 
 	memset(globalVars,0,sizeof(globalVars));
 
+#ifdef __amigaos4__
 	sig_main_vbl = AllocSignal(-1);
+#endif
+
+#ifdef __linux__
+	sig_main_vbl = SIGUSR1;
+#endif
 
 	for (n=0;n<64;n++)
 	{
@@ -1447,7 +1457,9 @@ int main(char args, char **arg)
 
 	if (sig_main_vbl) 
 	{
+		#ifdef __amigaos4__
 		FreeSignal(sig_main_vbl);
+		#endif
 		sig_main_vbl = 0;
 	}
 	
