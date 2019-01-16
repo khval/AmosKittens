@@ -1,8 +1,19 @@
 
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include <limits.h>
+#endif
+
 #include <string>
 #include <iostream>
 

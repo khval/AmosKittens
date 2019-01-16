@@ -1,13 +1,25 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <retromode_lib.h>
+#include <retromode.h>
+#include <stdint.h>
+#include <unistd.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <vector>
 #include <iostream>
-#include <proto/retroMode.h>
-
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
@@ -659,7 +671,7 @@ bool bank_is_object( struct kittyBank *bank, void *ptr)
 	return false;
 }
 
-void __write_ambs__( FILE *fd, uint16 banks)
+void __write_ambs__( FILE *fd, uint16_t banks)
 {
 	char id[4]={'A','m','B','s'};
 
