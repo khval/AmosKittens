@@ -105,7 +105,7 @@ char *_right( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	char *str;
 	char *tmp = NULL;
-	int _start, _len;
+	int _len;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -129,7 +129,6 @@ char *_instr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
 	char *_str,*_find, *ret;
-	char *tmp = NULL;
 	int  _pos = 0;
 	int _start = 0;
 
@@ -282,7 +281,7 @@ char *_flip( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int l,i;
-	char *str,*p,t;
+	char *str,t;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -330,7 +329,7 @@ char *_string( struct glueCommands *data, int nextToken )
 
 char *_asc( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack + 1 ;
+//	int args = stack - data->stack + 1 ;
 	char *_str;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
@@ -346,7 +345,7 @@ char *_asc( struct glueCommands *data, int nextToken )
 
 char *_val( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack  + 1;
+//	int args = stack - data->stack  + 1;
 	double num = 0.0f;
 	char *_str;
 
@@ -384,9 +383,7 @@ char *_chr( struct glueCommands *data, int nextToken )
 
 char *_len( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack + 1 ;
 	int len = 0;
-	char *_str;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -404,7 +401,7 @@ char *_len( struct glueCommands *data, int nextToken )
 
 char *_space( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack + 1 ;
+//	int args = stack - data->stack + 1 ;
 	int i,_len;
 	char *str;
 
@@ -426,7 +423,7 @@ char *_space( struct glueCommands *data, int nextToken )
 
 char *_upper( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack + 1  ;
+//	int args = stack - data->stack + 1  ;
 	char *str,*s;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -445,7 +442,7 @@ char *_upper( struct glueCommands *data, int nextToken )
 
 char *_lower( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack + 1 ;
+//	int args = stack - data->stack + 1 ;
 	char *str,*s;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -624,7 +621,6 @@ void _match_str( struct kittyData *array,  char *str )
 	int new_delta;
 	int found_chars = 0;
 	int delta =INT_MAX;
-	int value;
 	int i;
 	int _l = strlen(str);
 	char c;
@@ -785,7 +781,6 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	unsigned short next_token = *((short *) (tokenBuffer));
 	struct reference *ref = NULL;
 	int idx1,idx2;
 	struct kittyData *array_var = NULL;
@@ -865,7 +860,6 @@ char *_cmdRepeatStr( struct glueCommands *data, int nextToken )
 	string txt;
 	int args = stack - data->stack + 1;
 	char *str;
-	char *tmp = NULL;
 	int _num;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);

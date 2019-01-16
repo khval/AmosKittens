@@ -21,8 +21,6 @@ extern int tokenlength;
 
 bool correct_order( int last_token, int next_token )
 {
-	bool ret = true;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 //	printf("last_token %04x next token %04x\n\n", last_token, next_token);
@@ -674,7 +672,6 @@ char *_addData( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
-	int args = stack - data -> stack + 1;
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;

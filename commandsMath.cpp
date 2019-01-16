@@ -719,7 +719,6 @@ char *_mathFnReturn( struct glueCommands *data, int nextToken )
 char *_mathFn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1 ;
-	char *_str;
 	int ref = data -> lastVar;
 	char *ptr;
 

@@ -192,7 +192,6 @@ char *_cmdErase( struct glueCommands *data, int nextToken )
 {
 	int bankNr;
 	int args = stack - data->stack +1 ;
-	struct kittyBank *bank = NULL;
 
 	if (args==1)
 	{
@@ -217,7 +216,6 @@ extern void clean_up_banks();
 
 char *_cmdEraseAll( struct glueCommands *data, int nextToken )
 {
-	int n;
 	int args = stack - data->stack +1 ;
 
 	if (args==1)
@@ -317,10 +315,6 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 					bank -> type = 9;	
 					adr = (char *)  bank -> start;
 				}
-				else
-				{
-					char *adr = (char *) n;
-				}
 				
 				if (adr) fread( adr ,size,1, fd);
 			}
@@ -336,7 +330,6 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 char *_cmdBsave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int n;
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	char *start, *to;
@@ -679,7 +672,7 @@ void init_banks( char *data , int size)
 	struct retroMemFd fd;
 	char id[5];
 	unsigned short banks = 0;
-	int n, bankNr;
+	int n;
 	int type = -1;
 	struct kittyBank *bank = NULL;
 
@@ -781,7 +774,6 @@ void init_banks( char *data , int size)
 void __load_bank__(const char *name, int bankNr )
 {
 	FILE *fd;
-	int size;
 	char id[5];
 	unsigned short banks = 0;
 	id[4]=0;
@@ -887,7 +879,6 @@ void __load_bank__(const char *name, int bankNr )
 char *_cmdLoad( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int n;
 	int args = stack - data->stack +1 ;
 
 
@@ -954,7 +945,6 @@ void __write_banks__( FILE *fd )
 char *_cmdSave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	int n;
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	char *filename = NULL;
@@ -1030,7 +1020,6 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int b1,b2;
 
-	struct kittyBank tempBank;
 	struct kittyBank *bank1;
 	struct kittyBank *bank2;
 	
@@ -1042,11 +1031,8 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 				bank1 = findBank(b1);
 				bank2 = findBank(b2);
 
-				printf("bank1: %08x bank2: %08x \n",bank1,bank2);
-
 				if (bank1)
 				{
-					printf("bank1 from id %d to id %d\n", bank1-> id, b2);
 					bank1 -> id = b2;
 				}
 
