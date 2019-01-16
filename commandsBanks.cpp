@@ -99,7 +99,7 @@ int mseek( struct retroMemFd &fd, int off, unsigned mode )
 
 struct kittyBank *findBank( int banknr )
 {
-	int n;
+	unsigned int n;
 	struct kittyBank *bank;
 
 	for (n=0;n<kittyBankList.size();n++)
@@ -490,7 +490,7 @@ extern bool next_print_line_feed;
 
 char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 {
-	int n = 0;
+	unsigned int n = 0;
 	char txt[1000];
 	struct retroScreen *screen;
 	struct kittyBank *bank = NULL;
@@ -564,7 +564,7 @@ void __save_work_data__(FILE *fd,int bankno,struct kittyBank *bank)
 {
 	struct bankItemDisk item;
 	int type = bank -> type;
-	uint32 flags = 0;
+	uint32_t flags = 0;
 
 	switch (type)
 	{
