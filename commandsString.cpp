@@ -64,6 +64,7 @@ char *_mid( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1;
 	char *str;
 	char *tmp = NULL;
+	int _slen=0;
 	int _start=0, _len = 0;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
@@ -123,7 +124,7 @@ char *_right( struct glueCommands *data, int nextToken )
 	{
 		str = getStackString( stack - 1 );
 		_len = getStackNum( stack  );
-		if (_len>strlen(str)) _start = strlen(str);
+		if (_len>(int) strlen(str)) _len = strlen(str);
 
 		tmp = strdup(str + strlen(str) - _len );
 	}	
