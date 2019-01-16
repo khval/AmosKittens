@@ -317,22 +317,27 @@ char *_string( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int i,_len;
-	char *str;
+	char *str = NULL;
 	char *_str;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	_str = getStackString( stack - 1 );
-	_len = getStackNum( stack  );
+	switch (args)
+	{
+		case 2:
+			_str = getStackString( stack - 1 );
+			_len = getStackNum( stack  );
+			str = (char *) malloc(_len+1);
 
-	str = (char *) malloc(_len+1);
-
-	for (i=0;i<_len;i++) str[i]= (_str ? *_str : 0) ;
-	str[i]= 0;
+			for (i=0;i<_len;i++) str[i]= (_str ? *_str : 0) ;
+			str[i]= 0;
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
 
 	popStack(stack - data->stack);
-
-	setStackStr(str);
+	if (str) setStackStr(str);
 
 	return NULL;
 }
