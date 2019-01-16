@@ -58,7 +58,8 @@ main_objects = commands.cpp \
 			os\linux\cleanup.cpp \
 			os\linux\joystick.cpp \
 			os\linux\spawn.cpp
-linuxs_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
+
+objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
 
 objects = $(main_objects:.cpp=.o)
