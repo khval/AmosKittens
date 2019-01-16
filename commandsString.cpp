@@ -74,9 +74,13 @@ char *_mid( struct glueCommands *data, int nextToken )
 			str = getStackString( stack - 1 );
 			_start = getStackNum( stack ) -1;
 
-			if (_start<0) _start = 0;
-			if (_start>strlen(str)-1) _start = strlen(str)-1;
-			tmp = strdup(str + _start );
+			if (_start>-1)
+			{
+				_slen = strlen(str);
+				if (_start>_slen-1) _start = _slen-1;
+				if (_start<0) _start=0;
+				tmp = strdup(str + _start );
+			}
 			break;
 
 		case 3:
@@ -84,10 +88,16 @@ char *_mid( struct glueCommands *data, int nextToken )
 			_start = getStackNum( stack -1 ) -1;
 			_len = getStackNum( stack );
 
-			if (_start<0) _start = 0;
-			if (_start>strlen(str)-1) _start = strlen(str)-1;
-			tmp = strndup(str + _start, _len );
+
+			if (_start>-1)
+			{
+				_slen = strlen(str);
+				if (_start>_slen-1) _start = _slen-1;
+				if (_start<0) _start=0;
+				tmp = strndup(str + _start, _len );
+			}	
 			break;
+
 		default:
 			setError(22,data->tokenBuffer);
 	}
