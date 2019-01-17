@@ -16,14 +16,13 @@
 #endif
 
 #ifdef __linux__
-
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <signal.h>
 #include "os/linux/stuff.h"
-#include <retromodelib.h>
 #include <retromode.h>
+#include <retromode_lib.h>
 #endif
 
 #include "stack.h"

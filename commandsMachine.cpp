@@ -1,9 +1,24 @@
+
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <exec/emulation.h>
 #include <proto/dos.h>
+#endif
+
+#ifdef __linux__
+#include <retromode.h>
+#include <retromode_lib.h>
+#include <stdint.h>
+#include <unistd.h>
+#include "os/linux/stuff.h"
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
@@ -768,10 +783,14 @@ char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 {
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+#ifdef __amigaos4__
+
 	int libVec;
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 
 	if (args==1)
 	{
@@ -807,6 +826,10 @@ char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 	popStack( stack - data->stack );
 	setStackNum(ret);
 
+#else
+	setError(1001,data->tokenBuffer);	// 'not supported on Linux/Windows/MacOSX
+#endif
+
 	return NULL;
 }
 
@@ -819,10 +842,16 @@ char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_machineEXECALL( struct glueCommands *data, int nextToken )
 {
-	int libVec;
 	int args = stack - data->stack +1 ;
+
+#ifdef __amigaos4__
+	int libVec;
 	int ret = 0;
+#endif
+
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+#ifdef __amigaos4__
 
 	if (args==1)
 	{
@@ -857,6 +886,10 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
+
+#else
+	setError(1001,data->tokenBuffer);	// 'not supported on Linux/Windows/MacOSX
+#endif
 
 	return NULL;
 }
@@ -913,9 +946,14 @@ char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
 char *_machineCall( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+#ifdef __amigaos4__
 	struct kittyBank *bank;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	void *code = NULL;
+#endif
+
+proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+#ifdef __amigaos4__
 
 	if (args==1)
 	{
@@ -946,6 +984,11 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 		setStackNum(ret);
 	}
 	else setError(22,data->tokenBuffer);
+
+#else
+	setError(1001,data->tokenBuffer);	// 'not supported on Linux/Windows/MacOSX
+#endif
+
 
 	return NULL;
 }
@@ -982,7 +1025,7 @@ char *_machineFree( struct glueCommands *data, int nextToken )
 
 	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
 	{
-		ret = AvailMem(MEMF_ANY);
+		ret = sys_memavail_sysmem();
 	}
 	else setError(22,data->tokenBuffer);
 

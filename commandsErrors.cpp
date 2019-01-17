@@ -1,7 +1,20 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#endif
+
+#ifdef __linux__
+#include <retromode.h>
+#include <retromode_lib.h>
+#include <stdint.h>
+#include <unistd.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>

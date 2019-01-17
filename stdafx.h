@@ -22,6 +22,8 @@
 #define sys_public_alloc_clear(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END )
 #define sys_priv_alloc(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, TAG_END )
 #define sys_priv_alloc_clear(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, AVT_ClearWithValue, 0, TAG_END )
+#define sys_memavail_gfxmem()
+#define sys_memavail_sysmem()
 #define sys_free FreeVec
 #endif
 
@@ -33,6 +35,8 @@
 #define sys_public_alloc_clearsize(size) calloc(1,size)
 #define sys_priv_alloc(size) malloc(size)
 #define sys_priv_alloc_clear(size) calloc(1,size)
+#define sys_memavail_gfxmem() linux_memavail_gfxmem()
+#define sys_memavail_sysmem() linux_memavail_sysmem()
 #define sys_free free
 #define Delay(n) sleep(n)
 #define ULONG uint16_t

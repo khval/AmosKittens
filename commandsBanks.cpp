@@ -10,8 +10,8 @@
 #endif
 
 #ifdef __linux__
-#include <retromode_lib.h>
 #include <retromode.h>
+#include <retromode_lib.h>
 #include <stdint.h>
 #include <unistd.h>
 #endif
@@ -131,7 +131,7 @@ struct kittyBank *findBank( int banknr )
 
 int findBankIndex( int banknr )
 {
-	int n;
+	unsigned int n;
 	struct kittyBank *bank;
 
 	for (n=0;n<kittyBankList.size();n++)
