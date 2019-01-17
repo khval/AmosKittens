@@ -21,10 +21,6 @@ main_objects = commands.cpp \
 			commandsBanks.cpp \
 			commandsErrors.cpp \
 			commandsMachine.cpp \
-			commandsGfx.cpp \
-			commandsScreens.cpp \
-			commandsText.cpp \
-			commandsKeyboard.cpp \
 			commandsSound.cpp \
 			commandsDisc.cpp \
 			commandsObjectControl.cpp \
@@ -35,7 +31,11 @@ main_objects = commands.cpp \
 			commandsMenu.cpp \
 			commandsFonts.cpp \
 			commandsRead.cpp \
+			commandsGfx.cpp \
 			commandsOn.cpp \
+			commandsText.cpp \
+			commandsScreens.cpp \
+			commandsKeyboard.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
