@@ -319,4 +319,5 @@ struct error errorsRunTime[]= {
 	{ 200,"Cannot open powerpacker.library (v35)"},
 // Kitty errors 
 	{ 1000,"Amos Kittens don't support this command" },
+	{ 1001,"Command needs AmigaOS (not supported on Linux/Windows/MacOSX)" },
 	{ 0,NULL }};
