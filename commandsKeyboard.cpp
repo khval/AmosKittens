@@ -354,8 +354,6 @@ char *_LineInput( struct glueCommands *data,int nextToken )
 void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int args = 0;
-	int index = 0;
-	int idx;
 	size_t i;
 	std::string arg = "";
 	struct glueCommands data;
@@ -447,9 +445,6 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int args = 0;
-	int index = 0;
-	int idx;
-	size_t i;
 	std::string arg = "";
 	struct glueCommands data;
 	bool success = false;
