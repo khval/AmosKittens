@@ -1,13 +1,23 @@
 
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/dos.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#endif
+
 #include "debug.h"
 #include <string>
-#include <proto/dos.h>
 #include <vector>
-
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"

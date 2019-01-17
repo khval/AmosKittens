@@ -1,20 +1,23 @@
+#include "stdafx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <string>
 #include <iostream>
-#include <proto/dos.h>
 #include <vector>
 
+#ifdef __amigaos4__
+#include <proto/dos.h>
 #include <proto/exec.h>
 #include <proto/locale.h>
 #include <proto/keymap.h>
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
-#include "debug.h"
 #include <proto/retroMode.h>
+#endif
 
+#include "debug.h"
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
