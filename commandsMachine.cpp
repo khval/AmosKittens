@@ -619,7 +619,6 @@ char *_machineBset( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -643,7 +642,6 @@ char *_machineBchg( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -667,7 +665,6 @@ char *_machineBclr( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -731,10 +728,7 @@ char *_set_reg( struct glueCommands *data, int nextToken )
 
 char *_machineAREG( struct glueCommands *data, int nextToken )
 {
-	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
-
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
@@ -751,10 +745,7 @@ char *_machineAREG( struct glueCommands *data, int nextToken )
 
 char *_machineDREG( struct glueCommands *data, int nextToken )
 {
-	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
-
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==1)
@@ -914,7 +905,6 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 	{
 		char *name = getStackString(stack-1);
 		int bankNr = getStackNum(stack);
-		FILE *fd;
 
 		if (name)	readhunk( name, &keep_code, &code_size );
 
@@ -1017,7 +1007,6 @@ char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_machineFree( struct glueCommands *data, int nextToken )
 {
-	unsigned int bit;
 	int args = stack - data->stack +1 ;
 	unsigned int ret = 0;
 
@@ -1052,7 +1041,6 @@ struct LVO lvos[]= {
 
 int findLVO( const char *name )
 {
-	int ret = 0;
 	struct LVO *lvop;
 
 	for ( lvop = lvos; lvop->lvo; lvop++ )
@@ -1068,7 +1056,6 @@ int findLVO( const char *name )
 
 char *_machineLvo( struct glueCommands *data, int nextToken )
 {
-	unsigned int bit;
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 
