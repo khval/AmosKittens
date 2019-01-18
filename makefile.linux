@@ -22,20 +22,15 @@ main_objects = commands.cpp \
 			commandsErrors.cpp \
 			commandsMachine.cpp \
 			commandsSound.cpp \
-			commandsDisc.cpp \
 			commandsObjectControl.cpp \
 			commandsHardwareSprite.cpp \
 			commandsBlitterObject.cpp \
 			commandsBackgroundGraphics.cpp \
 			commandsAmal.cpp \
-			commandsMenu.cpp \
 			commandsFonts.cpp \
 			commandsRead.cpp \
-			commandsGfx.cpp \
 			commandsOn.cpp \
 			commandsText.cpp \
-			commandsScreens.cpp \
-			commandsKeyboard.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
@@ -57,7 +52,13 @@ main_objects = commands.cpp \
 			os\linux\init.cpp \
 			os\linux\cleanup.cpp \
 			os\linux\joystick.cpp \
-			os\linux\spawn.cpp
+			os\linux\spawn.cpp \
+			commandsKeyboard.cpp \
+			commandsDisc.cpp \
+			commandsMenu.cpp \
+			commandsGfx.cpp \
+			commandsScreens.cpp 
+
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp

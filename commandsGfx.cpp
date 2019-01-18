@@ -706,7 +706,7 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int color,n,num;
+	int n;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1147,10 +1147,10 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 		engine_lock();
 
-		if (video -> rainbow[n].table) FreeVec(video -> rainbow[n].table);
+		if (video -> rainbow[n].table) sys_free(video -> rainbow[n].table);
 		video -> rainbow[n].color = colour;
 		video -> rainbow[n].tableSize = length;
-		video -> rainbow[n].table = (struct retroRGB *) AllocVecTags(sizeof(struct retroRGB)  * video -> rainbow[n].tableSize,  AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0,	TAG_END );
+		video -> rainbow[n].table = (struct retroRGB *) sys_public_alloc_clear(sizeof(struct retroRGB)  * video -> rainbow[n].tableSize );
 
 		if (rgb = (unsigned char *) video -> rainbow[n].table)
 		{

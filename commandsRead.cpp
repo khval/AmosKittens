@@ -1,7 +1,17 @@
 
+#include "stdafx.h"
+
 #include <vector>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#endif
 
 #include "stack.h"
 #include "amosKittens.h"

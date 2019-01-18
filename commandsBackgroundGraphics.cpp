@@ -1,13 +1,27 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
-#include <proto/retroMode.h>
+
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -108,7 +122,7 @@ char *_bgGetIcon( struct glueCommands *data, int nextToken )
 
 					if (icons==NULL)
 					{
-						icons = (struct retroSprite *) AllocVecTags(  sizeof(struct retroSprite), AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
+						icons = (struct retroSprite *) sys_public_alloc_clear(sizeof(struct retroSprite));
 					}
 
 					if (icons)
@@ -528,7 +542,7 @@ char *_bgIconBase( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int pick = 0;
-	struct retroFrameHeader *frame;
+
 	void *ret = NULL;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);

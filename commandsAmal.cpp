@@ -1,4 +1,6 @@
 
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +9,13 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
 #endif
 
 #include "debug.h"
@@ -567,8 +576,8 @@ void channel_anim( struct kittyChannel *self )
 		self -> sleep ++;
 		if (self -> sleep == self -> sleep_to)
 		{
-			Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-			Printf("script: %s\n", self -> anim_at);
+//			engine_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+//			engine_printf("script: %s\n", self -> anim_at);
 			channel_do_object( self );
 		}
 	}

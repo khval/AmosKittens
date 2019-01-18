@@ -23,8 +23,9 @@
 #define sys_priv_alloc(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, TAG_END )
 #define sys_priv_alloc_clear(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, AVT_ClearWithValue, 0, TAG_END )
 #define sys_memavail_gfxmem()
-#define sys_memavail_sysmem()
+#define sys_memavail_sysmem() AvailMem(MEMF_ANY)
 #define sys_free FreeVec
+#define engine_started EngineTask
 #endif
 
 #if defined(__linux__)
@@ -32,7 +33,7 @@
 #define FALSE false
 #define TRUE true
 #define sys_public_alloc(size) malloc(size)
-#define sys_public_alloc_clearsize(size) calloc(1,size)
+#define sys_public_alloc_clear(size) calloc(1,size)
 #define sys_priv_alloc(size) malloc(size)
 #define sys_priv_alloc_clear(size) calloc(1,size)
 #define sys_memavail_gfxmem() linux_memavail_gfxmem()
@@ -43,5 +44,6 @@
 typedef void * APTR;
 typedef void * BPTR;
 #define TAG_END 0
+#define engine_started 0
 #endif
 // TODO: reference additional headers your program requires here

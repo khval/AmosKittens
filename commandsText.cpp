@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -189,7 +191,7 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 
 void __print_text(const char *txt, int maxchars)
 {
-	if (EngineTask)
+	if (engine_started)
 	{
 		if (screens[current_screen])
 		{
@@ -280,7 +282,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	if (args!=1) setError(22,data->tokenBuffer);
 
-	if (EngineTask)
+	if (engine_started)
 	{
 		if (screen = screens[current_screen])
 		{
@@ -1590,7 +1592,7 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 	int y=0,b=0;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't not support X Graphic yet, but kittens are brave, and try\n");
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
 
 	if (args == 1)
 	{
@@ -1621,7 +1623,7 @@ char *_textTitleTop( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
 
 	if (args == 1)
 	{
@@ -1643,8 +1645,6 @@ char *_textWindClose( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
 
 	if (args == 1)
 	{
@@ -1691,7 +1691,7 @@ char *_textWindon( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't not support textTitleTop yet, but kittens are brave, and try\n");
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
 
 	if (args == 1)
 	{
@@ -1717,12 +1717,12 @@ char *textWindon(nativeCommand *cmd, char *tokenBuffer)
 
 char *_textWindSave( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
-	struct retroScreen *screen = screens[current_screen];
+//	int args = stack - data->stack +1 ;
+//	struct retroScreen *screen = screens[current_screen];
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	Printf("Amos Kittens don't not support textWindSave yet, but kittens are brave, and try\n");
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;

@@ -17,6 +17,14 @@
 #include <proto/retroMode.h>
 #endif
 
+#ifdef __linux__
+#include <stdint.h>
+#include <unistd.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#endif
+
 #include "debug.h"
 #include "stack.h"
 #include "amosKittens.h"
@@ -55,7 +63,7 @@ void atomic_get_char( char *buf)
 {
 	buf[0]=0;
 
-	if (EngineTask)
+	if (engine_started)
 	{
 		struct InputEvent event;
 		bzero(&event,sizeof(struct InputEvent));
@@ -127,7 +135,7 @@ void kitty_getline(string &input)
 		textWindow = screen -> currentTextWindow;
 	}
 
-	if ((EngineTask)&&(textWindow))
+	if ((engine_started)&&(textWindow))
 	{
 		draw_cursor( screen );
 		rightx = textWindow -> locateX;
@@ -206,7 +214,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (EngineTask)
+	if (engine_started)
 	{
 		engine_wait_key = true;
 		do
@@ -251,11 +259,16 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		int n = getStackNum( stack );
-		while (tmp.length()<n)
+		while ((int) tmp.length()<n)
 		{
 			atomic_get_char(buf);
 			tmp += buf;
+
+#ifdef __amigaos4__
 			WaitTOF();
+#else
+			sleep(1);
+#endif
 		}
 	}
 	else
@@ -387,7 +400,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && EngineTask ) kitty_getline( input_str);
+			while (input_str.empty() && engine_started ) kitty_getline( input_str);
 
 			i = input_str.find(",");	
 			if (i != std::string::npos)
@@ -399,7 +412,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 				arg = input_str; input_str = "";
 			}
 		}
-		while ( arg.empty() && EngineTask );
+		while ( arg.empty() && engine_started );
 
 		if (last_var)
 		{
@@ -414,7 +427,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 			}
 		}
 	}
-	while (!success && EngineTask);
+	while (!success && engine_started);
 
 	engine_lock();
 	clear_cursor( screens[current_screen] );
@@ -492,7 +505,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && EngineTask ) kitty_getline(input_str);
+			while (input_str.empty() && engine_started ) kitty_getline(input_str);
 
 			engine_lock();
 			clear_cursor( screens[current_screen] );
@@ -500,7 +513,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 			arg = input_str; input_str = "";
 		}
-		while ( arg.empty() && EngineTask );
+		while ( arg.empty() && engine_started );
 
 		if (last_var)
 		{
@@ -518,7 +531,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		printf("%s:%d -- success = %s\n",__FUNCTION__,__LINE__, success ? "True" : "False");
 
 	}
-	while (!success && (EngineTask) );
+	while (!success && (engine_started) );
 
 	__print_text( "\n" ,0 );
 

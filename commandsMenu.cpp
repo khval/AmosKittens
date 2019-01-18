@@ -1,12 +1,18 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/gadtools.h>
+#endif
+
 #include "debug.h"
 #include <string>
-#include <proto/dos.h>
 #include <vector>
 
 #include "stack.h"

@@ -1,12 +1,25 @@
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
-#include <proto/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -104,7 +117,7 @@ void freeBobClear( struct retroSpriteObject *bob )
 
 	if (clear -> mem)
 	{
-		FreeVec(clear -> mem);
+		sys_free(clear -> mem);
 		clear -> mem = NULL;
 	}	
 }
@@ -218,8 +231,6 @@ void drawBobs()
 
 			if ( (image >= 0 ) && (image < sprite -> number_of_frames) )
 			{
-				Printf("screens[%ld] -> Bob[%ld] -> frames[%ld] \n",bob->screen_id, n, image);
-
 				frame = &sprite -> frames[ image-1 ];
 
 				clear = &bob -> clear[ 0 ];
@@ -235,7 +246,7 @@ void drawBobs()
 
 				if (clear -> mem)
 				{
-					FreeVec(clear -> mem);
+					sys_free(clear -> mem);
 					clear -> mem = NULL;
 				}
 
@@ -431,7 +442,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 
 					if (sprite==NULL)
 					{
-						sprite = (struct retroSprite *) AllocVecTags(  sizeof(struct retroSprite), AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
+						sprite = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
 					}
 
 					if (sprite)
@@ -724,7 +735,7 @@ char *_boDelBob( struct glueCommands *data, int nextToken )
 		{
 			int f;
 
-			if (sprite -> frames[del].data) FreeVec(sprite -> frames[del].data);
+			if (sprite -> frames[del].data) sys_free(sprite -> frames[del].data);
 
 			for (f=sprite->number_of_frames-1;f>del;f--)
 			{

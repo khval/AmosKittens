@@ -2245,7 +2245,7 @@ char *cmdChipFree( struct nativeCommand *cmd, char *tokenBuffer )
 #endif
 
 #ifdef __linux__
-	setStackNum( memavail() );
+	setStackNum( sys_memavail_gfxmem() );
 #endif
 
 	return tokenBuffer;
@@ -2259,7 +2259,7 @@ char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer )
 #endif
 
 #ifdef __linux__
-	setStackNum( memavail() );
+	setStackNum( sys_memavail_sysmem() );
 #endif
 
 	return tokenBuffer;

@@ -1,12 +1,25 @@
+
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
+#include <proto/exec.h>
+#include <proto/asl.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
-#include <proto/retroMode.h>
 
 #include "stack.h"
 #include "amosKittens.h"
