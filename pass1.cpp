@@ -270,7 +270,6 @@ int findFnByName(char *name)
 
 char *pass1Fn( char *ptr )
 {
-	char *_;
 	// skip all new lines..
 
 	if (*(unsigned short *) ptr  == 0x0006 )
@@ -305,7 +304,6 @@ char *pass1Fn( char *ptr )
 
 char *pass1DefFn( char *ptr )
 {
-	char *_;
 	// skip all new lines..
 
 	if (*(unsigned short *) ptr  == 0x0006 )
@@ -438,7 +436,6 @@ void pass1label(char *ptr)
 	char *tmpName;
 	int found_ref;
 	struct reference *ref = (struct reference *) ptr;
-	struct kittyData *var;
 	char *next;
 
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
@@ -721,7 +718,6 @@ void fix_token_short( int cmd, char *ptr )
 
 void pass1_proc_end( char *ptr )
 {
-	char *ret;
 	procStackCount--;
 
 	((struct procedure *) (nested_command[ nested_count -1 ].ptr )) -> EndOfProc = ptr-2;
@@ -774,7 +770,6 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
 	char *ret;
-	unsigned short length;
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{

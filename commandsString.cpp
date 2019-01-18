@@ -34,7 +34,6 @@ extern struct retroScreen *screens[8] ;
 
 extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
-extern bool engine_started ;
 
 using namespace std;
 
