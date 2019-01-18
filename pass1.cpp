@@ -189,7 +189,7 @@ int findVar( char *name, int type, int _proc )
 
 char *findLabel( char *name )
 {
-	int n;
+	unsigned int n;
 
 	for (n=0;n<labels.size();n++)
 	{
@@ -203,7 +203,7 @@ char *findLabel( char *name )
 
 int findLabelRef( char *name )
 {
-	int n;
+	unsigned int n;
 
 	for (n=0;n<labels.size();n++)
 	{
@@ -256,7 +256,7 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 int findFnByName(char *name)
 {
-	int n;
+	unsigned int n;
 	for (n=0;n<defFns.size();n++)
 	{
 		if (strcasecmp(name, defFns[n].name) == 0)
