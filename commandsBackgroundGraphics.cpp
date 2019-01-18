@@ -93,8 +93,6 @@ char *bgPasteIcon(struct nativeCommand *cmd, char *tokenBuffer)
 char *_bgGetIcon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int num;
-	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -282,8 +280,7 @@ void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char b
 	struct retroBlock *block = NULL;
 	unsigned char *sslice,*dslice;
 	int _x,_y,dx,dy;
-	int b;
-	unsigned char s;
+	unsigned int b;
 
 	for (b=0;b<blocks.size();b++)
 	{
@@ -328,7 +325,7 @@ void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char b
 char *_bgGetBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x2,y2;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -393,8 +390,6 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 	{
 		case 3:
 			{
-				int b;
-				struct retroBlock *block = NULL;
 				int id = getStackNum(stack-2);
 				int x = getStackNum(stack-1);
 				int y = getStackNum(stack);

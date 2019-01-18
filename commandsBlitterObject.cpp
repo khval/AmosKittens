@@ -41,10 +41,7 @@ void clearBobs()
 	int n;
 	struct retroScreen *screen;
 	struct retroSpriteObject *bob;
-	struct retroFrameHeader *frame;
 	struct retroSpriteClear *clear;
-	int image;
-	int x1,y1,x2,y2;
 
 	if (!sprite) return;
 	if (!sprite -> frames) return;
@@ -382,8 +379,6 @@ char *boYBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boPasteBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int num;
-	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -419,8 +414,6 @@ char *boPasteBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boGetBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int num;
-	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -470,9 +463,7 @@ char *boGetBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boPutBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int n;
-	int image,flags;
-	struct retroSpriteObject *bob;
+	int n,image,flags;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -508,7 +499,6 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 	int image;
 	int p;
 	int x,y;
-	struct retroSpriteObject *bob;
 	bool success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -584,8 +574,6 @@ char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boLimitBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int num;
-	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -725,7 +713,6 @@ char *_boDelBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int del = 0;
-	struct retroFrameHeader *frame;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 

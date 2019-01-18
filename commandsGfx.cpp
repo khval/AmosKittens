@@ -458,7 +458,6 @@ char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxInk( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0,y0,r0,r1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1106,7 +1105,6 @@ void channelRainbowOCS( unsigned char *rgb, int channel, int lines, int step, in
 	int n;
 	int C = 0;
 	int y= 0;
-	int pos;
 	unsigned char rgb_value;
 
 	if (step == 0) return;
@@ -1133,7 +1131,6 @@ void channelRainbowOCS( unsigned char *rgb, int channel, int lines, int step, in
 char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1175,7 +1172,6 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 char *_gfxRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1245,8 +1241,7 @@ char *_gfxAutoback( struct glueCommands *data, int nextToken )
 char *_gfxRain( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr ,y0 = ygr,x1,y1;
-
+	
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args==2)

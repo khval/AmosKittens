@@ -80,8 +80,6 @@ char *_set_amreg_channel_fn( struct glueCommands *data, int nextToken )
 char *_amalSetAmReg( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-
 	int ret = 0;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -124,7 +122,6 @@ char *_amalSetAmReg( struct glueCommands *data, int nextToken )
 char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	unsigned int num = 0;
 	int channel = 0;
 	int ret = 0;
@@ -314,7 +311,6 @@ void channel_amal( struct kittyChannel *channel )
 char *_amalAmal( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
