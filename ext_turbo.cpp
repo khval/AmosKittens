@@ -1,12 +1,26 @@
+
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <string.h>
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#endif
+
 #include "debug.h"
 #include <string>
 #include <iostream>
-#include <proto/retroMode.h>
-
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"

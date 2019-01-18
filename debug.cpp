@@ -1,14 +1,29 @@
 
+#include "stdafx.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <string.h>
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#define Printf printf
+#endif
+
 #include "amosKittens.h"
 #include "commands.h"
 #include "debug.h"
 #include <vector>
-#include <proto/retroMode.h>
 
 extern struct globalVar globalVars[1000];
 extern std::vector<struct lineAddr> linesAddress;

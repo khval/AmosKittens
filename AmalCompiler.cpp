@@ -5,11 +5,9 @@
 #include <string.h>
 #include "vs_missing_string_functions.h"
 #define strdup _strdup
+#define Printf printf
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 
 #if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>
@@ -20,9 +18,21 @@
 #else
 #define sys_alloc(size) malloc(size)
 #define sys_free(ptr) free(ptr)
+
+#endif
+
+#ifdef __linux__
+#include <string.h>
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
 #define Printf printf
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"

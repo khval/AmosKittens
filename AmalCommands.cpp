@@ -1,7 +1,5 @@
 
-#ifdef _MSC_VER
 #include "stdafx.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +8,12 @@
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
 #include <proto/dos.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#define Printf printf
 #endif
 
 #include "AmalCompiler.h"
