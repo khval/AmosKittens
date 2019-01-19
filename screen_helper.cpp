@@ -1,15 +1,23 @@
 
-#ifdef _MSC_VER
 #include "stdafx.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
 #endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#define Printf printf
+#endif
+
 #include "commandsScreens.h"
 
 extern struct retroScreen *screens[8] ;

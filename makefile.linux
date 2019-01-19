@@ -12,6 +12,8 @@ VERSION = 1
 
 warnings = -Wuninitialized -Wsign-compare -Wunused-variable
 
+inc = -I./ -I../../
+
 objects_dir = objs_amoskittens/
 
 main_objects = commands.cpp \
@@ -39,7 +41,6 @@ main_objects = commands.cpp \
 			pass1.cpp \
 			errors.cpp \
 			stack.cpp \
-			readhunk.cpp \
 			var_helper.cpp \
 			channel.cpp \
 			amal_object_bob.cpp \
@@ -47,12 +48,12 @@ main_objects = commands.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
 			screen_helper.cpp \
-			os\linux\engine.cpp \
-			os\linux\bitmap_font.cpp \
-			os\linux\init.cpp \
-			os\linux\cleanup.cpp \
-			os\linux\joystick.cpp \
-			os\linux\spawn.cpp \
+			os/linux/engine.cpp \
+			os/linux/bitmap_font.cpp \
+			os/linux/init.cpp \
+			os/linux/cleanup.cpp \
+			os/linux/joystick.cpp \
+			os/linux/spawn.cpp \
 			commandsKeyboard.cpp \
 			commandsDisc.cpp \
 			commandsMenu.cpp \
@@ -69,7 +70,7 @@ programs= $(main_SRCS:.cpp=.exe)
 all:	 $(objects_in_dir) $(programs) 
 
 $(objects_dir)%.o:	%.cpp debug.h 
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
 AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@

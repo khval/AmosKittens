@@ -1,11 +1,24 @@
+#include "stdafx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+
+#ifdef __amigaos4__
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#endif
+
+#ifdef __linux__
+#include <stdint.h>
+#include "os/linux/stuff.h"
+#include <retromode.h>
+#include <retromode_lib.h>
+#define Printf printf
+#endif
+
 #include "AmalCompiler.h"
 #include "channel.h"
 
