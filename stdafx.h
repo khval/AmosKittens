@@ -29,6 +29,7 @@
 #endif
 
 #if defined(__linux__)
+#include <stdint.h>
 #define BOOL bool
 #define FALSE false
 #define TRUE true
@@ -40,10 +41,35 @@
 #define sys_memavail_sysmem() linux_memavail_sysmem()
 #define sys_free free
 #define Delay(n) sleep(n)
-#define ULONG uint16_t
+#define UBYTE unsigned char
+#define UWORD uint16_t
+#define ULONG uint32_t
 typedef void * APTR;
 typedef void * BPTR;
 #define TAG_END 0
 #define engine_started 0
+
+struct TextFont
+{
+	UWORD	tf_YSize;
+	UBYTE	tf_Style;
+	UBYTE	tf_Flags;
+	UWORD	tf_XSize;
+	UWORD	tf_Baseline;
+	UWORD	tf_BoldSmear;
+
+	UWORD	tf_Accessors;
+
+	UBYTE	tf_LoChar;
+	UBYTE	tf_HiChar;
+	APTR	tf_CharData;
+
+	UWORD	tf_Modulo;
+	APTR	tf_CharLoc;
+
+	APTR	tf_CharSpace;
+	APTR	tf_CharKern;
+};
+
 #endif
 // TODO: reference additional headers your program requires here
