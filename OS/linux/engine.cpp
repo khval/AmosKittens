@@ -7,9 +7,15 @@
 #include <vector>
 
 #include <stdint.h>
+#include <unistd.h>
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>
+
+#include <thread>
+#include <mutex>
+#include <signal.h>
+#include <pthread.h>
 
 #include "amoskittens.h"
 #include "joysticks.h"
@@ -20,6 +26,9 @@
 #include "channel.h"
 #include "spawn.h"
 #include "init.h"
+
+
+using namespace std;
 
 extern int sig_main_vbl;
 extern bool running;			// 
@@ -39,11 +48,11 @@ bool engine_stopped = false;
 extern bool curs_on;
 extern int _keyshift;
 
-std::mutex engine_mx ;
+static std::mutex engine_mx ;
 
 extern ChannelTableClass *channels;
-std::vector<struct keyboard_buffer> keyboardBuffer;
-std::vector<struct amos_selected> amosSelected;
+vector<struct keyboard_buffer> keyboardBuffer;
+vector<struct amos_selected> amosSelected;
 
 
 int engine_mouse_key = 0;
@@ -105,106 +114,20 @@ struct retroRGB DefaultPalette[256] =
 	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS | IDCMP_MENUPICK
 
 struct retroVideo *video = NULL;
-struct Window *My_Window = NULL;
-
-struct Library * IntuitionBase = NULL;
-struct IntuitionIFace *IIntuition = NULL;
-
-struct Library * GraphicsBase = NULL;
-struct GraphicsIFace *IGraphics = NULL;
-
-
-
-struct Library * LayersBase = NULL;
-struct LayersIFace *ILayers = NULL;
-
-
-extern BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface);
 
 
 bool open_window( int window_width, int window_height )
 {
-		My_Window = OpenWindowTags( NULL,
-
-			WA_Title,         "Amos Kittens",
-
-			WA_InnerWidth,      window_width,
-			WA_InnerHeight,     window_height,
-
-			WA_SimpleRefresh,		FALSE,
-			WA_CloseGadget,     TRUE,
-			WA_DepthGadget,     TRUE,
-
-			WA_DragBar,         TRUE,
-			WA_Borderless,      FALSE,
-			WA_SizeGadget,      FALSE,
-			WA_SizeBBottom,	FALSE,
-			WA_Activate, TRUE,
-
-			WA_IDCMP,           IDCMP_COMMON,
-			WA_Flags,           WFLG_REPORTMOUSE | WFLG_RMBTRAP |  WFLG_NEWLOOKMENUS ,
-			TAG_DONE);
-
-
-
-	return (My_Window != NULL) ;
+	return NULL ;
 }
-
-struct TextFont *topaz8_font = NULL;
-struct RastPort font_render_rp;
 
 bool init_engine()
 {
-	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
-	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
-	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
-	if ( ! open_window(640,480) ) return false;
-
-	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
-
-	retroAllocSpriteObjects(video,64);
-
-	topaz8_font =  open_font( "topaz.font" ,  8);
-	if ( ! topaz8_font ) return FALSE;
-
-	InitRastPort(&font_render_rp);
-	font_render_rp.BitMap = AllocBitMapTags( 800, 50, 256, 
-				BMATags_PixelFormat, PIXF_CLUT, 
-				BMATags_Clear, true,
-				BMATags_Displayable, false,
-				TAG_END);
-
-	if ( !font_render_rp.BitMap ) return false;
-
-	font_render_rp.Font =  My_Window -> RPort -> Font;
-	SetBPen( &font_render_rp, 0 );
-
-	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
-	if ( ! engine_mx) return FALSE;
-
-	return TRUE;
+	return FALSE;
 }
 
 void close_engine()
 {
-	if (topaz8_font) CloseFont(topaz8_font); topaz8_font=0;
-
-	if ( font_render_rp.BitMap )
-	{
-		FreeBitMap( font_render_rp.BitMap );
-		font_render_rp.BitMap = NULL;
-	}
-
-	if (My_Window) CloseWindow(My_Window);
-
-	if (IntuitionBase) CloseLibrary(IntuitionBase); IntuitionBase = 0;
-	if (IIntuition) DropInterface((struct Interface*) IIntuition); IIntuition = 0;
-
-	if (LayersBase) CloseLibrary(LayersBase); LayersBase = 0;
-	if (ILayers) DropInterface((struct Interface*) ILayers); ILayers = 0;
-
-	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
-	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
 }
 
 void main_engine();
@@ -212,17 +135,6 @@ void main_engine();
 
 bool start_engine()
 {
-#ifdef enable_engine_debug_output_yes
-	BPTR engine_debug_output = Open("CON:660/50/600/480/Kittens engine",MODE_NEWFILE);
-#else
-	BPTR engine_debug_output = NULL;
-#endif
-
-	main_task = (struct Process *) FindTask(NULL);
-	EngineTask = spawn( main_engine, "Amos kittens graphics engine",engine_debug_output);
-
-	Wait(SIGF_CHILD);
-	return ((EngineTask) && (engine_stopped == false));
 }
 
 void set_default_colors( struct retroScreen *screen )
@@ -419,274 +331,6 @@ void DrawSprite(
 
 void main_engine()
 {
-	struct IntuiMessage *msg;
-	struct MenuItem *item;
-	UWORD menuNumber;
-
-	struct amos_selected selected;
-
-	Printf("init engine\n");
-
-	if (init_engine())		// libs open her.
-	{
-		Printf("init engine done..\n");
-		
-		struct retroScreen *screen ;
-		ULONG Class;
-		UWORD Code;
-		UWORD Qualifier;
-		ULONG sigs;
-		ULONG joy_sig;
-		ULONG ret;
-		int n;
-		
-		Signal( &main_task->pr_Task, SIGF_CHILD );
-
-		Printf("clear video\n");
-		retroClearVideo(video);
-		gfxDefault(NULL, NULL);
-
-		Printf("init joysticks..\n");
-		init_joysticks();
-
-		joy_sig = 1L << (joystick_msgport -> mp_SigBit);
-
-		sigs = SIGBREAKF_CTRL_C;
-		sigs |= joy_sig;
-
-		Printf("main loop\n");
-
-		while (running)
-		{
-			ret = SetSignal(0L, sigs);
-
-			if ( ret & SIGBREAKF_CTRL_C) running = false;
-
-			if ( ret & joy_sig )
-			{
-				for (n=0;n<4;n++)
-				{
-					if (joysticks[n].id>0)
-					{
-						joy_stick(n,joysticks[n].controller);
-					}
-				}
-			}
-
-			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
-			{
-				Qualifier = msg -> Qualifier;
-				Class = msg -> Class;
-				Code = msg -> Code;
-
-				switch (Class) 
-				{
-					case IDCMP_CLOSEWINDOW: 
-							running = false;
-							break;
-
-					case IDCMP_MOUSEBUTTONS:
-							switch (Code)
-							{
-								case SELECTDOWN:	engine_mouse_key |= 1; break;
-								case SELECTUP:	engine_mouse_key &= ~1; break;
-								case MENUDOWN:	engine_mouse_key |= 2; break;
-								case MENUUP:		engine_mouse_key &= ~2; break;
-							}
-							break;
-
-					case IDCMP_MOUSEMOVE:
-							engine_mouse_x = msg -> MouseX - video -> window -> BorderLeft;
-							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
-							break;
-
-					case IDCMP_MENUPICK:
-
-							menuNumber = msg -> Code;
-							while (menuNumber != MENUNULL)
-							{
-								item = ItemAddress(amiga_menu, menuNumber);
-
-								if (item)
-								{
-									selected.menu = MENUNUM(menuNumber);
-									selected.item = ITEMNUM(menuNumber);
-									selected.sub = SUBNUM(menuNumber);
-									amosSelected.push_back(selected);
-									menuNumber = item -> NextSelect;
-
-									Printf("selected %ld\n",amosSelected.size());
-								} else break;
-							}
-							
-
-							break;
-
-					case IDCMP_RAWKEY:
-
-							_keyshift = Qualifier;
-
-							if (Qualifier & IEQUALIFIER_REPEAT)
-							{
-								Printf("we have a repeat key\n");
-							}
-							 
-							{
-								int emu_code = Code &~ IECODE_UP_PREFIX;
-								if (emu_code==75) emu_code = 95;
-								keyState[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
-							}
-
-							if ((Code & IECODE_UP_PREFIX) || (Qualifier & IEQUALIFIER_REPEAT))
-							{
-								engine_wait_key = false;
-								Code = Code & ~IECODE_UP_PREFIX;
-
-								if ((Qualifier & IEQUALIFIER_LCOMMAND) || (Qualifier & IEQUALIFIER_RCOMMAND))
-								{
-									if ((Code >= RAWKEY_F1) && (Code <= RAWKEY_F10))
-									{
-										int idx = Code - RAWKEY_F1 + (Qualifier & IEQUALIFIER_RCOMMAND ? 10 : 0);
-
-										if (F1_keys[idx])
-										{
-											char *p;
-											for (p=F1_keys[idx];*p;p++) atomic_add_to_keyboard_queue( 0, 0, *p );
-										}
-									}
-								}
-								else	atomic_add_to_keyboard_queue( Code, Qualifier, 0 );
-							}
-							break;
-				}
-
-				ReplyMsg( (Message*) msg );
-			}
-
-			if (autoView)
-			{
-				retroClearVideo( video );
-
-				engine_lock();
-
-				if ((bobUpdate==1)||(screen -> force_swap))
-				{
-					Printf("drawBobs()\n");
-					drawBobs();
-				}
-
-				for (n=0; n<8;n++)
-				{
-					screen = screens[n];
-
-					if (screen)
-					{
-						retroFadeScreen_beta(screen);
-
-						if (screen -> Memory[1]) 	// has double buffer
-						{
-							Printf("screen %ld - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
-							Printf("Trying to swap\n");
-
-							if ((screen -> autoback!=0) || (screen -> force_swap))
-							{
-								screen -> force_swap = FALSE;
-
-								Printf("swapping\n");
-
-								memcpy( 
-									screen -> Memory[1 - screen -> double_buffer_draw_frame], 
-									screen -> Memory[screen -> double_buffer_draw_frame],
-									screen -> bytesPerRow * screen -> realHeight );
-
-								screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
-							}
-						}
-					}
-				}
-
-				retroDrawVideo( video );
-
-				if ((bobUpdate==1)||(screen -> force_swap))
-				{
-					clearBobs();
-					Printf("Clear bobs\n");
-				}
-
-				if (channels)
-				{
-					struct kittyChannel *item;
-					int i;
-					for (i=0;i<channels -> _size();i++)
-					{
-						if (item = channels -> item(i))
-						{
-							if (item->amal_script) channel_amal( item );
-							if (item->anim_script) channel_anim( item );
-							if (item->movex_script) channel_movex( item );
-							if (item->movey_script) channel_movey( item );
-						}
-					}
-				}
-
-				if ((sprite)&&(video -> sprites))
-				{
-					struct retroSpriteObject *item;
-					for (n=0;n<64;n++)
-					{
-						item = &video -> sprites[n];
-						item -> sprite = sprite;
-
-						if (item -> image>0)
-						{
-							DrawSprite( sprite, item, item -> image -1, 0 );
-						}
-					}
-				}
-		
-				engine_unlock();
-			}
-
-			AfterEffectScanline( video );
-//			AfterEffectAdjustRGB( video , 8, 0 , 4);
-			retroDmaVideo( video );
-
-			WaitTOF();
-			if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
-
-			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
-						BLITA_Source, video->rp.BitMap,
-						BLITA_SrcX, 0,
-						BLITA_SrcY, 0,
-						BLITA_Width,  video -> width, 
-						BLITA_Height, video -> height,
-						BLITA_DestType,  BLITT_RASTPORT,
-						BLITA_Dest, My_Window->RPort,
-						BLITA_DestX, My_Window->BorderLeft,
-						BLITA_DestY, My_Window->BorderTop,
-						TAG_END);
-
-			Delay(1);
-		}
-
-
-		for (n=0; n<8;n++)
-		{
-			if (screens[n]) retroCloseScreen(&screens[n]);
-		}
-
-		retroFreeVideo(video);
-	}
-	else
-	{
-		Signal( &main_task->pr_Task, SIGF_CHILD );
-	}
-
-	close_joysticks();
-	close_engine();
-
-	if (sig_main_vbl) signal( &main_task->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
-
 	engine_stopped = true;
 }
 
@@ -698,5 +342,5 @@ void engine_lock()
 
 void engine_unlock()
 {
-	engine_mx.unlcok();
+	engine_mx.unlock();
 }
