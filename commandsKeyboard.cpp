@@ -59,6 +59,17 @@ std::string input_str;
 using namespace std;
 
 
+#ifdef __linux__
+
+void atomic_get_char( char *buf)
+{
+
+}
+
+#endif
+
+#ifdef __amigaos4__
+
 void atomic_get_char( char *buf)
 {
 	buf[0]=0;
@@ -111,6 +122,8 @@ void atomic_get_char( char *buf)
 	}
 }
 
+#endif
+
 void kitty_getline(string &input)
 {
 	bool done = false;
@@ -147,7 +160,13 @@ void kitty_getline(string &input)
 		do
 		{
 			atomic_get_char(buf);
+
+#ifdef __amigaos4__			
 			WaitTOF();
+#endif
+#ifdef __linux__
+			sleep(1);
+#endif
 
 			if (buf[0] != 0) printf("--%d--\n",buf[0]);
 

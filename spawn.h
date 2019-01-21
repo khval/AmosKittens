@@ -7,7 +7,7 @@ struct Process *spawn( void (*fn) (), const char *name, BPTR output );		// creat
 
 #ifdef __linux__
 // returns pid+1 number for Linux, so it return 0 on error.
-int *spawn( void (*fn) (), const char *name, BPTR output );	
+int spawn( void (*fn) (), const char *name, BPTR output );	
 #endif
 
 

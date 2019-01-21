@@ -688,6 +688,7 @@ char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
 
 void LoadIff( char *name, const int n )
 {
+#if 0
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
@@ -747,6 +748,8 @@ void LoadIff( char *name, const int n )
 		DisposeDTObject((Object*) dto);
 		engine_unlock();
 	}
+
+#endif
 }
 
 char *_gfxLoadIff( struct glueCommands *data, int nextToken )
@@ -778,6 +781,9 @@ char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 
 void SaveIff( char *name, const int n )
 {
+
+#if 0
+
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
@@ -845,6 +851,9 @@ void SaveIff( char *name, const int n )
 		 DisposeDTObject((Object*) dto);
 	}
 	else 	if (dt_bitmap) FreeBitMap(dt_bitmap);
+
+#endif
+
 }
 
 

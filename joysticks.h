@@ -1,12 +1,18 @@
 
-#ifdef amigaos4
-
 extern struct MsgPort	*joystick_msgport;
 
 struct joystick
 {
 	void				*controller ;
+
+#ifdef __amigaos4__	
 	AIN_DeviceHandle	*handle;
+#endif
+
+#ifdef __linux__	
+	void	*handle;
+#endif
+
 	int id;
 	int num;
 	int res;
@@ -15,10 +21,6 @@ struct joystick
 extern int found_joysticks;
 extern int used_joysticks;
 extern struct joystick joysticks[4];
-
-#else
-
-#endif
 
 void init_joysticks();
 void close_joysticks();

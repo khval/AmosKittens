@@ -33,6 +33,10 @@ main_objects = commands.cpp \
 			commandsRead.cpp \
 			commandsOn.cpp \
 			commandsText.cpp \
+			commandsKeyboard.cpp \
+			os/linux/commandsDisc.cpp \
+			os/linux/commandsMenu.cpp \
+			os/linux/commandsGfx.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
@@ -54,10 +58,6 @@ main_objects = commands.cpp \
 			os/linux/cleanup.cpp \
 			os/linux/joystick.cpp \
 			os/linux/spawn.cpp \
-			commandsKeyboard.cpp \
-			commandsDisc.cpp \
-			commandsMenu.cpp \
-			commandsGfx.cpp \
 			commandsScreens.cpp 
 
 
