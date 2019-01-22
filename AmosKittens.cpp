@@ -1289,7 +1289,7 @@ char *filename = NULL;
 
 #define DLINE printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-int main(char args, char **arg)
+int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
 	FILE *fd;
