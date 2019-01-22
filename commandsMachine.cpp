@@ -9,6 +9,7 @@
 #include <proto/exec.h>
 #include <exec/emulation.h>
 #include <proto/dos.h>
+#include "readhunk.h"
 #endif
 
 #ifdef __linux__
@@ -29,7 +30,8 @@
 #include "commandsMachine.h"
 #include "commandsBanks.h"
 #include "errors.h"
-#include "readhunk.h"
+
+
 #include "var_helper.h"
 
 extern int last_var;
@@ -892,6 +894,8 @@ char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+#ifdef __amigaos4__
+
 char *_machinePload( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -926,6 +930,19 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 
 	return NULL;
 }
+
+#endif
+
+#ifdef __linux__
+
+char *_machinePload( struct glueCommands *data, int nextToken )
+{
+	popStack( stack - data->stack );
+	setError(1001,data->tokenBuffer);
+	return NULL;
+}
+
+#endif
 
 char *machinePload(struct nativeCommand *cmd, char *tokenBuffer)
 {
