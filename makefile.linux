@@ -64,7 +64,7 @@ main_objects = commands.cpp \
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
 
-libs = -lretromode_lib -l
+libs = -lm 
 
 objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
@@ -77,7 +77,7 @@ $(objects_dir)%.o:	%.cpp debug.h
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
 AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
+	g++ $(warnings) $(LIBRARY_DIRS) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@ $(libs) /usr/local/lib/libretromode.a
 
 %.exe:		%.cpp $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
