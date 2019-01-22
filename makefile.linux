@@ -58,6 +58,7 @@ main_objects = commands.cpp \
 			os/linux/cleanup.cpp \
 			os/linux/joystick.cpp \
 			os/linux/spawn.cpp \
+			os/linux/memory.cpp \
 			commandsScreens.cpp 
 
 

@@ -734,7 +734,7 @@ void init_banks( char *data , int size)
 							{
 								engine_lock();
 								freeBank( 1 );
-								sprite = retroLoadSprite( &fd, (cust_fread_t) hook_mread );
+								sprite = retroLoadSprite( (void *) &fd, (cust_fread_t) hook_mread );
 								engine_unlock();
 
 								// 4 Bottles of beer. 

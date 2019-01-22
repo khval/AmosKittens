@@ -40,6 +40,7 @@ extern struct Menu *amiga_menu;
 
 extern struct retroSprite *sprite;
 
+struct TextFont *topaz8_font = NULL;
 struct Process *EngineTask = NULL;
 
 bool engine_wait_key = false;
