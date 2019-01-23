@@ -18,6 +18,8 @@ inc = -I./ -I../../
 
 objects_dir = objs_amoskittens/
 
+config_tools = config_tools/check_cpu.tool.cpp
+
 main_objects = commands.cpp \
 			commandsData.cpp \
 			commandsString.cpp \
@@ -75,19 +77,26 @@ programs= $(main_SRCS:.cpp=.exe)
 
 COPT = -std=gnu++11
 
-all:	 $(objects_in_dir) $(programs) 
+all:	 config.h $(objects_in_dir) $(programs) 
 
 $(objects_dir)%.o:	%.cpp debug.h 
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
-AmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
+AmosKittens.exe:	config.h AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) $(LIBRARY_DIRS) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@ $(libs) /usr/local/lib/libretromode.a
 
 %.exe:		%.cpp $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
+config_tools/check_cpu.tool.exe:		config_tools/check_cpu.tool.cpp 
+	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) -o $@
+
+config.h: $(config_tools:.tool.cpp=.tool.exe)
+	echo > config.h
+	config_tools/check_cpu.tool.exe >> config.h
+
 clean:
-	@rm $(programs) $(objects_in_dir)
+	@rm $(programs) $(objects_in_dir) config.h
 
 .PHONY: revision 
 revision:

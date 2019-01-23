@@ -7,6 +7,7 @@
 #include <vector>
 #include <math.h>
 
+#include "config.h"
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -23,6 +24,11 @@
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>
+#endif
+
+#ifdef __LITTLE_ENDIAN__
+#warning "This is a little endien CPU, Amos was made for big endien CPU's"
+#include "os/littleendian/littleendian.h"
 #endif
 
 #include "stack.h"
@@ -1386,6 +1392,9 @@ int main(int args, char **arg)
 
 				fread(data,amos_filesize - _file_code_start_ ,1,fd);
 
+#ifdef __LITTLE_ENDIAN__
+				token_littleendian_fixer( data, _file_end_ );
+#endif
 				// snifff the tokens find labels, vars, functions and so on.
 				pass1_reader( data, _file_end_ );
 
