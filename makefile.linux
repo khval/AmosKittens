@@ -10,6 +10,8 @@ VERSION = 1
 #RM     = delete
 # RM     = rm
 
+LIBRARY_DIRS = -L/usr/local/lib -L/usr/lib -L/lib
+
 warnings = -Wuninitialized -Wsign-compare -Wunused-variable
 
 inc = -I./ -I../../
@@ -59,7 +61,8 @@ main_objects = commands.cpp \
 			os/linux/joystick.cpp \
 			os/linux/spawn.cpp \
 			os/linux/memory.cpp \
-			commandsScreens.cpp 
+			commandsScreens.cpp \
+			os/littleendian/littleendian.cpp 
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
