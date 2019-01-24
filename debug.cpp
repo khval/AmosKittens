@@ -17,6 +17,7 @@
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>
+extern FILE *engine_fd;
 #define Printf printf
 #endif
 
@@ -38,6 +39,10 @@ extern int current_screen ;
 // _lessOrEqualData
 
 extern int regs[16];
+
+#ifdef __linux__
+extern FILE *engine_fd;
+#endif
 
 char *_ifSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
@@ -184,6 +189,9 @@ unsigned int vars_crc()
 void dump_global()
 {
 	int n;
+#ifdef show_array_yes
+	int i;
+#endif
 
 	for (n=0;n<global_var_count;n++)
 	{
@@ -462,7 +470,7 @@ void dump_bobs(int screen_id)
 		{
 			if (bobs[n].image != -1)
 			{
-				Printf("[ %ld, %4ld,%4ld,%4ld ] ",
+				Printf_iso("[ %ld, %4ld,%4ld,%4ld ] ",
 					n,
 					bobs[n].x,
 					bobs[n].y,
@@ -483,7 +491,7 @@ void dumpScreenInfo()
 	{
 		if (screens[n])
 		{
-			Printf("screen %3ld, dw %3ld, dh %3ld, rw %3ld, rh %3ld, display %4ld,%4ld, offset %4ld,%4ld, db %s, frame %ld, autoback %ld, fade_speed %ld\n", 
+			Printf_iso("screen %3d, dw %3d, dh %3d, rw %3d, rh %3d, display %4d,%4d, offset %4d,%4d, db %s, frame %d, autoback %d, fade_speed %d\n", 
 				n,
 				screens[n]->displayWidth, screens[n]->displayHeight,
 				screens[n]->realWidth,screens[n]->realHeight,
