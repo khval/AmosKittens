@@ -1370,7 +1370,12 @@ int main(int args, char **arg)
 		}
 
 		start_engine();
-		Delay(10);
+
+#ifdef __amigaos4__
+		Delay(10);		
+		// should open all libs en main prog, and init graphics there, 
+		// only display stuff should be done in engine.
+#endif
 
 		fd = filename ? fopen(filename,"r") : NULL;
 		if (fd)
