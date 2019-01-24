@@ -331,7 +331,7 @@ char *_string( struct glueCommands *data, int nextToken )
 	char *str = NULL;
 	char *_str;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -358,7 +358,7 @@ char *_asc( struct glueCommands *data, int nextToken )
 //	int args = stack - data->stack + 1 ;
 	char *_str;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str = getStackString( stack  );
 
@@ -375,7 +375,7 @@ char *_val( struct glueCommands *data, int nextToken )
 	double num = 0.0f;
 	char *_str;
 
-	proc_names_printf("%s:%d args %d\n",__FUNCTION__,__LINE__,args);
+	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str = getStackString( stack  );
 	if (_str)
@@ -411,7 +411,7 @@ char *_len( struct glueCommands *data, int nextToken )
 {
 	int len = 0;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (kittyStack[data->stack + 1].type == type_string)
 	{
@@ -431,7 +431,7 @@ char *_space( struct glueCommands *data, int nextToken )
 	int i,_len;
 	char *str;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_len = getStackNum( stack );
 
