@@ -30,6 +30,9 @@
 
 using namespace std;
 
+
+FILE *engine_fd = NULL; 
+
 extern int sig_main_vbl;
 extern bool running;			// 
 extern bool interpreter_running;	// interprenter is really running.
@@ -119,16 +122,25 @@ struct retroVideo *video = NULL;
 
 bool open_window( int window_width, int window_height )
 {
+
 	return NULL ;
 }
 
 bool init_engine()
 {
+	char name[200];
+
+	sprintf(name,"/var/log/AmotKittens_engine_pid_%d.log",getpid());
+
+	engine_fd = fopen(name,"a+");
+
 	return FALSE;
 }
 
 void close_engine()
 {
+	if (engine_fd) fclose(engine_fd);
+	engine_fd = NULL;
 }
 
 void main_engine();
