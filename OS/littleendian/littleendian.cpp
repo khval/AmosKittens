@@ -87,10 +87,13 @@ static void FixData(char *ptr)
 {}
 
 
+static unsigned int line_number = 0;
+
 char *nextToken_littleendian( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
 	char *ret;
+	bool fixed;
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
@@ -98,9 +101,12 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 		{
 			ret = ptr;
 
+			fixed = true;
+
 			switch (token)
 			{
-				case 0x0000:	break;
+				case 0x0000:	line_number++;
+								break;
 
 				case 0x0006:	FixReference(ptr);
 								ret += ReferenceByteLength(ptr);
@@ -118,23 +124,25 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 								ret += ReferenceByteLength(ptr);
 								break;
 
-				case 0x001E:	FixBin(ptr);	break;
+//				case 0x001E:	FixBin(ptr);	break;
 
 				case 0x0026:	FixQuote(ptr);
 								ret += QuoteByteLength(ptr); break;	// skip strings.
 
+/*
 				case 0x0036:	FixHex(ptr);	break;
 				case 0x0046:	FixFloat(ptr);	break;
 
 				case 0x00b0:	break;
 				case 0x00bc:	break;
-
+*/
 				case 0x064A:	FixQuote(ptr);
 								ret += QuoteByteLength(ptr); break;	// skip strings.
 
 				case 0x0652:	FixQuote(ptr);
 								ret += QuoteByteLength(ptr); break;	// skip strings.
 
+/*
 				case 0x023C:	FixFor(ptr); break;
 				case 0x0246:	break;
 				case 0x0250:	FixRepeat(ptr); break;
@@ -156,13 +164,22 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 				case 0x039E:	break;
 				case 0x03AA:	break;
 				case 0x0404:	FixData(ptr);	break;
-
+	*/
+				default: fixed == false;
 			}
+
+			if ((cmd->size) && (fixed == false))
+			{
+				printf("warning token: %04x not converted\n", token);
+			}
+
 
 			ret += cmd -> size;
 			return ret;
 		}
 	}
+
+	printf("token %04x not found, at line_number %d\n", token, line_number );
 
 	setError(35,ptr);
 
@@ -185,6 +202,8 @@ void token_littleendian_fixer( char *start, char *file_end )
 	char *ptr;
 	int token = 0;
 	last_tokens[parenthesis_count] = 0;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	ptr = start;
 	while (( ptr = token_reader_littleendian(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( kittyError.code == 0))
