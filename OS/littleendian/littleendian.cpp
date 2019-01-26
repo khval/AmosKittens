@@ -57,10 +57,17 @@ static void FixExtension(unsigned char *ptr)
 	ext -> ExtentionTokenTable = getBigEndienShort(tptr);
 }
 
-static void FixBin(unsigned char *ptr)
-{}
-static void FixHex(unsigned char *ptr)
-{}
+static void FixNumber(register unsigned char *ptr)
+{
+	register unsigned char t;
+	t = ptr[0];
+	ptr[0]=ptr[3];
+	ptr[3]=t;
+	t = ptr[1];
+	ptr[1]=ptr[2];
+	ptr[2]=t;
+}
+
 static void FixFloat(unsigned char *ptr)
 {}
 static void FixFor(unsigned char *ptr)
@@ -124,14 +131,15 @@ unsigned char *nextToken_littleendian( unsigned char *ptr, unsigned short token,
 								ret += ReferenceByteLength( (char *) ptr);
 								break;
 
-//				case 0x001E:	FixBin(ptr);	break;
+				case 0x001E:	FixNumber(ptr);	break;	// Bin
 
 				case 0x0026:	FixQuote(ptr);
 								ret += QuoteByteLength( (char *) ptr); break;	// skip strings.
 
-/*
-				case 0x0036:	FixHex(ptr);	break;
-				case 0x0046:	FixFloat(ptr);	break;
+				case 0x0036:	FixNumber(ptr);	break;
+				case 0x003E:	FixNumber(ptr);	break;
+
+/*				case 0x0046:	FixFloat(ptr);	break;
 
 				case 0x00b0:	break;
 				case 0x00bc:	break;
