@@ -24,6 +24,7 @@
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>
+#include <byteswap.h>
 #endif
 
 #ifdef __LITTLE_ENDIAN__
@@ -95,7 +96,7 @@ int cmdStack = 0;
 int procStackCount = 0;
 unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 int last_var = 0;
-int tokenlength;
+int32_t tokenlength;
 
 unsigned int amiga_joystick_dir[4];
 unsigned int amiga_joystick_button[4];
@@ -1299,7 +1300,7 @@ int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
 	FILE *fd;
-	int amos_filesize;
+	int32_t amos_filesize;
 	char amosid[17];
 	char *data;
 	int n;
@@ -1387,6 +1388,9 @@ int main(int args, char **arg)
 			fread( amosid, 16, 1, fd );
 			fread( &tokenlength, 4, 1, fd );
 
+#ifdef __LITTLE_ENDIAN__
+			tokenlength = __bswap_32(tokenlength);
+#endif
 			data = (char *) malloc(amos_filesize);
 			if (data)
 			{

@@ -38,61 +38,61 @@ extern int ReferenceByteLength(char *ptr);
 #define getBigEndienShort( name ) ((name[0]<<8)|name[1])
 #define getBigEndienInt( name ) ((name[0]<<24)|(name[1]<<16)|(name[2]<<8)|name[3])
 
-static void FixQuote(char *ptr)
+static void FixQuote(unsigned char *ptr)
 {
 	*((unsigned short *) ptr) = getBigEndienShort(ptr);
 }
 
-static void FixReference(char *ptr)
+static void FixReference(unsigned char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
-	char *tptr = (char *) &ref -> ref;
+	unsigned char *tptr = (unsigned char *) &ref -> ref;
 	ref -> ref = getBigEndienShort(tptr);
 }
 
-static void FixExtension(char *ptr)
+static void FixExtension(unsigned char *ptr)
 {
 	struct extensionCommand *ext = (struct extensionCommand *) ptr;
-	char *tptr = (char *) &ext -> ExtentionTokenTable;
+	unsigned char *tptr = (unsigned char *) &ext -> ExtentionTokenTable;
 	ext -> ExtentionTokenTable = getBigEndienShort(tptr);
 }
 
-static void FixBin(char *ptr)
+static void FixBin(unsigned char *ptr)
 {}
-static void FixHex(char *ptr)
+static void FixHex(unsigned char *ptr)
 {}
-static void FixFloat(char *ptr)
+static void FixFloat(unsigned char *ptr)
 {}
-static void FixFor(char *ptr)
+static void FixFor(unsigned char *ptr)
 {}
-static void FixRepeat(char *ptr)
+static void FixRepeat(unsigned char *ptr)
 {}
-static void FixWhile(char *ptr)
+static void FixWhile(unsigned char *ptr)
 {}
-static void FixDo(char *ptr)
+static void FixDo(unsigned char *ptr)
 {}
-static void FixExitIf(char *ptr)
+static void FixExitIf(unsigned char *ptr)
 {}
-static void FixExit(char *ptr)
+static void FixExit(unsigned char *ptr)
 {}
-static void FixIf(char *ptr)
+static void FixIf(unsigned char *ptr)
 {}
-static void FixElse(char *ptr)
+static void FixElse(unsigned char *ptr)
 {}
-static void FixElseIf(char *ptr)
+static void FixElseIf(unsigned char *ptr)
 {}
-static void FixOn(char *ptr)
+static void FixOn(unsigned char *ptr)
 {}
-static void FixData(char *ptr)
+static void FixData(unsigned char *ptr)
 {}
 
 
 static unsigned int line_number = 0;
 
-char *nextToken_littleendian( char *ptr, unsigned short token )
+unsigned char *nextToken_littleendian( unsigned char *ptr, unsigned short token, unsigned char *file_end )
 {
 	struct nativeCommand *cmd;
-	char *ret;
+	unsigned char *ret;
 	bool fixed;
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
@@ -109,25 +109,25 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 								break;
 
 				case 0x0006:	FixReference(ptr);
-								ret += ReferenceByteLength(ptr);
+								ret += ReferenceByteLength( (char *) ptr);
 								break;
 
 				case 0x000c:	FixReference(ptr);
-								ret += ReferenceByteLength(ptr);
+								ret += ReferenceByteLength( (char *) ptr);
 								break;
 
 				case 0x0012:	FixReference(ptr);
-								ret += ReferenceByteLength(ptr);
+								ret += ReferenceByteLength( (char *) ptr);
 								break;
 
 				case 0x0018:	FixReference(ptr);
-								ret += ReferenceByteLength(ptr);
+								ret += ReferenceByteLength( (char *) ptr);
 								break;
 
 //				case 0x001E:	FixBin(ptr);	break;
 
 				case 0x0026:	FixQuote(ptr);
-								ret += QuoteByteLength(ptr); break;	// skip strings.
+								ret += QuoteByteLength( (char *) ptr); break;	// skip strings.
 
 /*
 				case 0x0036:	FixHex(ptr);	break;
@@ -137,10 +137,10 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 				case 0x00bc:	break;
 */
 				case 0x064A:	FixQuote(ptr);
-								ret += QuoteByteLength(ptr); break;	// skip strings.
+								ret += QuoteByteLength( (char *) ptr); break;	// skip strings.
 
 				case 0x0652:	FixQuote(ptr);
-								ret += QuoteByteLength(ptr); break;	// skip strings.
+								ret += QuoteByteLength( (char *) ptr); break;	// skip strings.
 
 /*
 				case 0x023C:	FixFor(ptr); break;
@@ -173,24 +173,30 @@ char *nextToken_littleendian( char *ptr, unsigned short token )
 				printf("warning token: %04x not converted\n", token);
 			}
 
+			printf("found token %04x - name %s\n",token,cmd -> name);
+
 
 			ret += cmd -> size;
 			return ret;
 		}
 	}
 
-	printf("token %04x not found, at line_number %d\n", token, line_number );
-
-	setError(35,ptr);
+	if (ptr<file_end)
+	{
+		printf("token %04x not found, at line_number %d (last token before %04x)\n", token, line_number, last_tokens[parenthesis_count] );
+	
+		printf("ptr at %08x file end at %08x\n",ptr,file_end);
+		setError(35,(char *) ptr);
+	}
 
 	return NULL;
 }
 
 
 
-char *token_reader_littleendian( char *start, char *ptr, unsigned short lastToken, unsigned short token, char *file_end )
+unsigned char *token_reader_littleendian( char *start, unsigned char *ptr, unsigned short lastToken, unsigned short token, unsigned char *file_end )
 {
-	ptr = nextToken_littleendian( ptr, token );
+	ptr = nextToken_littleendian( ptr, token, file_end );
 
 	if ( ptr  >= file_end ) return NULL;
 
@@ -199,14 +205,14 @@ char *token_reader_littleendian( char *start, char *ptr, unsigned short lastToke
 
 void token_littleendian_fixer( char *start, char *file_end )
 {
-	char *ptr;
+	unsigned char *ptr;
 	int token = 0;
 	last_tokens[parenthesis_count] = 0;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	ptr = start;
-	while (( ptr = token_reader_littleendian(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( kittyError.code == 0))
+	ptr = (unsigned char *) start;
+	while (( ptr = token_reader_littleendian(  start, ptr,  last_tokens[parenthesis_count], token, (unsigned char *) file_end ) ) && ( kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
 
