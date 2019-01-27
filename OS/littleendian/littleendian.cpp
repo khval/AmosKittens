@@ -166,7 +166,9 @@ unsigned char *nextToken_littleendian( unsigned char *ptr, unsigned short token,
 				case 0x25A4:	FixElseIf(ptr); break;
 				case 0x02DA:	break;
 				case 0x0316:	FixOn(ptr);	break;
+*/
 				case 0x0376:	FixExtension(ptr);	break;
+/*				
 				case 0x0390: 	break;
 				case 0x008C:	break;
 				case 0x039E:	break;
@@ -178,7 +180,7 @@ unsigned char *nextToken_littleendian( unsigned char *ptr, unsigned short token,
 
 			if ((cmd->size) && (fixed == false))
 			{
-				printf("warning token: %04x not converted\n", token);
+				printf("Warning: token %04x - name %s not endian converted\n", token, cmd -> name);
 			}
 
 			printf("found token %04x - name %s\n",token,cmd -> name);
