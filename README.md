@@ -62,8 +62,6 @@ Not Implemented:
 
 Note: 
 -----
-Recursive procedures: is not supported, due way the local variables are implmented for now, locals was implmented quick and dirty..
-
 Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
 
 Note Machine Code 
@@ -79,6 +77,9 @@ On X86 Linux you might run into endieness issues if your using VarPtr(var), to p
 
 Not yet supported:
 ------------------
+Recursive procedure calls: due way the local variables are implmented for now, locals was implmented quick and dirty.. 
+(in the global list), This part of the code will need to be rewritten to support stack frames, (like normal programing languages does). 
+
 Most of the new stuff in Amos Pro.
 
 Orginal source code can be found here:
