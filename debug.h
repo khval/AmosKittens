@@ -1,14 +1,9 @@
- 
-void dump_global();
-void dump_prog_stack();
-void dump_stack();
-void dump_labels();
-void dump_banks();
-void dump_end_of_program();
-void dumpLineAddress();
-void dump_680x0_regs();
-void dumpScreenInfo();
-int getLineFromPointer( char *address );
+
+#ifdef __amigaos4__
+#ifdef __linux__
+#undef __linux__
+#endif
+#endif
 
 // --------- debug options ---------------
 
@@ -22,6 +17,17 @@ int getLineFromPointer( char *address );
 #define enable_engine_debug_output_yes
 
 //------------- end of options -----------------
+
+void dump_global();
+void dump_prog_stack();
+void dump_stack();
+void dump_labels();
+void dump_banks();
+void dump_end_of_program();
+void dumpLineAddress();
+void dump_680x0_regs();
+void dumpScreenInfo();
+int getLineFromPointer( char *address );
 
 #ifdef show_debug_printf_yes
 #define dprintf printf
@@ -42,14 +48,21 @@ int getLineFromPointer( char *address );
 #endif
 
 #ifdef show_debug_amal_yes
+
 #ifdef __amigaos4__
 #define AmalPrintf Printf_iso
 #endif
+
 #ifdef __linux__
-#endif
 #define AmalPrintf printf
+#endif
+
 #else
 #define AmalPrintf(fmt,...)
+#endif
+
+#ifdef __amigaos4__
+void Printf_iso(const char *fmt,...);
 #endif
 
 #ifdef __linux__
