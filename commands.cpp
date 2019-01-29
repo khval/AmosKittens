@@ -30,7 +30,7 @@
 extern void clear_local_vars( int proc );
 
 bool every_on = true;
-int every_timer = 0;
+unsigned int every_timer = 0;
 char *on_every_gosub_location = NULL;
 char *on_every_proc_location = NULL;
 struct timeval every_before, every_after;
