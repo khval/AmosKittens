@@ -416,8 +416,6 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 	if (var -> sizeTab) free( var -> sizeTab);
 
-	printf("var -> cells = %d\n",var -> cells);
-
 	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
 
 	if (var -> sizeTab)
@@ -448,8 +446,6 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	}
 
 	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
-
-	printf("type %d array %08x sizeTab %08x\n", var->type, var->str, var->sizeTab);
 
 	popStack(stack - cmd -> stack);
 
@@ -1194,7 +1190,7 @@ char *executeToken( char *ptr, unsigned short token )
 		{
 #ifdef show_token_numbers_yes
 			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					getLineFromPointer(ptr), ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					getLineFromPointer(ptr), (unsigned int) ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -1205,7 +1201,10 @@ char *executeToken( char *ptr, unsigned short token )
 	token_not_found = token;
 	currentLine = getLineFromPointer( ptr );
 	setError(23, ptr);
-	printf("Addr %08x, token not found %04X at line %d\n", ptr, token_not_found, getLineFromPointer(ptr));
+	printf("Addr %08x, token not found %04X at line %d\n", 
+				(unsigned int) ptr, 
+				(unsigned int) token_not_found, 
+				getLineFromPointer( ptr));
 
 	return NULL;
 }
