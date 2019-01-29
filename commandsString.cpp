@@ -409,13 +409,23 @@ char *_chr( struct glueCommands *data, int nextToken )
 
 char *_len( struct glueCommands *data, int nextToken )
 {
+	int args = stack - data->stack + 1 ;
 	int len = 0;
 
-	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (kittyStack[data->stack + 1].type == type_string)
+	switch (args)
 	{
-		len  = (kittyStack[stack].len);
+		case 1:
+			if (kittyStack[stack].type == type_string)
+			{
+				len  = (kittyStack[stack].len);
+			}
+			break;
+
+		default:		
+			setError(22,data->tokenBuffer);
+
 	}
 
 	popStack(stack - data->stack);
@@ -431,10 +441,9 @@ char *_space( struct glueCommands *data, int nextToken )
 	int i,_len;
 	char *str;
 
-	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_len = getStackNum( stack );
-
 	str = (char *) malloc(_len+1);
 
 	for (i=0;i<_len;i++) str[i]=' ';
