@@ -76,7 +76,8 @@ extern void channel_anim( struct kittyChannel *self );
 extern void channel_movex( struct kittyChannel *self );
 extern void channel_movey( struct kittyChannel *self );
 
-struct retroScreen *screens[8] ;
+extern struct retroScreen *screens[8] ;
+
 struct retroRGB DefaultPalette[256] = 
 {
 	{ 0x00, 0x00, 0x00 },
@@ -117,7 +118,7 @@ struct retroRGB DefaultPalette[256] =
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
 	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS | IDCMP_MENUPICK
 
-struct retroVideo *video = NULL;
+extern struct retroVideo *video;
 
 
 bool open_window( int window_width, int window_height )

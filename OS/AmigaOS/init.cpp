@@ -86,6 +86,9 @@ BOOL init()
 	if ( ! open_lib( "retromode.library", 1L , "main", 1, &RetroModeBase, (struct Interface **) &IRetroMode  ) ) return FALSE;
 	if ( ! open_lib( "AmigaInput.library", 50L , "main", 1, &AIN_Base, (struct Interface **) &IAIN  ) ) return FALSE;
 	if ( ! open_lib( "gadtools.library", 53L , "main", 1, &GadToolsBase, (struct Interface **) &IGadTools  ) ) return FALSE;
+	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
+	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
+	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -139,6 +142,15 @@ void closedown()
 
 	if (RetroModeBase) CloseLibrary(RetroModeBase); RetroModeBase = 0;
 	if (IRetroMode) DropInterface((struct Interface*) IRetroMode); IRetroMode = 0;
+
+	if (IntuitionBase) CloseLibrary(IntuitionBase); IntuitionBase = 0;
+	if (IIntuition) DropInterface((struct Interface*) IIntuition); IIntuition = 0;
+
+	if (LayersBase) CloseLibrary(LayersBase); LayersBase = 0;
+	if (ILayers) DropInterface((struct Interface*) ILayers); ILayers = 0;
+
+	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
+	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
 
 	if (engine_mx) 
 	{

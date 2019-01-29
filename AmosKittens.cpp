@@ -91,6 +91,9 @@ char *_file_start_ = NULL;
 char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands are executed.
 char *_file_end_ = NULL;
 
+struct retroVideo *video = NULL;
+struct retroScreen *screens[8] ;
+
 int parenthesis_count = 0;
 int cmdStack = 0;
 int procStackCount = 0;
@@ -160,6 +163,33 @@ const char *str_dump_screen_info = "dump screen info";
 int findVar( char *name, int type, int _proc );
 
 extern void dumpScreenInfo();
+
+bool alloc_video()
+{
+
+#ifdef ___amigaos4__
+	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
+#endif
+
+#ifdef __linux__
+	if ( (video = retroAllocVideo()) == NULL ) return false;
+#endif
+
+	retroAllocSpriteObjects(video,64);
+	return true;
+}
+
+void free_video()
+{
+	uint32_t n;
+
+	for (n=0; n<8;n++)
+	{
+		if (screens[n]) retroCloseScreen(&screens[n]);
+	}
+
+	retroFreeVideo(video);
+}
 
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
@@ -1369,6 +1399,8 @@ int main(int args, char **arg)
 			if (do_to) do_to[n] = do_to_default;
 		}
 
+		alloc_video();
+
 		start_engine();
 
 #ifdef __amigaos4__
@@ -1378,7 +1410,7 @@ int main(int args, char **arg)
 #endif
 
 		fd = filename ? fopen(filename,"r") : NULL;
-		if (fd)
+		if ((fd)&&(video))
 		{
 			fseek(fd, 0, SEEK_END);
 			amos_filesize = ftell(fd);
@@ -1457,6 +1489,10 @@ int main(int args, char **arg)
 			free( (void *) do_to );
 			do_to = NULL;
 		}
+
+		printf("close & free video\n");
+
+		free_video();
 
 		printf("clean up vars\n");
 

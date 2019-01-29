@@ -76,7 +76,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 	int ret = 0;
 	int colors = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==5)
 	{

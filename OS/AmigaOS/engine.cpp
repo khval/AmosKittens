@@ -66,7 +66,7 @@ extern void channel_anim( struct kittyChannel *self );
 extern void channel_movex( struct kittyChannel *self );
 extern void channel_movey( struct kittyChannel *self );
 
-struct retroScreen *screens[8] ;
+
 struct retroRGB DefaultPalette[256] = 
 {
 	{ 0x00, 0x00, 0x00 },
@@ -107,7 +107,7 @@ struct retroRGB DefaultPalette[256] =
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
 	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS | IDCMP_MENUPICK
 
-struct retroVideo *video = NULL;
+
 struct Window *My_Window = NULL;
 
 struct Library * IntuitionBase = NULL;
@@ -158,14 +158,7 @@ struct RastPort font_render_rp;
 
 bool init_engine()
 {
-	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
-	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
-	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 	if ( ! open_window(640,480) ) return false;
-
-	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
-
-	retroAllocSpriteObjects(video,64);
 
 	topaz8_font =  open_font( "topaz.font" ,  8);
 	if ( ! topaz8_font ) return FALSE;
@@ -200,14 +193,6 @@ void close_engine()
 
 	if (My_Window) CloseWindow(My_Window);
 
-	if (IntuitionBase) CloseLibrary(IntuitionBase); IntuitionBase = 0;
-	if (IIntuition) DropInterface((struct Interface*) IIntuition); IIntuition = 0;
-
-	if (LayersBase) CloseLibrary(LayersBase); LayersBase = 0;
-	if (ILayers) DropInterface((struct Interface*) ILayers); ILayers = 0;
-
-	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
-	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
 }
 
 void main_engine();
@@ -671,14 +656,6 @@ void main_engine()
 
 			Delay(1);
 		}
-
-
-		for (n=0; n<8;n++)
-		{
-			if (screens[n]) retroCloseScreen(&screens[n]);
-		}
-
-		retroFreeVideo(video);
 	}
 	else
 	{
