@@ -15,6 +15,8 @@ extern int engine_mouse_x;
 extern int engine_mouse_y;
 extern bool engine_stopped;
 
+extern struct retroVideo *video;
+extern struct retroScreen *screens[8] ;
 
 #ifdef __amigaos4__
 extern Process *EngineTask;

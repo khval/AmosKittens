@@ -66,6 +66,7 @@ extern void channel_anim( struct kittyChannel *self );
 extern void channel_movex( struct kittyChannel *self );
 extern void channel_movey( struct kittyChannel *self );
 
+struct Window *My_Window = NULL;
 
 struct retroRGB DefaultPalette[256] = 
 {
@@ -107,21 +108,6 @@ struct retroRGB DefaultPalette[256] =
 	IDCMP_CHANGEWINDOW | IDCMP_MOUSEMOVE | IDCMP_REFRESHWINDOW | IDCMP_RAWKEY | \
 	IDCMP_EXTENDEDMOUSE | IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE | IDCMP_INTUITICKS | IDCMP_MENUPICK
 
-
-struct Window *My_Window = NULL;
-
-struct Library * IntuitionBase = NULL;
-struct IntuitionIFace *IIntuition = NULL;
-
-struct Library * GraphicsBase = NULL;
-struct GraphicsIFace *IGraphics = NULL;
-
-
-
-struct Library * LayersBase = NULL;
-struct LayersIFace *ILayers = NULL;
-
-
 extern BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface);
 
 
@@ -155,6 +141,7 @@ bool open_window( int window_width, int window_height )
 
 struct TextFont *topaz8_font = NULL;
 struct RastPort font_render_rp;
+struct retroEngine *engine = NULL;
 
 bool init_engine()
 {
@@ -178,6 +165,10 @@ bool init_engine()
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
 
+
+	engine =  retroAllocEngine( My_Window, video );
+
+	if ( ! engine) return FALSE;
 	return TRUE;
 }
 
@@ -192,6 +183,12 @@ void close_engine()
 	}
 
 	if (My_Window) CloseWindow(My_Window);
+
+	if (engine)
+	{
+		retroFreeEngine( engine );
+		engine = NULL;
+	}
 
 }
 
@@ -353,7 +350,7 @@ void DrawSprite(
 
 	if (y>0)
 	{
-		if (y+height>(video->height/2)) height = (video->height/2) - y;
+		if (y+height> (int) (video->height/2)) height = (video->height/2) - y;
 	}
 	else
 	{
@@ -362,7 +359,7 @@ void DrawSprite(
 
 	if (x>0)
 	{
-		if (x+width>(video->width/2)) width =(video->width/2) - x;
+		if (x+width> (int) (video->width/2)) width =(video->width/2) - x;
 	}
 	else
 	{
@@ -419,7 +416,7 @@ void main_engine()
 	{
 		Printf("init engine done..\n");
 		
-		struct retroScreen *screen ;
+		struct retroScreen *screen = NULL;
 		ULONG Class;
 		UWORD Code;
 		UWORD Qualifier;
@@ -461,7 +458,7 @@ void main_engine()
 				}
 			}
 
-			while (msg = (IntuiMessage *) GetMsg( video -> window -> UserPort) )
+			while (msg = (IntuiMessage *) GetMsg( engine -> window -> UserPort) )
 			{
 				Qualifier = msg -> Qualifier;
 				Class = msg -> Class;
@@ -484,8 +481,8 @@ void main_engine()
 							break;
 
 					case IDCMP_MOUSEMOVE:
-							engine_mouse_x = msg -> MouseX - video -> window -> BorderLeft;
-							engine_mouse_y = msg -> MouseY - video -> window -> BorderTop;
+							engine_mouse_x = msg -> MouseX - engine -> window -> BorderLeft;
+							engine_mouse_y = msg -> MouseY - engine -> window -> BorderTop;
 							break;
 
 					case IDCMP_MENUPICK:
@@ -573,7 +570,7 @@ void main_engine()
 
 						if (screen -> Memory[1]) 	// has double buffer
 						{
-							Printf("screen %ld - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
+							Printf_iso("screen %d - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
 							Printf("Trying to swap\n");
 
 							if ((screen -> autoback!=0) || (screen -> force_swap))
@@ -637,13 +634,13 @@ void main_engine()
 
 			AfterEffectScanline( video );
 //			AfterEffectAdjustRGB( video , 8, 0 , 4);
-			retroDmaVideo( video );
+			retroDmaVideo( video, engine );
 
 			WaitTOF();
 			if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 
 			BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
-						BLITA_Source, video->rp.BitMap,
+						BLITA_Source, engine->rp.BitMap,
 						BLITA_SrcX, 0,
 						BLITA_SrcY, 0,
 						BLITA_Width,  video -> width, 

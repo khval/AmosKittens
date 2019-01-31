@@ -46,6 +46,15 @@ ULONG				*codeset_page = NULL;
 struct Library 			* RetroModeBase = NULL;
 struct RetroModeIFace 	*IRetroMode = NULL;
 
+struct Library * IntuitionBase = NULL;
+struct IntuitionIFace *IIntuition = NULL;
+
+struct Library * GraphicsBase = NULL;
+struct GraphicsIFace *IGraphics = NULL;
+
+struct Library * LayersBase = NULL;
+struct LayersIFace *ILayers = NULL;
+
 APTR engine_mx = 0;
 
 

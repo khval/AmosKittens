@@ -167,12 +167,12 @@ extern void dumpScreenInfo();
 bool alloc_video()
 {
 
-#ifdef ___amigaos4__
-	if ( (video = retroAllocVideo( My_Window )) == NULL ) return false;
+#ifdef __amigaos4__
+	video = retroAllocVideo( 640,480 );
 #endif
 
 #ifdef __linux__
-	if ( (video = retroAllocVideo()) == NULL ) return false;
+	video = retroAllocVideo();
 #endif
 
 	retroAllocSpriteObjects(video,64);
@@ -181,14 +181,17 @@ bool alloc_video()
 
 void free_video()
 {
-	uint32_t n;
-
-	for (n=0; n<8;n++)
+	if (video)
 	{
-		if (screens[n]) retroCloseScreen(&screens[n]);
-	}
+		uint32_t n;
 
-	retroFreeVideo(video);
+		for (n=0; n<8;n++)
+		{
+			if (screens[n]) retroCloseScreen(&screens[n]);
+		}
+
+		retroFreeVideo(video);
+	}
 }
 
 char *cmdRem(nativeCommand *cmd, char *ptr)
@@ -1401,13 +1404,7 @@ int main(int args, char **arg)
 
 		alloc_video();
 
-		start_engine();
-
-#ifdef __amigaos4__
-		Delay(10);		
-		// should open all libs en main prog, and init graphics there, 
-		// only display stuff should be done in engine.
-#endif
+		if (video) start_engine();
 
 		fd = filename ? fopen(filename,"r") : NULL;
 		if ((fd)&&(video))
@@ -1472,7 +1469,8 @@ int main(int args, char **arg)
 		}
 		else
 		{
-			printf("AMOS file not open/can't find it\n");
+			if (!fd) printf("AMOS file not open/can't find it\n");
+			if (!video) printf("technical problems\n");
 		}
 
 		running = false;
