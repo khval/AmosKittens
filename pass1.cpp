@@ -450,23 +450,24 @@ void pass1label(char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	char *next;
 
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
 	{
-		printf("%s\n",tmpName);
 		ref -> ref = 0;	
 
 		// only add new labels if last token is 0.
 
 		if (last_tokens[parenthesis_count]  == 0)
 		{
-
 			found_ref = findLabelRef(tmpName);
 
 			if (found_ref>0)
 			{
 				ref -> ref = found_ref;
 				free(tmpName);		//  don't need tmp
+				tmpName = NULL;
 			}
 			else
 			{
@@ -481,14 +482,12 @@ void pass1label(char *ptr)
 
 				labels.push_back(tmp);
 				ref -> ref = labels.size();
-
 				tmpName = NULL;			// we store tmpName, we only set tmpName to NULL
 			}
 		}
 		else
 		{
 			found_ref = findLabelRef(tmpName);
-
 			if (found_ref>0)
 			{
 				ref -> ref = found_ref;
@@ -500,6 +499,10 @@ void pass1label(char *ptr)
 		}
 
 		if (tmpName) free(tmpName);
+	}
+	else
+	{
+		printf("bad data\n");
 	}
 }
 
