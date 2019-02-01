@@ -253,7 +253,7 @@ char *_cmdStart( struct glueCommands *data, int nextToken )
 	int ret = 0;
 	struct kittyBank *bank = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -275,7 +275,7 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 	struct kittyBank *bank;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -290,7 +290,7 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 
 char *_cmdBload( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	struct kittyBank *bank;
 	int args = stack - data->stack +1 ;
 	FILE *fd;

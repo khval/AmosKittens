@@ -424,7 +424,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 char *_alloc_mode_off( glueCommands *self, int nextToken )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	do_input[parenthesis_count] = do_std_next_arg;
 	do_var_index = _get_var_index;
@@ -439,7 +439,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	int varNum;
 	struct kittyData *var;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	varNum = cmd -> lastVar;	
 	if (varNum == 0) return NULL;
@@ -526,7 +526,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	unsigned short next_token = *((short *) (ptr+sizeof(struct reference)+ref->length));
 	
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	last_var = ref -> ref;
 

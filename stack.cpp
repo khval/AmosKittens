@@ -57,7 +57,7 @@ void remove_parenthesis(int black_at_stack )
 
 void _unLockPara()
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
@@ -89,7 +89,7 @@ char *flushCmdParaStack( int nextToken )
 	char *ret = NULL;
 	unsigned short tmp_lastToken;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
@@ -323,7 +323,7 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -337,7 +337,7 @@ bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -350,7 +350,7 @@ bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -362,7 +362,7 @@ bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -374,7 +374,7 @@ bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -386,7 +386,7 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
 	int ret;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
@@ -397,7 +397,7 @@ bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 
 void correct_for_hidden_sub_data()
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (stack > 0)
 	{

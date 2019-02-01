@@ -58,7 +58,7 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 	int num,n;
 	FILE *fd;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	num = getStackNum( data -> stack ) -1;
 
@@ -97,7 +97,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 	int num;
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
@@ -153,7 +153,7 @@ char *_discClose( struct glueCommands *data, int nextToken )
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	int num;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
@@ -183,7 +183,7 @@ char *_discKill( struct glueCommands *data, int nextToken )
 	int32 success = false;
 	_str = getStackString( stack );
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (_str) success = Delete(_str);
 
@@ -409,7 +409,7 @@ char *_discDirNextStr( struct glueCommands *data, int nextToken )
 {
 	char *outStr = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if( contextDir )
 	{
@@ -538,7 +538,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 	char *_path = NULL;
 	const char *_pattern = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	str = getStackString( stack );
 
@@ -638,7 +638,7 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 	BPTR oldLock;
 	char *_str;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str = getStackString( stack );
 
@@ -673,7 +673,7 @@ char *_set_dir_str( struct glueCommands *data, int nextToken )
 char *discDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( (( last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
@@ -702,7 +702,7 @@ char *discParent(struct nativeCommand *cmd, char *tokenBuffer)
 	BPTR lock;
 	BPTR oldLock;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	lock = Lock( "/", SHARED_LOCK );
 	if (lock)
@@ -778,7 +778,7 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 	const char *_pattern;
 	char *outStr = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (contextDir)
 	{
@@ -1201,7 +1201,7 @@ char *discInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discLineInputFile( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
 	do_input[parenthesis_count] = do_std_next_arg;
@@ -1213,7 +1213,7 @@ char *_discLineInputFile( struct glueCommands *data, int nextToken )
 
 char *discLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
@@ -1246,7 +1246,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 	char *newstr;
 	FILE *fd;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
@@ -1289,7 +1289,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 
 char *_discSetInput( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	dump_stack();
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
@@ -1303,7 +1303,7 @@ char *_discLof( struct glueCommands *data, int nextToken )
 	FILE *fd;
 	int pos,len = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
@@ -1338,7 +1338,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 	FILE *fd;
 	int ret =0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
@@ -1371,7 +1371,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 	int channel = 0;
 	FILE *fd;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
@@ -1401,35 +1401,35 @@ char *_discEof( struct glueCommands *data, int nextToken )
 
 char *discInputStrFile(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _discInputStrFile, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discSetInput(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discSetInput, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discLof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _discLof, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discPof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _discPof, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discEof(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _discEof, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1443,7 +1443,7 @@ char *_discGet( struct glueCommands *data, int nextToken )
 	FILE *fd;
 	char *str;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
@@ -1486,7 +1486,7 @@ char *_discPut( struct glueCommands *data, int nextToken )
 	char fmt[15];
 	char tmp[1000];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	dump_stack();
 
 	if (args == 2)
@@ -1525,7 +1525,7 @@ char *_discPut( struct glueCommands *data, int nextToken )
 
 char *discOpenRandom(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discOpenRandom, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1607,14 +1607,14 @@ char *discField(struct nativeCommand *cmd, char *ptr)
 
 char *discGet(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discGet, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discPut(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discPut, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1643,7 +1643,7 @@ char *_discMakedir( struct glueCommands *data, int nextToken )
 
 char *discMakedir(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discMakedir, tokenBuffer );
 	return tokenBuffer;
 }

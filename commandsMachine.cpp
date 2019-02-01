@@ -47,7 +47,7 @@ char *_machineCopy( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
@@ -77,7 +77,7 @@ char *_machinePoke( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -112,7 +112,7 @@ char *_machineDoke( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -141,7 +141,7 @@ char *_machineLoke( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -168,7 +168,7 @@ char *_machinePeek( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -206,7 +206,7 @@ char *_machineDeek( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -233,7 +233,7 @@ char *_machineLeek( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -288,7 +288,7 @@ char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (NEXT_TOKEN( ptr ) == 0x0074) ptr+=2;
 
@@ -327,7 +327,7 @@ char *_machineFill( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int _n, _size = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
@@ -407,7 +407,7 @@ char *_machineRolB( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -432,7 +432,7 @@ char *_machineRolW( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -457,7 +457,7 @@ char *_machineRolL( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -482,7 +482,7 @@ char *_machineRorB( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -507,7 +507,7 @@ char *_machineRorW( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -532,7 +532,7 @@ char *_machineRorL( struct glueCommands *data, int nextToken )
 	unsigned int shift;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -598,7 +598,7 @@ char *_machineBtst( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool ret = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -622,7 +622,7 @@ char *_machineBset( struct glueCommands *data, int nextToken )
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -645,7 +645,7 @@ char *_machineBchg( struct glueCommands *data, int nextToken )
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -668,7 +668,7 @@ char *_machineBclr( struct glueCommands *data, int nextToken )
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -731,7 +731,7 @@ char *_set_reg( struct glueCommands *data, int nextToken )
 char *_machineAREG( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -748,7 +748,7 @@ char *_machineAREG( struct glueCommands *data, int nextToken )
 char *_machineDREG( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -776,7 +776,7 @@ char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_machineDOSCALL( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 #ifdef __amigaos4__
 
@@ -842,7 +842,7 @@ char *_machineEXECALL( struct glueCommands *data, int nextToken )
 	int ret = 0;
 #endif
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 #ifdef __amigaos4__
 
@@ -903,7 +903,7 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 	char *keep_code = NULL;
 	int code_size;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -958,7 +958,7 @@ char *_machineCall( struct glueCommands *data, int nextToken )
 	void *code = NULL;
 #endif
 
-proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 #ifdef __amigaos4__
 
@@ -1027,7 +1027,7 @@ char *_machineFree( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	unsigned int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
 	{
@@ -1076,7 +1076,7 @@ char *_machineLvo( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
 	{
@@ -1110,7 +1110,7 @@ char *_machinePeekStr( struct glueCommands *data, int nextToken )
 	char *adr ;
 	char *term;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	dump_stack();
 
@@ -1172,7 +1172,7 @@ char *_machinePokeStr( struct glueCommands *data, int nextToken )
 	int ret = 0;
 	int _len;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{

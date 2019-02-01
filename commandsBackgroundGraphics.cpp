@@ -73,7 +73,7 @@ std::vector<struct retroBlock> blocks;	// 0 is not used.
 char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -545,7 +545,7 @@ char *_bgIconBase( struct glueCommands *data, int nextToken )
 
 	void *ret = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -565,7 +565,7 @@ char *_bgIconBase( struct glueCommands *data, int nextToken )
 
 char *bgIconBase(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _bgIconBase, tokenBuffer );
 	return tokenBuffer;
 }

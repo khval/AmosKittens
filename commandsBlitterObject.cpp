@@ -269,7 +269,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	int num;
 	struct retroSpriteObject *bob;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	num = getStackNum( stack - 3 );
 	bob = &bobs[num];
@@ -292,21 +292,21 @@ char *_boBob( struct glueCommands *data, int nextToken )
 
 char *boBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boBob, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
 
 char *_boNoMask( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -314,7 +314,7 @@ char *_boNoMask( struct glueCommands *data, int nextToken )
 
 char *boNoMask(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boNoMask, tokenBuffer );
 	return tokenBuffer;
 }
@@ -323,7 +323,7 @@ char *boNoMask(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boSetBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -331,7 +331,7 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 
 char *boSetBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boNoMask, tokenBuffer );
 	return tokenBuffer;
 }
@@ -340,7 +340,7 @@ char *_boXBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -356,7 +356,7 @@ char *_boXBob( struct glueCommands *data, int nextToken )
 
 char *boXBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boXBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -365,7 +365,7 @@ char *_boYBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int y=0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -382,7 +382,7 @@ char *_boYBob( struct glueCommands *data, int nextToken )
 
 char *boYBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boYBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -391,7 +391,7 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -417,7 +417,7 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 
 char *boPasteBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boPasteBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -426,7 +426,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -466,7 +466,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 
 char *boGetBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boGetBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -476,7 +476,7 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int n,image,flags;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -499,7 +499,7 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 
 char *boPutBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boPutBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -578,7 +578,7 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 
 char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boHotSpot, tokenBuffer );
 	return tokenBuffer;
 }
@@ -586,7 +586,7 @@ char *_boLimitBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	dump_stack();
 
@@ -596,7 +596,7 @@ char *_boLimitBob( struct glueCommands *data, int nextToken )
 
 char *boLimitBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boLimitBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -605,7 +605,7 @@ char *_boHrev( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -619,7 +619,7 @@ char *_boHrev( struct glueCommands *data, int nextToken )
 
 char *boHrev(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boHrev, tokenBuffer );
 	return tokenBuffer;
 }
@@ -628,7 +628,7 @@ char *_boVrev( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -642,7 +642,7 @@ char *_boVrev( struct glueCommands *data, int nextToken )
 
 char *boVrev(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boVrev, tokenBuffer );
 	return tokenBuffer;
 }
@@ -651,7 +651,7 @@ char *_boRev( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -665,21 +665,21 @@ char *_boRev( struct glueCommands *data, int nextToken )
 
 char *boRev(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boRev, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	bobUpdate = 0;
 	return tokenBuffer;
 }
 
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
 
@@ -688,7 +688,7 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -697,7 +697,7 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 
 char *boBobCol(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boBobCol, tokenBuffer );
 	return tokenBuffer;
 }
@@ -706,7 +706,7 @@ char *_boCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	popStack( stack - data->stack );
 	setStackNum(ret);
@@ -715,7 +715,7 @@ char *_boCol( struct glueCommands *data, int nextToken )
 
 char *boCol(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boCol, tokenBuffer );
 	return tokenBuffer;
 }
@@ -725,7 +725,7 @@ char *_boDelBob( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int del = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -752,7 +752,7 @@ char *_boDelBob( struct glueCommands *data, int nextToken )
 
 char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boDelBob, tokenBuffer );
 	return tokenBuffer;
 }

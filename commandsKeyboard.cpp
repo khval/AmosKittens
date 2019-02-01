@@ -231,7 +231,7 @@ void kitty_getline(string &input)
 
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (engine_started)
 	{
@@ -255,7 +255,7 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	char buf[2];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_scancode = 0;
 
@@ -271,7 +271,7 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 	string tmp;
 	char buf[2];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_scancode = 0;
 
@@ -302,14 +302,14 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 
 char *cmdScancode(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum(_scancode);
 	return tokenBuffer;
 }
 
 char *cmdKeyShift(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum(_keyshift);
 	return tokenBuffer;
 }
@@ -317,7 +317,7 @@ char *cmdKeyShift(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdClearKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 	keyboardBuffer.erase(keyboardBuffer.begin(),keyboardBuffer.begin()+keyboardBuffer.size());
@@ -336,7 +336,7 @@ char *_cmdKeyState( struct glueCommands *data,int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -358,7 +358,7 @@ char *_cmdKeyState( struct glueCommands *data,int nextToken )
 
 char *cmdKeyState(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _cmdKeyState, tokenBuffer );
 	return tokenBuffer;
 }
@@ -578,7 +578,7 @@ void breakdata_inc_stack( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	input_count = 0;
 	input_str = "";
@@ -596,7 +596,7 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdInputStrN(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	input_count = 0;
 	input_str = "";
@@ -610,7 +610,7 @@ char *cmdInputStrN(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 
@@ -658,7 +658,7 @@ char *_cmdPutKey( struct glueCommands *data,int nextToken )
 
 char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdPutKey, tokenBuffer );
 	return tokenBuffer;
 }

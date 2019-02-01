@@ -91,7 +91,7 @@ char *_amalSetAmReg( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -135,7 +135,7 @@ char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 	int channel = 0;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -225,7 +225,7 @@ void setChannelToken(struct kittyChannel *item,int token, int number)
 char *_amalChannel( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	do_to[parenthesis_count] = do_to_default;
 	switch (args)
@@ -388,7 +388,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -443,7 +443,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -589,7 +589,7 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -619,7 +619,7 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 
 char *amalAnim(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalAnim, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
@@ -627,7 +627,7 @@ char *amalAnim(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *amalAnimOn(struct nativeCommand *cmd, char *tokenBuffer)		// this dummy don't do anything.
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
 
@@ -638,7 +638,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -684,7 +684,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 
 char *amalAmalFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalAmalFreeze, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
@@ -804,7 +804,7 @@ void channel_movey( struct kittyChannel *self )
 char *_amalMoveX( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -844,7 +844,7 @@ char *_amalMoveX( struct glueCommands *data, int nextToken )
 
 char *amalMoveX(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalMoveX, tokenBuffer );
 	return tokenBuffer;
 }
@@ -852,7 +852,7 @@ char *amalMoveX(struct nativeCommand *cmd, char *tokenBuffer)
 char *_amalMoveY( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -891,7 +891,7 @@ char *_amalMoveY( struct glueCommands *data, int nextToken )
 
 char *amalMoveY(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalMoveY, tokenBuffer );
 	return tokenBuffer;
 }
@@ -899,7 +899,7 @@ char *amalMoveY(struct nativeCommand *cmd, char *tokenBuffer)
 char *_amalMoveOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// this code don't need to be tread safe, I'm not changing the script, or adding new channels,
 
@@ -933,14 +933,14 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 
 char *amalMoveOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalMoveOn, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum(0);	// should return error pos in string.
 	return tokenBuffer;
 }

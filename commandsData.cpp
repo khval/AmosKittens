@@ -195,7 +195,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((stack - data -> stack + 1)!=2)
 	{
@@ -270,7 +270,7 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ((stack - data -> stack + 1)!=2)
 	{
@@ -1254,7 +1254,7 @@ char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _andData, tokenBuffer );
 	incStack;
 	return tokenBuffer;
@@ -1262,7 +1262,7 @@ char *andData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _xorData, tokenBuffer );
 	incStack;
 	return tokenBuffer;
@@ -1270,7 +1270,7 @@ char *xorData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *lessData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm(_lessData, tokenBuffer);
 	incStack;
 	return tokenBuffer;
@@ -1278,7 +1278,7 @@ char *lessData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *moreData(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm(_moreData, tokenBuffer);
 	incStack;
 	return tokenBuffer;
@@ -1286,7 +1286,7 @@ char *moreData(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm(_lessOrEqualData, tokenBuffer);
 	incStack;
 	return tokenBuffer;
@@ -1294,7 +1294,7 @@ char *lessOrEqualData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *moreOrEqualData(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm(_moreOrEqualData, tokenBuffer);
 	incStack;
 	return tokenBuffer;

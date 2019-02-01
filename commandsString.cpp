@@ -395,7 +395,7 @@ char *_chr( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack + 1;
 	char _str[2];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str[0] = args == 1 ? (char) getStackNum( stack ) : 0;
 	_str[1] =0;
@@ -461,7 +461,7 @@ char *_upper( struct glueCommands *data, int nextToken )
 //	int args = stack - data->stack + 1  ;
 	char *str,*s;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	str = getStackString( stack );
 
@@ -480,7 +480,7 @@ char *_lower( struct glueCommands *data, int nextToken )
 //	int args = stack - data->stack + 1 ;
 	char *str,*s;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	str = getStackString( stack );
 
