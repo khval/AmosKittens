@@ -512,7 +512,15 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 	int x,y;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (!sprite)
+	{
+		popStack( stack - data->stack );
+		setError(36,data->tokenBuffer);
+		return NULL;
+	}
+
 
 	printf("sprite -> number_of_frames: %d\n",sprite -> number_of_frames);
 
