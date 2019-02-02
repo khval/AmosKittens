@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
+
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/retroMode.h>
@@ -700,6 +702,9 @@ void init_banks( char *data , int size)
 					if (strcmp(id,"AmBs")==0)
 					{
 						mread( &banks, 2, 1, fd);
+#ifdef __LITTLE_ENDIAN__
+						banks = __bswap_16(banks);
+#endif
 					}
 				}
 
@@ -752,7 +757,7 @@ void init_banks( char *data , int size)
 	
 						case bank_type_icons:
 							{
-								freeBank( 2);
+								freeBank( 2 );
 								icons = retroLoadSprite( &fd, (cust_fread_t) hook_mread );
 
 								// 99 Bottles of beer. 
