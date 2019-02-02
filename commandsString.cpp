@@ -83,10 +83,12 @@ char *_mid( struct glueCommands *data, int nextToken )
 	{
 		case 2:
 			str = getStackString( stack - 1 );
-			_start = getStackNum( stack ) -1;
+			_start = getStackNum( stack ) ;	
 
-			if (_start>-1)
+			if (_start == 0 ) _start = 1;	// 0 is allowed, even if string starts at 1.
+			if (_start>0)
 			{
+				_start--;
 				_slen = strlen(str);
 				if (_start>_slen-1) _start = _slen-1;
 				if (_start<0) _start=0;
@@ -96,12 +98,13 @@ char *_mid( struct glueCommands *data, int nextToken )
 
 		case 3:
 			str = getStackString( stack - 2 );
-			_start = getStackNum( stack -1 ) -1;
+			_start = getStackNum( stack -1 ) ;
 			_len = getStackNum( stack );
 
-
-			if (_start>-1)
+			if (_start == 0 ) _start = 1;
+			if (_start>0)
 			{
+				_start--;
 				_slen = strlen(str);
 				if (_start>_slen-1) _start = _slen-1;
 				if (_start<0) _start=0;
@@ -113,8 +116,10 @@ char *_mid( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	if ((_start<0)||(_len<0)) setError(23,data->tokenBuffer);
-
+	if ((_start<0)||(_len<0)) 
+	{
+		setError(23,data->tokenBuffer);
+	}
 	popStack(stack - data->stack);
 
 	if (tmp) setStackStr(tmp);
