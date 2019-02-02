@@ -111,6 +111,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 	struct kittyData *var = NULL;
 	int args = stack - data->stack +1;
 	char *ptr = data -> tokenBuffer ;
+	bool success = true;
 
 	if (NEXT_TOKEN( ptr ) == 0x0006)
 	{
@@ -153,24 +154,30 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 					}
 				}
 				break;
+
+			default:
+				success = false;
 		}
 
-		switch (var->type)
+		if (success)
 		{
-			case type_int:
-				var->value= _value;
-				break;
+			switch (var->type)
+			{
+				case type_int:
+					var->value= _value;
+					break;
 	
-			case type_int | type_array:
-				var->int_array[var -> index]= _value;
-				break;
+				case type_int | type_array:
+					var->int_array[var -> index]= _value;
+					break;
 	
-			default:
-				setError(ERROR_Type_mismatch,data->tokenBuffer);
+				default:
+					setError(ERROR_Type_mismatch,data->tokenBuffer);
+			}
 		}
 	}
-	else setError(22,data->tokenBuffer);
 
+	if (success == false) setError(22,data->tokenBuffer);
 
 	popStack(stack - data->stack);
 	return NULL;
