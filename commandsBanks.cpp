@@ -86,14 +86,15 @@ const char *bankTypes[] = {
 int hook_mread( char *dest, int size, int e, struct retroMemFd *fd )
 {
 	void *ret = NULL;
-	if (fd->off + (size+e) <= fd->size)
+
+	if (fd->off + (size*e) <= fd->size)
 	{
-		ret = memcpy(  dest,  (fd->mem + fd->off), (size+e) );
+		ret = memcpy( dest, (fd->mem+fd->off), (size*e) );
 		if (ret)
 		{
 			fd->off += (size*e);
-		}
-	}
+		} else printf("memcpy failed\n");
+	} else printf("%d <= %d\n",fd->off + (size*e), fd->size);
 	return ret ? e : 0;
 }
 
