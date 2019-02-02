@@ -434,11 +434,14 @@ char *_mathMax( struct glueCommands *data, int nextToken )
 	double a = 0.0, b=0.0;
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	int args = stack - data->stack +1;
+
 	if (args == 2)
 	{
-		a = getStackDecimal( stack );
+		a = getStackDecimal( stack-1 );
 		b = getStackDecimal( stack );
+//		printf("max(%0.2f,%0.2f) = %02f\n",a,b, a>b ? a: b);
 	}
+
 	popStack(stack - data->stack);
 	setStackDecimal( a>b ? a: b );
 	kittyStack[stack].state = state_none;
