@@ -271,9 +271,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
-	int n;
 	const char *txt = NULL;
-	struct retroTextWindow *textWindow = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 

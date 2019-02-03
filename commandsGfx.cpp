@@ -735,7 +735,6 @@ char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 			{
 				if (screens[screen_num])
 				{
-					struct retroRGB rgb;
 					struct retroRGB *Palette = screens[screen_num]->orgPalette;
 
 					for (n=0;n<256;n++)
@@ -1155,7 +1154,6 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 		char *r = getStackString( stack-2 );
 		char *g = getStackString( stack-1 );
 		char *b = getStackString( stack );
-		int y;
 		unsigned char *rgb;
 
 		engine_lock();
