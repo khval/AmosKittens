@@ -578,8 +578,8 @@ char *_gfxPaint( struct glueCommands *data, int nextToken )
 			if (screens[current_screen]) retroFill( screens[current_screen], x0,y0,pen0 );
 			break;
 		case 3:
-			stack_get_if_int( stack-1, &x0 );
-			stack_get_if_int( stack, &y0 );
+			stack_get_if_int( stack-2, &x0 );
+			stack_get_if_int( stack-1, &y0 );
 			c = getStackNum( stack );
 			if (screens[current_screen]) retroFill( screens[current_screen], x0,y0,c );
 			break;
