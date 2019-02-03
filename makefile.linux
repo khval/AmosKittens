@@ -38,9 +38,10 @@ main_objects = commands.cpp \
 			commandsOn.cpp \
 			commandsText.cpp \
 			commandsKeyboard.cpp \
+			commandsGfx.cpp \
 			os/linux/commandsDisc.cpp \
 			os/linux/commandsMenu.cpp \
-			os/linux/commandsGfx.cpp \
+			os/linux/commandsGfxText.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
