@@ -31,9 +31,6 @@
 #include "engine.h"
 #include "bitmap_font.h"
 
-extern int pen0;
-extern int pen1;
-extern int pen2;
 extern int last_var;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
@@ -411,11 +408,15 @@ char *textHome(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int t;
+	struct retroScreen *screen = screens[current_screen];
 
-	t = pen0 ;
-	pen0 = pen1;
-	pen1 = t;
+	if (screen)
+	{
+		unsigned int t;
+		t = screen -> ink0 ;
+		screen -> ink0 = screen -> ink1;
+		screen -> ink1 = t;
+	}
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
@@ -423,11 +424,15 @@ char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int t;
+	struct retroScreen *screen = screens[current_screen];
 
-	t = pen0 ;
-	pen0 = pen1;
-	pen1 = t;
+	if (screen)
+	{
+		unsigned int t;
+		t = screen -> ink0 ;
+		screen -> ink0 = screen -> ink1;
+		screen -> ink1 = t;
+	}
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;

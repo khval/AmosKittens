@@ -39,7 +39,6 @@ extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern struct RastPort font_render_rp;
 extern bool next_print_line_feed;
-extern int pen0, pen1,pen2;
 extern int xgr,  ygr;
 
 extern int GrWritingMode;
@@ -77,6 +76,8 @@ char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
 	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -87,17 +88,17 @@ char *_gfxText( struct glueCommands *data, int nextToken )
 				int y = getStackNum( stack-1 );
 				char *txt = getStackString( stack );
 
-				if (txt)
+				if ((txt)&&(screen))
 				{
 					int l = strlen(txt);
 					int tl;
 
-					SetAPen( &font_render_rp, pen0 );
+					SetAPen( &font_render_rp, screen -> ink0 );
 					Move( &font_render_rp, 0,10 );
 					Text( &font_render_rp, txt, l );
 					tl = TextLength(&font_render_rp, txt, l );
 
-					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screens[current_screen], x , y-10);
+					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screen, x , y-10);
 				}
 			}
 			break;
