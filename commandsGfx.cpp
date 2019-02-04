@@ -12,6 +12,7 @@
 
 #ifdef __linux__
 #include <stdint.h>
+#include <unistd.h>
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>
@@ -140,6 +141,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
+#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 	if (( sig_main_vbl )&&( EngineTask ))
 	{
 		Wait(1<<sig_main_vbl);
@@ -148,6 +150,12 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		Delay(1);
 	}
+#endif
+
+#ifdef __linux__
+	sleep(1);
+#endif
+
 	return tokenBuffer;
 }
 
@@ -1146,6 +1154,8 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+#if defined(__amigaos4__)
+
 	if (args==6)
 	{
 		int n = getStackNum( stack-5 );
@@ -1175,6 +1185,8 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
+#endif
+
 	popStack( stack - data->stack );
 
 	return NULL;
@@ -1193,7 +1205,15 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		int verticalOffset = getStackNum( stack-1 ) - 38;
 		int height = getStackNum( stack );
 
+#if defined(__amigaos4__) 
+// is this correct, should it not be in engine lock?
 		WaitTOF();
+#endif
+
+#if defined(__linux__)
+		sleep(1);
+#endif
+
 		retroRainbow( video, rainbowNumber, base, verticalOffset, height);
 	}
 	else setError(22,data->tokenBuffer);
@@ -1368,7 +1388,13 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 
 				if ( (n % updateEveryNPixels) == 0 )
 				{
-					WaitTOF();
+#ifdef __amigaos4__
+					Delay(1);
+#endif					
+
+#ifdef __linux__					
+					sleep(1);					
+#endif					
 				}
 			}
 		}
