@@ -183,13 +183,16 @@ void freeBank( int banknr )
 			{
 				case bank_type_sprite:
 
-					if (bank_is_object(bank,&sprite)) sprite = NULL;
+					if (bank_is_object(bank,sprite)) sprite = NULL;
 					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
+
+					getchar();
+
 					break;
 
 				case bank_type_icons:
 
-					if (bank_is_object(bank,&icons)) icons = NULL;
+					if (bank_is_object(bank,icons)) icons = NULL;
 					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
 					break;
 			}
