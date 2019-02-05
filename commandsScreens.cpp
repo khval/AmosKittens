@@ -984,6 +984,8 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (screen = screens[screen_num])
 	{
+		screen -> double_buffer_draw_frame = 0;
+
 		init_amos_kittens_screen_default_text_window(screen, 256);
 		init_amos_kittens_screen_default_colors(screen);
 		draw_cursor(screen);
