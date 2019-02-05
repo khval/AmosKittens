@@ -352,9 +352,9 @@ char *textPrint(nativeCommand *cmd, char *ptr)
 
 char *textCursOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	clear_cursor(screens[current_screen]);
 	curs_on = false;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	return tokenBuffer;
 }
