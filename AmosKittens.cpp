@@ -1450,6 +1450,8 @@ int main(int args, char **arg)
 
 					init_banks( _file_end_ , amos_filesize - tokenlength - _file_code_start_ );
 
+					gfxDefault(NULL, NULL);
+
 					//  execute the code.
 					code_reader( data, tokenlength );
 				}
