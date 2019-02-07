@@ -1490,15 +1490,15 @@ int main(int args, char **arg)
 			do_to = NULL;
 		}
 
-		printf("close & free video\n");
+		printf("-- close & free video --\n");
 
 		free_video();
 
-		printf("clean up vars\n");
+		printf("-- clean up vars --\n");
 
 		clean_up_vars();
 
-		printf("clean up stack\n");
+		printf("-- clean up stack --\n");
 
 		clean_up_stack();
 		clean_up_files();
