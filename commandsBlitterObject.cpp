@@ -231,7 +231,7 @@ void drawBobs()
 
 			if ( (image >= 0 ) && (image < sprite -> number_of_frames) )
 			{
-				frame = &sprite -> frames[ image-1 ];
+				frame = &sprite -> frames[ image ];
 
 				clear = &bob -> clear[ 0 ];
 
@@ -257,7 +257,7 @@ void drawBobs()
 				}
 
 				if (clear -> mem) copyScreenToClear( screen,clear );
-				retroPasteSprite(screen, sprite, bob->x, bob->y, image-1, flags);
+				retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags);
 			}
 		}
 	}
