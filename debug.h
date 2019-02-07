@@ -50,7 +50,11 @@ int getLineFromPointer( char *address );
 #ifdef show_debug_amal_yes
 
 #ifdef __amigaos4__
+#ifdef test_app
+#define AmalPrintf printf
+#else
 #define AmalPrintf Printf_iso
+#endif
 #endif
 
 #ifdef __linux__
