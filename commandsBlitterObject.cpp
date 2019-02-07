@@ -418,6 +418,8 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 char *boPasteBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+
 	stackCmdNormal( _boPasteBob, tokenBuffer );
 	return tokenBuffer;
 }
@@ -425,40 +427,63 @@ char *boPasteBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boGetBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = NULL;
+	int screen_nr = 0;
+	int image = 0;
+	int x0 = 0;
+	int y0 = 0;
+	int x1 = 0;
+	int y1 = 0;
+
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("stack is %d\n",stack);
 
 	switch (args)
 	{
 		case 5:	// get bob i,x,y to x2,y2
-				{
-					int image = getStackNum( stack-4 );
-					int x0 = getStackNum( stack-3 );
-					int y0 = getStackNum( stack-2 );
-					int x1 = getStackNum( stack-1 );
-					int y1 = getStackNum( stack );
 
-					engine_lock();
-
-					if (sprite==NULL)
-					{
-						sprite = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
-					}
-
-					if (sprite)
-					{
-						retroGetSprite(screens[current_screen],sprite,image-1,x0,y0,x1,y1);
-					}
-
-					engine_unlock();
-
-
-				}
+				image = getStackNum( stack-4 );
+				x0 = getStackNum( stack-3 );
+				y0 = getStackNum( stack-2 );
+				x1 = getStackNum( stack-1 );
+				y1 = getStackNum( stack );
+				screen = screens[current_screen];
 				break;
 
 		case 6:	// get bob s,i,x,y to x2,y2
+
+				screen_nr = getStackNum( stack-5 );
+				image = getStackNum( stack-4 );
+				x0 = getStackNum( stack-3 );
+				y0 = getStackNum( stack-2 );
+				x1 = getStackNum( stack-1 );
+				y1 = getStackNum( stack );
+
+				if ((screen_nr > -1) && (screen_nr < 8)) screen = screens[ screen_nr ];
 				break;
 	 }
+
+	if (screen)
+	{
+		engine_lock();
+
+		if (sprite==NULL)
+		{
+			printf("no srpite found\n");
+			sprite = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
+		}
+
+		if (sprite)
+		{
+			retroGetSprite(screen,sprite,image-1,x0,y0,x1,y1);
+		}
+
+		printf("try engine unlock\n");
+		engine_unlock();
+	}
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
