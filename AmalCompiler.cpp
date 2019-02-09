@@ -8,6 +8,7 @@
 #define Printf printf
 #endif
 
+#include "debug.h"
 
 #if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>
@@ -22,7 +23,12 @@
 #include <retromode.h>
 #include <retromode_lib.h>
 #define Printf printf
+#ifdef test_app
+#define engine_fd stdout
 #endif
+#endif
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
