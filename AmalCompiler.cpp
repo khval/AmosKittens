@@ -624,6 +624,7 @@ struct amalTab amalCmds[] =
 	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
 	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
 
+	{"Y",amal::class_cmd_arg,stdAmalWriter,amal_call_y},			// Y
 	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
 	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},			// Let
 	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},				// AUtotest
