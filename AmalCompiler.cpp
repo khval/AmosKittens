@@ -463,6 +463,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 	call_array[0] = self -> call;
 	amal_cmd_equal = NULL;
 	let = false;
+	next_arg = false;
 	return 1;
 }
 
