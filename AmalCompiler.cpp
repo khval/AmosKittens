@@ -83,9 +83,9 @@ void dumpAmalRegs(struct kittyChannel *channel)
 
 		if (i<10)
 		{
-			Printf("R%s is %3ld    R%s is %3ld\n",a, amreg[i], b, channel -> reg[i] );
+			Printf_iso("R%s is %3d    R%s is %3d\n",a, amreg[i], b, channel -> reg[i] );
 		}
-		else	Printf("R%s is %3ld\n",a, amreg[i]);
+		else	Printf_iso("R%s is %3d\n",a, amreg[i]);
 	}
 }
 
@@ -104,7 +104,7 @@ void dumpAmalStack( struct kittyChannel *channel )
 	Printf("Amal Stack\n");
 	for (s=0;s<=channel -> argStackCount;s++) 
 	{
-		Printf("stack %ld: value %ld\n",s, channel -> argStack[s] );
+		Printf_iso("stack %d: value %d\n",s, channel -> argStack[s] );
 	}
 
 	if (channel -> argStackCount>50)
@@ -113,7 +113,7 @@ void dumpAmalStack( struct kittyChannel *channel )
 
 		if (channel -> amal_script)
 		{
-			Printf("script '%s'\n", channel -> amal_script);
+			Printf_iso("script '%s'\n", channel -> amal_script);
 		}
 	}
 }
