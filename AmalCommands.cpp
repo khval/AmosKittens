@@ -178,6 +178,7 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 			return ret-1;
 		}
 	}
+	else 	AmalPrintf("Amal Jump did not find a ret value\n");
 
 	return code+1;
 }
