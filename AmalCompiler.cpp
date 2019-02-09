@@ -1049,7 +1049,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 	channel -> amalProgCounter = call;	// save counter.
 	if (*call == NULL) 
 	{
-		Printf("%s:%s:%ld - amal program ended\n",__FILE__,__FUNCTION__,__LINE__);
+		AmalPrintf("%s:%s:%d - amal program ended\n",__FILE__,__FUNCTION__,__LINE__);
 		channel -> status = channel_status::done;
 	}
 }
@@ -1076,7 +1076,7 @@ bool amal_fix_labels( void **code )
 	unsigned int ref_pos = 0xFFFFFFFE;
 	int fixed = 0;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (i=0;i<looking_for_labels.size();i++)
 	{
@@ -1090,7 +1090,7 @@ bool amal_fix_labels( void **code )
 		}
 	}
 
-	Printf("looking for labels %ld, Fixed labels %ld\n",looking_for_labels.size(), fixed );
+	AmalPrintf("looking for labels %d, Fixed labels %d\n",looking_for_labels.size(), fixed );
 
 	return (fixed == looking_for_labels.size());
 }
