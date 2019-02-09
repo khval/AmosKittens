@@ -54,7 +54,7 @@ void init_amos_kittens_screen_default_text_window( struct retroScreen *screen, i
 	else
 	{
 		screen->pen = 2;
-		screen->paper = 0;
+		screen->paper = 1;
 		screen->ink0 = 2;
 		screen->ink1= 0;
 		screen->ink2= 0;
