@@ -89,7 +89,7 @@ void readReloc32(FILE *fd)
 	unsigned int num_offsets;
 	unsigned int hunk_number;
 	unsigned int skip;
-	int n;
+	unsigned int n;
 
 	while (true)
 	{

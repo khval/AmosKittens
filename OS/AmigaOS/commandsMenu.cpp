@@ -188,7 +188,8 @@ bool compare_menu( struct amosMenuItem *i, struct amosMenuItem *n )
 
 void dump_menu()
 {
-	int n,nn;
+	unsigned int n;
+	int nn;
 	struct amosMenuItem *i;
 	for (n=0;n<menuitems.size();n++)
 	{
@@ -206,7 +207,7 @@ void dump_menu()
 
 void sort_menu()
 {
-	int n;
+	unsigned int n;
 	struct amosMenuItem *temp;
 	bool need_to_sort = true;
 

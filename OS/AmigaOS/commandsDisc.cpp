@@ -842,7 +842,7 @@ void init_dev_first()
 	char buffer[1000];
 	struct DosList *dl;
 	ULONG flags;
-	int n;
+	unsigned int n;
 
 	flags = LDF_DEVICES|LDF_READ;
 	dl = LockDosList(flags);
@@ -868,7 +868,7 @@ void init_dev_first()
 }
 
 
-int dev_index = 0;
+unsigned int dev_index = 0;
 
 char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 {
