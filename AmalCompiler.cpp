@@ -203,6 +203,29 @@ unsigned int AmalWriterNum (	struct kittyChannel *channel, struct amalTab *self,
 	return 2;
 }
 
+int animScriptLength( const char *str, const char *valid_chars )
+{
+	const char *c;
+	const char *vc;
+	bool valid;
+	int l = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	printf("str: %s\n", str);
+
+	for (c = str ; (*c!=0) && (*c!=';') ; c++)
+	{
+		valid = false;
+		for (vc=valid_chars; *vc ; vc++) if (*vc == *c) { valid = true; break; }
+		if (valid == false) break;		
+		l ++;
+	}
+
+	return l;
+}
+
+
 int amalStringLength( const char *str )
 {
 	const char *c;
@@ -219,10 +242,10 @@ const char *AmalAtStringArg( const char  *at_script )
 	return s;
 }
 
-int writeAmalStringToBuffer( const char *s, char *d )
+int writeAmalStringToBuffer( const char *s, char *d, int _max_len )
 {
 	int le = 0;
-	while ((*s != 0)&&(*s != ' ')&&( *s != ';')) { *d++=*s++; le++; }
+	while ((*s != 0)&&(*s != ' ')&&( *s != ';')&&(le < _max_len)) { *d++=*s++; le++; }
 	*d = 0;
 	return le;
 }
@@ -247,7 +270,7 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 // find script find the size
 
 	s = AmalAtStringArg( data -> at_script );
-	anim_script_len =amalStringLength( s );
+	anim_script_len =animScriptLength( s, "R,0123456789() " );
 	size = 2 + ((anim_script_len + sizeof(void *)) / sizeof(void *) );
 
 // check if size is ok, or need a new buffer.
@@ -262,7 +285,7 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 // write the script into buffer.
 
-	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) );
+	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) , anim_script_len );
 	data -> arg_len = le ? le+1 : 0;
 
 	offset = ((le + sizeof(void *)) / sizeof(void *) );
