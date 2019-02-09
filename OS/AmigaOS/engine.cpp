@@ -162,13 +162,10 @@ bool init_engine()
 	font_render_rp.Font =  My_Window -> RPort -> Font;
 	SetBPen( &font_render_rp, 0 );
 
-	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
-	if ( ! engine_mx) return FALSE;
-
-
 	engine =  retroAllocEngine( My_Window, video );
 
 	if ( ! engine) return FALSE;
+
 	return TRUE;
 }
 
