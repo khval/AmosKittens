@@ -1040,7 +1040,7 @@ bool amal_find_label(char *name, unsigned int *ref_pos)
 	return false;
 }
 
-void amal_fix_labels( void **code )
+bool amal_fix_labels( void **code )
 {
 	unsigned int i;
 	unsigned int ref_pos = 0xFFFFFFFE;
@@ -1060,7 +1060,9 @@ void amal_fix_labels( void **code )
 		}
 	}
 
-	Printf("labels %ld, Fixed labels %ld\n",looking_for_labels.size(), fixed );
+	Printf("looking for labels %ld, Fixed labels %ld\n",looking_for_labels.size(), fixed );
+
+	return (fixed == looking_for_labels.size());
 }
 
 
@@ -1189,14 +1191,13 @@ int main(int args, char **arg)
 
 			if (asc_to_amal_tokens( &channel ))
 			{
-				amal_fix_labels( (void **) amalProg -> call_array );
-
 				dump_object();
 				dump_amal_labels();
 
-				amal_clean_up_labels( );
-
-				test_run( &channel );
+				if (amal_fix_labels( (void **) amalProg -> call_array ))
+				{
+					test_run( &channel );
+				}
 			}
 
 			free(channel.amal_script);
