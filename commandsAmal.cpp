@@ -306,13 +306,19 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 
 void channel_amal( struct kittyChannel *channel )
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%d - channel -> status: %d, channel -> amalProgCounter %08x \n",__FILE__,__FUNCTION__,__LINE__, channel -> status, channel -> amalProgCounter);
 
 	// check if program is ready to run, and it has program.
 	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProgCounter ) )
 	{
+		AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 		// Check that program has not ended.
-		if ( *channel -> amalProgCounter )	amal_run_one_cycle(channel);
+		if ( *channel -> amalProgCounter )	
+		{
+			amal_run_one_cycle(channel);
+		}
+		else 	AmalPrintf("%s:%s:%d - channel -> amalProgCounter %d\n",__FILE__,__FUNCTION__,__LINE__, channel -> amalProgCounter);
 	}
 }
 
@@ -506,6 +512,8 @@ void channel_anim( struct kittyChannel *self )
 {
 	struct channelAPI *api = self -> objectAPI;
 	if (api == NULL) return;
+
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// we are at end of anim, what to do...
 	if (*self->anim_at == 0)
