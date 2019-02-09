@@ -907,7 +907,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 #ifdef test_app
 // 1000 to avoid reallocs.
 // 20 to test reallocs.
-	allocAmalBuf( amalProg, 1000 );	
+	allocAmalBuf( amalProg, 60 );	
 #else
 	allocAmalBuf( amalProg, 60 );
 #endif
