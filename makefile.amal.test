@@ -10,7 +10,7 @@ VERSION = 1
 #RM     = delete
 # RM     = rm
 
-warnings = -wall -Wuninitialized
+warnings = -Wuninitialized
 
 opt=-Dtest_app
 
