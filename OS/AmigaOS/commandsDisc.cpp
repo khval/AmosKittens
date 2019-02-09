@@ -181,16 +181,20 @@ char *_discKill( struct glueCommands *data, int nextToken )
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	char *_str;
 	int32 success = false;
-	_str = getStackString( stack );
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (_str) success = Delete(_str);
-
-	if (success == false)
+	if (args==1)
 	{
-		setError(81,data->tokenBuffer);
+		_str = getStackString( stack );
+		if (_str) success = Delete(_str);
+
+		if (success == false)
+		{
+			setError(81,data->tokenBuffer);
+		}
 	}
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - cmdTmp[cmdStack].stack  );
 	return NULL;
@@ -637,19 +641,23 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 	BPTR oldLock;
 	char *_str;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	_str = getStackString( stack );
-
-	if (_str)
+	if (args == 1)
 	{
-		lock = Lock( _str, SHARED_LOCK );
-		if (lock)
+		_str = getStackString( stack );
+
+		if (_str)
 		{
-			oldLock = SetCurrentDir( lock );
-			if (oldLock) UnLock (oldLock );
+			lock = Lock( _str, SHARED_LOCK );
+			if (lock)
+			{
+				oldLock = SetCurrentDir( lock );
+				if (oldLock) UnLock (oldLock );
+			}
 		}
 	}
+	else setError(22,data -> tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
