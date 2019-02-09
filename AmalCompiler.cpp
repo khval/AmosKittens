@@ -1074,7 +1074,7 @@ bool amal_fix_labels( void **code )
 {
 	unsigned int i;
 	unsigned int ref_pos = 0xFFFFFFFE;
-	int fixed = 0;
+	unsigned int fixed = 0;
 
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
