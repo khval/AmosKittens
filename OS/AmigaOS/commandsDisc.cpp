@@ -371,7 +371,6 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 			{
 				if( EXD_IS_SOFTLINK(dat) )        /* a FFS style softlink */
 				{
-					CONST_STRPTR target_type = "unavailable"; /* default  */
 			                APTR oldwin = SetProcWindow((APTR)-1); 
 					target = ExamineObjectTags(EX_StringNameInput, dat->Name,TAG_END);
 					SetProcWindow(oldwin);
@@ -1138,9 +1137,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 		if (fd)
 		{
 			char *line = NULL;
-			ssize_t read;
 			size_t len = 0;
-			int ret = 0;
 
 			getline( &line, &len, fd );
 

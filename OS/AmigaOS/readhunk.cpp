@@ -99,7 +99,6 @@ void readReloc32(FILE *fd)
 
 		for (n=0; n<num_offsets;n++)	fread(&skip,sizeof(int),1,fd);
 	}
-
 }
 
 #define HUNK_HEADER	0x3F3

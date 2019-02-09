@@ -289,11 +289,10 @@ extern struct Window *My_Window ;
 
 char *menuMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	uint32 wa_flags;
 	detach_menu(My_Window);	// safty.
 
 	sort_menu();
-	dump_menu();
+//	dump_menu();
 
 	if (amiga_menu_data) FreeVec(amiga_menu_data);
 	amiga_menu_data = alloc_amiga_menu( menuitems.size() );
@@ -419,7 +418,6 @@ char *menuMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
 char *_menuMenuX( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int i = 0;
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -440,7 +438,6 @@ char *menuMenuX(struct nativeCommand *cmd, char *tokenBuffer )
 char *_menuMenuY( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int i = 0;
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 

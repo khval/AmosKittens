@@ -79,7 +79,6 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int ret = 0;
 	int colors = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -156,7 +155,6 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -193,7 +191,6 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	bool success = false;
-	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -348,7 +345,6 @@ char *_gfxScreen( struct glueCommands *data, int nextToken )
 char *_gfxScin( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int ret = -1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -383,7 +379,6 @@ char *_gfxScin( struct glueCommands *data, int nextToken )
 					}
 				}
 			}
-			printf("ret: %d\n",ret);
 		}
 	}
 
@@ -614,7 +609,6 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -868,7 +862,6 @@ char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	printf("args: %d\n",args);
 
 	switch (args)
 	{
@@ -923,7 +916,6 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int screen_num;
 	struct retroScreen *screen;
 
@@ -957,7 +949,7 @@ char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 
 char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	struct retroScreen *screen = screens[current_screen];
+//	struct retroScreen *screen = screens[current_screen];
 
 	stackCmdNormal( _gfxScreenSwap, tokenBuffer );
 	setStackNone();
@@ -1000,7 +992,6 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxXScreen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int s,x = 0;
 	struct retroScreen *screen;
 
@@ -1033,7 +1024,6 @@ char *gfxXScreen(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxYScreen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int s,y = 0;
 	struct retroScreen *screen;
 
@@ -1066,7 +1056,6 @@ char *gfxYScreen(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxXHard( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int s=0,x = 0;
 	struct retroScreen *screen;
 
@@ -1099,7 +1088,6 @@ char *gfxXHard(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxYHard( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 	int s=0,y = 0;
 	struct retroScreen *screen;
 

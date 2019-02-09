@@ -87,7 +87,6 @@ char *flushCmdParaStack( int nextToken )
 {
 	struct glueCommands *cmd;
 	char *ret = NULL;
-	unsigned short tmp_lastToken;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 

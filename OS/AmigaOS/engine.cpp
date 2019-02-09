@@ -253,7 +253,6 @@ void draw_cursor(struct retroScreen *screen)
 	}
 }
 
-
 void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char )
 {
 	struct keyboard_buffer event;
