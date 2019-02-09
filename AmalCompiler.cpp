@@ -160,7 +160,10 @@ unsigned int AmalWriterIf (	struct kittyChannel *channel, struct amalTab *self,
 {
 	call_array[0] = self -> call;
 
-	printf("Writing %-8d to %08x/%08x - If\n",num, (unsigned int) &call_array[0], (unsigned int) &call_array[1]);
+	printf("Writing %-8d to %010d/%010d - If\n",
+			num, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
 
 	*((int *) &call_array[1]) = 0;
 	addNestAmal( if, &call_array[1] );
@@ -181,7 +184,10 @@ unsigned int AmalWriterCondition (	struct kittyChannel *channel, struct amalTab 
 {
 	call_array[0] = self -> call;
 
-	printf("Writing %-8d to %08x/%08x - Condition\n", 0, (unsigned int) &call_array[0], (unsigned int) &call_array[1]);
+	printf("Writing %-8d to %010d/%019d - Condition\n", 
+			0, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
 
 	*((int *) &call_array[1]) = 0;
 
@@ -201,7 +207,9 @@ unsigned int AmalWriterNum (	struct kittyChannel *channel, struct amalTab *self,
 {
 	call_array[0] = self -> call;
 
-	printf("Writing %-8d to %08x/%08x - num\n",num, (unsigned int) &call_array[0], (unsigned int) &call_array[1]);
+	printf("Writing %-8d to %010d/%010d - num\n",
+			num, (unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
 
 	*((int *) &call_array[1]) = num;
 	let = false;
@@ -271,7 +279,10 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 	struct amalBuf *amalProg = &channel -> amalProg;
 
-	printf("Writing %-8d to %08x/%08x - script\n",num,(unsigned int) &call_array[0],(unsigned int) &call_array[1]);
+	printf("Writing %-8d to %010d/%010d - script\n",
+		num,
+		(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+		(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
 
 // find script find the size
 
@@ -343,7 +354,9 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	const char *s;
 	char *d;
 
-	printf("writing %08x to %08x - jump\n", (unsigned int) self -> call,(unsigned int) &call_array[0]);
+	printf("writing %08x to %010d  - jump\n", 
+			(unsigned int) self -> call,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
 	call_array[0] = self -> call;
 	s = data -> at_script + data -> command_len;
@@ -401,9 +414,11 @@ unsigned int stdAmalWriterX ( struct kittyChannel *channel, struct amalTab *self
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x - X\n", (unsigned int) amal_call_x,(unsigned int) &call_array[0]);
-	call_array[0] = amal_call_x;
+	printf("writing %08x to %010d  - X\n", 
+			(unsigned int) amal_call_x,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
+	call_array[0] = amal_call_x;
 	return 1;
 }
 
@@ -412,9 +427,11 @@ unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *se
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x - exit\n", (unsigned int) amal_call_exit, (unsigned int) &call_array[0]);
-	call_array[0] = amal_call_exit;
+	printf("writing %08x to %010d  - exit\n", 
+			(unsigned int) amal_call_exit, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
+	call_array[0] = amal_call_exit;
 	return 1;
 }
 
@@ -430,7 +447,9 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x - ;\n", (unsigned int) self -> call, (unsigned int) &call_array[0]);
+	printf("writing %08x to %010d  - ;\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
 	// this command doubles as "end if"
 
@@ -455,7 +474,10 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x - %s\n", (unsigned int) self -> call, (unsigned int) &call_array[0], self->name);
+	printf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
 	call_array[0] = self -> call;
 	return 1;
 }
@@ -465,7 +487,11 @@ unsigned int stdAmalWriterSymbol ( struct kittyChannel *channel, struct amalTab 
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %08x - %s\n", (unsigned int) self -> call, (unsigned int) &call_array[0], self->name);
+	printf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
+
 	call_array[0] = self -> call;
 	next_arg = true;
 	return 1;
@@ -479,12 +505,12 @@ unsigned int stdAmalWriterEqual ( struct kittyChannel *channel, struct amalTab *
 {
 	if (amal_cmd_equal)
 	{
-		printf("writing %08x to %08x ==\n", (unsigned int) amal_cmd_equal, (unsigned int) &call_array[0]);
+		printf("writing %08x to %010d  ==\n", (unsigned int) amal_cmd_equal, (unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 		call_array[0] = amal_cmd_equal;
 	}
 	else
 	{
-		printf("writing %08x to %08x =\n", (unsigned int) self -> call,(unsigned int)  &call_array[0]);
+		printf("writing %08x to %010d  =\n", (unsigned int) self -> call,(unsigned int)  &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 		call_array[0] = self -> call;
 		amal_cmd_equal = amal_call_equal;
 	}
@@ -585,7 +611,7 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 				unsigned int )
 {
 	int num = *(data -> at_script + 1);
-	printf("writing %08x to %08x\n",(unsigned int) amal_call_reg,(unsigned int) &call_array[0]);
+	printf("writing %08x to %08x\n",(unsigned int) amal_call_reg,(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 	call_array[0] = amal_call_reg;
 	*((int *) &call_array[1]) = num;
 
@@ -700,14 +726,14 @@ void print_code( void **adr )
 {
 	if (*adr == NULL)
 	{
-		printf("%08X - %08X - %d\n",(unsigned int) adr,(unsigned int) 0,0);
+		printf("%010d - %010d - %d\n",(unsigned int) adr,(unsigned int) 0,0);
 	}
 
 	for (struct amalTab *tab = amalCmds; tab -> name ; tab++ )
 	{
 		if ( tab->call == *adr ) 
 		{
-			printf("%08X - %08X - name %s\n",(unsigned int) adr,(unsigned int) *adr, tab -> name);
+			printf("%010d - %010d - name %s\n",(unsigned int) adr,(unsigned int) *adr, tab -> name);
 			return;
 		}
 	}
@@ -717,11 +743,11 @@ void print_code( void **adr )
 
 		if (((c>='0')&&(c<='9')) || ((c>='A')&&(c<='Z')))
 		{
-			printf("%08X - %08X - R%c\n",(unsigned int) adr,(unsigned int) *adr,(int) *adr);
+			printf("%010d - %010d - R%c\n",(unsigned int) adr,(unsigned int) *adr,(int) *adr);
 		}
 		else
 		{
-			printf("%08X - %08X - %d\n",(unsigned int) adr,(unsigned int) *adr,(int) *adr);
+			printf("%010d - %010d - %d\n",(unsigned int) adr,(unsigned int) *adr,(int) *adr);
 		}
 
 	}
