@@ -28,8 +28,6 @@
 #endif
 #endif
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -102,7 +100,6 @@ unsigned int (*amal_to_writer) ( struct kittyChannel *channel, struct amalTab *s
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				struct amalWriterData *data,
 				unsigned int num) = NULL;
-
 
 void dumpAmalStack( struct kittyChannel *channel )
 {
@@ -875,8 +872,6 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 			new_size = 0;
 		}
 
-		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		printf(" i -> call_array = %08x\n",(unsigned int) i -> call_array );
 
 		amalFreeBuffer(i->call_array);
@@ -919,7 +914,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	s=script;
 	while (*s)
 	{
-		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");
+//		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");
 
 		if ((let)||(next_arg))
 		{
