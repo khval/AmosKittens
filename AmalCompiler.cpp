@@ -13,12 +13,6 @@
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <string.h>
-#define sys_alloc(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END )
-#define sys_free(ptr) FreeVec(ptr)
-#else
-#define sys_alloc(size) malloc(size)
-#define sys_free(ptr) free(ptr)
-
 #endif
 
 #ifdef __linux__
@@ -61,7 +55,7 @@ void dump_amal_labels();
 
 void *amalAllocBuffer( int size ) 
 {
-	return sys_alloc(size);
+	return sys_public_alloc_clear(size);
 }
 
 #define amalFreeBuffer( ptr ) { sys_free( ptr ); ptr = NULL; }
@@ -1028,7 +1022,6 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 		Printf("%s:%s:%ld - amal program ended\n",__FILE__,__FUNCTION__,__LINE__);
 		channel -> status = channel_status::done;
 	}
-
 }
 
 bool amal_find_label(char *name, unsigned int *ref_pos)
