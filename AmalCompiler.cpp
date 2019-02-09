@@ -124,7 +124,7 @@ void dumpAmalProgStack( struct kittyChannel *channel )
 	Printf("Amal Stack\n");
 	for (s=0;s<=channel -> progStackCount;s++) 
 	{
-		Printf("stack %ld: flags %lx\n",s, channel -> progStack[s].Flags );
+		AmalPrintf("stack %d: flags %x\n",s, channel -> progStack[s].Flags );
 	}
 }
 
@@ -1011,7 +1011,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	channel -> progStackCount = 0;
 	channel -> amalProgCounter = channel -> amalProg.call_array;
 
-	Printf("channel -> amalProgCounter = %08lx\n",channel -> amalProgCounter);
+	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProgCounter);
 
 	return true;
 }
@@ -1093,18 +1093,18 @@ void dump_amal_labels()
 {
 	unsigned int i;
 
-	printf("looking for labels\n");
+	AmalPrintf("looking for labels\n");
 
 	for (i=0;i<looking_for_labels.size();i++)
 	{
-		printf("pos 0x%08x, name %s\n",looking_for_labels[i].pos,looking_for_labels[i].name);
+		AmalPrintf("pos 0x%08x, name %s\n",looking_for_labels[i].pos,looking_for_labels[i].name);
 	}
 
-	printf("found labels\n");
+	AmalPrintf("found labels\n");
 
 	for (i=0;i<found_labels.size();i++)
 	{
-		printf("pos 0x%08x, name %s\n",found_labels[i].pos,found_labels[i].name);
+		AmalPrintf("pos 0x%08x, name %s\n",found_labels[i].pos,found_labels[i].name);
 	}
 }
 
@@ -1173,7 +1173,7 @@ void test_run(struct kittyChannel  *channel)
 
 	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
 	{
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 		amal_run_one_cycle(channel);
 		dump_object();
 		dumpAmalRegs( channel );
