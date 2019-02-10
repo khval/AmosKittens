@@ -975,7 +975,7 @@ void *amal_call_then API_AMAL_CALL_ARGS
 
 	if (self -> argStack [ self -> argStackCount ] == 0)
 	{
-		new_code = (void **) code[1];
+		new_code = (void **) ((char *) self -> amalProg.call_array + (unsigned int) code[1]);
 		if (new_code) return new_code-1;
 	}
 
@@ -987,7 +987,7 @@ void *amal_call_else API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	void **new_code;
 
-	new_code = (void **) code[1];
+	new_code = (void **) ((char *) self -> amalProg.call_array + (unsigned int) code[1]);
 	if (new_code) return new_code-1;
 
 	return code + 1;

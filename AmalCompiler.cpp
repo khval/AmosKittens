@@ -433,10 +433,10 @@ unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *se
 }
 
 
-void fix_condition_branch( void *adr )
+void fix_condition_branch( unsigned int relative_adr )
 {
-	void **ptr = (void **) nested_command[ nested_count-1 ].ptr;
-	*ptr = adr;
+	unsigned int *ptr = (unsigned int *) nested_command[ nested_count-1 ].ptr;
+	*ptr = relative_adr;
 }
 
 unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab *self, 
@@ -455,7 +455,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 		case nested_if:
 		case nested_then:
 		case nested_else:
-			fix_condition_branch( (void *) &call_array[0] );
+			fix_condition_branch( (unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 			nested_count --;
 			break;
 	}
@@ -939,14 +939,14 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 				switch (GET_LAST_NEST)
 				{
 					case nested_if:
-						fix_condition_branch( &amalProg -> call_array[data.pos] );
+						fix_condition_branch( (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );
 						write_cmd.call = amal_call_then; 
 						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_then);
 						amal_cmd_equal = NULL;
 						break;
 
 					case nested_then:
-						fix_condition_branch( &amalProg -> call_array[data.pos]  );	// skip over else
+						fix_condition_branch( (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );	// skip over else
 						write_cmd.call = amal_call_else; 
 
 //						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
@@ -1055,6 +1055,8 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 
 	for (call = channel -> amalProgCounter ;  *call ; call ++ )
 	{
+		AmalPrintf("offset %d\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
+
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret) 
 		{
@@ -1072,7 +1074,11 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 	channel -> amalProgCounter = call;	// save counter.
 	if (*call == NULL) 
 	{
-		AmalPrintf("%s:%s:%d - amal program ended\n",__FILE__,__FUNCTION__,__LINE__);
+
+		printf("pos at  %08x\n",call );
+		printf("code at %08x\n",channel -> amalProg.call_array );
+
+		AmalPrintf("%s:%s:%d - amal program ended, offset %d\n",__FILE__,__FUNCTION__,__LINE__, (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
 		channel -> status = channel_status::done;
 	}
 }
