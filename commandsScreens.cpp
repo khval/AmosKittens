@@ -72,7 +72,7 @@ void init_amos_kittens_screen_default_colors(struct retroScreen *screen)
 {
 	set_default_colors( screen );
 	retroFlash( screen, 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
-	retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, 1 );
+	retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 }
 
 char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
