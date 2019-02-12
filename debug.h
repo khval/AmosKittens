@@ -48,21 +48,21 @@ int getLineFromPointer( char *address );
 #endif
 
 #ifdef show_debug_amal_yes
+	#warning amal debug enabled?
+	#ifdef __amigaos4__
+		#ifdef test_app
+			#define AmalPrintf printf
+		#else
+			#define AmalPrintf Printf_iso
+		#endif
+	#endif
 
-#ifdef __amigaos4__
-#ifdef test_app
-#define AmalPrintf printf
+	#ifdef __linux__
+		#define AmalPrintf printf
+	#endif
 #else
-#define AmalPrintf Printf_iso
-#endif
-#endif
-
-#ifdef __linux__
-#define AmalPrintf printf
-#endif
-
-#else
-#define AmalPrintf(fmt,...)
+	#warning amal debug disabled.
+	#define AmalPrintf(fmt,...)
 #endif
 
 #ifdef __amigaos4__
