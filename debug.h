@@ -7,13 +7,13 @@
 
 // --------- debug options ---------------
 
-#define show_error_at_file_yes
-#define show_proc_names_yes
-#define show_token_numbers_yes
-#define show_debug_printf_yes
-#define show_debug_amal_yes
-#define show_pass1_tokens_yes
-#define show_array_yes
+#define show_error_at_file_no
+#define show_proc_names_no
+#define show_token_numbers_no
+#define show_debug_printf_no
+#define show_debug_amal_no
+#define show_pass1_tokens_no
+#define show_array_no
 #define enable_engine_debug_output_yes
 
 //------------- end of options -----------------
