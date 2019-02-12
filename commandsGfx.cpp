@@ -543,7 +543,6 @@ char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxPlot( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr, y0 = ygr,c;
 	struct retroScreen *screen = screens[current_screen];
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -551,29 +550,27 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			stack_get_if_int( stack-1, &x0 );
-			stack_get_if_int( stack, &y0 );
+			stack_get_if_int( stack-1, &xgr );
+			stack_get_if_int( stack, &ygr );
 			if (screen)
 			{
 				switch (GrWritingMode)
 				{
-					case 0:	retroPixel( screen, x0,y0,screen -> ink0 );
+					case 0:	retroPixel( screen, xgr,ygr,screen -> ink0 );
 							break;
 					case 2:
 							{
-								int old = retroPoint( screen, x0,y0 ) ^ screen -> ink0;
-								retroPixel( screen, x0,y0,old );
-								xgr = x0;	ygr=y0;
+								int old = retroPoint( screen, xgr,ygr ) ^ screen -> ink0;
+								retroPixel( screen, xgr,ygr,old );
 							}
 							break;
 				}
 			}
 			break;
 		case 3:
-			stack_get_if_int( stack-2, &x0 );
-			stack_get_if_int( stack-1, &y0 );
-			c = getStackNum( stack );
-			if (screen) retroPixel( screen, x0,y0,c );
+			stack_get_if_int( stack-2, &xgr );
+			stack_get_if_int( stack-1, &ygr );
+			if (screen) retroPixel( screen, xgr,ygr,getStackNum( stack ) );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
