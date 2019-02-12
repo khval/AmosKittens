@@ -52,7 +52,6 @@ static void setImage (int object,int image)
 	bobs[object].image = image;
 	s = screens[ bobs[object].screen_id ];
 	if (s) s -> force_swap = TRUE;
-	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,image);
 }
 
 static void setX (int object,int x)
@@ -61,7 +60,6 @@ static void setX (int object,int x)
 	bobs[object].x = x;
 	s = screens[ bobs[object].screen_id ];
 	if (s) s -> force_swap = TRUE;
-	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,x);
 }
 
 static void setY (int object,int y)
@@ -70,7 +68,6 @@ static void setY (int object,int y)
 	bobs[object].y = y;
 	s = screens[ bobs[object].screen_id ];
 	if (s) s -> force_swap = TRUE;
-	Printf("%s(%ld) = %ld\n",__FUNCTION__,object,y);
 }
 
 struct channelAPI bob_api = 

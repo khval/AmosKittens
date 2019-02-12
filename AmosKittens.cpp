@@ -294,7 +294,6 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
-	dprintf("setTokenMode = mode_standard\n");
 
 	if (ret) return ret -2;		// when exit +2 token 
 
@@ -322,7 +321,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
-	dprintf("setTokenMode = mode_standard\n");
 
 	if (breakpoint)
 	{
@@ -548,8 +546,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		if (ref -> ref)
 		{
 			int idx = ref->ref-1;
-
-			dprintf("varname: %s type: %d\n",globalVars[idx].varName, globalVars[idx].var.type & 7);
 
 			switch (globalVars[idx].var.type & 7)
 			{
