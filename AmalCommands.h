@@ -28,6 +28,7 @@ void *amal_call_play API_AMAL_CALL_ARGS;
 void *amal_call_end API_AMAL_CALL_ARGS;
 void *amal_call_x API_AMAL_CALL_ARGS;
 void *amal_call_y API_AMAL_CALL_ARGS;
+void *amal_call_image API_AMAL_CALL_ARGS;
 void *amal_call_xm API_AMAL_CALL_ARGS;
 void *amal_call_ym API_AMAL_CALL_ARGS;
 void *amal_call_k1 API_AMAL_CALL_ARGS;

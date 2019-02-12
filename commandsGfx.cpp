@@ -1426,67 +1426,72 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxFade( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool done = false;
+	struct retroScreen *screen;
+
 
 //	proc_names_
 printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	switch (args)
+	if (kittyStack[stack].type == type_none)
 	{
-		case 0:
-				setError(22,data->tokenBuffer);
-				return NULL;
-		case 1:
-				if (screens[current_screen])
-				{
-					int n;
-					struct retroRGB *pal;
-
-					screens[current_screen] -> fade_speed = 0; // disable fadeing...
-
-					n = 0;
-					pal = screens[current_screen] -> fadePalette;
-					while ( n<256)
-					{
-						pal -> r = 0;
-						pal -> g = 0;
-						pal -> b = 0;
-						pal++;
-						n++;
-					}
-
-					screens[current_screen] -> fade_count = 0;
-					screens[current_screen] -> fade_speed = getStackNum( stack );
-				}
-
-				done = true;
-				break;
+		setError(22, data -> tokenBuffer);
+		popStack( stack - data->stack );
+		return NULL;
 	}
 
-	if ((done == false) && (screens[current_screen] ))
+	if ( screen = screens[current_screen] )
 	{
-		int ecs_rgb = 0;
-		int s;
-		struct retroRGB *opal= screens[current_screen] -> orgPalette;
-		struct retroRGB *fpal= screens[current_screen] -> fadePalette;
+		int fade_speed;
+		struct retroRGB *dest_pal;
+		int c;
+		int rgb;
 
-		screens[current_screen] -> fade_speed = 0;	 // disable fadeing...
+		fade_speed = getStackNum( data->stack );
+		screen -> fade_speed = 0;	// disable fade.. until its setup again.
 
-		for ( s = data -> stack+1; s<=stack;s++ );
+		if ((fade_speed == 0)&&(args>255))
 		{
-			ecs_rgb = ((opal -> r & 0xF0) << 4) | (opal -> g & 0xF0 ) | ((opal ->b & 0xF0) >>4);
-			stack_get_if_int( s, &ecs_rgb );
-			fpal -> r =	((ecs_rgb & 0xF00) >> 8) * 0x11;
-			fpal -> g =	((ecs_rgb & 0x0F0) >> 4) * 0x11;
-			fpal -> b =	(ecs_rgb & 0x00F) * 0x11;
-			opal++;
-			fpal++;
+			setError(22, data -> tokenBuffer);
+			popStack( stack - data->stack );
+			return NULL;
 		}
 
-		screens[current_screen] -> fade_speed = getStackNum( data -> stack );
+		printf("fade %d colors\n",args-1);
+
+		dest_pal = screen -> fadePalette;
+
+		if (args>1)	// fade to colors listed after fade speed.
+		{
+			c = 0;	// color
+			for (int s = data->stack+1 ; s <= stack ; s++ )
+			{
+				rgb = getStackNum( s );
+				printf("%03x\n",rgb);
+
+				dest_pal[c].r = ((rgb & 0xF00) >> 8) * 0x11;
+				dest_pal[c].g = ((rgb & 0x0F0) >> 4) * 0x11;
+				dest_pal[c].b = ((rgb & 0x00F)) * 0x11;
+				c ++;
+			}
+		}
+		else		// fade to black, if no colors after fade.
+		{
+			for (c = 0; c < 256 ; c++ )
+			{
+				dest_pal[c].r = 0;
+				dest_pal[c].g = 0;
+				dest_pal[c].b = 0;
+				c ++;
+			}
+		}
+
+		screen -> fade_speed = fade_speed;
+		screen -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
 	}
 
 	popStack( stack - data->stack );
+
+	Delay(3);
 
 	return NULL;
 }
@@ -1554,8 +1559,8 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 				n++;
 			}
 
-			screens[current_screen] -> fade_count = 0;
 			screens[current_screen] -> fade_speed = fade_speed;
+			screens[current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
 
 			printf("fade speed is %d\n",screens[current_screen] -> fade_speed);
 		}
@@ -1583,6 +1588,8 @@ char *gfxFade(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	do_to[parenthesis_count] = do_to_fade;
 	stackCmdNormal( _gfxFade, tokenBuffer );
+	setStackNone();
+
 	return tokenBuffer;
 }
 

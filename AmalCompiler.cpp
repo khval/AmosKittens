@@ -168,8 +168,6 @@ unsigned int AmalWriterIf (	struct kittyChannel *channel, struct amalTab *self,
 
 	next_arg =true;
 
-	getchar();
-
 	return 2;
 }
 
@@ -419,6 +417,20 @@ unsigned int stdAmalWriterX ( struct kittyChannel *channel, struct amalTab *self
 	return 1;
 }
 
+unsigned int stdAmalWriterImage ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %010d  - Anim image\n", 
+			(unsigned int) amal_call_x,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
+
+	call_array[0] = amal_call_x;
+	return 1;
+}
+
+
 unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *self, 
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
 				struct amalWriterData *data,
@@ -652,6 +664,7 @@ struct amalTab amalCmds[] =
 	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
 	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},			// Let
 	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},				// AUtotest
+	{"A",amal::class_cmd_arg,stdAmalWriterImage,amal_call_image},	// Anim image
 	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},	// Anim
 	{"M",amal::class_cmd_normal,stdAmalWriter,amal_call_move},		// Move
 	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},		// Pause

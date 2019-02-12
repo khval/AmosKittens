@@ -93,7 +93,7 @@ void *amal_set_num API_AMAL_CALL_ARGS
 void *amal_call_x API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> last_reg = 5;
+	self -> last_reg = -1;
 	self -> argStack [ self -> argStackCount ] = self -> objectAPI -> getX( self -> number );
 	return NULL;
 }
@@ -101,7 +101,15 @@ void *amal_call_x API_AMAL_CALL_ARGS
 void *amal_call_y API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> last_reg = 6;
+	self -> last_reg = -2;
+	self -> argStack [ self -> argStackCount ] = self -> objectAPI -> getY( self -> number );
+	return NULL;
+}
+
+void *amal_call_image API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> last_reg = -3;
 	self -> argStack [ self -> argStackCount ] = self -> objectAPI -> getY( self -> number );
 	return NULL;
 }
@@ -875,21 +883,25 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 
 void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 {
-	unsigned int c;
+	int c;
 	char chr[2] = {0,0};
 
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	c = cb-> last_reg;
 
-	if (c==5)
+	switch (c)
 	{
-		self -> objectAPI -> setX( self -> number, self -> argStack [ self -> argStackCount ] );
+		case -1: 	self -> objectAPI -> setX( self -> number, self -> argStack [ self -> argStackCount ] );
+				break;
+		case -2:
+				self -> objectAPI -> setY( self -> number, self -> argStack [ self -> argStackCount ] );
+				break;
+		case -3:
+				self -> objectAPI -> setImage( self -> number, self -> argStack [ self -> argStackCount ] );
+				break;
 	}
-	else if (c==6)
-	{
-		self -> objectAPI -> setY( self -> number, self -> argStack [ self -> argStackCount ] );
-	}
+
 	if ((c>='0')&&(c<='9'))
 	{
 		self -> reg[ c - '0' ] = self -> argStack [ self -> argStackCount ];
