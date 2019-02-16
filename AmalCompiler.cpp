@@ -37,6 +37,7 @@
 #include "pass1.h"
 #include "AmosKittens.h"
 
+bool autotest = false;
 bool let = false;
 bool next_arg = false;
 
@@ -479,6 +480,35 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 	return 1;
 }
 
+unsigned int stdAmalWriterValue ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
+	call_array[0] = self -> call;
+	next_arg = false;
+	return 1;
+}
+
+
+
+unsigned int stdAmalWriterWithArg ( struct kittyChannel *channel, struct amalTab *self, 
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ), 
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
+	call_array[0] = self -> call;
+	next_arg = true;
+	return 1;
+}
 unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
 				struct amalWriterData *data,
@@ -633,8 +663,8 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 struct amalTab amalSymbols[] =
 {
 	{";",amal::class_cmd_normal,stdAmalWriterNextCmd,amal_call_next_cmd },
-	{"(",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_parenthses_start },
-	{")",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_parenthses_end },
+	{"(",amal::class_cmd_arg,stdAmalWriterParenthsesStart,amal_call_parenthses_start },
+	{")",amal::class_cmd_arg,stdAmalWriterParenthsesEnd,amal_call_parenthses_end },
 	{",",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_nextArg },
 	{"+",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_add},			// +
 	{"-",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_sub},			// -
@@ -652,23 +682,16 @@ struct amalTab amalCmds[] =
 {
 	{"@{never used}",amal::class_cmd_arg,stdAmalWriter,NULL},
 	{"@{number}",amal::class_cmd_arg,AmalWriterNum,amal_set_num},	//number token, reserved.
-	{"O",amal::class_cmd_normal,stdAmalWriter,amal_call_on},		// On
-	{"D",amal::class_cmd_normal,stdAmalWriter,NULL},				// Direct
-	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},				// Wait
-	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},			 // If
-
-	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
-	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
-
-	{"Y",amal::class_cmd_arg,stdAmalWriter,amal_call_y},			// Y
-	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
-	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},			// Let
-	{"AU",amal::class_cmd_normal,stdAmalWriter,NULL},				// AUtotest
-	{"A",amal::class_cmd_arg,stdAmalWriterImage,amal_call_image},	// Anim image
-	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},	// Anim
-	{"M",amal::class_cmd_normal,stdAmalWriter,amal_call_move},		// Move
-	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},		// Pause
-
+	{"O",amal::class_cmd_normal,stdAmalWriter,amal_call_on},			// On
+	{"D",amal::class_cmd_normal,stdAmalWriterJump,amal_call_direct},					// Direct
+	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},					// Wait
+	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},				 // If
+	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},				// Let
+	{"AU",amal::class_cmd_normal,AmalAutotest,NULL},					// AUtotest
+	{"A",amal::class_cmd_arg,stdAmalWriterImage,amal_call_image},		// Anim image
+	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},		// Anim
+	{"M",amal::class_cmd_normal,stdAmalWriterWithArg,amal_call_move},	// Move
+	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},			// Pause
 	{"R0",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R0
 	{"R1",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R1
 	{"R2",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R2
@@ -711,8 +734,8 @@ struct amalTab amalCmds[] =
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},	// Next (should be null)
 	{"PL",amal::class_cmd_normal,stdAmalWriter,NULL},				// Play
 	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
-	{"XM",amal::class_cmd_arg,stdAmalWriter,amal_call_xm},			// XM
-	{"YM",amal::class_cmd_arg,stdAmalWriter,amal_call_ym},			// YM
+	{"XM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_xm},			// XM
+	{"YM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_ym},			// YM
 	{"K1",amal::class_cmd_arg,stdAmalWriter,NULL},					// k1		mouse key 1
 	{"K2",amal::class_cmd_arg,stdAmalWriter,NULL},					// k2		mouse key 2
 	{"J0",amal::class_cmd_arg,stdAmalWriter,amal_call_j0},			// j0		joy0
@@ -727,6 +750,13 @@ struct amalTab amalCmds[] =
 	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
 	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
 	{"V",amal::class_cmd_normal,stdAmalWriter,NULL},				// Vumeter
+
+	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
+	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
+
+	{"Y",amal::class_cmd_arg,stdAmalWriter,amal_call_y},			// Y
+	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
+
 	{"@while",amal::class_cmd_normal,stdAmalWriter,amal_call_while },
 	{"@set",amal::class_cmd_arg,stdAmalWriter,amal_call_set },
 	{"@reg",amal::class_cmd_arg,stdAmalWriter,amal_call_reg },

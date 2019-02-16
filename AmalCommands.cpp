@@ -44,6 +44,18 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 #endif
 
 
+void *autotest_start API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
+void *autotest_end API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return NULL;
+}
+
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);

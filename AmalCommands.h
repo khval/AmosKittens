@@ -1,4 +1,6 @@
 
+void *autotest_start API_AMAL_CALL_ARGS;
+void *autotest_end API_AMAL_CALL_ARGS;
 void *amal_set_num API_AMAL_CALL_ARGS;
 void *amal_call_reg API_AMAL_CALL_ARGS;
 void *amal_call_on API_AMAL_CALL_ARGS;
