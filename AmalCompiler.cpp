@@ -363,7 +363,7 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	}
 
 	d = labelname;
-	while ((*s != 0) && (*s != ' ') && (*s != ';') && (*s != ':') && (le < 18)) { printf("data: %c\n", *s); *d++ = *s++; le++; }
+	if ((*s != 0) && (*s != ' ') && (*s != ';') && (*s != ':') && (le < 18)) { printf("data: %c\n", *s); *d++ = *s++; le++; }
 	*d = 0;
 
 	if ((*s == ';') || (*s ==':')) le++;	// if next command is ; we can skip it.
