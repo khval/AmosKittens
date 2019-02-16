@@ -891,13 +891,13 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 	switch (c)
 	{
 		case -1: 	self -> objectAPI -> setX( self -> number, self -> argStack [ self -> argStackCount ] );
-				break;
+				return NULL;;
 		case -2:
 				self -> objectAPI -> setY( self -> number, self -> argStack [ self -> argStackCount ] );
-				break;
+				return NULL;;
 		case -3:
 				self -> objectAPI -> setImage( self -> number, self -> argStack [ self -> argStackCount ] );
-				break;
+				return NULL;;
 	}
 
 	if ((c>='0')&&(c<='9'))
@@ -905,12 +905,15 @@ void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 		self -> reg[ c - '0' ] = self -> argStack [ self -> argStackCount ];
 		chr[0] = c;
 		AmalPrintf("R%s=%ld\n", chr, self -> reg[ c - '0' ]);
+		return NULL;
 	}
-	else if ((c>='A')&&(c<='Z'))
+	
+	if ((c>='A')&&(c<='Z'))
 	{
 		amreg[ c - 'A' ] = self -> argStack [ self -> argStackCount ];
 		chr[0]=c;
 		AmalPrintf("R%s=%ld\n",chr, amreg[ c - 'A' ]);
+		return NULL;
 	}
 
 	return NULL;
