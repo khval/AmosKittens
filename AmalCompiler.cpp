@@ -522,6 +522,78 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 	return 1;
 }
 
+void **autotest_start_ptr;
+
+
+
+
+unsigned int AmalAutotest ( struct kittyChannel *channel, struct amalTab *self,
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	autotest = true;
+	return 0;
+}
+
+
+unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct amalTab *self,
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %010d  - %s\n",
+			(unsigned int) self -> call,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+			self->name );
+
+
+	if (autotest)
+	{
+		printf("writing %08x to %010d  -Autotest start\n",
+				(unsigned int) self -> call,
+				(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+				self->name );
+
+		call_array[0] = autotest_start;
+		call_array[1] = 0;
+
+		autotest_start_ptr = (void **) &call_array[1];
+		next_arg = false;
+		return 1;
+	}
+
+	printf("writing %08x to %010d  - %s\n",
+			(unsigned int) self -> call,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+			self->name );
+
+	call_array[0] = self -> call;
+	next_arg = true;
+	return 1;
+}
+
+
+unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct amalTab *self,
+				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
+				struct amalWriterData *data,
+				unsigned int num)
+{
+	printf("writing %08x to %010d  - %s\n",
+			(unsigned int) self -> call,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+			self->name );
+
+
+
+	call_array[0] = self -> call;
+	next_arg = false;
+	autotest = false;
+	return 1;
+}
+
+
+
 unsigned int stdAmalWriterSymbol ( struct kittyChannel *channel, struct amalTab *self,
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
 				struct amalWriterData *data,
