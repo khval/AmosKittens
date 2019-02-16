@@ -9,7 +9,7 @@ struct amalCallBack
 	void **code ;
 	void *(*cmd) (struct kittyChannel *self, struct amalCallBack *cb);
 	void *ret;
-	unsigned char last_reg;
+	int last_reg;
 	int argStackCount;
 	int progStackCount;
 	amal::Flags Flags;
@@ -58,8 +58,10 @@ struct kittyChannel
 	char *movey_at;
 	int deltax;
 	int deltay;
-	int sleep;
-	int sleep_to;
+	int anim_sleep;
+	int anim_sleep_to;
+	int move_sleep;
+	int move_sleep_to;
 	int count;
 	int count_to;
 	
