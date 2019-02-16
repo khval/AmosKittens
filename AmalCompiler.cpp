@@ -1223,7 +1223,8 @@ void test_run(struct kittyChannel  *channel)
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 		amal_run_one_cycle(channel);
 		dump_object();
-		dumpAmalRegs( channel );
+		printf("amal program counter at %10d\n",(unsigned int) channel -> amalProgCounter - (unsigned int) channel -> amalProg.call_array);
+//		dumpAmalRegs( channel );
 		getchar();
 	}
 }
