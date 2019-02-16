@@ -275,7 +275,6 @@ void *amal_call_move API_AMAL_CALL_ARGS
 static void *add (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-//	dumpAmalStack( self );
 
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -764,7 +763,6 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 {
 	void *ret;
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	ret = amalFlushAllCmds( self );
 
 	return ret ? ret : NULL;
