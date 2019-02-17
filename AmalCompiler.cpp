@@ -873,6 +873,13 @@ struct amalTab *find_amal_symbol(const char *str)
 	return NULL;
 }
 
+bool amal_is_label(const char *str)
+{
+	if (str[0]==0) return false;
+	if (str[1]==':') return true;
+	return false;
+}
+
 struct amalTab *find_amal_command(const char *str , int class_flags )
 {
 	char next_c;
@@ -903,6 +910,10 @@ struct amalTab *find_amal_command(const char *str , int class_flags )
 						return tab;
 					}
 					else if (*str=='J')	// if command is jump.
+					{
+						return tab;
+					}
+					else if (amal_is_label(str+1))
 					{
 						return tab;
 					}
