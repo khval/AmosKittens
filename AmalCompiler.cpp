@@ -522,10 +522,7 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 	return 1;
 }
 
-void **autotest_start_ptr;
-
-
-
+int autotest_start_ptr_offset;
 
 unsigned int AmalAutotest ( struct kittyChannel *channel, struct amalTab *self,
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
@@ -536,18 +533,11 @@ unsigned int AmalAutotest ( struct kittyChannel *channel, struct amalTab *self,
 	return 0;
 }
 
-
 unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct amalTab *self,
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	printf("writing %08x to %010d  - %s\n",
-			(unsigned int) self -> call,
-			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
-			self->name );
-
-
 	if (autotest)
 	{
 		printf("writing %08x to %010d  -Autotest start\n",
@@ -558,7 +548,7 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 		call_array[0] = autotest_start;
 		call_array[1] = 0;
 
-		autotest_start_ptr = (void **) &call_array[1];
+		autotest_start_ptr_offset = (unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array;
 		next_arg = false;
 		return 1;
 	}
@@ -584,7 +574,11 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 			self->name );
 
-
+	if (autotest_start_ptr_offset>-1)
+	{
+		void **ptr = (void **)  ((char *) channel -> amalProg.call_array + autotest_start_ptr_offset);
+		*ptr = (void *) ((unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
+	}
 
 	call_array[0] = self -> call;
 	next_arg = false;
@@ -1026,6 +1020,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	printf("script: '%s'\n",script);
 
 	data.pos = 0;
+	autotest_start_ptr_offset = -1;
 
 	s=script;
 	while (*s)
