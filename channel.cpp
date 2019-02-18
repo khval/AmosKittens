@@ -36,7 +36,7 @@ void initChannel( struct kittyChannel *item, int channel )
 		item -> progStackCount = 0;
 		item -> argStack = NULL;
 		item -> argStackCount = 0;
-		item -> amalProgCounter = NULL;
+		item -> amalProg.amalProgCounter = NULL;
 
 		item -> parenthses = 0;
 		item -> objectAPI = NULL;

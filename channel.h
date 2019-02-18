@@ -25,7 +25,9 @@ namespace channel_status
 		done,		// Amal program is done.
 		active,		// Amal program is running.
 		paused,		// Same as exit amal prgram at VBL
-		frozen		// Stops the amal program, until its unfrozen.
+		frozen,		// Stops the amal program, until its unfrozen.
+		wait,			// same as frozen, but triggered by wait command.
+		direct		// if direct, then amal program counter is set. status reset.
 	};
 };
 
@@ -79,7 +81,6 @@ struct kittyChannel
 	int parenthses;
 	int *argStack;
 	struct amalBuf amalProg;
-	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
 	unsigned int argStackCount;
 	struct amalCallBack *progStack;
 	unsigned int progStackCount;

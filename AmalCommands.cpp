@@ -161,12 +161,14 @@ void *amal_call_on API_AMAL_CALL_ARGS
 void *amal_call_direct API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	return NULL;
+	self -> status = channel_status::direct;
+	return code+1;
 }
 
 void *amal_call_wait API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> status = channel_status::wait;
 	return NULL;
 }
 

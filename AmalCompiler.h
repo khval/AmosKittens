@@ -25,6 +25,9 @@ struct amalBuf
 	unsigned int elements;
 	unsigned int size;
 	void *(**call_array) API_AMAL_CALL_ARGS;
+	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
+	void *(**amalAutotest) API_AMAL_CALL_ARGS;
+	void *(**directProgCounter) API_AMAL_CALL_ARGS;
 };
 
 struct amalWriterData
@@ -57,7 +60,7 @@ extern void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern void dumpAmalRegs(struct kittyChannel *channel);
 extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
-extern void amal_run_one_cycle( struct kittyChannel  *channel );
+extern void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_CALL_ARGS, bool save );
 extern bool amal_fix_labels( void **code );
 extern void amal_clean_up_labels();
 extern void freeAmalBuf( struct amalBuf *i);

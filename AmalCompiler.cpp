@@ -350,9 +350,10 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	const char *s;
 	char *d;
 
-	printf("writing %08x to %010d  - jump\n",
+	printf("writing %08x to %010d/ %010d - jump\n",
 			(unsigned int) self -> call,
-			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array );
 
 	call_array[0] = self -> call;
 	s = data -> at_script + data -> command_len;
@@ -540,7 +541,7 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 {
 	if (autotest)
 	{
-		printf("writing %08x to %010d  -Autotest start\n",
+		printf("writing %08x to %010d  - autotest start\n",
 				(unsigned int) self -> call,
 				(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 				self->name );
@@ -550,7 +551,7 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 
 		autotest_start_ptr_offset = (unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array;
 		next_arg = false;
-		return 1;
+		return 2;
 	}
 
 	printf("writing %08x to %010d  - %s\n",
@@ -569,16 +570,26 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 				struct amalWriterData *data,
 				unsigned int num)
 {
+	if (autotest_start_ptr_offset>-1)
+	{
+		printf("writing %08x to %010d  - autotest end\n",
+				(unsigned int) self -> call,
+				(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+				self->name );
+
+		void **ptr = (void **)  ((char *) channel -> amalProg.call_array + autotest_start_ptr_offset);
+		*ptr = (void *) ((unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
+
+		call_array[0] = 0;	// end of autotest ;-)
+
+		return 1;
+	}
+
+
 	printf("writing %08x to %010d  - %s\n",
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 			self->name );
-
-	if (autotest_start_ptr_offset>-1)
-	{
-		void **ptr = (void **)  ((char *) channel -> amalProg.call_array + autotest_start_ptr_offset);
-		*ptr = (void *) ((unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
-	}
 
 	call_array[0] = self -> call;
 	next_arg = false;
@@ -750,7 +761,7 @@ struct amalTab amalCmds[] =
 	{"@{number}",amal::class_cmd_arg,AmalWriterNum,amal_set_num},	//number token, reserved.
 	{"O",amal::class_cmd_normal,stdAmalWriter,amal_call_on},			// On
 	{"D",amal::class_cmd_normal,stdAmalWriterJump,amal_call_direct},					// Direct
-	{"W",amal::class_cmd_normal,stdAmalWriter,NULL},					// Wait
+	{"W",amal::class_cmd_normal,stdAmalWriter,amal_call_wait},					// Wait
 	{"I",amal::class_cmd_normal,AmalWriterIf,amal_call_if},				 // If
 	{"L",amal::class_cmd_normal,stdAmalWriterLet,NULL},				// Let
 	{"AU",amal::class_cmd_normal,AmalAutotest,NULL},					// AUtotest
@@ -1160,19 +1171,31 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 
 	channel -> progStack = (struct amalCallBack *) malloc(sizeof(struct amalCallBack *)*500);
 	channel -> progStackCount = 0;
-	channel -> amalProgCounter = channel -> amalProg.call_array;
 
-	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProgCounter);
+	channel -> amalProg.amalProgCounter = channel -> amalProg.call_array;
+
+	if (autotest_start_ptr_offset>-1)
+	{
+		channel -> amalProg.amalAutotest = (void* (**)(kittyChannel*, void**, unsigned int)) ((char *) channel -> amalProg.call_array + autotest_start_ptr_offset + sizeof(void *) );
+
+		printf("%08x\n", channel -> amalProg.amalAutotest);
+	}
+	else channel -> amalProg.amalAutotest =  NULL;
+
+	printf("autotest_start_ptr_offset %d\n",autotest_start_ptr_offset);
+	getchar();
+
+	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProg.amalProgCounter);
 
 	return true;
 }
 
-void amal_run_one_cycle(struct kittyChannel  *channel)
+void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_CALL_ARGS, bool save )
 {
 	void *ret;
-	void *(**call) ( struct kittyChannel *self, void **code, unsigned int opt );
+	void *(**call) API_AMAL_CALL_ARGS;
 
-	for (call = channel -> amalProgCounter ;  *call ; call ++ )
+	for (call = prog ;  *call ; call ++ )
 	{
 		AmalPrintf("offset %d\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
 
@@ -1188,12 +1211,17 @@ void amal_run_one_cycle(struct kittyChannel  *channel)
 			call++;
 			break;
 		}
+
+		if (channel -> status == channel_status::wait) 
+		{
+			break;
+		}
 	}
 
-	channel -> amalProgCounter = call;	// save counter.
+	if (save) channel -> amalProg.amalProgCounter = call;	
+
 	if (*call == NULL)
 	{
-
 		printf("pos at  %08x\n",call );
 		printf("code at %08x\n",channel -> amalProg.call_array );
 
@@ -1326,15 +1354,38 @@ void test_run(struct kittyChannel  *channel)
 	channel -> status = channel_status::active;
 	channel -> objectAPI = &test_api;
 
-	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProgCounter ) )
+	printf("test run %08x\n",channel -> amalProg.amalAutotest);
+
+	if (channel -> amalProg.amalAutotest != NULL)
 	{
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-		amal_run_one_cycle(channel);
-		dump_object();
-		printf("amal program counter at %10d\n",(unsigned int) channel -> amalProgCounter - (unsigned int) channel -> amalProg.call_array);
-//		dumpAmalRegs( channel );
+		printf("autotest :-)\n");
+		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
 		getchar();
 	}
+
+	getchar();
+
+	if (channel -> status == channel_status::wait) return;
+
+	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we break loop
+	{
+		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
+		channel -> status == channel_status::active;
+	}
+
+	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
+	{
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+		amal_run_one_cycle(channel,channel -> amalProg.amalProgCounter,true);
+
+		dump_object();
+		printf("amal program counter at %10d\n",(unsigned int) channel -> amalProg.amalProgCounter - (unsigned int) channel -> amalProg.call_array);
+//		dumpAmalRegs( channel );
+//		getchar();
+	}
+
+	printf("Amal Status %d\n",channel -> status);
 }
 
 void dump_object()
@@ -1370,8 +1421,8 @@ int main(int args, char **arg)
 
 			if (asc_to_amal_tokens( &channel ))
 			{
-				dump_object();
-				dump_amal_labels();
+//				dump_object();
+//				dump_amal_labels();
 
 				if (amal_fix_labels( (void **) amalProg -> call_array ))
 				{
