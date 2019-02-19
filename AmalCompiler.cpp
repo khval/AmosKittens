@@ -25,6 +25,8 @@
 #define Printf printf
 #ifdef test_app
 #define engine_fd stdout
+#else
+extern FILE *engine_fd;
 #endif
 #endif
 
