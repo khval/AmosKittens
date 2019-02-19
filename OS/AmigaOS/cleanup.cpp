@@ -67,8 +67,6 @@ void clear_local_vars( int proc )
 			}
 		}
 	}
-
-	Delay(5);
 }
 
 void clean_up_vars()
