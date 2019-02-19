@@ -306,19 +306,32 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 
 void channel_amal( struct kittyChannel *channel )
 {
-	AmalPrintf("%s:%s:%d - channel -> status: %d, channel -> amalProgCounter %08x \n",__FILE__,__FUNCTION__,__LINE__, channel -> status, channel -> amalProgCounter);
+	AmalPrintf("%s:%s:%d - channel -> status: %d, channel -> amalProg,amalProgCounter %08x \n",__FILE__,__FUNCTION__,__LINE__, channel -> status, channel -> amalProg.amalProgCounter);
+
+	if (channel -> amalProg.amalAutotest != NULL)
+	{
+		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
+	}
+
+	if (channel -> status == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
+
+	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
+	{
+		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
+		channel -> status = channel_status::active;
+	}
 
 	// check if program is ready to run, and it has program.
-	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProgCounter ) )
+	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProg.amalProgCounter ) )
 	{
 		AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		// Check that program has not ended.
-		if ( *channel -> amalProgCounter )	
+		if ( *channel -> amalProg.amalProgCounter )	
 		{
-			amal_run_one_cycle(channel);
+			amal_run_one_cycle(channel, channel -> amalProg.amalProgCounter, true );
 		}
-		else 	AmalPrintf("%s:%s:%d - channel -> amalProgCounter %d\n",__FILE__,__FUNCTION__,__LINE__, channel -> amalProgCounter);
+		else 	AmalPrintf("%s:%s:%d - channel -> amalProgCounter %d\n",__FILE__,__FUNCTION__,__LINE__, channel -> amalProg.amalProgCounter);
 	}
 }
 

@@ -160,8 +160,18 @@ void *amal_call_on API_AMAL_CALL_ARGS
 
 void *amal_call_direct API_AMAL_CALL_ARGS
 {
+	void *(**ret) API_AMAL_CALL_ARGS;
+
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> status = channel_status::direct;
+
+	ret = (void *(**) API_AMAL_CALL_ARGS) code[1];
+	if (ret)
+	{
+		self -> amalProg.directProgCounter = ret;
+	}
+
+
 	return code+1;
 }
 

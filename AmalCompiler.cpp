@@ -1220,15 +1220,23 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 		}
 	}
 
-	if (save) channel -> amalProg.amalProgCounter = call;	
-
-	if (*call == NULL)
+	if (save) // normal amal prog
 	{
-		printf("pos at  %08x\n",call );
-		printf("code at %08x\n",channel -> amalProg.call_array );
+		channel -> amalProg.amalProgCounter = call;	
 
-		AmalPrintf("%s:%s:%d - amal program ended, offset %d\n",__FILE__,__FUNCTION__,__LINE__, (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
-		channel -> status = channel_status::done;
+		if (*call == NULL)
+		{
+			printf("pos at  %08x\n",call );
+			printf("code at %08x\n",channel -> amalProg.call_array );
+
+			AmalPrintf("%s:%s:%d - amal program ended, offset %d\n",__FILE__,__FUNCTION__,__LINE__, (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
+			channel -> status = channel_status::done;
+		}
+	}
+	else	// autotest prog
+	{
+		if (*call == NULL ) printf("autotest end\n");
+
 	}
 }
 
@@ -1356,23 +1364,17 @@ void test_run(struct kittyChannel  *channel)
 	channel -> status = channel_status::active;
 	channel -> objectAPI = &test_api;
 
-	printf("test run %08x\n",channel -> amalProg.amalAutotest);
-
 	if (channel -> amalProg.amalAutotest != NULL)
 	{
-		printf("autotest :-)\n");
 		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
-		getchar();
 	}
 
-	getchar();
+	if (channel -> status == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
 
-	if (channel -> status == channel_status::wait) return;
-
-	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we break loop
+	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
 	{
 		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
-		channel -> status == channel_status::active;
+		channel -> status = channel_status::active;
 	}
 
 	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
