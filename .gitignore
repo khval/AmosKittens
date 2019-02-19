@@ -3,3 +3,5 @@
 *.info
 
 config\.h
+
+core
