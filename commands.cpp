@@ -2231,7 +2231,7 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else
 	{
-		printf("*** warning extensions not yet supported, extention %d, token %04x ****\n", ext-> ext, ext-> token);
+		printf("*** warning extensions not yet supported, extention %d, token %04x at line %d ****\n", ext-> ext, ext-> token,getLineFromPointer( tokenBuffer ));
 		stackCmdNormal( cmdFlushStack, tokenBuffer );
 	}
 
