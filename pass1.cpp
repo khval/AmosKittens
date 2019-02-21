@@ -686,27 +686,27 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 int getLineFromPointer( char *address );
 
-void eol( char *ptr )
+
+void set_nested_if_condition( char *ptr )
 {
 	unsigned short offset;
+	offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
+	*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
+	nested_count --;
+}
+
+void eol( char *ptr )
+{
+	printf("nested_count %d\n",nested_count);
 
 	if (nested_count>0)
 	{
 		switch (nested_command[ nested_count -1 ].cmd )
 		{
 			case nested_data:
-
-			// IF can end at EOL if then is there. (command THEN should replace nested_if )
-
-			case nested_then:
 			case nested_then_else:
 			case nested_then_else_if:
-
-				{
-					offset = (short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2;
-					*((short *) (nested_command[ nested_count -1 ].ptr)) = offset;
-				}
-				nested_count --;
+				set_nested_if_condition( ptr );
 				break;
 
 			case nested_defFn:
@@ -714,6 +714,25 @@ void eol( char *ptr )
 				nested_count --;
 				break;
 		}
+	}
+
+	// in a while in case of.
+	// IF ... TEHN IF ... TEHN IF ... THEN 
+
+	while (nested_count>0)
+	{
+		if (nested_command[ nested_count -1 ].cmd  == nested_then)
+		{
+			printf("fixing IF ... THEN\n");
+			set_nested_if_condition( ptr );
+		} else break;
+	}
+
+	printf("nested_count %d\n",nested_count);
+
+	if (nested_count>0)
+	{
+		printf("nested_command[ %d ].cmd  = %s\n", nested_count -1, nest_names[ nested_command[ nested_count -1 ].cmd ] );
 	}
 }
 
@@ -840,9 +859,14 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				// loop
 				case 0x0286:	if IS_LAST_NEST_TOKEN(do)
+							{
 								fix_token_short( nested_do, ptr+2 );
+							}
 							else
+							{
+								printf("expected DO found nested command: %s\n",(nested_count>0) ? nest_names[nested_command[ nested_count -1 ].cmd] : "none" );
 								setError( 28, ptr );
+							}
 							break;
 
 				case 0x023C: addNest( nested_for );
