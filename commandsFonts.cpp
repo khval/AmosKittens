@@ -35,8 +35,53 @@ using namespace std;
 
 vector<string> fonts;
 
+void set_font_buffer( char *buffer, char *name, int size, char *type )
+{
+	char *c;
+	char *b;
+	int n;
+	memset(buffer,' ',37);
+	buffer[38]=0;
+
+	n = 0; b = buffer;
+	for (c=name;(*c) && (n<38);c++)
+	{
+		 *b++=*c;
+		n++;
+	}
+
+	n = 0; b = buffer+37-4;
+	for (c=type;(*c) && (n<4);c++)
+	{
+		 *b++=*c;
+		n++;
+	}
+
+	b = buffer+37-6;
+	while (size)
+	{
+		n = size % 10;
+		size /=10;
+		*b-- = n + '0';
+	}
+}
+
 char *fontsGetRomFonts(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	char buffer[38];
+	int n;
+
+	memset(buffer,' ',37);
+	buffer[38]=0;
+	
+	fonts.erase( fonts.begin(), fonts.end() );
+
+	set_font_buffer(buffer,"topaz.font",8,"disc");
+	fonts.push_back(buffer);
+
+	set_font_buffer(buffer,"junk.font",8,"disc");
+	fonts.push_back(buffer);
+
 	return tokenBuffer;
 }
 
