@@ -20,6 +20,8 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <vector>
+#include <string>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -28,6 +30,10 @@
 #include "engine.h"
 
 extern int last_var;
+
+using namespace std;
+
+vector<string> fonts;
 
 char *fontsGetRomFonts(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -62,10 +68,27 @@ char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer)
 char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	unsigned int index;
+	string font;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	setError(33,data->tokenBuffer);
+	switch (args)
+	{
+		case 1:	index = (unsigned int) getStackNum(stack);
+
+				printf("index: %d\n",index);
+
+				if ((index>0) && (index <= fonts.size()))
+				{
+					popStack( stack - data->stack );
+					setStackStrDup( fonts[ index-1 ].c_str() );
+					return NULL;
+				}
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
 
 	popStack( stack - data->stack );
 	setStackStrDup("");
