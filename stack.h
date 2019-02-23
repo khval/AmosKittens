@@ -1,10 +1,10 @@
 
 extern int stack;
 
-extern void	setParenthesis();
 extern void	remove_parenthesis(int black_at_stack );
 extern void	unLockPara();
 
+extern void	setStackParenthesis();
 #define 		setStackPtr(adr) setStackNum((int) adr) 
 extern void	setStackNum( int num );
 extern void	setStackDecimal( double decimal );

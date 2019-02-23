@@ -242,7 +242,7 @@ void setStackStr( char *str)
 	kittyStack[stack].type = type_string;
 }
 
-void setParenthesis()
+void setStackParenthesis()
 {
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
 	kittyStack[stack].str = NULL ;

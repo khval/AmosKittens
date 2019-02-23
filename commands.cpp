@@ -469,7 +469,7 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 	parenthesis[parenthesis_count] =stack;
 	parenthesis_count++;
 
-	setParenthesis();
+	setStackParenthesis();
 	stack++;
 	setStackNone();
 
