@@ -19,6 +19,7 @@
 //------------- end of options -----------------
 
 void dump_global();
+void dump_local( int n );
 void dump_prog_stack();
 void dump_stack();
 void dump_labels();
