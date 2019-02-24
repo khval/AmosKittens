@@ -151,6 +151,7 @@ extern char *nextToken_pass1( char *ptr, unsigned short token );
 bool breakpoint = false;
 
 const char *str_dump_stack = "dump stack";
+const char *str_dump_prog_stack = "dump prog stack";
 const char *str_breakpoint_on = "breakpoint on";
 const char *str_breakpoint_off = "breakpoint off";
 const char *str_warning = "warning";
@@ -221,6 +222,13 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
 				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
+			}
+
+			if (strncmp(txt,str_dump_prog_stack,strlen(str_dump_stack))==0)
+			{
+				dump_prog_stack();
+				printf("<press enter to continue>\n");
+				getchar();
 			}
 
 			if (strncmp(txt,str_pause,strlen(str_pause))==0)
@@ -324,8 +332,10 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	if (breakpoint)
 	{
-		dump_stack();
-		dump_global();
+		printf("breakpoint at line %d - <press enter for next line>\n",getLineFromPointer( ptr ) );
+
+//		dump_stack();
+//		dump_global();
 		getchar();
 	}
 
