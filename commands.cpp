@@ -579,7 +579,7 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 	
 	// empty the stack for what ever is inside the IF.
 
-	while ((cmdStack)&&(stack))
+	while (cmdStack)
 	{
 		if (cmdTmp[cmdStack-1].cmd == _if ) break;
 		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
