@@ -694,6 +694,7 @@ char *cmdEndIf(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			cmdStack--;
 		}
+		else setError(23,tokenBuffer);
 	}
 
 	return tokenBuffer;
