@@ -921,7 +921,14 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _do ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+	if (cmdStack) 
+	{
+		if (cmdTmp[cmdStack-1].cmd == _do )
+		{
+			tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+		}
+		else setError(23,tokenBuffer);
+	}
 
 	return tokenBuffer;
 }
