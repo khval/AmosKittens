@@ -50,6 +50,7 @@ char *_ifNotSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifThenSuccess(struct glueCommands *data, int nextToken) ;
 char *_ifThenNotSuccess(struct glueCommands *data, int nextToken) ;
 
+char *_cmdNot (struct glueCommands *data, int nextToken);
 char *_textCentre (struct glueCommands *data, int nextToken);
 char *_mathSin (struct glueCommands *data, int nextToken);
 char *_addData (struct glueCommands *data, int nextToken);
@@ -131,6 +132,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_len,"len"},
 	{_lessOrEqualData,"<="},
 	{_moreOrEqualData,">="},
+	{_cmdNot,"Not"},
 
 	{NULL, NULL}
 };
