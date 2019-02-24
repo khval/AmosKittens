@@ -28,12 +28,13 @@
 const char *types[]={"","#","$",""};
 
 extern struct globalVar globalVars[1000];	// 0 is not used.
-extern int global_var_count;
+extern unsigned int global_var_count;
 extern int globalVarsSize;
 extern int nativeCommandsSize;
 extern struct nativeCommand nativeCommands[];
 extern const char *TokenName( unsigned short token );
 
+std::vector<struct reference *> pass1CallProcedures;
 extern std::vector<struct label> labels;
 extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct defFn> defFns;
@@ -45,6 +46,8 @@ int ifCount = 0;
 int endIfCount = 0;
 int currentLine = 0;
 int pass1_bracket_for;
+
+int pass1_token_count = 0;
 
 enum
 {
@@ -104,7 +107,7 @@ char *dupRef( struct reference *ref )
 
 int findVarPublic( char *name, int type )
 {
-	int n;
+	unsigned int n;
 
 	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -125,7 +128,7 @@ int findVarPublic( char *name, int type )
 
 int findProc( char *name )
 {
-	int n;
+	unsigned int n;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -144,10 +147,9 @@ int findProc( char *name )
 }
 
 
-int findVar( char *name, int type, int _proc )
+int findVar( char *name, bool is_first_token, int type, int _proc )
 {
-	int n;
-
+	unsigned int n;
 	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=0;n<global_var_count;n++)
@@ -188,13 +190,15 @@ int findVar( char *name, int type, int _proc )
 		// look for any proc.
 
 		if (
-			(strcasecmp( globalVars[n].varName, name)==0) 
+			(is_first_token == true)
+			&&(strcasecmp( globalVars[n].varName, name)==0) 
 			&& (globalVars[n].var.type == type)
 			&& ( type == type_proc ))
 		{
 			return n+1;
 		}
 	}
+
 	return 0;
 }
 
@@ -355,7 +359,7 @@ char *pass1DefFn( char *ptr )
 }
 
 
-struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
+struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool is_procedure )
 {
 	char *tmp;
 	int found = 0;
@@ -365,6 +369,27 @@ struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 	if (tmp)
 	{
 		int type = ref -> flags & 7;
+			short next_token = *((short *) (ptr + sizeof(struct reference) + ReferenceByteLength( ptr )));
+
+			printf("next token %08x\n", next_token );
+
+		printf("%s:%s:%d\n",__FUNCTION__,__FILE__,__LINE__);
+
+		if (first_token)
+		{
+
+
+			// <EOL> <VAR> <EOL>
+			// <EOL> <VAR> <NEXT CMD>
+			// <EOL> <VAR> <BRACKET START>
+
+			if ((next_token == 0x0000) || (next_token == 0x0054) || (next_token == 0x0084))
+			{
+				printf("this looks alot like a procedure call\n");
+				pass1CallProcedures.push_back(ref);
+				is_proc_call = true;
+			}
+		}
 
 		if (is_proc_call | is_procedure)
 		{
@@ -376,7 +401,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 			if  (*((unsigned short *) next_ptr)  == 0x0074) type |= type_array;
 		}
 
-		found = findVar(tmp, type , ( is_proc_call | is_procedure )  ? 0 : (pass1_inside_proc ? procCount : 0) );
+		found = findVar(tmp, first_token, type, ( is_proc_call | is_procedure )  ? 0 : (pass1_inside_proc ? procCount : 0) );
 		if (found)
 		{
 			ref -> ref = found;
@@ -387,6 +412,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 				_old -> var.type = type_proc;
 				_old -> var.tokenBufferPos = ptr + 2 + sizeof(struct reference) + ref -> length ;
 				_old -> proc =  procCount;
+
 				return &_old -> var;
 			}
 		}
@@ -406,6 +432,7 @@ struct kittyData * pass1var(char *ptr, bool is_proc_call, bool is_procedure )
 				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type ))
 				{
 					_new -> proc = (pass1_inside_proc ? procCount : 0);
+					ref -> ref = global_var_count ;
 					return &_new -> var;
 				}
 			}
@@ -425,7 +452,7 @@ char *pass1_procedure( char *ptr )
 	short token = *((short *) ptr);
 	if (token == 0x0006)
 	{
-		current_proc = pass1var( ptr +2, false, true );
+		current_proc = pass1var( ptr +2, true, false, true );
 
 		pass1_inside_proc = true;
 		// we like to skip the variable, so its not added as a local variable.
@@ -823,6 +850,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							currentLine++;
 							addLineAddress( lastLineAddr, ptr );
 							lastLineAddr = ptr;
+							pass1_token_count = 0;
 							break;
 
 				case 0x0006:	pass1var( ptr, false, false );
@@ -842,7 +870,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x0012:	pass1var( ptr, true, false );
+				case 0x0012:	pass1var( ptr, true, true, false );
 							ret += ReferenceByteLength(ptr);
 							break;
 
@@ -903,6 +931,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x02C6:	// THEN
+							pass1_token_count = 0;
 							if IS_LAST_NEST_TOKEN(if)
 								nested_command[ nested_count -1 ].cmd = nested_then;
 							else
@@ -934,6 +963,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							break;
 
 				case 0x02D0:	// ELSE
+							pass1_token_count = 0;
 							if IS_LAST_NEST_TOKEN(if)
 							{
 								pass1_if_or_else(ptr);
@@ -1041,6 +1071,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 			}
 
 			ret += cmd -> size;
+			pass1_token_count ++;
 			return ret;
 		}
 	}
@@ -1062,11 +1093,38 @@ char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsi
 	return ptr;
 }
 
+bool findRefAndFixProcCall( struct reference *toFind )
+{
+	unsigned int n;
+	struct globalVar *var;
+	char *toFindName = dupRef( toFind );
+	if (toFindName == NULL) return false;
+
+	for (n=0;n<global_var_count;n++)
+	{
+		var = &globalVars[n];
+
+		if ( (var->varName != NULL) && (var->var.type == type_proc) )
+		{
+			if ( strcasecmp( var->varName, toFindName ) == 0 )
+			{
+				toFind -> ref = n + 1;
+				free(toFindName);
+				return true;
+			}
+		}
+	}
+
+	free(toFindName);
+	return false;
+}
+
 void pass1_reader( char *start, char *file_end )
 {
 	char *ptr;
 	int token = 0;
 	last_tokens[parenthesis_count] = 0;
+	unsigned int n;
 
 	lastLineAddr = start;
 	ptr = start;
@@ -1098,7 +1156,32 @@ void pass1_reader( char *start, char *file_end )
 		}
 	}
 
-	validate_and_fix_globals();
+	printf("number of procedure calls %d\n", pass1CallProcedures.size() );
+
+	for (n = 0 ; n < pass1CallProcedures.size(); n++)
+	{
+		if ( findRefAndFixProcCall(pass1CallProcedures[n])  )
+		{
+			printf("fixed at: %08x ref is %d\n", pass1CallProcedures[n], pass1CallProcedures[n] -> ref - 1 );
+		}
+		else
+		{
+			setError( 25, (char *) pass1CallProcedures[n] );
+			break;
+		}
+	}
+
+	for (n = 0; n< global_var_count ; n++)
+	{
+		if (globalVars[n].var.type == type_proc)
+		{
+			if (globalVars[n].var.procDataPointer == NULL)
+			{
+				printf("Procedure %s not declared\n", globalVars[n].varName );
+				setError(20, 0);	// errorsTestTime 20, 
+			}
+		}
+	}
 
 	printf("lines: %d -- end of tokens shoud be at 0x%08x\n",linesAddress.size()-2,file_end);
 

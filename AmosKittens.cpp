@@ -160,7 +160,7 @@ const char *str_show_var = "show var ";
 const char *str_dump_banks = "dump banks";
 const char *str_dump_screen_info = "dump screen info"; 
 
-int findVar( char *name, int type, int _proc );
+int findVar( char *name, bool  is_first_token, int type, int _proc );
 
 extern void dumpScreenInfo();
 
@@ -237,7 +237,7 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 
 				for (c=var_name;*c;c++) if (*c==' ') *c = 0;
 
-				ref = findVar( var_name, type_int, 0 );
+				ref = findVar( var_name, false, type_int, 0 );
 
 				if (ref)
 				{
