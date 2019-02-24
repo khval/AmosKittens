@@ -853,10 +853,12 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							pass1_token_count = 0;
 							break;
 
-				case 0x0006:	pass1var( ptr, false, false );
+				case 0x0006:	pass1var( ptr, (pass1_token_count == 1), false, false );
 							ret += ReferenceByteLength(ptr);
 							break;
 
+				case 0x0054:	pass1_token_count = 0;
+							break;
 				case 0x00b0:	procCount ++;
 							procStackCount++;
 							addNest( nested_defFn );
@@ -1175,7 +1177,7 @@ void pass1_reader( char *start, char *file_end )
 	{
 		if (globalVars[n].var.type == type_proc)
 		{
-			if (globalVars[n].var.procDataPointer == NULL)
+			if (globalVars[n].var.tokenBufferPos == NULL)
 			{
 				printf("Procedure %s not declared\n", globalVars[n].varName );
 				setError(20, 0);	// errorsTestTime 20, 
