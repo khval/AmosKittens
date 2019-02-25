@@ -90,9 +90,15 @@ char *_mid( struct glueCommands *data, int nextToken )
 			{
 				_start--;
 				_slen = strlen(str);
-				if (_start>_slen-1) _start = _slen-1;
-				if (_start<0) _start=0;
-				tmp = strdup(str + _start );
+				if (_start>_slen-1) 
+				{
+					tmp = strdup("");
+				}
+				else
+				{
+					if (_start<0) _start=0;
+					tmp = strdup(str + _start );
+				}
 			}
 			break;
 
@@ -106,9 +112,15 @@ char *_mid( struct glueCommands *data, int nextToken )
 			{
 				_start--;
 				_slen = strlen(str);
-				if (_start>_slen-1) _start = _slen-1;
-				if (_start<0) _start=0;
-				tmp = strndup(str + _start, _len );
+				if (_start>_slen-1) 
+				{
+					tmp = strdup("");
+				}
+				else
+				{
+					if (_start<0) _start=0;
+					tmp = strndup(str + _start, _len );
+				}
 			}	
 			break;
 
