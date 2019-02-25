@@ -253,7 +253,16 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 				}
 				else
 				{
-					printf("line %d, int var: [%s] is not found\n",getLineFromPointer( ptr ), var_name);
+					ref = findVar( var_name, false, type_string, 0 );
+
+					if (ref)
+					{
+						printf("line %d, int var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
+					}
+					else
+					{
+						printf("line %d, int var: [%s] is not found\n",getLineFromPointer( ptr ), var_name);
+					}
 				}
 			}
 
