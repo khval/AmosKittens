@@ -328,7 +328,7 @@ bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
 
-	setStackNum( ret > 0  );
+	setStackNum( ret > 0 ? ~0 : 0  );
 
 	return true;
 }
@@ -341,7 +341,7 @@ bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	setStackNum( ret < 0  );
+	setStackNum( ret < 0  ? ~0 : 0 );
 
 	return true;
 }
@@ -354,7 +354,7 @@ bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	setStackNum( ret <= 0  );
+	setStackNum( ret <= 0   ? ~0 : 0 );
 	return true;
 }
 
@@ -366,7 +366,7 @@ bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	setStackNum( ret >= 0  );
+	setStackNum( ret >= 0 ? ~0 : 0 );
 	return true;
 }
 
@@ -378,7 +378,7 @@ bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	setStackNum( ret == 0  );
+	setStackNum( ret == 0  ? ~0 : 0  );
 	return true;
 }
 
@@ -390,7 +390,7 @@ bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
 	ret = strcmp( item0->str , item1->str );
 	popStack(1);	
-	setStackNum( ret != 0  );
+	setStackNum( ret != 0  ? ~0 : 0  );
 	return true;
 }
 

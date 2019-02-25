@@ -145,12 +145,12 @@ char *_equalData( struct glueCommands *data, int nextToken )
 		
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal == (double) item1->value );
+			setStackNum( item0->decimal == (double) item1->value ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( item0->decimal == item1->decimal );
+			setStackNum( item0->decimal == item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -160,12 +160,12 @@ char *_equalData( struct glueCommands *data, int nextToken )
 
 		if (type1 == type_int)
 		{
-			setStackNum( item0->value == item1->value );
+			setStackNum( item0->value == item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value == item1->decimal );
+			setStackNum( (double) item0->value == item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -217,13 +217,13 @@ char *_lessData( struct glueCommands *data, int nextToken )
 		
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal < (double) item1->value );
+			setStackNum( item0->decimal < (double) item1->value  ? ~0 : 0 );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
 			proc_names_printf ("( %d > %d ) = %d \n", item0->decimal , item1->decimal , item0->decimal < item1->decimal);
-			setStackNum( item0->decimal < item1->decimal );
+			setStackNum( item0->decimal < item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -234,12 +234,12 @@ char *_lessData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			dprintf ("( %d < %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
-			setStackNum( item0->value < item1->value );
+			setStackNum( item0->value < item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value < item1->decimal );
+			setStackNum( (double) item0->value < item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -294,12 +294,12 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal <= (double) item1->value );
+			setStackNum( item0->decimal <= (double) item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( item0->decimal <= item1->decimal );
+			setStackNum( item0->decimal <= item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -308,12 +308,12 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			proc_names_printf ("( %d <= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
-			setStackNum( item0->value <= item1->value );
+			setStackNum( item0->value <= item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value <= item1->decimal );
+			setStackNum( (double) item0->value <= item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -365,12 +365,12 @@ char *_moreData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal > (double) item1->value );
+			setStackNum( item0->decimal > (double) item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( item0->decimal > item1->decimal );
+			setStackNum( item0->decimal > item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -379,12 +379,12 @@ char *_moreData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			dprintf ("( %d > %d ) = %d \n", item0->value , item1->value , item0->value > item1->value);
-			setStackNum( item0->value > item1->value );
+			setStackNum( item0->value > item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value > item1->decimal );
+			setStackNum( (double) item0->value > item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -435,12 +435,12 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal >= (double) item1->value );
+			setStackNum( item0->decimal >= (double) item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( item0->decimal >= item1->decimal );
+			setStackNum( item0->decimal >= item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -451,12 +451,12 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			dprintf ("( %d >= %d ) = %d \n", item0->value , item1->value , item0->value >= item1->value);
-			setStackNum( item0->value >= item1->value );
+			setStackNum( item0->value >= item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value >= item1->decimal );
+			setStackNum( (double) item0->value >= item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -507,12 +507,12 @@ char *_orData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->decimal != 0) || (item1->value != 0) );
+			setStackNum( (item0->decimal != 0) || (item1->value != 0)  ? ~0 : 0);
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (item0->decimal != 0) || (item1->decimal != 0) );
+			setStackNum( (item0->decimal != 0) || (item1->decimal != 0)  ? ~0 : 0);
 			success = true;
 		}
 	}
@@ -520,12 +520,12 @@ char *_orData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->value != 0) ||  (item1->value != 0) );
+			setStackNum( (item0->value != 0) ||  (item1->value != 0)  ? ~0 : 0);
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum(  (item0->value != 0 ) || (item1->decimal != 0) );
+			setStackNum(  (item0->value != 0 ) || (item1->decimal != 0)  ? ~0 : 0);
 			success = true;
 		}
 	}
@@ -573,12 +573,12 @@ char *_andData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->decimal != 0) && (item1->value != 0) );
+			setStackNum( (item0->decimal != 0) && (item1->value != 0)  ? ~0 : 0);
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (item0->decimal != 0) && (item1->decimal != 0) );
+			setStackNum( (item0->decimal != 0) && (item1->decimal != 0)  ? ~0 : 0);
 			success = true;
 		}
 	}
@@ -586,12 +586,12 @@ char *_andData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->value != 0) &&  (item1->value != 0) );
+			setStackNum( (item0->value != 0) &&  (item1->value != 0)  ? ~0 : 0);
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum(  (item0->value != 0 ) && (item1->decimal != 0) );
+			setStackNum(  (item0->value != 0 ) && (item1->decimal != 0)  ? ~0 : 0);
 			success = true;
 		}
 	}
@@ -1327,12 +1327,12 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( item0->decimal != (double) item1->value );
+			setStackNum( item0->decimal != (double) item1->value ? ~0 : 0 );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( item0->decimal != item1->decimal );
+			setStackNum( item0->decimal != item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}
@@ -1341,12 +1341,12 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			printf ("( %d != %d ) = %d \n", item0->value , item1->value , item0->value =! item1->value);
-			setStackNum( item0->value != item1->value );
+			setStackNum( item0->value != item1->value  ? ~0 : 0);
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (double) item0->value != item1->decimal );
+			setStackNum( (double) item0->value != item1->decimal  ? ~0 : 0);
 			success = TRUE;
 		}
 	}

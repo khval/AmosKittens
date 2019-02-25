@@ -966,7 +966,7 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdTrue(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum(-1);
+	setStackNum( ~0 );
 	flushCmdParaStack(NEXT_TOKEN(tokenBuffer));
 	return tokenBuffer;
 }
