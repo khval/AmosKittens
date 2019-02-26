@@ -106,7 +106,7 @@ char *flushCmdParaStack( int nextToken )
 
 				if ( correct_order( last_tokens[parenthesis_count] ,  nextToken ) == false )
 				{
-					printf("**** Looks like I need to exit here, not the correct order ***\n");
+//					printf("**** Looks like I need to exit here, not the correct order ***\n");
 					return ret;		// exit here.
 				}
 			}
