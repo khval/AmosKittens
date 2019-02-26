@@ -1352,6 +1352,11 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 				tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 				proc_stack_frame--;		// move stack frame down.
 			}
+			else
+			{
+				dump_prog_stack();
+				setError(23,tokenBuffer);
+			}
 		}
 	}
 
