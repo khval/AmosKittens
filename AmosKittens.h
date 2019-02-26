@@ -74,6 +74,7 @@ enum
 #define cmd_onComma		128
 #define cmd_onBreak		256
 #define cmd_never			512
+#define cmd_exit			1024
 
 
 enum

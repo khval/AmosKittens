@@ -928,8 +928,16 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 		}
-		else setError(23,tokenBuffer);
+		else 
+		{
+			if (cmdTmp[cmdStack-1].flag == cmd_exit)
+			{
+				cmdStack--;
+			}
+			else	setError(23,tokenBuffer);
+		}
 	}
+	else	setError(23,tokenBuffer);
 
 	return tokenBuffer;
 }
@@ -948,7 +956,23 @@ char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+	if (cmdStack)
+	{
+		if (cmdTmp[cmdStack-1].cmd == _while ) 
+		{
+			tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+		}
+		else 
+		{
+			if (cmdTmp[cmdStack-1].flag == cmd_exit)
+			{
+				cmdStack--;
+			}
+			else	setError(23,tokenBuffer);
+		}
+	}
+	else	setError(23,tokenBuffer);
+
 	return tokenBuffer;
 }
 
@@ -959,7 +983,23 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
 
 	tokenMode = mode_logical;
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _repeat ) cmdTmp[cmdStack-1].flag = cmd_normal;
+	if (cmdStack)
+	{
+		if (cmdTmp[cmdStack-1].cmd == _repeat )
+		{
+			cmdTmp[cmdStack-1].flag = cmd_normal;
+		}
+		else 
+		{
+			if (cmdTmp[cmdStack-1].flag == cmd_exit)
+			{
+				cmdStack--;
+			}
+			else	setError(23,tokenBuffer);
+		}
+	}
+	else	setError(23,tokenBuffer);
+
 	return tokenBuffer;
 }
 
@@ -1156,6 +1196,13 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 				{
 					cmdStack--;
 				}
+			}
+		}
+		else
+		{
+			if (cmdTmp[cmdStack-1].flag == cmd_exit )
+			{
+				cmdStack --;
 			}
 		}
 	}
@@ -1863,7 +1910,8 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 			case 0x0268:	// While
 			case 0x027E:	// DO
 
-				cmdStack --;
+				cmdTmp[cmdStack-1].cmd = NULL;
+				cmdTmp[cmdStack-1].flag = cmd_exit ;
 				return ptr + ( *((unsigned short *) ptr) * 2 )-2;
 				break;
 
