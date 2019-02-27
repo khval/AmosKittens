@@ -67,13 +67,13 @@
 #include "ext_compact.h"
 #include "ext_turbo.h"
 
-
 bool running = true;
 bool interpreter_running = false;
 
-
 int sig_main_vbl = 0;
 int proc_stack_frame = 0;
+
+bool ext_crc();
 
 #define enable_vars_crc
 
@@ -1257,7 +1257,7 @@ char *executeToken( char *ptr, unsigned short token )
 	return NULL;
 }
 
-#define enable_vars_crc
+char *_for( struct glueCommands *data, int nextToken );
 
 char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
 {
@@ -1269,10 +1269,17 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 		return NULL;
 	}
 
-#ifdef enable_vars_crc
+#ifdef enable_ext_crc_yes
+
+	if (ext_crc()) setError(23,ptr);
+
+#endif
+
+#ifdef enable_vars_crc_yes
 	if (_vars_crc != vars_crc())
 	{
 		printf("vars are corrupted at line: %d\n", getLineFromPointer(ptr));
+		setError(22,ptr);
 	}
 #endif
 
@@ -1343,6 +1350,21 @@ char *filename = NULL;
 
 #define DLINE printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+bool ext_crc()
+{
+	int n;
+
+	for(n=0;n<32;n++)
+	{
+		if (kitty_extensions[n].lookup)
+		{
+			kitty_extensions[n].crc != mem_crc( kitty_extensions[12].lookup, 0xFFFF );
+			return false;
+		}
+	}
+	return true;
+}
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1406,6 +1428,11 @@ int main(int args, char **arg)
 		if (kitty_extensions[12].lookup)
 		{
 			*((void **) (kitty_extensions[12].lookup + 0x0A08)) = (void *) ext_cmd_range;
+		}
+
+		for(n=0;n<32;n++)
+		{
+			if (kitty_extensions[n].lookup) kitty_extensions[n].crc = mem_crc( kitty_extensions[12].lookup, 0xFFFF ) ;
 		}
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );

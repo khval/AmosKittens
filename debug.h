@@ -16,6 +16,11 @@
 #define show_array_no
 #define enable_engine_debug_output_no
 
+// ------------- CRC options ------------------
+
+#define enable_ext_crc_no
+#define enable_vars_crc_no
+
 //------------- end of options -----------------
 
 void dump_global();
@@ -29,6 +34,7 @@ void dumpLineAddress();
 void dump_680x0_regs();
 void dumpScreenInfo();
 int getLineFromPointer( char *address );
+uint32_t mem_crc( char *mem, uint32_t size );
 
 #ifdef show_debug_printf_yes
 #define dprintf printf

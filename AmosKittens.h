@@ -152,6 +152,7 @@ struct extension_lib
 	struct Interface *interface;
 #endif
 	char	*lookup;
+	uint32_t crc;
 };
 
 struct kittyData

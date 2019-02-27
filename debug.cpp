@@ -188,6 +188,14 @@ unsigned int vars_crc()
 	return crc;
 }
 
+unsigned int mem_crc( char *mem, uint32_t size )
+{
+	uint32_t n;
+	unsigned int crc = 0;
+	for (n=0;n<size;n++) crc ^= mem[n] << (n % 24);
+	return crc;
+}
+
 
 void dump_var( int n )
 {
