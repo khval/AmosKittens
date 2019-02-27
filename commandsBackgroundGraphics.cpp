@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+#include <stdint.h>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -12,7 +13,6 @@
 #endif
 
 #ifdef __linux__
-#include <stdint.h>
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>

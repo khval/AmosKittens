@@ -1,5 +1,6 @@
 
 #include "stdafx.h"
+#include <stdint.h>
 
 #ifdef _MSC_VER
 #include <string.h>
@@ -18,7 +19,6 @@
 
 #ifdef __linux__
 #include <string.h>
-#include <stdint.h>
 #include "os/linux/stuff.h"
 #include <retromode.h>
 #include <retromode_lib.h>

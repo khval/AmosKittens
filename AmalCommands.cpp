@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
@@ -11,7 +12,6 @@
 #endif
 
 #ifdef __linux__
-#include <stdint.h>
 #include "os/linux/stuff.h"
 #define Printf printf
 #endif

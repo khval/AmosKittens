@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "config.h"
 
@@ -14,7 +15,6 @@
 #ifdef __linux__
 #include <retromode.h>
 #include <retromode_lib.h>
-#include <stdint.h>
 #include <unistd.h>
 #endif
 
