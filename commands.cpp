@@ -894,7 +894,6 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					break;
 
 		default:
-
 				printf("bad token: %04x\n", next_token);
 				setError(22, tokenBuffer);
 	}
@@ -1111,6 +1110,7 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 {
 	unsigned short token;
 	char *ptr = tokenBuffer;
+	int cmdStack_start = cmdStack;
 
 	token = *( (unsigned short *) ptr);
 	ptr +=2;
@@ -1132,6 +1132,13 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 	};
 
 	*new_ptr = ptr - 2;
+
+	// forcefully flush all cmds
+
+	while ( cmdStack > cmdStack_start ) 
+	{
+		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
+	}
 
 	return getStackNum(stack);
 }
@@ -1170,9 +1177,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 			unsigned short next_num;
 
 			ptr = cmdTmp[cmdStack-1].FOR_NUM_TOKENBUFFER;
-
 			globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
-
 			next_num = FOR_NEXT_INT(ptr, &new_ptr);
 
 			if (cmdTmp[cmdStack-1].step > 0)
@@ -1197,6 +1202,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 					cmdStack--;
 				}
 			}
+			else setError(23,tokenBuffer);
 		}
 		else
 		{
