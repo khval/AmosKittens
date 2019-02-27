@@ -348,7 +348,7 @@ char *_string( struct glueCommands *data, int nextToken )
 	char *str = NULL;
 	char *_str;
 
-	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -375,7 +375,7 @@ char *_asc( struct glueCommands *data, int nextToken )
 //	int args = stack - data->stack + 1 ;
 	char *_str;
 
-	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str = getStackString( stack  );
 
@@ -392,7 +392,7 @@ char *_val( struct glueCommands *data, int nextToken )
 	double num = 0.0f;
 	char *_str;
 
-	proc_names_printf("%s:%s:%n\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_str = getStackString( stack  );
 	if (_str)
