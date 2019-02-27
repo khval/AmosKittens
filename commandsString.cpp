@@ -372,16 +372,22 @@ char *_string( struct glueCommands *data, int nextToken )
 
 char *_asc( struct glueCommands *data, int nextToken )
 {
-//	int args = stack - data->stack + 1 ;
+	int args = stack - data->stack + 1 ;
 	char *_str;
+	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	_str = getStackString( stack  );
+	if (args==1)
+	{
+		_str = getStackString( stack  );
+		if (_str) ret = *_str;
+	}
+	else setError(22,data->tokenBuffer);
 
 	popStack(stack - data->stack);
 
-	setStackNum( _str ? *_str : 0 );
+	setStackNum( ret );
 
 	return NULL;
 }
