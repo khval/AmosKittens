@@ -5,7 +5,7 @@
 #endif
 #endif
 
-// --------- debug options ---------------
+// --------- debug options --------------- (most common debug options)
 
 #define show_error_at_file_no
 #define show_proc_names_no
@@ -16,7 +16,7 @@
 #define show_array_no
 #define enable_engine_debug_output_no
 
-// ------------- CRC options ------------------
+// ------------- CRC options ------------------ (keep this to no, unless you need to find a memory corruption bug)
 
 #define enable_ext_crc_no
 #define enable_vars_crc_no
