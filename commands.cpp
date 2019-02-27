@@ -2288,7 +2288,7 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if (_this -> lookup)
 		{
-			ext_cmd = (char* (*)(nativeCommand*, char*)) *((void **) (kitty_extensions[2].lookup + ext -> token));
+			ext_cmd = (char* (*)(nativeCommand*, char*)) *((void **) (kitty_extensions[ext-> ext].lookup + ext -> token));
 		}
 	}
 
