@@ -1835,11 +1835,19 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1: ret = getStackNum( stack ) | 0xC0000000;
+		case 1: 
+				if (kittyStack[stack].type == type_none)
+				{
+					ret = current_screen | 0xC0000000;
+				}
+				else 
+				{
+					ret = getStackNum( stack ) | 0xC0000000;
+				}
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -1861,14 +1869,22 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1: ret = getStackNum( stack ) | 0x80000000;
+		case 1:
+				if (kittyStack[stack].type == type_none)
+				{
+					ret = current_screen | 0x80000000;
+				}
+				else 
+				{
+					ret = getStackNum( stack ) | 0x80000000;
+				}
 			break;
+
 		default:
 			setError(22,data->tokenBuffer);
 	}
