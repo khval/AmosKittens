@@ -7,6 +7,8 @@
 #include <vector>
 #include <math.h>
 
+#include <signal.h>
+
 #include "config.h"
 
 #ifdef __amigaos4__
@@ -1366,6 +1368,28 @@ bool ext_crc()
 	return true;
 }
 
+#ifdef __linux__
+
+static void ctrl_c_handler(int signum)
+{
+	Printf("CTRL C\n");
+}
+
+#endif
+
+#ifdef __amigaos4__
+
+ULONG exceptCode ( struct ExecBase *SysBase, ULONG signals, ULONG exceptData)
+{
+	if (exceptData & SIGBREAKF_CTRL_C)
+	{
+		SetSignal( 0L, SIGBREAKF_CTRL_C);
+		Printf("CTRL C\n");
+	}
+}
+
+#endif
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1374,6 +1398,34 @@ int main(int args, char **arg)
 	char amosid[17];
 	char *data;
 	int n;
+
+#ifdef __amigaos__
+	struct Task *me;
+	APTR oldException;
+	ULONG oldSigExcept;
+
+	me = FindTask(NULL);	// don't need forbid, not looking for name.
+	oldException = me -> tc_ExceptCode;
+	me -> tc_ExceptCode = (APTR) exceptCode;
+
+	oldSigExcept = SetExcept(0,0 );
+	SetExcept( SIGBREAKF_CTRL_C, SIGBREAKF_CTRL_C );
+#endif
+
+#ifdef  __linux__
+	struct sigaction sa;
+
+	sa.sa_handler = ctrl_c_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+
+	if (sigaction(SIGINT, &sa, NULL) ==-1)
+	{
+		printf("CTRL C signal handler not working\n");
+	}
+
+#endif
+
 
 	if (args == 2)
 	{
@@ -1562,6 +1614,14 @@ int main(int args, char **arg)
 	
 	if (filename) free(filename);
 
+#ifdef __amigaos__
+	if ( me )
+	{
+		SetExcept( oldSigExcept,oldSigExcept | SIGBREAKF_CTRL_C );
+		me -> tc_ExceptCode = oldException;
+		Printf("Old exception handler restored\n");
+	}
+#endif
 
 	return 0;
 }
