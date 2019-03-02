@@ -1,13 +1,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+
 #include <proto/exec.h>
 #include <proto/locale.h>
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
 #include <proto/keymap.h>
 #include <proto/Amigainput.h>
-#include <string.h>
+#include <proto/icon.h>
+#include <proto/wb.h>
+
 #include "joysticks.h"
 #include "amoskittens.h"
 
@@ -45,6 +50,12 @@ ULONG				*codeset_page = NULL;
 
 struct Library 			* RetroModeBase = NULL;
 struct RetroModeIFace 	*IRetroMode = NULL;
+
+struct WorkbenchIFace *IWorkbench = NULL;
+struct Library *WorkbenchBase = NULL;
+
+struct IconIFace *IIcon = NULL;
+struct Library *IconBase = NULL;
 
 struct Library * IntuitionBase = NULL;
 struct IntuitionIFace *IIntuition = NULL;
@@ -98,6 +109,8 @@ BOOL init()
 	if ( ! open_lib( "intuition.library", 51L , "main", 1, &IntuitionBase, (struct Interface **) &IIntuition  ) ) return FALSE;
 	if ( ! open_lib( "graphics.library", 54L , "main", 1, &GraphicsBase, (struct Interface **) &IGraphics  ) ) return FALSE;
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
+	if ( ! open_lib( "workbench.library", 53 , "main", 1, &WorkbenchBase, (struct Interface **) &IWorkbench ) ) return FALSE;
+	if ( ! open_lib( "icon.library", 53, "main", 1, &IconBase, (struct Interface **) &IIcon) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -130,6 +143,12 @@ void closedown()
 	}
 
 	if (_locale) CloseLocale(_locale); _locale = NULL;
+
+	if (IIcon) DropInterface((struct Interface*) IIcon); IIcon = 0;
+	if (IconBase) CloseLibrary(IconBase); IconBase = 0;
+
+	if (IWorkbench) DropInterface((struct Interface*) IWorkbench); IWorkbench = 0;
+	if (WorkbenchBase) CloseLibrary(WorkbenchBase); WorkbenchBase = 0;
 
 	if (IAIN) DropInterface((struct Interface*) IAIN); IAIN = 0;
 	if (AIN_Base) CloseLibrary(AIN_Base); AIN_Base = 0;
