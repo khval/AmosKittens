@@ -1,9 +1,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
 #include <proto/exec.h>
 #include <proto/Amigainput.h>
-#include <string.h>
 
 #include "AmosKittens.h"
 #include "joysticks.h"

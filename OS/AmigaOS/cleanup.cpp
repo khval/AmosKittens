@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include "stack.h"
@@ -29,13 +30,13 @@ void clear_local_vars( int proc )
 	int n;
 	struct kittyData *var;
 
-	printf("%s;%s\n",__FILE__,__FUNCTION__);
+//	printf("%s;%s\n",__FILE__,__FUNCTION__);
 
 	for (n=0;n<global_var_count;n++)
 	{
 		if (globalVars[n].proc == proc)
 		{
-			printf("clear %s\n",globalVars[n].varName);
+//			printf("clear %s\n",globalVars[n].varName);
 
 			var = &globalVars[n].var;
 

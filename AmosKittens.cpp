@@ -1405,6 +1405,8 @@ int main(int args, char **arg)
 
 	if (init() && channels)
 	{
+		bool init_error = false;
+
 		// set up a fake extention lookup
 
 		// set default values.
@@ -1449,7 +1451,7 @@ int main(int args, char **arg)
 		if (video) start_engine();
 
 		fd = filename ? fopen(filename,"r") : NULL;
-		if ((fd)&&(video))
+		if ((fd)&&(video)&&(init_error == false))
 		{
 			fseek(fd, 0, SEEK_END);
 			amos_filesize = ftell(fd);

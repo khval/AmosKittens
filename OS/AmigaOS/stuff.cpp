@@ -14,3 +14,4 @@ void Printf_iso(const char *fmt,...)
 
 	Printf("%s",buffer);
 }
+
