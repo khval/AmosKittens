@@ -185,9 +185,6 @@ void freeBank( int banknr )
 
 					if (bank_is_object(bank,sprite)) sprite = NULL;
 					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
-
-					getchar();
-
 					break;
 
 				case bank_type_icons:
@@ -782,13 +779,13 @@ void init_banks( char *data , int size)
 							break;
 
 						default:
-							printf("oh no!!... unexpected id: '%c%c%c%c'\n",id[0],id[1],id[2],id[3]);
 							n = banks; // exit for loop.
 
 					}
-					getchar();
 				}
 	}
+	printf("--press enter--\n");
+	getchar();
 }
 
 

@@ -1299,6 +1299,7 @@ char *_gfxZoom( struct glueCommands *data, int nextToken )
 				int y0 = getStackNum( stack-7 );
 				int x1 = getStackNum( stack-6 );
 				int y1 = getStackNum( stack-5 );
+
 				int to_screen = getStackNum( stack-4 );
 				int x2 = getStackNum( stack-3 );
 				int y2 = getStackNum( stack-2 );
@@ -1335,7 +1336,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	int pixels;
 	bool args_ok = true;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1428,9 +1429,7 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen;
 
-
-//	proc_names_
-printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (kittyStack[stack].type == type_none)
 	{
@@ -1456,8 +1455,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 			return NULL;
 		}
 
-		printf("fade %d colors\n",args-1);
-
 		dest_pal = screen -> fadePalette;
 
 		if (args>1)	// fade to colors listed after fade speed.
@@ -1466,8 +1463,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 			for (int s = data->stack+1 ; s <= stack ; s++ )
 			{
 				rgb = getStackNum( s );
-				printf("%03x\n",rgb);
-
 				dest_pal[c].r = ((rgb & 0xF00) >> 8) * 0x11;
 				dest_pal[c].g = ((rgb & 0x0F0) >> 4) * 0x11;
 				dest_pal[c].b = ((rgb & 0x00F)) * 0x11;
@@ -1808,8 +1803,6 @@ char *_gfxScrollOff( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
 	switch (args)
 	{
 		case 1:
@@ -1833,7 +1826,6 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -1855,6 +1847,7 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	setStackNum( ret );
+
 	return NULL;
 }
 
@@ -1891,6 +1884,7 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	setStackNum( ret );
+
 	return NULL;
 }
 

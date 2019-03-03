@@ -251,8 +251,6 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 
 		printf("unpack %d to %d\n",n,s);
 
-		dump_banks();
-
 		bank = findBank(n);
 		if (bank)
 		{

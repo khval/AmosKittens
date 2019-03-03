@@ -129,13 +129,9 @@ int findProc( char *name )
 {
 	unsigned int n;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	for (n=0;n<global_var_count;n++)
 	{
 		if (globalVars[n].varName == NULL) return 0;
-
-		printf("%s\n", globalVars[n].varName);
 
 		if ( (strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.type & type_proc) )
 		{
@@ -276,7 +272,6 @@ int findFnByName(char *name)
 	{
 		if (strcasecmp(name, defFns[n].name) == 0)
 		{
-			printf("return %d\n",n+1);
 			return n +1;
 		}
 	}
@@ -364,19 +359,16 @@ struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 	int found = 0;
 	struct reference *ref = (struct reference *) (ptr);
 
+	pass1_printf("%s:%s:%d\n",__FUNCTION__,__FILE__,__LINE__);
+
 	tmp = dupRef( ref );
 	if (tmp)
 	{
 		int type = ref -> flags & 7;
 			short next_token = *((short *) (ptr + sizeof(struct reference) + ReferenceByteLength( ptr )));
 
-			printf("next token %08x\n", next_token );
-
-		printf("%s:%s:%d\n",__FUNCTION__,__FILE__,__LINE__);
-
 		if (first_token)
 		{
-
 
 			// <EOL> <VAR> <EOL>
 			// <EOL> <VAR> <NEXT CMD>
@@ -384,7 +376,9 @@ struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 
 			if ((next_token == 0x0000) || (next_token == 0x0054) || (next_token == 0x0084))
 			{
+//ifdef show_pass1_procedure_fixes_yes
 				printf("this looks alot like a procedure call\n");
+//endif
 				pass1CallProcedures.push_back(ref);
 				is_proc_call = true;
 			}
@@ -476,7 +470,7 @@ void pass1label(char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	char *next;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	tmpName = strndup( ptr + sizeof(struct reference), ref->length  );
 	if (tmpName)
@@ -650,7 +644,7 @@ char *pass1_global( char *ptr )
 						break;
 
 			default:
-						printf("%d\n",token);
+						printf("%04x\n",token);
 						setError(1,ptr);
 		}
 
@@ -723,7 +717,7 @@ void set_nested_if_condition( char *ptr )
 
 void eol( char *ptr )
 {
-	printf("nested_count %d\n",nested_count);
+	pass1_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (nested_count>0)
 	{
@@ -749,17 +743,18 @@ void eol( char *ptr )
 	{
 		if (nested_command[ nested_count -1 ].cmd  == nested_then)
 		{
-			printf("fixing IF ... THEN\n");
 			set_nested_if_condition( ptr );
 		} else break;
 	}
 
+#if 0
 	printf("nested_count %d\n",nested_count);
 
 	if (nested_count>0)
 	{
 		printf("nested_command[ %d ].cmd  = %s\n", nested_count -1, nest_names[ nested_command[ nested_count -1 ].cmd ] );
 	}
+#endif
 }
 
 void fix_token_short( int cmd, char *ptr )
@@ -808,12 +803,6 @@ void pass1_if_or_else( char *ptr )
 			case nested_then:
 			case nested_else:
 			case nested_else_if:
-
-
-				printf ("0x%08x - 0%08x ----- +0x%02x ------\n",
-					nested_command[ nested_count -1 ].ptr,
-					ptr,
-					(short) (int) (ptr - nested_command[ nested_count -1 ].ptr)) ;
 
 				*((short *) (nested_command[ nested_count -1 ].ptr)) =(short) ((int) (ptr - nested_command[ nested_count -1 ].ptr)) / 2 ;
 				nested_count --;
@@ -1003,8 +992,6 @@ char *nextToken_pass1( char *ptr, unsigned short token )
  							break;
 
 				case 0x0376: // Procedure
-
-							printf("last token: %d\n", last_tokens[parenthesis_count] );
 
 							procCount ++;
 							procStackCount++;
