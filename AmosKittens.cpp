@@ -907,7 +907,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0DDC,"Rainbow",0,gfxRainbow },
 	{0x0DF0,"Rain",0,gfxRain },
 	{0x0DFE,"Fade",0,gfxFade },
-	{0x0E16,"Logic",0,gfxLogic },
+	{0x0E16,"Physic",0,gfxPhysic },
 	{0x0E24,"Physic",0,gfxPhysic },
 	{0x0E2C, "Autoback", 0, gfxAutoback },
 	{0x0E3C,"Plot",0,gfxPlot },
