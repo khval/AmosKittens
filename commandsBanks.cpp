@@ -538,7 +538,6 @@ char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
 		next_print_line_feed = true;
 	}
 
-
 	return tokenBuffer;
 }
 
@@ -569,9 +568,9 @@ char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
 
 struct bankItemDisk
 {
-	unsigned short bank;
-	unsigned short type;
-	unsigned int length;
+	uint16_t bank;
+	uint16_t type;
+	uint32_t length;
 	char name[8];
 } __attribute__((packed)) ;
 
@@ -592,6 +591,12 @@ void __save_work_data__(FILE *fd,int bankno,struct kittyBank *bank)
 	item.length = (bank -> length + 8) | flags;
 	memcpy( item.name, bank->start-8, 8 );
 
+#ifdef __LITTLE_ENDIAN__
+		item.bank = __bswap_16(item.bank);
+		item.type = __bswap_16(item.type);
+		item.length = __bswap_32(item.length);
+#endif
+
 	fwrite( &item, sizeof(struct bankItemDisk), 1, fd );
 	fwrite( bank -> start, bank -> length, 1, fd );
 }
@@ -604,6 +609,12 @@ void __load_work_data__(FILE *fd,int bank)
 
 	if (fread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
 	{
+#ifdef __LITTLE_ENDIAN__
+		item.bank = __bswap_16(item.bank);
+		item.type = __bswap_16(item.type);
+		item.length = __bswap_32(item.length);
+#endif
+
 		if (bank>0) item.bank = bank;
 
 		if (item.length & 0x80000000) item.type += 8;
@@ -631,6 +642,11 @@ void __load_work_data_mem__(struct retroMemFd &fd)
 
 	if (mread( &item, sizeof(struct bankItemDisk), 1, fd )==1)
 	{
+
+#ifdef __LITTLE_ENDIAN__
+		item.length = __bswap_32(item.length);
+#endif
+
 		if (item.length & 0x80000000) item.type += 8;
 		item.length = (item.length & 0x7FFFFFF) -8;
 
@@ -737,6 +753,7 @@ void init_banks( char *data , int size)
 							printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 							getchar();
 						}
+						else printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 					}
 					else 
 					{
