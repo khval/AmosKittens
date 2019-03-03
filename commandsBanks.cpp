@@ -731,7 +731,12 @@ void init_banks( char *data , int size)
 							cnt++;
 						}
 
-						if (type != -1) 	printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+						if (type == -1) 
+						{
+							printf("oh no!!... unexpected id: '%c%c%c%c'\n",id[0],id[1],id[2],id[3]);
+							printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+							getchar();
+						}
 					}
 					else 
 					{
