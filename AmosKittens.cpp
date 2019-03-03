@@ -77,13 +77,15 @@ int proc_stack_frame = 0;
 
 bool ext_crc();
 
-#define enable_vars_crc
-
-#ifdef enable_vars_crc
+#ifdef enable_vars_crc_yes
 unsigned int _vars_crc = 0;
 unsigned int str_crc( char *name );
 unsigned int vars_crc();
 #endif 
+
+#ifdef enable_bank_crc_yes
+uint32_t bank_crc = 0;
+#endif
 
 char *var_param_str = NULL;
 int var_param_num;
@@ -92,6 +94,7 @@ double var_param_decimal;
 char *_file_start_ = NULL;
 char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands are executed.
 char *_file_end_ = NULL;
+uint32_t _file_bank_size = 0;
 
 struct retroVideo *video = NULL;
 struct retroScreen *screens[8] ;
@@ -1526,6 +1529,11 @@ int main(int args, char **arg)
 
 				fread(data,amos_filesize - _file_code_start_ ,1,fd);
 
+#ifdef enable_bank_crc
+				bank_crc = mem_crc( _file_end_ , amos_filesize - tokenlength - _file_code_start_  );
+#endif 
+
+
 #ifdef __LITTLE_ENDIAN__
 				token_littleendian_fixer( data, _file_end_ );
 #endif
@@ -1545,7 +1553,9 @@ int main(int args, char **arg)
 
 					// init banks
 
-					init_banks( _file_end_ , amos_filesize - tokenlength - _file_code_start_ );
+					_file_bank_size = amos_filesize - tokenlength - _file_code_start_;
+
+					init_banks( _file_end_ ,  _file_bank_size );
 
 					gfxDefault(NULL, NULL);
 

@@ -12,14 +12,17 @@
 #define show_token_numbers_no
 #define show_debug_printf_no
 #define show_debug_amal_no
-#define show_pass1_tokens_no
 #define show_array_no
 #define enable_engine_debug_output_no
+#define show_pass1_tokens_no
+#define show_pass1_procedure_fixes_no
+#define show_pass1_end_of_file_no
 
 // ------------- CRC options ------------------ (keep this to no, unless you need to find a memory corruption bug)
 
 #define enable_ext_crc_no
 #define enable_vars_crc_no
+#define enable_bank_crc_no			// can find memory corruption in pass1
 
 //------------- end of options -----------------
 

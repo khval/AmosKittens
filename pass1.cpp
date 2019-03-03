@@ -45,8 +45,13 @@ int ifCount = 0;
 int endIfCount = 0;
 int currentLine = 0;
 int pass1_bracket_for;
-
 int pass1_token_count = 0;
+
+extern uint32_t _file_bank_size;
+
+#ifdef enable_bank_crc_yes
+extern uint32_t bank_crc;
+#endif
 
 enum
 {
@@ -1076,6 +1081,14 @@ char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsi
 {
 	ptr = nextToken_pass1( ptr, token );
 
+#ifdef enable_bank_crc
+	if (bank_crc != mem_crc( _file_end_ , amos_filesize - tokenlength - _file_code_start_  ))
+	{
+		printf("memory bank corrupted in %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		getchar();
+	}
+#endif 
+
 	if ( ptr  >= file_end ) return NULL;
 
 	return ptr;
@@ -1144,13 +1157,25 @@ void pass1_reader( char *start, char *file_end )
 		}
 	}
 
+//ifdef show_pass1_procedure_fixes_yes
 	printf("number of procedure calls %d\n", pass1CallProcedures.size() );
+//endif
+
+#ifdef enable_bank_crc_yes
+	if (bank_crc != mem_crc( _file_end_ , _file_bank_size ))
+	{
+		printf("memory bank corrupted in %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		getchar();
+	}
+#endif
 
 	for (n = 0 ; n < pass1CallProcedures.size(); n++)
 	{
 		if ( findRefAndFixProcCall(pass1CallProcedures[n])  )
 		{
+//ifdef show_pass1_procedure_fixes_yes
 			printf("fixed at: %08x ref is %d\n", pass1CallProcedures[n], pass1CallProcedures[n] -> ref - 1 );
+//endif
 		}
 		else
 		{
@@ -1158,6 +1183,14 @@ void pass1_reader( char *start, char *file_end )
 			break;
 		}
 	}
+
+#ifdef enable_bank_crc_yes
+	if (bank_crc != mem_crc( _file_end_ , _file_bank_size ))
+	{
+		printf("memory bank corrupted in %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		getchar();
+	}
+#endif
 
 	for (n = 0; n< global_var_count ; n++)
 	{
@@ -1171,8 +1204,17 @@ void pass1_reader( char *start, char *file_end )
 		}
 	}
 
-	printf("lines: %d -- end of tokens shoud be at 0x%08x\n",linesAddress.size()-2,file_end);
+#ifdef enable_bank_crc_yes
+	if (bank_crc != mem_crc( _file_end_ , _file_bank_size ))
+	{
+		printf("memory bank corrupted in %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		getchar();
+	}
+#endif
 
+#ifdef show_pass1_end_of_file_yes
+	printf("lines: %d -- end of tokens shoud be at 0x%08x\n",linesAddress.size()-2,file_end);
+#endif
 	nested_count = 0;
 }
 
