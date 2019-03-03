@@ -733,6 +733,12 @@ void init_banks( char *data , int size)
 
 						if (type != -1) 	printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 					}
+					else 
+					{
+						// clear id.
+						memset(id,' ',4);
+					}
+
 
 					switch (type)
 					{
@@ -831,6 +837,10 @@ void __load_bank__(const char *name, int bankNr )
 							if (strcmp(id,*idp)==0) { type = cnt; break; }
 							cnt++;
 						}
+					}
+					else
+					{
+						memset( id, ' ',4 );
 					}
 					
 					switch (type)
