@@ -626,8 +626,13 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
-					retroScreenBlit( screens[src_screen],src_mode, 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
-							screens[dest_screen],dest_mode, 0, 0);
+					if ((screens[src_screen])&&(screens[dest_screen]))
+					{
+						retroScreenBlit( screens[src_screen],src_mode, 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
+								screens[dest_screen],dest_mode, 0, 0);
+
+					}
+					else setError(47,data->tokenBuffer);
 				}
 			}
 			break;
@@ -650,8 +655,13 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 
 				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
 				{
-					retroScreenBlit( screens[src_screen], src_mode ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
-							screens[dest_screen], dest_mode, dest_x, dest_y);
+
+					if ((screens[src_screen])&&(screens[dest_screen]))
+					{
+						retroScreenBlit( screens[src_screen], src_mode ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
+								screens[dest_screen], dest_mode, dest_x, dest_y);
+					}
+					else setError(47,data->tokenBuffer);
 				}
 			}
 			break;
