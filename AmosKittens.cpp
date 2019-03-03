@@ -1375,7 +1375,7 @@ bool ext_crc()
 
 static void ctrl_c_handler(int signum)
 {
-	Printf("CTRL C\n");
+	printf("CTRL C\n");
 }
 
 #endif
