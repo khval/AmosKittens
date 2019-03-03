@@ -351,7 +351,7 @@ char *_gfxScin( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		int mx = getStackNum( stack-1 );
+//		int mx = getStackNum( stack-1 );
 		int my = getStackNum( stack );
 
 		if ((my>-1)&&(my<480))
