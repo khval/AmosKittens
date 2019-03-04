@@ -658,23 +658,44 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
-	unsigned int data = *((unsigned int *) ptr);
-	unsigned int number1 = data >> 8;
-	int e = (data & 0x3F) ;
-	int n;
 	double f = 0.0f;
+	unsigned short next_token = *((short *) (ptr+4) );
+	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
-	if ( (data & 0x40)  == 0)	e = -(65 - e);
+	// check if - or + comes before *, / or ; symbols
 
-	for (n=23;n>-1;n--)
+	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
-		if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
+		dprintf("---hidden ( symbol \n");
+
+		// hidden ( condition.
+		kittyStack[stack].str = NULL;
+		kittyStack[stack].value = 0;
+		kittyStack[stack].state = state_hidden_subData;
+		stack++;
 	}
 
-	if (e>0) { while (--e) { f *= 2.0; } }
-	if (e<0) { while (e) {  f /= 2.0f; e++; } }
+	{
+		unsigned int data = *((unsigned int *) ptr);
+		unsigned int number1 = data >> 8;
+		int e = (data & 0x3F) ;
+		int n;
+
+		if ( (data & 0x40)  == 0)	e = -(65 - e);
+
+		for (n=23;n>-1;n--)
+		{
+			if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
+		}
+
+		if (e>0) { while (--e) { f *= 2.0; } }
+		if (e<0) { while (e) {  f /= 2.0f; e++; } }
+	}
 
 	setStackDecimal( f );
+
+	kittyStack[stack].state = state_none;
+	flushCmdParaStack( next_token );
 
 	return ptr;
 }
