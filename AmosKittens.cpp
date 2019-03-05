@@ -200,9 +200,12 @@ void free_video()
 	}
 }
 
+struct timeval debug_time_start,debug_time_end;
+
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
 	int length = *((short *) ptr);
+	int length_in_bytes = length + (length&1);		// round up to 2.
 
 	if (length>4)
 	{
@@ -288,11 +291,28 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 				printf("**********************************\n");
 			}
 
+			if (strncmp(txt,str_time_start,strlen(str_time_start))==0)
+			{
+				printf("time recorded\n");
+				gettimeofday(&debug_time_start, NULL);
+			}
+
+			if (strncmp(txt,str_time_end,strlen(str_time_end))==0)
+			{
+				gettimeofday(&debug_time_end, NULL);
+				printf("total time %f seconds\n",	(double) (debug_time_end.tv_usec - debug_time_start.tv_usec) / 1000000 +
+											(double) (debug_time_end.tv_sec - debug_time_start.tv_sec)  );
+
+//				getchar();
+			}
+
 			free(txt);
 		}
 	}
 	
-	return ptr + length;
+	setStackNum(0);
+
+	return ptr + length_in_bytes;
 }
 
 
