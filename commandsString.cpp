@@ -180,8 +180,11 @@ char *_instr( struct glueCommands *data, int nextToken )
 
 				if ((_str)&&(_find))
 				{
-					ret = strstr( _str, _find );
-					_pos = ret ? (unsigned int) (ret - _str) +1 : 0;
+					if ((_str[0]) &&(_find[0]))		// not empty
+					{
+						ret = strstr( _str, _find );
+						_pos = ret ? (unsigned int) (ret - _str) +1 : 0;
+					}
 				}
 				break;
 		case 3:
@@ -191,12 +194,15 @@ char *_instr( struct glueCommands *data, int nextToken )
 
 				if ((_str)&&(_find)&&(_start>-1) )
 				{
-					int str_len = kittyStack[stack-2].len;
+					if ((_str[0]) &&(_find[0]))		// not empty
+					{
+						int str_len = kittyStack[stack-2].len;
 
-					if (_start >= str_len) _start = str_len-1;
+						if (_start >= str_len) _start = str_len-1;
 
-					ret = strstr( _str + _start, _find );
-					_pos = ret ? (unsigned int) (ret - _str) +1 + _start : 0;
+						ret = strstr( _str + _start, _find );
+						_pos = ret ? (unsigned int) (ret - _str) +1 + _start : 0;
+					}
 				}
 				break;
 		default:
