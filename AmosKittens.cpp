@@ -165,6 +165,8 @@ const char *str_hint = "hint ";
 const char *str_show_var = "show var ";
 const char *str_dump_banks = "dump banks";
 const char *str_dump_screen_info = "dump screen info"; 
+const char *str_time_start = "time start";
+const char *str_time_end = "time end";
 
 int findVar( char *name, bool  is_first_token, int type, int _proc );
 
