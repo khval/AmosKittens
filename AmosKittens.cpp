@@ -1335,7 +1335,7 @@ char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned s
 	return ptr;
 }
 
-void code_reader( char *start, int tokenlength )
+char *code_reader( char *start, int tokenlength )
 {
 	char *ptr;
 	int token = 0;
@@ -1391,6 +1391,8 @@ void code_reader( char *start, int tokenlength )
 	}
 
 	interpreter_running = false;
+
+	return ptr;
 }
 
 char *filename = NULL;
