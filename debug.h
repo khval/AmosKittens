@@ -24,6 +24,10 @@
 #define enable_vars_crc_no
 #define enable_bank_crc_no			// can find memory corruption in pass1
 
+// ------------ optimizer ----------------------
+
+#define enable_fast_execution_yes		// Some debug option do not work when this enabled.
+
 //------------- end of options -----------------
 
 void dump_global();

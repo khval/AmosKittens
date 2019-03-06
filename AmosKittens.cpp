@@ -678,6 +678,24 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+double _float[256];
+
+void make_float_lookup()
+{
+	double f;
+	unsigned int number1;
+	int n = 0;
+	for (number1=0;number1<256;number1++)
+	{
+		f = 0.0f;
+		for (n=7;n>-1;n--)
+		{
+			if ((1<<n)&number1) f += 1.0f / (double) (1<<(7-n));
+		}
+		_float[number1]=f;
+	}
+}
+
 char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
 	double f = 0.0f;
@@ -701,14 +719,23 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		unsigned int data = *((unsigned int *) ptr);
 		unsigned int number1 = data >> 8;
 		int e = (data & 0x3F) ;
+
 		int n;
 
 		if ( (data & 0x40)  == 0)	e = -(65 - e);
 
+#if 1
+
+		f = _float[ (number1 & 0xFF0000) >> 16 ] ;
+		f += (_float[ (number1  & 0xFF00) >> 8 ] ) / (double) (1<<8);
+		f += _float[ (number1  & 0xFF) ]  / (double) (1<<16);
+
+#else
 		for (n=23;n>-1;n--)
 		{
 			if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
 		}
+#endif
 
 		if (e>0) { while (--e) { f *= 2.0; } }
 		if (e<0) { while (e) {  f /= 2.0f; e++; } }
@@ -1276,6 +1303,8 @@ const char *TokenName( unsigned short token )
 	return noName;
 }
 
+#ifdef enable_fast_execution_no
+
 char *executeToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -1305,6 +1334,62 @@ char *executeToken( char *ptr, unsigned short token )
 
 	return NULL;
 }
+
+#endif
+
+#ifdef enable_fast_execution_yes
+
+char fast_lookup[0xFFFF];
+
+void init_fast_lookup()
+{
+	int token;
+	struct nativeCommand *cmd;
+
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+	{
+		token = (int) ((unsigned short) cmd->id) ;
+
+		*((void **) (fast_lookup + token)) = (void *) cmd -> fn;
+		*((uint16_t *) (fast_lookup + token + sizeof(void *))) = (uint16_t) cmd -> size;
+	}
+}
+
+// should be faster, draw back, no token name can be printed.
+
+struct nativeCommand _cmd;
+
+char *executeToken( char *ptr, unsigned short token )
+{
+	char *(*fn) (struct nativeCommand *cmd, char *tokenBuffer);
+	uint16_t size;
+
+	char *ret;
+
+	fn = (char* (*)(nativeCommand*, char*)) *((void **) (fast_lookup + token)) ;
+	size = *((uint16_t *) (fast_lookup + token + sizeof(void *)));
+
+	if (fn)
+	{
+		_cmd.id = token;
+		_cmd.size = size;
+		ret = fn( &_cmd, ptr ) ;
+		if (ret) ret += size;
+		return ret;
+	}
+
+	token_not_found = token;
+	currentLine = getLineFromPointer( ptr );
+	setError(23, ptr);
+	printf("Addr %08x, token not found %04X at line %d\n", 
+				(unsigned int) ptr, 
+				(unsigned int) token_not_found, 
+				getLineFromPointer( ptr));
+
+	return NULL;
+}
+#endif
+
 
 char *_for( struct glueCommands *data, int nextToken );
 
@@ -1474,13 +1559,14 @@ int main(int args, char **arg)
 
 #endif
 
-
 	if (args == 2)
 	{
 		filename = strdup(arg[1]);
 	}
 
 	amosid[16] = 0;	// /0 string.
+
+	init_fast_lookup();
 
 	stack = 0;
 	cmdStack = 0;
@@ -1501,6 +1587,8 @@ int main(int args, char **arg)
 		bobs[n].screen_id = -1;
 		bobs[n].image = -1;
 	}
+
+	make_float_lookup();
 
 	channels = new ChannelTableClass();
 
