@@ -791,7 +791,7 @@ void main_engine()
 				if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 			}
 
-			Delay(1);
+			Delay(4);
 		} // while
 	}
 	else
