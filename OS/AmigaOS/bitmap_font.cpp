@@ -98,7 +98,7 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 			screen -> textWindows = NULL;
 		}
 
-		printf("store at %d\n",_to_alloc_-1);
+//		printf("window store at %d\n",_to_alloc_-1);
 
 		_new_tab_[_to_alloc_-1] = new_text_window( id ) ;
 		screen -> textWindows = _new_tab_;
