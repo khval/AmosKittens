@@ -291,10 +291,12 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	char *_str;
 	BPTR lock = 0;
 
-	_str = getStackString( stack );
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
+		_str = getStackString( stack );
+
 		lock = Lock( _str, SHARED_LOCK );
 
 		if (lock)
