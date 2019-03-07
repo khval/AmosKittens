@@ -552,7 +552,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 
 	split_path_pattern(str, &_path, &_pattern);
 	
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (_path == NULL) return NULL;
 
@@ -1116,7 +1116,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 	bool valid = false;
 	FILE *fd;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmd == NULL)
 	{
