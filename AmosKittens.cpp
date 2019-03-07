@@ -1566,7 +1566,11 @@ int main(int args, char **arg)
 
 	amosid[16] = 0;	// /0 string.
 
+#ifdef enable_fast_execution_yes
+
 	init_fast_lookup();
+
+#endif
 
 	stack = 0;
 	cmdStack = 0;
