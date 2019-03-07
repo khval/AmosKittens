@@ -772,13 +772,13 @@ char *discRename(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *discFselStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _discFselStr, tokenBuffer );
+	stackCmdParm( _discFselStr, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discExist(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _discExist, tokenBuffer );
+	stackCmdParm( _discExist, tokenBuffer );
 	return tokenBuffer;
 }
 
