@@ -584,8 +584,6 @@ int strlen_no_esc(const char *txt)
 	const char *c;
 	char buffer[1000];
 
-	printf("****** START STRLEN ***\n");
-
 	for (c=txt;*c;c++)
 	{
 		switch (*c)
@@ -625,10 +623,6 @@ int strlen_no_esc(const char *txt)
 		}
 	}
 	buffer[_l] = 0;
-
-	printf("text '%s' strlen %d\n",buffer, _l);
-	printf("****** END STRLEN ***\n");
-
 
 	return _l;
 }
