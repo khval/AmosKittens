@@ -90,15 +90,19 @@ char *_gfxText( struct glueCommands *data, int nextToken )
 
 				if ((txt)&&(screen))
 				{
+					struct TextExtent te;
 					int l = strlen(txt);
 					int tl;
 
+					TextExtent( &font_render_rp, txt, strlen( txt), &te );
+
 					SetAPen( &font_render_rp, screen -> ink0 );
-					Move( &font_render_rp, 0,10 );
+					SetBPen( &font_render_rp, screen -> ink1 );
+					Move( &font_render_rp, 0,-te.te_Extent.MinY );
 					Text( &font_render_rp, txt, l );
 					tl = TextLength(&font_render_rp, txt, l );
 
-					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,15, screen, x , y-10);
+					retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
 				}
 			}
 			break;
