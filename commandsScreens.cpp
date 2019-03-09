@@ -135,7 +135,7 @@ bool kitten_screen_close(int screen_num)
 		if (screen_num == current_screen)
 		{
 			int n;
-			for (n=8; n>-1;n--)
+			for (n=7; n>-1;n--)
 			{
 				if (screens[n])
 				{
@@ -412,8 +412,6 @@ char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _gfxScreenDisplay, tokenBuffer );
 	return tokenBuffer;
 }
-
-
 
 char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer)
 {
