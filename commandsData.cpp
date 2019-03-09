@@ -815,7 +815,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 bool _subStr( void )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	char *string;
 	char *remove;
@@ -855,7 +855,7 @@ bool _subStr( void )
 
 char *_subData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -1340,7 +1340,8 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			printf ("( %d != %d ) = %d \n", item0->value , item1->value , item0->value =! item1->value);
+			dprintf ("( %d != %d ) = %d \n", item0->value , item1->value , item0->value != item1->value);
+
 			setStackNum( item0->value != item1->value  ? ~0 : 0);
 			success = TRUE;
 		}

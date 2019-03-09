@@ -653,7 +653,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 char *cmdNumber(nativeCommand *cmd, char *ptr)
 {
 	unsigned short next_token = *((short *) (ptr+4) );
-	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 	// check if - or + comes before *, / or ; symbols
 
@@ -685,6 +685,8 @@ void make_float_lookup()
 	double f;
 	unsigned int number1;
 	int n = 0;
+	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (number1=0;number1<256;number1++)
 	{
 		f = 0.0f;
@@ -719,17 +721,14 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		unsigned int data = *((unsigned int *) ptr);
 		unsigned int number1 = data >> 8;
 		int e = (data & 0x3F) ;
-
 		int n;
 
 		if ( (data & 0x40)  == 0)	e = -(65 - e);
 
 #if 1
-
 		f = _float[ (number1 & 0xFF0000) >> 16 ] ;
 		f += (_float[ (number1  & 0xFF00) >> 8 ] ) / (double) (1<<8);
 		f += _float[ (number1  & 0xFF) ]  / (double) (1<<16);
-
 #else
 		for (n=23;n>-1;n--)
 		{
