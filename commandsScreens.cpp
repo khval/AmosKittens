@@ -423,7 +423,23 @@ char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _gfxScreen, tokenBuffer );
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (last_tokens[parenthesis_count])
+	{
+		case 0x0000:
+		case 0x0054:
+				stackCmdNormal( _gfxScreen, tokenBuffer );
+				break;
+		default:
+				{
+					unsigned short next_token = *((short *) (tokenBuffer) );
+					setStackNum( screens[current_screen] ? current_screen : -1 );		// returns -1 if no screen is open.	
+					kittyStack[stack].state = state_none;
+					flushCmdParaStack( next_token );
+				}
+	}
+
 	return tokenBuffer;
 }
 
