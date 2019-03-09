@@ -1316,16 +1316,16 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 		return NULL;
 	}
 
-	stack --;
-
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + stack-1;
+	item1 = kittyStack + stack;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
 
 	if (type0 == type_float) 
 	{
+		stack --;	
+
 		if (type1 == type_int)
 		{
 			setStackNum( item0->decimal != (double) item1->value ? ~0 : 0 );
@@ -1339,6 +1339,8 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 	}
 	else if (type0 == type_int) 
 	{
+		stack--;
+
 		if (type1 == type_int)
 		{
 			dprintf ("( %d != %d ) = %d \n", item0->value , item1->value , item0->value != item1->value);
