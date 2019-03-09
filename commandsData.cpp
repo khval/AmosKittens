@@ -881,6 +881,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 		if (type1 == type_int)
 		{
 			setStackNum( - item1->value );
+			dprintf(" 0 - %d = %d\n",  item1->value, - item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
