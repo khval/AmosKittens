@@ -85,6 +85,7 @@ char *_len (struct glueCommands *data, int nextToken);
 char *_lessOrEqualData (struct glueCommands *data, int nextToken);
 char *_moreOrEqualData (struct glueCommands *data, int nextToken);
 char *_discExist( struct glueCommands *data, int nextToken );
+char *_not_equal( struct glueCommands *data, int nextToken );
 
 struct stackDebugSymbol
 {
@@ -135,6 +136,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_moreOrEqualData,">="},
 	{_cmdNot,"Not"},
 	{_discExist,"Exist"},
+	{_not_equal,"<>"},
 	{NULL, NULL}
 };
 
