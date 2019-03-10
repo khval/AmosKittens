@@ -685,6 +685,7 @@ void make_float_lookup()
 	double f;
 	unsigned int number1;
 	int n = 0;
+
 	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (number1=0;number1<256;number1++)
@@ -1693,10 +1694,10 @@ int main(int args, char **arg)
 
 					init_banks( _file_end_ ,  _file_bank_size );
 
+#ifdef run_program_yes
 					gfxDefault(NULL, NULL);
-
-					//  execute the code.
 					code_reader( data, tokenlength );
+#endif
 				}
 
 				if (kittyError.newError)

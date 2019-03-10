@@ -812,8 +812,6 @@ void init_banks( char *data , int size)
 					}
 				}
 	}
-	printf("--press enter--\n");
-	getchar();
 }
 
 
