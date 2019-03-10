@@ -181,7 +181,6 @@ bool open_engine_window( int window_left, int window_top, int window_width, int 
 	return (My_Window != NULL) ;
 }
 
-
 void close_engine_window( )
 {
 	if (My_Window)
@@ -646,8 +645,6 @@ void main_engine()
 		sigs = SIGBREAKF_CTRL_C;
 		sigs |= joy_sig;
 
-		Printf("main loop\n");
-
 		while (running)
 		{
 			ret = SetSignal(0L, sigs);
@@ -693,13 +690,10 @@ void main_engine()
 						if (screen -> Memory[1]) 	// has double buffer
 						{
 							Printf_iso("screen %d - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
-							Printf("Trying to swap\n");
 
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
 								screen -> force_swap = FALSE;
-
-								Printf("swapping\n");
 
 								memcpy( 
 									screen -> Memory[1 - screen -> double_buffer_draw_frame], 
