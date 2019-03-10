@@ -77,7 +77,18 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 	struct retroScreen *screen = NULL;
 	struct retroTextWindow *textWindow = NULL;
 
-	if (mode & 0x8000) videomode = retroHires; 
+	videomode = 0;
+
+	if (mode & 0x8000)
+	{
+		 videomode |= retroHires; 
+	}
+	else
+	{
+		 videomode |= retroLowres_pixeld; 
+	}
+
+	if (mode % 0x2000) videomode |= retroHam6;
 
 	engine_lock();
 

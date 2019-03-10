@@ -98,8 +98,8 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
-			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),getStackNum( stack ));
-	
+
+			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),(colors == 4096 ? retroHam6 : 0) | getStackNum( stack ));
 			if (screen = screens[screen_num])
 			{
 				init_amos_kittens_screen_default_text_window(screen, colors);
