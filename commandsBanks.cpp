@@ -707,6 +707,8 @@ void init_banks( char *data , int size)
 	int type = -1;
 	struct kittyBank *bank = NULL;
 
+	id[4]=0;	// null terminate id string.
+
 	if (data)
 	{
 		fd.mem = data;
@@ -716,7 +718,7 @@ void init_banks( char *data , int size)
 				if (mread( &id, 4, 1, fd )==1)
 				{	
 					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
-					if (strcmp(id,"AmBs")==0)
+					if (strncmp(id,"AmBs",4)==0)
 					{
 						mread( &banks, 2, 1, fd);
 #ifdef __LITTLE_ENDIAN__
@@ -743,7 +745,7 @@ void init_banks( char *data , int size)
 
 						for (idp = amos_file_ids; *idp ; idp++)
 						{
-							if (strcmp(id,*idp)==0) { type = cnt; break; }
+							if (strncmp(id,*idp,4)==0) { type = cnt; break; }
 							cnt++;
 						}
 
@@ -830,7 +832,7 @@ void __load_bank__(const char *name, int bankNr )
 			{
 				if (fread( &id, 4, 1, fd )==1)
 				{	
-					if (strcmp(id,"AmBs")==0)
+					if (strncmp(id,"AmBs",4)==0)
 					{
 						fread( &banks, 2, 1, fd);
 						clean_up_banks();		
