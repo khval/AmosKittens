@@ -1500,7 +1500,16 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	unsigned int flags;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	while (cmdStack)
+	{
+		flags = cmdTmp[cmdStack-1].flag;
+
+		if  ( flags & (cmd_loop | cmd_never | cmd_onEol | cmd_proc | cmd_normal)) break;
+		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
+	}
 
 	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _procAndArgs )
 	{
