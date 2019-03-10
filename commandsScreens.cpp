@@ -105,9 +105,8 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 				init_amos_kittens_screen_default_text_window(screen, colors);
 				init_amos_kittens_screen_default_colors(screen);
 				draw_cursor(screen);
+				retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
 			}
-
-			retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
 			engine_unlock();
 
 			success = true;
