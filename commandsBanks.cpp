@@ -956,7 +956,7 @@ char *cmdLoad(nativeCommand *cmd, char *tokenBuffer)
 
 void __write_banks__( FILE *fd )
 {
-	int n=0;
+	unsigned int n=0;
 	struct kittyBank *bank = NULL;
 
 	for (n=0;n<kittyBankList.size();n++)
