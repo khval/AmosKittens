@@ -13,4 +13,5 @@ char *hsSpriteOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsGetSprite(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsGetSpritePalette(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsSpriteBase(struct nativeCommand *cmd, char *tokenBuffer);
+char *hsSetSpriteBuffer(struct nativeCommand *cmd, char *tokenBuffer);
 

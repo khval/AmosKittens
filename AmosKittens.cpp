@@ -1137,6 +1137,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1954,"Fsel$",0,discFselStr },		// found in Help_72.amos
 	{0x196C,"Fsel$",0,discFselStr },
 	{0x1978,"Fsel$",0,discFselStr },
+	{0x1986,"Set Sprite Buffers",0,hsSetSpriteBuffer },
 	{0x199E,"Sprite Off",0,hsSpriteOff },
 	{0x1A72,"Sprite Base",0,hsSpriteBase },
 	{0x1A84,"Icon Base",0,bgIconBase },

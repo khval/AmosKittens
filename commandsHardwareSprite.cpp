@@ -169,3 +169,25 @@ char *hsSpriteBase(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _hsSpriteBase, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_hsSetSpriteBuffer( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+	}
+	else setError(22, data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsSetSpriteBuffer(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _hsSetSpriteBuffer, tokenBuffer );
+	return tokenBuffer;
+}
