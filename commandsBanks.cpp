@@ -1102,4 +1102,92 @@ char *bankBankSwap(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+struct kittyBank *ResourceBank = NULL;
+
+char *_bankResourceBank( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int b1;
+
+	switch (args)
+	{
+		case 1:	b1 = getStackNum(stack-1);
+				ResourceBank = findBank(b1);
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *bankResourceBank(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _bankResourceBank, tokenBuffer );
+	return tokenBuffer;
+}
+
+const char *AmosKittensSystem = "AmosKittens:System/";
+
+const char *DefaultFileNames[] =
+{
+	"",	// 0		(-1 to -9)
+	"",	// 1
+	"",	// 2
+	"",	// 3
+	"",	// 4
+	"",	// 5
+	"",	// 6
+	"",	// 7
+	"",	// 8
+	NULL
+};
+
+char *_bankResourceStr( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int id;
+	const char *ret = NULL;
+
+	switch (args)
+	{
+		case 1:	id = getStackNum(stack-1);
+
+				if (id>0)
+				{
+					Printf("Looking for stuff in resource\n");
+				}
+				else if (id == 0)
+				{
+					ret = AmosKittensSystem;
+				}
+				if ((id >=-1 )&&(id <=-9))	// Default file names
+				{
+					ret = DefaultFileNames[ (-id)-1];
+				}
+				else if ((id >=-10 )&&(id <=-36))	// name of extentions
+				{
+
+				}
+
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackStrDup( ret ? ret : "" );
+
+	return NULL;
+}
+
+char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _bankResourceStr, tokenBuffer );
+	return tokenBuffer;
+}
+
 

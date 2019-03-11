@@ -1258,6 +1258,8 @@ struct nativeCommand nativeCommands[]=
 	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)
 	{0x28AE,"Peek$",0,machinePeekStr },	// Peek$(adr, length)
 	{0x28BE,"Peek$",0,machinePeekStr },	// Peek$(adr, termChar) // returns string
+	{0x28CA,"Resource Bank", 0,bankResourceBank }, // AmosPro Command.
+	{0x28DE,"Resource$",0,bankResourceStr }, // Resource$
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
 	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
 	{0x2AB0,"Prg Under",0,cmdPrgUnder },
