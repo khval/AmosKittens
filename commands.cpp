@@ -2392,3 +2392,11 @@ char *cmdSetAccessory( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdPrgUnder( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	setStackNum(1);
+	return tokenBuffer;
+}
+
+
+

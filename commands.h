@@ -81,6 +81,8 @@ char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExec(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdSetAccessory(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *cmdPrgUnder(struct nativeCommand *cmd, char *tokenBuffer);
+
 // not used outside of commands.cpp, normally but just for testing.
 char *_addStr( struct glueCommands *data, int nextToken );
 char *_print( struct glueCommands *data, int nextToken );
