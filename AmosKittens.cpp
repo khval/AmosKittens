@@ -56,6 +56,7 @@
 #include "commandsAmal.h"
 #include "commandsMenu.h"
 #include "commandsFonts.h"
+#include "commandsgui.h"
 #include "debug.h"
 #include "errors.h"
 #include "pass1.h"
@@ -1256,6 +1257,15 @@ struct nativeCommand nativeCommands[]=
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
+	{0x2704,"Dialog Box",0,guiDialogBox },
+	{0x2742,"Dialog Open",0,guiDialogOpen },
+	{0x2750,"Dialog Close",0,guiDialogClose },
+	{0x277E,"Dialog Run", 0, guiDialogRun },
+	{0x2796,"Dialog",0,guiDialog },
+	{0x27A4,"Vdialog",0,guiVdialog },
+	{0x27E6,"Dialog$",0,guiDialogStr },
+	{0x2866,"Dialog Freeze",0,guiDialogFreeze },
+	{0x2882,"Dialog Unfreeze",0,guiDialogUnfreeze },
 	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)
 	{0x28AE,"Peek$",0,machinePeekStr },	// Peek$(adr, length)
 	{0x28BE,"Peek$",0,machinePeekStr },	// Peek$(adr, termChar) // returns string
