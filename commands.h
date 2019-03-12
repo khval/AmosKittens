@@ -80,6 +80,7 @@ char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExec(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdSetAccessory(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdCallEditor(struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdPrgUnder(struct nativeCommand *cmd, char *tokenBuffer);
 

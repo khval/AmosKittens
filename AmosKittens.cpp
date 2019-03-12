@@ -1254,6 +1254,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
+	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
 	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)
 	{0x28AE,"Peek$",0,machinePeekStr },	// Peek$(adr, length)

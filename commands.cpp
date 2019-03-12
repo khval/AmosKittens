@@ -2398,5 +2398,22 @@ char *cmdPrgUnder( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_cmdCallEditor( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack + 1;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	switch (args)
+	{
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	return NULL;
+}
+
+char *cmdCallEditor(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _cmdCallEditor, tokenBuffer );
+}
 
