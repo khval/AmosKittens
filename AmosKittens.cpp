@@ -1264,6 +1264,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2796,"Dialog",0,guiDialog },
 	{0x27A4,"Vdialog",0,guiVdialog },
 	{0x27E6,"Dialog$",0,guiDialogStr },
+	{0x2812,"Dialog Clr",0,guiDialogClr },
 	{0x2866,"Dialog Freeze",0,guiDialogFreeze },
 	{0x2882,"Dialog Unfreeze",0,guiDialogUnfreeze },
 	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)
@@ -1271,6 +1272,7 @@ struct nativeCommand nativeCommands[]=
 	{0x28BE,"Peek$",0,machinePeekStr },	// Peek$(adr, termChar) // returns string
 	{0x28CA,"Resource Bank", 0,bankResourceBank }, // AmosPro Command.
 	{0x28DE,"Resource$",0,bankResourceStr }, // Resource$
+	{0x28EE,"Resource Screen Open",0,guiResourceScreenOpen},
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
 	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
 	{0x2AB0,"Prg Under",0,cmdPrgUnder },

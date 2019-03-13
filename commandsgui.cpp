@@ -209,3 +209,84 @@ char *guiDialogOpen(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_guiVdialog( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int a,b;
+
+	switch (args)
+	{
+		case 2:	a = getStackNum(stack-1);
+				b = getStackNum(stack);
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+char *guiVdialog(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _guiVdialog, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_guiDialogClr( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int a;
+
+	switch (args)
+	{
+		case 1:	a = getStackNum(stack);
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+ char *guiDialogClr(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _guiDialogClr, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int a;
+
+	switch (args)
+	{
+		case 4:	a = getStackNum(stack);
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+ char *guiResourceScreenOpen(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _guiResourceScreenOpen, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+
