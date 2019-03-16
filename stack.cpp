@@ -29,11 +29,11 @@ bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken)
 	return false;
 }
 
-bool dropProgStackToType( int type )
+bool dropProgStackToFlag( int flag )
 {
 	while (cmdStack > 0)
 	{
-		if (cmdTmp[cmdStack-1].flag == type) return true;
+		if (cmdTmp[cmdStack-1].flag & flag) return true;
 		cmdStack--;
 	}
 	return false;
@@ -93,7 +93,7 @@ char *flushCmdParaStack( int nextToken )
 
 	if (cmdStack)
 	{
-		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag == cmd_para)) 
+		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag & cmd_para)) 
 		{
 			cmd = &cmdTmp[cmdStack-1];
 

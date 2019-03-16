@@ -262,7 +262,7 @@ struct zone
 #define stackCmdNormal( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_normal;	\
+	cmdTmp[cmdStack].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
@@ -295,7 +295,7 @@ struct zone
 #define stackCmdIndex( fn, buf )	{			\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_index;	\
+	cmdTmp[cmdStack].flag = cmd_index ;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \
@@ -305,7 +305,7 @@ struct zone
 #define stackCmdParm( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_para;	\
+	cmdTmp[cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \

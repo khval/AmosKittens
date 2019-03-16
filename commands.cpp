@@ -65,6 +65,12 @@ char *dupRef( struct reference *ref );
 char *_setVar( struct glueCommands *data, int nextToken );
 
 // dummy not used, see code in cmdNext
+char *_exit( struct glueCommands *data, int nextToken )
+{
+	return NULL;
+}
+
+// dummy not used, see code in cmdNext
 char *_for( struct glueCommands *data, int nextToken )
 {
 	return NULL;
@@ -927,14 +933,11 @@ char *cmdLoop(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 		}
-		else 
+		else 	if (cmdTmp[cmdStack-1].cmd == _exit)
 		{
-			if (cmdTmp[cmdStack-1].flag == cmd_exit)
-			{
-				cmdStack--;
-			}
-			else	setError(23,tokenBuffer);
+			cmdStack--;
 		}
+		else	setError(23,tokenBuffer);
 	}
 	else	setError(23,tokenBuffer);
 
@@ -961,14 +964,11 @@ char *cmdWend(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 		}
-		else 
+		else 	if (cmdTmp[cmdStack-1].cmd == _exit)
 		{
-			if (cmdTmp[cmdStack-1].flag == cmd_exit)
-			{
-				cmdStack--;
-			}
-			else	setError(23,tokenBuffer);
+			cmdStack--;
 		}
+		else	setError(23,tokenBuffer);
 	}
 	else	setError(23,tokenBuffer);
 
@@ -988,14 +988,11 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			cmdTmp[cmdStack-1].flag = cmd_normal;
 		}
-		else 
+		else if (cmdTmp[cmdStack-1].cmd == _exit)
 		{
-			if (cmdTmp[cmdStack-1].flag == cmd_exit)
-			{
-				cmdStack--;
-			}
-			else	setError(23,tokenBuffer);
+			cmdStack--;
 		}
+		else	setError(23,tokenBuffer);
 	}
 	else	setError(23,tokenBuffer);
 
@@ -1045,7 +1042,7 @@ char *do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		// We loop back to "TO" not "FOR", we are not reseting COUNTER var.
 
-		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_normal ))
+		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag & cmd_normal ))
 		{
 			cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
 			cmdTmp[cmdStack-1].cmd_type = cmd_loop;
@@ -1147,32 +1144,33 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	char *ptr = tokenBuffer ;
 	char *new_ptr = NULL;
-	int idx_var = -1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
+	if ( cmdTmp[cmdStack-1].cmd == _for )
 	{
-		struct reference *ref = (struct reference *) (ptr + 2);
-		idx_var = ref -> ref -1;
-	}
-	else 	// For var=
-	{
-		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
-		{
-			char *ptr = cmdTmp[cmdStack-1].tokenBuffer + 2  ;	// first short is JMP address, next after is token.
+		int idx_var = -1;
 
-			if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
+		if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
+		{
+			struct reference *ref = (struct reference *) (ptr + 2);
+			idx_var = ref -> ref -1;
+		}
+		else 	// For var=
+		{
+			if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
 			{
-				struct reference *ref = (struct reference *) (ptr + 2);
-				idx_var = ref -> ref -1;
+				char *ptr = cmdTmp[cmdStack-1].tokenBuffer + 2  ;	// first short is JMP address, next after is token.
+	
+				if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
+				{
+					struct reference *ref = (struct reference *) (ptr + 2);
+					idx_var = ref -> ref -1;
+				}
 			}
 		}
-	}
 		
-	if (idx_var>-1)
-	{
-		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+		if (idx_var>-1)
 		{
 			unsigned short next_num;
 
@@ -1206,12 +1204,22 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 		else
 		{
-			if (cmdTmp[cmdStack-1].flag == cmd_exit )
-			{
-				cmdStack --;
-			}
+			setError(22,tokenBuffer);	
 		}
 	}
+	else	if (cmdTmp[cmdStack-1].cmd == _exit )
+	{
+		cmdStack --;
+	}
+	else
+	{
+		dump_prog_stack();	// wtf unexpected....
+		setError(22,tokenBuffer);
+	}
+
+	dump_prog_stack();
+
+	getchar();
 
 	return tokenBuffer;
 }
@@ -1914,11 +1922,11 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 
 	while (exit_loops>1)
 	{
-		if (dropProgStackToType( cmd_loop )) cmdStack--;
+		if (dropProgStackToFlag( cmd_loop )) cmdStack--;
 		exit_loops--;
 	}
 
-	if (dropProgStackToType( cmd_loop ))
+	if (dropProgStackToFlag( cmd_loop ))
 	{
 		ptr = cmdTmp[cmdStack-1].tokenBuffer;
 		token = *((unsigned short *) (ptr - 2)) ;
@@ -1930,8 +1938,11 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 			case 0x0268:	// While
 			case 0x027E:	// DO
 
-				cmdTmp[cmdStack-1].cmd = NULL;
-				cmdTmp[cmdStack-1].flag = cmd_exit ;
+				cmdTmp[cmdStack-1].cmd = _exit;
+				cmdTmp[cmdStack-1].flag = cmd_never ;
+
+getchar();
+
 				return ptr + ( *((unsigned short *) ptr) * 2 )-2;
 				break;
 
@@ -1979,11 +1990,12 @@ char *_cmdExitIf(struct glueCommands *data, int nextToken)
 
 	while (exit_loops>1)
 	{
-		if (dropProgStackToType( cmd_loop )) cmdStack--;
+		if (dropProgStackToFlag( cmd_loop )) cmdStack--;
 		exit_loops--;
 	}
 
-	if (dropProgStackToType( cmd_loop ))
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	if (dropProgStackToFlag( cmd_loop ))
 	{
 		ptr = cmdTmp[cmdStack-1].tokenBuffer;
 		token = *((unsigned short *) (ptr - 2)) ;
@@ -1995,9 +2007,9 @@ char *_cmdExitIf(struct glueCommands *data, int nextToken)
 			case 0x0268:	// While
 			case 0x027E:	// DO
 
-				cmdStack --;
-				proc_names_printf("exit from loop %04x\n", token);
-				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )   ;
+				cmdTmp[cmdStack-1].cmd = _exit;
+				cmdTmp[cmdStack-1].flag = cmd_never ;
+				ptr =  ptr + ( *((unsigned short *) ptr) * 2 )-2   ;
 				return ptr;
 				break;
 

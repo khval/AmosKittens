@@ -123,6 +123,8 @@ char *(**do_to) ( struct nativeCommand *, char * ) ;
 void (**do_input) ( struct nativeCommand *, char * ) ;
 void (*do_breakdata) ( struct nativeCommand *, char * ) = NULL;
 
+extern char *_errTrap( struct glueCommands *data, int nextToken );
+
 int tokenMode = mode_standard;
 
 struct retroSprite *icons = NULL;
@@ -330,10 +332,15 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	{
 		flags = cmdTmp[cmdStack-1].flag;
 
-		if  ( flags & (cmd_loop | cmd_never | cmd_onEol | cmd_proc )) break;
+		printf("flags %08x\n",flags);
+		if  ( ! (flags & cmd_onNextCmd) ) break;		// needs to be include tags, (if commands be excuted on endOfLine or Next command)
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
-		if (cmdTmp[cmdStack].flag & cmd_normal) break;
+		if (cmdTmp[cmdStack].flag & cmd_normal)
+		{
+			if (!cmdStack) break;
+			if (cmdTmp[cmdStack-1].cmd != _errTrap ) break;
+		}
 		if (ret) break;
 	}
 
