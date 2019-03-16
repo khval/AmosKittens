@@ -1,0 +1,45 @@
+
+# Version to build
+VERSION = 1
+
+#CC     = $(CROSS_COMPILE)gcc 
+#CXX    = $(CROSS_COMPILE)c++ 
+#AS     = $(CROSS_COMPILE)as 
+#LD     = $(CROSS_COMPILE)ld 
+#RANLIB = $(CROSS_COMPILE)ranlib 
+#RM     = delete
+# RM     = rm
+
+warnings = -Wuninitialized
+
+opt=-Dtest_app
+
+objects_dir = objs_interface/
+
+main_objects = os/amigaos/stuff.cpp \
+			screen_helper.cpp
+
+main_SRCS = interfaceTest.cpp
+
+objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
+objects = $(main_objects:%.cpp=%.o)
+
+programs= $(main_SRCS:%.cpp=%.exe)
+
+all:	  show $(programs) $(objects_in_dir)
+
+show:
+	@echo $(objects_in_dir)
+
+${objects_dir}%.o:		%.cpp	debug.h 
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ ${opt} $(@:${objects_dir}%.o=%.cpp) -o $@
+
+interfaceTest.exe:  interfaceTest.cpp ${objects_in_dir} AmalCompiler.h
+	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
+
+clean:
+	delete $(programs) ${objects_in_dir}
+
+.PHONY: revision 
+revision:
+	bumprev $(VERSION) $(programs)
