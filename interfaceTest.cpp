@@ -47,16 +47,19 @@ struct stack
 struct cmdcontext
 {
 	int stackp;
-	struct stack *stack;
+	struct stack stack[10];
 	uint32_t vars[512];	
 	uint32_t labels[512];
+	char *(*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
+	int args;
+	int error;
 };
 
 struct cmdinterface
 {
 	const char *name;
 	int type;
-	char *cmd( struct cmdcontext *context, struct cmdinterface *self );
+	char *(*cmd)( struct cmdcontext *context, struct cmdinterface *self );
 };
 
 enum
@@ -65,13 +68,98 @@ enum
 	i_parm
 };
 
-struct cmdinterface *commands[]=
+
+void push_context_num(struct cmdcontext *context, int num);
+
+
+char *_icmdif( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+}
+
+char *icmdif( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmdif;
+	context -> args = 1;
+}
+
+char *icmdvar( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>0)
+	{
+		struct stack &self = context -> stack[context -> stackp-1];
+
+		if ( self.type == type_int)
+		{
+			self.num = context -> vars[ self.num ];
+		}
+	}
+	else context -> error = 1;
+}
+
+void pop_context( struct cmdcontext *context, int pop )
+{
+	while ((pop)&&(context->stackp))
+	{
+		struct stack &p = context -> stack[--context -> stackp];
+
+		switch (p.type)
+		{
+			case type_string:
+					if (p.str)
+					{
+						free (p.str);
+						p.str = NULL;
+					}
+					break;
+		}
+	}
+}
+
+char *icmdequal( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct stack &arg1 = context -> stack[context -> stackp-2];
+		struct stack &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
+		{
+			ret = arg1.num == arg2.num ? ~0 : 0 ;
+		}
+
+		pop_context( context, 1);
+		push_context_num( context, ret );
+	}
+	else context -> error = 1;
+}
+
+char *icmdnextcmd( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> cmd_done)
+	{
+		return context ->cmd_done(context, self);
+	}
+}
+
+
+
+struct cmdinterface commands[]=
 {
 	{"BA",i_normal,NULL},
 //	{"BP",
 	{"BO",i_normal,NULL},
 	{"BR",i_normal,NULL},
-	{"BQ",
+//	{"BQ",
 	{"BU",i_normal,NULL},
 	{"BX",i_parm,NULL},
 	{"BY",i_parm,NULL},
@@ -82,7 +170,7 @@ struct cmdinterface *commands[]=
 	{"GE",i_normal,NULL},
 	{"GL",i_normal,NULL},
 	{"HT",i_normal,NULL},
-	{"IF",i_normal,NULL},
+	{"IF",i_normal,icmdif},
 	{"IN",i_normal,NULL},
 	{"JS",i_normal,NULL},
 	{"LA",i_normal,NULL},
@@ -102,26 +190,28 @@ struct cmdinterface *commands[]=
 	{"RT",i_normal,NULL},
 //	{"RU",
 	{"TH",i_parm,NULL},
-	{"TL",i_param,NULL },
+	{"TL",i_parm,NULL },
 	{"TW",i_parm,NULL},
 	{"UN",i_normal,NULL},
-	{"VA",i_parm,NULL},
+	{"VA",i_parm,icmdvar},
 	{"VT",i_normal,NULL},
 	{"XB",i_parm,NULL},
 	{"XY",i_parm,NULL},
 	{"YB",i_parm,NULL},
 	{"ZN",i_parm,NULL},
-	{"=",i_parm,NULL},
-	{";",i_normal,NULL},
+	{"=",i_parm,icmdequal },
+	{";",i_normal,icmdnextcmd},
 	{"[",i_normal,NULL},
 	{"]",i_normal,NULL},
 	{",",i_parm,NULL},
 	{"+",i_parm,NULL},
 	{"-",i_parm,NULL},
 	{"/",i_parm,NULL},
-	{"%",i_parm,NULL},
+//	{"%",i_parm,NULL},
 	{NULL,i_normal, NULL}
 };
+
+
 
 void remove_lower_case(char *txt)
 {
@@ -159,14 +249,14 @@ void remove_lower_case(char *txt)
 
 int find_command( char *at, int &l )
 {
-	const char **cmd;
+	struct cmdinterface *cmd;
 	int num = 0;
 	char c;
 
-	for (cmd = commands; *cmd ; cmd++)
+	for (cmd = commands; cmd -> name; cmd++)
 	{
-		l = strlen(*cmd);
-		if (strncmp(*cmd,at,l)==0)
+		l = strlen(cmd -> name);
+		if (strncmp(cmd -> name,at,l)==0)
 		{
 			c = *(at+l);
 			if ( ! ((c <= 'A') && (c >= 'Z')) )	return num;
@@ -202,11 +292,26 @@ void dump(char *txt)
 	printf("\n");
 }
 
+void push_context_num(struct cmdcontext *context, int num)
+{
+	struct stack &self = context -> stack[context -> stackp];
+	self.type = 0;
+	self.num = num;
+	context -> stackp++;
+
+	printf("push %d\n",num);
+}
+
 void read_script(char *script)
 {
 	int cmd;
 	int l;
 	int num;
+	struct cmdcontext context;
+
+	context.vars[0]=1;
+	context.stackp = 0;
+
 	char *at = script;
 
 	while (*at != 0)
@@ -220,11 +325,19 @@ void read_script(char *script)
 		{
 			if (is_number(at, num, l))
 			{
-				printf("%d\n",num);
+				push_context_num( &context, num );
 			}
 			else 	break;
 		}
-		else 	printf ("%s\n", commands[cmd] );
+		else 	
+		{
+			struct cmdinterface *icmd = &commands[cmd];
+			if (icmd -> cmd)
+			{
+				icmd -> cmd( &context, icmd );
+			}
+			else printf("ignored %s\n", icmd -> name);
+		}
 
 		at += l;
 	}
