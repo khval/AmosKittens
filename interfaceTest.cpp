@@ -50,16 +50,18 @@ struct cmdcontext
 	struct stack stack[10];
 	uint32_t vars[512];	
 	uint32_t labels[512];
-	char *(*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
+	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
 	int error;
+	char *at;
+	int l;
 };
 
 struct cmdinterface
 {
 	const char *name;
 	int type;
-	char *(*cmd)( struct cmdcontext *context, struct cmdinterface *self );
+	void (*cmd)( struct cmdcontext *context, struct cmdinterface *self );
 };
 
 enum
@@ -72,19 +74,76 @@ enum
 void push_context_num(struct cmdcontext *context, int num);
 
 
-char *_icmdif( struct cmdcontext *context, struct cmdinterface *self )
+void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
 {
+	char *at;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	at = context->at;
+
+	if (context -> stackp > 0)
+	{
+		struct stack &arg1 = context -> stack[context -> stackp-1];
+
+		// check if value is number and is false.
+
+		if  (( arg1.type == type_int ) && (arg1.num == 0))
+		{
+			int count = 0;
+
+			if (*at)
+			{
+				at++;
+				if (*at=='[')	// next is a block.
+				{
+					count = 0;
+					while (*at)
+					{
+						switch (*at )
+						{
+							case '[': count ++;	break;
+							case ']': count --;	
+								break;
+						}
+
+						if (count == 0)
+						{
+							context->at =at+1;		// set new location.
+							context->l = 0;		// reset length of command.
+			
+							printf("%s\n",context->at);
+
+
+							break;
+						}
+						at ++;
+					}
+				}
+				else	// skip next command.
+				{
+					while (*at)
+					{
+						if (*at == ';')
+						{
+							context->at =at+1;		// set new location.
+							context->l = 0;		// reset length of command.
+							break;
+						}
+						at ++;
+					}
+				}
+			}
+		}	else context -> error = 1;
+	} else context -> error = 1;
 }
 
-char *icmdif( struct cmdcontext *context, struct cmdinterface *self )
+void icmdif( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmdif;
 	context -> args = 1;
 }
 
-char *icmdvar( struct cmdcontext *context, struct cmdinterface *self )
+void icmdvar( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -119,7 +178,7 @@ void pop_context( struct cmdcontext *context, int pop )
 	}
 }
 
-char *icmdequal( struct cmdcontext *context, struct cmdinterface *self )
+void icmdequal( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -140,7 +199,7 @@ char *icmdequal( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-char *icmdnextcmd( struct cmdcontext *context, struct cmdinterface *self )
+void icmdnextcmd( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -148,6 +207,7 @@ char *icmdnextcmd( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> cmd_done)
 	{
 		return context ->cmd_done(context, self);
+		context ->cmd_done = NULL;
 	}
 }
 
@@ -305,25 +365,25 @@ void push_context_num(struct cmdcontext *context, int num)
 void read_script(char *script)
 {
 	int cmd;
-	int l;
+	int n;
 	int num;
 	struct cmdcontext context;
 
-	context.vars[0]=1;
+	for (n=0;n<10;n++) context.vars[n]=n*10;
+
+	 context.vars[0] = 2; 
+
 	context.stackp = 0;
+	context.at = script;
 
-	char *at = script;
-
-	while (*at != 0)
+	while (*context.at != 0)
 	{
-		while (*at==' ') at++;
+		while (*context.at==' ') context.at++;
 
-//		dump( at );
-
-		cmd = find_command( at, l );
+		cmd = find_command( context.at, context.l );
 		if (cmd == -1) 
 		{
-			if (is_number(at, num, l))
+			if (is_number(context.at, num, context.l))
 			{
 				push_context_num( &context, num );
 			}
@@ -339,7 +399,7 @@ void read_script(char *script)
 			else printf("ignored %s\n", icmd -> name);
 		}
 
-		at += l;
+		context.at += context.l;
 	}
 
 }
