@@ -139,15 +139,18 @@ char *guiDialogStr(nativeCommand *cmd, char *tokenBuffer)
 
 //---
 
+extern void execute_interface_script(char *script);
+
 char *_guiDialogBox( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
-	const char *script = NULL;
+	char *script = NULL;
 
 	switch (args)
 	{
 		case 1:	script = getStackString(stack);
+				execute_interface_script( script);
 				break;
 		default:
 				setError(22,data->tokenBuffer);

@@ -676,12 +676,13 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		stack++;
 	}
 
+	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
+
 	setStackNum( *((int *) ptr) );
-
-//	printf("num is %d\n",*((int *) ptr) );
-
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack( next_token );
+
+	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 	return ptr;
 }
@@ -730,7 +731,6 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		unsigned int data = *((unsigned int *) ptr);
 		unsigned int number1 = data >> 8;
 		int e = (data & 0x3F) ;
-		int n;
 
 		if ( (data & 0x40)  == 0)	e = -(65 - e);
 
@@ -739,7 +739,7 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 		f += (_float[ (number1  & 0xFF00) >> 8 ] ) / (double) (1<<8);
 		f += _float[ (number1  & 0xFF) ]  / (double) (1<<16);
 #else
-		for (n=23;n>-1;n--)
+		for (int n=23;n>-1;n--)
 		{
 			if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
 		}
@@ -1264,6 +1264,7 @@ struct nativeCommand nativeCommands[]=
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
+	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
 	{0x2704,"Dialog Box",0,guiDialogBox },
 	{0x2742,"Dialog Open",0,guiDialogOpen },
 	{0x2750,"Dialog Close",0,guiDialogClose },

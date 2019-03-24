@@ -45,6 +45,7 @@ main_objects = commands.cpp \
 			os/amigaos/stuff.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
+			interfacelanguage.cpp \
 			ext_compact.cpp \
 			ext_turbo.cpp \
 			debug.cpp \
