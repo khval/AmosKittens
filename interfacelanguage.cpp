@@ -61,6 +61,7 @@ struct dialog
 struct cmdcontext
 {
 	int stackp;
+	int lstackp;
 	struct ivar stack[10];
 	struct ivar vars[512];	
 	uint32_t labels[512];
@@ -86,14 +87,16 @@ enum
 };
 
 
-void isetvarstr( struct cmdcontext *context,char *str);
-void isetvarnum( struct cmdcontext *context,int num);
+void isetvarstr( struct cmdcontext *context, int index, char *str );
+void isetvarnum( struct cmdcontext *context, int index, int num );
 
 void dump_context_stack( struct cmdcontext *context );
 void pop_context( struct cmdcontext *context, int pop );
 void push_context_num(struct cmdcontext *context, int num);
 void push_context_string(struct cmdcontext *context, char *str);
 void push_context_var(struct cmdcontext *context, int num);
+
+
 
 
 void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
@@ -163,6 +166,7 @@ void icmdif( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmdif;
+	context -> lstackp = context -> stackp;
 	context -> args = 1;
 }
 
@@ -193,6 +197,7 @@ void icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmddialogsize;
+	context -> lstackp = context -> stackp;
 	context -> args = 2;
 }
 
@@ -206,15 +211,34 @@ void _icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
 	{
 		struct retroScreen *screen = screens[current_screen];
 
-		int x = context -> stack[context -> stackp-4].num;
-		int y = context -> stack[context -> stackp-3].num;
-		char *txt  = context -> stack[context -> stackp-2].str;
-		int o = context -> stack[context -> stackp-1].num;
+		if (screen)
+		{
+			int x = context -> stack[context -> stackp-4].num;
+			int y = context -> stack[context -> stackp-3].num;
+			int o = context -> stack[context -> stackp-1].num;
 
-		x+=context -> dialog.x;
-		y+=context -> dialog.y;
+			x+=context -> dialog.x;
+			y+=context -> dialog.y;
 
-		if ((txt)&&(screen))	os_text(screen, x,y,txt);
+			switch ( context -> stack[context -> stackp-2].type )
+			{
+				case type_string:
+					{
+						char *txt  = context -> stack[context -> stackp-2].str;
+						if (txt) os_text(screen, x,y,txt);
+					}
+					break;
+
+				case type_int:
+					{
+						char txt[30];
+						int n = context -> stack[context -> stackp-2].num;
+						sprintf( txt, "%d", n);
+						os_text(screen, x,y,txt);
+					}
+					break;
+			}
+		}
 	}
 
 	pop_context( context, 4 );
@@ -225,7 +249,24 @@ void icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmdPrint;
+	context -> lstackp = context -> stackp;
 	context -> args = 4;
+}
+
+void icmdComma( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> cmd_done)
+	{
+		printf("args %d found args %d\n",context -> stackp - context -> lstackp, context -> args );
+
+		if ((context -> stackp - context -> lstackp) == context -> args)
+		{
+			context ->cmd_done(context, self);
+			context ->cmd_done = NULL;	
+		}
+	}
 }
 
 void _icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
@@ -256,8 +297,52 @@ void icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmdPrintOutline;
+	context -> lstackp = context -> stackp;
 	context -> args = 5;
 }
+
+// icmdSetVar
+
+void _icmdSetVar( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=2)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int ) 
+		{
+			switch ( arg2.type )
+			{
+				case type_int:
+					isetvarnum( context, arg1.num, arg2.num );
+					break;
+
+				case type_string:
+					 isetvarstr( context, arg1.num, arg2.str);
+					arg2.str = NULL;		// move not free ;-)
+					break;
+
+			}
+		}
+
+		pop_context( context, 2);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmdSetVar( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmdSetVar;
+	context -> lstackp = context -> stackp;
+	context -> args = 2;
+}
+
+// ----
 
 void _icmdInk( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -610,6 +695,7 @@ struct cmdinterface commands[]=
 	{"SI",i_normal,icmddialogsize},
 	{"SM",i_parm,NULL},
 	{"SP",i_normal,NULL},
+	{"SV",i_normal,icmdSetVar },
 	{"SW",i_parm,icmdScreenWidth},
 	{"SX",i_parm,icmdSizeX},
 	{"SY",i_parm,icmdSizeY},
@@ -629,7 +715,7 @@ struct cmdinterface commands[]=
 	{";",i_normal,icmdnextcmd},
 	{"[",i_normal,NULL},
 	{"]",i_normal,NULL},
-	{",",i_parm,NULL},
+	{",",i_parm,icmdComma},
 	{"+",i_parm,icmdplus},
 	{"-",i_parm,icmdminus},
 	{"*",i_parm,icmdmul},
@@ -823,6 +909,9 @@ void execute_interface_script(char *script)
 
 	isetvarnum(&context,0,2); 
 	isetvarstr(&context,1,"Hello World");
+
+	context.dialog.x = 0;
+	context.dialog.y = 0;
 
 	context.stackp = 0;
 	context.at = script;
