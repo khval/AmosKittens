@@ -1265,7 +1265,8 @@ struct nativeCommand nativeCommands[]=
 	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, cmdEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
-	{0x2704,"Dialog Box",0,guiDialogBox },
+	{0x2704,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$,value,b$)
+	{0x2710,"Dialog Box",0,guiDialogBox },		// d=Dialog Box(a$,value,b$,n,n)
 	{0x2742,"Dialog Open",0,guiDialogOpen },
 	{0x2750,"Dialog Close",0,guiDialogClose },
 	{0x277E,"Dialog Run", 0, guiDialogRun },
