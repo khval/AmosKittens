@@ -29,6 +29,8 @@
 #include "errors.h"
 #include "engine.h"
 
+#include "interfacelanguage.h"
+
 extern int last_var;
 extern struct globalVar globalVars[];
 extern struct retroScreen *screens[8] ;
@@ -137,21 +139,54 @@ char *guiDialogStr(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-//---
-
-extern void execute_interface_script(char *script);
 
 char *_guiDialogBox( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	char *script = NULL;
+	struct cmdcontext context;
 
 	switch (args)
 	{
-		case 1:	script = getStackString(stack);
-				execute_interface_script( script);
+		case 1:
+				{
+					script = getStackString(stack);
+					init_interface_context( &context, 0, 0 );
+					execute_interface_script( &context, script );
+				}
 				break;
+
+		case 3:	
+				{
+					script = getStackString(stack-2);
+					int var1 = getStackNum(stack-1);
+					char *var2s = getStackString(stack);
+
+					init_interface_context( &context, 0, 0 );
+
+					isetvarnum( &context,0,var1); 
+					if (var2s) isetvarstr( &context,1,var2s);
+					execute_interface_script( &context, script );
+				}
+				break;
+
+		case 5:
+				{
+					script = getStackString(stack-4);
+					int var1 = getStackNum(stack-3);
+					char *var2s = getStackString(stack-2);
+					int x = getStackNum(stack-1);
+					int y = getStackNum(stack);
+
+					init_interface_context( &context, x, y );
+
+					isetvarnum( &context,0,var1); 
+					if (var2s) isetvarstr( &context,1,var2s);
+					execute_interface_script( &context, script );
+				}
+				break;
+
 		default:
 				setError(22,data->tokenBuffer);
 	}

@@ -37,54 +37,12 @@ extern FILE *engine_fd;
 #include "AmalCompiler.h"
 #include "pass1.h"
 #include "AmosKittens.h"
+#include "interfacelanguage.h"
 
 extern int current_screen;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
-
-struct ivar
-{
-	int type;
-	int num;
-	char *str;
-};
-
-struct dialog
-{
-	int x;
-	int y;
-	int width;
-	int height;
-};
-
-struct cmdcontext
-{
-	int stackp;
-	int lstackp;
-	struct ivar stack[10];
-	struct ivar vars[512];	
-	uint32_t labels[512];
-	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
-	int args;
-	int error;
-	char *at;
-	int l;
-	struct dialog dialog;
-};
-
-struct cmdinterface
-{
-	const char *name;
-	int type;
-	void (*cmd)( struct cmdcontext *context, struct cmdinterface *self );
-};
-
-enum
-{
-	i_normal,
-	i_parm
-};
 
 
 void isetvarstr( struct cmdcontext *context, int index, char *str );
@@ -95,8 +53,6 @@ void pop_context( struct cmdcontext *context, int pop );
 void push_context_num(struct cmdcontext *context, int num);
 void push_context_string(struct cmdcontext *context, char *str);
 void push_context_var(struct cmdcontext *context, int num);
-
-
 
 
 void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
@@ -895,45 +851,50 @@ void dump_context_stack( struct cmdcontext *context )
 	}
 }
 
-void execute_interface_script(char *script)
+void init_interface_context( struct cmdcontext *context, int x, int y )
+{
+	int n;
+	bzero( context, sizeof( struct cmdcontext ) );
+
+	for (n=0;n<10;n++) isetvarnum(context,n,n*10);
+
+	context -> dialog.x = x;
+	context -> dialog.y = y;
+}
+
+void execute_interface_script( struct cmdcontext *context, char *script)
 {
 	int cmd;
 	int n;
 	int num;
 	char *str = NULL;
-	struct cmdcontext context;
 
 	remove_lower_case( script );
 
-	for (n=0;n<10;n++) isetvarnum(&context,n,n*10);
+	isetvarnum(context,0,2); 
+	isetvarstr(context,1,"Hello World");
 
-	isetvarnum(&context,0,2); 
-	isetvarstr(&context,1,"Hello World");
+	context -> stackp = 0;
+	context -> at = script;
 
-	context.dialog.x = 0;
-	context.dialog.y = 0;
-
-	context.stackp = 0;
-	context.at = script;
-
-	while (*context.at != 0)
+	while (*context -> at != 0)
 	{
-		while (*context.at==' ') context.at++;
+		while (*context -> at==' ') context -> at++;
 
-		printf("{%s}\n",context.at);
+		printf("{%s}\n",context -> at);
 
-		cmd = find_command( context.at, context.l );
+		cmd = find_command( context -> at, context -> l );
 		if (cmd == -1) 
 		{
 			printf("not found\n");
 
-			if (is_string(context.at, str, context.l) )
+			if (is_string(context -> at, str, context -> l) )
 			{
-				push_context_string( &context, str );
+				push_context_string( context, str );
 			}
-			else 	if (is_number(context.at, num, context.l))
+			else 	if (is_number(context -> at, num, context -> l))
 			{
-				push_context_num( &context, num );
+				push_context_num( context, num );
 			}
 			else 	break;
 		}
@@ -942,14 +903,14 @@ void execute_interface_script(char *script)
 			struct cmdinterface *icmd = &commands[cmd];
 			if (icmd -> cmd)
 			{
-				icmd -> cmd( &context, icmd );
+				icmd -> cmd( context, icmd );
 			}
 			else printf("ignored %s\n", icmd -> name);
 		}
 
-		context.at += context.l;
+		context -> at += context -> l;
 
-		dump_context_stack( &context );
+		dump_context_stack( context );
 	}
 }
 
