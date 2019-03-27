@@ -26,6 +26,9 @@ struct cmdcontext
 	int error;
 	char *at;
 	int l;
+	int ink0;
+	int ink1;
+	int ink3;
 	struct dialog dialog;
 };
 

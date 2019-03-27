@@ -158,6 +158,7 @@ void icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
 }
 
 extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
+void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
 
 void _icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -233,16 +234,21 @@ void _icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 	{
 		struct retroScreen *screen = screens[current_screen];
 
-		int x = context -> stack[context -> stackp-5].num;
-		int y = context -> stack[context -> stackp-4].num;
-		char *txt = context -> stack[context -> stackp-3].str;
-		int o1 = context -> stack[context -> stackp-2].num;
-		int o2 = context -> stack[context -> stackp-1].num;
+		if (screen)
+		{
 
-		x+=context -> dialog.x;
-		y+=context -> dialog.y;
+			int x = context -> stack[context -> stackp-5].num;
+			int y = context -> stack[context -> stackp-4].num;
+			char *txt = context -> stack[context -> stackp-3].str;
+			uint16_t pen = context -> stack[context -> stackp-2].num;
+			uint16_t outline = context -> stack[context -> stackp-1].num;
 
-		if ((txt)&&(screen))	os_text(screen, x,y,txt);
+			x+=context -> dialog.x;
+			y+=context -> dialog.y;
+
+			if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
+
+		}
 	}
 
 	pop_context( context, 5);
@@ -304,6 +310,13 @@ void _icmdInk( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (context -> stackp>=3)
+	{
+		context -> ink0  = context -> stack[context -> stackp-3].num;
+		context -> ink1 -= context ->  stack[context -> stackp-2].num;
+		context -> ink3 = context -> stack[context -> stackp-1].num;
+	}
+
 	pop_context( context, 3);
 	context -> cmd_done = NULL;
 }
@@ -329,11 +342,11 @@ void _icmdGraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 		int y1 = context -> stack[context -> stackp-1].num;
 
 		x0+=context -> dialog.x;
-		x1+=context -> dialog.x;
 		y0+=context -> dialog.y;
+		x1+=context -> dialog.x;
 		y1+=context -> dialog.y;
 
-		if (screen) retroBox( screen, x0,y0,x1,y1,screen -> ink0 );
+		if (screen) retroBAR( screen, x0,y0,x1,y1,context -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -373,6 +386,31 @@ void icmdBase( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmdBase;
 	context -> args = 2;
+}
+
+void _icmdSave( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+
+		if ( arg1.type == type_int ) 
+		{		
+		}
+
+		pop_context( context, 1);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmdSave( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmdSave;
+	context -> args = 1;
 }
 
 void icmdvar( struct cmdcontext *context, struct cmdinterface *self )
@@ -620,6 +658,21 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 	var.num = num;
 }
 
+struct cmdinterface symbols[]=
+{
+	{"=",i_parm,icmdequal },
+	{";",i_normal,icmdnextcmd},
+	{"[",i_normal,NULL},
+	{"]",i_normal,NULL},
+	{",",i_parm,icmdComma},
+	{"+",i_parm,icmdplus},
+	{"-",i_parm,icmdminus},
+	{"*",i_parm,icmdmul},
+	{"/",i_parm,icmddiv},
+//	{"%",i_parm,NULL},
+	{NULL,i_normal, NULL}
+};
+
 struct cmdinterface commands[]=
 {
 	{"BA",i_normal,icmdBase},
@@ -646,7 +699,7 @@ struct cmdinterface commands[]=
 	{"PR",i_normal,icmdPrint},
 	{"PO",i_normal,icmdPrintOutline},
 	{"ME",i_parm,NULL},
-	{"SA",i_normal,NULL},
+	{"SA",i_normal,icmdSave},
 	{"SH",i_parm,icmdScreenHeight},
 	{"SI",i_normal,icmddialogsize},
 	{"SM",i_parm,NULL},
@@ -728,6 +781,23 @@ bool is_command( char *at )
 	}
 	return false;
 }
+
+
+int find_symbol( char *at, int &l )
+{
+	struct cmdinterface *cmd;
+	int num = 0;
+	char c;
+
+	for (cmd = symbols; cmd -> name; cmd++)
+	{
+		l = 1;
+		if ( *(cmd -> name)  == *at ) return num;
+		num++;
+	}
+	return -1;
+}
+
 
 int find_command( char *at, int &l )
 {
@@ -864,7 +934,7 @@ void init_interface_context( struct cmdcontext *context, int x, int y )
 
 void execute_interface_script( struct cmdcontext *context, char *script)
 {
-	int cmd;
+	int sym,cmd;
 	int n;
 	int num;
 	char *str = NULL;
@@ -883,29 +953,41 @@ void execute_interface_script( struct cmdcontext *context, char *script)
 
 		printf("{%s}\n",context -> at);
 
-		cmd = find_command( context -> at, context -> l );
-		if (cmd == -1) 
-		{
-			printf("not found\n");
+		sym = find_symbol( context -> at, context -> l );
 
-			if (is_string(context -> at, str, context -> l) )
-			{
-				push_context_string( context, str );
-			}
-			else 	if (is_number(context -> at, num, context -> l))
-			{
-				push_context_num( context, num );
-			}
-			else 	break;
-		}
-		else 	
+		if (sym != -1)
 		{
-			struct cmdinterface *icmd = &commands[cmd];
+			struct cmdinterface *icmd = &symbols[sym];
 			if (icmd -> cmd)
 			{
 				icmd -> cmd( context, icmd );
 			}
 			else printf("ignored %s\n", icmd -> name);
+		}
+		else
+		{
+			cmd = find_command( context -> at, context -> l );
+			if (cmd == -1) 
+			{
+				if (is_string(context -> at, str, context -> l) )
+				{
+					push_context_string( context, str );
+				}
+				else 	if (is_number(context -> at, num, context -> l))
+				{
+					push_context_num( context, num );
+				}
+				else 	break;
+			}
+			else 	
+			{
+				struct cmdinterface *icmd = &commands[cmd];
+				if (icmd -> cmd)
+				{
+					icmd -> cmd( context, icmd );
+				}
+				else printf("ignored %s\n", icmd -> name);
+			}
 		}
 
 		context -> at += context -> l;

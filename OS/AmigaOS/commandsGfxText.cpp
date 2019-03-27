@@ -88,6 +88,50 @@ void os_text(struct retroScreen *screen,int x, int y, char *txt)
 	retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
 }
 
+void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline)
+{
+	struct TextExtent te;
+	int l = strlen(txt);
+	int tl;
+	ULONG mode;
+
+       mode = GetDrMd( &font_render_rp );
+
+	TextExtent( &font_render_rp, txt, strlen( txt), &te );
+	tl = TextLength(&font_render_rp, txt, l );
+
+	RectFill ( &font_render_rp, 0,0, tl,te.te_Height );
+
+	retroScreenToBitmap( screen, x , y-10, tl,te.te_Height, font_render_rp.BitMap, 0 , 0);
+
+	SetDrMd( &font_render_rp, JAM1 );
+
+	SetAPen( &font_render_rp, outline );
+
+		Move( &font_render_rp, 1,-te.te_Extent.MinY-1 );
+		Text( &font_render_rp, txt, l );
+
+		Move( &font_render_rp, 1,-te.te_Extent.MinY+1 );
+		Text( &font_render_rp, txt, l );
+
+		Move( &font_render_rp, 0,-te.te_Extent.MinY );
+		Text( &font_render_rp, txt, l );
+
+		Move( &font_render_rp, 2,-te.te_Extent.MinY );
+		Text( &font_render_rp, txt, l );
+
+	SetAPen( &font_render_rp, pen );
+
+		Move( &font_render_rp, 1,-te.te_Extent.MinY );
+		Text( &font_render_rp, txt, l );
+
+
+	SetDrMd( &font_render_rp, mode );	// restore mode
+
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
+}
+
+
 char *_gfxText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
