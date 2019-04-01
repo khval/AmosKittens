@@ -1179,15 +1179,11 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 							len = *( (unsigned short *) pos );
 							pos+=2;
 
-							printf("len %0x\n",len);
-
-							if (len == 0) break;
-
 							if (len == 255) break;
 
 							if (id == 1) 
 							{
-								ret = strndup( (const char *) pos,len);
+								if (len>0) ret = strndup( (const char *) pos,len);
 								break;
 							}
 
@@ -1195,10 +1191,6 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 							id--;
 						}			
 					}
-
-					Printf("Looking for stuff in resource\n");
-
-					getchar();
 				}
 				else if (id == 0)
 				{
