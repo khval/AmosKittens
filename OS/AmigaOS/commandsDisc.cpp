@@ -442,6 +442,14 @@ char *amos_to_amiga_pattern(const char *amosPattern)
 	char *amigaPattern;
 	const char *s;
 	char *d;
+	const char *end_of_path = NULL;
+
+	for (s = amosPattern; *s ;  s++) 
+	{
+		if ((*s=='/') || (*s==':')) end_of_path=s;
+	}
+
+	if (end_of_path) amosPattern=end_of_path+1;
 
 	for (s = amosPattern; *s ;  s++) _new_len += (*s == '*') ? 2 : 1;
 
