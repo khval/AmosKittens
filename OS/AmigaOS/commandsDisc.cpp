@@ -239,6 +239,18 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 
 		switch (args)
 		{
+			case 1:
+					_path_ = getStackString( stack );
+
+					amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+
+					success = AslRequestTags( (void *) filereq, 
+						ASLFR_DrawersOnly, FALSE,	
+						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
+						ASLFR_DoPatterns, TRUE,
+						TAG_DONE );
+					break;
+
 			case 3:
 					_path_ = getStackString( stack -2 );
 					_default_ = getStackString( stack -1 );
