@@ -1154,7 +1154,7 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	id = getStackNum(stack-1);
+		case 1:	id = getStackNum(stack);
 
 				if (id>0)
 				{
