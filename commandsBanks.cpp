@@ -720,6 +720,9 @@ void init_banks( char *data , int size)
 					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 					if (strncmp(id,"AmBs",4)==0)
 					{
+
+						printf("file offset = %d\n", fd.off);
+
 						mread( &banks, 2, 1, fd);
 #ifdef __LITTLE_ENDIAN__
 						banks = __bswap_16(banks);
@@ -1150,7 +1153,7 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int id;
-	const char *ret = NULL;
+	char *ret = NULL;
 
 	switch (args)
 	{
@@ -1158,15 +1161,52 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 
 				if (id>0)
 				{
+					struct kittyBank *bank1;
+
+					bank1 = findBank(16);
+
+					if (bank1)
+					{
+						struct resourcebank_header *header = (resourcebank_header*) bank1->start;
+						unsigned char *pos = (unsigned char *) bank1->start;
+						unsigned short len;
+						char *str;
+
+						pos += header -> var_offset; 
+
+						for(;;)
+						{
+							len = *( (unsigned short *) pos );
+							pos+=2;
+
+							printf("len %0x\n",len);
+
+							if (len == 0) break;
+
+							if (len == 255) break;
+
+							if (id == 1) 
+							{
+								ret = strndup( (const char *) pos,len);
+								break;
+							}
+
+							pos+=len;
+							id--;
+						}			
+					}
+
 					Printf("Looking for stuff in resource\n");
+
+					getchar();
 				}
 				else if (id == 0)
 				{
-					ret = AmosKittensSystem;
+					ret = strdup(AmosKittensSystem);
 				}
 				if ((id >=-1 )&&(id <=-9))	// Default file names
 				{
-					ret = DefaultFileNames[ (-id)-1];
+					ret = strdup( DefaultFileNames[ (-id)-1] );
 				}
 				else if ((id >=-10 )&&(id <=-36))	// name of extentions
 				{
@@ -1179,7 +1219,13 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-	setStackStrDup( ret ? ret : "" );
+
+	if (ret)
+	{
+		setStackStr( ret );
+	}
+	else setStackStrDup( "" );
+
 
 	return NULL;
 }
