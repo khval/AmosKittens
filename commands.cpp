@@ -1217,10 +1217,6 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		setError(22,tokenBuffer);
 	}
 
-	dump_prog_stack();
-
-	getchar();
-
 	return tokenBuffer;
 }
 
