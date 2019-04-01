@@ -921,31 +921,33 @@ void dump_context_stack( struct cmdcontext *context )
 	}
 }
 
-void init_interface_context( struct cmdcontext *context, int x, int y )
+void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y )
 {
 	int n;
 	bzero( context, sizeof( struct cmdcontext ) );
 
-	for (n=0;n<10;n++) isetvarnum(context,n,n*10);
+//	for (n=0;n<10;n++) isetvarnum(context,n,n*10);
+
+	remove_lower_case( script );
+
+	context -> id = id;
+	context -> stackp = 0;
+	context -> script = strdup( script );
+	context -> at = context -> script;
 
 	context -> dialog.x = x;
 	context -> dialog.y = y;
 }
 
-void execute_interface_script( struct cmdcontext *context, char *script)
+void execute_interface_script( struct cmdcontext *context)
 {
 	int sym,cmd;
 	int n;
 	int num;
 	char *str = NULL;
 
-	remove_lower_case( script );
-
 	isetvarnum(context,0,2); 
 	isetvarstr(context,1,"Hello World");
-
-	context -> stackp = 0;
-	context -> at = script;
 
 	while (*context -> at != 0)
 	{

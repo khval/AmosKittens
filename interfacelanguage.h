@@ -16,6 +16,7 @@ struct dialog
 
 struct cmdcontext
 {
+	int id;
 	int stackp;
 	int lstackp;
 	struct ivar stack[10];
@@ -24,6 +25,7 @@ struct cmdcontext
 	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
 	int error;
+	char *script;
 	char *at;
 	int l;
 	int ink0;
@@ -48,6 +50,6 @@ enum
 
 extern void isetvarstr( struct cmdcontext *context,int index, char *str);
 extern void isetvarnum( struct cmdcontext *context,int index,int num);
-extern void init_interface_context( struct cmdcontext *context, int x, int y );
-extern void execute_interface_script( struct cmdcontext *context, char *script);
+extern void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y );
+extern void execute_interface_script( struct cmdcontext *context);
 
