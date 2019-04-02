@@ -107,6 +107,7 @@ char *_copy_until_len(char *adr, int _len)
 		}
 		*d= 0;
 	}
+	return ret;
 }
 
 char *_copy_until_char(char *adr, char t)
