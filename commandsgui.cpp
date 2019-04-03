@@ -322,6 +322,31 @@ char *_set_interface_command ( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *_set_interface_str_command ( struct glueCommands *data, int nextToken ) 
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (_set_interface_!=-1)
+	{
+		struct cmdcontext *item = find_interface_context(_set_interface_);
+
+		printf("set interface %d var %d\n",_set_interface_,_set_var_);
+
+		if (item)
+		{
+			char *str = getStackString(stack);
+			if (str)
+			{
+				isetvarstr( item,_set_var_, str); 
+			}
+		}
+		else setError(22,data->tokenBuffer);
+	}
+
+	_do_set = _setVar;
+	return NULL;
+}
+
 char *_guiVdialog( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -348,6 +373,35 @@ char *_guiVdialog( struct glueCommands *data, int nextToken )
 char *guiVdialog(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _guiVdialog, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_guiVdialogStr( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+
+	_set_interface_ = -1;
+
+	switch (args)
+	{
+		case 2:	_set_interface_ = getStackNum(stack-1);
+				_set_var_ = getStackNum(stack);
+				_do_set = _set_interface_str_command;
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+char *guiVdialogStr(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _guiVdialogStr, tokenBuffer );
 	return tokenBuffer;
 }
 
