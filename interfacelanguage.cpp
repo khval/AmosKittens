@@ -394,7 +394,7 @@ void _icmdSave( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=1)
 	{
-		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
 
 		if ( arg1.type == type_int ) 
 		{		
