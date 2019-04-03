@@ -45,6 +45,50 @@ std::vector<struct cmdcontext *> icmdcontexts;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
+uint16_t getWord( char *adr, int &pos )
+{
+	short ret = *((uint16_t *) (adr + pos));
+	pos+=2;
+	return ret;
+}
+
+uint32_t getLong( char *adr, int &pos )
+{
+	short ret = *((uint32_t *) (adr + pos));
+	pos+=4;
+	return ret;
+}
+
+void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
+{
+	struct kittyBank *bank1;
+
+	bank1 = findBank(16);
+
+	if (bank1)
+	{
+		struct resourcebank_header *header = (resourcebank_header*) bank1->start;
+		int hunk,pos,adr_gfx,pupics,color,colors,mode,n;
+
+		hunk = header -> img_offset ;
+   		pos=hunk; 
+		adr_gfx = hunk;
+
+		pupics = getWord( bank1->start, pos );
+
+   		pos = hunk =adr_gfx+2+pupics*4 ;
+
+		colors = getWord( bank1->start, pos );
+		mode = getWord( bank1->start, pos );
+
+  		for ( n= 0; n<32; n++)
+		{
+			color = getWord( bank1->start, pos );
+			retroScreenColor( screen, n, ((color & 0xF00) >> 8) * 0x11, ((color & 0xF0) >> 4) * 0x11,  ((color & 0xF)) * +0x11 );
+		}
+	}
+}
+
 
 struct cmdcontext *find_interface_context(int id)
 {
@@ -458,12 +502,9 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 					if (screen = screens[screen_num])
 					{
 						init_amos_kittens_screen_default_text_window(screen, 64);
-						init_amos_kittens_screen_default_colors(screen);
-						draw_cursor(screen);
+						init_amos_kittens_screen_resource_colors(screen);
+
 						retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
-
-
-						printf("looks like success to me :-)\n");
 					}
 					engine_unlock();
 				}
