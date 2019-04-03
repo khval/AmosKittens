@@ -388,6 +388,35 @@ void icmdBase( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
+void _icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=3)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-3];
+		struct ivar &arg2 = context -> stack[context -> stackp-2];
+		struct ivar &arg3 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ) && ( arg3.type == type_int ) )
+		{
+			printf("unpack %d,%d,%d\n", arg1.num, arg2.num, arg3.num);
+		}
+
+		pop_context( context, 3);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmdUnpack;
+	context -> args = 3;
+}
+
+
 void _icmdSave( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -713,7 +742,7 @@ struct cmdinterface commands[]=
 	{"TH",i_parm,NULL},
 	{"TL",i_parm,NULL },
 	{"TW",i_parm,icmdTextWidth},
-	{"UN",i_normal,NULL},
+	{"UN",i_normal,icmdUnpack},
 	{"VA",i_parm,icmdvar},
 	{"VT",i_normal,NULL},
 	{"XB",i_parm,NULL},
