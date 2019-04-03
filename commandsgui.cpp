@@ -48,7 +48,7 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
 struct cmdcontext *find_interface_context(int id)
 {
-	int n;
+	unsigned int n;
 
 	for (n=0;n<icmdcontexts.size();n++)
 	{
