@@ -88,7 +88,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 		 videomode |= retroLowres_pixeld; 
 	}
 
-	if (mode % 0x2000) videomode |= retroHam6;
+	if (mode & 0x2000) videomode |= retroHam6;
 
 	engine_lock();
 
