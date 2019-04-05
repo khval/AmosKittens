@@ -816,7 +816,6 @@ int find_symbol( char *at, int &l )
 {
 	struct cmdinterface *cmd;
 	int num = 0;
-	char c;
 
 	for (cmd = symbols; cmd -> name; cmd++)
 	{
@@ -952,10 +951,7 @@ void dump_context_stack( struct cmdcontext *context )
 
 void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y )
 {
-	int n;
 	bzero( context, sizeof( struct cmdcontext ) );
-
-//	for (n=0;n<10;n++) isetvarnum(context,n,n*10);
 
 	remove_lower_case( script );
 
@@ -971,7 +967,6 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 void execute_interface_script( struct cmdcontext *context)
 {
 	int sym,cmd;
-	int n;
 	int num;
 	char *str = NULL;
 

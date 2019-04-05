@@ -149,8 +149,8 @@ char *_guiDialog( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int guiChannel = 0;
-	int label = 0;
-	int x = 0,y = 0;
+//	int label = 0;
+//	int x = 0,y = 0;
 	const char *ret = NULL;
 
 	switch (args)
@@ -178,8 +178,8 @@ char *_guiDialogStr( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int guiChannel = 0;
-	int label = 0;
-	int x = 0,y = 0;
+//	int label = 0;
+//	int x = 0,y = 0;
 	const char *ret = NULL;
 
 	switch (args)
