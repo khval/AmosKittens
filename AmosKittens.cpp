@@ -1269,9 +1269,11 @@ struct nativeCommand nativeCommands[]=
 	{0x2710,"Dialog Box",0,guiDialogBox },		// d=Dialog Box(a$,value,b$,n,n)
 	{0x2742,"Dialog Open",0,guiDialogOpen },
 	{0x2750,"Dialog Close",0,guiDialogClose },
+	{0x2764,"Dialog Close",0,guiDialogClose },	// Dialog Close <NR>
 	{0x277E,"Dialog Run", 0, guiDialogRun },
 	{0x2796,"Dialog",0,guiDialog },
 	{0x27A4,"Vdialog",0,guiVdialog },
+	{0x27B6,"Vdialog$",0,guiVdialogStr },
 	{0x27E6,"Dialog$",0,guiDialogStr },
 	{0x2812,"Dialog Clr",0,guiDialogClr },
 	{0x2866,"Dialog Freeze",0,guiDialogFreeze },

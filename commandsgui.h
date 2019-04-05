@@ -17,6 +17,7 @@ extern char *guiDialogUnfreeze(nativeCommand *cmd, char *tokenBuffer);
 extern char *guiDialogOpen(nativeCommand *cmd, char *ptr);
 extern char *guiDialogClose(nativeCommand *cmd, char *ptr);
 extern char *guiVdialog(nativeCommand *cmd, char *ptr);
+extern char *guiVdialogStr(nativeCommand *cmd, char *ptr);
 extern char *guiDialogClr(nativeCommand *cmd, char *ptr);
 extern char *guiResourceScreenOpen(nativeCommand *cmd, char *ptr);
 
