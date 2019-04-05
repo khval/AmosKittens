@@ -38,6 +38,8 @@ extern FILE *engine_fd;
 #include "pass1.h"
 #include "AmosKittens.h"
 #include "interfacelanguage.h"
+#include "commandsBanks.h"
+#include "errors.h"
 
 extern int current_screen;
 extern struct retroScreen *screens[8] ;
@@ -53,6 +55,100 @@ void pop_context( struct cmdcontext *context, int pop );
 void push_context_num(struct cmdcontext *context, int num);
 void push_context_string(struct cmdcontext *context, char *str);
 void push_context_var(struct cmdcontext *context, int num);
+
+
+extern uint8_t getByte( char *adr, int &pos );
+extern uint16_t getWord( char *adr, int &pos );
+extern uint32_t getLong( char *adr, int &pos );
+
+void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
+{
+//	int tpos = offset_gfx+2+pn*4;
+//	int offset_picture = offset_gfx + getLong( bnk_adr, tpos  );		// picture stored here.
+
+	pn++;
+}
+
+struct __attribute__((__packed__))  __header__
+{
+	uint32_t	what;
+	uint16_t	x;
+	uint16_t	y;
+	uint16_t	w;
+	uint16_t	h1;
+	uint16_t	h2;
+};
+
+bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
+{
+	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
+	int chunks,end_offset,_len,type,id;
+	int pos,pupics;
+	int xx,yy;
+	int is_signed;
+	int offset_gfx;
+	int tpos;
+	int colors;
+	int x1,y1;
+	struct __header__ *head;
+	struct retroScreen *screen = screens[current_screen];
+
+	if (!screen) return false;
+
+	pos = 0;
+	chunks = getWord( bank1->start, pos );	// get chunks.
+
+	offset_gfx = pos = 2+chunks*4; 
+	end_offset = getLong( bank1->start, pos );
+
+	pos = header -> img_offset;
+	 
+	pupics = getWord( bank1->start, pos );
+
+	if ((block_nr<0) ||  (block_nr >= pupics)) return false;
+
+
+	printf("pupics: %d\n",pupics);
+
+	pos = header -> img_offset + 2 + block_nr*4;
+	pos = getLong( bank1->start, pos );
+
+	if (pos)
+	{
+		pos += header -> img_offset;
+
+		head = (struct __header__ *) (bank1->start + pos);
+
+
+			printf("pos %d, %d block x %d,y %d,w %d,h %d\n",
+				x0,
+				y0,
+				head->x*8,
+				head->y,
+				head->w*8,
+				head->h1*head->h2);
+
+		x1 = x0 + (head->w*8);
+		y1 = y0 + (head->h1*head->h2);
+
+		is_signed =  getByte( bank1->start, pos );
+		type = getByte( bank1->start, pos );
+
+		printf("%x,%x\n",is_signed, type);
+
+		type = is_signed ? -type : type;
+		id = getWord( bank1->start, pos );
+
+		printf("pn: % 2d, type: % 4d, id: %04x\n", block_nr, type, id);
+
+		retroBox( screen, x0,y0,x1,y1, 3 );
+
+		return true;		
+	}
+
+
+	return false;
+}
 
 
 void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
@@ -156,6 +252,36 @@ void icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
 }
+
+void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = NULL;
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int )
+		{
+			context -> labels[arg1.num] = context -> at;
+		}
+
+		pop_context( context, 2 );
+	}
+	else context -> error = 1;
+
+
+}
+
+void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _ipass_label;
+	context -> lstackp = context -> stackp;
+	context -> args = 2;
+}
+
 
 extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
 void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
@@ -388,6 +514,39 @@ void icmdBase( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
+void _icmdJump( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int ) 
+		{
+			char *at = context -> labels[ arg1.num ];
+			if (at)
+			{
+				context -> at =  at;
+				context -> l = 0;
+			}
+		}
+
+		pop_context( context, 1);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+
+void icmdJump( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmdJump;
+	context -> args = 1;
+}
+
+
 void _icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -400,7 +559,22 @@ void _icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_int ) && ( arg2.type == type_int ) && ( arg3.type == type_int ) )
 		{
+			struct kittyBank *bank1;
+
 			printf("unpack %d,%d,%d\n", arg1.num, arg2.num, arg3.num);
+
+			bank1 = findBank(16);
+	
+			if (bank1)
+			{
+				printf("**** we found a bank\n");
+
+				if (get_resource_block( bank1, arg3.num, arg1.num, arg2.num ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+			}
 		}
 
 		pop_context( context, 3);
@@ -689,79 +863,83 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 
 struct cmdinterface symbols[]=
 {
-	{"=",i_parm,icmdequal },
-	{";",i_normal,icmdnextcmd},
-	{"[",i_normal,NULL},
-	{"]",i_normal,NULL},
-	{",",i_parm,icmdComma},
-	{"+",i_parm,icmdplus},
-	{"-",i_parm,icmdminus},
-	{"*",i_parm,icmdmul},
-	{"/",i_parm,icmddiv},
-//	{"%",i_parm,NULL},
-	{NULL,i_normal, NULL}
+
+	{"=",i_parm,NULL,icmdequal },
+	{";",i_normal,icmdnextcmd,icmdnextcmd},
+	{"[",i_normal,NULL,NULL},
+	{"]",i_normal,NULL,NULL},
+	{",",i_parm,NULL,icmdComma},
+	{"+",i_parm,NULL,icmdplus},
+	{"-",i_parm,NULL,icmdminus},
+	{"*",i_parm,NULL,icmdmul},
+	{"/",i_parm,NULL,icmddiv},
+//	{"%",i_parm,NULL,NULL},
+
+	{NULL,i_normal,NULL,NULL}
 };
 
 struct cmdinterface commands[]=
 {
-	{"BA",i_normal,icmdBase},
-//	{"BP",
-	{"BO",i_normal,NULL},
-	{"BR",i_normal,NULL},
-//	{"BQ",
-	{"BU",i_normal,NULL},
-	{"BX",i_parm,NULL},
-	{"BY",i_parm,NULL},
-//	{"CX",
-	{"ED",i_normal,NULL},
-	{"EX",i_normal,NULL},
-	{"GB",i_normal,icmdGraphicBox},
-	{"GE",i_normal,NULL},
-	{"GL",i_normal,NULL},
-	{"HT",i_normal,NULL},
-	{"IF",i_normal,icmdif},
-	{"IN",i_normal,icmdInk},
-	{"JS",i_normal,NULL},
-	{"LA",i_normal,NULL},
-	{"KY",i_normal,NULL},
-	{"MI",i_parm,icmdMin},
-	{"PR",i_normal,icmdPrint},
-	{"PO",i_normal,icmdPrintOutline},
-	{"ME",i_parm,NULL},
-	{"SA",i_normal,icmdSave},
-	{"SH",i_parm,icmdScreenHeight},
-	{"SI",i_normal,icmddialogsize},
-	{"SM",i_parm,NULL},
-	{"SP",i_normal,NULL},
-	{"SV",i_normal,icmdSetVar },
-	{"SW",i_parm,icmdScreenWidth},
-	{"SX",i_parm,icmdSizeX},
-	{"SY",i_parm,icmdSizeY},
-	{"RT",i_normal,NULL},
-//	{"RU",
-	{"TH",i_parm,NULL},
-	{"TL",i_parm,NULL },
-	{"TW",i_parm,icmdTextWidth},
-	{"UN",i_normal,icmdUnpack},
-	{"VA",i_parm,icmdvar},
-	{"VT",i_normal,NULL},
-	{"XB",i_parm,NULL},
-	{"XY",i_parm,NULL},
-	{"YB",i_parm,NULL},
-	{"ZN",i_parm,NULL},
-	{"=",i_parm,icmdequal },
-	{";",i_normal,icmdnextcmd},
-	{"[",i_normal,NULL},
-	{"]",i_normal,NULL},
-	{",",i_parm,icmdComma},
-	{"+",i_parm,icmdplus},
-	{"-",i_parm,icmdminus},
-	{"*",i_parm,icmdmul},
-	{"/",i_parm,icmddiv},
-//	{"%",i_parm,NULL},
-	{NULL,i_normal, NULL}
-};
 
+	{"BA",i_normal,NULL,icmdBase},
+//	{"BP",
+	{"BO",i_normal,NULL,NULL},
+	{"BR",i_normal,NULL,NULL},
+//	{"BQ",
+	{"BU",i_normal,NULL,NULL},
+	{"BX",i_parm,NULL,NULL},
+	{"BY",i_parm,NULL,NULL},
+//	{"CX",
+	{"ED",i_normal,NULL,NULL},
+	{"EX",i_normal,NULL,NULL},
+	{"GB",i_normal,NULL,icmdGraphicBox},
+	{"GE",i_normal,NULL,NULL},
+	{"GL",i_normal,NULL,NULL},
+	{"HT",i_normal,NULL,NULL},
+	{"IF",i_normal,NULL,icmdif},
+	{"IN",i_normal,NULL,icmdInk},
+	{"JP",i_normal,NULL,icmdJump},
+	{"JS",i_normal,NULL,NULL},
+	{"LA",i_normal,ipass_label,NULL},
+	{"KY",i_normal,NULL,NULL},
+	{"MI",i_parm,NULL,icmdMin},
+	{"PR",i_normal,NULL,icmdPrint},
+	{"PO",i_normal,NULL,icmdPrintOutline},
+	{"ME",i_parm,NULL,NULL},
+	{"SA",i_normal,NULL,icmdSave},
+	{"SH",i_parm,NULL,icmdScreenHeight},
+	{"SI",i_normal,NULL,icmddialogsize},
+	{"SM",i_parm,NULL,NULL},
+	{"SP",i_normal,NULL,NULL},
+	{"SV",i_normal,NULL,icmdSetVar },
+	{"SW",i_parm,NULL,icmdScreenWidth},
+	{"SX",i_parm,NULL,icmdSizeX},
+	{"SY",i_parm,NULL,icmdSizeY},
+	{"RT",i_normal,NULL,NULL},
+//	{"RU",
+	{"TH",i_parm,NULL,NULL},
+	{"TL",i_parm,NULL,NULL },
+	{"TW",i_parm,NULL,icmdTextWidth},
+	{"UN",i_normal,NULL,icmdUnpack},
+	{"VA",i_parm,NULL,icmdvar},
+	{"VT",i_normal,NULL,NULL},
+	{"XB",i_parm,NULL,NULL},
+	{"XY",i_parm,NULL,NULL},
+	{"YB",i_parm,NULL,NULL},
+	{"ZN",i_parm,NULL,NULL},
+	{"=",i_parm,NULL,icmdequal },
+	{";",i_normal,icmdnextcmd,icmdnextcmd},
+	{"[",i_normal,NULL,NULL},
+	{"]",i_normal,NULL,NULL},
+	{",",i_parm,NULL,icmdComma},
+	{"+",i_parm,NULL,icmdplus},
+	{"-",i_parm,NULL,icmdminus},
+	{"*",i_parm,NULL,icmdmul},
+	{"/",i_parm,NULL,icmddiv},
+//	{"%",i_parm,NULL,NULL},
+
+	{NULL,i_normal,NULL,NULL}
+};
 
 
 static void remove_lower_case(char *txt)
@@ -964,16 +1142,78 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> dialog.y = y;
 }
 
+
+void test_interface_script( struct cmdcontext *context)
+{
+	int sym,cmd;
+	int num;
+	char *str = NULL;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	while ((*context -> at != 0) && (context -> error == false))
+	{
+		while (*context -> at==' ') context -> at++;
+
+		printf("{%s}\n",context -> at);
+
+		sym = find_symbol( context -> at, context -> l );
+
+		if (sym != -1)
+		{
+			struct cmdinterface *icmd = &symbols[sym];
+			if (icmd -> pass)
+			{
+				printf("found %s\n", icmd -> name);
+				icmd -> pass( context, icmd );
+			}
+		}
+		else
+		{
+			cmd = find_command( context -> at, context -> l );
+			if (cmd == -1) 
+			{
+				if (is_string(context -> at, str, context -> l) )
+				{
+					push_context_string( context, str );
+				}
+				else 	if (is_number(context -> at, num, context -> l))
+				{
+					push_context_num( context, num );
+				}
+				else 	break;
+			}
+			else 	
+			{
+				struct cmdinterface *icmd = &commands[cmd];
+
+				if (icmd -> type == i_normal) pop_context( context, context -> stackp );
+
+				if (icmd -> pass)
+				{
+					printf("found %s\n", icmd -> name);
+					icmd -> pass( context, icmd );
+				}
+			}
+		}
+
+		context -> at += context -> l;
+		dump_context_stack( context );
+	}
+}
+
 void execute_interface_script( struct cmdcontext *context)
 {
 	int sym,cmd;
 	int num;
 	char *str = NULL;
 
-	isetvarnum(context,0,2); 
-	isetvarstr(context,1,"Hello World");
+	context -> error = false;
+ 	test_interface_script( context );
 
-	while (*context -> at != 0)
+	context -> at = context -> script;
+
+	while ((*context -> at != 0) && (context -> error == false))
 	{
 		while (*context -> at==' ') context -> at++;
 
@@ -1017,7 +1257,6 @@ void execute_interface_script( struct cmdcontext *context)
 		}
 
 		context -> at += context -> l;
-
 		dump_context_stack( context );
 	}
 }

@@ -21,7 +21,7 @@ struct cmdcontext
 	int lstackp;
 	struct ivar stack[10];
 	struct ivar vars[512];	
-	uint32_t labels[512];
+	char *labels[512];
 	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
 	int error;
@@ -32,12 +32,14 @@ struct cmdcontext
 	int ink1;
 	int ink3;
 	struct dialog dialog;
+	char *tokenBuffer;
 };
 
 struct cmdinterface
 {
 	const char *name;
 	int type;
+	void (*pass)( struct cmdcontext *context, struct cmdinterface *self );
 	void (*cmd)( struct cmdcontext *context, struct cmdinterface *self );
 };
 

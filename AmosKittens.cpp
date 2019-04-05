@@ -1275,6 +1275,7 @@ struct nativeCommand nativeCommands[]=
 	{0x27A4,"Vdialog",0,guiVdialog },
 	{0x27B6,"Vdialog$",0,guiVdialogStr },
 	{0x27E6,"Dialog$",0,guiDialogStr },
+	{0x2804,"EDialog",0,guiEDialog },
 	{0x2812,"Dialog Clr",0,guiDialogClr },
 	{0x2866,"Dialog Freeze",0,guiDialogFreeze },
 	{0x2882,"Dialog Unfreeze",0,guiDialogUnfreeze },
@@ -1286,6 +1287,7 @@ struct nativeCommand nativeCommands[]=
 	{0x28EE,"Resource Screen Open",0,guiResourceScreenOpen},
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
 	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
+	{0x2A90,"Bsend",0, NULL }, 
 	{0x2AB0,"Prg Under",0,cmdPrgUnder },
 	{0x2B3E,"Exec",0,cmdExec },
 	{0x2B58,"Screen Mode",0,gfxScreenMode },

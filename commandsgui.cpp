@@ -45,6 +45,13 @@ std::vector<struct cmdcontext *> icmdcontexts;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
+uint8_t getByte( char *adr, int &pos )
+{
+	uint8_t ret = *((uint8_t *) (adr + pos));
+	pos+=1;
+	return ret;
+}
+
 uint16_t getWord( char *adr, int &pos )
 {
 	short ret = *((uint16_t *) (adr + pos));
@@ -209,6 +216,8 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	char *script = NULL;
 	struct cmdcontext context;
+
+	context.tokenBuffer = data -> tokenBuffer;
 
 	switch (args)
 	{
@@ -520,11 +529,15 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
- char *guiResourceScreenOpen(nativeCommand *cmd, char *tokenBuffer)
+char *guiResourceScreenOpen(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _guiResourceScreenOpen, tokenBuffer );
 	return tokenBuffer;
 }
 
-
+char *guiEDialog(nativeCommand *cmd, char *tokenBuffer)
+{
+	setStackNum( 0 );
+	return tokenBuffer;
+}
 
