@@ -151,7 +151,7 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
 }
 
 
-void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char *at;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -214,15 +214,15 @@ void _icmdif( struct cmdcontext *context, struct cmdinterface *self )
 	} else context -> error = 1;
 }
 
-void icmdif( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdif;
+	context -> cmd_done = _icmd_If;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
 }
 
-void _icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -245,10 +245,10 @@ void _icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmddialogsize( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmddialogsize;
+	context -> cmd_done = _icmd_Dialogsize;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
 }
@@ -286,7 +286,7 @@ void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
 void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
 
-void _icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -328,15 +328,15 @@ void _icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdPrint( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdPrint;
+	context -> cmd_done = _icmd_Print;
 	context -> lstackp = context -> stackp;
 	context -> args = 4;
 }
 
-void icmdComma( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Comma( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -352,7 +352,7 @@ void icmdComma( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
-void _icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -373,7 +373,6 @@ void _icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 			y+=context -> dialog.y;
 
 			if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
-
 		}
 	}
 
@@ -381,17 +380,17 @@ void _icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdPrintOutline( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdPrintOutline;
+	context -> cmd_done = _icmd_PrintOutline;
 	context -> lstackp = context -> stackp;
 	context -> args = 5;
 }
 
 // icmdSetVar
 
-void _icmdSetVar( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -422,17 +421,17 @@ void _icmdSetVar( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdSetVar( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdSetVar;
+	context -> cmd_done = _icmd_SetVar;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
 }
 
 // ----
 
-void _icmdInk( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -447,14 +446,14 @@ void _icmdInk( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdInk( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdInk;
+	context -> cmd_done = _icmd_Ink;
 	context -> args = 3;
 }
 
-void _icmdGraphicBox( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = screens[current_screen];
 
@@ -479,14 +478,14 @@ void _icmdGraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdGraphicBox( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdGraphicBox;
+	context -> cmd_done = _icmd_GraphicBox;
 	context -> args = 4;
 }
 
-void _icmdBase( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -507,14 +506,14 @@ void _icmdBase( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdBase( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdBase;
+	context -> cmd_done = _icmd_Base;
 	context -> args = 2;
 }
 
-void _icmdJump( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -542,7 +541,7 @@ void _icmdJump( struct cmdcontext *context, struct cmdinterface *self )
 void icmdJump( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdJump;
+
 	context -> args = 1;
 }
 
@@ -583,15 +582,15 @@ void _icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdUnpack;
+	context -> cmd_done = _icmd_Unpack;
 	context -> args = 3;
 }
 
 
-void _icmdSave( struct cmdcontext *context, struct cmdinterface *self )
+void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -609,14 +608,14 @@ void _icmdSave( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-void icmdSave( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmdSave;
+	context -> cmd_done = _icmd_Save;
 	context -> args = 1;
 }
 
-void icmdvar( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -654,7 +653,7 @@ void pop_context( struct cmdcontext *context, int pop )
 	}
 }
 
-void icmdequal( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -675,7 +674,7 @@ void icmdequal( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmdplus( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -696,7 +695,7 @@ void icmdplus( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmdminus( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -717,7 +716,7 @@ void icmdminus( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmdmul( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Mul( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -738,7 +737,7 @@ void icmdmul( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmddiv( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Div( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -759,7 +758,7 @@ void icmddiv( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmdMin( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -781,7 +780,7 @@ void icmdMin( struct cmdcontext *context, struct cmdinterface *self )
 }
 
 
-void icmdTextWidth( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -802,13 +801,13 @@ void icmdTextWidth( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-void icmdSizeX( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_SizeX( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog.width );
 }
 
-void icmdSizeY( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog.height );
@@ -820,13 +819,13 @@ void icmdScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, -999 );
 }
 
-void icmdScreenHeight( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_ScreenHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, -999 );
 }
 
-void icmdnextcmd( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -864,15 +863,15 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 struct cmdinterface symbols[]=
 {
 
-	{"=",i_parm,NULL,icmdequal },
-	{";",i_normal,icmdnextcmd,icmdnextcmd},
+	{"=",i_parm,NULL,icmd_Equal },
+	{";",i_normal,icmd_NextCmd,icmd_NextCmd},
 	{"[",i_normal,NULL,NULL},
 	{"]",i_normal,NULL,NULL},
-	{",",i_parm,NULL,icmdComma},
-	{"+",i_parm,NULL,icmdplus},
-	{"-",i_parm,NULL,icmdminus},
-	{"*",i_parm,NULL,icmdmul},
-	{"/",i_parm,NULL,icmddiv},
+	{",",i_parm,NULL,icmd_Comma},
+	{"+",i_parm,NULL,icmd_Plus},
+	{"-",i_parm,NULL,icmd_Minus},
+	{"*",i_parm,NULL,icmd_Mul},
+	{"/",i_parm,NULL,icmd_Div},
 //	{"%",i_parm,NULL,NULL},
 
 	{NULL,i_normal,NULL,NULL}
@@ -881,7 +880,7 @@ struct cmdinterface symbols[]=
 struct cmdinterface commands[]=
 {
 
-	{"BA",i_normal,NULL,icmdBase},
+	{"BA",i_normal,NULL,icmd_Base},
 //	{"BP",
 	{"BO",i_normal,NULL,NULL},
 	{"BR",i_normal,NULL,NULL},
@@ -892,50 +891,50 @@ struct cmdinterface commands[]=
 //	{"CX",
 	{"ED",i_normal,NULL,NULL},
 	{"EX",i_normal,NULL,NULL},
-	{"GB",i_normal,NULL,icmdGraphicBox},
+	{"GB",i_normal,NULL,icmd_GraphicBox},
 	{"GE",i_normal,NULL,NULL},
 	{"GL",i_normal,NULL,NULL},
 	{"HT",i_normal,NULL,NULL},
-	{"IF",i_normal,NULL,icmdif},
-	{"IN",i_normal,NULL,icmdInk},
-	{"JP",i_normal,NULL,icmdJump},
-	{"JS",i_normal,NULL,NULL},
+	{"IF",i_normal,NULL,icmd_If},
+	{"IN",i_normal,NULL,icmd_Ink},
+	{"JP",i_normal,NULL,icmd_Jump},
+	{"JS",i_normal,NULL,icmd_JumpSubRutine},
 	{"LA",i_normal,ipass_label,NULL},
 	{"KY",i_normal,NULL,NULL},
-	{"MI",i_parm,NULL,icmdMin},
-	{"PR",i_normal,NULL,icmdPrint},
-	{"PO",i_normal,NULL,icmdPrintOutline},
+	{"MI",i_parm,NULL,icmd_Min},
+	{"PR",i_normal,NULL,icmd_Print},
+	{"PO",i_normal,NULL,icmd_PrintOutline},
 	{"ME",i_parm,NULL,NULL},
-	{"SA",i_normal,NULL,icmdSave},
-	{"SH",i_parm,NULL,icmdScreenHeight},
-	{"SI",i_normal,NULL,icmddialogsize},
+	{"SA",i_normal,NULL,icmd_Save},
+	{"SH",i_parm,NULL,icmd_ScreenHeight},
+	{"SI",i_normal,NULL,icmd_Dialogsize},
 	{"SM",i_parm,NULL,NULL},
 	{"SP",i_normal,NULL,NULL},
-	{"SV",i_normal,NULL,icmdSetVar },
-	{"SW",i_parm,NULL,icmdScreenWidth},
-	{"SX",i_parm,NULL,icmdSizeX},
-	{"SY",i_parm,NULL,icmdSizeY},
-	{"RT",i_normal,NULL,NULL},
+	{"SV",i_normal,NULL,icmd_SetVar },
+	{"SW",i_parm,NULL,icmd_ScreenWidth},
+	{"SX",i_parm,NULL,icmd_SizeX},
+	{"SY",i_parm,NULL,icmd_SizeY},
+	{"RT",i_normal,NULL,icmd_Return},
 //	{"RU",
 	{"TH",i_parm,NULL,NULL},
 	{"TL",i_parm,NULL,NULL },
-	{"TW",i_parm,NULL,icmdTextWidth},
-	{"UN",i_normal,NULL,icmdUnpack},
-	{"VA",i_parm,NULL,icmdvar},
+	{"TW",i_parm,NULL,icmd_TextWidth},
+	{"UN",i_normal,NULL,icmd_Unpack},
+	{"VA",i_parm,NULL,icmd_Var},
 	{"VT",i_normal,NULL,NULL},
 	{"XB",i_parm,NULL,NULL},
 	{"XY",i_parm,NULL,NULL},
 	{"YB",i_parm,NULL,NULL},
 	{"ZN",i_parm,NULL,NULL},
-	{"=",i_parm,NULL,icmdequal },
-	{";",i_normal,icmdnextcmd,icmdnextcmd},
+	{"=",i_parm,NULL,icmd_Equal },
+	{";",i_normal,icmd_NextCmd,icmd_NextCmd},
 	{"[",i_normal,NULL,NULL},
 	{"]",i_normal,NULL,NULL},
-	{",",i_parm,NULL,icmdComma},
-	{"+",i_parm,NULL,icmdplus},
-	{"-",i_parm,NULL,icmdminus},
-	{"*",i_parm,NULL,icmdmul},
-	{"/",i_parm,NULL,icmddiv},
+	{",",i_parm,NULL,icmd_Comma},
+	{"+",i_parm,NULL,icmd_Plus},
+	{"-",i_parm,NULL,icmd_Minus},
+	{"*",i_parm,NULL,icmd_Mul},
+	{"/",i_parm,NULL,icmd_Div},
 //	{"%",i_parm,NULL,NULL},
 
 	{NULL,i_normal,NULL,NULL}
