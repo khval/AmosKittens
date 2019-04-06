@@ -298,7 +298,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			int x = context -> stack[context -> stackp-4].num;
 			int y = context -> stack[context -> stackp-3].num;
-			int o = context -> stack[context -> stackp-1].num;
+//			int o = context -> stack[context -> stackp-1].num;
 
 			x+=context -> dialog.x;
 			y+=context -> dialog.y;
@@ -413,7 +413,7 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 					break;
 
 			}
-		}
+	}
 
 		pop_context( context, 2);
 	}
@@ -538,15 +538,65 @@ void _icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 }
 
 
-void icmdJump( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_Jump;
+	context -> args = 1;
+}
+
+void _Jump_SubRoutine( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int ) 
+		{
+			char *at = context -> labels[ arg1.num ];
+			if (at)
+			{
+				context -> programStack[ context -> programStackCount] = context -> at;
+				context -> programStackCount ++;
+				context -> at =  at;
+				context -> l = 0;
+			}
+		}
+
+		pop_context( context, 1);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	context -> cmd_done = _Jump_SubRoutine;
 	context -> args = 1;
 }
 
 
-void _icmdUnpack( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Return( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> programStackCount)
+	{
+		printf(" jump to %s\n ", context -> programStack[ context -> programStackCount -1 ] );
+		context -> at = context -> programStack[ context -> programStackCount - 1 ];
+ 		context -> programStackCount--;
+		context -> l = 0;
+	}
+	else 	context -> error = true;
+}
+
+
+
+void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -813,7 +863,13 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> dialog.height );
 }
 
-void icmdScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> at = context -> script + strlen(context -> script);
+}
+
+void icmd_ScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, -999 );
@@ -890,7 +946,7 @@ struct cmdinterface commands[]=
 	{"BY",i_parm,NULL,NULL},
 //	{"CX",
 	{"ED",i_normal,NULL,NULL},
-	{"EX",i_normal,NULL,NULL},
+	{"EX",i_normal,NULL,icmd_Exit},
 	{"GB",i_normal,NULL,icmd_GraphicBox},
 	{"GE",i_normal,NULL,NULL},
 	{"GL",i_normal,NULL,NULL},

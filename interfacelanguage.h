@@ -33,6 +33,8 @@ struct cmdcontext
 	int ink3;
 	struct dialog dialog;
 	char *tokenBuffer;
+	int programStackCount;
+	char *programStack[10];
 };
 
 struct cmdinterface
