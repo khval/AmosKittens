@@ -76,6 +76,7 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 	{
 		struct resourcebank_header *header = (resourcebank_header*) bank1->start;
 		int hunk,pos,adr_gfx,pupics,color,colors,mode,n;
+		int videomode = 0;
 
 		hunk = header -> img_offset ;
    		pos=hunk; 
@@ -87,6 +88,20 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 
 		colors = getWord( bank1->start, pos );
 		mode = getWord( bank1->start, pos );
+
+		if (mode & 0x8000)
+		{
+			 videomode |= retroHires; 
+		}
+		else
+		{
+			 videomode |= retroLowres_pixeld; 
+		}
+
+		if (mode & 0x2000) videomode |= retroHam6;
+
+		screen -> videomode = videomode;
+
 
   		for ( n= 0; n<32; n++)
 		{
