@@ -111,7 +111,6 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 	}
 }
 
-
 struct cmdcontext *find_interface_context(int id)
 {
 	unsigned int n;
@@ -124,8 +123,6 @@ struct cmdcontext *find_interface_context(int id)
 	return NULL;
 }
 
-
-
 char *_guiDialogRun( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -134,20 +131,36 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 	int label = 0;
 	int x = 0,y = 0;
 	const char *ret = NULL;
+	struct cmdcontext *context;
 
 	switch (args)
 	{
 		case 1:	guiChannel = getStackNum(stack);
+
+				if (context = find_interface_context( guiChannel ))
+				{
+					execute_interface_script( context, -1 );
+				}
 				break;
 
 		case 2:	guiChannel = getStackNum(stack-1);
 				label = getStackNum(stack);
+
+				if (context = find_interface_context( guiChannel ))
+				{
+					execute_interface_script( context, label );
+				}
 				break;
 
 		case 4:	guiChannel = getStackNum(stack-3);
 				label = getStackNum(stack-2);
 				x = getStackNum(stack-1);
 				y = getStackNum(stack);
+
+				if (context = find_interface_context( guiChannel ))
+				{
+					execute_interface_script( context, label );
+				}
 				break;
 
 		default:
@@ -240,7 +253,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				{
 					script = getStackString(stack);
 					init_interface_context( &context, 0, script, 0, 0 );
-					execute_interface_script( &context );
+					execute_interface_script( &context, -1 );
 				}
 				break;
 
@@ -254,7 +267,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 
 					isetvarnum( &context,0,var1); 
 					if (var2s) isetvarstr( &context,1,var2s);
-					execute_interface_script( &context );
+					execute_interface_script( &context, -1 );
 				}
 				break;
 
@@ -270,7 +283,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 
 					isetvarnum( &context,0,var1); 
 					if (var2s) isetvarstr( &context,1,var2s);
-					execute_interface_script( &context );
+					execute_interface_script( &context, -1 );
 				}
 				break;
 
@@ -331,7 +344,7 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
-	if (id != -1)
+	if ((id != -1) && (script))
 	{
 		struct cmdcontext *item = find_interface_context(id);
 	

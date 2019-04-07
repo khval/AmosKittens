@@ -35,6 +35,7 @@ struct cmdcontext
 	char *tokenBuffer;
 	int programStackCount;
 	char *programStack[10];
+	bool tested;
 };
 
 struct cmdinterface
@@ -55,5 +56,5 @@ enum
 extern void isetvarstr( struct cmdcontext *context,int index, char *str);
 extern void isetvarnum( struct cmdcontext *context,int index,int num);
 extern void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y );
-extern void execute_interface_script( struct cmdcontext *context);
+extern void execute_interface_script( struct cmdcontext *context, int32_t label);
 

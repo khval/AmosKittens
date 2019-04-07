@@ -362,7 +362,6 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (screen)
 		{
-
 			int x = context -> stack[context -> stackp-5].num;
 			int y = context -> stack[context -> stackp-4].num;
 			char *txt = context -> stack[context -> stackp-3].str;
@@ -1255,18 +1254,31 @@ void test_interface_script( struct cmdcontext *context)
 		context -> at += context -> l;
 		dump_context_stack( context );
 	}
+	context -> tested = true;
 }
 
-void execute_interface_script( struct cmdcontext *context)
+void execute_interface_script( struct cmdcontext *context, int32_t label)
 {
 	int sym,cmd;
 	int num;
 	char *str = NULL;
 
 	context -> error = false;
- 	test_interface_script( context );
+	context -> stackp = 0;
 
-	context -> at = context -> script;
+	if (context -> tested == false)
+	{
+	 	test_interface_script( context );
+	}
+
+	if (label == -1)
+	{
+		context -> at = context -> script;
+	}
+	else
+	{
+		context -> at = context -> labels[ label ];
+	}
 
 	while ((*context -> at != 0) && (context -> error == false))
 	{
