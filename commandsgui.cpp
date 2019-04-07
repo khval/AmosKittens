@@ -330,14 +330,14 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:	id = getStackNum(stack-1);
-				script = getStackString(stack-1);
+				script = getStackString(stack);
 				break;
 
 		case 4:
 				id = getStackNum(stack-3);
 				script = getStackString(stack-2);
 				x = getStackNum(stack-1);
-				y = getStackNum(stack-1);
+				y = getStackNum(stack);
 				break;
 
 		default:
@@ -365,7 +365,7 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-	setStackNum( 0 );
+	setStackNum( ret );
 
 	return NULL;
 }
