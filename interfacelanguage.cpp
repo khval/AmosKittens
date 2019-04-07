@@ -1324,7 +1324,18 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 
 		context -> at += context -> l;
-		dump_context_stack( context );
+//		dump_context_stack( context );
+	}
+
+	if (context -> error)
+	{
+		printf("error at: {%s}\n",context -> at);
+		getchar();
+	}
+	else
+	{
+		printf("ended at: {%s}\n",context -> at);
+		getchar();
 	}
 }
 
