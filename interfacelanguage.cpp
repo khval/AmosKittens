@@ -578,6 +578,53 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=8)
+	{
+		struct ivar &nr = context -> stack[context -> stackp-8];
+		struct ivar &_x = context -> stack[context -> stackp-7];
+		struct ivar &_y = context -> stack[context -> stackp-6];
+		struct ivar &_w = context -> stack[context -> stackp-5];
+		struct ivar &_h = context -> stack[context -> stackp-4];
+		struct ivar &arg6 = context -> stack[context -> stackp-3];
+		struct ivar &_min = context -> stack[context -> stackp-2];
+		struct ivar &_max = context -> stack[context -> stackp-1];
+
+		if (( nr.type == type_int ) 
+			&& ( _x.type == type_int )  
+			&& ( _y.type == type_int )  
+			&& ( _w.type == type_int )  
+			&& ( _h.type == type_int )  
+			&& ( arg6.type == type_int ) 
+ 			&& ( _min.type == type_int ) 
+			&& ( _max.type == type_int ))
+		{
+			struct retroScreen *screen = screens[current_screen];
+			int x = _x.num + context -> dialog.x;
+			int y = _y.num + context -> dialog.y;
+
+			if (screen) retroBox( screen,  x,y,  x+_w.num,y+_h.num,  3 );
+		}
+
+		pop_context( context, 8);
+	}
+
+	context -> cmd_done = NULL;
+
+	getchar();
+}
+
+void icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	context -> cmd_done = _icmd_Button;
+	context -> args = 8;
+}
+
 
 void icmd_Return( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -663,6 +710,20 @@ void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_Save;
 	context -> args = 1;
 }
+
+void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+}
+
+void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num(context, 0);
+
+}
+
 
 void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -915,6 +976,7 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 	var.num = num;
 }
 
+
 struct cmdinterface symbols[]=
 {
 
@@ -936,11 +998,11 @@ struct cmdinterface commands[]=
 {
 
 	{"BA",i_normal,NULL,icmd_Base},
-//	{"BP",
+	{"BP",i_normal,NULL,icmd_ButtonPosition},
 	{"BO",i_normal,NULL,NULL},
 	{"BR",i_normal,NULL,NULL},
-//	{"BQ",
-	{"BU",i_normal,NULL,NULL},
+	{"BQ",i_normal,NULL,NULL },
+	{"BU",i_normal,NULL,icmd_Button},
 	{"BX",i_parm,NULL,NULL},
 	{"BY",i_parm,NULL,NULL},
 //	{"CX",
@@ -957,6 +1019,7 @@ struct cmdinterface commands[]=
 	{"LA",i_normal,ipass_label,NULL},
 	{"KY",i_normal,NULL,NULL},
 	{"MI",i_parm,NULL,icmd_Min},
+	{"NW",i_normal,NULL,icmd_ButtonNoWait},
 	{"PR",i_normal,NULL,icmd_Print},
 	{"PO",i_normal,NULL,icmd_PrintOutline},
 	{"ME",i_parm,NULL,NULL},
