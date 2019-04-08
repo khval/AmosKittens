@@ -98,7 +98,7 @@ void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_
        mode = GetDrMd( &font_render_rp );
 
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
-	tl = TextLength(&font_render_rp, txt, l );
+	tl = TextLength(&font_render_rp, txt, l )+2;
 
 	RectFill ( &font_render_rp, 0,0, tl,te.te_Height );
 
