@@ -502,7 +502,7 @@ void handel_window()
 				Code = msg -> Code;
 				GadgetID = (Class == IDCMP_GADGETUP) ? ((struct Gadget *) ( msg -> IAddress)) -> GadgetID : 0;
 				mouse_x = msg -> MouseX;
-				mouse_y = msg -> MouseX;
+				mouse_y = msg -> MouseY;
 				ReplyMsg( (Message*) msg );
 
 				switch (Class) 
