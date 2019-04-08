@@ -14,14 +14,28 @@ struct dialog
 	int height;
 };
 
+struct ibutton
+{
+	int x;
+	int y;
+	int w;
+	int h;
+};
+
 struct cmdcontext
 {
 	int id;
+	char *tokenBuffer;
+	bool tested;
 	int stackp;
 	int lstackp;
 	struct ivar stack[10];
-	struct ivar vars[512];	
+	struct ivar vars[512];
 	char *labels[512];
+	int programStackCount;
+	char *programStack[10];
+	int selected_dialog;
+	struct dialog dialog[2];
 	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
 	int error;
@@ -31,11 +45,6 @@ struct cmdcontext
 	int ink0;
 	int ink1;
 	int ink3;
-	struct dialog dialog;
-	char *tokenBuffer;
-	int programStackCount;
-	char *programStack[10];
-	bool tested;
 };
 
 struct cmdinterface
