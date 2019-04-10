@@ -45,6 +45,7 @@ struct cmdcontext
 	int ink0;
 	int ink1;
 	int ink3;
+	int block;
 };
 
 struct cmdinterface

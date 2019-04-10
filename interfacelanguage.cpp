@@ -168,52 +168,7 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &arg1 = context -> stack[context -> stackp-1];
 
 		// check if value is number and is false.
-
-		if  (( arg1.type == type_int ) && (arg1.num == 0))
-		{
-			int count = 0;
-
-			if (*at)
-			{
-				at++;
-				if (*at=='[')	// next is a block.
-				{
-					count = 0;
-					while (*at)
-					{
-						switch (*at )
-						{
-							case '[': count ++;	break;
-							case ']': count --;	
-								break;
-						}
-
-						if (count == 0)
-						{
-							context->at =at+1;		// set new location.
-							context->l = 0;		// reset length of command.
-			
-							printf("%s\n",context->at);
-							break;
-						}
-						at ++;
-					}
-				}
-				else	// skip next command.
-				{
-					while (*at)
-					{
-						if (*at == ';')
-						{
-							context->at =at+1;		// set new location.
-							context->l = 0;		// reset length of command.
-							break;
-						}
-						at ++;
-					}
-				}
-			}
-		}	else context -> error = 1;
+		context -> block = (( arg1.type == type_int ) && (arg1.num == 0)) ? -2 : 2;
 
 		pop_context( context, 1);
 
@@ -655,6 +610,8 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	context -> block = -2;
+
 	if (context -> stackp>=8)
 	{
 		struct ivar &nr = context -> stack[context -> stackp-8];
@@ -697,14 +654,19 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				if (	(mx>=x)&&(mx<=(x+_w.num))	&&
 					(my>=y)&&(my<=(y+_h.num))	)
 				{
-					 retroBox( screen,  x,y,  x+_w.num,y+_h.num,  1 );
+					context -> block = 2;
 				}
 
-				sprintf( txt, "    %d,    %d     ",	mx,	my );
-				os_text(screen, 0,20,txt);
+#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
+				if (( sig_main_vbl )&&( EngineTask ))
+				{
+					sprintf( txt, "    %d,    %d     ",	mx,	my );
+					os_text(screen, 0,20,txt);
 
-				sprintf( txt, "    %d,    %d     ",	engine_mouse_x,	engine_mouse_y );
-				os_text(screen, 160,20,txt);
+					sprintf( txt, "    %d,    %d     ",	engine_mouse_x,	engine_mouse_y );
+					os_text(screen, 160,20,txt);
+				}
+#endif
 			}
 		}
 
@@ -719,8 +681,49 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 {
+	char *at = context -> at;
+	int count = 0;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	switch  ( context -> block )
+	{
+		case 2:
+		case -1:
+		case 0:
+
+				if (*at=='[')	// next is a block.
+				{
+					count = 0;
+					while (*at)
+					{
+						switch (*at )
+						{
+							case '[': count ++;	break;
+							case ']': count --;	
+								break;
+						}
+
+						if (count == 0)
+						{
+							context->at =at+1;		// set new location.
+							context->l = 0;		// reset length of command.
+			
+							printf("%s\n",context->at);
+							break;
+						}
+						at ++;
+					}
+				}
+
+			break;
+	}
+
+	if (context -> block<0)
+	{
+		context -> block++;
+	}
+	else 	if (context -> block>0) context -> block--;
 
 	context -> args = 0;
 }
