@@ -208,8 +208,8 @@ void _icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
 		{
-			context -> dialog[context -> selected_dialog].width = arg1.num;
-			context -> dialog[context -> selected_dialog].height = arg2.num;
+			context -> dialog[0].width = arg1.num;
+			context -> dialog[0].height = arg2.num;
 		}
 
 		pop_context( context, 2 );
