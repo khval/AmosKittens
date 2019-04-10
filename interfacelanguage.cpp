@@ -1517,11 +1517,17 @@ void test_interface_script( struct cmdcontext *context)
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (context -> at == 0)
+	{
+		setError( 22, context -> tokenBuffer );
+		return ;
+	}
+
 	while ((*context -> at != 0) && (context -> error == false))
 	{
 		while (*context -> at==' ') context -> at++;
 
-		printf("{%s}\n",context -> at);
+		printf("TEST SCRIPT {%s}\n",context -> at);
 
 		sym = find_symbol( context -> at, context -> l );
 
@@ -1575,6 +1581,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	int num;
 	char *str = NULL;
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> error = false;
 	context -> stackp = 0;
 
@@ -1582,6 +1590,9 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	{
 	 	test_interface_script( context );
 	}
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 
 	if (label == -1)
 	{
@@ -1592,11 +1603,19 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		context -> at = context -> labels[ label ];
 	}
 
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> at == 0)
+	{
+		setError( 22, context -> tokenBuffer );
+		return ;
+	}
+
 	while ((*context -> at != 0) && (context -> error == false))
 	{
 		while (*context -> at==' ') context -> at++;
 
-		printf("{%s}\n",context -> at);
+		printf("EXECUTE SCRIPT {%s}\n",context -> at);
 
 		sym = find_symbol( context -> at, context -> l );
 
@@ -1636,8 +1655,9 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 
 		context -> at += context -> l;
-
 	}
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> error)
 	{
