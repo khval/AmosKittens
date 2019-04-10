@@ -493,6 +493,45 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 4;
 }
 
+
+void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=4)
+	{
+		int ox,oy;
+
+		int x0 = context -> stack[context -> stackp-4].num;
+		int y0 = context -> stack[context -> stackp-3].num;
+		int x1 = context -> stack[context -> stackp-2].num;
+		int y1 = context -> stack[context -> stackp-1].num;
+
+		ox = get_dialog_x(context);
+		oy = get_dialog_y(context);
+		x0+=ox;
+		y0+=oy;
+		x1+=ox;
+		y1+=oy;
+
+		if (screen) retroBox( screen, x0,y0,x1,y1,context -> ink0 );
+	}
+
+	pop_context( context, 4);
+	context -> cmd_done = NULL;
+}
+
+void icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_GraphicSquare;
+	context -> args = 4;
+}
+
+
+
 void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1182,6 +1221,7 @@ struct cmdinterface commands[]=
 	{"ED",i_normal,NULL,NULL},
 	{"EX",i_normal,NULL,icmd_Exit},
 	{"GB",i_normal,NULL,icmd_GraphicBox},
+	{"GS",i_normal,NULL,icmd_GraphicSquare},
 	{"GE",i_normal,NULL,NULL},
 	{"GL",i_normal,NULL,NULL},
 	{"HT",i_normal,NULL,NULL},
