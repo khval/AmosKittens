@@ -283,39 +283,45 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (context -> stackp>=4)
+#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
+	if (( sig_main_vbl )&&( EngineTask ))
 	{
-		struct retroScreen *screen = screens[current_screen];
 
-		if (screen)
+		if (context -> stackp>=4)
 		{
-			int x = context -> stack[context -> stackp-4].num;
-			int y = context -> stack[context -> stackp-3].num;
-//			int o = context -> stack[context -> stackp-1].num;
+			struct retroScreen *screen = screens[current_screen];
 
-			x+=get_dialog_x(context);
-			y+=get_dialog_y(context);
-
-			switch ( context -> stack[context -> stackp-2].type )
+			if (screen)
 			{
-				case type_string:
-					{
-						char *txt  = context -> stack[context -> stackp-2].str;
-						if (txt) os_text(screen, x,y,txt);
-					}
-					break;
+				int x = context -> stack[context -> stackp-4].num;
+				int y = context -> stack[context -> stackp-3].num;
+//				int o = context -> stack[context -> stackp-1].num;
 
-				case type_int:
-					{
-						char txt[30];
-						int n = context -> stack[context -> stackp-2].num;
-						sprintf( txt, "%d", n);
-						os_text(screen, x,y,txt);
-					}
-					break;
+				x+=get_dialog_x(context);
+				y+=get_dialog_y(context);
+
+				switch ( context -> stack[context -> stackp-2].type )
+				{
+					case type_string:
+						{
+							char *txt  = context -> stack[context -> stackp-2].str;
+							if (txt) os_text(screen, x,y,txt);
+						}
+						break;
+
+					case type_int:
+						{
+							char txt[30];
+							int n = context -> stack[context -> stackp-2].num;
+							sprintf( txt, "%d", n);
+							os_text(screen, x,y,txt);
+						}
+						break;
+				}
 			}
 		}
 	}
+#endif
 
 	pop_context( context, 4 );
 	context -> cmd_done = NULL;
@@ -349,24 +355,30 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (context -> stackp>=5)
+#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
+	if (( sig_main_vbl )&&( EngineTask ))
 	{
-		struct retroScreen *screen = screens[current_screen];
 
-		if (screen)
+		if (context -> stackp>=5)
 		{
-			int x = context -> stack[context -> stackp-5].num;
-			int y = context -> stack[context -> stackp-4].num;
-			char *txt = context -> stack[context -> stackp-3].str;
-			uint16_t pen = context -> stack[context -> stackp-2].num;
-			uint16_t outline = context -> stack[context -> stackp-1].num;
+			struct retroScreen *screen = screens[current_screen];
 
-			x+=get_dialog_x(context);
-			y+=get_dialog_y(context);
+			if (screen)
+			{
+				int x = context -> stack[context -> stackp-5].num;
+				int y = context -> stack[context -> stackp-4].num;
+				char *txt = context -> stack[context -> stackp-3].str;
+				uint16_t pen = context -> stack[context -> stackp-2].num;
+				uint16_t outline = context -> stack[context -> stackp-1].num;
 
-			if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
+				x+=get_dialog_x(context);
+				y+=get_dialog_y(context);
+
+				if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
+			}
 		}
 	}
+#endif
 
 	pop_context( context, 5);
 	context -> cmd_done = NULL;
