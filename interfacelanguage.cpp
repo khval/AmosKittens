@@ -16,6 +16,7 @@
 #include <proto/exec.h>
 #include <proto/retroMode.h>
 #include <string.h>
+extern struct RastPort font_render_rp;
 #endif
 
 #ifdef __linux__
@@ -42,6 +43,7 @@ extern FILE *engine_fd;
 #include "errors.h"
 #include "engine.h"
 
+extern int sig_main_vbl;
 
 extern int current_screen;
 extern struct retroScreen *screens[8] ;
@@ -1115,6 +1117,38 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
+
+void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+
+	if (context -> stackp>0)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_string ) 
+		{
+			struct retroScreen *screen = screens[current_screen];
+
+			if (screen)
+			{
+				int l = strlen( arg1.str );
+				int tl = TextLength(&font_render_rp, arg1.str, l );
+
+				ret = (context -> dialog[ context -> selected_dialog ] .width / 2) - (tl/2)  ;
+			}
+		}
+
+		pop_context( context, 1);
+		push_context_num( context, ret );
+	}
+	else context -> error = 1;
+
+}
+
+
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1217,7 +1251,7 @@ struct cmdinterface commands[]=
 	{"BU",i_normal,NULL,icmd_Button},
 	{"BX",i_parm,NULL,NULL},
 	{"BY",i_parm,NULL,NULL},
-//	{"CX",
+	{"CX",i_parm,NULL,icmd_cx},
 	{"ED",i_normal,NULL,NULL},
 	{"EX",i_normal,NULL,icmd_Exit},
 	{"GB",i_normal,NULL,icmd_GraphicBox},
