@@ -1067,13 +1067,13 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_SizeX( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, context -> dialog[0].width );
+	push_context_num( context, context -> dialog[context -> selected_dialog].width );
 }
 
 void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, context -> dialog[0].height );
+	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
@@ -1419,7 +1419,7 @@ void dump_context_stack( struct cmdcontext *context )
 
 void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y )
 {
-	struct dialog &dialog = context -> dialog[context -> selected_dialog];
+	struct dialog &dialog = context -> dialog[0];
 
 	bzero( context, sizeof( struct cmdcontext ) );
 
