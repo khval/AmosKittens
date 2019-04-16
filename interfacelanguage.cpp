@@ -69,6 +69,10 @@ extern uint8_t getByte( char *adr, int &pos );
 extern uint16_t getWord( char *adr, int &pos );
 extern uint32_t getLong( char *adr, int &pos );
 
+extern bool convertPacPic( unsigned char *data, struct PacPicContext *context );
+extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
+extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
+
 void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 {
 //	int tpos = offset_gfx+2+pn*4;
@@ -77,28 +81,12 @@ void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 	pn++;
 }
 
-struct __attribute__((__packed__))  __header__
-{
-	uint32_t	what;
-	uint16_t	x;
-	uint16_t	y;
-	uint16_t	w;
-	uint16_t	h1;
-	uint16_t	h2;
-};
-
 bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
 {
 	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
-	int chunks,end_offset,_len,type,id;
+	int chunks,end_offset;
 	int pos,pupics;
-	int xx,yy;
-	int is_signed;
 	int offset_gfx;
-	int tpos;
-	int colors;
-	int x1,y1;
-	struct __header__ *head;
 	struct retroScreen *screen = screens[current_screen];
 
 	if (!screen) return false;
@@ -110,50 +98,29 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
 	end_offset = getLong( bank1->start, pos );
 
 	pos = header -> img_offset;
-	 
 	pupics = getWord( bank1->start, pos );
 
 	if ((block_nr<0) ||  (block_nr >= pupics)) return false;
-
-
-	printf("pupics: %d\n",pupics);
 
 	pos = header -> img_offset + 2 + block_nr*4;
 	pos = getLong( bank1->start, pos );
 
 	if (pos)
 	{
+		struct PacPicContext context;
+		context.raw = NULL;
 		pos += header -> img_offset;
 
-		head = (struct __header__ *) (bank1->start + pos);
-
-
-			printf("pos %d, %d block x %d,y %d,w %d,h %d\n",
-				x0,
-				y0,
-				head->x*8,
-				head->y,
-				head->w*8,
-				head->h1*head->h2);
-
-		x1 = x0 + (head->w*8);
-		y1 = y0 + (head->h1*head->h2);
-
-		is_signed =  getByte( bank1->start, pos );
-		type = getByte( bank1->start, pos );
-
-		printf("%x,%x\n",is_signed, type);
-
-		type = is_signed ? -type : type;
-		id = getWord( bank1->start, pos );
-
-		printf("pn: % 2d, type: % 4d, id: %04x\n", block_nr, type, id);
-
-		retroBox( screen, x0,y0,x1,y1, 3 );
-
-		return true;		
+		if (convertPacPicData( (unsigned char *) (bank1->start + pos), 0, &context ))
+		{
+			if (context.raw)
+			{
+				plotUnpackedContext( &context, screen , x0, y0 );
+				free( context.raw);
+				return true;	
+			}
+		}
 	}
-
 
 	return false;
 }
@@ -963,9 +930,9 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=3)
 	{
-		struct ivar &arg1 = context -> stack[context -> stackp-3];
-		struct ivar &arg2 = context -> stack[context -> stackp-2];
-		struct ivar &arg3 = context -> stack[context -> stackp-1];
+		struct ivar &arg1 = context -> stack[context -> stackp-3];	// x
+		struct ivar &arg2 = context -> stack[context -> stackp-2];	// y
+		struct ivar &arg3 = context -> stack[context -> stackp-1];	// image
 
 		if (( arg1.type == type_int ) && ( arg2.type == type_int ) && ( arg3.type == type_int ) )
 		{
@@ -979,7 +946,10 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 			{
 				printf("**** we found a bank\n");
 
-				if (get_resource_block( bank1, arg3.num, arg1.num, arg2.num ) == false )
+				arg1.num += get_dialog_x(context);
+				arg2.num += get_dialog_y(context);
+
+				if (get_resource_block( bank1, arg3.num + context -> image_offset - 1, arg1.num, arg2.num ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
@@ -1264,6 +1234,7 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
+
 
 
 void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
