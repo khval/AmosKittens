@@ -62,24 +62,55 @@ void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB
 	b = (data[pos+1] & 0x0F) * 0x11;
 }
 
-void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, int *r, int *g, int *b, unsigned char *raw, unsigned short mode)
+void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 )
 {
-	int n;
 	int row;
 	int byte;
 	int bit;
 	int color;
-	int d;
 	int planeOffset;
-	int bytesPerPlan;
-	int colors = 1 << depth;
+	int imageWidth = context -> w * 8;
+	int imageHeight = context -> h * context -> ll;
+	int bytesPerPlan = context -> w * imageHeight;
+
+	for (int y=0; y < imageHeight; y++)
+	{
+		row = context -> w * y;
+
+		for (int x=0; x < imageWidth; x++)
+		{
+			byte = x / 8;
+			bit = 1<<(7-(x & 7));
+			planeOffset = 0;
+
+			color = 0;
+			for (int d=0;d<context -> d;d++)
+			{
+				color += context -> raw[ row + byte + planeOffset ] & bit ? 1<<d: 0 ;
+				planeOffset += bytesPerPlan;
+			}
+
+			retroPixel( screen, x +x0,y +y0, color );	
+		}
+	}
+}
+
+
+void openUnpackedScreen(int screen_num, 
+//		int bytesPerRow, int height, 
+		struct PacPicContext *context )
+			
+{
+	int n;
+
+	int colors = 1 << context -> d;
 	unsigned int videomode = retroLowres_pixeld;
 	struct retroScreen *screen = NULL;
 	struct retroTextWindow *textWindow = NULL;
 
 	videomode = 0;
 
-	if (mode & 0x8000)
+	if (context -> mode & 0x8000)
 	{
 		 videomode |= retroHires; 
 	}
@@ -88,7 +119,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 		 videomode |= retroLowres_pixeld; 
 	}
 
-	if (mode & 0x2000) videomode |= retroHam6;
+	if (context -> mode & 0x2000) videomode |= retroHam6;
 
 	engine_lock();
 
@@ -101,7 +132,7 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 		retroCloseScreen(&screens[screen_num]);
 	}
 
-	screens[screen_num] = retroOpenScreen( bytesPerRow * 8, height, videomode );
+	screens[screen_num] = retroOpenScreen(context -> w * 8, context -> h * context -> ll, videomode );
 
 	if (screen = screens[screen_num])
 	{
@@ -127,37 +158,18 @@ void openUnpackedScreen(int screen_num, int bytesPerRow, int height, int depth, 
 
 		retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 
-		bytesPerPlan = bytesPerRow * height;
+		plotUnpackedContext( context, screen, 0,0 );
 
-		for (int y=0; y < screen -> realHeight; y++)
-		{
-			row = bytesPerRow * y;
-
-			for (int x=0; x < screen -> realWidth; x++)
-			{
-				byte = x / 8;
-				bit = 1<<(7-(x & 7));
-				planeOffset = 0;
-
-				color = 0;
-				for (d=0;d<depth;d++)
-				{
-					color += raw[ row + byte + planeOffset ] & bit ? 1<<d: 0 ;
-					planeOffset += bytesPerPlan;
-				}
-
-				retroPixel( screen, x,y, color );					
-			}
-		}
 	}
 
 	video -> refreshAllScanlines = TRUE;
 	engine_unlock();
 }
 
+bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
 
 // pac.pic. RLE decompressor
-int convertPacPic( int screen, unsigned char *data, const char *name  )
+bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 {
 	//  int o = 20;
 	int o=0;
@@ -184,46 +196,68 @@ int convertPacPic( int screen, unsigned char *data, const char *name  )
 		printf("%08x\n",get4(o));
 		printf("%08x\n",get4(o+4));
 		printf("%08x\n",get4(o+8));
-		return 1;
+		return false;
 	}
 
-  int w  = get2(o+8),
-      h  = get2(o+10),
-      ll = get2(o+12),
-      d  = get2(o+14);
+	return convertPacPicData( data, o , context );
+
+}
+
+
+// pac.pic. RLE decompressor
+bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context )
+{
+	context -> w  = get2(o+8),
+	context -> h  = get2(o+10),
+	context -> ll = get2(o+12),
+	context -> d  = get2(o+14);
+
+	printf( " w %d, h %d, ll %d, d %d\n",
+		context -> w,	context -> h,	context -> ll,	context -> d );
+
+	printf("data w %d,h %d\n",
+				context->w*8,
+				context->h*context->ll);
+
+	if (context->w*8 > 640) return false;
+
+	if (context->w == 0) return false;
+	if ((context->h*context->ll) <0) return false;
 
 	// reserve bitplane memory
-	unsigned char* raw = (unsigned char*) malloc(w*h*ll*d);
+	context -> raw = (unsigned char*) malloc( context -> w * context -> h * context -> ll * context -> d );
+
 	unsigned char *picdata = &data[o+24];
 	unsigned char *rledata = &data[o+get4(o+16)];
 	unsigned char *points  = &data[o+get4(o+20)];
 
-	if (raw)
+	if (context -> raw)
 	{
+		unsigned char *&raw = context -> raw;
 		int rrbit = 6, rbit = 7;
 		int picbyte = *picdata++;
 		int rlebyte = *rledata++;
 		if (*points & 0x80) rlebyte = *rledata++;
 
-		for( int i = 0; i < d; i++)
+		for( int i = 0; i < context -> d; i++)
 		{
-			unsigned char *lump_start = &raw[i*w*h*ll];
+			unsigned char *lump_start = &raw[ i * context -> w * context -> h * context -> ll ];
 
-			for( int j = 0; j < h; j++ )
+			for( int j = 0; j < context -> h; j++ )
 			{
 				unsigned char *lump_offset = lump_start;
 
-				for( int k = 0; k < w; k++ )
+				for( int k = 0; k < context -> w; k++ )
 				{
 					unsigned char *dd = lump_offset;
-					for( int l = 0; l < ll; l++ )
+					for( int l = 0; l < context -> ll; l++ )
 					{
 						/* if the current RLE bit is set to 1, read in a new picture byte */
 						if (rlebyte & (1 << rbit--)) picbyte = *picdata++;
 
 						/* write picture byte and move down by one line in the picture */
 						*dd = picbyte;
-         					dd += w;
+         					dd += context -> w;
 
 						/* if we've run out of RLE bits, check the POINTS bits to see if a new RLE byte is needed */
 						if (rbit < 0)
@@ -235,22 +269,20 @@ int convertPacPic( int screen, unsigned char *data, const char *name  )
 					}
 					lump_offset++;
 				}
-				lump_start += w * ll;
+				lump_start += context -> w * context -> ll;
 			}
 		}
 
-		printf ("%d,%d,%d\n",w*8,h*ll,1<<d);
-		openUnpackedScreen( screen, w, h*ll, d, r,g ,b,raw, mode );
-		free(raw);
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
 char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 {
 	int n;
-	int s;
+	int screen_num;
 	struct kittyBank *bank;
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data -> stack  +1;
@@ -258,18 +290,24 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 	if (args==2)
 	{
 		n = getStackNum(stack-1);
-		s = getStackNum(stack);
+		screen_num = getStackNum(stack);
 
-		printf("unpack %d to %d\n",n,s);
+		printf("unpack %d to %d\n",n,screen_num);
 
 		bank = findBank(n);
 		if (bank)
 		{
 			if (bank -> start)
 			{
-				convertPacPic( s, (unsigned char *) bank -> start, "dump" );
+				struct PacPicContext context;
 
-				if (screens[s] == NULL) setError(47,data->tokenBuffer );
+				if ( convertPacPic( (unsigned char *) bank -> start, &context ) )
+				{
+					openUnpackedScreen( screen_num, &context );
+					free( context.raw);
+				}
+
+				if (screens[screen_num] == NULL) setError(47,data->tokenBuffer );
 			}
 			else setError(36,data->tokenBuffer);	// Bank not reserved
 		}
