@@ -1236,7 +1236,9 @@ void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 
 	printf("%s\n", at);
 
-	if (*at=='%%') at++;
+	if (*at != 37) return;	// not binaray
+
+	 at++;
 
 	ret = 0;
 	while ((*at=='0')||(*at=='1'))
@@ -1244,6 +1246,7 @@ void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 		ret=ret<<1;
 		if (*at=='1') ret++;
 		context -> l++;
+		at++;
 	}
 
 	push_context_num( context, ret );
