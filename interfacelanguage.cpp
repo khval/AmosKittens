@@ -905,6 +905,33 @@ void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void _icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int ) 
+		{		
+			context -> image_offset = arg1.num;
+		}
+
+		pop_context( context, 1);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_PushImage;
+	context -> args = 1;
+}
+
+
 void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1269,6 +1296,7 @@ struct cmdinterface commands[]=
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
 	{"PR",i_normal,NULL,icmd_Print},
 	{"PO",i_normal,NULL,icmd_PrintOutline},
+	{"PU",i_normal,NULL,icmd_PushImage},
 	{"ME",i_parm,NULL,NULL},
 	{"SA",i_normal,NULL,icmd_Save},
 	{"SH",i_parm,NULL,icmd_ScreenHeight},
