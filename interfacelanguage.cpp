@@ -441,7 +441,120 @@ void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
-// ----
+void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( (screen) && (context -> stackp>=5) )
+	{
+		struct ivar &x0 = context -> stack[context -> stackp-5];
+		struct ivar &y0 = context -> stack[context -> stackp-4];
+		struct ivar &image = context -> stack[context -> stackp-3];
+		struct ivar &x1 = context -> stack[context -> stackp-2];
+		struct ivar &y1 = context -> stack[context -> stackp-1];
+
+		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( x1.type == type_int ) && ( y1.type == type_int ) )
+		{
+			int ox = get_dialog_x(context);
+			int oy = get_dialog_y(context);
+
+			x0.num+=ox;
+			y0.num+=oy;
+			x1.num+=ox;
+			y1.num+=oy;
+
+			retroBox(screen, x0.num, y0.num, x1.num, y1.num, 2 );
+		}
+	}
+
+	pop_context( context, 5);
+	context -> cmd_done = NULL;
+}
+
+void icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_ImageBox;
+	context -> args = 5;
+}
+
+void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( (screen) && (context -> stackp>=4) )
+	{
+		struct ivar &x0 = context -> stack[context -> stackp-4];
+		struct ivar &y0 = context -> stack[context -> stackp-3];
+		struct ivar &image = context -> stack[context -> stackp-2];
+		struct ivar &width = context -> stack[context -> stackp-1];
+
+		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( width.type == type_int ) )
+		{
+			int ox = get_dialog_x(context);
+			int oy = get_dialog_y(context);
+			int x1;
+
+			x0.num+=ox;
+			y0.num+=oy;
+
+			x1 = x0.num + width.num ;
+
+			retroBox(screen, x0.num, y0.num, x1, y0.num+8, 2 );
+		}
+	}
+
+	pop_context( context, 4);
+	context -> cmd_done = NULL;
+}
+
+void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_Imagehline;
+	context -> args = 4;
+}
+
+void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if ( (screen) && (context -> stackp>=4) )
+	{
+		struct ivar &x0 = context -> stack[context -> stackp-4];
+		struct ivar &y0 = context -> stack[context -> stackp-3];
+		struct ivar &image = context -> stack[context -> stackp-2];
+		struct ivar &height = context -> stack[context -> stackp-1];
+
+		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( height.type == type_int ) )
+		{
+			int ox = get_dialog_x(context);
+			int oy = get_dialog_y(context);
+			int y1;
+
+			x0.num+=ox;
+			y0.num+=oy;
+
+			y1 = y0.num + height.num ;
+
+			retroBox(screen, x0.num, y0.num, x0.num+8, y1, 2 );
+		}
+	}
+
+	pop_context( context, 4);
+	context -> cmd_done = NULL;
+}
+
+void icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_imagevline;
+	context -> args = 4;
+}
+
 
 void _icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1283,7 +1396,7 @@ struct cmdinterface commands[]=
 
 	{"BA",i_normal,NULL,icmd_Base},
 	{"BP",i_normal,NULL,icmd_ButtonPosition},
-	{"BO",i_normal,NULL,NULL},
+	{"BO",i_normal,NULL,icmd_ImageBox},
 	{"BR",i_normal,NULL,icmd_ButtonReturn},
 	{"BQ",i_normal,NULL,NULL },
 	{"BU",i_normal,NULL,icmd_Button},
@@ -1302,6 +1415,8 @@ struct cmdinterface commands[]=
 	{"JP",i_normal,NULL,icmd_Jump},
 	{"JS",i_normal,NULL,icmd_JumpSubRutine},
 	{"LA",i_normal,ipass_label, icmd_label },
+	{"LI",i_normal,NULL,icmd_Imagehline },
+	{"VL",i_normal,NULL,icmd_imagevline },
 	{"KY",i_normal,NULL,NULL},
 	{"MI",i_parm,NULL,icmd_Min},
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
