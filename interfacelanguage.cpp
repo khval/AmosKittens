@@ -85,7 +85,7 @@ void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 	pn++;
 }
 
-bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
+bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, int *out_width, int *out_height )
 {
 	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
 	int chunks,end_offset;
@@ -117,6 +117,9 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0 )
 
 		if (convertPacPicData( (unsigned char *) (bank1->start + pos), 0, &context ))
 		{
+			*out_width = context.w * 8;
+			*out_height = context.h *context.ll;
+
 			if (context.raw)
 			{
 				plotUnpackedContext( &context, screen , x0, y0 );
@@ -423,15 +426,100 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( x1.type == type_int ) && ( y1.type == type_int ) )
 		{
+			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
+
+			x0.num = x0.num - (x0.num % 8);
+			x1.num = x1.num - (x0.num % 8);
 
 			x0.num+=ox;
 			y0.num+=oy;
 			x1.num+=ox;
 			y1.num+=oy;
 
-			retroBox(screen, x0.num, y0.num, x1.num, y1.num, 2 );
+			bank1 = findBank(16);
+
+			if (bank1)
+			{
+				int x,y;
+				int w,h;
+				int ew, eh;
+				int _w,_h;	// temp, ignore.
+				int _image =  image.num + context -> image_offset - 1;
+
+				if (get_resource_block( bank1, _image , x0.num, y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				ew = (x1.num - x0.num) / w - 1 ;
+				eh = (y1.num - y0.num) / h - 1 ;
+
+
+				if (get_resource_block( bank1, _image +2, ew*w + x0.num, y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				if (get_resource_block( bank1, _image + 6 , x0.num, eh*h+y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				if (get_resource_block( bank1, _image +8,  ew*w+ x0.num, eh*h + y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+		
+
+				for (y=1; y<eh;y++)
+				{
+
+					if (get_resource_block( bank1, _image +3, 0 *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+
+					if (get_resource_block( bank1, _image +5, ew *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+				}
+
+				for (x=1; x<ew;x++)
+				{
+					if (get_resource_block( bank1, _image +1, x *w + x0.num, y0.num, &_w,&_h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+
+					for (y=1; y<eh;y++)
+					{
+						if (get_resource_block( bank1, _image +4, x *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
+						{
+							setError( 22, context -> tokenBuffer );
+							context -> error = true;
+						}
+					}
+
+					if (get_resource_block( bank1, _image +7, x*w + x0.num, eh*h + y0.num, &_w,&_h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+				}
+
+			}
+
+//			retroBox(screen, x0.num, y0.num, x1.num, y1.num, 2 );
 		}
 	}
 
@@ -944,12 +1032,12 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 	
 			if (bank1)
 			{
-				printf("**** we found a bank\n");
+				int w,h;
 
 				arg1.num += get_dialog_x(context);
 				arg2.num += get_dialog_y(context);
 
-				if (get_resource_block( bank1, arg3.num + context -> image_offset - 1, arg1.num, arg2.num ) == false )
+				if (get_resource_block( bank1, arg3.num + context -> image_offset - 1, arg1.num, arg2.num, &w, &h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
