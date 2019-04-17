@@ -250,10 +250,17 @@ char *_errTrap( struct glueCommands *data, int nextToken )
 		onError = onErrorTemp;
 		onErrorTemp = NULL;
 
-		kittyError.trapCode = kittyError.code;
-		kittyError.code = 0;
-		kittyError.newError = false;
+
+		if (kittyError.code)
+		{
+
+
+			kittyError.trapCode = kittyError.code;
+			kittyError.code = 0;
+			kittyError.newError = false;
+		}
 	}
+
 
 	return NULL;
 }
@@ -281,6 +288,7 @@ char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	setStackNum( kittyError.trapCode );
+	kittyError.trapCode = 0;
 	return tokenBuffer;
 }
 
