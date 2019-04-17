@@ -64,7 +64,6 @@ void push_context_num(struct cmdcontext *context, int num);
 void push_context_string(struct cmdcontext *context, char *str);
 void push_context_var(struct cmdcontext *context, int num);
 
-
 extern uint8_t getByte( char *adr, int &pos );
 extern uint16_t getWord( char *adr, int &pos );
 extern uint32_t getLong( char *adr, int &pos );
@@ -1235,8 +1234,6 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
-
-
 void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -1264,9 +1261,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 		push_context_num( context, ret );
 	}
 	else context -> error = 1;
-
 }
-
 
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 {

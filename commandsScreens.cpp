@@ -317,29 +317,7 @@ char *_gfxScreenOffset( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_gfxScreen( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	bool success = false;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (args==1)
-	{
-		int screen_num = getStackNum( stack );
-
-		if ((screen_num>-1)&&(screen_num<8))
-		{
-			current_screen = screen_num;
-			success = true;
-		}
-	}
-
-	if (success == false) setError(22,data->tokenBuffer);
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 char *_gfxScin( struct glueCommands *data, int nextToken )
 {
@@ -418,14 +396,46 @@ char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxScreen( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = getStackNum( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			printf("limit looks ok\n");
+
+			if (screens[screen_num])
+			{
+				printf("looks ok\n");
+				current_screen = screen_num;
+				success = true;
+			}
+		}
+
+		if (success == false) setError(47,data->tokenBuffer);
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (last_tokens[parenthesis_count])
 	{
-		case 0x0000:
-		case 0x0054:
+		case 0x0000:	// new line
+		case 0x0054:	// next command
+		case 0x259A:	// trap
 				stackCmdNormal( _gfxScreen, tokenBuffer );
 				break;
 		default:
