@@ -72,6 +72,11 @@ extern bool convertPacPic( unsigned char *data, struct PacPicContext *context );
 extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
 
+extern int os_text_length(char *txt);
+extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
+extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
+extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen);
+
 void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 {
 //	int tpos = offset_gfx+2+pn*4;
@@ -243,10 +248,6 @@ void icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
-
-extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
-void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
-
 void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -259,7 +260,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			int x = context -> stack[context -> stackp-4].num;
 			int y = context -> stack[context -> stackp-3].num;
-//			int o = context -> stack[context -> stackp-1].num;
+			int pen = context -> stack[context -> stackp-1].num;
 
 			x+=get_dialog_x(context);
 			y+=get_dialog_y(context);
@@ -274,7 +275,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 					case type_string:
 						{
 							char *txt  = context -> stack[context -> stackp-2].str;
-							if (txt) os_text(screen, x,y,txt);
+							if (txt) os_text_no_outline(screen, x,y,txt,pen);
 						}
 						break;
 
@@ -337,8 +338,8 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 				int x = context -> stack[context -> stackp-5].num;
 				int y = context -> stack[context -> stackp-4].num;
 				char *txt = context -> stack[context -> stackp-3].str;
-				uint16_t pen = context -> stack[context -> stackp-2].num;
-				uint16_t outline = context -> stack[context -> stackp-1].num;
+				uint16_t outline = context -> stack[context -> stackp-2].num;
+				uint16_t pen = context -> stack[context -> stackp-1].num;
 
 				x+=get_dialog_x(context);
 				y+=get_dialog_y(context);
@@ -1212,7 +1213,7 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_string ) 
 		{
-			ret = strlen(arg1.str);
+			ret = os_text_length( arg1.str );
 		}
 		else ret = 0;
 
@@ -1251,7 +1252,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 			if (screen)
 			{
 				int l = strlen( arg1.str );
-				int tl = TextLength(&font_render_rp, arg1.str, l );
+				int tl = os_text_length( arg1.str );
 
 				ret = (context -> dialog[ context -> selected_dialog ] .width / 2) - (tl/2)  ;
 			}
