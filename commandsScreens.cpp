@@ -571,32 +571,38 @@ char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		if (kittyStack[stack].type == type_none)
-		{
-			if (screens[current_screen]) screens[current_screen]->flags &= ~retroscreen_flag_hide;
-			video -> refreshAllScanlines = TRUE;
-			success = true;
-		}
-		else
-		{
-			int screen_num = getStackNum( stack );
+		int screen_num =-1;
+		bool success = false;
 
-			if ((screen_num>-1)&&(screen_num<8))
+		switch (kittyStack[stack].type)
+		{ 
+			case type_none:
+					screen_num = current_screen;
+					break;
+
+			case type_int:
+					screen_num = getStackNum( stack );
+					break;
+		}
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			if (screens[screen_num])
 			{
-				if (screens[screen_num]) screens[screen_num]->flags &= ~retroscreen_flag_hide;
+				screens[screen_num]->flags &= ~retroscreen_flag_hide;
 				video -> refreshAllScanlines = TRUE;
 				success = true;
 			}
 		}
-	}
 
-	if (success == false) setError(22,data->tokenBuffer);
+		if (success == false) setError(47,data->tokenBuffer);
+	}
+	else setError( 22, data -> tokenBuffer );
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -615,15 +621,17 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			printf("screen_num %d\n",screen_num);
-
-			if (screens[screen_num]) screens[screen_num]->flags |= retroscreen_flag_hide;
-			video -> refreshAllScanlines = TRUE;
-			success = true;
+			if (screens[screen_num])
+			{
+				screens[screen_num]->flags |= retroscreen_flag_hide;
+				video -> refreshAllScanlines = TRUE;
+				success = true;
+			}
 		}
-	}
 
-	if (success == false) setError(22,data->tokenBuffer);
+		if (success == false) setError(47,data->tokenBuffer);
+	}
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
