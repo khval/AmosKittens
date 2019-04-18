@@ -1800,19 +1800,15 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	 	test_interface_script( context );
 	}
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> at = context -> script;	// default
 
-
-	if (label == -1)
+	if (label != -1)
 	{
-		context -> at = context -> script;
+		if (context -> labels[ label ])
+		{
+			context -> at = context -> labels[ label ];
+		}
 	}
-	else
-	{
-		context -> at = context -> labels[ label ];
-	}
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> at == 0)
 	{
