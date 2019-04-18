@@ -123,6 +123,20 @@ struct cmdcontext *find_interface_context(int id)
 	return NULL;
 }
 
+void 	erase_interface_context( struct cmdcontext *context )
+{
+	unsigned int n;
+
+	for (n=0;n<icmdcontexts.size();n++)
+	{
+		if (icmdcontexts[n] == context) 
+		{
+			icmdcontexts.begin()+n;
+			return;
+		}
+	}
+}
+
 char *_guiDialogRun( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -252,8 +266,9 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 		case 1:
 				{
 					script = getStackString(stack);
-					init_interface_context( &context, 0, script, 0, 0 );
+					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 					execute_interface_script( &context, -1 );
+					cleanup_inerface_context( &context );
 				}
 				break;
 
@@ -263,11 +278,13 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					int var1 = getStackNum(stack-1);
 					char *var2s = getStackString(stack);
 
-					init_interface_context( &context, 0, script, 0, 0 );
+					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 
 					isetvarnum( &context,0,var1); 
 					if (var2s) isetvarstr( &context,1,var2s);
+
 					execute_interface_script( &context, -1 );
+					cleanup_inerface_context( &context );
 				}
 				break;
 
@@ -279,11 +296,13 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					int x = getStackNum(stack-1);
 					int y = getStackNum(stack);
 
-					init_interface_context( &context, 0, script, x, y );
+					init_interface_context( &context, 0, script, x, y, 16, 0 );
 
 					isetvarnum( &context,0,var1); 
 					if (var2s) isetvarstr( &context,1,var2s);
+
 					execute_interface_script( &context, -1 );
+					cleanup_inerface_context( &context );
 				}
 				break;
 
@@ -313,8 +332,54 @@ char *guiDialogUnfreeze(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+int current_dialog = -1;
+
+char *_guiDialogClose( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int id=-1;
+
+	switch (args)
+	{
+		case 1:
+				switch ( kittyStack[stack].type )
+				{
+					case type_none:
+						id = current_dialog;
+						break;
+
+					case type_int:
+						id = kittyStack[stack].value;
+						break;
+				}
+
+				break;
+
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	if (id != -1)
+	{
+		struct cmdcontext *context = find_interface_context(id);
+		
+		if (context)
+		{
+			cleanup_inerface_context( context );
+			erase_interface_context( context );
+		}
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *guiDialogClose(nativeCommand *cmd, char *tokenBuffer)
 {
+	stackCmdNormal( _guiDialogClose, tokenBuffer );
+	setStackNone();
+
 	return tokenBuffer;
 }
 
@@ -325,7 +390,7 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 	char *script;
 	int id = -1;
 	int ret = 0;
-	int x=0,y=0;
+	int varSize=17,bufferSize=0;
 
 	switch (args)
 	{
@@ -336,8 +401,8 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 		case 4:
 				id = getStackNum(stack-3);
 				script = getStackString(stack-2);
-				x = getStackNum(stack-1);
-				y = getStackNum(stack);
+				varSize = getStackNum(stack-1);
+				bufferSize = getStackNum(stack);
 				break;
 
 		default:
@@ -353,7 +418,8 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 			item = new cmdcontext();
 			if (item) 
 			{
-				init_interface_context( item, id, script, x, y );
+				current_dialog = id;
+				init_interface_context( item, id, script, 0, 0 , varSize, bufferSize );
 				icmdcontexts.push_back(item);
 				ret = ~1;
 			}

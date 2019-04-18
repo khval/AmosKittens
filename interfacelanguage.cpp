@@ -1700,7 +1700,7 @@ void dump_context_stack( struct cmdcontext *context )
 	}
 }
 
-void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y )
+void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y, int varSize, int bufferSize  )
 {
 	struct dialog &dialog = context -> dialog[0];
 
@@ -1712,9 +1712,33 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> stackp = 0;
 	context -> script = strdup( script );
 	context -> at = context -> script;
+	context -> max_vars = varSize;
+
+	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
 
 	dialog.x = x;
 	dialog.y = y;
+
+
+	printf("dialog %d, %d\n", x,y);
+	getchar();
+}
+
+void cleanup_inerface_context( struct cmdcontext *context )
+{
+	context -> at = NULL;
+
+	if (context -> script)
+	{
+		free(	context -> script );
+		context -> script = NULL;
+	}
+
+	if (context -> vars) 
+	{
+		free(context -> vars);
+		context -> vars = NULL;
+	}
 }
 
 

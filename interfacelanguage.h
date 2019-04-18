@@ -30,7 +30,7 @@ struct cmdcontext
 	int stackp;
 	int lstackp;
 	struct ivar stack[10];
-	struct ivar vars[512];
+	struct ivar *vars;
 	char *labels[512];
 	int programStackCount;
 	char *programStack[10];
@@ -47,6 +47,7 @@ struct cmdcontext
 	int ink3;
 	int image_offset;
 	int block;
+	int max_vars;
 };
 
 struct cmdinterface
@@ -66,6 +67,7 @@ enum
 
 extern void isetvarstr( struct cmdcontext *context,int index, char *str);
 extern void isetvarnum( struct cmdcontext *context,int index,int num);
-extern void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y );
+extern void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y, int varSize, int bufferSize  );
+extern void cleanup_inerface_context( struct cmdcontext *context );
 extern void execute_interface_script( struct cmdcontext *context, int32_t label);
 
