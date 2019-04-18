@@ -1632,6 +1632,8 @@ int main(int args, char **arg)
 	{
 		bool init_error = false;
 
+		__load_bank__( "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk", -2 );
+
 		// set up a fake extention lookup
 
 		// set default values.
