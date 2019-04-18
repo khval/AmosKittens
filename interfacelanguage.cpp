@@ -1068,7 +1068,7 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			struct kittyBank *bank1;
 
-			printf("unpack %d,%d,%d\n", arg1.num, arg2.num, arg3.num);
+			printf("unpack %d,%d,%d + (%d )\n", arg1.num, arg2.num, arg3.num, context -> image_offset);
 
 			bank1 = findBank(16);
 	
