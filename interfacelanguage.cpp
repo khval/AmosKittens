@@ -85,26 +85,68 @@ void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 	pn++;
 }
 
-bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, int *out_width, int *out_height )
+bool resource_bank_has_pictures( struct kittyBank *bank1, int block_nr )
 {
-	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
-	int chunks,end_offset;
+	struct resourcebank_header *header; 
 	int pos,pupics;
-	int offset_gfx;
-	struct retroScreen *screen = screens[current_screen];
 
-	if (!screen) return false;
+	if (bank1 == NULL) return false;
 
-	pos = 0;
-	chunks = getWord( bank1->start, pos );	// get chunks.
+	header = (resourcebank_header*) bank1->start;
 
-	offset_gfx = pos = 2+chunks*4; 
-	end_offset = getLong( bank1->start, pos );
+	if (header -> img_offset == 0) return false;
 
 	pos = header -> img_offset;
 	pupics = getWord( bank1->start, pos );
 
 	if ((block_nr<0) ||  (block_nr >= pupics)) return false;
+	return true;
+}
+
+bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, int *out_width, int *out_height )
+{
+	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
+	int pos;
+	struct retroScreen *screen = screens[current_screen];
+
+	if (!screen) return false;
+
+	pos = 0;
+
+	printf("x0 %d y0 %d\n",x0,y0);
+
+	if (resource_bank_has_pictures( bank1, block_nr ) == false)
+	{
+		printf("Sorry nothing in custum resource :-)\n");
+
+		bank1 = findBank(-2);
+
+		if (bank1)
+		{
+			if (resource_bank_has_pictures( bank1, block_nr ) == false)
+			{
+				printf("Can't find picture in default resource\n");
+				getchar();
+				return false;
+			}
+
+			header = (resourcebank_header*) bank1->start;
+			if (header -> img_offset == 0) 
+			{
+				printf("resource has no images\n");
+				getchar();
+				return false;
+			}
+		}
+		else
+		{
+			printf( "Can't find default resource\n");
+			getchar();
+			return false;
+		}
+	}
+
+//	pos = header -> img_offset;
 
 	pos = header -> img_offset + 2 + block_nr*4;
 	pos = getLong( bank1->start, pos );
