@@ -185,6 +185,7 @@ char *onErrorProc(char *ptr)
 
 char *_errError( struct glueCommands *data, int nextToken )
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	if (args == 1)
@@ -198,7 +199,7 @@ char *_errError( struct glueCommands *data, int nextToken )
 
 char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _errError, tokenBuffer );
 	return tokenBuffer;
 }
@@ -207,7 +208,8 @@ char *errError(struct nativeCommand *cmd, char *tokenBuffer)
 char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	char *name = NULL;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	name_from_ref(&tokenBuffer, &name);
 
@@ -243,52 +245,47 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_errTrap( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (onErrorTemp)
 	{
 		onError = onErrorTemp;
 		onErrorTemp = NULL;
 
-
 		if (kittyError.code)
 		{
-
-
 			kittyError.trapCode = kittyError.code;
 			kittyError.code = 0;
 			kittyError.newError = false;
 		}
 	}
 
-
 	return NULL;
 }
 
 char *errTrap(nativeCommand *err, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	onErrorTemp = onError;
 	onError = onErrorIgnore;
 	stackCmdFlags( _errTrap, tokenBuffer, cmd_onNextCmd | cmd_onEol );
-
 	return tokenBuffer;
 }
 
 
 char *errErrn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum( kittyError.code );
 	return tokenBuffer;
 }
 
 char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum( kittyError.trapCode );
 	kittyError.trapCode = 0;
+
 	return tokenBuffer;
 }
 
