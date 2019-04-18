@@ -615,8 +615,6 @@ void __load_work_data__(FILE *fd,int bank)
 		item.length = __bswap_32(item.length);
 #endif
 
-		if (bank>0) item.bank = bank;
-
 		if (item.length & 0x80000000) item.type += 8;
 		item.length = (item.length & 0x7FFFFFF) -8;
 
@@ -629,7 +627,14 @@ void __load_work_data__(FILE *fd,int bank)
 				memset( mem, 0, item.length + 8 );
 				fread( mem +8 , item.length, 1, fd );
 
-				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+				if (bank != -1)
+				{
+					if (__ReserveAs( item.type, bank, item.length,NULL, mem ) == false) free(mem);
+				}
+				else
+				{
+					if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+				}
 			}
 		}
 	}
@@ -872,7 +877,7 @@ void __load_bank__(const char *name, int bankNr )
 					{
 						case bank_type_sprite:
 							{
-								int _bank = bankNr>-1 ? bankNr : 1;
+								int _bank = (bankNr != -1) ? bankNr : 1;
 
 								engine_lock();
 								freeBank( _bank );
@@ -893,7 +898,7 @@ void __load_bank__(const char *name, int bankNr )
 	
 						case bank_type_icons:
 							{
-								int _bank = bankNr>-1 ? bankNr : 2;
+								int _bank = bankNr != -1 ? bankNr : 2;
 
 								freeBank( _bank );
 								icons = retroLoadSprite(fd, (cust_fread_t) cust_fread );

@@ -61,3 +61,5 @@ extern char *bankBGrab(nativeCommand *cmd, char *ptr);
 extern char *bankResourceBank(nativeCommand *cmd, char *ptr);
 extern char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer);
 
+extern void __load_bank__(const char *name, int bankNr );
+
