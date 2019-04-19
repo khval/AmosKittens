@@ -232,6 +232,14 @@ bool init_engine()
 	return TRUE;
 }
 
+bool engine_ready()
+{
+	if (engine == NULL) return false; 
+	if (topaz8_font == NULL) return false;
+	if ( font_render_rp.BitMap == NULL ) return false;
+	return true;
+}
+
 void close_engine()
 {
 	if (topaz8_font) CloseFont(topaz8_font); topaz8_font=0;
