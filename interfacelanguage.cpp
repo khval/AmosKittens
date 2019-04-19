@@ -195,6 +195,34 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
+{
+	char *at;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp >= 2)
+	{
+		struct ivar &eventCode = context -> stack[context -> stackp-2];
+		struct ivar &shiftCode = context -> stack[context -> stackp-1];
+
+		if ((eventCode.type == type_int)&&(shiftCode.type == type_int))
+		{
+
+		}
+
+		pop_context( context, 2);
+
+	} else context -> error = 1;
+}
+
+void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_KeyShortCut;
+	context -> lstackp = context -> stackp;
+	context -> args = 2;
+}
+
 static int get_dialog_x(struct cmdcontext *context)
 {
 	int x=0;
@@ -1512,7 +1540,7 @@ struct cmdinterface commands[]=
 	{"LA",i_normal,ipass_label, icmd_label },
 	{"LI",i_normal,NULL,icmd_Imagehline },
 	{"VL",i_normal,NULL,icmd_imagevline },
-	{"KY",i_normal,NULL,NULL},
+	{"KY",i_normal,NULL,icmd_KeyShortCut},
 	{"MI",i_parm,NULL,icmd_Min},
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
 	{"PR",i_normal,NULL,icmd_Print},
