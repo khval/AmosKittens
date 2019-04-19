@@ -1431,13 +1431,21 @@ void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_ScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, -999 );
+
+	if (screens[current_screen])	// check if current screen is open.
+	{
+		push_context_num( context,screens[current_screen] -> realWidth);
+	}
 }
 
 void icmd_ScreenHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, -999 );
+
+	if (screens[current_screen])	// check if current screen is open.
+	{
+		push_context_num( context,screens[current_screen] -> realHeight);
+	}
 }
 
 void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
