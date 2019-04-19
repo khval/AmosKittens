@@ -29,7 +29,7 @@ struct cmdcontext
 	bool tested;
 	int stackp;
 	int lstackp;
-	struct ivar stack[10];
+	struct ivar stack[20];
 	struct ivar *vars;
 	char *labels[512];
 	int programStackCount;
