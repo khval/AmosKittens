@@ -794,7 +794,11 @@ void main_engine()
 	}
 
 	close_joysticks();
+
+	engine_lock();
 	close_engine();
+	engine_unlock();
+
 
 	if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
 
