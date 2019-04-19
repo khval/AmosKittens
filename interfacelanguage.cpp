@@ -1708,16 +1708,25 @@ void push_context_string(struct cmdcontext *context, char *str)
 void push_context_var(struct cmdcontext *context, int index)
 {
 	struct ivar &self = context -> stack[context -> stackp];
-	struct ivar &var = context -> vars[index];
 
-	self.type = var.type;
-	if (var.type == type_string)
+	if ( context -> vars)
 	{
-		self.str = strdup( var.str );
-	}
-	else self.num = var.num;
+		struct ivar &var = context -> vars[index];
 
-	context -> stackp++;
+		self.type = var.type;
+		if (var.type == type_string)
+		{
+			self.str = strdup( var.str );
+		}
+		else self.num = var.num;
+
+		context -> stackp++;
+	}
+	else
+	{
+		printf("interface context not initialized\n");
+		context -> error = 1;
+	}
 
 	printf("push VAR[%d]\n",index);
 }
@@ -1856,6 +1865,13 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if ( context -> vars == NULL )
+	{
+		printf("%s:%s context damged\n",__FILE__,__FUNCTION__);
+		getchar();
+		return;
+	}
+
 	context -> error = false;
 	context -> stackp = 0;
 
@@ -1924,6 +1940,13 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 
 		context -> at += context -> l;
+
+		if (context -> vars  == NULL)
+		{
+			printf("context vars died here -> context stack %d\n", context -> stackp );
+			getchar();
+			break;
+		}
 	}
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
