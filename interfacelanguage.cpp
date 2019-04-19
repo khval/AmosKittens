@@ -510,7 +510,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 				int w,h;
 				int ew, eh;
 				int _w,_h;	// temp, ignore.
-				int _image =  image.num + context -> image_offset - 1;
+				int _image =  image.num - 1 + context -> image_offset ;
 
 				if (get_resource_block( bank1, _image , x0.num, y0.num, &w,&h ) == false )
 				{
@@ -608,20 +608,54 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &x0 = context -> stack[context -> stackp-4];
 		struct ivar &y0 = context -> stack[context -> stackp-3];
 		struct ivar &image = context -> stack[context -> stackp-2];
-		struct ivar &width = context -> stack[context -> stackp-1];
+		struct ivar &x1 = context -> stack[context -> stackp-1];
 
-		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( width.type == type_int ) )
+		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( x1.type == type_int ) )
 		{
+			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
-			int x1;
+
+			x0.num = x0.num - (x0.num % 8);
 
 			x0.num+=ox;
 			y0.num+=oy;
+			x1.num+=ox;
 
-			x1 = x0.num + width.num ;
+			bank1 = findBank(16);
 
-			retroBox(screen, x0.num, y0.num, x1, y0.num+8, 2 );
+			if (bank1)
+			{
+				int x;
+				int xp;
+				int w=0,h=0;
+				int _image =  image.num -1  + context -> image_offset ;
+
+				xp = x0.num;
+
+				if (get_resource_block( bank1, _image , xp, y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				xp += w;
+
+				for (; xp<x1.num-w;xp+=w)
+				{
+					if (get_resource_block( bank1, _image+1, x, y0.num, &w,&h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+				}
+
+				if (get_resource_block( bank1, _image+2 , xp, y0.num, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+			}
 		}
 	}
 
@@ -646,20 +680,52 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &x0 = context -> stack[context -> stackp-4];
 		struct ivar &y0 = context -> stack[context -> stackp-3];
 		struct ivar &image = context -> stack[context -> stackp-2];
-		struct ivar &height = context -> stack[context -> stackp-1];
+		struct ivar &y1 = context -> stack[context -> stackp-1];
 
-		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( height.type == type_int ) )
+		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( y1.type == type_int ) )
 		{
+			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
-			int y1;
 
 			x0.num+=ox;
 			y0.num+=oy;
+			y1.num+=ox;
 
-			y1 = y0.num + height.num ;
+			bank1 = findBank(16);
 
-			retroBox(screen, x0.num, y0.num, x0.num+8, y1, 2 );
+			if (bank1)
+			{
+				int y;
+				int yp;
+				int w=0,h=0;
+				int _image =  image.num -1 + context -> image_offset ;
+
+				yp = y0.num;
+
+				if (get_resource_block( bank1, _image, x0.num, yp, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				yp +=h;
+
+				for (; yp<y1.num-h;yp+=h)
+				{
+					if (get_resource_block( bank1, _image+1, x0.num, yp, &w,&h ) == false )
+					{
+						setError( 22, context -> tokenBuffer );
+						context -> error = true;
+					}
+				}
+
+				if (get_resource_block( bank1, _image+2 , x0.num, yp, &w,&h ) == false )
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+			}
 		}
 	}
 
@@ -1485,6 +1551,7 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 
 void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 {
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned char *at = (unsigned char *) context -> at;
 	int ret;
 
@@ -1841,6 +1908,8 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 void cleanup_inerface_context( struct cmdcontext *context )
 {
 	context -> at = NULL;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> script)
 	{
