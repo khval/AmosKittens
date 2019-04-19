@@ -113,12 +113,8 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 
 	pos = 0;
 
-	printf("x0 %d y0 %d\n",x0,y0);
-
 	if (resource_bank_has_pictures( bank1, block_nr ) == false)
 	{
-		printf("Sorry nothing in custum resource :-)\n");
-
 		bank1 = findBank(-2);
 
 		if (bank1)
@@ -145,8 +141,6 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 			return false;
 		}
 	}
-
-//	pos = header -> img_offset;
 
 	pos = header -> img_offset + 2 + block_nr*4;
 	pos = getLong( bank1->start, pos );
@@ -1166,7 +1160,6 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 
 }
 
-
 void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1451,8 +1444,6 @@ void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 {
 	unsigned char *at = (unsigned char *) context -> at;
 	int ret;
-
-	printf("%s\n", at);
 
 	if (*at != 37) return;	// not binaray
 
