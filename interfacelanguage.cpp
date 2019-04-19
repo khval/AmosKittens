@@ -1496,6 +1496,34 @@ void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, ret );
 }
 
+void icmd_Hex( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	unsigned char *at = (unsigned char *) context -> at;
+	int ret;
+	char symb;
+
+	if (*at != '$') return;	// not binaray
+	 at++;
+
+	ret = 0;
+	symb = *at;
+	while (
+			((symb>='0')&&(symb<='9')) ||
+			((symb>='A')&&(symb<='F')) 
+		)
+	{
+		ret = ret << 4;
+		if ((symb>='0')&&(symb<='9')) ret += symb -'0';
+		if ((symb>='A')&&(symb<='F')) ret += symb -'A'+10;
+		
+		context -> l++;
+		at++;
+		symb = *at;
+	}
+
+	push_context_num( context, ret );
+}
 
 struct cmdinterface symbols[]=
 {
@@ -1510,6 +1538,7 @@ struct cmdinterface symbols[]=
 	{"*",i_parm,NULL,icmd_Mul},
 	{"/",i_parm,NULL,icmd_Div},
 	{"%",i_parm,NULL,icmd_Bin},
+	{"$",i_parm,NULL,icmd_Hex},
 
 	{NULL,i_normal,NULL,NULL}
 };
