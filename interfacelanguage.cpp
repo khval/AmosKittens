@@ -1156,7 +1156,7 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	push_context_num( context, context -> dialog[1].x );
+	push_context_num( context, context -> button_active );
 
 }
 

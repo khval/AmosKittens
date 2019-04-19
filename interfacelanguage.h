@@ -48,6 +48,7 @@ struct cmdcontext
 	int image_offset;
 	int block;
 	int max_vars;
+	int button_active;
 };
 
 struct cmdinterface
