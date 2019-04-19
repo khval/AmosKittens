@@ -416,7 +416,7 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &arg1 = context -> stack[context -> stackp-2];
 		struct ivar &arg2 = context -> stack[context -> stackp-1];
 
-		if ( arg1.type == type_int ) 
+		if (( arg1.type == type_int ) && ( arg1.num < context -> max_vars ))
 		{
 			switch ( arg2.type )
 			{
@@ -425,12 +425,13 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 					break;
 
 				case type_string:
-					 isetvarstr( context, arg1.num, arg2.str);
+					isetvarstr( context, arg1.num, arg2.str);
 					arg2.str = NULL;		// move not free ;-)
 					break;
 
 			}
 		}
+		else context -> error = 1;
 
 		pop_context( context, 2);
 	}
@@ -1171,7 +1172,14 @@ void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 1);
 
-		if (index>-1) push_context_var(context, index);
+		if ((index>-1)  && (index < context -> max_vars))
+		{
+
+			printf("index: %d\n",index);
+
+			push_context_var(context, index);
+		}
+		else context -> error = 1 ;
 	}
 }
 
