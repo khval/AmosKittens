@@ -305,8 +305,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 			y+=get_dialog_y(context);
 
 			engine_lock();
-#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
-			if (( sig_main_vbl )&&( EngineTask ))
+			if (engine_ready())
 			{
 
 				switch ( context -> stack[context -> stackp-2].type )
@@ -328,7 +327,6 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 						break;
 				}
 			}
-#endif
 			engine_unlock();
 		}
 	}
@@ -384,9 +382,10 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 				y+=get_dialog_y(context);
 
 				engine_lock();
-
-				if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
-
+				if (engine_ready())
+				{
+					if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
+				}
 				engine_unlock();
 			}
 
@@ -922,7 +921,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 #if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 				engine_lock();
-				if (( sig_main_vbl )&&( EngineTask ))
+				if (engine_ready())
 				{
 					sprintf( txt, "    %d,    %d     ",	mx,	my );
 					os_text(screen, 0,20,txt);
