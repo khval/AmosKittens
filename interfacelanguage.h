@@ -49,6 +49,10 @@ struct cmdcontext
 	int block;
 	int max_vars;
 	int button_active;
+	int xgcl;
+	int ygcl;
+	int xgc;
+	int ygc;
 };
 
 struct cmdinterface

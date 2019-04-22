@@ -370,6 +370,11 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 			int y = context -> stack[context -> stackp-3].num;
 			int pen = context -> stack[context -> stackp-1].num;
 
+			context -> xgcl = x;
+			context -> ygcl = y;
+			context -> xgc = x;
+			context -> ygc = y;
+
 			x+=get_dialog_x(context);
 			y+=get_dialog_y(context);
 
@@ -382,16 +387,26 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 					case type_string:
 						{
 							char *txt  = context -> stack[context -> stackp-2].str;
-							if (txt) os_text_no_outline(screen, x,y,txt,pen);
+							if (txt)
+							{
+								os_text_no_outline(screen, x,y,txt,pen);
+								context -> xgc += os_text_length( txt ) ;
+								context -> ygc += 8;
+							}
 						}
 						break;
 
-						case type_int:
+					case type_int:
 						{
 							char txt[30];
 							int n = context -> stack[context -> stackp-2].num;
 							sprintf( txt, "%d", n);
-							os_text(screen, x,y,txt);
+							if (txt)
+							{
+								os_text_no_outline(screen, x,y,txt,pen);
+								context -> xgc += os_text_length( txt ) ;
+								context -> ygc += 8;
+							}
 						}
 						break;
 				}
@@ -819,6 +834,11 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 		int x1 = context -> stack[context -> stackp-2].num;
 		int y1 = context -> stack[context -> stackp-1].num;
 
+		context -> xgcl = x0;
+		context -> ygcl = y0;
+		context -> xgc = x1;
+		context -> ygc = y1;
+
 		ox = get_dialog_x(context);
 		oy = get_dialog_y(context);
 		x0+=ox;
@@ -856,6 +876,11 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 		int x1 = context -> stack[context -> stackp-2].num;
 		int y1 = context -> stack[context -> stackp-1].num;
 
+		context -> xgcl = x0;
+		context -> ygcl = y0;
+		context -> xgc = x1;
+		context -> ygc = y1;
+
 		ox = get_dialog_x(context);
 		oy = get_dialog_y(context);
 		x0+=ox;
@@ -876,8 +901,6 @@ void icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_GraphicSquare;
 	context -> args = 4;
 }
-
-
 
 void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1641,6 +1664,36 @@ void icmd_Hex( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, ret );
 }
 
+void icmd_XGCL( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> xgcl );
+}
+
+void icmd_YGCL( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> ygcl );
+}
+
+void icmd_XGC( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> xgc );
+}
+
+void icmd_YGC( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> ygc );
+}
+
+
+
 struct cmdinterface symbols[]=
 {
 
@@ -1709,9 +1762,11 @@ struct cmdinterface commands[]=
 	{"UN",i_normal,NULL,icmd_Unpack},
 	{"VA",i_parm,NULL,icmd_Var},
 	{"VT",i_normal,NULL,NULL},
-	{"XB",i_parm,NULL,NULL},
+	{"XA",i_parm,NULL,icmd_XGCL},
+	{"YA",i_parm,NULL,icmd_YGCL},
+	{"XB",i_parm,NULL,icmd_XGC},
+	{"YB",i_parm,NULL,icmd_YGC},
 	{"XY",i_parm,NULL,NULL},
-	{"YB",i_parm,NULL,NULL},
 	{"ZN",i_parm,NULL,NULL},
 	{"ZC",i_normal,NULL,icmd_ZoneChange },
 	{"=",i_parm,NULL,icmd_Equal },
