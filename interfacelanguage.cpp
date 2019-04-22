@@ -745,12 +745,14 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 
 				for (; xp<x1.num-w;xp+=w)
 				{
-					if (get_resource_block( bank1, _image+1, x, y0.num, &w,&h ) == false )
+					if (get_resource_block( bank1, _image+1, xp, y0.num, &w,&h ) == false )
 					{
 						setError( 22, context -> tokenBuffer );
 						context -> error = true;
 					}
 				}
+
+				xp = x1.num - w;
 
 				if (get_resource_block( bank1, _image+2 , xp, y0.num, &w,&h ) == false )
 				{
