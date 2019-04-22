@@ -1829,6 +1829,12 @@ void icmd_YGC( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> ygc );
 }
 
+void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, 0 );
+}
 
 
 struct cmdinterface symbols[]=
@@ -1907,6 +1913,7 @@ struct cmdinterface commands[]=
 	{"XY",i_parm,NULL,NULL},
 	{"ZN",i_parm,NULL,NULL},
 	{"ZC",i_normal,NULL,icmd_ZoneChange },
+	{"ZV",i_parm,NULL,icmd_ZoneValue },
 	{"=",i_parm,NULL,icmd_Equal },
 	{";",i_parm,icmd_NextCmd,icmd_NextCmd},		// next command or end of command.
 	{"[",i_normal,NULL,icmd_block_start},
