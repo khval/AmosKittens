@@ -620,8 +620,8 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 					context -> error = true;
 				}
 
-				ew = (x1.num - x0.num) / w - 1 ;
-				eh = (y1.num - y0.num) / h - 1 ;
+				ew = (x1.num - x0.num) / w  ;
+				eh = (y1.num - y0.num) / h  ;
 
 
 				if (get_resource_block( bank1, _image +2, ew*w + x0.num, y0.num, &w,&h ) == false )
@@ -978,7 +978,7 @@ void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			struct dialog &dialog = context -> dialog[0];
 
-			dialog.x = arg1.num;
+			dialog.x = arg1.num -  (arg1.num % 16);
 			dialog.y = arg2.num;
 		}
 
@@ -2019,8 +2019,6 @@ void push_context_var(struct cmdcontext *context, int index)
 		printf("interface context not initialized\n");
 		context -> error = 1;
 	}
-
-	printf("push VAR[%d]\n",index);
 }
 
 void dump_context_stack( struct cmdcontext *context )
@@ -2057,12 +2055,8 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 
 	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
 
-	dialog.x = x;
+	dialog.x = x - (x % 16) ;
 	dialog.y = y;
-
-
-	printf("dialog %d, %d\n", x,y);
-	getchar();
 }
 
 void cleanup_inerface_context( struct cmdcontext *context )
@@ -2083,7 +2077,6 @@ void cleanup_inerface_context( struct cmdcontext *context )
 		context -> vars = NULL;
 	}
 }
-
 
 void test_interface_script( struct cmdcontext *context)
 {
