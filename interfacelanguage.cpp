@@ -1082,7 +1082,7 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = NULL;
 
-	if (context -> stackp>=1)
+	if (context -> stackp>=2)
 	{
 		struct ivar &arg1 = context -> stack[context -> stackp-2];
 		struct ivar &arg2 = context -> stack[context -> stackp-1];
@@ -1092,8 +1092,9 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 
 		}
 
-		pop_context( context, 1);
+		pop_context( context, 2);
 	}
+	else context -> error = 1;
 }
 
 
