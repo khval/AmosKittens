@@ -1480,9 +1480,9 @@ void pop_context( struct cmdcontext *context, int pop )
 {
 	printf("pop(%d)\n",pop);
 
-	while ((pop)&&(context->stackp))
+	while ((pop>0)&&(context->stackp>0))
 	{
-		struct ivar &p = context -> stack[--context -> stackp];
+		struct ivar &p = context -> stack[context -> stackp-1];
 
 		switch (p.type)
 		{
@@ -1494,7 +1494,9 @@ void pop_context( struct cmdcontext *context, int pop )
 					}
 					break;
 		}
+
 		pop--;
+		context -> stackp--;
 	}
 }
 
@@ -1906,7 +1908,7 @@ struct cmdinterface commands[]=
 	{"ZN",i_parm,NULL,NULL},
 	{"ZC",i_normal,NULL,icmd_ZoneChange },
 	{"=",i_parm,NULL,icmd_Equal },
-	{";",i_normal,icmd_NextCmd,icmd_NextCmd},
+	{";",i_parm,icmd_NextCmd,icmd_NextCmd},		// next command or end of command.
 	{"[",i_normal,NULL,icmd_block_start},
 	{"]",i_normal,NULL,icmd_block_end},
 	{",",i_parm,NULL,icmd_Comma},
@@ -1914,7 +1916,6 @@ struct cmdinterface commands[]=
 	{"-",i_parm,NULL,icmd_Minus},
 	{"*",i_parm,NULL,icmd_Mul},
 	{"/",i_parm,NULL,icmd_Div},
-//	{"%",i_parm,NULL,NULL},
 
 	{NULL,i_normal,NULL,NULL}
 };
