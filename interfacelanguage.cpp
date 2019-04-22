@@ -1417,6 +1417,28 @@ void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=5)
+	{
+		printf("don't know what command BB should do :-(\n");
+
+		pop_context( context, 5);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_bb;
+	context -> args = 5;
+}
+
+
 
 void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1827,9 +1849,9 @@ struct cmdinterface symbols[]=
 
 struct cmdinterface commands[]=
 {
-
 	{"BA",i_normal,NULL,icmd_Base},
-	{"BP",i_normal,NULL,icmd_ButtonPosition},
+	{"BB",i_normal,NULL,icmd_bb },	// 6 args
+	{"BP",i_parm,NULL,icmd_ButtonPosition},
 	{"BO",i_normal,NULL,icmd_ImageBox},
 	{"BR",i_normal,NULL,icmd_ButtonReturn},
 	{"BQ",i_normal,NULL,NULL },
