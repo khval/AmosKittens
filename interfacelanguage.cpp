@@ -223,6 +223,47 @@ void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
+
+//icmd_ZoneChange
+
+void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
+{
+	char *at;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp >= 2)
+	{
+		struct ivar &zoneNr = context -> stack[context -> stackp-2];
+		struct ivar &data = context -> stack[context -> stackp-1];
+
+		if (zoneNr.type == type_int)
+		{
+			switch ( data.type )
+			{
+				case type_int:
+						break;
+				case type_string:
+						break; 
+			}
+		}
+
+		pop_context( context, 2);
+
+	} else context -> error = 1;
+}
+
+void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_ZoneChange;
+	context -> lstackp = context -> stackp;
+	context -> args = 2;
+}
+
+// ---
+
+
+
 static int get_dialog_x(struct cmdcontext *context)
 {
 	int x=0;
@@ -1672,6 +1713,7 @@ struct cmdinterface commands[]=
 	{"XY",i_parm,NULL,NULL},
 	{"YB",i_parm,NULL,NULL},
 	{"ZN",i_parm,NULL,NULL},
+	{"ZC",i_normal,NULL,icmd_ZoneChange },
 	{"=",i_parm,NULL,icmd_Equal },
 	{";",i_normal,icmd_NextCmd,icmd_NextCmd},
 	{"[",i_normal,NULL,icmd_block_start},
