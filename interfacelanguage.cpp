@@ -925,6 +925,53 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 4;
 }
 
+// icmd_VerticalSlider
+
+void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=9)
+	{
+		int x1,y1;
+		int ox,oy;
+
+		int zn = context -> stack[context -> stackp-9].num;
+		int x0 = context -> stack[context -> stackp-8].num;
+		int y0 = context -> stack[context -> stackp-7].num;
+		int w = context -> stack[context -> stackp-6].num;
+		int h = context -> stack[context -> stackp-5].num;
+		int position = context -> stack[context -> stackp-4].num;
+		int trigger = context -> stack[context -> stackp-3].num;
+		int total = context -> stack[context -> stackp-2].num;
+		int step = context -> stack[context -> stackp-1].num;
+
+		ox = get_dialog_x(context);
+		oy = get_dialog_y(context);
+
+		x1=x0+w;
+		y1=y0+h;
+
+		x0+=ox;
+		y0+=oy;
+		x1+=ox;
+		y1+=oy;
+
+		if (screen) retroBAR( screen, x0,y0,x1,y1,context -> ink0 );
+	}
+
+	pop_context( context, 9);
+	context -> cmd_done = NULL;
+}
+
+void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_VerticalSlider;
+	context -> args = 9;
+}
 
 void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1826,6 +1873,7 @@ struct cmdinterface commands[]=
 	{"TW",i_parm,NULL,icmd_TextWidth},
 	{"UN",i_normal,NULL,icmd_Unpack},
 	{"VA",i_parm,NULL,icmd_Var},
+	{"VS",i_normal,NULL,icmd_VerticalSlider },
 	{"VT",i_normal,NULL,NULL},
 	{"XA",i_parm,NULL,icmd_XGCL},
 	{"YA",i_parm,NULL,icmd_YGCL},
