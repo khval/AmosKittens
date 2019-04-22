@@ -865,6 +865,23 @@ void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 3;
 }
 
+void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int )
+		{
+			pop_context( context, 1);
+
+			push_context_string(context, strdup("Message"));
+		}
+	}
+}
+
 void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = screens[current_screen];
@@ -1790,7 +1807,7 @@ struct cmdinterface commands[]=
 	{"PR",i_normal,NULL,icmd_Print},
 	{"PO",i_normal,NULL,icmd_PrintOutline},
 	{"PU",i_normal,NULL,icmd_PushImage},
-	{"ME",i_parm,NULL,NULL},
+	{"ME",i_parm,NULL,icmd_Message},
 	{"SA",i_normal,NULL,icmd_Save},
 	{"SH",i_parm,NULL,icmd_ScreenHeight},
 	{"SI",i_normal,NULL,icmd_Dialogsize},
