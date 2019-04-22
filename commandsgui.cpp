@@ -66,11 +66,33 @@ uint32_t getLong( char *adr, int &pos )
 	return ret;
 }
 
+bool __resource_bank_has_pictures( struct kittyBank *bank1 )
+{
+	struct resourcebank_header *header; 
+	int pos,pupics;
+
+	if (bank1 == NULL) return false;
+
+	header = (resourcebank_header*) bank1->start;
+	if (header -> img_offset == 0) return false;
+
+	pos = header -> img_offset;
+	pupics = getWord( bank1->start, pos );
+
+	if (pupics==0) return false;
+	return true;
+}
+
 void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 {
 	struct kittyBank *bank1;
 
 	bank1 = findBank(16);
+
+	 if (__resource_bank_has_pictures( bank1 ) == false )
+	{
+		bank1 = findBank(-2);
+	}
 
 	if (bank1)
 	{
