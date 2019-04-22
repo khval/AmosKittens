@@ -2299,11 +2299,26 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 			else 	
 			{
 				struct cmdinterface *icmd = &commands[cmd];
+
+				if (icmd -> type == i_normal)
+				{
+					if (context -> stackp >0)
+					{
+						printf("there is stuff on the stack, there shoud be none.\n");
+						dump_context_stack( context );
+						getchar();
+					}
+				}
+
 				if (icmd -> cmd)
 				{
 					icmd -> cmd( context, icmd );
 				}
-				else printf("ignored %s\n", icmd -> name);
+				else
+				{
+					printf("ignored %s\n", icmd -> name);
+					getchar();
+				}
 			}
 		}
 
