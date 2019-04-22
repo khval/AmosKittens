@@ -443,40 +443,86 @@ void icmd_Comma( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
+
+//icmd_HyperText
+
+void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	engine_lock();
+
+	if (engine_ready())
+	{
+		if (context -> stackp>=10)
+		{
+			struct retroScreen *screen = screens[current_screen];
+/*
+			struct ivar &ZN = context -> stack[context -> stackp-10];
+			struct ivar &x = context -> stack[context -> stackp-9];
+			struct ivar &y = context -> stack[context -> stackp-8];
+			struct ivar &w = context -> stack[context -> stackp-7];
+			struct ivar &h = context -> stack[context -> stackp-6];
+			struct ivar &address = context -> stack[context -> stackp-5];
+			struct ivar &lineNr = context -> stack[context -> stackp-4];
+			struct ivar &buffer = context -> stack[context -> stackp-3];
+			struct ivar &paper = context -> stack[context -> stackp-2];
+			struct ivar &pen = context -> stack[context -> stackp-1];
+*/
+			if (screen)
+			{
+
+			}
+
+			pop_context( context, 10);
+		}
+	}
+
+	engine_unlock();
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_HyperText;
+	context -> lstackp = context -> stackp;
+	context -> args = 10;
+}
+
+//-----
+
+
 void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
-	if (( sig_main_vbl )&&( EngineTask ))
+	if (context -> stackp>=5)
 	{
-		if (context -> stackp>=5)
+		struct retroScreen *screen = screens[current_screen];
+
+		if (screen)
 		{
-			struct retroScreen *screen = screens[current_screen];
+			int x = context -> stack[context -> stackp-5].num;
+			int y = context -> stack[context -> stackp-4].num;
+			char *txt = context -> stack[context -> stackp-3].str;
+			uint16_t outline = context -> stack[context -> stackp-2].num;
+			uint16_t pen = context -> stack[context -> stackp-1].num;
 
-			if (screen)
+			x+=get_dialog_x(context);
+			y+=get_dialog_y(context);
+
+			engine_lock();
+			if (engine_ready())
 			{
-				int x = context -> stack[context -> stackp-5].num;
-				int y = context -> stack[context -> stackp-4].num;
-				char *txt = context -> stack[context -> stackp-3].str;
-				uint16_t outline = context -> stack[context -> stackp-2].num;
-				uint16_t pen = context -> stack[context -> stackp-1].num;
-
-				x+=get_dialog_x(context);
-				y+=get_dialog_y(context);
-
-				engine_lock();
-				if (engine_ready())
-				{
-					if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
-				}
-				engine_unlock();
+				if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
 			}
-
-			pop_context( context, 5);
+			engine_unlock();
 		}
+
+		pop_context( context, 5);
 	}
-#endif
 
 	context -> cmd_done = NULL;
 }
@@ -1730,7 +1776,7 @@ struct cmdinterface commands[]=
 	{"GS",i_normal,NULL,icmd_GraphicSquare},
 	{"GE",i_normal,NULL,NULL},
 	{"GL",i_normal,NULL,NULL},
-	{"HT",i_normal,NULL,NULL},
+	{"HT",i_normal,NULL,icmd_HyperText},
 	{"IF",i_normal,NULL,icmd_If},
 	{"IN",i_normal,NULL,icmd_Ink},
 	{"JP",i_normal,NULL,icmd_Jump},
