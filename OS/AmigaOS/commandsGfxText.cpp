@@ -98,42 +98,35 @@ void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint
 {
 	struct TextExtent te;
 	int l = strlen(txt);
-	int tl;
 	ULONG mode;
 
-      	mode = GetDrMd( &font_render_rp );
-
-	retroScreenToBitmap( screen, x , y-10, tl,te.te_Height, font_render_rp.BitMap, 0 , 0);
-
-	SetDrMd( &font_render_rp, JAM1 );
-
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
-	SetAPen( &font_render_rp, pen );
 
+	retroScreenToBitmap( screen, x , y-te.te_Extent.MinY-te.te_Height, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
+
+      	mode = GetDrMd( &font_render_rp );
+	SetDrMd( &font_render_rp, JAM1 );
+	SetAPen( &font_render_rp, pen );
 	Move( &font_render_rp, 0,-te.te_Extent.MinY );
 	Text( &font_render_rp, txt, l );
-	tl = TextLength(&font_render_rp, txt, l );
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y-te.te_Extent.MinY-te.te_Height);
 }
 
 void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline)
 {
 	struct TextExtent te;
 	int l = strlen(txt);
-	int tl;
 	ULONG mode;
 
        mode = GetDrMd( &font_render_rp );
 
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
-	tl = TextLength(&font_render_rp, txt, l )+2;
+	RectFill ( &font_render_rp, 0,0, te.te_Width,te.te_Height );
 
-	RectFill ( &font_render_rp, 0,0, tl,te.te_Height );
-
-	retroScreenToBitmap( screen, x , y-10, tl,te.te_Height, font_render_rp.BitMap, 0 , 0);
+	retroScreenToBitmap( screen, x , y-te.te_Extent.MinY-te.te_Height, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
 
 	SetDrMd( &font_render_rp, JAM1 );
 
@@ -159,7 +152,7 @@ void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y-te.te_Extent.MinY-te.te_Height);
 }
 
 
