@@ -573,12 +573,12 @@ char *_andData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->decimal != 0) && (item1->value != 0)  ? ~0 : 0);
+			setStackNum( (int) item0->decimal & item1->value );
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum( (item0->decimal != 0) && (item1->decimal != 0)  ? ~0 : 0);
+			setStackNum( (int) item0->decimal & (int) item1->decimal );
 			success = true;
 		}
 	}
@@ -586,12 +586,12 @@ char *_andData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->value != 0) &&  (item1->value != 0)  ? ~0 : 0);
+			setStackNum( item0->value & item1->value );
 			success = true;
 		}
 		else if (type1 == type_float)
 		{
-			setStackNum(  (item0->value != 0 ) && (item1->decimal != 0)  ? ~0 : 0);
+			setStackNum(  item0->value & (int) item1->decimal );
 			success = true;
 		}
 	}
@@ -1377,6 +1377,7 @@ char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm(_not_equal, tokenBuffer);
 	incStack;
+
 	return tokenBuffer;
 }
 
