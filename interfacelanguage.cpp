@@ -2251,6 +2251,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 
 	context -> error = false;
 	context -> stackp = 0;
+	context -> image_offset = 0;
 
 	if (context -> tested == false)
 	{
