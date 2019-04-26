@@ -1110,7 +1110,6 @@ char *bankBankSwap(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-struct kittyBank *ResourceBank = NULL;
 
 char *_bankResourceBank( struct glueCommands *data, int nextToken )
 {
@@ -1120,8 +1119,7 @@ char *_bankResourceBank( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	b1 = getStackNum(stack-1);
-				ResourceBank = findBank(b1);
+		case 1:	current_resource_bank = getStackNum(stack-1);
 				break;
 		default:
 				setError(22,data->tokenBuffer);
@@ -1153,6 +1151,75 @@ const char *DefaultFileNames[] =
 	NULL
 };
 
+
+char *getResourceStr(int id)
+{
+	char *ret = NULL;
+	int retry = 0;
+	int cbank = current_resource_bank;
+
+	if (id>0)
+	{
+		struct kittyBank *bank1;
+
+		do
+		{
+			bank1 = findBank(cbank);
+
+			if (bank1)
+			{
+				struct resourcebank_header *header = (resourcebank_header*) bank1->start;
+
+				if (header -> var_offset)
+				{
+					unsigned char *pos = (unsigned char *) bank1->start;
+					unsigned short len;
+					char *str;
+
+					pos += header -> var_offset; 
+
+					for(;;)
+					{
+						len = *( (unsigned short *) pos );
+						pos+=2;
+
+						if (len == 255) break;
+	
+						if (id == 1) 
+						{
+							if (len>0) ret = strndup( (const char *) pos,len);
+							break;
+						}
+
+						pos+=len;
+						id--;
+					}			
+				}
+			}
+
+			if (ret) break;
+
+			cbank = -2;		// try default resource if not found
+			retry++;
+
+		} while ( retry < 2 );
+	}
+	else if (id == 0)
+	{
+		ret = strdup(AmosKittensSystem);
+	}
+	if ((id >=-1 )&&(id <=-9))	// Default file names
+	{
+		ret = strdup( DefaultFileNames[ (-id)-1] );
+	}
+	else if ((id >=-10 )&&(id <=-36))	// name of extentions
+	{
+
+	}
+
+	return ret;
+}
+
 char *_bankResourceStr( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1163,53 +1230,7 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	id = getStackNum(stack);
-
-				if (id>0)
-				{
-					struct kittyBank *bank1;
-
-					bank1 = findBank(16);
-
-					if (bank1)
-					{
-						struct resourcebank_header *header = (resourcebank_header*) bank1->start;
-						unsigned char *pos = (unsigned char *) bank1->start;
-						unsigned short len;
-						char *str;
-
-						pos += header -> var_offset; 
-
-						for(;;)
-						{
-							len = *( (unsigned short *) pos );
-							pos+=2;
-
-							if (len == 255) break;
-
-							if (id == 1) 
-							{
-								if (len>0) ret = strndup( (const char *) pos,len);
-								break;
-							}
-
-							pos+=len;
-							id--;
-						}			
-					}
-				}
-				else if (id == 0)
-				{
-					ret = strdup(AmosKittensSystem);
-				}
-				if ((id >=-1 )&&(id <=-9))	// Default file names
-				{
-					ret = strdup( DefaultFileNames[ (-id)-1] );
-				}
-				else if ((id >=-10 )&&(id <=-36))	// name of extentions
-				{
-
-				}
-
+				ret = getResourceStr( id );
 				break;
 		default:
 				setError(22,data->tokenBuffer);

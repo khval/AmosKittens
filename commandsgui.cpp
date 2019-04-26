@@ -25,7 +25,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commands.h"
-#include "commandsBanks.h"
+#include "commandsbanks.h"
 #include "errors.h"
 #include "engine.h"
 
@@ -42,6 +42,7 @@ extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 
 std::vector<struct cmdcontext *> icmdcontexts;
 
+int current_resource_bank = 16;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
@@ -87,7 +88,7 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 {
 	struct kittyBank *bank1;
 
-	bank1 = findBank(16);
+	bank1 = findBank(current_resource_bank);
 
 	 if (__resource_bank_has_pictures( bank1 ) == false )
 	{

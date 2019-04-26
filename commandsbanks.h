@@ -37,6 +37,8 @@ struct resourcebank_header
 
 //------------------------------------------------------------------------------
 
+extern int current_resource_bank ;
+
 void freeBank( int banknr );
 struct kittyBank *findBank( int bankNr );
 struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem );
@@ -62,4 +64,8 @@ extern char *bankResourceBank(nativeCommand *cmd, char *ptr);
 extern char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer);
 
 extern void __load_bank__(const char *name, int bankNr );
+
+extern char *getResourceStr(int id);
+
+
 
