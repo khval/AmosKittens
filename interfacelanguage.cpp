@@ -1426,13 +1426,46 @@ void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+// undocumented not in AmosPro manuall, used in AmosPro_Help.amos
+
 void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=5)
 	{
-		printf("don't know what command BB should do :-(\n");
+		struct kittyBank *bank1;
+		struct retroScreen *screen = screens[current_screen]; 
+		struct ivar &nr = context -> stack[context -> stackp-5];	// id
+		struct ivar &x = context -> stack[context -> stackp-4];	// x
+		struct ivar &y = context -> stack[context -> stackp-3];	// y
+		struct ivar &width = context -> stack[context -> stackp-2];	// ?
+		struct ivar &txt = context -> stack[context -> stackp-1];	// txt
+
+		if (( nr.type == type_int ) 
+			&& ( x.type == type_int )  
+			&& ( y.type == type_int )  
+			&& ( width.type == type_int )  
+			&& ( txt.type == type_string ))
+		{
+			x.num+=get_dialog_x(context);
+			y.num+=get_dialog_y(context);
+	
+			retroBox( screen, x.num, y.num, x.num+width.num-2, y.num+9,2 );
+
+			engine_lock();
+			if (engine_ready())
+			{
+				if (txt.str)
+				{
+					os_text_no_outline(screen, x.num+2,y.num+8,txt.str,2 );
+		//	os_text(screen, x.num+2, y.num + 8, txt.str );
+				}							
+			}
+			engine_unlock();
+		}
+		else context -> error = 1;
+
 
 		pop_context( context, 5);
 	}
