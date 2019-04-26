@@ -1410,7 +1410,7 @@ void _icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_int ) 
 		{		
-			context -> image_offset = arg1.num -1 ;
+			context -> image_offset = arg1.num  ;
 		}
 
 		pop_context( context, 1);
