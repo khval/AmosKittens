@@ -877,9 +877,18 @@ void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_int )
 		{
+			char *ret ;
+			ret = getResourceStr( arg1.num );
 			pop_context( context, 1);
 
-			push_context_string(context, strdup("Message"));
+			if (ret)
+			{
+				push_context_string(context, ret );
+			}
+			else
+			{
+				push_context_string(context, strdup("NULL") );
+			}
 		}
 	}
 }
