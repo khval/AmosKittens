@@ -79,22 +79,22 @@ int os_text_length(char *txt)
 	return TextLength(&font_render_rp, txt, l );
 }
 
-void os_text(struct retroScreen *screen,int x, int y, char *txt)
+void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1)
 {
 	struct TextExtent te;
 	int l = strlen(txt);
-	int tl;
 
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
-	SetAPen( &font_render_rp, screen -> ink0 );
-	SetBPen( &font_render_rp, screen -> ink1 );
+
+	SetAPen( &font_render_rp, ink0 );
+	SetBPen( &font_render_rp, ink1 );
 	Move( &font_render_rp, 0,-te.te_Extent.MinY );
 	Text( &font_render_rp, txt, l );
-	tl = TextLength(&font_render_rp, txt, l );
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, tl,te.te_Height, screen, x , y-10);
+
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y + te.te_Extent.MinY);
 }
 
-void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen)
+void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, int pen)
 {
 	struct TextExtent te;
 	int l = strlen(txt);
@@ -102,7 +102,7 @@ void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint
 
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
 
-	retroScreenToBitmap( screen, x , y-te.te_Extent.MinY-te.te_Height, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
+	retroScreenToBitmap( screen, x , y+te.te_Extent.MinY, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
 
       	mode = GetDrMd( &font_render_rp );
 	SetDrMd( &font_render_rp, JAM1 );
@@ -112,10 +112,10 @@ void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y-te.te_Extent.MinY-te.te_Height);
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y + te.te_Extent.MinY);
 }
 
-void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline)
+void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline)
 {
 	struct TextExtent te;
 	int l = strlen(txt);
@@ -126,7 +126,7 @@ void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
 	RectFill ( &font_render_rp, 0,0, te.te_Width,te.te_Height );
 
-	retroScreenToBitmap( screen, x , y-te.te_Extent.MinY-te.te_Height, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
+	retroScreenToBitmap( screen, x , y+ te.te_Extent.MinY, te.te_Width,te.te_Height, font_render_rp.BitMap, 0 , 0);
 
 	SetDrMd( &font_render_rp, JAM1 );
 
@@ -152,7 +152,7 @@ void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y-te.te_Extent.MinY-te.te_Height);
+	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y+ te.te_Extent.MinY);
 }
 
 
@@ -171,7 +171,48 @@ char *_gfxText( struct glueCommands *data, int nextToken )
 				int y = getStackNum( stack-1 );
 				char *txt = getStackString( stack );
 
-				if ((txt)&&(screen))	os_text(screen, x,y,txt);
+				if ((txt)&&(screen))
+				{
+					engine_lock();
+					if (engine_ready())
+					{
+						switch (GrWritingMode)
+						{
+							case 0:	// 
+									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
+									break;
+
+							case 1:	//
+									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
+									break;
+
+							case 2:	//
+									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
+									break;
+
+							case 3:	//
+									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
+									break;
+
+							case 4:	//
+									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
+									break;
+
+							case 5:	//
+									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0 );
+									break;
+
+							case 6:	//
+									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
+									break;
+
+							case 7:	//
+									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0);
+									break;
+						}
+					}
+					engine_unlock();
+				}
 			}
 			break;
 		default:

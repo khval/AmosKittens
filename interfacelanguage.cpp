@@ -73,9 +73,9 @@ extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
 
 extern int os_text_length(char *txt);
-extern void os_text(struct retroScreen *screen,int x, int y, char *txt);
-extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen,uint16_t outline);
-extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, uint16_t pen);
+extern void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1);
+extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline);
+extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, int pen);
 
 void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 {
