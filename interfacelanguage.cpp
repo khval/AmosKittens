@@ -968,7 +968,7 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBAR( screen, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroBox( screen, x0,y0,x1,y1,context -> ink0 );
 	}
 
 	pop_context( context, 9);
