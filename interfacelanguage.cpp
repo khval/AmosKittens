@@ -1187,6 +1187,11 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			button.width = _w.num;
 			button.height = _h.num;
 
+			context -> xgcl = _x.num;
+			context -> ygcl =_y.num;
+			context -> xgc = _x.num + _w.num;
+			context -> ygc = _y.num + _h.num;
+
 			if (screen)
 			{
 				char txt[30];
