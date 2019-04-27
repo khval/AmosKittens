@@ -1445,8 +1445,7 @@ void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 			{
 				if (txt.str)
 				{
-					os_text_no_outline(screen, x.num+2,y.num+8,txt.str,2 );
-		//	os_text(screen, x.num+2, y.num + 8, txt.str );
+					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_length( txt.str ) / 2),y.num+8,txt.str,screen -> ink0 );
 				}							
 			}
 			engine_unlock();
