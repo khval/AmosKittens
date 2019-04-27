@@ -79,6 +79,7 @@ enum
 
 enum
 {
+	type_undefined = 0,
 	type_int = 0,
 	type_float,		// 1
 	type_string,		// 2
