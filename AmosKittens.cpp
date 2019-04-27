@@ -160,14 +160,18 @@ bool breakpoint = false;
 
 const char *str_dump_stack = "dump stack";
 const char *str_dump_prog_stack = "dump prog stack";
+const char *str_dump_vars = "dump vars";
+const char *str_dump_banks = "dump banks";
+const char *str_dump_screen_info = "dump screen info"; 
+
 const char *str_breakpoint_on = "breakpoint on";
 const char *str_breakpoint_off = "breakpoint off";
+
 const char *str_warning = "warning";
 const char *str_pause = "pause";
 const char *str_hint = "hint ";
 const char *str_show_var = "show var ";
-const char *str_dump_banks = "dump banks";
-const char *str_dump_screen_info = "dump screen info"; 
+
 const char *str_time_start = "time start";
 const char *str_time_end = "time end";
 
@@ -217,40 +221,38 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 		char *txt = strndup( ptr + 3, length );
 		if (txt)
 		{
-			if (strncmp(txt,str_dump_screen_info,strlen(str_dump_screen_info))==0)
+			if (strncmp(txt,str_dump_vars,strlen(str_dump_vars))==0)
+			{
+				dump_global();
+			}
+			else if (strncmp(txt,str_dump_screen_info,strlen(str_dump_screen_info))==0)
 			{
 				dumpScreenInfo();
 			}
-
-			if (strncmp(txt,str_dump_banks,strlen(str_dump_banks))==0)
+			else if (strncmp(txt,str_dump_banks,strlen(str_dump_banks))==0)
 			{
 				dump_banks();
 			}
-
-			if (strncmp(txt,str_hint,strlen(str_hint))==0)
+			else if (strncmp(txt,str_hint,strlen(str_hint))==0)
 			{
 				printf("stack %d at line %d, hint: %s\n",stack, getLineFromPointer( ptr ), txt+strlen(str_hint));
 			}
-
-			if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
+			else if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
 				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
 			}
-
-			if (strncmp(txt,str_dump_prog_stack,strlen(str_dump_stack))==0)
+			else if (strncmp(txt,str_dump_prog_stack,strlen(str_dump_stack))==0)
 			{
 				dump_prog_stack();
 				printf("<press enter to continue>\n");
 				getchar();
 			}
-
-			if (strncmp(txt,str_pause,strlen(str_pause))==0)
+			else if (strncmp(txt,str_pause,strlen(str_pause))==0)
 			{
 				printf("line %d -- <press enter to continue>\n", getLineFromPointer( ptr ));
 				getchar();
 			}
-
-			if (strncmp(txt,str_show_var,strlen(str_show_var))==0)
+			else if (strncmp(txt,str_show_var,strlen(str_show_var))==0)
 			{
 				char *var_name = txt +strlen(str_show_var);
 				char *c;
@@ -270,7 +272,7 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 
 					if (ref)
 					{
-						printf("line %d, int var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
+						printf("line %d, string var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
 					}
 					else
 					{
@@ -278,37 +280,30 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 					}
 				}
 			}
-
-			if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
+			else if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
 			{
 				breakpoint = true;
 			}
-
-			if (strncmp(txt,str_breakpoint_off,strlen(str_breakpoint_off))==0)
+			else if (strncmp(txt,str_breakpoint_off,strlen(str_breakpoint_off))==0)
 			{
 				breakpoint = false;
 			}
-
-			if (strncmp(txt,str_warning,strlen(str_warning))==0)
+			else if (strncmp(txt,str_warning,strlen(str_warning))==0)
 			{
 				printf("**********************************\n");
 				printf(" %s\n",txt+strlen(str_warning));
 				printf("**********************************\n");
 			}
-
-			if (strncmp(txt,str_time_start,strlen(str_time_start))==0)
+			else if (strncmp(txt,str_time_start,strlen(str_time_start))==0)
 			{
 				printf("time recorded\n");
 				gettimeofday(&debug_time_start, NULL);
 			}
-
-			if (strncmp(txt,str_time_end,strlen(str_time_end))==0)
+			else if (strncmp(txt,str_time_end,strlen(str_time_end))==0)
 			{
 				gettimeofday(&debug_time_end, NULL);
 				printf("total time %f seconds\n",	(double) (debug_time_end.tv_usec - debug_time_start.tv_usec) / 1000000 +
 											(double) (debug_time_end.tv_sec - debug_time_start.tv_sec)  );
-
-//				getchar();
 			}
 
 			free(txt);
@@ -328,11 +323,14 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	// we should empty stack, until first/normal command is not a parm command.
 
+	dump_prog_stack();
+
 	while (cmdStack)
 	{
 		flags = cmdTmp[cmdStack-1].flag;
 
 		printf("flags %08x\n",flags);
+
 		if  ( ! (flags & cmd_onNextCmd) ) break;		// needs to be include tags, (if commands be excuted on endOfLine or Next command)
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
@@ -377,9 +375,6 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 	if (breakpoint)
 	{
 		printf("breakpoint at line %d - <press enter for next line>\n",getLineFromPointer( ptr ) );
-
-//		dump_stack();
-//		dump_global();
 		getchar();
 	}
 
