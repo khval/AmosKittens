@@ -1199,19 +1199,6 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				{
 					context -> block = 2;
 				}
-
-#if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
-				engine_lock();
-				if (engine_ready())
-				{
-					sprintf( txt, "    %d,    %d     ",	mx,	my );
-					os_text(screen, 0,20,txt);
-
-					sprintf( txt, "    %d,    %d     ",	engine_mouse_x,	engine_mouse_y );
-					os_text(screen, 160,20,txt);
-				}
-				engine_unlock();
-#endif
 			}
 		}
 
