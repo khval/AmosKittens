@@ -255,6 +255,7 @@ struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type 
 	{
 		global_var_count ++;
 		ref -> ref = global_var_count;
+		ref -> flags = type;
 
 		_new = &globalVars[global_var_count-1];
 		_new -> varName = *tmp;	// tmp is alloced and used here.
@@ -357,6 +358,23 @@ char *pass1DefFn( char *ptr )
 	return ptr;
 }
 
+uint32_t getTrueVarType( char *varname, uint32_t type )
+{
+	if ( ( type & 7) == type_undefined )		// type_int is also not defined.
+	{
+		int tl = strlen(varname);
+
+		if (tl)
+		{
+			switch (varname[tl-1])
+			{
+				case '#' : type |= type_float; break;
+				case '$': type |= type_string; break;
+			}
+		}
+	}
+	return type;
+}
 
 struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool is_procedure )
 {
@@ -370,7 +388,7 @@ struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 	if (tmp)
 	{
 		int type = ref -> flags & 7;
-			short next_token = *((short *) (ptr + sizeof(struct reference) + ReferenceByteLength( ptr )));
+		short next_token = *((short *) (ptr + sizeof(struct reference) + ReferenceByteLength( ptr )));
 
 		if (first_token)
 		{
@@ -397,9 +415,11 @@ struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 		{
 			char *next_ptr = ptr + sizeof(struct reference) + ref -> length;	
 			if  (*((unsigned short *) next_ptr)  == 0x0074) type |= type_array;
+			type = getTrueVarType( tmp, type );
 		}
 
 		found = findVar(tmp, first_token, type, ( is_proc_call | is_procedure )  ? 0 : (pass1_inside_proc ? procCount : 0) );
+
 		if (found)
 		{
 			ref -> ref = found;
@@ -622,6 +642,8 @@ char *pass1_global( char *ptr )
 
 							if ( next_token == 0x0074 ) type |= type_array;
 
+							type = getTrueVarType( tmp, type );
+							
 							var = findVarPublic(tmp, type );
 							if (var)
 							{
@@ -630,7 +652,7 @@ char *pass1_global( char *ptr )
 							}
 							else
 							{
-								add_var_from_ref( ref, &tmp, FALSE );
+								add_var_from_ref( ref, &tmp, type );
 								globalVars[global_var_count-1].isGlobal = TRUE;
 							}
 							
