@@ -1119,7 +1119,7 @@ char *_bankResourceBank( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	current_resource_bank = getStackNum(stack-1);
+		case 1:	current_resource_bank = getStackNum(stack);
 				break;
 		default:
 				setError(22,data->tokenBuffer);
