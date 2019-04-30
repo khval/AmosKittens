@@ -1750,6 +1750,30 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
+
+void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>0)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_string ) 
+		{
+			ret = strlen( arg1.str );
+		}
+		else ret = 0;
+
+		pop_context( context, 1);
+		push_context_num( context, ret );
+	}
+	else context -> error = 1;
+}
+
+
+
 void icmd_SizeX( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -2005,7 +2029,7 @@ struct cmdinterface commands[]=
 	{"RT",i_normal,NULL,icmd_Return},
 	{"RU",i_normal,NULL,icmd_Run},
 	{"TH",i_parm,NULL,icmd_TextHeight},
-	{"TL",i_parm,NULL,NULL },
+	{"TL",i_parm,NULL,icmd_TextLength},
 	{"TW",i_parm,NULL,icmd_TextWidth},
 	{"UN",i_normal,NULL,icmd_Unpack},
 	{"VA",i_parm,NULL,icmd_Var},
