@@ -120,7 +120,7 @@ extern BOOL open_lib( const char *name, int ver , const char *iname, int iver, s
 
 struct Gadeget *add_window_button(struct Image *img, ULONG id)
 {
-	struct Gadeget *retGad;
+	struct Gadeget *retGad = NULL;
 
 	if (img)
 	{
