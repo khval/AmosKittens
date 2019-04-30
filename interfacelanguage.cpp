@@ -1060,6 +1060,18 @@ void icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
+void icmd_BaseX( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	push_context_num( context, context -> dialog[context -> selected_dialog].x );
+}
+
+void icmd_BaseY( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	push_context_num( context, context -> dialog[context -> selected_dialog].y );
+}
+
 void _icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1696,8 +1708,6 @@ void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
-
-
 void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -1959,8 +1969,8 @@ struct cmdinterface commands[]=
 	{"BR",i_normal,NULL,icmd_ButtonReturn },
 	{"BQ",i_normal,NULL,icmd_ButtonQuit },
 	{"BU",i_normal,NULL,icmd_Button},
-	{"BX",i_parm,NULL,NULL},
-	{"BY",i_parm,NULL,NULL},
+	{"BX",i_parm,NULL,icmd_BaseX},
+	{"BY",i_parm,NULL,icmd_BaseY},
 	{"CX",i_parm,NULL,icmd_cx},
 	{"ED",i_normal,NULL,NULL},
 	{"EX",i_normal,NULL,icmd_Exit},
