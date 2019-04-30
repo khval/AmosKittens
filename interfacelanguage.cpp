@@ -1154,6 +1154,65 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+
+void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
+{
+	char *at = context -> at;
+	int count = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch  ( context -> block )
+	{
+		case 2:
+		case -1:
+		case 0:
+
+				if (*at=='[')	// next is a block.
+				{
+					count = 0;
+					while (*at)
+					{
+						switch (*at )
+						{
+							case '[': count ++;	break;
+							case ']': count --;	
+								break;
+						}
+
+						if (count == 0)
+						{
+							context->at =at+1;		// set new location.
+							context->l = 0;		// reset length of command.
+			
+							printf("%s\n",context->at);
+							break;
+						}
+						at ++;
+					}
+				}
+
+			break;
+	}
+
+	if (context -> block<0)
+	{
+		context -> block++;
+	}
+	else 	if (context -> block>0) context -> block--;
+
+	context -> args = 0;
+}
+
+void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	context -> selected_dialog = 0;
+
+	context -> args = 0;
+}
+
 void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -1219,72 +1278,19 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = NULL;
 }
 
-
-
-void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
-{
-	char *at = context -> at;
-	int count = 0;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch  ( context -> block )
-	{
-		case 2:
-		case -1:
-		case 0:
-
-				if (*at=='[')	// next is a block.
-				{
-					count = 0;
-					while (*at)
-					{
-						switch (*at )
-						{
-							case '[': count ++;	break;
-							case ']': count --;	
-								break;
-						}
-
-						if (count == 0)
-						{
-							context->at =at+1;		// set new location.
-							context->l = 0;		// reset length of command.
-			
-							printf("%s\n",context->at);
-							break;
-						}
-						at ++;
-					}
-				}
-
-			break;
-	}
-
-	if (context -> block<0)
-	{
-		context -> block++;
-	}
-	else 	if (context -> block>0) context -> block--;
-
-	context -> args = 0;
-}
-
-void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	context -> selected_dialog = 0;
-
-	context -> args = 0;
-}
-
 void icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> cmd_done = _icmd_Button;
 	context -> args = 8;
+}
+
+
+void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> has_return_value = true;
 }
 
 void _icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
