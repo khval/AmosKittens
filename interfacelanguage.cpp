@@ -1510,8 +1510,6 @@ void icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 5;
 }
 
-
-
 void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -2260,8 +2258,6 @@ void test_interface_script( struct cmdcontext *context)
 	int num;
 	char *str = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	if (context -> at == 0)
 	{
 		setError( 22, context -> tokenBuffer );
@@ -2272,10 +2268,7 @@ void test_interface_script( struct cmdcontext *context)
 	{
 		while (*context -> at==' ') context -> at++;
 
-		printf("TEST SCRIPT {%s}\n",context -> at);
-
 		sym = find_symbol( context -> at, context -> l );
-
 		if (sym != -1)
 		{
 			struct cmdinterface *icmd = &symbols[sym];
