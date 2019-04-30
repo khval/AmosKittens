@@ -390,9 +390,11 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							char *txt  = context -> stack[context -> stackp-2].str;
 							if (txt)
 							{
+								int th = os_text_height( txt );
+
 								os_text_no_outline(screen, x,y,txt,pen);
 								context -> xgc += os_text_width( txt ) ;
-								context -> ygc += 8;
+								context -> ygc += th;
 							}
 						}
 						break;
@@ -404,10 +406,11 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							sprintf( txt, "%d", n);
 							if (txt)
 							{
-								os_text_no_outline(screen, x,y,txt,pen);
+								int th = os_text_height( txt );
 
-								context -> ygc += 8;
+								os_text_no_outline(screen, x,y ,txt,pen);
 								context -> xgc += os_text_width( txt ) ;
+								context -> ygc += th;
 							}
 						}
 						break;
@@ -1452,7 +1455,7 @@ void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 			{
 				if (txt.str)
 				{
-					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_length( txt.str ) / 2),y.num+8,txt.str,screen -> ink0 );
+					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_width( txt.str ) / 2),y.num+os_text_height( txt.str ),txt.str,screen -> ink0 );
 				}							
 			}
 			engine_unlock();
@@ -1661,6 +1664,28 @@ void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 	else context -> error = 1;
 }
 
+
+
+void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>0)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_string ) 
+		{
+			ret = os_text_height( arg1.str );
+		}
+		else ret = 0;
+
+		pop_context( context, 1);
+		push_context_num( context, ret );
+	}
+	else context -> error = 1;
+}
 
 void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1934,7 +1959,7 @@ struct cmdinterface commands[]=
 	{"SY",i_parm,NULL,icmd_SizeY},
 	{"RT",i_normal,NULL,icmd_Return},
 	{"RU",i_normal,NULL,icmd_Run},
-	{"TH",i_parm,NULL,NULL},
+	{"TH",i_parm,NULL,icmd_TextHeight},
 	{"TL",i_parm,NULL,NULL },
 	{"TW",i_parm,NULL,icmd_TextWidth},
 	{"UN",i_normal,NULL,icmd_Unpack},
