@@ -1785,6 +1785,9 @@ void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> at = context -> script + strlen(context -> script);
+	context -> cmd_done = NULL;
+	context -> args = 0;
+	context -> l = 0;
 }
 
 void icmd_ScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
