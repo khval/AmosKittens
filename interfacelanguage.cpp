@@ -78,6 +78,8 @@ extern void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0
 extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline);
 extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, int pen);
 
+extern bool breakpoint ;
+
 void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 {
 //	int tpos = offset_gfx+2+pn*4;
@@ -1103,7 +1105,32 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_int ) && ( arg1.type == type_int ))
 		{
+			if (arg2.num & 4) engine_wait_key = true;
 
+			for (;;)
+			{
+				if (arg2.num & 2)	// mouse key
+				{
+					if (engine_mouse_key)
+					{
+						context -> mouse_key = true;
+						break;
+					}
+				}
+
+				if (arg2.num & 4)	// key press
+				{
+					if (engine_wait_key == false)
+					{
+ 						engine_wait_key = false;
+						break;
+					}
+				}
+
+				if (engine_ready() == false)	break;
+
+				Delay(1);
+			}
 		}
 
 		pop_context( context, 2);
@@ -1251,12 +1278,13 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			button.width = _w.num;
 			button.height = _h.num;
 
+			context -> return_value = nr.num;
 			context -> xgcl = _x.num;
 			context -> ygcl =_y.num;
 			context -> xgc = _x.num + _w.num;
 			context -> ygc = _y.num + _h.num;
 
-			if (screen)
+			if ((screen)&&(engine_mouse_key || context -> mouse_key))
 			{
 				char txt[30];
 
@@ -1264,7 +1292,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				int my = YScreen_formula( screen, engine_mouse_y );
 
 				if (	(mx>=x)&&(mx<=(x+_w.num))	&&
-					(my>=y)&&(my<=(y+_h.num))	)
+					(my>=y)&&(my<=(y+_h.num))  )
 				{
 					context -> block = 2;
 				}
@@ -1925,10 +1953,10 @@ struct cmdinterface commands[]=
 {
 	{"BA",i_normal,NULL,icmd_Base},
 	{"BB",i_normal,NULL,icmd_bb },	// 6 args
-	{"BP",i_parm,NULL,icmd_ButtonPosition},
-	{"BO",i_normal,NULL,icmd_ImageBox},
-	{"BR",i_normal,NULL,icmd_ButtonReturn},
-	{"BQ",i_normal,NULL,NULL },
+	{"BP",i_parm,NULL,icmd_ButtonPosition },
+	{"BO",i_normal,NULL,icmd_ImageBox },
+	{"BR",i_normal,NULL,icmd_ButtonReturn },
+	{"BQ",i_normal,NULL,icmd_ButtonQuit },
 	{"BU",i_normal,NULL,icmd_Button},
 	{"BX",i_parm,NULL,NULL},
 	{"BY",i_parm,NULL,NULL},
@@ -2199,6 +2227,7 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> script = strdup( script );
 	context -> at = context -> script;
 	context -> max_vars = varSize;
+	context -> selected_dialog = 0;
 
 	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
 
@@ -2309,6 +2338,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	context -> error = false;
 	context -> stackp = 0;
 	context -> image_offset = 0;
+	context -> has_return_value = false;
+	context -> selected_dialog = 0;
 
 	if (context -> tested == false)
 	{
@@ -2331,11 +2362,15 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		return ;
 	}
 
-	while ((*context -> at != 0) && (context -> error == false))
+	while ((*context -> at != 0) && (context -> error == false) && (context -> has_return_value == false))
 	{
 		while (*context -> at==' ') context -> at++;
 
-		printf("EXECUTE SCRIPT {%s}\n",context -> at);
+		if (breakpoint)
+		{
+			printf("EXECUTE SCRIPT {%s}\n",context -> at);
+			printf("<< breakpoint, press enter >>\n");
+		}
 
 		sym = find_symbol( context -> at, context -> l );
 

@@ -167,8 +167,7 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 	int guiChannel = 0;
 	int label = 0;
 	int x = 0,y = 0;
-	const char *ret = NULL;
-	struct cmdcontext *context;
+	struct cmdcontext *context = NULL;
 
 	switch (args)
 	{
@@ -205,7 +204,7 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-	setStackNum( 0 );
+	setStackNum( context ? (context -> has_return_value ? context -> return_value : 0) : 0 );
 
 	return NULL;
 }
@@ -223,7 +222,7 @@ char *_guiDialog( struct glueCommands *data, int nextToken )
 	int guiChannel = 0;
 //	int label = 0;
 //	int x = 0,y = 0;
-	const char *ret = NULL;
+//	const char *ret = NULL;
 
 	switch (args)
 	{
@@ -250,7 +249,7 @@ char *_guiDialogStr( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int guiChannel = 0;
-	const char *ret = NULL;
+//	const char *ret = NULL;
 
 	switch (args)
 	{
@@ -278,8 +277,9 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	char *script = NULL;
-	struct cmdcontext context;
+	struct cmdcontext context ;
 
+	context.return_value = 0;
 	context.tokenBuffer = data -> tokenBuffer;
 
 	switch (args)
@@ -332,7 +332,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-	setStackNum( 0 );
+	setStackNum( context.has_return_value ? context.return_value : 0 );
 
 	return NULL;
 }

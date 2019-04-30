@@ -53,6 +53,9 @@ struct cmdcontext
 	int ygcl;
 	int xgc;
 	int ygc;
+	bool has_return_value;
+	int return_value;
+	bool mouse_key;
 };
 
 struct cmdinterface
