@@ -73,10 +73,19 @@ char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-int os_text_length(char *txt)
+int os_text_width(char *txt)
 {
 	int l = strlen(txt);
 	return TextLength(&font_render_rp, txt, l );
+}
+
+int os_text_height(char *txt)
+{
+	struct TextExtent te;
+	int l = strlen(txt);
+
+	TextExtent( &font_render_rp, txt, strlen( txt), &te );
+	return -te.te_Extent.MinY;
 }
 
 void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1)
