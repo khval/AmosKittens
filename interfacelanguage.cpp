@@ -72,7 +72,8 @@ extern bool convertPacPic( unsigned char *data, struct PacPicContext *context );
 extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
 
-extern int os_text_length(char *txt);
+extern int os_text_height(char *txt);
+extern int os_text_width(char *txt);
 extern void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1);
 extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline);
 extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, int pen);
@@ -390,7 +391,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							if (txt)
 							{
 								os_text_no_outline(screen, x,y,txt,pen);
-								context -> xgc += os_text_length( txt ) ;
+								context -> xgc += os_text_width( txt ) ;
 								context -> ygc += 8;
 							}
 						}
@@ -404,8 +405,9 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							if (txt)
 							{
 								os_text_no_outline(screen, x,y,txt,pen);
-								context -> xgc += os_text_length( txt ) ;
+
 								context -> ygc += 8;
+								context -> xgc += os_text_width( txt ) ;
 							}
 						}
 						break;
@@ -1671,7 +1673,7 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_string ) 
 		{
-			ret = os_text_length( arg1.str );
+			ret = os_text_width( arg1.str );
 		}
 		else ret = 0;
 
@@ -1710,7 +1712,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 			if (screen)
 			{
 				int l = strlen( arg1.str );
-				int tl = os_text_length( arg1.str );
+				int tl = os_text_width( arg1.str );
 
 				ret = (context -> dialog[ context -> selected_dialog ] .width / 2) - (tl/2)  ;
 			}
