@@ -54,11 +54,11 @@ Partially implemented:
 * Chapter 14. Amal
 * Chapter 15. Background graphics.
 * Chapter 16. Menus
+* Chapter 21. Screen compaction (only unpack suported).
 
 Not Implemented:
 
 * Chapter 17. Sound and music
-* Chapter 21. Screen compaction.
 
 AmosPro support:
  * Resource banks
