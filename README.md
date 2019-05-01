@@ -60,6 +60,10 @@ Not Implemented:
 * Chapter 17. Sound and music
 * Chapter 21. Screen compaction.
 
+AmosPro support:
+ * Resource banks
+ * The Interface Language (mostly done)
+
 Note: 
 -----
 Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
