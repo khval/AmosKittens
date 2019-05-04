@@ -46,7 +46,8 @@ struct cmdcontext
 	int ink1;
 	int ink3;
 	int image_offset;
-	int block;
+	int block_level;
+	void (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );
 	int max_vars;
 	int button_active;
 	int xgcl;
@@ -56,6 +57,7 @@ struct cmdcontext
 	bool has_return_value;
 	int return_value;
 	bool mouse_key;
+	bool button_action;
 };
 
 struct cmdinterface

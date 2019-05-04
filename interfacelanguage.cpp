@@ -80,6 +80,42 @@ extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *tx
 
 extern bool breakpoint ;
 
+#define set_block_fn(name) context -> block_fn[ context -> block_level ] = name
+#define has_block_fn() context -> block_fn[ context -> block_level ]
+#define call_block_fn(context,self) context -> block_fn[ context -> block_level ](context,self)
+#define inc_block() { context -> block_level++ ; context -> block_fn[ context -> block_level ] = NULL; }
+
+
+void block_skip( struct cmdcontext *context, struct cmdinterface *self )
+{
+	char *at = context -> at;
+	int block_count = 0;
+	int size = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	while (*at != 0)
+	{
+		if (*at == '[')
+		{
+			block_count ++;
+		}
+		else if (*at == ']')
+		{		
+			block_count --;
+		}
+
+		if ((*at == ']') && (block_count == 0)) break;
+
+		at++;
+		size ++;
+	}
+
+	context -> at = at;
+	context -> l = 0;
+	set_block_fn(NULL);
+}
+
 void _read_gfx( char *bnk_adr, int offset_gfx, int &pn )
 {
 //	int tpos = offset_gfx+2+pn*4;
@@ -171,7 +207,6 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 	return false;
 }
 
-
 void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char *at;
@@ -182,8 +217,10 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 	{
 		struct ivar &arg1 = context -> stack[context -> stackp-1];
 
-		// check if value is number and is false.
-		context -> block = (( arg1.type == type_int ) && (arg1.num == 0)) ? -2 : 2;
+		if (( arg1.type == type_int ) && (arg1.num == 0)) 
+		{
+			set_block_fn(block_skip);
+		}
 
 		pop_context( context, 1);
 
@@ -1201,44 +1238,9 @@ void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	switch  ( context -> block )
-	{
-		case 2:
-		case -1:
-		case 0:
+	if ( has_block_fn() ) call_block_fn( context, self );
 
-				if (*at=='[')	// next is a block.
-				{
-					count = 0;
-					while (*at)
-					{
-						switch (*at )
-						{
-							case '[': count ++;	break;
-							case ']': count --;	
-								break;
-						}
-
-						if (count == 0)
-						{
-							context->at =at+1;		// set new location.
-							context->l = 0;		// reset length of command.
-			
-							printf("%s\n",context->at);
-							break;
-						}
-						at ++;
-					}
-				}
-
-			break;
-	}
-
-	if (context -> block<0)
-	{
-		context -> block++;
-	}
-	else 	if (context -> block>0) context -> block--;
+	inc_block();
 
 	context -> args = 0;
 }
@@ -1249,14 +1251,37 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 
 	context -> selected_dialog = 0;
 
+	if (context -> block_level > 0) context -> block_level --;
+
 	context -> args = 0;
 }
+
+
+void block_button_action( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	set_block_fn(NULL);
+}
+
+
+void block_button_render( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> button_action)
+	{
+		set_block_fn(block_button_action);
+	}
+	else
+	{
+		set_block_fn(block_skip);
+	}
+}
+
 
 void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	context -> block = -2;
 
 	if (context -> stackp>=8)
 	{
@@ -1291,10 +1316,15 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			button.height = _h.num;
 
 			context -> return_value = nr.num;
+
+			printf("--------- %d -------\n", nr.num);
+
 			context -> xgcl = _x.num;
 			context -> ygcl =_y.num;
 			context -> xgc = _x.num + _w.num;
 			context -> ygc = _y.num + _h.num;
+
+			context -> button_action = false;			
 
 			if ((screen)&&(engine_mouse_key || context -> mouse_key))
 			{
@@ -1306,13 +1336,15 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				if (	(mx>=x)&&(mx<=(x+_w.num))	&&
 					(my>=y)&&(my<=(y+_h.num))  )
 				{
-					context -> block = 2;
+					context -> button_action = true;
 				}
 			}
 		}
 
 		pop_context( context, 8);
 	}
+
+	set_block_fn(block_button_render);
 
 	context -> selected_dialog = 1;
 	context -> cmd_done = NULL;
@@ -2251,6 +2283,7 @@ void dump_context_stack( struct cmdcontext *context )
 
 void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y, int varSize, int bufferSize  )
 {
+	int n;
 	struct dialog &dialog = context -> dialog[0];
 
 	bzero( context, sizeof( struct cmdcontext ) );
@@ -2263,11 +2296,16 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> at = context -> script;
 	context -> max_vars = varSize;
 	context -> selected_dialog = 0;
+	context -> block_level = 0;
 
 	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
+	context -> block_fn = (void (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
 
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
+
+	for (n=0;n<20;n++) context -> block_fn[n] = NULL;
+
 }
 
 void cleanup_inerface_context( struct cmdcontext *context )
@@ -2280,6 +2318,12 @@ void cleanup_inerface_context( struct cmdcontext *context )
 	{
 		free(	context -> script );
 		context -> script = NULL;
+	}
+
+	if (context -> block_fn)
+	{
+		free(	context -> block_fn );
+		context -> block_fn = NULL;
 	}
 
 	if (context -> vars) 
