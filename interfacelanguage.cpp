@@ -519,6 +519,8 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 			}
 
 			pop_context( context, 10);
+
+			set_block_fn(NULL);
 		}
 	}
 
@@ -1013,6 +1015,9 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 		y1+=oy;
 
 		if (screen) retroBox( screen, x0,y0,x1,y1,context -> ink0 );
+
+		set_block_fn(NULL);
+
 	}
 
 	pop_context( context, 9);
