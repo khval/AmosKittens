@@ -1998,6 +1998,13 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 }
 
 
+void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, 0 );
+}
+
 struct cmdinterface symbols[]=
 {
 
@@ -2073,6 +2080,7 @@ struct cmdinterface commands[]=
 	{"YB",i_parm,NULL,icmd_YGC},
 	{"XY",i_parm,NULL,NULL},
 	{"ZN",i_parm,NULL,NULL},
+	{"ZP",i_parm,NULL,icmd_ZonePosition},
 	{"ZC",i_normal,NULL,icmd_ZoneChange },
 	{"ZV",i_parm,NULL,icmd_ZoneValue },
 	{"=",i_parm,NULL,icmd_Equal },
