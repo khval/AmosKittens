@@ -1368,6 +1368,7 @@ void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> has_return_value = true;
+	context -> at = context -> script + strlen(context -> script);
 }
 
 void _icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
