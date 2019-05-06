@@ -1936,9 +1936,6 @@ char *_cmdExit(struct glueCommands *data, int nextToken )
 
 				cmdTmp[cmdStack-1].cmd = _exit;
 				cmdTmp[cmdStack-1].flag = cmd_never ;
-
-getchar();
-
 				return ptr + ( *((unsigned short *) ptr) * 2 )-2;
 				break;
 
@@ -1991,10 +1988,15 @@ char *_cmdExitIf(struct glueCommands *data, int nextToken)
 	}
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	dump_prog_stack();
+
 	if (dropProgStackToFlag( cmd_loop ))
 	{
 		ptr = cmdTmp[cmdStack-1].tokenBuffer;
 		token = *((unsigned short *) (ptr - 2)) ;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		switch (token)
 		{

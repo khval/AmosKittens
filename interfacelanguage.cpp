@@ -85,6 +85,46 @@ extern bool breakpoint ;
 #define call_block_fn(context,self) context -> block_fn[ context -> block_level ](context,self)
 #define inc_block() { context -> block_level++ ; context -> block_fn[ context -> block_level ] = NULL; }
 
+void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
+{
+	if (id>=20) return;
+
+	if (context -> zones[id].custom == custom)
+	{
+		printf("bad code\n");
+		return;
+	}
+
+	if (context -> zones[id].custom ) free (context -> zones[id].custom);
+	context -> zones[id].id = id;
+	context -> zones[id].type = type;
+	context -> zones[id].custom = custom;
+}
+
+
+void il_dump_vars( struct cmdcontext *context)
+{
+	int n;
+
+	printf("----- %s ------\n",__FUNCTION__);
+
+	for (n=0;n<4;n++)
+	{
+		switch (context -> vars[n].type)
+		{
+			case type_string:
+					printf("var[%d]=[%08x] {%s}\n",n,context -> vars[n].str, context -> vars[n].str);
+					break;
+
+			case type_int:
+					printf("var[%d]={%d}\n",n,context -> vars[n].num);
+					break;
+
+		 }
+	}
+}
+
+
 
 void block_skip( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -233,6 +273,7 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_If;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
+
 }
 
 void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
@@ -295,6 +336,7 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_ZoneChange;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
@@ -602,13 +644,10 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 
 				case type_string:
 					isetvarstr( context, arg1.num, arg2.str);
-					arg2.str = NULL;		// move not free ;-)
 					break;
-
 			}
 		}
 		else context -> error = 1;
-
 		pop_context( context, 2);
 	}
 
@@ -982,41 +1021,150 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 
 // icmd_VerticalSlider
 
-void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+void block_trigger( struct cmdcontext *context, struct cmdinterface *self )
 {
+	set_block_fn(NULL);
+}
+
+void render_hslider(struct zone_slider *zl)
+{
+	int t0;
+	int t1;
 	struct retroScreen *screen = screens[current_screen];
 
+	t0 = zl->h * zl -> pos / zl->total;
+	t1 = zl->h * (zl->pos+zl->trigger) / zl->total;
+	
+	if (screen) 
+	{
+		if (zl->y0+t0 != zl->y0 ) retroBAR( screen, zl->x0,zl->y0,zl->x1,zl->y0+t0-1, 0 );
+		retroBAR( screen, zl->x0,zl->y0+t0,zl->x1,zl->y0+t1, 4 );
+		if (zl->y0+t1 != zl->y1 ) retroBAR( screen, zl->x0,zl->y0+t1+1,zl->x1,zl->y1, 0 );
+	}
+}
+
+void mouse_event_hslider(struct cmdcontext *context, int mx, int my, struct zone_slider *zl)
+{
+	int t0;
+	int t1;
+	int tpos = zl->pos;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	t0 = zl->h * zl -> pos / zl->total;
+	t1 = zl->h * (zl->pos+zl->trigger) / zl->total;
+
+	if ((mx>=zl->x0)&&(mx<=zl->x1))
+	{
+		my -= zl->y0;
+
+		if ((my>=0)&&(my<=t0))
+		{
+			tpos -= ( tpos - zl -> step < 0) ? 1: zl -> step;
+			if (tpos < 0 )	tpos =0;
+			zl -> pos = tpos;
+			return;
+		}
+
+		if ((my>=t0)&&(my<=t1))
+		{
+			struct retroScreen *screen = screens[current_screen];
+			int dy = my-t0;
+			int y;
+			int handel = zl->h * zl->trigger / zl->total;
+			int tpos;
+
+			while (engine_mouse_key)
+			{
+				my = YScreen_formula( screen, engine_mouse_y );
+
+				y = my - zl->y0 - dy;
+				if (y<0) y=0;
+				if (y>zl->h) y = zl->h;
+
+				tpos = y * (zl -> total - zl -> trigger) / (zl -> h -handel);
+
+				if (tpos > (zl->total-zl->trigger)) tpos = zl->total - zl->trigger; 
+
+				zl -> pos = tpos;
+
+				printf("my %d, mouse y %d, y %d, dy %d\n",
+						my,
+						engine_mouse_y, 
+						y, 
+						dy );
+
+				zl -> render( zl );
+
+				Delay(1);
+			}
+
+
+			return;
+		}
+
+		if ((my>=t1)&&(my<=zl->h))
+		{
+			tpos += ( tpos + zl -> trigger + zl -> step > zl -> total) ? 1: zl -> step;
+			if ( tpos + zl -> trigger > zl -> total )	tpos = zl -> total - zl -> trigger;
+			zl -> pos = tpos;
+			return;
+		}
+	}
+}
+
+
+void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+{
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=9)
 	{
-		int x1,y1;
-		int ox,oy;
+		struct zone_slider *zs = NULL;
 
 		int zn = context -> stack[context -> stackp-9].num;
-		int x0 = context -> stack[context -> stackp-8].num;
-		int y0 = context -> stack[context -> stackp-7].num;
-		int w = context -> stack[context -> stackp-6].num;
-		int h = context -> stack[context -> stackp-5].num;
-		int position = context -> stack[context -> stackp-4].num;
-		int trigger = context -> stack[context -> stackp-3].num;
-		int total = context -> stack[context -> stackp-2].num;
-		int step = context -> stack[context -> stackp-1].num;
 
-		ox = get_dialog_x(context);
-		oy = get_dialog_y(context);
+		if (context -> zones)
+		{
+			zs = (struct zone_slider *) context -> zones[zn].custom;
+		}
+		else
+		{
+			printf("your so fucked\n");
+			getchar();
+			return;
+		}
 
-		x1=x0+w;
-		y1=y0+h;
+		if (zs == NULL)
+		{
+			zs = (struct zone_slider *) malloc( sizeof(struct zone_slider) );
+			zs -> pos = context -> stack[context -> stackp-4].num;
+			il_set_zone( context, zn, iz_slider, zs);
+		}
 
-		x0+=ox;
-		y0+=oy;
-		x1+=ox;
-		y1+=oy;
+		if (zs)
+		{
+			int ox,oy;
+			ox = get_dialog_x(context);
+			oy = get_dialog_y(context);
 
-		if (screen) retroBox( screen, x0,y0,x1,y1,context -> ink0 );
+			zs -> x0 = context -> stack[context -> stackp-8].num + ox;
+			zs -> y0 = context -> stack[context -> stackp-7].num + oy;
+			zs -> w = context -> stack[context -> stackp-6].num;
+			zs -> h = context -> stack[context -> stackp-5].num;
+			zs -> x1 = zs -> x0+zs->w;
+			zs -> y1 = zs -> y0+zs->h;
+			zs -> render = render_hslider;
+			zs -> mouse_event = mouse_event_hslider;
 
-		set_block_fn(NULL);
+			zs -> trigger = context -> stack[context -> stackp-3].num;
+			zs -> total = context -> stack[context -> stackp-2].num;
+			zs -> step = context -> stack[context -> stackp-1].num;
+
+			zs -> render(zs);
+		}
+
+		set_block_fn(block_trigger);
 
 	}
 
@@ -1167,7 +1315,37 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 				{
 					if (engine_mouse_key)
 					{
+						struct retroScreen *screen = screens[current_screen];
+						int n;
 						context -> mouse_key = true;
+
+						if (screen)
+						{
+							int mx = XScreen_formula( screen, engine_mouse_x );
+							int my = YScreen_formula( screen, engine_mouse_y );
+
+							for (n=0;n<20;n++)
+							{
+								printf("context -> zones[%d].type= %d\n",n, context -> zones[n].type);
+
+								switch ( context -> zones[n].type )
+								{
+									case iz_button:
+										{
+											struct zone_button *button = (struct zone_button *) context -> zones[n].custom;
+											button -> mouse_event(context, mx,my, button);
+										}
+										break;
+
+									case iz_slider:
+										{
+											struct zone_slider *slider = (struct zone_slider *) context -> zones[n].custom;
+											slider -> mouse_event(context, mx,my, slider);
+										}
+										break;
+								}
+							}
+						}
 						break;
 					}
 				}
@@ -1238,9 +1416,6 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 {
-	char *at = context -> at;
-	int count = 0;
-
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( has_block_fn() ) call_block_fn( context, self );
@@ -1266,6 +1441,16 @@ void block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	set_block_fn(NULL);
+
+	struct zone_button *zb = (struct zone_button *) context -> zones[context -> last_zone].custom;
+
+	if (zb)
+	{
+		zb -> script_action = context -> at;
+	}
+
+	block_skip(context,self);
+
 }
 
 
@@ -1273,16 +1458,37 @@ void block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (context -> button_action)
+	struct zone_button *zb = (struct zone_button *) context -> zones[context -> last_zone].custom;
+
+	if (zb)
 	{
-		set_block_fn(block_button_action);
+		zb -> script_render = context -> at;
 	}
-	else
-	{
-		set_block_fn(block_skip);
-	}
+
+	set_block_fn(block_button_action);
+//	block_skip(context,self);
+
+
 }
 
+void mouse_event_button(struct cmdcontext *context, int mx, int my, struct zone_button *zb)
+{
+	if (  (mx>=zb->x0)&&(mx<=zb->x1)	&&
+		(my>=zb->y0)&&(my<=zb->y1)  )
+	{
+		set_block_fn(NULL);
+
+		if (zb -> script_render)
+		{
+			printf("found a action script trying to run it\n");
+
+			printf("[%s]\n", zb -> script_render);
+
+			context -> at = zb -> script_action;
+			context -> l = 0;
+		}
+	}
+}
 
 void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1290,7 +1496,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=8)
 	{
-		struct ivar &nr = context -> stack[context -> stackp-8];
+		struct ivar &zn = context -> stack[context -> stackp-8];
 		struct ivar &_x = context -> stack[context -> stackp-7];
 		struct ivar &_y = context -> stack[context -> stackp-6];
 		struct ivar &_w = context -> stack[context -> stackp-5];
@@ -1299,30 +1505,50 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &_min = context -> stack[context -> stackp-2];
 		struct ivar &_max = context -> stack[context -> stackp-1];
 
-		if (( nr.type == type_int ) 
-			&& ( _x.type == type_int )  
-			&& ( _y.type == type_int )  
-			&& ( _w.type == type_int )  
-			&& ( _h.type == type_int )  
-			&& ( arg6.type == type_int ) 
- 			&& ( _min.type == type_int ) 
-			&& ( _max.type == type_int ))
+		if (( zn.type == type_int ) && ( _x.type == type_int )  && ( _y.type == type_int )  && ( _w.type == type_int )  && ( _h.type == type_int )  
+				&& ( arg6.type == type_int ) && ( _min.type == type_int ) && ( _max.type == type_int ))
 		{
-			struct dialog &dialog = context -> dialog[0];
 			struct dialog &button = context -> dialog[1];
+			struct zone_button *zb = NULL;
 
-			struct retroScreen *screen = screens[current_screen];
-			int x = _x.num + dialog.x;
-			int y = _y.num + dialog.y;
+			context -> last_zone = zn.num;
 
 			button.x = _x.num;
 			button.y = _y.num;
 			button.width = _w.num;
 			button.height = _h.num;
 
-			context -> return_value = nr.num;
+			if (context -> zones)
+			{
+				zb = (struct zone_button *) context -> zones[zn.num].custom;
+			}
+			else
+			{
+				return;
+			}
 
-			printf("--------- %d -------\n", nr.num);
+			if (zb == NULL)
+			{
+				zb = (struct zone_button *) malloc( sizeof(struct zone_button) );
+
+				if (zb)
+				{
+					zb -> script_render = NULL;
+					zb -> script_action = NULL;
+					il_set_zone( context, zn.num, iz_button,  zb);
+				}
+			}
+
+			if (zb)
+			{
+				zb -> x0 = _x.num + get_dialog_x(context);
+				zb -> y0 = _y.num + get_dialog_y(context);
+				zb -> w = _w.num;
+				zb -> h = _h.num;
+				zb -> x1 = zb -> x0+zb->w;
+				zb -> y1 = zb -> y0+zb->h;
+				zb -> mouse_event = mouse_event_button;
+			}
 
 			context -> xgcl = _x.num;
 			context -> ygcl =_y.num;
@@ -1330,20 +1556,6 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			context -> ygc = _y.num + _h.num;
 
 			context -> button_action = false;			
-
-			if ((screen)&&(engine_mouse_key || context -> mouse_key))
-			{
-				char txt[30];
-
-				int mx = XScreen_formula( screen, engine_mouse_x );
-				int my = YScreen_formula( screen, engine_mouse_y );
-
-				if (	(mx>=x)&&(mx<=(x+_w.num))	&&
-					(my>=y)&&(my<=(y+_h.num))  )
-				{
-					context -> button_action = true;
-				}
-			}
 		}
 
 		pop_context( context, 8);
@@ -1369,6 +1581,7 @@ void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> has_return_value = true;
 	context -> at = context -> script + strlen(context -> script);
+	context -> l = 0;
 }
 
 void _icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
@@ -1569,7 +1782,7 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	push_context_num( context, context -> button_active );
+	push_context_num( context, context -> last_zone );
 
 }
 
@@ -1587,10 +1800,10 @@ void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ((index>-1)  && (index < context -> max_vars))
 		{
-
-			printf("index: %d\n",index);
-
 			push_context_var(context, index);
+
+			dump_context_stack( context );
+			il_dump_vars( context );
 		}
 		else context -> error = 1 ;
 	}
@@ -1609,6 +1822,8 @@ void pop_context( struct cmdcontext *context, int pop )
 			case type_string:
 					if (p.str)
 					{
+						printf("--pop frees(%08x)\n",p.str);
+
 						free (p.str);
 						p.str = NULL;
 					}
@@ -1618,6 +1833,8 @@ void pop_context( struct cmdcontext *context, int pop )
 		pop--;
 		context -> stackp--;
 	}
+
+	printf("stackp is %d\n",context -> stackp);
 }
 
 void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
@@ -1770,17 +1987,25 @@ void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
+	char str[30];
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>0)
 	{
 		struct ivar &arg1 = context -> stack[context -> stackp-1];
 
-		if ( arg1.type == type_string ) 
+		switch ( arg1.type )
 		{
-			ret = os_text_width( arg1.str );
+			case type_string:
+					ret = os_text_width( arg1.str );
+					break;
+			case type_int:
+					sprintf( str, "%d", arg1.num );
+					ret = os_text_width( str );
+					break;
+			default:
+					ret = 0;
 		}
-		else ret = 0;
 
 		pop_context( context, 1);
 		push_context_num( context, ret );
@@ -1840,7 +2065,6 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 
 			if (screen)
 			{
-				int l = strlen( arg1.str );
 				int tl = os_text_width( arg1.str );
 
 				ret = (context -> dialog[ context -> selected_dialog ] .width / 2) - (tl/2)  ;
@@ -1888,7 +2112,7 @@ void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> cmd_done)
 	{
-		return context ->cmd_done(context, self);
+		context ->cmd_done(context, self);
 		context ->cmd_done = NULL;
 	}
 }
@@ -1912,8 +2136,10 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 	if (var.type == type_string)
 	{
 		if (var.str) free(var.str);
+		var.str = NULL;
 	}
-	else var.type = type_int;
+
+	var.type = type_int;
 	var.num = num;
 }
 
@@ -2007,7 +2233,6 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	push_context_num( context, 0 );
 }
 
@@ -2255,20 +2480,33 @@ void push_context_string(struct cmdcontext *context, char *str)
 
 void push_context_var(struct cmdcontext *context, int index)
 {
-	struct ivar &self = context -> stack[context -> stackp];
+	struct ivar &stackd = context -> stack[context -> stackp];
+
+	if (index < 0) return;
+	if (index >= 20 ) return;
 
 	if ( context -> vars)
 	{
 		struct ivar &var = context -> vars[index];
 
-		self.type = var.type;
-		if (var.type == type_string)
+		switch (var.type )
 		{
-			self.str = strdup( var.str );
-		}
-		else self.num = var.num;
+			case type_string:
 
-		context -> stackp++;
+					stackd.type = type_string;
+					stackd.str = strdup( var.str );
+					stackd.num = 0;
+					context -> stackp++;
+					break;
+
+			case type_int:
+
+					stackd.type = type_int;
+					stackd.str = NULL;
+					stackd.num = var.num;
+					context -> stackp++;
+					break;
+		}
 	}
 	else
 	{
@@ -2312,11 +2550,19 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> selected_dialog = 0;
 	context -> block_level = 0;
 
+	context -> zones = (struct izone *) malloc( sizeof(struct izone) * 20 );
+
 	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
 	context -> block_fn = (void (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
 
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
+
+	for (n=0;n<20;n++) 
+	{
+		context -> zones[n].type = iz_none;
+		context -> zones[n].custom = NULL;
+	}
 
 	for (n=0;n<20;n++) context -> block_fn[n] = NULL;
 
@@ -2327,6 +2573,22 @@ void cleanup_inerface_context( struct cmdcontext *context )
 	context -> at = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> zones)
+	{
+		int n=0;
+		for (n=0;n<20;n++)
+		{
+			context -> zones[n].type = 0;
+			if (context -> zones[n].custom) 
+			{
+				free (context -> zones[n].custom);
+				context -> zones[n].custom = NULL;
+			}
+		}
+		free(context -> zones);
+		context -> zones = NULL;
+	}
 
 	if (context -> script)
 	{
@@ -2402,6 +2664,20 @@ void test_interface_script( struct cmdcontext *context)
 			}
 		}
 
+		if (context -> zones  == NULL)
+		{
+			printf("context zones died here -> context stack %d\n", context -> stackp );
+			getchar();
+			break;
+		}
+
+		if (context -> vars  == NULL)
+		{
+			printf("context vars died here -> context stack %d\n", context -> stackp );
+			getchar();
+			break;
+		}
+
 		context -> at += context -> l;
 		dump_context_stack( context );
 	}
@@ -2416,9 +2692,16 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if ( context -> zones == NULL )
+	{
+		printf("%s:%s context zones damged\n",__FILE__,__FUNCTION__);
+		getchar();
+		return;
+	}
+
 	if ( context -> vars == NULL )
 	{
-		printf("%s:%s context damged\n",__FILE__,__FUNCTION__);
+		printf("%s:%s context vars damged\n",__FILE__,__FUNCTION__);
 		getchar();
 		return;
 	}
@@ -2453,6 +2736,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	while ((*context -> at != 0) && (context -> error == false) && (context -> has_return_value == false))
 	{
 		while (*context -> at==' ') context -> at++;
+
+		printf("%s\n", context -> at);
 
 		if (breakpoint)
 		{
@@ -2514,6 +2799,13 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 
 		context -> at += context -> l;
 
+		if (context -> zones  == NULL)
+		{
+			printf("context zones died here -> context stack %d\n", context -> stackp );
+			getchar();
+			break;
+		}
+
 		if (context -> vars  == NULL)
 		{
 			printf("context vars died here -> context stack %d\n", context -> stackp );
@@ -2531,7 +2823,9 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	}
 	else if (*context -> at != 0)
 	{
-		printf("ended at: {%s}\n",context -> at);
+		if (context -> at)
+
+		printf("ended at: {%s} %d\n",context -> at,*context -> at);
 		dump_context_stack( context );
 		getchar();
 	}

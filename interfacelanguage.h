@@ -22,6 +22,46 @@ struct ibutton
 	int h;
 };
 
+struct zone_base
+{
+	int x0,y0,x1,y1,w,h;
+};
+
+struct zone_button : zone_base
+{
+	void (*render) (struct zone_button *zl);
+	void (*mouse_event) (struct cmdcontext *context, int mx, int my, struct zone_button *zb);
+
+	char *script_render;
+	char *script_action;
+};
+
+struct zone_slider : zone_base
+{
+	void (*render) (struct zone_slider *zl);
+	void (*mouse_event) (struct cmdcontext *context, int mx, int my, struct zone_slider *zb);
+
+	int pos;
+	int position;
+	int trigger;
+	int total;
+	int step;
+};
+
+enum 
+{
+	iz_none,
+	iz_button,
+	iz_slider
+};
+
+struct izone
+{
+	int id;
+	int type;
+	struct zone_base *custom;
+};
+
 struct cmdcontext
 {
 	int id;
@@ -36,6 +76,7 @@ struct cmdcontext
 	char *programStack[10];
 	int selected_dialog;
 	struct dialog dialog[2];
+	struct izone *zones;
 	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
 	int error;
@@ -49,7 +90,7 @@ struct cmdcontext
 	int block_level;
 	void (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );
 	int max_vars;
-	int button_active;
+	int last_zone;
 	int xgcl;
 	int ygcl;
 	int xgc;
