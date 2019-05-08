@@ -723,13 +723,13 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 					context -> error = true;
 				}
 
-				if (get_resource_block( bank1, _image + 6 , x0.num, eh*h+y0.num, &w,&h ) == false )
+				if (get_resource_block( bank1, _image + 6 , x0.num, y1.num - h, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
 				}
 
-				if (get_resource_block( bank1, _image +8,  ew*w+ x0.num, eh*h + y0.num, &w,&h ) == false )
+				if (get_resource_block( bank1, _image +8,  ew*w+ x0.num, y1.num - h, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
@@ -769,7 +769,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 						}
 					}
 
-					if (get_resource_block( bank1, _image +7, x*w + x0.num, eh*h + y0.num, &_w,&_h ) == false )
+					if (get_resource_block( bank1, _image +7, x*w + x0.num, y1.num - h, &_w,&_h ) == false )
 					{
 						setError( 22, context -> tokenBuffer );
 						context -> error = true;
@@ -1718,6 +1718,8 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			struct zone_button *zb = NULL;
 
 			context -> last_zone = zn.num;
+
+			_x.num -= _x.num % 8;
 
 			button.x = _x.num;
 			button.y = _y.num;
