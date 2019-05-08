@@ -86,6 +86,8 @@ extern bool breakpoint ;
 #define call_block_fn(context,self) context -> block_fn[ context -> block_level ](context,self)
 #define inc_block() { context -> block_level++ ; context -> block_fn[ context -> block_level ] = NULL; }
 
+void execute_interface_sub_script( struct cmdcontext *context, char *at);
+
 void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
 {
 	if (id>=20) return;
@@ -306,32 +308,30 @@ void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 }
 
 
-//icmd_ZoneChange
-
 void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 {
-	char *at;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp >= 2)
 	{
-		struct ivar &zoneNr = context -> stack[context -> stackp-2];
+		struct ivar &zn = context -> stack[context -> stackp-2];
 		struct ivar &data = context -> stack[context -> stackp-1];
 
-		if (zoneNr.type == type_int)
+		if ((zn.type == type_int) && ( data.type == type_int ))
 		{
-			switch ( data.type )
+			struct zone_base *zone =  context -> zones[zn.num].custom;
+			if (zone) 
 			{
-				case type_int:
-						break;
-				case type_string:
-						break; 
+				zone -> value = data.num;
+				pop_context( context, 2);
+				return;		// return success ;-)
 			}
 		}
 
 		pop_context( context, 2);
+	} 
 
-	} else context -> error = 1;
+	context -> error = 1;	// if we have not retuned success before.
 }
 
 void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
@@ -1081,6 +1081,23 @@ void render_hslider(struct zone_slider *zl)
 	int t1;
 	struct retroScreen *screen = screens[current_screen];
 
+	t0 = zl->w * zl -> pos / zl->total;
+	t1 = zl->w * (zl->pos+zl->trigger) / zl->total;
+	
+	if (screen) 
+	{
+		if (zl->x0+t0 != zl->x0 ) retroBAR( screen, zl->x0,zl->y0,zl->x0+t0-1,zl->y1, 0 );
+		retroBAR( screen, zl->x0+t0,zl->y0,zl->x0+t1,zl->y1, 4 );
+		if (zl->x0+t1 != zl->x1 ) retroBAR( screen, zl->x0+t1+1,zl->y0,zl->x1,zl->y1, 0 );
+	}
+}
+
+void render_vslider(struct zone_slider *zl)
+{
+	int t0;
+	int t1;
+	struct retroScreen *screen = screens[current_screen];
+
 	t0 = zl->h * zl -> pos / zl->total;
 	t1 = zl->h * (zl->pos+zl->trigger) / zl->total;
 	
@@ -1092,7 +1109,79 @@ void render_hslider(struct zone_slider *zl)
 	}
 }
 
-void mouse_event_hslider(struct cmdcontext *context, int mx, int my, struct zone_slider *zl)
+
+void mouse_event_hslider(struct cmdcontext *context, int mx, int my, int zid, struct zone_slider *zl)
+{
+	int t0;
+	int t1;
+	int tpos = zl->pos;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	t0 = zl->w * zl -> pos / zl->total;
+	t1 = zl->w * (zl->pos+zl->trigger) / zl->total;
+
+	if ((my>=zl->y0)&&(my<=zl->y1))
+	{
+		mx -= zl->x0;
+
+		if ((mx>=0)&&(mx<=t0))
+		{
+			tpos -= ( tpos - zl -> step < 0) ? 1: zl -> step;
+			if (tpos < 0 )	tpos =0;
+			zl -> pos = tpos;
+			return;
+		}
+
+		if ((mx>=t0)&&(mx<=t1))
+		{
+			struct retroScreen *screen = screens[current_screen];
+			int dx = mx-t0;
+			int x;
+			int handel = zl->w * zl->trigger / zl->total;
+			int tpos;
+
+			while (engine_mouse_key)
+			{
+				mx = XScreen_formula( screen, engine_mouse_x );
+
+				x = mx - zl->x0 - dx;
+				if (x<0) x=0;
+				if (x>zl->w) x = zl->w;
+
+				tpos = x * (zl -> total - zl -> trigger) / (zl -> w -handel);
+
+				if (tpos > (zl->total-zl->trigger)) tpos = zl->total - zl->trigger; 
+
+				zl -> pos = tpos;
+
+				printf("mx  %d, mouse x  %d, x %d, dx %d, t0 %d tpos %d\n",
+						mx,
+						engine_mouse_x, 
+						x, 
+						dx,
+						t0, tpos );
+
+				zl -> render( zl );
+
+				Delay(1);
+			}
+
+
+			return;
+		}
+
+		if ((mx>=t1)&&(mx<=zl->w))
+		{
+			tpos += ( tpos + zl -> trigger + zl -> step > zl -> total) ? 1: zl -> step;
+			if ( tpos + zl -> trigger > zl -> total )	tpos = zl -> total - zl -> trigger;
+			zl -> pos = tpos;
+			return;
+		}
+	}
+}
+
+void mouse_event_vslider(struct cmdcontext *context, int mx, int my, int zid, struct zone_slider *zl)
 {
 	int t0;
 	int t1;
@@ -1172,6 +1261,73 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 		struct zone_slider *zs = NULL;
 
 		int zn = context -> stack[context -> stackp-9].num;
+		context -> last_zone = zn;
+
+		if (context -> zones)
+		{
+			zs = (struct zone_slider *) context -> zones[zn].custom;
+		}
+		else
+		{
+			printf("your so fucked\n");
+			getchar();
+			return;
+		}
+
+		if (zs == NULL)
+		{
+			zs = (struct zone_slider *) malloc( sizeof(struct zone_slider) );
+			zs -> pos = context -> stack[context -> stackp-4].num;
+			il_set_zone( context, zn, iz_slider, zs);
+		}
+
+		if (zs)
+		{
+			int ox,oy;
+			ox = get_dialog_x(context);
+			oy = get_dialog_y(context);
+
+			zs -> x0 = context -> stack[context -> stackp-8].num + ox;
+			zs -> y0 = context -> stack[context -> stackp-7].num + oy;
+			zs -> w = context -> stack[context -> stackp-6].num;
+			zs -> h = context -> stack[context -> stackp-5].num;
+			zs -> x1 = zs -> x0+zs->w;
+			zs -> y1 = zs -> y0+zs->h;
+			zs -> render = render_vslider;
+			zs -> mouse_event = mouse_event_vslider;
+
+			zs -> trigger = context -> stack[context -> stackp-3].num;
+			zs -> total = context -> stack[context -> stackp-2].num;
+			zs -> step = context -> stack[context -> stackp-1].num;
+
+			zs -> render(zs);
+		}
+
+		set_block_fn(block_trigger);
+
+	}
+
+	pop_context( context, 9);
+	context -> cmd_done = NULL;
+}
+
+void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_VerticalSlider;
+	context -> args = 9;
+}
+
+void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=9)
+	{
+		struct zone_slider *zs = NULL;
+
+		int zn = context -> stack[context -> stackp-9].num;
+		context -> last_zone = zn;
 
 		if (context -> zones)
 		{
@@ -1221,12 +1377,13 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 	context -> cmd_done = NULL;
 }
 
-void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
+void icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmd_VerticalSlider;
+	context -> cmd_done = _icmd_HorizontalSlider;
 	context -> args = 9;
 }
+
 
 void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -1356,6 +1513,11 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_int ) && ( arg1.type == type_int ))
 		{
+			int delay = arg1.num;
+			int event_triggers = arg2.num;
+
+			pop_context( context, 2);
+
 			if (arg2.num & 4) engine_wait_key = true;
 
 			for (;;)
@@ -1382,14 +1544,14 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 									case iz_button:
 										{
 											struct zone_button *button = (struct zone_button *) context -> zones[n].custom;
-											button -> mouse_event(context, mx,my, button);
+											button -> mouse_event(context, mx,my, n ,button);
 										}
 										break;
 
 									case iz_slider:
 										{
 											struct zone_slider *slider = (struct zone_slider *) context -> zones[n].custom;
-											slider -> mouse_event(context, mx,my, slider);
+											slider -> mouse_event(context, mx,my, n, slider);
 										}
 										break;
 								}
@@ -1414,9 +1576,11 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 			}
 		}
 
-		pop_context( context, 2);
+		return;	// return success
 	}
-	else context -> error = 1;
+
+	pop_context( context, 2);
+	context -> error = 1;
 }
 
 
@@ -1498,8 +1662,8 @@ void block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 		zb -> script_action = context -> at;
 	}
 
-	block_skip(context,self);
-
+	block_skip(context,self);		// does purge set_block_fn
+	set_block_fn(NULL);
 }
 
 
@@ -1515,26 +1679,19 @@ void block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 	}
 
 	set_block_fn(block_button_action);
-//	block_skip(context,self);
-
-
 }
 
-void mouse_event_button(struct cmdcontext *context, int mx, int my, struct zone_button *zb)
+void mouse_event_button(struct cmdcontext *context, int mx, int my, int zid, struct zone_button *zb)
 {
 	if (  (mx>=zb->x0)&&(mx<=zb->x1)	&&
 		(my>=zb->y0)&&(my<=zb->y1)  )
 	{
 		set_block_fn(NULL);
 
-		if (zb -> script_render)
+		if (zb -> script_action)
 		{
-			printf("found a action script trying to run it\n");
-
-			printf("[%s]\n", zb -> script_render);
-
-			context -> at = zb -> script_action;
-			context -> l = 0;
+			execute_interface_sub_script( context, zb -> script_action);
+			context -> return_value = zid;
 		}
 	}
 }
@@ -2331,6 +2488,7 @@ struct cmdinterface commands[]=
 	{"GS",i_normal,NULL,icmd_GraphicSquare},
 	{"GE",i_normal,NULL,NULL},
 	{"GL",i_normal,NULL,icmd_GraphicLine},
+	{"HS",i_normal,NULL,icmd_HorizontalSlider },
 	{"HT",i_normal,NULL,icmd_HyperText},
 	{"IF",i_normal,NULL,icmd_If},
 	{"IN",i_normal,NULL,icmd_Ink},
@@ -2749,6 +2907,117 @@ void test_interface_script( struct cmdcontext *context)
 	}
 	context -> tested = true;
 }
+
+void execute_interface_sub_script( struct cmdcontext *context, char *at)
+{
+	int sym,cmd;
+	int num;
+	int initial_block_level = context -> block_level;
+	int initial_command_length = context -> l;
+
+	char *str = NULL;
+	char *backup_at = context -> at;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	context -> at = at;
+
+	if (context -> at == 0) 
+	{
+		context -> error = 1;
+		context -> at = backup_at;
+		context -> l = initial_command_length;
+		return ;
+	}
+
+	if (*context -> at == '[') 
+	{
+		context -> at ++;
+	}
+	else context -> error =1;
+
+	while ((*context -> at != 0) && (context -> error == false) && (context -> has_return_value == false))
+	{
+		if (initial_block_level == context -> block_level)
+		{
+			if (*context -> at == ']') break;		// time to exit block.
+		}
+
+		while (*context -> at==' ') context -> at++;
+
+		if (breakpoint)
+		{
+			printf("EXECUTE SCRIPT {%s}\n",context -> at);
+			printf("<< breakpoint, press enter >>\n");
+		}
+
+		sym = find_symbol( context -> at, context -> l );
+
+		if (sym != -1)
+		{
+			struct cmdinterface *icmd = &symbols[sym];
+			if (icmd -> cmd)
+			{
+				icmd -> cmd( context, icmd );
+			}
+			else printf("ignored %s\n", icmd -> name);
+		}
+		else
+		{
+			cmd = find_command( context -> at, context -> l );
+			if (cmd == -1) 
+			{
+				if (is_string(context -> at, str, context -> l) )
+				{
+					push_context_string( context, str );
+				}
+				else 	if (is_number(context -> at, num, context -> l))
+				{
+					push_context_num( context, num );
+				}
+				else 	break;
+			}
+			else 	
+			{
+				struct cmdinterface *icmd = &commands[cmd];
+
+				if (icmd -> type == i_normal)
+				{
+					if (context -> stackp >0)
+					{
+						printf("there is stuff on the stack, there shoud be none.\n");
+						dump_context_stack( context );
+						getchar();
+					}
+				}
+
+				if (icmd -> cmd)
+				{
+					icmd -> cmd( context, icmd );
+				}
+				else
+				{
+					printf("ignored %s\n", icmd -> name);
+					getchar();
+				}
+			}
+		}
+
+		context -> at += context -> l;
+	}
+
+	if (context -> error)
+	{
+		printf("error at: {%s}\n",context -> at);
+		getchar();
+	}
+
+	// return to where we left off, restore damaged data.
+
+	context -> at = backup_at;	
+	context -> l = initial_command_length;
+}
+
 
 void execute_interface_script( struct cmdcontext *context, int32_t label)
 {
