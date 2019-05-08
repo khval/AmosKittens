@@ -526,6 +526,8 @@ char *_guiVdialog( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
+	int ret = 0;
+	struct cmdcontext *item;
 
 	_set_interface_ = -1;
 
@@ -534,13 +536,18 @@ char *_guiVdialog( struct glueCommands *data, int nextToken )
 		case 2:	_set_interface_ = getStackNum(stack-1);
 				_set_var_ = getStackNum(stack);
 				_do_set = _set_interface_command;
+
+				if (item = find_interface_context(_set_interface_))
+				{			
+					ret = igetvarnum( item , _set_var_ );
+				}
 				break;
 		default:
 				setError(22,data->tokenBuffer);
 	}
 
 	popStack( stack - data->stack );
-	setStackNum( 0 );
+	setStackNum( ret );
 
 	return NULL;
 }
