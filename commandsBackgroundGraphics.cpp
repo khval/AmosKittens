@@ -47,16 +47,6 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *icons;
 
 
-struct retroBlock
-{
-	int id; 
-	int x;
-	int y;
-	int w;
-	int h;
-	int mask;
-	unsigned char *mem;
-};
 
 struct retroIcon 
 {
@@ -149,7 +139,7 @@ char *bgGetIcon(struct nativeCommand *cmd, char *tokenBuffer)
 char *_bgGetIconPalette( struct glueCommands *data, int nextToken )
 {
 	int n;
-	int args = stack - data->stack +1 ;
+//	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -252,55 +242,11 @@ void del_block(int id)
 	}
 }
 
-void get_block(struct retroScreen *screen,struct retroBlock *block,  int x, int y)
+
+void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask)
 {
-	int _x,_y;
-	int sx,sy;
-	unsigned char *sslice,*dslice;
-
-	for (_y=0;_y<block->h;_y++)
-	{
-		sy = _y+y;
-
-		if ((sy>=0)&&(sy<screen->realHeight))
-		{
-			sslice = screen->Memory[0] + (screen->bytesPerRow*sy);
-			dslice = block->mem + (block->w * _y);
-
-			for (_x=0;_x<block->w;_x++)
-			{
-				sx = _x+x;
-				if ((sx>=0)&&(sx<screen->realWidth))
-				{
-					dslice[_x]= sslice[sx];
-				}
-				else dslice[_x] = 0;
-			}
-		}
-		else
-		{
-			dslice = block->mem + (block->w * _y);
-
-			for (_x=0;_x<block->w;_x++)
-			{
-				dslice[_x]= 0;
-			}
-		}
-	}
-}
-
-void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char bitmask)
-{
-	struct retroBlock *block = NULL;
 	unsigned char *sslice,*dslice;
 	int _x,_y,dx,dy;
-	unsigned int b;
-
-	for (b=0;b<blocks.size();b++)
-	{
-		if (blocks[b].id == id) block = &blocks[b];
-	}
-	if (NULL == block) return;
 
 	for (_y=0;_y<block->h;_y++)
 	{
@@ -336,6 +282,20 @@ void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char b
 	}
 }
 
+void put_block(struct retroScreen *screen,int id,  int x, int y, unsigned char bitmask)
+{
+	struct retroBlock *block = NULL;
+	unsigned int b;
+
+	for (b=0;b<blocks.size();b++)
+	{
+		if (blocks[b].id == id) block = &blocks[b];
+	}
+	if (NULL == block) return;
+
+	retroPutBlock(screen, block,   x,  y, bitmask);
+}
+
 char *_bgGetBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -355,7 +315,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 
 					del_block( block.id );
 					block.mem  = (unsigned char *) malloc( block.w * block.h );		
-					get_block(screens[current_screen],&block, block.x, block.y);
+					retroGetBlock(screens[current_screen],&block, block.x, block.y);
 					blocks.push_back(block);
 				}
 				break;
@@ -370,7 +330,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 
 					del_block( block.id );	// delete old
 					block.mem  = (unsigned char *) malloc( block.w * block.h );
-					get_block(screens[current_screen],&block, block.x, block.y);
+					retroGetBlock(screens[current_screen],&block, block.x, block.y);
 
 					blocks.push_back(block);
 

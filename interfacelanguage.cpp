@@ -1671,6 +1671,8 @@ void icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 {
+	retroScreen *screen = screens[current_screen];
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
@@ -1678,7 +1680,15 @@ void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &arg1 = context -> stack[context -> stackp-1];
 
 		if ( arg1.type == type_int ) 
-		{		
+		{	
+			if (context -> saved_block) retroFreeBlock( context -> saved_block );
+
+			context -> saved_block = retroAllocBlock( context -> dialog[0].width, context -> dialog[0].height );
+
+			if (context -> saved_block)
+			{
+				retroGetBlock( screen, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y );
+			} 
 		}
 
 		pop_context( context, 1);
@@ -2549,6 +2559,7 @@ void init_interface_context( struct cmdcontext *context, int id, char *script, i
 	context -> max_vars = varSize;
 	context -> selected_dialog = 0;
 	context -> block_level = 0;
+	context -> saved_block = NULL;
 
 	context -> zones = (struct izone *) malloc( sizeof(struct izone) * 20 );
 
@@ -2573,6 +2584,12 @@ void cleanup_inerface_context( struct cmdcontext *context )
 	context -> at = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> saved_block)
+	{
+		retroFreeBlock( context -> saved_block );
+		context -> saved_block = NULL;
+	}
 
 	if (context -> zones)
 	{
