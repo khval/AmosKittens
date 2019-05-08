@@ -1996,14 +1996,6 @@ void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 }
 
-void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	push_context_num( context, context -> last_zone );
-
-}
-
 void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -2444,14 +2436,38 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	push_context_num( context, 0 );
-}
+	struct zone_base *zb = context -> zones[context -> last_zone].custom;
 
+	if (zb)
+	{
+		push_context_num( context, zb -> value );
+	}
+}
 
 void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, 0 );
+
+	struct zone_base *zb = context -> zones[context -> last_zone].custom;
+
+	if (zb)
+	{
+		push_context_num( context, zb -> pos );
+	}
+}
+
+void icmd_ZoneNumber( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> last_zone );
+}
+
+void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	push_context_num( context, context -> last_zone );
 }
 
 struct cmdinterface symbols[]=
@@ -2529,7 +2545,7 @@ struct cmdinterface commands[]=
 	{"XB",i_parm,NULL,icmd_XGC},
 	{"YB",i_parm,NULL,icmd_YGC},
 	{"XY",i_parm,NULL,NULL},
-	{"ZN",i_parm,NULL,NULL},
+	{"ZN",i_parm,NULL,icmd_ZoneNumber},
 	{"ZP",i_parm,NULL,icmd_ZonePosition},
 	{"ZC",i_normal,NULL,icmd_ZoneChange },
 	{"ZV",i_parm,NULL,icmd_ZoneValue },
