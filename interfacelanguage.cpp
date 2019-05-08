@@ -2353,6 +2353,18 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 	var.num = num;
 }
 
+char *igetvarstr( struct cmdcontext *context, int index)
+{
+	struct ivar &var = context -> vars[index];
+	return (var.type == type_string) ? strdup(var.str) : NULL;
+}
+
+int igetvarnum( struct cmdcontext *context,int index )
+{
+	struct ivar &var = context -> vars[index];
+	return (var.type == type_int) ? var.num : 0;
+}
+
 void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
