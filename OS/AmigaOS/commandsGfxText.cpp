@@ -88,6 +88,17 @@ int os_text_height(char *txt)
 	return -te.te_Extent.MinY;
 }
 
+int os_text_base(char *txt)
+{
+	struct TextExtent te;
+	int l = strlen(txt);
+
+	TextExtent( &font_render_rp, txt, strlen( txt), &te );
+
+	return -te.te_Extent.MinY - te.te_Extent.MaxY;
+}
+
+
 void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1)
 {
 	struct TextExtent te;

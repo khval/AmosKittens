@@ -73,6 +73,7 @@ extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
 
 extern int os_text_height(char *txt);
+extern int os_text_base(char *txt);
 extern int os_text_width(char *txt);
 extern void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1);
 extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline);
@@ -472,8 +473,9 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							if (txt)
 							{
 								int th = os_text_height( txt );
+								int tb = os_text_base( txt );
 
-								os_text_no_outline(screen, x,y,txt,pen);
+								os_text_no_outline(screen, x,y+tb,txt,pen);
 								context -> xgc += os_text_width( txt ) ;
 								context -> ygc += th;
 							}
@@ -488,8 +490,9 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 							if (txt)
 							{
 								int th = os_text_height( txt );
+								int tb = os_text_base( txt );
 
-								os_text_no_outline(screen, x,y ,txt,pen);
+								os_text_no_outline(screen, x,y+tb ,txt,pen);
 								context -> xgc += os_text_width( txt ) ;
 								context -> ygc += th;
 							}
@@ -592,6 +595,7 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (screen)
 		{
+			int tb;
 			int x = context -> stack[context -> stackp-5].num;
 			int y = context -> stack[context -> stackp-4].num;
 			char *txt = context -> stack[context -> stackp-3].str;
@@ -604,7 +608,11 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 			engine_lock();
 			if (engine_ready())
 			{
-				if (txt)	os_text_outline(screen, x,y,txt,pen,outline);
+				if (txt)
+				{
+					tb = os_text_base( txt );
+					os_text_outline(screen, x,y+tb,txt,pen,outline);
+				}
 			}
 			engine_unlock();
 		}
@@ -1762,7 +1770,7 @@ void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 			{
 				if (txt.str)
 				{
-					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_width( txt.str ) / 2),y.num+os_text_height( txt.str ),txt.str,screen -> ink0 );
+					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_width( txt.str ) / 2),y.num+os_text_base( txt.str ),txt.str,screen -> ink0 );
 				}							
 			}
 			engine_unlock();
