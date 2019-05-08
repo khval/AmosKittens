@@ -986,6 +986,47 @@ void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
+void _icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = screens[current_screen];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=4)
+	{
+		int ox,oy;
+
+		int x0 = context -> stack[context -> stackp-4].num;
+		int y0 = context -> stack[context -> stackp-3].num;
+		int x1 = context -> stack[context -> stackp-2].num;
+		int y1 = context -> stack[context -> stackp-1].num;
+
+		context -> xgcl = x0;
+		context -> ygcl = y0;
+		context -> xgc = x1;
+		context -> ygc = y1;
+
+		ox = get_dialog_x(context);
+		oy = get_dialog_y(context);
+		x0+=ox;
+		y0+=oy;
+		x1+=ox;
+		y1+=oy;
+
+		if (screen) retroLine( screen, x0,y0,x1,y1,context -> ink0 );
+	}
+
+	pop_context( context, 4);
+	context -> cmd_done = NULL;
+}
+
+void icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_GraphicLine;
+	context -> args = 4;
+}
+
 void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = screens[current_screen];
@@ -2289,7 +2330,7 @@ struct cmdinterface commands[]=
 	{"GB",i_normal,NULL,icmd_GraphicBox},
 	{"GS",i_normal,NULL,icmd_GraphicSquare},
 	{"GE",i_normal,NULL,NULL},
-	{"GL",i_normal,NULL,NULL},
+	{"GL",i_normal,NULL,icmd_GraphicLine},
 	{"HT",i_normal,NULL,icmd_HyperText},
 	{"IF",i_normal,NULL,icmd_If},
 	{"IN",i_normal,NULL,icmd_Ink},
