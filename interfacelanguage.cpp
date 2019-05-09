@@ -88,6 +88,7 @@ extern bool breakpoint ;
 
 void execute_interface_sub_script( struct cmdcontext *context, char *at);
 
+#define ierror( nr ) context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
 {
 	if (id>=20) return;
@@ -267,7 +268,7 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 1);
 
-	} else context -> error = 1;
+	} else ierror(1);
 }
 
 void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
@@ -296,7 +297,7 @@ void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 2);
 
-	} else context -> error = 1;
+	} else ierror(1);
 }
 
 void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
@@ -331,7 +332,7 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2);
 	} 
 
-	context -> error = 1;	// if we have not retuned success before.
+	ierror(1);	// if we have not retuned success before.
 }
 
 void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
@@ -378,7 +379,7 @@ void _icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 2 );
 	}
-	else context -> error = 1;
+	else ierror(1);
 
 	pop_context( context, 2);
 	context -> cmd_done = NULL;
@@ -408,7 +409,7 @@ void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 1 );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
@@ -428,7 +429,7 @@ void _icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 	{
 		pop_context( context, 1 );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_label( struct cmdcontext *context, struct cmdinterface *self )
@@ -655,7 +656,7 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 					break;
 			}
 		}
-		else context -> error = 1;
+		else ierror(1);
 		pop_context( context, 2);
 	}
 
@@ -1580,7 +1581,7 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 	}
 
 	pop_context( context, 2);
-	context -> error = 1;
+	ierror(1);
 }
 
 
@@ -1975,7 +1976,7 @@ void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 			}
 			engine_unlock();
 		}
-		else context -> error = 1;
+		else ierror(1);
 
 
 		pop_context( context, 5);
@@ -2015,7 +2016,7 @@ void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 			dump_context_stack( context );
 			il_dump_vars( context );
 		}
-		else context -> error = 1 ;
+		else ierror(1) ;
 	}
 }
 
@@ -2065,7 +2066,7 @@ void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2);
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
@@ -2086,7 +2087,7 @@ void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2 );
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
@@ -2107,7 +2108,7 @@ void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2 );
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Mul( struct cmdcontext *context, struct cmdinterface *self )
@@ -2128,7 +2129,7 @@ void icmd_Mul( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2 );
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Div( struct cmdcontext *context, struct cmdinterface *self )
@@ -2149,7 +2150,7 @@ void icmd_Div( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2 );
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
@@ -2170,7 +2171,7 @@ void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 2 );
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
@@ -2191,7 +2192,7 @@ void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 1);
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
@@ -2220,7 +2221,7 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 1);
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 
@@ -2242,7 +2243,7 @@ void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 1);
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 
@@ -2284,7 +2285,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 		pop_context( context, 1);
 		push_context_num( context, ret );
 	}
-	else context -> error = 1;
+	else ierror(1);
 }
 
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
@@ -2758,7 +2759,7 @@ void push_context_var(struct cmdcontext *context, int index)
 	else
 	{
 		printf("interface context not initialized\n");
-		context -> error = 1;
+		ierror(1);
 	}
 }
 
@@ -2954,7 +2955,7 @@ void execute_interface_sub_script( struct cmdcontext *context, char *at)
 
 	if (context -> at == 0) 
 	{
-		context -> error = 1;
+		ierror(1);
 		context -> at = backup_at;
 		context -> l = initial_command_length;
 		return ;
