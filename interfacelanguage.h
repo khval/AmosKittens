@@ -51,11 +51,24 @@ struct zone_slider : zone_base
 	int step;
 };
 
+struct zone_hypertext : zone_base
+{
+	void (*render) (struct zone_hypertext *zl);
+	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_hypertext *zb);
+
+	void *address;
+	int lineNr;
+	int buffer;
+	int paper;
+	int pen;
+};
+
 enum 
 {
 	iz_none,
 	iz_button,
-	iz_slider
+	iz_slider,
+	iz_hypertext
 };
 
 struct izone

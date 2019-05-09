@@ -89,6 +89,9 @@ extern bool breakpoint ;
 void execute_interface_sub_script( struct cmdcontext *context, char *at);
 
 #define ierror( nr ) context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self );
+
 void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
 {
 	if (id>=20) return;
@@ -533,9 +536,6 @@ void icmd_Comma( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
-
-//icmd_HyperText
-
 void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -547,26 +547,37 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 		if (context -> stackp>=10)
 		{
 			struct retroScreen *screen = screens[current_screen];
-/*
-			struct ivar &ZN = context -> stack[context -> stackp-10];
+			struct ivar &zn = context -> stack[context -> stackp-10];
 			struct ivar &x = context -> stack[context -> stackp-9];
 			struct ivar &y = context -> stack[context -> stackp-8];
 			struct ivar &w = context -> stack[context -> stackp-7];
 			struct ivar &h = context -> stack[context -> stackp-6];
-			struct ivar &address = context -> stack[context -> stackp-5];
-			struct ivar &lineNr = context -> stack[context -> stackp-4];
-			struct ivar &buffer = context -> stack[context -> stackp-3];
-			struct ivar &paper = context -> stack[context -> stackp-2];
-			struct ivar &pen = context -> stack[context -> stackp-1];
-*/
-			if (screen)
-			{
+			struct zone_hypertext *zh;
 
+			context -> last_zone = zn.num;
+
+			zh = (struct zone_hypertext *) malloc( sizeof(struct zone_hypertext) );
+			if (zh)
+			{
+				zh -> w = w.num;
+				zh -> h = h.num;
+				zh -> address = (void *) context -> stack[context -> stackp-5].num;
+				zh -> lineNr = context -> stack[context -> stackp-4].num;
+				zh -> buffer = context -> stack[context -> stackp-3].num;
+				zh -> paper = context -> stack[context -> stackp-2].num;
+				zh -> pen = context -> stack[context -> stackp-1].num;
+
+				il_set_zone( context, zn.num, iz_hypertext, zh );
+
+				if (screen)
+				{
+					retroBAR( screen, x.num, y.num, x.num + (w.num*8), y.num + (h.num*8), zh -> paper );
+				}
 			}
 
 			pop_context( context, 10);
 
-			set_block_fn(NULL);
+			set_block_fn( block_hypertext_action );
 		}
 	}
 
@@ -1648,6 +1659,18 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> block_level > 0) context -> block_level --;
 
 	context -> args = 0;
+}
+
+void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct zone_hypertext *zh = (struct zone_hypertext *) context -> zones[context -> last_zone].custom;
+
+	if (zh)
+	{
+//		zh -> script_action = context -> at;
+	}
+
+	set_block_fn(block_skip);
 }
 
 
