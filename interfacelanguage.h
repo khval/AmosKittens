@@ -30,20 +30,23 @@ struct zone_base
 		int pos;
 		int value;
 	};
+
+	char *script_action;
+	void (*render) (struct zone_base *zl);
 };
+
+#define I_FUNC_RENDER (void (*) (struct zone_base *))
 
 struct zone_button : zone_base
 {
-	void (*render) (struct zone_button *zl);
 	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_button *zb);
 
 	char *script_render;
-	char *script_action;
+
 };
 
 struct zone_slider : zone_base
 {
-	void (*render) (struct zone_slider *zl);
 	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_slider *zb);
 
 	int trigger;
@@ -53,11 +56,9 @@ struct zone_slider : zone_base
 
 struct zone_hypertext : zone_base
 {
-	void (*render) (struct zone_hypertext *zl);
 	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_hypertext *zb);
 
 	void *address;
-	int lineNr;
 	int buffer;
 	int paper;
 	int pen;
@@ -115,7 +116,7 @@ struct cmdcontext
 	bool has_return_value;
 	int return_value;
 	bool mouse_key;
-	bool button_action;
+	bool exit_run;
 };
 
 struct cmdinterface
