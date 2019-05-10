@@ -11,7 +11,7 @@
 extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
 
-void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph);
+void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen);
 
 
 void freeAllTextWindows(struct retroScreen *screen)
@@ -174,6 +174,7 @@ struct _font
 	short *tf_CharKern;
  };
 
+/*
 void draw_bit( struct retroScreen *screen, int x,int y)
 {
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
@@ -181,12 +182,10 @@ void draw_bit( struct retroScreen *screen, int x,int y)
 
 	retroPixel( screen,x,y,screen -> pen);
 }
+*/
 
-void draw_char(struct retroScreen *screen, int lX, int lY, char c )
+void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, int lX, int lY, char c, int pen, int paper )
 {
-	struct retroTextWindow *textWindow = screen -> currentTextWindow;
-	if (!textWindow) return;
-
 	int b = (textWindow -> border ? 1 : 0);
 	int x = textWindow -> x + lX + b;
 	int y = textWindow -> y + lY + b;
@@ -194,8 +193,8 @@ void draw_char(struct retroScreen *screen, int lX, int lY, char c )
 	x *= 8;
 	y *= 8;
 
-	retroBAR( screen, x,y,x+7,y+7, screen -> paper);
-	draw_glyph( screen, topaz8_font, x, y, c );
+	retroBAR( screen, x,y,x+7,y+7, paper);
+	draw_glyph( screen, topaz8_font, x, y, c, pen );
 }
 
 struct TextFont *open_font( char const *filename, int size )
@@ -211,7 +210,7 @@ struct TextFont *open_font( char const *filename, int size )
 int offset_x = 0;
 int offset_y = 0;
 
-void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph)
+void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen)
 {
 	int x,y;
 	short bit_start ;
@@ -260,7 +259,10 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 				{
 					if (data & (1<<(7-x)) ) 
 					{
-						draw_bit( screen, rp_x + x + bit_offset - _bit_start, rp_y + y ) ;
+//						draw_bit( screen, rp_x + x + bit_offset - _bit_start, rp_y + y ) ;
+
+						retroPixel( screen,rp_x + x + bit_offset - _bit_start, rp_y + y, pen);
+
 					}
 				}
 			}
@@ -308,32 +310,36 @@ void esc_zone (struct retroScreen *screen,struct esc_data *data, int x1, int y1,
 void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
 {
 	int x,y;
+
+	struct retroTextWindow *textWindow = screen -> currentTextWindow;
+	if (!textWindow) return;
+
 	data -> y --;
 	data -> x --;
 	y1 ++;
 
 	if (data->x>-1)
 	{
-		if (data -> y>-1) draw_char(screen, data->x , data -> y , '.');
-		if ( y1>-1) draw_char(screen, data->x , y1 , '\'');
+		if (data -> y>-1) draw_char(screen,textWindow,data->x , data -> y , '.', screen -> pen, screen -> paper);
+		if ( y1>-1) draw_char(screen,textWindow,data->x , y1 , '\'', screen -> pen, screen -> paper);
 	}
 
 	if (x1>-1)
 	{
-		if (data -> y>-1) draw_char(screen, x1 , data -> y , '.');
-		if ( y1>-1) draw_char(screen, x1 , y1 , '\'');
+		if (data -> y>-1) draw_char(screen,textWindow,x1 , data -> y , '.', screen -> pen, screen -> paper);
+		if ( y1>-1) draw_char(screen,textWindow, x1 , y1 , '\'', screen -> pen, screen -> paper);
 	}
 
 	for (y=data->y+1;y<y1;y++)
 	{
-		if (data -> x>-1) draw_char(screen, data -> x ,  y , '|');
-		if ( x1>-1) draw_char(screen, x1 , y , '|');
+		if (data -> x>-1) draw_char(screen,textWindow,data -> x ,  y , '|', screen -> pen, screen -> paper);
+		if ( x1>-1) draw_char(screen,textWindow, x1 , y , '|', screen -> pen, screen -> paper);
 	}
 
 	for (x=data->x+1;x<x1;x++)
 	{
-		if (data -> y>-1) draw_char(screen, x , data -> y , '-');
-		if ( y1>-1) draw_char(screen, x , y1 , '-');
+		if (data -> y>-1) draw_char(screen,textWindow, x , data -> y , '-', screen -> pen, screen -> paper);
+		if ( y1>-1) draw_char(screen,textWindow, x , y1 , '-', screen -> pen, screen -> paper);
 	}
 }
 
@@ -476,9 +482,9 @@ void draw_tab(struct retroScreen *screen)
 
 	while (n<_tab_size)
 	{
-		draw_char(screen, 
+		draw_char(screen, textWindow,
 			textWindow -> locateX,
-			textWindow -> locateY , 20);
+			textWindow -> locateY , 20, screen -> pen, screen -> paper);
 
 		textWindow -> locateX ++;
 		limit_location(screen);
@@ -567,9 +573,11 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 					textWindow -> locateY++;
 					break;
 			default:
-					draw_char(screen, 
+					draw_char(screen, textWindow,
 						textWindow -> locateX ,
-						textWindow -> locateY , c);
+						textWindow -> locateY , c, 
+						screen -> pen, 
+						screen -> paper);
 
 					textWindow -> locateX ++;
 		}
