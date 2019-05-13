@@ -67,7 +67,7 @@ char *_andData (struct glueCommands *data, int nextToken);
 char *_ifSuccess (struct glueCommands *data, int nextToken);
 char *_ifThenSuccess (struct glueCommands *data, int nextToken);
 char *_machinePeek(struct glueCommands *data, int nextToken);
-char *_cmdStart(struct glueCommands *data, int nextToken);
+char *_bankStart(struct glueCommands *data, int nextToken);
 char *_chr(struct glueCommands *data, int nextToken);
 char *_gfxPoint(struct glueCommands *data, int nextToken);
 char *_mid(struct glueCommands *data, int nextToken);
@@ -113,7 +113,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_ifSuccess,"If Success" },
 	{_ifThenSuccess,"If Then Success" },
 	{_machinePeek,"Peek" },
-	{_cmdStart,"Start" },
+	{_bankStart,"Start" },
 	{_chr,"Chr$" },
 	{_gfxPoint,"Point" },
 	{_mid,"Mid" },

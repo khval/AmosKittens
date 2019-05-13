@@ -221,15 +221,15 @@ char *_cmdErase( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *cmdErase(nativeCommand *cmd, char *tokenBuffer)
+char *bankErase(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdErase, tokenBuffer );
+	stackCmdNormal( _bankErase, tokenBuffer );
 	return tokenBuffer;
 }
 
 extern void clean_up_banks();
 
-char *_cmdEraseAll( struct glueCommands *data, int nextToken )
+char *_bankEraseAll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
@@ -243,13 +243,13 @@ char *_cmdEraseAll( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *cmdEraseAll(nativeCommand *cmd, char *tokenBuffer)
+char *bankEraseAll(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdEraseAll, tokenBuffer );
+	stackCmdNormal( _bankEraseAll, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *_cmdStart( struct glueCommands *data, int nextToken )
+char *_bankStart( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -271,7 +271,7 @@ char *_cmdStart( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdLength( struct glueCommands *data, int nextToken )
+char *_bankLength( struct glueCommands *data, int nextToken )
 {
 	int n;
 	int args = stack - data->stack +1 ;
@@ -291,7 +291,7 @@ char *_cmdLength( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdBload( struct glueCommands *data, int nextToken )
+char *_bankBload( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	struct kittyBank *bank;
@@ -342,7 +342,7 @@ char *_cmdBload( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdBsave( struct glueCommands *data, int nextToken )
+char *_bankBsave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -374,7 +374,7 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 {
 	struct kittyBank *bank;
 
-	printf("%s:%s:%d - bank %d\n",__FILE__,__FUNCTION__,__LINE__, bankNr);
+	printf("%s:%s:%d - bank (%d)\n",__FILE__,__FUNCTION__,__LINE__, bankNr);
 
 	freeBank( bankNr );
 	bank = allocBank( bankNr );
@@ -419,7 +419,7 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 }
 
 
-char *_cmdReserveAsWork( struct glueCommands *data, int nextToken )
+char *_bankReserveAsWork( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -433,7 +433,7 @@ char *_cmdReserveAsWork( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdReserveAsChipWork( struct glueCommands *data, int nextToken )
+char *_bankReserveAsChipWork( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -447,7 +447,7 @@ char *_cmdReserveAsChipWork( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdReserveAsData( struct glueCommands *data, int nextToken )
+char *_bankReserveAsData( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -461,7 +461,7 @@ char *_cmdReserveAsData( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_cmdReserveAsChipData( struct glueCommands *data, int nextToken )
+char *_bankReserveAsChipData( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -475,94 +475,106 @@ char *_cmdReserveAsChipData( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *cmdReserveAsWork(nativeCommand *cmd, char *tokenBuffer)
+char *bankReserveAsWork(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdReserveAsWork, tokenBuffer );
+	stackCmdNormal( _bankReserveAsWork, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdReserveAsChipWork(nativeCommand *cmd, char *tokenBuffer)
+char *bankReserveAsChipWork(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdReserveAsChipWork, tokenBuffer );
+	stackCmdNormal( _bankReserveAsChipWork, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdReserveAsData(nativeCommand *cmd, char *tokenBuffer)
+char *bankReserveAsData(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdReserveAsData, tokenBuffer );
+	stackCmdNormal( _bankReserveAsData, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
+char *bankReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdReserveAsChipData, tokenBuffer );
+	stackCmdNormal( _bankReserveAsChipData, tokenBuffer );
 	return tokenBuffer;
 }
-
 
 extern bool next_print_line_feed;
 
-
-char *cmdListBank(nativeCommand *cmd, char *tokenBuffer)
+char *bankListBank(nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned int n = 0;
 	char txt[1000];
 	struct retroScreen *screen;
 	struct kittyBank *bank = NULL;
-
 	screen = screens[current_screen];
+	bool has_banks = false;
 
 	if (screen)
 	{
 		clear_cursor( screen );
-	
-		if (next_print_line_feed) _my_print_text( screen, (char *) "\n", 0);
-
-		_my_print_text( screen, (char *) "Nr   Type     Start       Length\n\n", 0);
 
 		for (n=0;n<kittyBankList.size();n++)
 		{
-			bank = &kittyBankList[n];
-
-			if (bank -> start)
+			if (kittyBankList[n].id>=0)
 			{
-				sprintf(txt,"%2d - %.8s S:$%08X L:%d\n", 
-					bank -> id,
-					(char *) bank -> start-8,
-					bank -> start, 
-					bank -> length);
+				has_banks = true;
+				break;
+			}
+		}
 
-				_my_print_text( screen, txt, 0 );
+		if (has_banks)
+		{
+			if (next_print_line_feed) _my_print_text( screen, (char *) "\n", 0);
+
+			_my_print_text( screen, (char *) "Nr   Type     Start       Length\n\n", 0);
+
+			for (n=0;n<kittyBankList.size();n++)
+			{
+				bank = &kittyBankList[n];
+
+				if ((bank->id>-1)&&(bank -> start))
+				{
+					sprintf(txt,"%2d - %.8s S:$%08X L:%d\n", 
+						bank -> id,
+						(char *) bank -> start-8,
+						bank -> start, 
+						bank -> length);	
+
+					_my_print_text( screen, txt, 0 );
+				}
 			}
 		}
 		next_print_line_feed = true;
 	}
 
+	getchar();
+
 	return tokenBuffer;
 }
 
 
-char *cmdStart(nativeCommand *cmd, char *tokenBuffer)
+char *bankStart(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _cmdStart, tokenBuffer );
+	stackCmdParm( _bankStart, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdLength(nativeCommand *cmd, char *tokenBuffer)
+char *bankLength(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _cmdLength, tokenBuffer );
+	stackCmdParm( _bankLength, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdBload(nativeCommand *cmd, char *tokenBuffer)
+char *bankBload(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdBload, tokenBuffer );
+	stackCmdNormal( _bankBload, tokenBuffer );
 	return tokenBuffer;
 }
 
-char *cmdBsave(nativeCommand *cmd, char *tokenBuffer)
+char *bankBsave(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdBsave, tokenBuffer );
+	stackCmdNormal( _bankBsave, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -934,7 +946,7 @@ void __load_bank__(const char *name, int bankNr )
 			}
 }
 
-char *_cmdLoad( struct glueCommands *data, int nextToken )
+char *_bankLoad( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
@@ -956,9 +968,9 @@ char *_cmdLoad( struct glueCommands *data, int nextToken )
 }
 
 
-char *cmdLoad(nativeCommand *cmd, char *tokenBuffer)
+char *bankLoad(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdLoad, tokenBuffer );
+	stackCmdNormal( _bankLoad, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -1000,15 +1012,13 @@ void __write_banks__( FILE *fd )
 	}
 }
 
-char *_cmdSave( struct glueCommands *data, int nextToken )
+char *_bankSave( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	char *filename = NULL;
 	int banknr = 0;
-
-	dump_stack();
 
 	switch (args)
 	{
@@ -1031,12 +1041,10 @@ char *_cmdSave( struct glueCommands *data, int nextToken )
 			banknr = getStackNum( stack );
 
 			fd = fopen( filename , "w");
-
 			if (fd)
 			{
 				fclose(fd);
 			}
-
 			break;
 
 		default:
@@ -1048,9 +1056,9 @@ char *_cmdSave( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *cmdSave(nativeCommand *cmd, char *tokenBuffer)
+char *bankSave(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _cmdSave, tokenBuffer );
+	stackCmdNormal( _bankSave, tokenBuffer );
 	return tokenBuffer;
 }
 

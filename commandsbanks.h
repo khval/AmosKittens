@@ -43,20 +43,20 @@ void freeBank( int banknr );
 struct kittyBank *findBank( int bankNr );
 struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem );
 
-extern char *cmdReserveAsWork(nativeCommand *cmd, char *ptr);
-extern char *cmdReserveAsChipWork(nativeCommand *cmd, char *ptr);
-extern char *cmdReserveAsData(nativeCommand *cmd, char *ptr);
-extern char *cmdReserveAsChipData(nativeCommand *cmd, char *ptr);
-extern char *cmdListBank(nativeCommand *cmd, char *ptr);
+extern char *bankReserveAsWork(nativeCommand *cmd, char *ptr);
+extern char *bankReserveAsChipWork(nativeCommand *cmd, char *ptr);
+extern char *bankReserveAsData(nativeCommand *cmd, char *ptr);
+extern char *bankReserveAsChipData(nativeCommand *cmd, char *ptr);
+extern char *bankListBank(nativeCommand *cmd, char *ptr);
 
-extern char *cmdErase(nativeCommand *cmd, char *ptr);
-extern char *cmdEraseAll(nativeCommand *cmd, char *ptr);
-extern char *cmdStart(nativeCommand *cmd, char *ptr);
-extern char *cmdLength(nativeCommand *cmd, char *ptr);
-extern char *cmdBload(nativeCommand *cmd, char *ptr);
-extern char *cmdBsave(nativeCommand *cmd, char *ptr);
-extern char *cmdLoad(nativeCommand *cmd, char *ptr);
-extern char *cmdSave(nativeCommand *cmd, char *ptr);
+extern char *bankErase(nativeCommand *cmd, char *ptr);
+extern char *bankEraseAll(nativeCommand *cmd, char *ptr);
+extern char *bankStart(nativeCommand *cmd, char *ptr);
+extern char *bankLength(nativeCommand *cmd, char *ptr);
+extern char *bankBload(nativeCommand *cmd, char *ptr);
+extern char *bankBsave(nativeCommand *cmd, char *ptr);
+extern char *bankLoad(nativeCommand *cmd, char *ptr);
+extern char *bankSave(nativeCommand *cmd, char *ptr);
 extern char *bankBankSwap(nativeCommand *cmd, char *ptr);
 extern char *bankBGrab(nativeCommand *cmd, char *ptr);
 
