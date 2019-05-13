@@ -465,21 +465,28 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 
 	if (screen)
 	{
-		engine_lock();
-
 		if (sprite==NULL)
 		{
-			printf("no srpite found\n");
+			struct kittyBank *bank1;
 			sprite = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
+
+			bank1 = findBank(1);
+			if (!bank1) 
+			{
+				if (bank1 = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
+				{
+					bank1 -> object_ptr = (char *) sprite;
+				} 
+			}
 		}
 
 		if (sprite)
 		{
+			engine_lock();
 			retroGetSprite(screen,sprite,image-1,x0,y0,x1,y1);
+			engine_unlock();
 		}
 
-		printf("try engine unlock\n");
-		engine_unlock();
 	}
 	else setError(22,data->tokenBuffer);
 
