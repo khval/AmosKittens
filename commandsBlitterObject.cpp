@@ -27,6 +27,7 @@
 #include "commandsBlitterObject.h"
 #include "errors.h"
 #include "engine.h"
+#include "commandsBanks.h"
 
 extern int sig_main_vbl;
 
@@ -435,10 +436,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 	int x1 = 0;
 	int y1 = 0;
 
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("stack is %d\n",stack);
 
 	switch (args)
 	{

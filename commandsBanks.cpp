@@ -53,20 +53,6 @@ const char *amos_file_ids[] =
 		NULL
 	};
 
-enum
-{
-	type_ChipWork,	// 0
-	type_FastWork,	// 1
-	type_Icons,		// 2
-	type_Sprites,		// 3
-	type_Music,		// 4
-	type_Amal,		// 5
-	type_Samples,		// 6
-	type_Menu,		// 7
-	type_ChipData,	// 8
-	type_FastData,	// 9
-	type_Code
-};
 
 const char *bankTypes[] = {
 	"ChipWork",		// 0
@@ -115,18 +101,10 @@ int mseek( struct retroMemFd &fd, int off, unsigned mode )
 struct kittyBank *findBank( int banknr )
 {
 	unsigned int n;
-	struct kittyBank *bank;
 
 	for (n=0;n<kittyBankList.size();n++)
 	{
-		bank = &kittyBankList[n];
-		if (bank)
-		{
-			if (bank->id == banknr)
-			{
-				return bank;
-			}
-		}
+		if (kittyBankList[n].id == banknr)	return &kittyBankList[n];
 	}
 
 	return NULL;
@@ -135,18 +113,9 @@ struct kittyBank *findBank( int banknr )
 int findBankIndex( int banknr )
 {
 	unsigned int n;
-	struct kittyBank *bank;
-
 	for (n=0;n<kittyBankList.size();n++)
 	{
-		bank = &kittyBankList[n];
-		if (bank)
-		{
-			if (bank->id == banknr)
-			{
-				return n;
-			}
-		}
+		if (kittyBankList[n].id == banknr) return n;
 	}
 
 	return -1;
@@ -203,7 +172,7 @@ void freeBank( int banknr )
 }
 
 
-char *_cmdErase( struct glueCommands *data, int nextToken )
+char *_bankErase( struct glueCommands *data, int nextToken )
 {
 	int bankNr;
 	int args = stack - data->stack +1 ;
@@ -1123,7 +1092,6 @@ char *_bankResourceBank( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
-	int b1;
 
 	switch (args)
 	{
@@ -1147,15 +1115,15 @@ const char *AmosKittensSystem = "AmosKittens:System/";
 
 const char *DefaultFileNames[] =
 {
-	"",	// 0		(-1 to -9)
-	"",	// 1
-	"",	// 2
-	"",	// 3
-	"",	// 4
-	"",	// 5
-	"",	// 6
-	"",	// 7
-	"",	// 8
+	"DefaultFileNames0",	// 0		(-1 to -9)
+	"DefaultFileNames1",	// 1
+	"DefaultFileNames2",	// 2
+	"DefaultFileNames3",	// 3
+	"DefaultFileNames4",	// 4
+	"DefaultFileNames5",	// 5
+	"DefaultFileNames6",	// 6
+	"DefaultFileNames7",	// 7
+	"DefaultFileNames8",	// 8
 	NULL
 };
 
@@ -1182,7 +1150,6 @@ char *getResourceStr(int id)
 				{
 					unsigned char *pos = (unsigned char *) bank1->start;
 					unsigned short len;
-					char *str;
 
 					pos += header -> var_offset; 
 

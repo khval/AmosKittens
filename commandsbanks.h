@@ -14,15 +14,28 @@
 
 void init_banks( char *data , int size);
 
+enum
+{
+	type_ChipWork,	// 0
+	type_FastWork,	// 1
+	type_Icons,		// 2
+	type_Sprites,		// 3
+	type_Music,		// 4
+	type_Amal,		// 5
+	type_Samples,		// 6
+	type_Menu,		// 7
+	type_ChipData,	// 8
+	type_FastData,	// 9
+	type_Code
+};
+
 struct resourcebank_header
 {
 	uint16_t chunks;
 	uint32_t img_offset;
 	uint32_t var_offset;		 // 001A
 	uint32_t script_offset;	 // 002E
-//	uint32_t gadget_offset;	 // 0000
-//	uint32_t strings_size;	 // 0014
-//	uint32_t scripts_size;	 // 008A
+	uint32_t gadget_offset;	 // 0000
 } PACKED;
 
 // resource strings starts with size, text.

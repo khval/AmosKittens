@@ -21,8 +21,6 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
-
-
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsBackgroundGraphics.h"
@@ -45,8 +43,6 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *icons;
-
-
 
 struct retroIcon 
 {
@@ -451,8 +447,6 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
 	switch (args)
 	{
 		case 1:
@@ -476,8 +470,6 @@ char *_bgDelCBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("args: %d\n",args);
 
 	switch (args)
 	{
