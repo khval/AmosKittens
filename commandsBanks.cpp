@@ -163,10 +163,12 @@ void freeBank( int banknr )
 					break;
 			}
 
+			bank -> object_ptr = NULL;
 			bank->start = NULL;
 			bank->length = 0;
 			bank->type = 0;
 		}
+
 		kittyBankList.erase(kittyBankList.begin()+index);
 	}
 }
