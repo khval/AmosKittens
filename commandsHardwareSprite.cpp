@@ -99,6 +99,8 @@ char *hsSprite(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+/*
+
 char *_hsGetSprite( struct glueCommands *data, int nextToken )
 {
 	int n;
@@ -117,6 +119,8 @@ char *hsGetSprite(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _hsSprite, tokenBuffer );
 	return tokenBuffer;
 }
+
+*/
 
 char *_hsSpriteOff( struct glueCommands *data, int nextToken )
 {

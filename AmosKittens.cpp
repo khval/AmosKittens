@@ -1156,7 +1156,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1B8A,"Set Bob",0,boSetBob },
 	{0x1B9E,"Bob",0,boBob },
 	{0x1BAE,"Get Sprite Palette",0,hsGetSpritePalette },
-	{0x1BD0,"Get Sprite",0,hsGetSprite },
+	{0x1BD0,"Get Sprite",0,boGetBob },	//  GetBob and GetSprite is the same.
 	{0x1BFC,"Get Bob",0,boGetBob },
 	{0x1C14,"Get Bob",0,boGetBob },	// get bob 0,0,0,0 to 0,0
 	{0x1C42,"Del Bob",0,boDelBob },
