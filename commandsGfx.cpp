@@ -1695,15 +1695,22 @@ char *gfxSetTempras(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxClip( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	struct retroScreen *screen = screens[current_screen];
 
-	printf("args: %d\n",args);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
 			break;
 		case 4:
+			if (screen)
+			{
+				screen -> clip_x0 = getStackNum( stack -3);
+				screen -> clip_y0 = getStackNum( stack -2 );
+				screen -> clip_x1 = getStackNum( stack -1);
+				screen -> clip_y1 = getStackNum( stack );
+			}
 			break;
 		default:
 			setError(22,data->tokenBuffer);
