@@ -758,6 +758,39 @@ char *boCol(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+bool del_sprite_object( struct retroSprite *objList, int del)
+{
+	printf("Del: %d Items %d\n",del, objList->number_of_frames);
+
+	if (objList == NULL)
+	{
+		printf("no object, so can't delete frame\n");
+		return false;
+	}
+
+	if ((del>-1)&&(del<objList->number_of_frames))
+	{
+		int f;
+
+		if (objList -> frames[del].data) 
+		{
+			sys_free(objList -> frames[del].data);
+			objList -> frames[del].data = NULL;
+		}
+
+		for (f=del+1;f<objList->number_of_frames;f++)
+		{
+			printf("move %d to %d\n",f,f-1);
+			objList -> frames[f-1] = objList -> frames[f];
+		}
+		objList->number_of_frames--;
+
+		return true;
+	}
+
+	return false;
+}
+
 char *_boDelBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -768,19 +801,7 @@ char *_boDelBob( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		del = getStackNum(stack);
-
-		if ((sprite->number_of_frames)&&(del<sprite->number_of_frames))
-		{
-			int f;
-
-			if (sprite -> frames[del].data) sys_free(sprite -> frames[del].data);
-
-			for (f=sprite->number_of_frames-1;f>del;f--)
-			{
-				sprite -> frames[f-1] = sprite -> frames[f];
-			}
-			sprite->number_of_frames--;
-		}
+		del_sprite_object(sprite, del-1);
 	}
 	else setError(22, data->tokenBuffer);
 
