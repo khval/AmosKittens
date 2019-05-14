@@ -1161,6 +1161,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1BFC,"Get Bob",0,boGetBob },
 	{0x1C14,"Get Bob",0,boGetBob },	// get bob 0,0,0,0 to 0,0
 	{0x1C42,"Del Bob",0,boDelBob },
+	{0x1C5C,"Del Icon",0,bgDelIcon },
+	{0x1C6C,"Del Icon",0,bgDelIcon },
 	{0x1CA6,"Get Icon Palette", 0, bgGetIconPalette },
 	{0x1CC6,"Get Icon", 0, bgGetIcon },
 	{0x1CF0,"Put Bob",0,boPutBob },
