@@ -176,9 +176,11 @@ char *bgGetIconPalette(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern bool del_sprite_object( struct retroSprite *sprite, int del);
 char *_bgDelIcon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int del, delTo;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	printf("args: %d\n",args);
@@ -186,7 +188,22 @@ char *_bgDelIcon( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
+			del = getStackNum(stack);
+			del_sprite_object(icons, del-1);
 			break;
+
+		case 2:
+			del = getStackNum(stack-1);
+			delTo = getStackNum(stack);
+
+			while (delTo>=del)
+			{
+				del_sprite_object(icons, del-1);
+				delTo--;
+			}
+
+			break;
+
 		default:
 			setError(22,data->tokenBuffer);
 	}
