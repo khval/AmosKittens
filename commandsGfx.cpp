@@ -1708,6 +1708,11 @@ char *_gfxClip( struct glueCommands *data, int nextToken )
 				screen -> clip_y0 = getStackNum( stack -2 );
 				screen -> clip_x1 = getStackNum( stack -1);
 				screen -> clip_y1 = getStackNum( stack );
+
+				if (screen -> clip_x0<0) screen -> clip_x0 = 0;
+				if (screen -> clip_y0<0) screen -> clip_y0 = 0;
+				if (screen -> clip_x1>=screen -> realWidth) screen -> clip_x1 = screen -> realWidth -1;
+				if (screen -> clip_y1>=screen -> realHeight) screen -> clip_y1 = screen -> realHeight -1;
 			}
 			break;
 		default:
