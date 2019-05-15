@@ -70,7 +70,7 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 	bool success = false;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -170,7 +170,7 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
@@ -196,7 +196,7 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 	struct retroScreen *screen = screens[current_screen];
 	struct retroTextWindow *textWindow = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (screen)
 	{
@@ -263,7 +263,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 	int x0 = xgr ,y0 = ygr,x1,y1;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -296,7 +296,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 	int array[100*2];
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( (args>=4) && ((args&1) == 0) && (screen) )
 	{
@@ -322,9 +322,7 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 	bool success = false;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (screen)
 	{
@@ -372,7 +370,7 @@ char *_gfxCircle( struct glueCommands *data, int nextToken )
 	int x0=xgr,y0=ygr,r;
 	struct retroScreen *screen = screens[current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
@@ -394,7 +392,7 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 	int x0=xgr,y0=ygr,r0,r1;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
@@ -415,9 +413,10 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
+	int t;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
@@ -474,7 +473,7 @@ char *_gfxInk( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (screen)
 	{
@@ -545,7 +544,7 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -586,7 +585,7 @@ char *_gfxPaint( struct glueCommands *data, int nextToken )
 	int x0 = xgr, y0 = ygr,c;
 	struct retroScreen *screen = screens[current_screen];
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -616,7 +615,7 @@ char *_gfxPoint( struct glueCommands *data, int nextToken )
 	int ret = -1;
 	int x0 = xgr, y0 = ygr;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -642,7 +641,7 @@ char *_gfxGrLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -663,7 +662,7 @@ char *_gfxGetColour( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int c;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (args)
 	{
 		case 1:
@@ -694,7 +693,7 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int color,n,num;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 
@@ -726,7 +725,7 @@ char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int n;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 
@@ -763,7 +762,7 @@ char *_gfxDefaultPalette( struct glueCommands *data, int nextToken )
 	int color,n,num;
 	struct retroRGB rgb;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (n=data->stack;n<=stack;n++)
 	{
@@ -791,7 +790,7 @@ char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	bool success = false;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (args)
 	{
 		case 7:
@@ -822,7 +821,7 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (args)
 	{
 		case 1:
@@ -1031,7 +1030,7 @@ struct _never_used_shift_
 char *_gfxShiftUp( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1149,7 +1148,7 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 #if defined(__amigaos4__)
 
@@ -1193,7 +1192,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
@@ -1250,7 +1249,7 @@ char *_gfxAutoback( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
@@ -1270,7 +1269,7 @@ char *_gfxRain( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -1288,7 +1287,7 @@ char *_gfxRain( struct glueCommands *data, int nextToken )
 char *_gfxZoom( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1336,7 +1335,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	int pixels;
 	bool args_ok = true;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1429,7 +1428,7 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (kittyStack[stack].type == type_none)
 	{
@@ -1499,8 +1498,7 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 	int source_screen = 0;
 	bool valid = true;
 
-//	proc_names_
-printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1522,7 +1520,6 @@ printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (valid)
 	{
-		printf("Fade %d TO %d,%08x\n",fade_speed,source_screen,mask);
 
 		if ((screens[current_screen])&&(screens[source_screen]))
 		{
@@ -1616,7 +1613,8 @@ char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxColourBack( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1643,7 +1641,8 @@ char *gfxColourBack(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1671,7 +1670,8 @@ char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxSetTempras( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1697,12 +1697,10 @@ char *_gfxClip( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1:
-			break;
 		case 4:
 			if (screen)
 			{
@@ -1834,7 +1832,7 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1870,7 +1868,7 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1908,7 +1906,7 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==7)
 	{
@@ -1951,7 +1949,7 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==7)
 	{
@@ -1992,7 +1990,7 @@ char *gfsVslider(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==8)
 	{
@@ -2013,21 +2011,21 @@ char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 
 char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _gfxSetSlider, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setError(1000,tokenBuffer);
 	return tokenBuffer;
 }
 
 char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum(retroInterlaced);
 	return tokenBuffer;
 }
