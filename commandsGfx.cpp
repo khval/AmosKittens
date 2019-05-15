@@ -46,6 +46,7 @@ extern bool next_print_line_feed;
 int xgr = 0,  ygr = 0;
 
 int GrWritingMode = 0;
+int paintMode = 0;
 int sliderBPen,	sliderBPaper, sliderBOutline, sliderBStyle, sliderSPen, sliderSPaper, sliderSOutline, sliderSStyle;
 
 extern int current_screen;
@@ -181,7 +182,13 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 		xgr = x1 = getStackNum( stack-1 );
 		ygr = y1 = getStackNum( stack );
 
-		if (screen) retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
+		if (screen)
+		{
+			retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
+
+			if (paintMode) retroBox( screen,x0,y0,x1,y1,screen -> ink2);
+
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -294,6 +301,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int array[100*2];
+	int lx,ly;
 	struct retroScreen *screen = screens[current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -302,6 +310,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 	{
 		int n;
 		int _stack = data -> stack;
+		int coordinates = args >> 1;
 
 		for (n=0;n<args;n++)
 		{
@@ -309,6 +318,22 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 		}
 
 		retroPolyGonArray( screen, screen -> ink0, args, array );
+
+		if (paintMode)
+		{
+			lx = array[ 0 ];
+			ly = array[ 1 ];
+			for (n=1;n<coordinates;n++)
+			{
+				xgr = array[ n*2 ];
+				ygr = array[ n*2+1];
+				retroLine( screen, lx,ly,xgr,ygr,screen -> ink2 );
+				lx = xgr;
+				ly=ygr;
+			}
+
+			retroLine( screen, lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
+		}
 	}
 	else	setError(22,data->tokenBuffer);
 
@@ -1647,9 +1672,7 @@ char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-				if (screens[current_screen])
-				{
-				}
+			paintMode = getStackNum( stack );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
