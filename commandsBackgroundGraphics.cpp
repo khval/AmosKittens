@@ -580,17 +580,27 @@ char *_bgIconBase( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		pick = getStackNum(stack)-1;
+		pick = getStackNum(stack);
 
-		if ((pick>0)&&(icons->number_of_frames)&&(pick<icons->number_of_frames))
+		if (icons)
 		{
-			ret = &icons -> frames[pick-1] ;
+			if ((pick>0)&&(pick<=icons->number_of_frames))
+			{
+				ret = &icons -> frames[pick-1] ;
+
+				// success quit here.
+
+				popStack( stack - data->stack );
+				setStackNum( (int) ret );
+				return NULL;
+			}
 		}
 	}
-	else setError(22, data->tokenBuffer);
 
+	// failed quit here.
+	
 	popStack( stack - data->stack );
-	setStackNum( (int) ret );
+	setError(22, data->tokenBuffer);
 	return NULL;
 }
 
