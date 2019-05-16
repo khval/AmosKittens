@@ -28,4 +28,7 @@ char *bgGetCBlock(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgPutCBlock(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgDelCBlock(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgIconBase(struct nativeCommand *cmd, char *tokenBuffer);
+char *bgMakeIconMask(struct nativeCommand *cmd, char *tokenBuffer);
+
+
 

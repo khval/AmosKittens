@@ -217,29 +217,60 @@ char *bgDelIcon(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_bgMaskIconMask( struct glueCommands *data, int nextToken )
+char *_bgMakeIconMask( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int pick = 0;
+	bool success = false;
 
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	switch (args)
+	if (args==1)
 	{
-		case 1:
-			break;
-		default:
-			setError(22,data->tokenBuffer);
+		switch (kittyStack[stack].type)
+		{
+			case type_none:
+
+				if (icons)
+				{
+					for (pick = 0;pick<icons->number_of_frames;pick++)
+					{
+						icons -> frames[pick].retroFlag = 1 ;
+					}
+					success = true;
+				}
+
+				break;
+
+			case type_int:
+
+				pick = getStackNum(stack);
+
+				if (icons)
+				{
+					if ((pick>0)&&(pick<=icons->number_of_frames))
+					{
+						icons -> frames[pick-1].retroFlag = 1 ;
+						success = true;
+					}
+				}
+				break;
+
+		}
 	}
 
+	if (success == false) setError(22, data->tokenBuffer);
+
 	popStack( stack - data->stack );
+
 	return NULL;
 }
 
-char *bgMaskIconMask(struct nativeCommand *cmd, char *tokenBuffer)
+char *bgMakeIconMask(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	// some thing to do with drawing, not sure.
-	stackCmdNormal( _bgMaskIconMask, tokenBuffer );
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	setStackNone();
+	stackCmdNormal( _bgMakeIconMask, tokenBuffer );
 	return tokenBuffer;
 }
 
