@@ -70,10 +70,8 @@ char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 					int x = getStackNum( stack-2 );
 					int y = getStackNum( stack-1 );
 					int image = getStackNum( stack );
-					int flags = image & 0xC000;
-					image &= 0x3FFF;
 
-					retroPasteSprite(screens[current_screen],icons,x,y,image-1,flags);
+					retroPasteIcon(screens[current_screen],icons,x,y,image-1);
 				}
 				break;
 			break;
