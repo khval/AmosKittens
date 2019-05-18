@@ -416,8 +416,8 @@ void DrawSprite(
 
 	struct retroFrameHeader *frame = sprite -> frames + image;
 
-	width = frame -> Width ;
-	height = frame -> Height ;
+	width = frame -> width ;
+	height = frame -> height ;
 
 	x = (item -> x / 2) -  frame -> XHotSpot;
 	y = (item -> y / 2) - frame -> YHotSpot;	

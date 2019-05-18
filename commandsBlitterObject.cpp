@@ -238,8 +238,8 @@ void drawBobs()
 
 				clear -> x = bob -> x - frame -> XHotSpot;
 				clear -> y = bob -> y - frame -> YHotSpot;
-				clear -> w = frame -> Width;
-				clear -> h = frame -> Height;
+				clear -> w = frame -> width;
+				clear -> h = frame -> height;
 				clear -> image = bob -> image;
 				clear -> drawn = 1;
 
@@ -570,8 +570,8 @@ char *_boHotSpot( struct glueCommands *data, int nextToken )
 						{
 							x = (p >> 4) & 0xF;
 							y = p & 0xF;
-							frame -> XHotSpot = (x * frame -> Width) >> 1;
-							frame -> YHotSpot = (y * frame -> Height) >> 1;
+							frame -> XHotSpot = (x * frame -> width) >> 1;
+							frame -> YHotSpot = (y * frame -> height) >> 1;
 							success = true;
 						}
 					}
