@@ -9,7 +9,7 @@ extern bool engine_ready();
 extern void set_default_colors( struct retroScreen *screen );
 extern void clear_cursor( struct retroScreen *screen );
 extern void draw_cursor( struct retroScreen *screen );
-extern void atomic_add_to_keyboard_queue( ULONG Code, ULONG Qualifier, char Char );
+extern void atomic_add_key( ULONG eventCode, ULONG Code, ULONG Qualifier, char Char );
 
 extern bool engine_wait_key;
 extern int engine_mouse_key;
@@ -24,8 +24,15 @@ extern struct retroScreen *screens[8] ;
 extern Process *EngineTask;
 #endif
 
+enum
+{
+	kitty_key_up,
+	kitty_key_down
+};
+
 struct keyboard_buffer
 {
+	ULONG event;
 	ULONG Code;
 	ULONG Qualifier;
 	char	Char;

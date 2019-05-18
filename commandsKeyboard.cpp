@@ -58,6 +58,9 @@ std::string input_str;
 
 using namespace std;
 
+int keyboardLag = 20*1000/50;	// ms
+int keyboardSpeed = 20*1000/50;	// ms
+
 
 #ifdef __linux__
 
@@ -70,54 +73,90 @@ void atomic_get_char( char *buf)
 
 #ifdef __amigaos4__
 
+struct keyboard_buffer current_key;
+
+void handel_key( char *buf )
+{
+	ULONG actual;
+	ULONG code;
+	char buffer[20];
+	struct InputEvent event;
+	bzero(&event,sizeof(struct InputEvent));
+
+	event.ie_NextEvent	=	0;
+	event.ie_Class		=	IECLASS_RAWKEY;
+	event.ie_SubClass	=	0;
+
+	if (current_key.Code)
+	{
+		_scancode = code;
+
+		event.ie_Code = current_key.Code;
+		event.ie_Qualifier = current_key.Qualifier;
+		actual = MapRawKey(&event, buffer, 20, 0);
+
+		if (actual)
+		{
+			buf[0] = buffer[0];
+			buf[1]=0;
+		}
+	}
+	else
+	{
+		buf[0] = keyboardBuffer[0].Char;
+		buf[1]=0;
+	}
+}
+
+
+struct timeval key_press_time;
+struct timeval repeat_time;
+
+#define delta_time_ms(t1,t2) (((t2.tv_sec - t1.tv_sec) *1000)+((t2.tv_usec - t1.tv_usec) /1000))
+
 void atomic_get_char( char *buf)
 {
+	struct timeval ctime;
 	buf[0]=0;
+	buf[1]=1;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (engine_started)
 	{
-		struct InputEvent event;
-		bzero(&event,sizeof(struct InputEvent));
-
-		event.ie_NextEvent = 0;
-       		event.ie_Class     = IECLASS_RAWKEY;
-		event.ie_SubClass  = 0;
-
 		engine_lock();
-		if (! keyboardBuffer.empty() )
+		if ( ! keyboardBuffer.empty() )
 		{
-
-			ULONG actual;
-			ULONG code;
-			char buffer[20];
-
-			if (code = keyboardBuffer[0].Code)
+			current_key = keyboardBuffer[0];
+			if (current_key.event == kitty_key_down )
 			{
-				if ((code & IECODE_UP_PREFIX) == 0)	// button pressed.
-				{
-					_scancode = code;
-
-					event.ie_Code = keyboardBuffer[0].Code;
-					event.ie_Qualifier = keyboardBuffer[0].Qualifier;
-					actual = MapRawKey(&event, buffer, 20, 0);
-
-
-					if (actual)
-					{
-						buf[0] = buffer[0];
-						buf[1]=0;
-//						if (buf[0]==13) buf[0]=10;
-					}
-				}
-			}
-			else
-			{
-				buf[0] = keyboardBuffer[0].Char;
-//				if (buf[0]==13) buf[0]=10;
+				handel_key( buf );
+				gettimeofday(&key_press_time, NULL);
+				gettimeofday(&repeat_time, NULL);
 			}
 
 			keyboardBuffer.erase(keyboardBuffer.begin());
 		}
+		else
+		{
+			if (current_key.event == kitty_key_down )
+			{
+				gettimeofday(&ctime, NULL);
+
+				printf("lag time: %d > %d\n", delta_time_ms(key_press_time,ctime), (keyboardLag+keyboardSpeed));
+				printf("keyboard speed: %d > %d\n", delta_time_ms(repeat_time,ctime),keyboardSpeed);
+				
+				if (delta_time_ms(key_press_time,ctime) > (keyboardLag+keyboardSpeed))
+				{
+					if (delta_time_ms(repeat_time,ctime) > keyboardSpeed  )
+					{
+						handel_key( buf );
+						gettimeofday(&repeat_time, NULL);
+					}
+				}
+			}
+		}
+
 		engine_unlock();
 	}
 }
@@ -642,7 +681,8 @@ char *_cmdPutKey( struct glueCommands *data,int nextToken )
 			char *c;
 			for (c = str; *c; c++)
 			{
-				atomic_add_to_keyboard_queue( 0, 0, *c );
+				atomic_add_key( kitty_key_down, 0,0, *c );
+				atomic_add_key( kitty_key_up, 0,0, *c );
 			}
 		}
 	}
@@ -666,6 +706,13 @@ char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer)
 char *_cmdKeySpeed( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data -> stack +1;
+
+	if (args==2)
+	{
+		keyboardLag = getStackNum(stack-1) * 1000 / 50;
+		keyboardSpeed = getStackNum(stack) * 1000 / 50;
+	}
+	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data -> stack  );
 	return NULL;
