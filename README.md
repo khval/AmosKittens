@@ -41,13 +41,13 @@ Implemented:
 * Chapter 8. Maths commands
 * Chapter 10. Screens
 * Chapter 15. Background graphics.
+* Chapter 18. The Keyboard
 * Chapter 20. Disk access.
 * Chapter 22. Machine level instructions
 
 Partially implemented:
 
 * Chapter 8. Text & Windows
-* Chapter 18. The Keyboard
 * Chapter 19. Other commands
 * Chapter 11. Hardware sprites
 * Chapter 12. Blitter objects
