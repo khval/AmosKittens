@@ -42,11 +42,15 @@ extern struct retroRGB DefaultPalette[256];
 extern struct RastPort font_render_rp;
 
 extern bool next_print_line_feed;
+extern retroSprite *patterns;
+
 
 int xgr = 0,  ygr = 0;
 
 int GrWritingMode = 0;
 int paintMode = 0;
+int currentPattern = 0;
+
 int sliderBPen,	sliderBPaper, sliderBOutline, sliderBStyle, sliderSPen, sliderSPaper, sliderSOutline, sliderSStyle;
 
 extern int current_screen;
@@ -184,7 +188,11 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 
 		if (screen)
 		{
-			retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
+			if ((currentPattern)&&(patterns))
+			{
+				retroBarPattern( screen, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern-1 : -currentPattern, screen -> ink0, screen -> ink1 );
+			}
+			else retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
 
 			if (paintMode) retroBox( screen,x0,y0,x1,y1,screen -> ink2);
 
@@ -449,6 +457,9 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 		stack_get_if_int( stack-2, &y0 );
 		xgr = x1 = getStackNum( stack-1 );
 		ygr = y1 = getStackNum( stack );
+
+		if (x1<x0) { t = x0; x0 = x1; x1 = t; }
+		if (y1<y0) { t = y0; y0 = y1; y1 = t; }
 
 		if (screen) retroBox( screen, x0,y0,x1,y1,screen -> ink0 );
 	}
@@ -1763,6 +1774,7 @@ char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
+			currentPattern = getStackNum(stack);
 			break;
 		default:
 			setError(22,data->tokenBuffer);

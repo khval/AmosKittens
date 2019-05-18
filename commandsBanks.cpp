@@ -40,6 +40,8 @@ extern struct retroRGB DefaultPalette[256];
 extern int current_screen;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
+extern struct retroSprite *patterns;
+
 extern std::vector<struct kittyBank> kittyBankList;
 
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
@@ -68,6 +70,26 @@ const char *bankTypes[] = {
 	"Code"
 };
 
+void *getBankObject(int id)
+{
+	int n;
+	for (n=0;n<kittyBankList.size();n++)
+	{
+		if (id == kittyBankList[n].id) return kittyBankList[n].object_ptr;
+	}
+
+	return NULL;
+}
+
+void update_objects()
+{
+dump_banks();
+getchar();
+
+	patterns = (struct retroSprite *) getBankObject( - 3 );
+	sprite = (struct retroSprite *) getBankObject( 1 );
+	icons = (struct retroSprite *) getBankObject( 2 );
+}
 
 int hook_mread( char *dest, int size, int e, struct retroMemFd *fd )
 {
@@ -621,6 +643,8 @@ void __load_work_data__(FILE *fd,int bank)
 			}
 		}
 	}
+
+	update_objects();
 }
 
 void __load_work_data_mem__(struct retroMemFd &fd)
@@ -703,108 +727,91 @@ void init_banks( char *data , int size)
 		fd.off = 0;
 		fd.size = size;
 
-				if (mread( &id, 4, 1, fd )==1)
-				{	
-					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
-					if (strncmp(id,"AmBs",4)==0)
-					{
+		if (mread( &id, 4, 1, fd )==1)
+		{	
+			printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+			if (strncmp(id,"AmBs",4)==0)
+			{
+				printf("file offset = %d\n", fd.off);
 
-						printf("file offset = %d\n", fd.off);
-
-						mread( &banks, 2, 1, fd);
+				mread( &banks, 2, 1, fd);
 #ifdef __LITTLE_ENDIAN__
-						banks = __bswap_16(banks);
+				banks = __bswap_16(banks);
 #endif
-					}
-				}
+			}
+		}
 
-				if (banks == 0) 
+		if (banks == 0) 
+		{
+			mseek( fd, 0, SEEK_SET );	// set set, to start no header found.
+			banks = 1;
+		}
+
+		for (n=0;n<banks;n++)
+		{
+			type = -1;
+			printf("bank %d of %d\n",n+1,banks);
+
+			if (mread( &id, 4, 1, fd )==1)
+			{	
+				int cnt = 0;
+				const char **idp;
+
+				for (idp = amos_file_ids; *idp ; idp++)
 				{
-					mseek( fd, 0, SEEK_SET );	// set set, to start no header found.
-					banks = 1;
+					if (strncmp(id,*idp,4)==0) { type = cnt; break; }
+					cnt++;
 				}
 
-				for (n=0;n<banks;n++)
+				if (type == -1) 
 				{
-					type = -1;
-					printf("bank %d of %d\n",n+1,banks);
-
-					if (mread( &id, 4, 1, fd )==1)
-					{	
-						int cnt = 0;
-						const char **idp;
-
-						for (idp = amos_file_ids; *idp ; idp++)
-						{
-							if (strncmp(id,*idp,4)==0) { type = cnt; break; }
-							cnt++;
-						}
-
-						if (type == -1) 
-						{
-							printf("oh no!!... unexpected id: '%c%c%c%c'\n",id[0],id[1],id[2],id[3]);
-							printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
-							getchar();
-						}
-						else printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
-					}
-					else 
-					{
-						// clear id.
-						memset(id,' ',4);
-					}
-
-
-					switch (type)
-					{
-						case bank_type_sprite:
-							{
-								engine_lock();
-								freeBank( 1 );
-								sprite = retroLoadSprite( (void *) &fd, (cust_fread_t) hook_mread );
-								engine_unlock();
-
-								// 4 Bottles of beer. 
-								if (bank = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
-								{
-									bank -> object_ptr = (char *) sprite;
-								} 
-								else
-								{
-									if (sprite) retroFreeSprite(sprite);
-									sprite = NULL;
-								}
-							}
-							break;
-	
-						case bank_type_icons:
-							{
-								freeBank( 2 );
-								icons = retroLoadSprite( &fd, (cust_fread_t) hook_mread );
-
-								// 99 Bottles of beer. 
-								if (bank = __ReserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL ))
-								{
-									bank -> object_ptr = (char *) icons;
-								}
-								else
-								{
-									if (icons) retroFreeSprite(icons);
-									icons = NULL;
-								}
-							}
-							break;
-
-						case bank_type_work_or_data:
-							__load_work_data_mem__(fd);
-							break;
-
-						default:
-							n = banks; // exit for loop.
-
-					}
+					printf("oh no!!... unexpected id: '%c%c%c%c'\n",id[0],id[1],id[2],id[3]);
+					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+					getchar();
 				}
+				else printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+			}
+			else 
+			{
+				// clear id.
+				memset(id,' ',4);
+			}
+
+			switch (type)
+			{
+				case bank_type_sprite:
+					{
+						engine_lock();
+						freeBank( 1 );
+						if (bank = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
+						{
+							bank -> object_ptr = (char *) retroLoadSprite( (void *) &fd, (cust_fread_t) hook_mread );
+						} 
+						engine_unlock();
+					}
+					break;
+
+				case bank_type_icons:
+					{
+						freeBank( 2 );
+						if (bank = __ReserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL ))
+						{
+							bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread );;
+						}
+					}
+					break;
+
+				case bank_type_work_or_data:
+					__load_work_data_mem__(fd);
+					break;
+
+				default:
+					n = banks; // exit for loop.
+			}
+		}
 	}
+
+	update_objects();
 }
 
 
@@ -818,104 +825,94 @@ void __load_bank__(const char *name, int bankNr )
 	int n;
 	struct kittyBank *bank = NULL;
 
-			fd = fopen( name , "r");
-			if (fd)
+	fd = fopen( name , "r");
+	if (fd)
+	{
+		if (fread( &id, 4, 1, fd )==1)
+		{	
+			if (strncmp(id,"AmBs",4)==0)
 			{
-				if (fread( &id, 4, 1, fd )==1)
-				{	
-					if (strncmp(id,"AmBs",4)==0)
+				fread( &banks, 2, 1, fd);
+				clean_up_banks();		
+			}
+		}
+
+		if (banks == 0) 
+		{
+			fseek( fd, 0, SEEK_SET );	// set set, to start no header found.
+			banks = 1;
+		}
+
+		for (n=0;n<banks;n++)
+		{
+			type = -1;
+
+			if (fread( &id, 4, 1, fd )==1)
+			{	
+				int cnt = 0;
+				const char **idp;
+
+				for (idp = amos_file_ids; *idp ; idp++)
+				{
+					if (strcmp(id,*idp)==0) { type = cnt; break; }
+					cnt++;
+				}
+			}
+			else
+			{
+				memset( id, ' ',4 );
+			}
+			
+			switch (type)
+			{
+				case bank_type_sprite:
 					{
-						fread( &banks, 2, 1, fd);
-						clean_up_banks();		
-					}
-				}
-
-				if (banks == 0) 
-				{
-					fseek( fd, 0, SEEK_SET );	// set set, to start no header found.
-					banks = 1;
-				}
-
-				for (n=0;n<banks;n++)
-				{
-					type = -1;
-
-					if (fread( &id, 4, 1, fd )==1)
-					{	
-						int cnt = 0;
-						const char **idp;
-
-						for (idp = amos_file_ids; *idp ; idp++)
+						int _bank = (bankNr != -1) ? bankNr : 1;
+						engine_lock();
+						freeBank( _bank );
+						if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
 						{
-							if (strcmp(id,*idp)==0) { type = cnt; break; }
-							cnt++;
+							bank -> object_ptr = (char *) retroLoadSprite(fd, (cust_fread_t) cust_fread );
+						} 
+						engine_unlock();
+					}
+					break;
+	
+				case bank_type_icons:
+					{
+						int _bank = bankNr != -1 ? bankNr : 2;
+						freeBank( _bank );
+						icons = retroLoadSprite(fd, (cust_fread_t) cust_fread );
+
+						// 99 Bottles of beer. 
+						if (bank = __ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, NULL ))
+						{
+							bank -> object_ptr = (char *) icons;
+						}
+						else
+						{
+							if (icons) retroFreeSprite(icons);
+							icons = NULL;
 						}
 					}
-					else
-					{
-						memset( id, ' ',4 );
-					}
-					
-					switch (type)
-					{
-						case bank_type_sprite:
-							{
-								int _bank = (bankNr != -1) ? bankNr : 1;
+					break;
 
-								engine_lock();
-								freeBank( _bank );
-								sprite = retroLoadSprite(fd, (cust_fread_t) cust_fread );
-								engine_unlock();
+				case bank_type_work_or_data:
+					__load_work_data__(fd,bankNr);
+					break;
 
-								if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
-								{
-									bank -> object_ptr = (char *) sprite;
-								} 
-								else
-								{
-									if (sprite) retroFreeSprite(sprite);
-									sprite = NULL;
-								}
-							}
-							break;
-	
-						case bank_type_icons:
-							{
-								int _bank = bankNr != -1 ? bankNr : 2;
-
-								freeBank( _bank );
-								icons = retroLoadSprite(fd, (cust_fread_t) cust_fread );
-
-								// 99 Bottles of beer. 
-								if (bank = __ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, NULL ))
-								{
-									bank -> object_ptr = (char *) icons;
-								}
-								else
-								{
-									if (icons) retroFreeSprite(icons);
-									icons = NULL;
-								}
-							}
-							break;
-
-						case bank_type_work_or_data:
-
-							printf("we are here\n");
-
-							__load_work_data__(fd,bankNr);
-							break;
-
-						default:
-							printf("oh no!!... unexpected id: %s\n", id);
-							Delay(120);
-
-					}
-				}
-
-				fclose(fd);
+				default:
+					printf("oh no!!... unexpected id: %s\n", id);
+					Delay(120);
 			}
+		}
+
+		fclose(fd);
+	}
+
+	update_objects();
 }
+
 
 char *_bankLoad( struct glueCommands *data, int nextToken )
 {

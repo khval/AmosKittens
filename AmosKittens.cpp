@@ -129,6 +129,7 @@ int tokenMode = mode_standard;
 
 struct retroSprite *icons = NULL;
 struct retroSprite *sprite = NULL;
+struct retroSprite *patterns = NULL;
 
 struct retroSpriteObject bobs[64];
 
@@ -1629,7 +1630,8 @@ int main(int args, char **arg)
 	{
 		bool init_error = false;
 
-		__load_bank__( "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk", -2 );
+		__load_bank__( "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
+		__load_bank__("Amos-the-creator:AMOS_System/mouse.abk",-3);
 
 		// set up a fake extention lookup
 

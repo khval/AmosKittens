@@ -79,6 +79,7 @@ extern char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer);
 extern void __load_bank__(const char *name, int bankNr );
 
 extern char *getResourceStr(int id);
+extern void *getBankObject(int id);
 
 
 
