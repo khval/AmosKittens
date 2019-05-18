@@ -324,8 +324,6 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	// we should empty stack, until first/normal command is not a parm command.
 
-	dump_prog_stack();
-
 	while (cmdStack)
 	{
 		flags = cmdTmp[cmdStack-1].flag;

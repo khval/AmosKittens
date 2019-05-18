@@ -52,9 +52,6 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("do_input[%d] = %x\n",parenthesis_count, do_input[parenthesis_count]);
-	printf("args: %d\n",args);
-
 	if (args==2)
 	{
 		if (screen=screens[current_screen])

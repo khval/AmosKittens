@@ -1769,8 +1769,6 @@ char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
 	switch (args)
 	{
 		case 1:
@@ -1796,8 +1794,6 @@ char *_gfxSetLine( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
 	switch (args)
 	{
 		case 1:
@@ -1821,8 +1817,6 @@ char *_gfxRainbowDel( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	printf("args: %d\n",args);
 
 	switch (args)
 	{

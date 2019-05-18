@@ -66,7 +66,6 @@ uint32_t mem_crc( char *mem, uint32_t size );
 #endif
 
 #ifdef show_debug_amal_yes
-	#warning amal debug enabled?
 	#ifdef __amigaos4__
 		#ifdef test_app
 			#define AmalPrintf printf
@@ -79,7 +78,6 @@ uint32_t mem_crc( char *mem, uint32_t size );
 		#define AmalPrintf printf
 	#endif
 #else
-	#warning amal debug disabled.
 	#define AmalPrintf(fmt,...)
 #endif
 

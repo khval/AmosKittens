@@ -136,7 +136,7 @@ void kitty_getline(string &input)
 	int cursx = 0;
 	int scrollx = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	input = "";
 	
@@ -673,7 +673,7 @@ char *_cmdKeySpeed( struct glueCommands *data,int nextToken )
 
 char *cmdKeySpeed(struct nativeCommand *cmd, char *tokenBuffer)
 {
-		printf("%s:%d\n",__FUNCTION__,__LINE__);printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdNormal( _cmdKeySpeed, tokenBuffer );
 	return tokenBuffer;
 }
@@ -684,11 +684,8 @@ int keyStr_index =0;
 
 char *_set_keyStr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("keyStr_index %d\n",keyStr_index);
-	dump_stack();
-	getchar();
 
 	if ((keyStr_index>=1)&&(keyStr_index<=20))
 	{
@@ -709,7 +706,7 @@ char *_cmdKeyStr( struct glueCommands *data,int nextToken )
 {
 	int args = stack - data -> stack +1;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	keyStr_index = getStackNum( stack );
 	_do_set = _set_keyStr;
@@ -720,7 +717,7 @@ char *_cmdKeyStr( struct glueCommands *data,int nextToken )
 
 char *cmdKeyStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	stackCmdIndex( _cmdKeyStr, tokenBuffer );
 	return tokenBuffer;
 }

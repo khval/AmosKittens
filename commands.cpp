@@ -507,12 +507,6 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
 	}
 
-/*
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-printf("next token is %04x\n",nextToken);
-dump_prog_stack();
-*/
-
 	lastToken = last_tokens[parenthesis_count];
 
 	if ( correct_order( lastToken ,  nextToken ) == false )

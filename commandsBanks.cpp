@@ -83,9 +83,6 @@ void *getBankObject(int id)
 
 void update_objects()
 {
-dump_banks();
-getchar();
-
 	patterns = (struct retroSprite *) getBankObject( - 3 );
 	sprite = (struct retroSprite *) getBankObject( 1 );
 	icons = (struct retroSprite *) getBankObject( 2 );
