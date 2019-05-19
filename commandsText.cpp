@@ -46,6 +46,8 @@ int _tab_size = 3;
 bool next_print_line_feed = false;
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 
+void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
+
 char *_textLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1359,6 +1361,39 @@ char *textYCurs(nativeCommand *cmd, char *tokenBuffer)
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window );
 
+void renderWindow( struct retroScreen *screen, struct retroTextWindow *textWindow )
+{
+	int x0,y0,x1,y1;
+	x0 = textWindow -> x*8;
+	y0 = textWindow -> y*8;
+	x1 = x0 + (textWindow -> charsPerRow*8)-1;
+	y1 = y0 + (textWindow -> rows*8)-1;
+
+	retroBAR( screen, x0,y0,x1,y1,screen -> paper);
+}
+
+void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *textWindow )
+{
+	int x0,y0,x1,y1;
+	x0 = textWindow -> x*8;
+	y0 = textWindow -> y*8;
+	x1 = x0 + (textWindow -> charsPerRow*8)-1;
+	y1 = y0 + (textWindow -> rows*8)-1;
+
+	retroBAR( screen, x0,y0,x1,y0+8,screen -> paper);
+	retroBAR( screen, x0,y0,x0+8,y1,screen -> paper);
+	retroBAR( screen, x1-8,y0,x1,y1,screen -> paper);
+	retroBAR( screen, x0,y1-8,x1,y1,screen -> paper);
+
+	x0+=2;
+	y0+=2;
+	x1-=2;
+	y1-=2;
+
+	retroBox( screen, x0,y0,x1,y1, 2 );
+	retroBox( screen, x0+1,y0+1,x1-1,y1-1, 2 );
+}
+
 char *_textWindOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1406,7 +1441,10 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 					s = getStackNum( stack );
 
 					textWindow = newTextWindow( screen, id );
-					break;		
+					break;
+
+			default:
+					setError(22,data-> tokenBuffer);
 		}
 	}
 
@@ -1422,21 +1460,11 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 
 		if (b)
 		{
-			int x0,y0,x1,y1;
-			x0 = textWindow -> x*8;
-			y0 = textWindow -> y*8;
-			x1 = x0 + (textWindow -> charsPerRow*8)-1;
-			y1 = y0 + (textWindow -> rows*8)-1;
-
-			retroBAR( screen, x0,y0,x1,y1,screen -> paper);
-
-			x0+=2;
-			y0+=2;
-			x1-=2;
-			y1-=2;
-
-			retroBox( screen, x0,y0,x1,y1, 2 );
-			retroBox( screen, x0+1,y0+1,x1-1,y1-1, 2 );
+			renderWindowBorder( screen, textWindow );
+		}
+		else
+		{
+			renderWindow( screen, textWindow );
 		}
 	}
 	else
