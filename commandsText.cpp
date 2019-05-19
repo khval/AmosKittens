@@ -1513,10 +1513,18 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 
 	if (textWindow)
 	{
-		clear_cursor(screens[current_screen]);
-		textWindow -> x = x /8;
-		textWindow -> y = y /8; 
-		draw_cursor(screens[current_screen]);
+		struct retroBlock *block = retroAllocBlock( textWindow -> x*8, textWindow -> y*8 );
+
+		if (block)
+		{
+			retroGetBlock(screen,block, textWindow -> x * 8, textWindow -> y *8 );
+
+			textWindow -> x = x /8;
+			textWindow -> y = y /8; 
+
+			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+			retroFreeBlock(block);
+		}
 	}
 	else
 	{
