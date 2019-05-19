@@ -38,6 +38,9 @@ extern int current_screen;
 extern int cursor_color;
 
 bool curs_on = true;
+bool underLine = false;
+bool shades = false;
+
 int _tab_size = 3;
 
 bool next_print_line_feed = false;
@@ -607,67 +610,31 @@ char *textWriting(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-char *_textShadeOff( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	popStack( stack - data->stack );
-	return NULL;
-}
-
 char *textShadeOff(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _textShadeOff, ptr );
+	shades = false;
 	return ptr;
-}
-
-char *_textShadeOn( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	popStack( stack - data->stack );
-	return NULL;
 }
 
 char *textShadeOn(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _textShadeOn, ptr );
+	shades = true;
 	return ptr;
-}
-
-char *_textUnderOff( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	popStack( stack - data->stack );
-	return NULL;
 }
 
 char *textUnderOff(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _textShadeOn, ptr );
+	underLine = true;
 	return ptr;
-}
-
-char *_textUnderOn( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	popStack( stack - data->stack );
-	return NULL;
 }
 
 char *textUnderOn(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _textShadeOn, ptr );
+	underLine = false;
 	return ptr;
 }
 
