@@ -56,32 +56,6 @@ struct retroTextWindow *new_text_window ( int id )
 	return textWindow;
 }
 
-
-struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id)
-{
-	printf("findTextWindow\n");
-
-	if (screen)
-	{
-		struct retroTextWindow **tab = screen -> textWindows;
-		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
-
-		printf("looking into tabel %08x, %08x, %d\n",tab,eot, screen -> allocatedTextWindows);
-
-		for (tab = screen -> textWindows; tab < eot ; tab++)
-		{
-			printf("tab %08x\n",*tab);
-
-			if (*tab) 
-			{
-				printf("tab id %d == find id %d\n", (*tab)->id, id );
-				if ( (*tab)->id == id) return *tab;
-			}
-		}
-	}
-	return NULL;
-}
-
 struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 {
 	int _to_alloc_ = screen -> allocatedTextWindows +1;
@@ -110,38 +84,6 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 	return NULL;
 }
 
-void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window )
-{
-	if (screen)
-	{
-		struct retroTextWindow **tab = screen -> textWindows;
-		struct retroTextWindow **src = screen -> textWindows;
-		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
-
-		for (tab = screen -> textWindows; tab < eot ; tab++)
-		{
-			if (tab) if ( *tab == window ) 
-			{
-				FreeVec( *tab );
-				screen -> allocatedTextWindows --;
-
-				for (src = tab+1; src < eot ; tab++)
-				{
-					*tab = *src;
-					tab++;
-				}
-
-				break;
-			}
-		}
-
-		if (screen -> allocatedTextWindows == 0)
-		{
-			if (screen -> textWindows) FreeVec( screen -> textWindows );
-			screen -> textWindows = NULL;
-		}
-	}
-}
 
 
 struct _font_loc {

@@ -43,8 +43,13 @@ bool shades = false;
 
 int _tab_size = 3;
 
+extern struct TextFont *topaz8_font;
+
 bool next_print_line_feed = false;
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
+struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
+struct retroTextWindow *redrawWindowsExceptID(struct retroScreen *screen,int exceptID);
+void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window );
 
 void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
 
@@ -1218,9 +1223,6 @@ void write_format( bool sign, char *buf, char *dest )
 
 	if (psign)
 	{
-//		printf("sign\n");
-//		getchar();
-
 		if (*psign=='-') *psign = ' ';
 		if (sign) *psign = '-';
 	}
@@ -1295,7 +1297,47 @@ char *textPrintUsing(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
+struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id)
+{
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		for (tab = screen -> textWindows; tab < eot ; tab++)
+		{
+			if (*tab) 
+			{
+				if ( (*tab)->id == id) return *tab;
+			}
+		}
+	}
+	return NULL;
+}
+
+struct retroTextWindow *redrawWindowsExceptID(struct retroScreen *screen,int exceptID)
+{
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		for (tab = screen -> textWindows; tab < eot ; tab++)
+		{
+			if (*tab) 
+			{
+				if ( (*tab)->id != exceptID) 
+				{
+					if ((*tab) -> saved) 
+					{
+						retroPutBlock( screen, (*tab) -> saved, (*tab) -> x * 8, (*tab) -> y * 8, 0xFF );
+					}
+				}
+			}
+		}
+	}
+	return NULL;
+}
 
 char *_textWindow( struct glueCommands *data, int nextToken )
 {
@@ -1308,8 +1350,6 @@ char *_textWindow( struct glueCommands *data, int nextToken )
 
 	if (screen)
 	{
-		printf("pen is %d, paper is %d\n", screen -> pen, screen -> paper);
-
 		switch (args)
 		{
 			case 1:	id = getStackNum( stack );
@@ -1320,6 +1360,11 @@ char *_textWindow( struct glueCommands *data, int nextToken )
 						clear_cursor(screens[current_screen]);
 						screen -> currentTextWindow = textWindow;
 						draw_cursor(screens[current_screen]);
+
+						if (textWindow -> saved) 
+						{
+							retroPutBlock( screen, textWindow -> saved, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+						}
 					}
 					else printf("not found id: %d\n",id);
 					break;
@@ -1364,7 +1409,62 @@ char *textYCurs(nativeCommand *cmd, char *tokenBuffer)
 }
 
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
-extern void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window );
+
+void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window )
+{
+	if (screen)
+	{
+		struct retroTextWindow **tab = screen -> textWindows;
+		struct retroTextWindow **src = screen -> textWindows;
+		struct retroTextWindow **eot = screen -> textWindows + screen -> allocatedTextWindows;
+
+		for (tab = screen -> textWindows; tab < eot ; tab++)
+		{
+			if (tab) if ( *tab == window ) 
+			{
+				if ( (*tab) -> saved )
+				{
+					retroFreeBlock( (*tab) -> saved );
+					(*tab) -> saved = NULL;
+				}
+
+				if ( (*tab) -> title_top )
+				{
+					free( (*tab) -> title_top );
+					(*tab) -> title_top = NULL;
+				}
+
+				if ( (*tab) -> title_bottom )
+				{
+					free( (*tab) -> title_bottom );
+					(*tab) -> title_bottom = NULL;
+				}
+
+				FreeVec( *tab );
+
+				// count down number of windows.
+				screen -> allocatedTextWindows --;
+
+				// fill empty location
+
+				for (src = tab+1; src < eot ; tab++)
+				{
+					*tab = *src;
+					tab++;
+				}
+
+				break;
+			}
+		}
+
+		if (screen -> allocatedTextWindows == 0)
+		{
+			if (screen -> textWindows) FreeVec( screen -> textWindows );
+			screen -> textWindows = NULL;
+		}
+	}
+}
+
 
 void renderWindow( struct retroScreen *screen, struct retroTextWindow *textWindow )
 {
@@ -1384,11 +1484,13 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 	y0 = textWindow -> y*8;
 	x1 = x0 + (textWindow -> charsPerRow*8)-1;
 	y1 = y0 + (textWindow -> rows*8)-1;
+	int _x,_y;
+	char *c;
 
-	retroBAR( screen, x0,y0,x1,y0+8,screen -> paper);
-	retroBAR( screen, x0,y0,x0+8,y1,screen -> paper);
-	retroBAR( screen, x1-8,y0,x1,y1,screen -> paper);
-	retroBAR( screen, x0,y1-8,x1,y1,screen -> paper);
+	retroBAR( screen, x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, x0,y1-7,x1,y1,screen -> paper);
 
 	x0+=2;
 	y0+=2;
@@ -1397,6 +1499,40 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 
 	retroBox( screen, x0,y0,x1,y1, 2 );
 	retroBox( screen, x0+1,y0+1,x1-1,y1-1, 2 );
+
+
+	x0-=2;
+	y0-=2;
+	x1+=2;
+	y1+=2;
+
+	_x = textWindow -> x + 2;
+	_y = textWindow -> y;
+
+	if (textWindow -> title_top)
+	{
+		retroBAR( screen, _x*8,y0,(_x + strlen(textWindow -> title_top) )*8,y0+7,screen -> paper);
+
+		for (c = textWindow -> title_top; *c; c++)
+		{
+			draw_glyph( screen, topaz8_font,_x*8,_y*8,*c, screen -> pen );
+			_x ++;
+		}
+	}
+
+	_x = textWindow -> x + 2;
+	_y = textWindow -> y + textWindow -> rows -1;
+
+	if (textWindow -> title_bottom)
+	{
+		retroBAR( screen, _x*8,y1-7,(_x + strlen(textWindow -> title_bottom) )*8,y1,screen -> paper);
+
+		for (c = textWindow -> title_bottom; *c; c++)
+		{
+			draw_glyph( screen, topaz8_font,_x*8,_y*8,*c, screen -> pen );
+			_x ++;
+		}
+	}
 }
 
 char *_textWindOpen( struct glueCommands *data, int nextToken )
@@ -1499,8 +1635,6 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 	screen = screens[current_screen];
 	if (screen)
 	{
-		printf("args: %d\n",args);
-
 		switch (args)
 		{
 			case 2:
@@ -1513,14 +1647,18 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 
 	if (textWindow)
 	{
-		struct retroBlock *block = retroAllocBlock( textWindow -> x*8, textWindow -> y*8 );
+		struct retroBlock *block = retroAllocBlock( textWindow -> charsPerRow*8, textWindow -> rows*8 );
 
 		if (block)
 		{
 			retroGetBlock(screen,block, textWindow -> x * 8, textWindow -> y *8 );
 
+			redrawWindowsExceptID( screen, textWindow -> id );
+
 			textWindow -> x = x /8;
 			textWindow -> y = y /8; 
+
+			if (textWindow -> saved) retroGetBlock(screen,textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
 
 			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
 			retroFreeBlock(block);
@@ -1631,8 +1769,6 @@ char *_textTitleTop( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
-
 	if (args == 1)
 	{
 		struct retroScreen *screen = screens[current_screen];
@@ -1642,6 +1778,11 @@ char *_textTitleTop( struct glueCommands *data, int nextToken )
 
 			if (textWindow)
 			{
+				char *title = getStackString(stack);
+
+				if (textWindow -> title_top) free( textWindow -> title_top );
+				textWindow -> title_top = strdup( title );
+				
 				renderWindowBorder( screen, textWindow );
 			}
 		}
@@ -1664,8 +1805,6 @@ char *_textTitleBottom( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
-
 	if (args == 1)
 	{
 		struct retroScreen *screen = screens[current_screen];
@@ -1675,6 +1814,11 @@ char *_textTitleBottom( struct glueCommands *data, int nextToken )
 
 			if (textWindow)
 			{
+				char *title = getStackString(stack);
+
+				if (textWindow -> title_bottom) free( textWindow -> title_bottom );
+				textWindow -> title_bottom = strdup( title );
+				
 				renderWindowBorder( screen, textWindow );
 			}
 		}
@@ -1766,22 +1910,22 @@ char *textWindon(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_textWindSave( struct glueCommands *data, int nextToken )
-{
-//	int args = stack - data->stack +1 ;
-//	struct retroScreen *screen = screens[current_screen];
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
-
-	popStack( stack - data->stack );
-	return NULL;
-}
-
 char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _textWindSave, tokenBuffer );
+	struct retroScreen *screen = screens[current_screen];
+
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			if (textWindow -> saved) retroFreeBlock( textWindow -> saved );
+			textWindow -> saved = retroAllocBlock( textWindow -> charsPerRow * 8, textWindow -> rows *8 );
+			if (textWindow -> saved)	retroGetBlock( screen, textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
+		}
+	}
+
 	return tokenBuffer;
 }
 
@@ -1802,14 +1946,14 @@ char *_textBorder( struct glueCommands *data, int nextToken )
 			if (textWindow)
 			{
 				textWindow -> border =	getStackNum( stack-2 );
-				screen -> pen = getStackNum( stack-1 );
-				screen -> paper = getStackNum( stack );
+				screen -> paper = getStackNum( stack-1 );
+				screen -> pen = getStackNum( stack );
+
+				renderWindowBorder( screen, textWindow );
 			}
 		}
 	}
 	else setError(22, data->tokenBuffer);
-
-	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;
