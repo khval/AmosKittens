@@ -1635,6 +1635,16 @@ char *_textTitleTop( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
+		struct retroScreen *screen = screens[current_screen];
+		if (screen)
+		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+			if (textWindow)
+			{
+				renderWindowBorder( screen, textWindow );
+			}
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -1646,6 +1656,39 @@ char *_textTitleTop( struct glueCommands *data, int nextToken )
 char *textTitleTop(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _textTitleTop, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_textTitleBottom( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
+
+	if (args == 1)
+	{
+		struct retroScreen *screen = screens[current_screen];
+		if (screen)
+		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+			if (textWindow)
+			{
+				renderWindowBorder( screen, textWindow );
+			}
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(0);
+	return NULL;
+}
+
+char *textTitleBottom(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _textTitleBottom, tokenBuffer );
 	return tokenBuffer;
 }
 
