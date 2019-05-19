@@ -287,6 +287,9 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 			txt = getStackString(stack);
 
 			clear_cursor(screen);
+
+			if (next_print_line_feed == true) __print_text("\n",0);
+
 			if ((txt)&&(textWindow))
 			{
 				textWindow -> locateX = (textWindow -> charsPerRow/2) - (strlen_no_esc( txt ) / 2);
@@ -309,6 +312,8 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
+
+	next_print_line_feed = false;
 
 	return NULL;
 }
