@@ -1065,6 +1065,7 @@ struct nativeCommand nativeCommands[]=
 	{0x13D2,"Pen",0,textPen },
 	{0x13DC,"Paper",0,textPaper },
 	{0x13E8,"Centre",0,textCentre },
+	{0x13F6,"Border",0,textBorder },
 	{0x1408,"Writing",0,textWriting },
 	{0x1422,"Title Top",0,textTitleTop },
 	{0x1446,"Curs Off",0,textCursOff },

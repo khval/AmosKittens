@@ -1742,3 +1742,40 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *_textBorder( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroScreen *screen = screens[current_screen];
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args == 3)
+	{
+		if (screen=screens[current_screen])
+		{
+			struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+			if (textWindow)
+			{
+				textWindow -> border =	getStackNum( stack-2 );
+				screen -> pen = getStackNum( stack-1 );
+				screen -> paper = getStackNum( stack );
+			}
+		}
+	}
+	else setError(22, data->tokenBuffer);
+
+	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *textBorder(struct nativeCommand *disc, char *tokenBuffer)
+{
+	stackCmdNormal( _textBorder, tokenBuffer );
+	return tokenBuffer;
+}
+
+
