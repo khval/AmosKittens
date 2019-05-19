@@ -190,7 +190,7 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 
 void __print_text(const char *txt, int maxchars)
 {
-	if (engine_started)
+	if (engine_ready())
 	{
 		if (screens[current_screen])
 		{
