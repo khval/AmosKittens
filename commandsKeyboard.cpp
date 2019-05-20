@@ -78,7 +78,6 @@ struct keyboard_buffer current_key;
 void handel_key( char *buf )
 {
 	ULONG actual;
-	ULONG code;
 	char buffer[20];
 	struct InputEvent event;
 	bzero(&event,sizeof(struct InputEvent));
@@ -89,7 +88,7 @@ void handel_key( char *buf )
 
 	if (current_key.Code)
 	{
-		_scancode = code;
+		_scancode = current_key.Code;
 
 		event.ie_Code = current_key.Code;
 		event.ie_Qualifier = current_key.Qualifier;
