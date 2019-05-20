@@ -193,14 +193,11 @@ char *_textPaper( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-void __print_text(const char *txt, int maxchars)
+void __print_text(struct retroScreen *screen, const char *txt, int maxchars)
 {
 	if (engine_ready())
 	{
-		if (screens[current_screen])
-		{
-			_my_print_text(  screens[current_screen], (char *) txt, maxchars);
-		}
+		_my_print_text(  screen, underLine, (char *) txt, maxchars);
 	}
 	else
 	{
@@ -208,7 +205,7 @@ void __print_text(const char *txt, int maxchars)
 	}
 }
 
-void __print_num( int num )
+void __print_num( struct retroScreen *screen, int num )
 {
 	char tmp[50];
 
@@ -220,10 +217,10 @@ void __print_num( int num )
 	{
 		sprintf(tmp,"%d",num);
 	}
-	__print_text(tmp,0);
+	__print_text(screen, tmp,0);
 }
 
-void __print_double( double d )
+void __print_double( struct retroScreen *screen, double d )
 {
 	char tmp[40];
 
@@ -235,35 +232,42 @@ void __print_double( double d )
 	{
 		sprintf(tmp,"%0.3lf",d);
 	}
-	__print_text(tmp,0);
+	__print_text(screen, tmp,0);
 }
 
 char *_print( struct glueCommands *data, int nextToken )
 {
+	struct retroScreen *screen = screens[current_screen];
 	int n;
 
-	for (n=data->stack;n<=stack;n++)
+	if (screen)
 	{
-		switch (kittyStack[n].type)
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		for (n=data->stack;n<=stack;n++)
 		{
-			case type_int:
-				__print_num( kittyStack[n].value);
-				break;
-			case type_float:
-				__print_double( kittyStack[n].decimal);
-				break;
-			case type_string:
-				if (kittyStack[n].str) __print_text(kittyStack[n].str,0);
-				break;
-			case type_none:
-				if (n>data->stack) next_print_line_feed = false;
-				break;
+			switch (kittyStack[n].type)
+			{
+				case type_int:
+					__print_num( screen, kittyStack[n].value);
+					break;
+				case type_float:
+					__print_double( screen, kittyStack[n].decimal);
+					break;
+				case type_string:
+					if (kittyStack[n].str) __print_text( screen, kittyStack[n].str,0);
+					break;
+				case type_none:
+					if (n>data->stack) next_print_line_feed = false;
+					break;
+			}
+
+			if ((n<stack)&&( kittyStack[n+1].type != type_none ))  __print_text( screen, "    ",0);
 		}
 
-		if ((n<stack)&&( kittyStack[n+1].type != type_none ))  __print_text("    ",0);
-	}
+		draw_cursor(screen);
 
-	if (screens[current_screen]) draw_cursor(screens[current_screen]);
+	}
 
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
@@ -284,16 +288,16 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	if (args!=1) setError(22,data->tokenBuffer);
 
-	if (engine_started)
+	if (screen = screens[current_screen])
 	{
-		if (screen = screens[current_screen])
+		if (engine_started)
 		{
 			struct retroTextWindow *textWindow = screen -> currentTextWindow;
 			txt = getStackString(stack);
 
 			clear_cursor(screen);
 
-			if (next_print_line_feed == true) __print_text("\n",0);
+			if (next_print_line_feed == true) __print_text( screen, "\n",0);
 
 			if ((txt)&&(textWindow))
 			{
@@ -310,7 +314,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	if (txt)
 	{
-		__print_text(txt,0);
+		__print_text( screen, txt,0);
 	}
 
 	if (screens[current_screen]) draw_cursor(screens[current_screen]);
@@ -350,11 +354,15 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *textPrint(nativeCommand *cmd, char *ptr)
 {
+	struct retroScreen *screen = screens[current_screen];
 	stackCmdNormal( _print, ptr );
 	do_breakdata = _print_break;
 
-	if (screens[current_screen]) clear_cursor(screens[current_screen]);
-	if (next_print_line_feed == true) __print_text("\n",0);
+	if (screen)
+	{
+		 clear_cursor(screen);
+		if (next_print_line_feed == true) __print_text(screen, "\n",0);
+	}
 	next_print_line_feed = true;
 
 	setStackNone();
@@ -639,14 +647,14 @@ char *textShadeOn(nativeCommand *cmd, char *ptr)
 char *textUnderOff(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	underLine = true;
+	underLine = false;
 	return ptr;
 }
 
 char *textUnderOn(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	underLine = false;
+	underLine = true;
 	return ptr;
 }
 

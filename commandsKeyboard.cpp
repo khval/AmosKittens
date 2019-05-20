@@ -51,7 +51,7 @@ char *_setVar( struct glueCommands *data,int nextToken );
 
 void _input_arg( struct nativeCommand *cmd, char *tokenBuffer );
 void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer );
-void __print_text(const char *txt, int maxchars);
+void __print_text( struct retroScreen *screen, const char *txt, int maxchars);
 
 int input_count = 0;
 std::string input_str;
@@ -228,7 +228,7 @@ void kitty_getline(string &input)
 
 						if (cursx - scrollx < 0) scrollx--;
 
-						__print_text(input.c_str() + scrollx,charspace);
+						__print_text( screens[current_screen], input.c_str() + scrollx,charspace);
 						clear_cursor( screens[current_screen] );
 						draw_cursor( screens[current_screen] );
 					}
@@ -250,7 +250,7 @@ void kitty_getline(string &input)
 
 
 					if (cursx - scrollx > charspace) scrollx++;
-					__print_text(input.c_str() + scrollx,charspace);
+					__print_text( screen, input.c_str() + scrollx,charspace);
 
 
 					draw_cursor( screens[current_screen] );
@@ -298,6 +298,7 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 	_scancode = 0;
 
 	atomic_get_char(buf);
+
 
 	setStackStrDup(buf);
 	return tokenBuffer;
@@ -430,6 +431,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	bool success = false;
 	int num;
 	double des;
+	struct retroScreen *screen = screens[current_screen];
 
 	if (cmd == NULL)
 	{
@@ -446,11 +448,11 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	if ((input_count == 0)&&(stack))		// should be one arg.
 	{
 		char *str = getStackString( stack-args+1 );
-		if (str)  __print_text( str ,0 );
+		if (str)  __print_text( screen, str ,0 );
 	}
 	else if (input_str.empty())
 	{
-		__print_text("??? ",0);
+		__print_text( screen, "??? ",0);
 	}
 
 	do
@@ -490,7 +492,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	clear_cursor( screens[current_screen] );
 	engine_unlock();
 
-	__print_text( "\n" ,0 );
+	__print_text( screen, "\n" ,0 );
 
 	if (last_var)
 	{
@@ -520,6 +522,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	bool success = false;
 	int num;
 	double des;
+	struct retroScreen *screen = screens[current_screen];
 
 	if (cmd == NULL)
 	{
@@ -540,18 +543,18 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 		if (str) if (str[0])
 		{
-			__print_text( str ,0 );
+			__print_text( screen, str ,0 );
 			have_question = true;
 		}
 
 		if (have_question == false)
 		{
-			__print_text("? ",0);
+			__print_text( screen, "? ",0);
 		}
 	}
 	else if (input_str.empty())
 	{
-		__print_text("?? ",0);
+		__print_text( screen, "?? ",0);
 	}
 
 	engine_lock();
@@ -590,7 +593,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	while (!success && (engine_started) );
 
-	__print_text( "\n" ,0 );
+	__print_text( screen, "\n" ,0 );
 
 	switch (globalVars[last_var -1].var.type & 7)
 	{	
@@ -618,11 +621,12 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	struct retroScreen *screen = screens[current_screen];
 	input_count = 0;
 	input_str = "";
 
-	if (screens[current_screen]) clear_cursor(screens[current_screen]);
-	if (next_print_line_feed == true) __print_text("\n",0);
+	if (screen) clear_cursor(screen);
+	if (next_print_line_feed == true) __print_text( screen, "\n",0);
 	next_print_line_feed = true;
 
 	do_input[parenthesis_count] = _input_arg;
@@ -649,11 +653,12 @@ char *cmdInputStrN(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	struct retroScreen *screen = screens[current_screen];
 
 	engine_lock();
 
-	if (screens[current_screen]) clear_cursor(screens[current_screen]);
-	if (next_print_line_feed == true) __print_text("\n",0);
+	if (screen) clear_cursor(screen);
+	if (next_print_line_feed == true) __print_text(screen,"\n",0);
 	next_print_line_feed = true;
 
 	engine_unlock();

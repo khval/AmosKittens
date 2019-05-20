@@ -501,7 +501,7 @@ void draw_tab(struct retroScreen *screen)
 	}
 }
 
-void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
+void _my_print_text(struct retroScreen *screen, bool underLine, char *text, int maxchars)
 {
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
 	if (!textWindow) return;

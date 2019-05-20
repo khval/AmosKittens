@@ -28,6 +28,7 @@
 #include "commandsBanks.h"
 #include "errors.h"
 #include "engine.h"
+#include "bitmap_font.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -43,8 +44,6 @@ extern struct retroSprite *icons ;
 extern struct retroSprite *patterns;
 
 extern std::vector<struct kittyBank> kittyBankList;
-
-void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
 const char *amos_file_ids[] =
 	{
@@ -515,9 +514,9 @@ char *bankListBank(nativeCommand *cmd, char *tokenBuffer)
 
 		if (has_banks)
 		{
-			if (next_print_line_feed) _my_print_text( screen, (char *) "\n", 0);
+			if (next_print_line_feed) _my_print_text( screen, false, (char *) "\n", 0);
 
-			_my_print_text( screen, (char *) "Nr   Type     Start       Length\n\n", 0);
+			_my_print_text( screen, false, (char *) "Nr   Type     Start       Length\n\n", 0);
 
 			for (n=0;n<kittyBankList.size();n++)
 			{
@@ -531,14 +530,12 @@ char *bankListBank(nativeCommand *cmd, char *tokenBuffer)
 						bank -> start, 
 						bank -> length);	
 
-					_my_print_text( screen, txt, 0 );
+					_my_print_text( screen, false, txt, 0 );
 				}
 			}
 		}
 		next_print_line_feed = true;
 	}
-
-	getchar();
 
 	return tokenBuffer;
 }
