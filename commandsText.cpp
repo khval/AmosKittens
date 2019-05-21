@@ -40,6 +40,7 @@ extern int cursor_color;
 bool curs_on = true;
 bool underLine = false;
 bool shade = false;
+bool inverse = false;
 
 int _tab_size = 3;
 
@@ -430,33 +431,19 @@ char *textHome(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *textInverseOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	struct retroScreen *screen = screens[current_screen];
-
-	if (screen)
-	{
-		unsigned int t;
-		t = screen -> ink0 ;
-		screen -> ink0 = screen -> ink1;
-		screen -> ink1 = t;
-	}
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	inverse = true;
+
 	return tokenBuffer;
 }
 
 char *textInverseOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	struct retroScreen *screen = screens[current_screen];
-
-	if (screen)
-	{
-		unsigned int t;
-		t = screen -> ink0 ;
-		screen -> ink0 = screen -> ink1;
-		screen -> ink1 = t;
-	}
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	inverse = false;
+
 	return tokenBuffer;
 }
 
