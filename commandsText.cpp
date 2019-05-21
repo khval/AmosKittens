@@ -57,39 +57,43 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen; 
-	bool success = false;
-	struct retroTextWindow *textWindow = NULL;
+	struct retroTextWindow *textWindow ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args==2)
+	if (screen=screens[current_screen])
 	{
-		if (screen=screens[current_screen])
+		textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
 		{
-			textWindow = screen -> currentTextWindow;
+			clear_cursor(screen);
+			if (next_print_line_feed) textWindow -> locateY++;
 
-			if (textWindow)
+			switch (args)
 			{
-				clear_cursor(screen);
+				case 1:
+						if (kittyStack[stack].type == type_int ) 
+							textWindow -> locateX = kittyStack[stack].value;
+						break;
 
-				if (kittyStack[stack-1].type == type_int ) 
-				{
-					textWindow -> locateX = kittyStack[stack-1].value;
-				}
+				case 2:
+						if (kittyStack[stack-1].type == type_int ) 
+							textWindow -> locateX = kittyStack[stack-1].value;
 		
-				if (kittyStack[stack].type == type_int )
-				{
-					textWindow -> locateY = kittyStack[stack].value;
-				}
+						if (kittyStack[stack].type == type_int )
+							textWindow -> locateY = kittyStack[stack].value;
+						break;
 
-				draw_cursor(screen);
+				default:
+						setError(22,data->tokenBuffer);
+
 			}
+			draw_cursor(screen);
 		}
-		next_print_line_feed = false;
-		success = true;
 	}
 
-	if (success == false) setError(22,data->tokenBuffer);
+	next_print_line_feed = false;
 
 	popStack( stack - data->stack );
 	return NULL;
