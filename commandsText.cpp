@@ -42,6 +42,8 @@ bool underLine = false;
 bool shade = false;
 bool inverse = false;
 
+int writing_w1,writing_w2;
+
 int _tab_size = 3;
 
 extern struct TextFont *topaz8_font;
@@ -202,7 +204,7 @@ void __print_text(struct retroScreen *screen, const char *txt, int maxchars)
 {
 	if (engine_ready())
 	{
-		_my_print_text(  screen, underLine, shade, (char *) txt, maxchars);
+		_my_print_text( screen, (char *) txt, maxchars, underLine, shade, inverse,writing_w1,writing_w2 );
 	}
 	else
 	{
@@ -607,8 +609,20 @@ extern char *textPaperStr(nativeCommand *cmd, char *ptr)
 
 char *_textWriting( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args = stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	writing_w1 = getStackNum(stack);
+				break;
+		case 2:	writing_w1 = getStackNum(stack-1);
+				writing_w2 = getStackNum(stack);
+				break;
+		default:
+				setError(22, data -> tokenBuffer);
+	}
+
 
 	popStack( stack - data->stack );
 	return NULL;

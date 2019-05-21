@@ -586,6 +586,8 @@ void _my_print_text(struct retroScreen *screen, bool underLine, char *text, int 
 						textWindow -> locateX ,
 						textWindow -> locateY , c);
 
+					if (underLine) retroLine(screen,_m0*8,textWindow -> locateX*8+6,textWindow -> locateX*8+7,textWindow -> locateY*8+6, screen -> pen);
+
 					textWindow -> locateX ++;
 		}
 
