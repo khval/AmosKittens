@@ -514,9 +514,9 @@ char *bankListBank(nativeCommand *cmd, char *tokenBuffer)
 
 		if (has_banks)
 		{
-			if (next_print_line_feed) _my_print_text( screen, false, (char *) "\n", 0);
+			if (next_print_line_feed) _my_print_text( screen, false, false, (char *) "\n", 0);
 
-			_my_print_text( screen, false, (char *) "Nr   Type     Start       Length\n\n", 0);
+			_my_print_text( screen, false, false, (char *) "Nr   Type     Start       Length\n\n", 0);
 
 			for (n=0;n<kittyBankList.size();n++)
 			{
@@ -530,7 +530,7 @@ char *bankListBank(nativeCommand *cmd, char *tokenBuffer)
 						bank -> start, 
 						bank -> length);	
 
-					_my_print_text( screen, false, txt, 0 );
+					_my_print_text( screen, false, false, txt, 0 );
 				}
 			}
 		}

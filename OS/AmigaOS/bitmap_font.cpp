@@ -12,6 +12,7 @@ extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
 
 void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen);
+void draw_glyph_shade(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen);
 
 
 void freeAllTextWindows(struct retroScreen *screen)
@@ -72,8 +73,6 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 			screen -> textWindows = NULL;
 		}
 
-//		printf("window store at %d\n",_to_alloc_-1);
-
 		_new_tab_[_to_alloc_-1] = new_text_window( id ) ;
 		screen -> textWindows = _new_tab_;
 		screen -> allocatedTextWindows = _to_alloc_;
@@ -126,7 +125,7 @@ void draw_bit( struct retroScreen *screen, int x,int y)
 }
 */
 
-void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, int lX, int lY, char c, int pen, int paper )
+void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, int lX, int lY, char c, int pen, int paper, bool shade )
 {
 	int b = (textWindow -> border ? 1 : 0);
 	int x = textWindow -> x + lX + b;
@@ -136,7 +135,15 @@ void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, i
 	y *= 8;
 
 	retroBAR( screen, x,y,x+7,y+7, paper);
-	draw_glyph( screen, topaz8_font, x, y, c, pen );
+
+	if (shade)
+	{
+		draw_glyph_shade( screen, topaz8_font, x, y, c, pen );
+	}
+	else
+	{
+		draw_glyph( screen, topaz8_font, x, y, c, pen );
+	}
 }
 
 struct TextFont *open_font( char const *filename, int size )
@@ -213,6 +220,72 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 	}
 }
 
+void draw_glyph_shade(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen)
+{
+	int x,y;
+	short bit_start ;
+	short bit_width ;
+	int start_byte ;
+	int num_bytes ;
+	int end_byte ; 
+	unsigned char data;
+	int bit_offset;
+	int num_bits_in_byte;
+	int _bit_start;
+	int n;
+	int _y;
+
+	if ((glyph<font -> tf_LoChar)||(glyph>font -> tf_HiChar))
+	{
+		return ;
+	}
+
+	glyph -= font -> tf_LoChar;
+
+	bit_start =(( struct _font_loc *)  font -> tf_CharLoc) [glyph].bit_start;
+	bit_width = (( struct _font_loc *) font -> tf_CharLoc) [glyph].bit_width;
+	start_byte = bit_start >> 3;
+	num_bytes = (bit_width & 7) ? (bit_width >> 3) + 1 : bit_width >> 3;
+	end_byte =start_byte + num_bytes; 
+
+	bit_start = bit_start & 7;	// we don't need to know what byte anymore.
+	bit_width += bit_start;
+	_bit_start = bit_start;
+
+	num_bytes = (bit_width & 7) ? (bit_width >> 3) + 1 : bit_width >> 3;
+	end_byte =start_byte + num_bytes; 
+
+	for (y=0;y<font -> tf_YSize ;y+=2)
+	{
+		for (n=start_byte;n<end_byte;n++)
+		{
+			bit_offset = (n-start_byte)<<3;
+
+			num_bits_in_byte = (bit_width - bit_offset) >8 ? 8 : (bit_width - bit_offset) ;
+
+			for (x=0;x< num_bits_in_byte ;x++)
+			{
+				_y = y+(x&1);
+
+				if (x + bit_offset - _bit_start > -1)
+				{
+					data = ( (char *) font -> tf_CharData) [ n + (_y * font -> tf_Modulo)  ];
+
+					if (data & (1<<(7-x)) ) 
+					{
+//						draw_bit( screen, rp_x + x + bit_offset - _bit_start, rp_y + y ) ;
+
+						retroPixel( screen,rp_x + x + bit_offset - _bit_start, rp_y + _y, pen);
+
+					}
+				}
+			}
+			bit_start = 0;
+		}
+	}
+}
+
+
 //struct esc_cmd;	// forward declare.
 
 struct esc_data
@@ -262,26 +335,26 @@ void esc_border (struct retroScreen *screen,struct esc_data *data, int x1, int y
 
 	if (data->x>-1)
 	{
-		if (data -> y>-1) draw_char(screen,textWindow,data->x , data -> y , '.', screen -> pen, screen -> paper);
-		if ( y1>-1) draw_char(screen,textWindow,data->x , y1 , '\'', screen -> pen, screen -> paper);
+		if (data -> y>-1) draw_char(screen,textWindow,data->x , data -> y , '.', screen -> pen, screen -> paper, false);
+		if ( y1>-1) draw_char(screen,textWindow,data->x , y1 , '\'', screen -> pen, screen -> paper, false);
 	}
 
 	if (x1>-1)
 	{
-		if (data -> y>-1) draw_char(screen,textWindow,x1 , data -> y , '.', screen -> pen, screen -> paper);
-		if ( y1>-1) draw_char(screen,textWindow, x1 , y1 , '\'', screen -> pen, screen -> paper);
+		if (data -> y>-1) draw_char(screen,textWindow,x1 , data -> y , '.', screen -> pen, screen -> paper,false);
+		if ( y1>-1) draw_char(screen,textWindow, x1 , y1 , '\'', screen -> pen, screen -> paper,false);
 	}
 
 	for (y=data->y+1;y<y1;y++)
 	{
-		if (data -> x>-1) draw_char(screen,textWindow,data -> x ,  y , '|', screen -> pen, screen -> paper);
-		if ( x1>-1) draw_char(screen,textWindow, x1 , y , '|', screen -> pen, screen -> paper);
+		if (data -> x>-1) draw_char(screen,textWindow,data -> x ,  y , '|', screen -> pen, screen -> paper,false);
+		if ( x1>-1) draw_char(screen,textWindow, x1 , y , '|', screen -> pen, screen -> paper,false);
 	}
 
 	for (x=data->x+1;x<x1;x++)
 	{
-		if (data -> y>-1) draw_char(screen,textWindow, x , data -> y , '-', screen -> pen, screen -> paper);
-		if ( y1>-1) draw_char(screen,textWindow, x , y1 , '-', screen -> pen, screen -> paper);
+		if (data -> y>-1) draw_char(screen,textWindow, x , data -> y , '-', screen -> pen, screen -> paper,false);
+		if ( y1>-1) draw_char(screen,textWindow, x , y1 , '-', screen -> pen, screen -> paper,false);
 	}
 }
 
@@ -426,7 +499,7 @@ void draw_tab(struct retroScreen *screen)
 	{
 		draw_char(screen, textWindow,
 			textWindow -> locateX,
-			textWindow -> locateY , 20, screen -> pen, screen -> paper);
+			textWindow -> locateY , 20, screen -> pen, screen -> paper, false);
 
 		textWindow -> locateX ++;
 		limit_location(screen);
@@ -434,7 +507,7 @@ void draw_tab(struct retroScreen *screen)
 	}
 }
 
-void _my_print_text(struct retroScreen *screen, bool underLine, char *text, int maxchars)
+void _my_print_text(struct retroScreen *screen, bool underLine, bool shade, char *text, int maxchars)
 {
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
 	if (!textWindow) return;
@@ -519,7 +592,7 @@ void _my_print_text(struct retroScreen *screen, bool underLine, char *text, int 
 						textWindow -> locateX ,
 						textWindow -> locateY , c, 
 						screen -> pen, 
-						screen -> paper);
+						screen -> paper,shade);
 
 					if (underLine) retroLine(screen,textWindow -> locateX*8,textWindow -> locateY*8+6,textWindow -> locateX*8+7,textWindow -> locateY*8+6, screen -> pen);
 

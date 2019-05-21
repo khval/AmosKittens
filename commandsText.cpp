@@ -39,7 +39,7 @@ extern int cursor_color;
 
 bool curs_on = true;
 bool underLine = false;
-bool shades = false;
+bool shade = false;
 
 int _tab_size = 3;
 
@@ -197,7 +197,7 @@ void __print_text(struct retroScreen *screen, const char *txt, int maxchars)
 {
 	if (engine_ready())
 	{
-		_my_print_text(  screen, underLine, (char *) txt, maxchars);
+		_my_print_text(  screen, underLine, shade, (char *) txt, maxchars);
 	}
 	else
 	{
@@ -633,14 +633,14 @@ char *textWriting(nativeCommand *cmd, char *ptr)
 char *textShadeOff(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	shades = false;
+	shade = false;
 	return ptr;
 }
 
 char *textShadeOn(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	shades = true;
+	shade = true;
 	return ptr;
 }
 
