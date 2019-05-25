@@ -235,7 +235,7 @@ void kitty_getline(string &input)
 
 					break;
 
-				case 10:
+				case 13:
 					printf("<enter>\n");
 					done=true;
 					break;
