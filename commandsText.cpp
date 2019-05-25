@@ -56,6 +56,55 @@ void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window )
 
 void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
 
+struct retroBlock *cursor_block = NULL; 
+
+void clear_cursor( struct retroScreen *screen )
+{
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if ((curs_on)&&(textWindow))
+		{
+			int gx,gy;
+			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+			gx=8*x;	gy=8*y;
+
+			if (cursor_block)
+			{
+				retroPutBlock( screen, cursor_block, gx, gy, 0xFF );
+			}
+		}
+	}
+}
+
+void draw_cursor(struct retroScreen *screen)
+{
+	if (screen)
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if ((curs_on)&&(textWindow))
+		{
+			int gx,gy;
+			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+			gx=8*x;	gy=8*y;
+
+			if (cursor_block == NULL) cursor_block = retroAllocBlock( 8, 8 );
+
+			if (cursor_block)
+			{
+				retroGetBlock( screen, cursor_block, gx, gy );
+			}
+
+			retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
+		}
+	}
+}
+
+
 char *_textLocate( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
