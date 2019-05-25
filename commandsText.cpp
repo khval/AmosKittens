@@ -58,6 +58,8 @@ void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x,
 
 struct retroBlock *cursor_block = NULL; 
 
+int curs_lines[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+
 void clear_cursor( struct retroScreen *screen )
 {
 	if (screen)
@@ -88,6 +90,7 @@ void draw_cursor(struct retroScreen *screen)
 		if ((curs_on)&&(textWindow))
 		{
 			int gx,gy;
+			int d,m;
 			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
 			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
 			gx=8*x;	gy=8*y;
@@ -99,7 +102,23 @@ void draw_cursor(struct retroScreen *screen)
 				retroGetBlock( screen, cursor_block, gx, gy );
 			}
 
-			retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
+//			retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
+
+			for (y=0;y<8;y++)
+			{
+				if (d = curs_lines[y])
+				{
+					x=0;
+					m = 0x80;
+					while (m>0)
+					{
+						if (d&m) retroPixel( screen, gx+x,gy+y, cursor_color );
+						m>>=1;
+						x++;
+					}
+				}
+			}
+
 		}
 	}
 }
@@ -994,7 +1013,14 @@ char *textSetTab(nativeCommand *cmd, char *ptr)
 char *_textSetCurs( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int n;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	for (n=0;n<args;n++)
+	{
+		curs_lines[n] = getStackNum( stack-7+n );
+	}
+
 	popStack( stack - data->stack );
 	return NULL;
 }
