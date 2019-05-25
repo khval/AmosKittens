@@ -488,9 +488,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	while (!success && engine_started);
 
-	engine_lock();
 	clear_cursor( screens[current_screen] );
-	engine_unlock();
 
 	__print_text( screen, "\n" ,0 );
 
@@ -567,9 +565,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		{
 			while (input_str.empty() && engine_started ) kitty_getline(input_str);
 
-			engine_lock();
 			clear_cursor( screens[current_screen] );
-			engine_unlock();
 
 			arg = input_str; input_str = "";
 		}
@@ -655,13 +651,9 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	struct retroScreen *screen = screens[current_screen];
 
-	engine_lock();
-
 	if (screen) clear_cursor(screen);
 	if (next_print_line_feed == true) __print_text(screen,"\n",0);
 	next_print_line_feed = true;
-
-	engine_unlock();
 
 	input_count = 0;
 	input_str = "";
