@@ -129,6 +129,7 @@ char *_textHome( struct glueCommands *data, int nextToken )
 				clear_cursor(screen);
 				textWindow -> locateX = 0;
 				textWindow -> locateY = 0;
+				next_print_line_feed = false;
 				draw_cursor(screen);
 			}
 		}
@@ -756,7 +757,7 @@ char *_textCMove( struct glueCommands *data, int nextToken )
 
 				textWindow -> locateX = x;
 				textWindow -> locateY = y;
-
+				next_print_line_feed = false;
 				draw_cursor(screen);
 			}
 		}
@@ -1500,6 +1501,8 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 	int _x,_y;
 	char *c;
 
+	if (textWindow -> border == 0) return;
+
 	retroBAR( screen, x0,y0,x1,y0+7,screen -> paper);
 	retroBAR( screen, x0,y0,x0+7,y1,screen -> paper);
 	retroBAR( screen, x1-7,y0,x1,y1,screen -> paper);
@@ -1610,7 +1613,10 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 		textWindow -> rows = h; 
 		textWindow -> border = b;
 		textWindow -> set = s;
+
+		clear_cursor(screens[current_screen]);
 		screen -> currentTextWindow = textWindow;
+		draw_cursor(screens[current_screen]);
 
 		if (b)
 		{
@@ -1675,6 +1681,12 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 
 			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
 			retroFreeBlock(block);
+
+			clear_cursor(screens[current_screen]);
+			textWindow -> locateX = 0;
+			textWindow -> locateY = 0;
+			next_print_line_feed = false;
+			draw_cursor(screens[current_screen]);
 		}
 	}
 	else
@@ -1698,8 +1710,59 @@ char *_textWindSize( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen ;
 	struct retroTextWindow *textWindow = NULL;
+	int w=0,h=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	screen = screens[current_screen];
+	if (screen)
+	{
+		switch (args)
+		{
+			case 2:
+					w = getStackNum( stack -1 );
+					h = getStackNum( stack  );
+					textWindow = screen -> currentTextWindow;
+					break;
+		}
+	}
+
+	if (textWindow)
+	{
+		struct retroBlock *block = NULL;
+		int minW, minH;
+
+		minW = (textWindow -> charsPerRow < w) ? textWindow -> charsPerRow : w;
+		minH = (textWindow -> rows < h) ? textWindow -> rows : h;
+
+		block = retroAllocBlock( (minW-1)*8, (minH-1)*8 );
+		if (block)	retroGetBlock( screen, block, textWindow -> x * 8, textWindow -> y *8 );
+
+		textWindow -> charsPerRow = w;
+		textWindow -> rows = h;
+
+		redrawWindowsExceptID( screen, textWindow -> id );
+
+		renderWindow( screen, textWindow );
+
+		if (block)
+		{
+			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+			retroFreeBlock(block);
+		}
+
+		renderWindowBorder( screen, textWindow );
+
+		clear_cursor(screens[current_screen]);
+		textWindow -> locateX = 0;
+		textWindow -> locateY = 0;
+		next_print_line_feed = false;
+		draw_cursor(screens[current_screen]);
+	}
+	else
+	{
+		setError(22,data->tokenBuffer);
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
