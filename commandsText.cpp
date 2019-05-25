@@ -445,31 +445,95 @@ char *textCursOn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+int memorizeX,memorizeY;
+
 char *textMemorizeX(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	clear_cursor(screens[current_screen]);
+	struct retroScreen *screen; 
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen=screens[current_screen])
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			clear_cursor(screen);
+			if (next_print_line_feed) textWindow -> locateY++;
+			memorizeX = textWindow -> locateX;
+			next_print_line_feed = false;
+			draw_cursor(screen);
+		}
+	}
+
 	return tokenBuffer;
 }
 
 char *textMemorizeY(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	clear_cursor(screens[current_screen]);
+	struct retroScreen *screen; 
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen=screens[current_screen])
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			clear_cursor(screen);
+			if (next_print_line_feed) textWindow -> locateY++;
+			memorizeY = textWindow -> locateY;
+			next_print_line_feed = false;
+			draw_cursor(screen);
+		}
+	}
+
 	return tokenBuffer;
 }
 
 char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	clear_cursor(screens[current_screen]);
+	struct retroScreen *screen; 
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen=screens[current_screen])
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			clear_cursor(screen);
+			if (next_print_line_feed) textWindow -> locateY++;
+			textWindow -> locateX = memorizeX;
+			next_print_line_feed = false;
+			draw_cursor(screen);
+		}
+	}
 	return tokenBuffer;
 }
 
 char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	clear_cursor(screens[current_screen]);
+	struct retroScreen *screen; 
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen=screens[current_screen])
+	{
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			clear_cursor(screen);
+			if (next_print_line_feed) textWindow -> locateY++;
+			textWindow -> locateY = memorizeY;
+			next_print_line_feed = false;
+			draw_cursor(screen);
+		}
+	}
 	return tokenBuffer;
 }
 
