@@ -21,6 +21,7 @@ extern char *dir_first_pattern ;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
 extern ChannelTableClass *channels;
+extern struct retroBlock *cursor_block;
 
 extern std::vector<struct kittyBank> kittyBankList;
 
@@ -30,14 +31,10 @@ void clear_local_vars( int proc )
 	int n;
 	struct kittyData *var;
 
-//	printf("%s;%s\n",__FILE__,__FUNCTION__);
-
 	for (n=0;n<global_var_count;n++)
 	{
 		if (globalVars[n].proc == proc)
 		{
-//			printf("clear %s\n",globalVars[n].varName);
-
 			var = &globalVars[n].var;
 
 			switch (var->type)
@@ -77,9 +74,6 @@ void clean_up_vars()
 
 	for (n=0;n<global_var_count;n++)
 	{
-//		printf("Free var %d -- type: %x is shared %d\n",n, globalVars[n].var.type, globalVars[n].pass1_shared_to);
-//		printf("--->name %s\n",globalVars[n].varName);
-
 		if (globalVars[n].varName) 
 		{
 			free(globalVars[n].varName);
@@ -159,6 +153,12 @@ void clean_up_special()
 	int n;
 
 	printf("should clean up menus here, don't forget me\n");
+
+	if (cursor_block)
+	{
+		retroFreeBlock(cursor_block);
+		cursor_block = NULL;
+	}
 
 	printf("clean up channels!!\n");
 
