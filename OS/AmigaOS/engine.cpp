@@ -204,16 +204,12 @@ void close_engine_window( )
 	}
 }
 
-struct TextFont *topaz8_font = NULL;
 struct RastPort font_render_rp;
 struct retroEngine *engine = NULL;
 
 bool init_engine()
 {
 	if ( ! open_engine_window( 0, 0, 640,480) ) return false;
-
-	topaz8_font =  open_font( "topaz.font" ,  8);
-	if ( ! topaz8_font ) return FALSE;
 
 	InitRastPort(&font_render_rp);
 	font_render_rp.BitMap = AllocBitMapTags( 800, 50, 256, 
@@ -237,15 +233,12 @@ bool init_engine()
 bool engine_ready()
 {
 	if (engine == NULL) return false; 
-	if (topaz8_font == NULL) return false;
 	if ( font_render_rp.BitMap == NULL ) return false;
 	return true;
 }
 
 void close_engine()
 {
-	if (topaz8_font) CloseFont(topaz8_font); topaz8_font=0;
-
 	if ( font_render_rp.BitMap )
 	{
 		FreeBitMap( font_render_rp.BitMap );
@@ -259,7 +252,6 @@ void close_engine()
 		retroFreeEngine( engine );
 		engine = NULL;
 	}
-
 }
 
 void main_engine();

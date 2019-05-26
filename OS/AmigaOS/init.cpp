@@ -8,6 +8,7 @@
 #include <proto/locale.h>
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
+#include <proto/graphics.h>
 #include <proto/keymap.h>
 #include <proto/Amigainput.h>
 #include <proto/icon.h>
@@ -15,6 +16,11 @@
 
 #include "joysticks.h"
 #include "amoskittens.h"
+
+struct TextFont *topaz8_font = NULL;
+struct TextFont *gfx_font = NULL;
+
+extern struct TextFont *open_font( char const *filename, int size );
 
 struct Process *main_task = NULL;
 
@@ -119,6 +125,9 @@ BOOL init()
 		codeset_page = (ULONG *) ObtainCharsetInfo(DFCS_NUMBER, (ULONG) _locale -> loc_CodeSet , DFCS_MAPTABLE);
 	}
 
+	topaz8_font =  open_font( "topaz.font" ,  8);
+	if ( ! topaz8_font ) return FALSE;
+
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
 
@@ -141,6 +150,8 @@ void closedown()
 		if (kitty_extensions[i].lookup) free(kitty_extensions[i].lookup);
 		kitty_extensions[i].lookup = NULL;
 	}
+
+	if (topaz8_font) CloseFont(topaz8_font); topaz8_font= NULL;
 
 	if (_locale) CloseLocale(_locale); _locale = NULL;
 
