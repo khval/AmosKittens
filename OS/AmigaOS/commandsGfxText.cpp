@@ -41,37 +41,9 @@ extern struct RastPort font_render_rp;
 extern bool next_print_line_feed;
 extern int xgr,  ygr;
 
-extern int GrWritingMode;
-
 extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
-
-
-char *_gfxGrWriting( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 1:
-			GrWritingMode = getStackNum(stack);
-			break;
-		default:
-			setError(22,data->tokenBuffer);
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
-
-char *gfxGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	// some thing to do with drawing, not sure.
-	stackCmdNormal( _gfxGrWriting, tokenBuffer );
-	return tokenBuffer;
-}
 
 int os_text_width(char *txt)
 {
@@ -173,116 +145,6 @@ void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
 	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y+ te.te_Extent.MinY);
-}
-
-
-char *_gfxText( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	struct retroScreen *screen = screens[current_screen];
-
-	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 3:
-			{
-				int x = getStackNum( stack-2 );
-				int y = getStackNum( stack-1 );
-				char *txt = getStackString( stack );
-
-				if ((txt)&&(screen))
-				{
-					engine_lock();
-					if (engine_ready())
-					{
-						switch (GrWritingMode)
-						{
-							case 0:	// 
-									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
-									break;
-
-							case 1:	//
-									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
-									break;
-
-							case 2:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
-									break;
-
-							case 3:	//
-									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
-									break;
-
-							case 4:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
-									break;
-
-							case 5:	//
-									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0 );
-									break;
-
-							case 6:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
-									break;
-
-							case 7:	//
-									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0);
-									break;
-						}
-					}
-					engine_unlock();
-				}
-			}
-			break;
-		default:
-			setError(22,data->tokenBuffer);
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
-
-char *gfxText(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	// some thing to do with drawing, not sure.
-	stackCmdNormal( _gfxText, tokenBuffer );
-	return tokenBuffer;
-}
-
-char *_gfxTextLength( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	unsigned short ret = 0;
-	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 1:
-			{
-				char *txt = getStackString( stack );
-
-				if (txt)
-				{
-					ret = TextLength( &font_render_rp, txt, strlen( txt) );
-				}
-			}
-			break;
-
-			default:
-			setError(22,data->tokenBuffer);
-	}
-
-	popStack( stack - data->stack );
-	setStackNum(ret);
-	return NULL;
-}
-
-char *gfxTextLength(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	// some thing to do with drawing, not sure.
-	stackCmdParm( _gfxTextLength, tokenBuffer );
-	return tokenBuffer;
 }
 
 

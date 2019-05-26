@@ -999,10 +999,10 @@ struct nativeCommand nativeCommands[]=
 	{0x0EE8,"Paint",0, gfxPaint },
 	{0x0EF8,"Paint",0,gfxPaint },		// Paint n,n,n
 	{0x0F04,"Gr Locate",0,gfxGrLocate },
-	{0x0F16,"Text Length",0,gfxTextLength },
-	{0x0F3A,"Text Base",0,gfxTextBase },
-	{0x0F4A,"Text",0,gfxText },
-	{0x0F5A,"Set Text",0,gfxSetText },
+	{0x0F16,"Text Length",0,textTextLength },
+	{0x0F28,"Text Styles",0,textTextStyles },
+	{0x0F3A,"Text Base",0,textTextBase },
+	{0x0F4A,"Text",0,textText },
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
 	{0x0F7A,"Get Fonts",0,fontsGetRomFonts },
 	{0x0F8A,"Get Disc Fonts",0,fontsGetRomFonts },
@@ -1017,7 +1017,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1044,"Ink",0,gfxInk },
 	{0x1050,"Ink",0,gfxInk },
 	{0x105A,"Ink n,n,n",0,gfxInk },
-	{0x1066,"Gr Writing",0,gfxGrWriting },			// needs more work.
+	{0x1066,"Gr Writing",0,textGrWriting },			// needs more work.
 	{0x1078,"Clip",0,gfxClip },					// dummy function
 	{0x1084,"Clip",0,gfxClip },					// dummy function
 	{0x10AC,"Set Tempras",0,gfxSetTempras },		// dummy function
