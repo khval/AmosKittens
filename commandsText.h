@@ -64,4 +64,11 @@ extern char *textTitleTop(nativeCommand *cmd, char *ptr);
 extern char *textTitleBottom(nativeCommand *cmd, char *ptr);
 extern char *textAt(struct nativeCommand *disc, char *tokenBuffer);
 extern char *textBorder(struct nativeCommand *disc, char *tokenBuffer);
+extern char *textSetText(struct nativeCommand *disc, char *tokenBuffer);
+extern char *textTextStyles(struct nativeCommand *disc, char *tokenBuffer);
+extern char *textTextBase(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textGrWriting(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textText(struct nativeCommand *cmd, char *tokenBuffer);
+extern char *textTextLength(struct nativeCommand *cmd, char *tokenBuffer);
+
 

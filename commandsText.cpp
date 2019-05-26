@@ -9,6 +9,8 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
+
+extern struct RastPort font_render_rp;
 #endif
 
 #ifdef __linux__
@@ -2151,7 +2153,7 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer)
+char *textTextBase(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	int ret = 0;
 	proc_names_printf("%s:s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -2168,7 +2170,9 @@ char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_gfxSetText( struct glueCommands *data, int nextToken )
+int text_style = 0;
+
+char *_textSetText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
@@ -2177,6 +2181,17 @@ char *_gfxSetText( struct glueCommands *data, int nextToken )
 	switch( args )
 	{
 		case 1:	
+				text_style = getStackNum(stack);
+
+				engine_lock();
+				if (engine_ready())
+				{
+					SetSoftStyle(&font_render_rp,
+				             text_style,
+				             FSF_BOLD | FSF_UNDERLINED | FSF_ITALIC);
+				}
+				engine_unlock();
+				
 				break;
 
 		default:
@@ -2184,17 +2199,22 @@ char *_gfxSetText( struct glueCommands *data, int nextToken )
 				break;
 	}
 
-	printf("%s:%s:%d -> dummy command ignored\n",__FILE__,__FUNCTION__,__LINE__);	
-
 	popStack( stack - data->stack );
 	setStackNum(ret);
 	return NULL;
 }
 
-char *gfxSetText(struct nativeCommand *cmd, char *tokenBuffer)
+char *textSetText(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	// some thing to do with drawing, not sure.
-	stackCmdParm( _gfxSetText, tokenBuffer );
+	stackCmdParm( _textSetText, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *textTextStyles(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	setStackNum(text_style);
 	return tokenBuffer;
 }
 

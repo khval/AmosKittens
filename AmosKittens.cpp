@@ -1003,6 +1003,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0F28,"Text Styles",0,textTextStyles },
 	{0x0F3A,"Text Base",0,textTextBase },
 	{0x0F4A,"Text",0,textText },
+	{0x0F5A,"Set Text",0,textSetText },
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
 	{0x0F7A,"Get Fonts",0,fontsGetAllFonts },
 	{0x0F8A,"Get Disc Fonts",0,fontsGetDiscFonts },
