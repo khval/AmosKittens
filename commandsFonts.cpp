@@ -11,6 +11,8 @@
 #include <proto/asl.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/diskfont.h>
+#include <proto/graphics.h>
 #endif
 
 #ifdef __linux__
@@ -31,20 +33,32 @@
 
 extern int last_var;
 
+extern struct TextFont *open_font( char const *filename, int size );
+extern struct TextFont *gfx_font ;
+
 using namespace std;
 
-vector<string> fonts;
+class font
+{
+	public:
+		string	amosString;
+		string	name;
+		int		size;
+
+};
+
+vector<font> fonts;
 
 void set_font_buffer( char *buffer, char *name, int size, char *type )
 {
 	char *c;
 	char *b;
 	int n;
-	memset(buffer,' ',37);
-	buffer[38]=0;
+	memset(buffer,' ',37);	// char 0 to 36
+	buffer[37]=0;
 
 	n = 0; b = buffer;
-	for (c=name;(*c) && (n<38);c++)
+	for (c=name;(*c) && (n<37);c++)
 	{
 		 *b++=*c;
 		n++;
@@ -66,24 +80,63 @@ void set_font_buffer( char *buffer, char *name, int size, char *type )
 	}
 }
 
+void getfonts(char *buffer)
+{
+	int32 afShortage, afSize;
+	struct AvailFontsHeader *afh;
+	struct AvailFonts *_fonts;
+	font tfont;
+
+	afSize = 400;
+	do
+	{
+		afh = (struct AvailFontsHeader *) AllocVecTags(afSize, TAG_END);
+		if (afh)
+		{
+			afShortage = AvailFonts( (char *) afh, afSize, AFF_MEMORY | AFF_DISK);
+
+			if (afShortage)
+			{
+				FreeVec(afh);
+				afSize += afShortage;
+			}
+			else
+			{
+				int n;
+				_fonts = (AvailFonts *) ((char *) afh + sizeof(uint16_t));
+				for (n=0;n<afh -> afh_NumEntries;n++)
+				{
+					set_font_buffer(buffer, (char *) _fonts -> af_Attr.ta_Name, _fonts -> af_Attr.ta_YSize, (char *) "disc");
+					tfont.amosString =buffer;
+					tfont.name = _fonts -> af_Attr.ta_Name;
+					tfont.size = _fonts -> af_Attr.ta_YSize;
+					fonts.push_back(tfont);
+					_fonts++;
+				}
+				FreeVec(afh);
+			}
+		}
+		else
+		{
+			printf("AllocMem of AvailFonts buffer afh failed\n");
+			break;
+		}
+	} while (afShortage);
+}
+
+
 char *fontsGetRomFonts(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	char buffer[38];
-	int n;
+	char buffer[39];
 
-	memset(buffer,' ',37);
-	buffer[38]=0;
-	
 	fonts.erase( fonts.begin(), fonts.end() );
-
-	set_font_buffer(buffer,"topaz.font",8,"disc");
-	fonts.push_back(buffer);
-
-	set_font_buffer(buffer,"junk.font",8,"disc");
-	fonts.push_back(buffer);
+	getfonts( buffer );
 
 	return tokenBuffer;
 }
+
+
+extern struct RastPort font_render_rp;
 
 char *_fontsSetFont( struct glueCommands *data, int nextToken )
 {
@@ -94,6 +147,20 @@ char *_fontsSetFont( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1: ret = getStackNum( stack ) ;
+
+			if ((ret>=0)&&(ret<=fonts.size()))
+			{
+				if (gfx_font) CloseFont(gfx_font);		
+				gfx_font = open_font( fonts[ret].name.c_str(),fonts[ret].size );
+
+				engine_lock();
+				if (engine_ready())
+				{
+					SetFont( &font_render_rp, gfx_font );
+				}
+				engine_unlock();
+			}
+
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -110,6 +177,7 @@ char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
 char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -122,12 +190,10 @@ char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 	{
 		case 1:	index = (unsigned int) getStackNum(stack);
 
-				printf("index: %d\n",index);
-
 				if ((index>0) && (index <= fonts.size()))
 				{
 					popStack( stack - data->stack );
-					setStackStrDup( fonts[ index-1 ].c_str() );
+					setStackStrDup( fonts[ index-1 ].amosString.c_str() );
 					return NULL;
 				}
 				break;
