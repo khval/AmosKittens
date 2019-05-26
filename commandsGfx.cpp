@@ -587,20 +587,7 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 		case 2:
 			stack_get_if_int( stack-1, &xgr );
 			stack_get_if_int( stack, &ygr );
-			if (screen)
-			{
-				switch (GrWritingMode)
-				{
-					case 0:	retroPixel( screen, xgr,ygr,screen -> ink0 );
-							break;
-					case 2:
-							{
-								int old = retroPoint( screen, xgr,ygr ) ^ screen -> ink0;
-								retroPixel( screen, xgr,ygr,old );
-							}
-							break;
-				}
-			}
+			if (screen) retroPixel( screen, xgr,ygr,screen -> ink0 );
 			break;
 		case 3:
 			stack_get_if_int( stack-2, &xgr );
