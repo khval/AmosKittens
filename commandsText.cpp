@@ -54,6 +54,8 @@ struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
 struct retroTextWindow *redrawWindowsExceptID(struct retroScreen *screen,int exceptID);
 void delTextWindow( struct retroScreen *screen, struct retroTextWindow *window );
 
+extern int os_text_base(char *txt);
+
 void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
 
 struct retroBlock *cursor_block = NULL; 
@@ -2144,6 +2146,52 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxTextBase(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	int ret = 0;
+	proc_names_printf("%s:s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	char *txt="abcdefghijklmnopqrstuvwxyz";
+
+	if (txt)
+	{
+		ret = os_text_base(txt);
+	}
+
+	setStackNum(ret);
+
+	return tokenBuffer;
+}
+
+char *_gfxSetText( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch( args )
+	{
+		case 1:	
+				break;
+
+		default:
+				setError(22, data->tokenBuffer);
+				break;
+	}
+
+	printf("%s:%s:%d -> dummy command ignored\n",__FILE__,__FUNCTION__,__LINE__);	
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *gfxSetText(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	// some thing to do with drawing, not sure.
+	stackCmdParm( _gfxSetText, tokenBuffer );
+	return tokenBuffer;
+}
 
 char *_textBorder( struct glueCommands *data, int nextToken )
 {

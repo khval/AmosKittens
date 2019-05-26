@@ -10,6 +10,7 @@
 
 extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
+extern struct TextFont *gfx_font;
 
 #define effect_args unsigned char data, int bit_offset, int num_bits_in_byte , int _bit_start,int y,struct retroScreen *screen, int destx, int desty, int pen, int paper, int w2
 
