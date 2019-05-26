@@ -13,6 +13,8 @@
 #include <proto/dos.h>
 #include <proto/diskfont.h>
 #include <proto/graphics.h>
+
+extern struct RastPort font_render_rp;
 #endif
 
 #ifdef __linux__
@@ -80,7 +82,7 @@ void set_font_buffer( char *buffer, char *name, int size, char *type )
 	}
 }
 
-void getfonts(char *buffer)
+void getfonts(char *buffer, int source_type )
 {
 	int32 afShortage, afSize;
 	struct AvailFontsHeader *afh;
@@ -106,11 +108,14 @@ void getfonts(char *buffer)
 				_fonts = (AvailFonts *) ((char *) afh + sizeof(uint16_t));
 				for (n=0;n<afh -> afh_NumEntries;n++)
 				{
-					set_font_buffer(buffer, (char *) _fonts -> af_Attr.ta_Name, _fonts -> af_Attr.ta_YSize, (char *) "disc");
-					tfont.amosString =buffer;
-					tfont.name = _fonts -> af_Attr.ta_Name;
-					tfont.size = _fonts -> af_Attr.ta_YSize;
-					fonts.push_back(tfont);
+					if ((_fonts -> af_Type | source_type ) && (_fonts ->  af_Attr.ta_Style == FS_NORMAL))
+					{
+						set_font_buffer(buffer, (char *) _fonts -> af_Attr.ta_Name, _fonts -> af_Attr.ta_YSize, (char *) "disc");
+						tfont.amosString =buffer;
+						tfont.name = _fonts -> af_Attr.ta_Name;
+						tfont.size = _fonts -> af_Attr.ta_YSize;
+						fonts.push_back(tfont);
+					}
 					_fonts++;
 				}
 				FreeVec(afh);
@@ -130,13 +135,30 @@ char *fontsGetRomFonts(struct nativeCommand *cmd, char *tokenBuffer)
 	char buffer[39];
 
 	fonts.erase( fonts.begin(), fonts.end() );
-	getfonts( buffer );
+	getfonts( buffer,  AFF_MEMORY );
 
 	return tokenBuffer;
 }
 
+char *fontsGetDiscFonts(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	char buffer[39];
 
-extern struct RastPort font_render_rp;
+	fonts.erase( fonts.begin(), fonts.end() );
+	getfonts( buffer,  AFF_DISK );
+
+	return tokenBuffer;
+}
+
+char *fontsGetAllFonts(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	char buffer[39];
+
+	fonts.erase( fonts.begin(), fonts.end() );
+	getfonts( buffer,  AFF_DISK | AFF_MEMORY );
+
+	return tokenBuffer;
+}
 
 char *_fontsSetFont( struct glueCommands *data, int nextToken )
 {

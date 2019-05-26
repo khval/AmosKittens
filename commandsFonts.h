@@ -9,6 +9,8 @@
 
 #include "amosKittens.h"
 
+char *fontsGetAllFonts(struct nativeCommand *cmd, char *tokenBuffer);
+char *fontsGetDiscFonts(struct nativeCommand *cmd, char *tokenBuffer);
 char *fontsGetRomFonts(struct nativeCommand *cmd, char *tokenBuffer);
 char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer);
 char *fontsFontsStr(struct nativeCommand *cmd, char *tokenBuffer);

@@ -1004,8 +1004,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0F3A,"Text Base",0,textTextBase },
 	{0x0F4A,"Text",0,textText },
 	{0x0F6A,"Set Paint",0,gfxSetPaint },			// dummy function
-	{0x0F7A,"Get Fonts",0,fontsGetRomFonts },
-	{0x0F8A,"Get Disc Fonts",0,fontsGetRomFonts },
+	{0x0F7A,"Get Fonts",0,fontsGetAllFonts },
+	{0x0F8A,"Get Disc Fonts",0,fontsGetDiscFonts },
 	{0x0F9E,"Get Rom Fonts",0,fontsGetRomFonts },
 	{0x0FB2,"Set Font",0,fontsSetFont },
 	{0x0FC2,"Fonts$",0,fontsFontsStr },
