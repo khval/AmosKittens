@@ -762,6 +762,9 @@ void draw_tab(struct retroScreen *screen)
 	struct retroTextWindow *textWindow = screen -> currentTextWindow;
 	if (!textWindow) return;
 
+
+	n = textWindow -> locateX % _tab_size;
+
 	while (n<_tab_size)
 	{
 		draw_char(screen, textWindow,
