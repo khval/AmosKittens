@@ -1922,6 +1922,20 @@ char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void dotBAR( struct retroScreen *screen, int x0,int y0, int x1, int y1, int bc, int oc )
+{
+	int x,y,n;
+
+	for (y=y0;y<=y1;y++)
+	{
+		n=y&1;
+		for (x=x0;x<=x1;x++)
+		{
+			retroPixel(screen,x,y, (x^y) & 1 ? bc : oc );
+		}
+	}
+}
+
 char *_gfxHslider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1947,10 +1961,10 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 			xpos2 =  (x2-x1) * (pos+size) / total;
 
 			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
-			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,sliderBPaper );
+			dotBAR( screens[current_screen],x1+1,	y1+1,x2-1,y2-1,sliderBPaper, sliderBOutline );
 
-			retroBox( screens[current_screen], x1+xpos1+2,y1+2,x1+xpos2-2,y2-2,sliderSOutline );
-			retroBAR( screens[current_screen], x1+xpos1+3,y1+3,x1+xpos2-3,y2-3,sliderSPaper );
+			retroBox( screens[current_screen], x1+xpos1,y1,x1+xpos2,y2,sliderSOutline );
+			retroBAR( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -1990,10 +2004,10 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 			ypos2 =  (y2-y1) * (pos+size) / total;
 
 			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
-			retroBAR( screens[current_screen], x1+1,y1+1,x2-1,y2-1,sliderBPaper );
+			dotBAR( screens[current_screen],x1+1,	y1+1,x2-1,y2-1,sliderBPaper, sliderBOutline );
 
-			retroBox( screens[current_screen], x1+2,y1+ypos1+2,x2-2,y1+ypos2-2,sliderSOutline );
-			retroBAR( screens[current_screen], x1+3,y1+ypos1+3,x2-3,y1+ypos2-3,sliderSPaper );
+			retroBox( screens[current_screen], x1,y1+ypos1,x2,y1+ypos2-2,sliderSOutline );
+			retroBAR( screens[current_screen], x1+1,y1+ypos1+1,x2-1,y1+ypos2-1,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
