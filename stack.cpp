@@ -39,6 +39,22 @@ bool dropProgStackToFlag( int flag )
 	return false;
 }
 
+bool dropProgStackAllFlag( int flag )
+{
+	bool deleted = false;
+	while (cmdStack > 0)
+	{
+		if (cmdTmp[cmdStack-1].flag & flag) 
+		{
+			cmdStack--;
+			deleted = true;
+		}
+		else return deleted;
+	}
+	return false;
+}
+
+
 void remove_parenthesis(int black_at_stack )
 {
 	if ( kittyStack[black_at_stack].state == state_subData ) 

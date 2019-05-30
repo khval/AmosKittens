@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <label.h>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -12,7 +13,6 @@
 #include "amosKittens.h"
 #include "commands.h"
 
-extern char *findLabel( char *name, int proc );
 int findVar( char *name, int type, int _proc );
 extern int findVarPublic( char *name, int type );
 extern int findProc( char *name );
@@ -26,16 +26,17 @@ int var_type_is( struct reference *ref, int mask )
 	return ref -> flags & mask;
 }
 
-char *var_JumpToName(struct reference *ref)
+struct label *var_JumpToName(struct reference *ref)
 {
-	char *ptr = NULL;
 	char *name = dupRef(ref);
 	if (name) 
 	{
-		ptr = findLabel( name, procStcakFrame[proc_stack_frame].id );
+		struct label *label = findLabel( name, procStcakFrame[proc_stack_frame].id );
 		free(name);
+		return label;
 	}
-	return ptr;
+
+	return NULL;
 }
 
 int var_find_proc_ref(struct reference *ref)

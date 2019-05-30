@@ -75,6 +75,8 @@ enum
 #define cmd_onBreak		256
 #define cmd_never			512
 #define cmd_exit			1024
+#define cmd_true			2048
+#define cmd_false			4096
 
 
 enum
@@ -191,6 +193,7 @@ struct kittyData
 struct label
 {
 	int proc;
+	char *loopLocation;
 	char *tokenLocation;
 	char *name;
 };
@@ -269,13 +272,13 @@ struct PacPicContext
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
-	cmdTmp[cmdStack].flag = cmd_never;	\
+	cmdTmp[cmdStack].flag = cmd_never | cmd_true;	\
 	cmdStack++; \
 
 #define stackIfNotSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifNotSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
-	cmdTmp[cmdStack].flag = cmd_never;	\
+	cmdTmp[cmdStack].flag = cmd_never | cmd_false;	\
 	cmdStack++; \
 
 #define stackCmdNormal( fn, buf )				\

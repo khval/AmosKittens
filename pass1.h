@@ -1,7 +1,6 @@
 
 char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsigned short token, char *file_end );
 void pass1_reader( char *start, char *file_end );
-int findLabelRef( char *name, int _proc );
 
 #define max_nested_commands 1000
 
@@ -30,6 +29,12 @@ struct nested
 
 extern int nested_count;
 extern struct nested nested_command[ max_nested_commands ];
+
+#define addNestLoop( enum_cmd ) \
+	nested_command[ nested_count ].cmd = enum_cmd; \
+	nested_command[ nested_count ].ptr = ptr; \
+	nested_count++;	\
+	nest_loop_count++;
 
 #define addNest( enum_cmd ) \
 	nested_command[ nested_count ].cmd = enum_cmd; \

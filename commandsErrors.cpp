@@ -25,6 +25,7 @@
 #include "commands.h"
 #include "commandsErrors.h"
 #include "errors.h"
+#include "label.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -32,7 +33,6 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern char *findLabel( char *name, int proc );
 extern int findVarPublic( char *name, int type );
 extern std::vector<struct label> labels;
 
@@ -59,6 +59,7 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 {
 	char *name = NULL;
 	unsigned short next_token; 
+	struct label *label;
 
 	onError = onErrorBreak;	// default.
 
@@ -73,7 +74,8 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				if (name)
 				{
 					printf("name %s\n",name);
-					on_error_goto_location = findLabel(name, procStcakFrame[proc_stack_frame].id);
+					struct label *label =  findLabel(name, procStcakFrame[proc_stack_frame].id);
+					on_error_goto_location = label -> tokenLocation;
 					onError = onErrorGoto;
 					free(name);
 				}
@@ -216,8 +218,9 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 	if (name)	// has args
 	{
 		char *ret;
+		struct label *label =  findLabel(name, procStcakFrame[proc_stack_frame].id);
+		ret = label -> tokenLocation;
 
-		ret = findLabel(name, procStcakFrame[proc_stack_frame].id);
 		free(name);
 
 		if (ret) 

@@ -194,7 +194,7 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (procStcakFrame[proc_stack_frame].dataPointer == 0x0000) 
 	{
-		printf("we are here\n");
+		printf("setting error in %s at line %d\n",__FUNCTION__, getLineFromPointer( tokenBuffer ));
 		setError( 25, tokenBuffer);
 	}
 	else

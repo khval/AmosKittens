@@ -66,6 +66,7 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "spawn.h"
+#include "label.h"
 
 #include "ext_compact.h"
 #include "ext_turbo.h"
@@ -565,8 +566,6 @@ char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
 	struct reference *ref = (struct reference *) ptr;
 	return ptr + ref -> length ;
 }
-
-extern char *findLabel( char *name );
 
 
 char *cmdVar(nativeCommand *cmd, char *ptr)

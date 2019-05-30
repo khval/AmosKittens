@@ -20,6 +20,7 @@
 #include "debug.h"
 #include "errors.h"
 #include "var_helper.h"
+#include "label.h"
 
 
 extern struct globalVar globalVars[];
@@ -27,8 +28,6 @@ extern struct nativeCommand nativeCommands[];
 extern int nativeCommandsSize;
 extern const char *TokenName( unsigned short token );
 extern unsigned short token_not_found;
-extern int findLabelRef( char *name, int _proc );
-extern char *findLabel( char *name, int _proc );
 extern char *_gosub_return( struct glueCommands *data, int nextToken );
 
 
@@ -267,10 +266,13 @@ exit_on_for_loop:
 
 		if (ref_num>0)
 		{
+			struct label *label = NULL;
+
 			switch (token)
 			{
 				case GOTO:	
-						ret = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id);
+						label = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id);
+						ret = label ? label -> tokenLocation : NULL;
 						break;
 
 				case GOSUB:	
@@ -281,17 +283,19 @@ exit_on_for_loop:
 						{
 							case 0x0006:
 									stackCmdLoop( _gosub_return, tokenBuffer+2 );
-									ret = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id );
+									label = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id );
 									break;
 							case 0x0018:
 									stackCmdLoop( _gosub_return, tokenBuffer+2 );
-									ret = labels[ref_num-1].tokenLocation;
+									label = &labels[ref_num-1];
 									break;
 							case 0x003E:
 									stackCmdLoop( _gosub_return, tokenBuffer+2 );
-									ret = labels[ref_num-1].tokenLocation;
+									label = &labels[ref_num-1];
 									break;
 						}
+
+						ret = label ? label -> tokenLocation : NULL;
 						break;
 
 				case PROC:
