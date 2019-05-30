@@ -114,7 +114,9 @@ struct extension_lib	kitty_extensions[32];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
-char *data_read_pointers[PROC_STACK_SIZE];
+//char *data_read_pointers[PROC_STACK_SIZE];
+
+struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 
 char *_get_var_index( glueCommands *self, int nextToken);
 

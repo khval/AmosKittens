@@ -62,7 +62,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 					if (ptr)	// if ptr, then token is 0x0404 (new line)
 					{
 						ptr+=4;	// skip token.
-						data_read_pointers[proc_stack_frame] = ptr;	// set data_read_poiner
+						procStcakFrame[proc_stack_frame].dataPointer = ptr;	// set data_read_poiner
 						
 						// end of line => comma, exit we have read something I hope.
 						if (do_input[parenthesis_count] == _exit_read_data) 
@@ -120,7 +120,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 static void collect_data()
 {
 	unsigned short token;
-	char *ptr = data_read_pointers[proc_stack_frame];
+	char *ptr = procStcakFrame[proc_stack_frame].dataPointer;
 
 	setStackNum(0);
 	token = *((short *) ptr );
@@ -131,7 +131,7 @@ static void collect_data()
 		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr );
 		ptr += 2;	// next token.	
-		data_read_pointers[proc_stack_frame] = ptr;	// store last valid.
+		procStcakFrame[proc_stack_frame].dataPointer = ptr;	// store last valid.
 	}
 }
 
@@ -192,7 +192,7 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (data_read_pointers[proc_stack_frame] == 0x0000) 
+	if (procStcakFrame[proc_stack_frame].dataPointer == 0x0000) 
 	{
 		printf("we are here\n");
 		setError( 25, tokenBuffer);

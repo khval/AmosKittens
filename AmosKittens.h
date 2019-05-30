@@ -203,6 +203,13 @@ struct globalVar
 	bool isGlobal;
 };
 
+struct stackFrame
+{
+	int id;
+//	struct kittyData *var;
+	char *dataPointer;
+};
+
 struct defFn
 {
 	char *name;
@@ -366,7 +373,9 @@ extern int var_param_num;
 extern double var_param_decimal;
 
 extern int proc_stack_frame;
-extern char *data_read_pointers[PROC_STACK_SIZE];
+
+extern struct stackFrame procStcakFrame[PROC_STACK_SIZE];
+
 extern char *_file_start_;
 extern char *_file_end_;
 

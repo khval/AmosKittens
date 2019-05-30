@@ -111,15 +111,18 @@ char *_procedure( struct glueCommands *data, int nextToken )
 }
 
 
-
-void stack_frame_up(struct kittyData *var)
+void stack_frame_up(int varIndex)
 {
+	struct kittyData *var = &globalVars[ varIndex ].var;
+
 	proc_stack_frame++;		// move stack frame up.
+	procStcakFrame[proc_stack_frame].id = globalVars[ varIndex ].proc;
+
 	if ( var -> procDataPointer )
 	{
-		data_read_pointers[proc_stack_frame]  = var -> procDataPointer;
+		procStcakFrame[proc_stack_frame].dataPointer  = var -> procDataPointer;
 	}
-	else data_read_pointers[proc_stack_frame] = data_read_pointers[proc_stack_frame-1];
+	else procStcakFrame[proc_stack_frame].dataPointer = procStcakFrame[proc_stack_frame-1].dataPointer;
 }
 
 char *_procAndArgs( struct glueCommands *data, int nextToken )
@@ -147,7 +150,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
-					stack_frame_up(&globalVars[idx].var);
+					stack_frame_up( idx );
 					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
@@ -165,7 +168,7 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
 
 					tokenMode = mode_store;
-					stack_frame_up(&globalVars[idx].var);
+					stack_frame_up( idx);
 					return globalVars[idx].var.tokenBufferPos  ;
 			}
 		}
@@ -1656,7 +1659,7 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	if (ptr)
 	{
 		ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
-		data_read_pointers[proc_stack_frame] = ptr;
+		procStcakFrame[proc_stack_frame].dataPointer = ptr;
 	}
 	else
 	{
@@ -1692,7 +1695,7 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 							if (ptr) 
 							{
 								ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
-								data_read_pointers[proc_stack_frame] = ptr;
+								procStcakFrame[proc_stack_frame].dataPointer = ptr;
 							}
 							else 	setError( 40, tokenBuffer );
 						}

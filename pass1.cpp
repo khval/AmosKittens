@@ -1077,7 +1077,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							{
 								if (current_proc -> procDataPointer == NULL) current_proc -> procDataPointer = ptr + 2;
 							}
-							else 	if (data_read_pointers[0] == NULL) data_read_pointers[0] = ptr + 2;
+							else 	if (procStcakFrame[0].dataPointer == NULL) procStcakFrame[0].dataPointer = ptr + 2;
 
 							addNest( nested_data );
 
