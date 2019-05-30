@@ -12,7 +12,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 
-extern char *findLabel( char *name );
+extern char *findLabel( char *name, int proc );
 int findVar( char *name, int type, int _proc );
 extern int findVarPublic( char *name, int type );
 extern int findProc( char *name );
@@ -32,7 +32,7 @@ char *var_JumpToName(struct reference *ref)
 	char *name = dupRef(ref);
 	if (name) 
 	{
-		ptr = findLabel( name );
+		ptr = findLabel( name, procStcakFrame[proc_stack_frame].id );
 		free(name);
 	}
 	return ptr;

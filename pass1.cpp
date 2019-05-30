@@ -203,29 +203,45 @@ int findVar( char *name, bool is_first_token, int type, int _proc )
 }
 
 
-char *findLabel( char *name )
+char *findLabel( char *name, int _proc )
 {
 	unsigned int n;
+	struct label *label;
+
+	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
 
 	for (n=0;n<labels.size();n++)
 	{
-		if (strcasecmp( labels[n].name, name)==0)
+		label = &labels[n];
+
+		if (label -> proc == _proc)
 		{
-			return labels[n].tokenLocation;
+			if (strcasecmp( label -> name, name)==0)
+			{
+				return labels[n].tokenLocation;
+			}
 		}
 	}
 	return NULL;
 }
 
-int findLabelRef( char *name )
+int findLabelRef( char *name, int _proc )
 {
 	unsigned int n;
+	struct label *label;
+
+	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
 
 	for (n=0;n<labels.size();n++)
 	{
-		if (strcasecmp( labels[n].name, name)==0)
+		label = &labels[n];
+
+		if (label -> proc == _proc)
 		{
-			return n+1;
+			if (strcasecmp( label -> name, name)==0)
+			{
+				return n+1;
+			}
 		}
 	}
 	return 0;
@@ -506,7 +522,7 @@ void pass1label(char *ptr)
 
 		if (last_tokens[parenthesis_count]  == 0)
 		{
-			found_ref = findLabelRef(tmpName);
+			found_ref = findLabelRef(tmpName, (pass1_inside_proc ? procCount : 0));
 
 			if (found_ref>0)
 			{
@@ -522,6 +538,7 @@ void pass1label(char *ptr)
 				// skip all new lines..
 				while ( (*(unsigned short *) next) == 0x0000 ) next += 4;	// token and newline code
 
+				tmp.proc = (pass1_inside_proc ? procCount : 0);
 				tmp.name = tmpName;
 				tmp.tokenLocation = next +2 ;
 
@@ -532,7 +549,7 @@ void pass1label(char *ptr)
 		}
 		else
 		{
-			found_ref = findLabelRef(tmpName);
+			found_ref = findLabelRef(tmpName,(pass1_inside_proc ? procCount : 0));
 			if (found_ref>0)
 			{
 				ref -> ref = found_ref;

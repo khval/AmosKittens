@@ -32,7 +32,7 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern char *findLabel( char *name );
+extern char *findLabel( char *name, int proc );
 extern int findVarPublic( char *name, int type );
 extern std::vector<struct label> labels;
 
@@ -73,7 +73,7 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				if (name)
 				{
 					printf("name %s\n",name);
-					on_error_goto_location = findLabel(name);
+					on_error_goto_location = findLabel(name, procStcakFrame[proc_stack_frame].id);
 					onError = onErrorGoto;
 					free(name);
 				}
@@ -217,7 +217,7 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		char *ret;
 
-		ret = findLabel(name);
+		ret = findLabel(name, procStcakFrame[proc_stack_frame].id);
 		free(name);
 
 		if (ret) 

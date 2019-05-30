@@ -162,7 +162,9 @@ void dump_labels()
 
 	for (n=0;n<labels.size();n++)
 	{
-		printf("%d: tokenLocation: %08x, Name: %s\n" ,n, labels[n].tokenLocation, labels[n].name);
+		printf("%d: tokenLocation: %08x, Name: %s - in proc %d\n" ,n, 
+				labels[n].tokenLocation, 
+				labels[n].name, labels[n].proc);
 
 	}
 }

@@ -54,11 +54,13 @@ extern void setStackStr( char *str );
 extern void setStackStrDup( const char *str );
 extern int findVarPublic( char *name, int type );
 extern int ReferenceByteLength(char *ptr);
-extern int findLabelRef( char *name );
+
+extern char *findLabel( char *name, int _proc );
+extern int findLabelRef( char *name, int _proc );
 
 using namespace std;
 
-extern char *findLabel( char *name );
+
 
 void	input_mode( char *tokenBuffer );
 char *dupRef( struct reference *ref );
@@ -723,14 +725,14 @@ char *_gosub( struct glueCommands *data, int nextToken )
 				{
 					char num[50];
 					sprintf(num,"%d", kittyStack[stack].value );
-					ref_num = findLabelRef( num );
+					ref_num = findLabelRef( num , procStcakFrame[proc_stack_frame].id  );
 				}
 				break;
 
 		case type_string:
 				{
 					char *txt = getStackString( stack );
-					ref_num = findLabelRef( txt );
+					ref_num = findLabelRef( txt, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
@@ -778,14 +780,14 @@ char *_goto( struct glueCommands *data, int nextToken )
 				{
 					char num[50];
 					sprintf(num,"%d", kittyStack[stack].value );
-					ref_num = findLabelRef( num );
+					ref_num = findLabelRef( num, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
 		case type_string:
 				{
 					char *txt = getStackString( stack );
-					ref_num = findLabelRef( txt );
+					ref_num = findLabelRef( txt, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
@@ -1653,7 +1655,7 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	char *name = getStackString( stack );
-	if (name)	ptr = findLabel(name);
+	if (name)	ptr = findLabel(name, procStcakFrame[proc_stack_frame].id );
 	popStack( stack - data->stack  );
 
 	if (ptr)
@@ -1689,7 +1691,7 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 				case type_proc:
 						if (name = dupRef( ref ))
 						{
-							char *ptr = findLabel(name);
+							char *ptr = findLabel(name, procStcakFrame[proc_stack_frame].id);
 							free(name);
 
 							if (ptr) 
@@ -2073,7 +2075,7 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 
 						if (name)
 						{
-							on_every_gosub_location = findLabel(name);
+							on_every_gosub_location = findLabel(name, procStcakFrame[proc_stack_frame].id);
 							every_on = true;
 							free(name);
 						}

@@ -27,8 +27,8 @@ extern struct nativeCommand nativeCommands[];
 extern int nativeCommandsSize;
 extern const char *TokenName( unsigned short token );
 extern unsigned short token_not_found;
-extern int findLabelRef( char *name );
-extern char *findLabel( char *name );
+extern int findLabelRef( char *name, int _proc );
+extern char *findLabel( char *name, int _proc );
 extern char *_gosub_return( struct glueCommands *data, int nextToken );
 
 
@@ -218,7 +218,8 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 							if (name)
 							{
 								printf("name: %s\n",name);
-								ref_num = ref->ref = findLabelRef( name );	free(name); 
+								ref_num = ref->ref = findLabelRef( name, procStcakFrame[proc_stack_frame].id );
+								free(name); 
 							}
 
 							if (ref_num == 0) 
@@ -244,7 +245,7 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 					{
 						char num[50];
 						sprintf(num,"%d", *((int *) tokenBuffer));
-						ref_num = findLabelRef( num );
+						ref_num = findLabelRef( num, procStcakFrame[proc_stack_frame].id );
 					}
 
 					tokenBuffer += 4;
@@ -269,7 +270,7 @@ exit_on_for_loop:
 			switch (token)
 			{
 				case GOTO:	
-						ret = findLabel(globalVars[ref_num-1].varName);
+						ret = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id);
 						break;
 
 				case GOSUB:	
@@ -280,7 +281,7 @@ exit_on_for_loop:
 						{
 							case 0x0006:
 									stackCmdLoop( _gosub_return, tokenBuffer+2 );
-									ret = findLabel(globalVars[ref_num-1].varName);
+									ret = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id );
 									break;
 							case 0x0018:
 									stackCmdLoop( _gosub_return, tokenBuffer+2 );

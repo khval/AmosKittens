@@ -190,6 +190,7 @@ struct kittyData
 
 struct label
 {
+	int proc;
 	char *tokenLocation;
 	char *name;
 };
