@@ -190,7 +190,7 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 		{
 			if ((currentPattern)&&(patterns))
 			{
-				retroBarPattern( screen, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern-1 : -currentPattern, screen -> ink0, screen -> ink1 );
+				retroBarPattern( screen, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern+3 : -currentPattern, screen -> ink0, screen -> ink1 );
 			}
 			else retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
 
