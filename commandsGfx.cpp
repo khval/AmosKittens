@@ -1961,10 +1961,28 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 			xpos2 =  (x2-x1) * (pos+size) / total;
 
 			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
-			dotBAR( screens[current_screen],x1+1,	y1+1,x2-1,y2-1,sliderBPaper, sliderBOutline );
+
+			if (sliderBStyle)
+			{
+				retroBarPattern( screens[current_screen],x1+1, y1+1,x2-1,y2-1, patterns, sliderBStyle+3, sliderBOutline, sliderBPaper );
+			}
+			else
+			{
+				retroBAR( screens[current_screen],x1+1, y1+1,x2-1,y2-1, sliderBOutline );
+			}
 
 			retroBox( screens[current_screen], x1+xpos1,y1,x1+xpos2,y2,sliderSOutline );
-			retroBAR( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSPaper );
+
+			if (sliderSStyle)
+			{
+				retroBarPattern( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,patterns, sliderSStyle+3, sliderSOutline, sliderSPaper );
+			}
+			else
+			{
+				retroBAR( screens[current_screen],x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSOutline );
+			}
+
+//			retroBAR( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
