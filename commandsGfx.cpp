@@ -324,8 +324,11 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 		{
 			array[n] = getStackNum( _stack++ );
 		}
+		array[n] = array[0]; n++;
+		array[n] = array[1]; n++;
 
-		retroPolyGonArray( screen, screen -> ink0, args, array );
+
+		retroPolyGonArray( screen, screen -> ink0, (args+2) * sizeof(int), array );
 
 		if (paintMode)
 		{
