@@ -300,40 +300,74 @@ void del_block(std::vector<struct retroBlock> &blocks,int id)
 }
 
 
+void putRowBlock(int w, unsigned char *sslice,unsigned char *dslice, int x, int sw, unsigned char bitmask)
+{
+	int _x, dx; 
+
+	for (_x=0;_x<w;_x++)
+	{
+		dx = _x+x;
+		if ((dx>=0)&&(dx<sw))
+		{
+			dslice[dx]= sslice[_x] & bitmask;
+		}
+	}
+}
+
+void putRowBlockMask(int w, unsigned char *sslice,unsigned char *dslice, int x,int sw, unsigned char bitmask)
+{
+	int _x, dx; 
+
+	for (_x=0;_x<w;_x++)
+	{
+		dx = _x+x;
+		if ((dx>=0)&&(dx<sw))
+		{
+			if (sslice[_x]) dslice[dx]= sslice[_x] & bitmask;
+		}
+	}
+}
+
+
 void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask)
 {
 	unsigned char *sslice,*dslice;
-	int _x,_y,dx,dy;
+	int _y,dy;
 
-	for (_y=0;_y<block->h;_y++)
+	void (*putRow) (int w, unsigned char *sslice,unsigned char *dslice, int x, int sw, unsigned char bitmask);
+
+	if (block->mask)
 	{
-		dy = _y+y;
-		if ((dy>=0)&&(dy<screen->realHeight))
-		{
-			dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
-			sslice = block->mem + (block->w * _y);
+		putRow = putRowBlockMask;
+	}
+	else
+	{
+		putRow = putRowBlock;
+	}
 
-			if (block->mask)
+	if ( block -> flag & flag_block_vrev )
+	{
+		for (_y=block->h-1;_y>=0;_y--)
+		{
+			dy = _y+y;
+			if ((dy>=0)&&(dy<screen->realHeight))
 			{
-				for (_x=0;_x<block->w;_x++)
-				{
-					dx = _x+x;
-					if ((dx>=0)&&(dx<screen->realWidth))
-					{
-						if (sslice[_x]) dslice[dx]= sslice[_x] & bitmask;
-					}
-				}
+				dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
+				sslice = block->mem + (block->w * _y);
+				putRow( block -> w, sslice,dslice, x, screen -> realWidth, bitmask);
 			}
-			else
+		}
+	}
+	else
+	{
+		for (_y=0;_y<block->h;_y++)
+		{
+			dy = _y+y;
+			if ((dy>=0)&&(dy<screen->realHeight))
 			{
-				for (_x=0;_x<block->w;_x++)
-				{
-					dx = _x+x;
-					if ((dx>=0)&&(dx<screen->realWidth))
-					{
-						dslice[dx]= sslice[_x] & bitmask;
-					}
-				}
+				dslice = screen->Memory[0] + (screen->bytesPerRow*dy);
+				sslice = block->mem + (block->w * _y);
+				putRow( block -> w, sslice,dslice, x, screen -> realWidth, bitmask);
 			}
 		}
 	}
@@ -350,10 +384,6 @@ struct retroBlock *findBlock(std::vector<struct retroBlock> &blocks,int id)
 	return NULL;
 }
 
-void put_block(struct retroScreen *screen,struct retroBlock *block,  int x, int y, unsigned char bitmask)
-{
-	retroPutBlock(screen, block,   x,  y, bitmask);
-}
 
 char *_bgGetBlock( struct glueCommands *data, int nextToken )
 {
@@ -440,7 +470,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 		screen = screens[ current_screen ];
 		if (screen)
 		{
-			if (block) put_block(screen, block, x,y, 255);
+			if (block) retroPutBlock(screen, block, x,y, 255);
 		}
 	}
 
@@ -557,7 +587,7 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 		screen = screens[ current_screen ];
 		if (screen)
 		{
-			if (block) put_block(screen, block, x,y, 255);
+			if (block) retroPutBlock(screen, block, x,y, 255);
 		}
 	}
 
@@ -616,9 +646,6 @@ char *_bgIconBase( struct glueCommands *data, int nextToken )
 			if ((pick>0)&&(pick<=icons->number_of_frames))
 			{
 				ret = &icons -> frames[pick-1] ;
-
-				// success quit here.
-
 				popStack( stack - data->stack );
 				setStackNum( (int) ret );
 				return NULL;
@@ -639,4 +666,71 @@ char *bgIconBase(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _bgIconBase, tokenBuffer );
 	return tokenBuffer;
 }
+
+//------
+
+
+char *_bgVrevBlock( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroBlock *block = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		block = findBlock(blocks, getStackNum(stack));
+		if (block) block -> flag ^= flag_block_vrev;
+		popStack( stack - data->stack );
+		return NULL;
+	}
+
+	// failed quit here.
+	
+	popStack( stack - data->stack );
+	setError(22, data->tokenBuffer);
+	return NULL;
+}
+
+char *bgVrevBlock(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _bgVrevBlock, tokenBuffer );
+	return tokenBuffer;
+}
+
+// -----
+
+
+char *_bgHrevBlock( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	struct retroBlock *block = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		block = findBlock(blocks, getStackNum(stack));
+		if (block) block -> flag ^= flag_block_hrev;
+		popStack( stack - data->stack );
+		return NULL;
+	}
+
+	// failed quit here.
+	
+	popStack( stack - data->stack );
+	setError(22, data->tokenBuffer);
+	return NULL;
+}
+
+char *bgHrevBlock(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _bgHrevBlock, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+
 

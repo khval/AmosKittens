@@ -29,6 +29,7 @@ char *bgPutCBlock(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgDelCBlock(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgIconBase(struct nativeCommand *cmd, char *tokenBuffer);
 char *bgMakeIconMask(struct nativeCommand *cmd, char *tokenBuffer);
-
+char *bgVrevBlock(struct nativeCommand *cmd, char *tokenBuffer);
+char *bgHrevBlock(struct nativeCommand *cmd, char *tokenBuffer);
 
 
