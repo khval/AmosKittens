@@ -179,9 +179,8 @@ char *_bgDelIcon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int del, delTo;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -389,7 +388,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -447,7 +446,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 	struct retroBlock *block = NULL;
 	int x=0,y=0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -489,7 +488,7 @@ char *_bgDelBlock( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int id;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -515,9 +514,8 @@ char *bgDelBlock(struct nativeCommand *cmd, char *tokenBuffer)
 char *_bgGetCBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
 
 	switch (args)
 	{
@@ -558,7 +556,7 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 	struct retroBlock *block = NULL;
 	int x=0,y=0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -605,7 +603,8 @@ char *_bgDelCBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int id;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{

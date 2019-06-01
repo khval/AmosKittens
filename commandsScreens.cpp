@@ -125,7 +125,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 // make sure there is standard way to close screens, that take care of clean up.
 
-bool kitten_screen_close(int screen_num)
+bool kitten_screen_close(int screen_num )
 {
 	if ((screen_num>-1)&&(screen_num<8))
 	{
@@ -261,13 +261,6 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 				if (kittyStack[stack-2].type ==  type_int) screen -> scanline_y = (getStackNum( stack-2 ) *2) - 80;
 				if (kittyStack[stack-1].type ==  type_int) screen -> displayWidth = getStackNum( stack-1 );
 				if (kittyStack[stack].type ==  type_int) screen -> displayHeight = getStackNum( stack );
-
-				printf( "retroApplyScreen( screen %08x, video %08x, screen -> scanline_x %d, screen -> scanline_y, %d,	screen -> displayWidth %d, screen -> displayHeight  %d );\n",
-					screen, video, 
-					screen -> scanline_x,
-					screen -> scanline_y,
-					screen -> displayWidth,
-					screen -> displayHeight );
 
 				retroApplyScreen( screen, video, 
 					screen -> scanline_x,
@@ -413,11 +406,8 @@ char *_gfxScreen( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			printf("limit looks ok\n");
-
 			if (screens[screen_num])
 			{
-				printf("looks ok\n");
 				current_screen = screen_num;
 				success = true;
 			}
@@ -433,7 +423,7 @@ char *_gfxScreen( struct glueCommands *data, int nextToken )
 
 char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (last_tokens[parenthesis_count])
 	{
@@ -631,7 +621,7 @@ char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenToBack, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
@@ -777,7 +767,7 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 
 char *gfxScreenShow(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenShow, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
@@ -785,7 +775,7 @@ char *gfxScreenShow(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxScreenHide(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _gfxScreenHide, tokenBuffer );
 	return tokenBuffer;
 }
@@ -865,8 +855,7 @@ void LoadIff( char *name, const int n )
 char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -891,6 +880,7 @@ char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 
 void SaveIff( char *name, const int n )
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 #if 0
 
@@ -971,7 +961,7 @@ char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
