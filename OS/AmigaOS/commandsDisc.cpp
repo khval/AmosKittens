@@ -1675,3 +1675,36 @@ char *discMakedir(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _discMakedir, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_discAssign( struct glueCommands *data, int nextToken )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	bool success = false;
+
+	if (args==2)
+	{
+		char *_volume = getStackString( stack-1 );
+		char *_path = getStackString( stack );
+
+		if ((_volume)&&(_path))
+		{
+			int vl = strlen (_volume);
+			if (vl)	 if (_volume[ vl -1 ]==':') _volume[ vl -1 ]=0 ;
+
+			if (AssignLate(_volume,_path)) success = true;
+		}
+	}
+
+	if (success == false )setError( 22, data -> tokenBuffer );
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+char *discAssign(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _discAssign, tokenBuffer );
+	return tokenBuffer;
+}
+
