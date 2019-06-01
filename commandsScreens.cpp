@@ -794,7 +794,6 @@ char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
 
 void LoadIff( char *name, const int n )
 {
-#if 0
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
@@ -813,15 +812,17 @@ void LoadIff( char *name, const int n )
 					PDTA_ModeID, &modeid,
 					TAG_DONE);
 
+		if (screens[n]) 	kitten_screen_close( n );	// this function locks engine ;-)
+
 		engine_lock();
 
-		if (screens[n]) 	kitten_screen_close( n );
 		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height,1);
 
 		if (screens[n])
 		{
 			struct RastPort rp;
-			int x,y,c;
+			unsigned int c;
+			int x,y;
 
 			init_amos_kittens_screen_default_text_window(screens[n], 256);
 
@@ -852,10 +853,9 @@ void LoadIff( char *name, const int n )
 		}
 
 		DisposeDTObject((Object*) dto);
+
 		engine_unlock();
 	}
-
-#endif
 }
 
 char *_gfxLoadIff( struct glueCommands *data, int nextToken )
