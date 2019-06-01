@@ -469,7 +469,7 @@ char *_gfxScreenWidth( struct glueCommands *data, int nextToken )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			popStack( stack - data->stack );
-			setStackNum(screens[current_screen] -> realWidth);
+			setStackNum(screens[screen_num] -> realWidth);
 			return NULL;
 		}
 
@@ -512,7 +512,7 @@ char *_gfxScreenHeight( struct glueCommands *data, int nextToken )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			popStack( stack - data->stack );
-			setStackNum(screens[current_screen] -> realHeight);
+			setStackNum(screens[screen_num] -> realHeight);
 			return NULL;
 		}
 
