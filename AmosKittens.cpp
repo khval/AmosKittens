@@ -944,7 +944,8 @@ struct nativeCommand nativeCommands[]=
 	{0x0B20,"Auto View Off", 0, ocAutoViewOff },
 	{0x0B34,"Auto View On", 0, ocAutoViewOn },
 	{0x0B58,"Screen Width", 0, gfxScreenWidth },
-	{0x0B74,"Screen Height", 0, gfxScreenHeight },
+	{0x0B88,"Screen Height", 0, gfxScreenHeight },		// =Screen Height(screen nr)
+	{0x0B74,"Screen Height", 0, gfxScreenHeight },		// =Screen Height
 	{0x0B90,"Get Palette",0,gfxGetPalette },
 	{0x0BAE,"Cls",0,gfxCls},
 	{0x0BB8,"Cls color",0,gfxCls},

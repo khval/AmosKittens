@@ -462,18 +462,83 @@ char *gfxScreenColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxScreenWidth( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = getStackNum( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			popStack( stack - data->stack );
+			setStackNum(screens[current_screen] -> realWidth);
+			return NULL;
+		}
+
+		setError(47,data->tokenBuffer);
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
 char *gfxScreenWidth(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (screens[current_screen])	// check if current screen is open.
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+
+	if (next_token == 0x0074)
+	{
+		stackCmdParm( _gfxScreenWidth, tokenBuffer );
+	}
+	else if (screens[current_screen])	// check if current screen is open.
 	{
 		setStackNum(screens[current_screen] -> realWidth);
 	}
 	return tokenBuffer;
 }
 
+
+char *_gfxScreenHeight( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	bool success = false;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int screen_num = getStackNum( stack );
+
+		if ((screen_num>-1)&&(screen_num<8))
+		{
+			popStack( stack - data->stack );
+			setStackNum(screens[current_screen] -> realHeight);
+			return NULL;
+		}
+
+		if (success == false) setError(47,data->tokenBuffer);
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxScreenHeight(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (screens[current_screen])	// check if current screen is open.
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+
+	if (next_token == 0x0074)
+	{
+		stackCmdParm( _gfxScreenHeight, tokenBuffer );
+	}
+	else if (screens[current_screen])	// check if current screen is open.
 	{
 		setStackNum(screens[current_screen] -> realHeight);
 	}
