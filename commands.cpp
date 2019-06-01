@@ -1012,7 +1012,7 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		if (cmdTmp[cmdStack-1].cmd == _repeat )
 		{
-			cmdTmp[cmdStack-1].flag = cmd_normal;
+			cmdTmp[cmdStack-1].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;
 		}
 		else if (cmdTmp[cmdStack-1].cmd == _exit)
 		{
