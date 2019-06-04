@@ -1005,7 +1005,7 @@ char *_modData( struct glueCommands *data, int nextToken )
 
 char *_mulData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -1030,13 +1030,13 @@ char *_mulData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			dprintf("%f * %d\n",  item0->decimal , (double) item1->value );
+			dprintf("%lf * %d\n",  item0->decimal , (double) item1->value );
 			setStackDecimal( item0->decimal * (double) item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			dprintf("%f * %f\n",  item0->decimal , item1->decimal );
+			dprintf("%lf * %lf\n",  item0->decimal , item1->decimal );
 			setStackDecimal( item0->decimal * item1->decimal );
 			success = TRUE;
 		}
@@ -1051,7 +1051,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 		}
 		else if (type1 == type_float)
 		{
-			printf("%f * %f\n",  (double) item0->value , item1->decimal );
+			printf("%lf * %f\n",  (double) item0->value , item1->decimal );
 			setStackDecimal( (double) item0->value * item1->decimal );
 			success = TRUE;
 		}
