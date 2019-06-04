@@ -814,7 +814,6 @@ char *_goto( struct glueCommands *data, int nextToken )
 char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	char *ptr;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (next_token)
@@ -869,7 +868,6 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	char *ptr;
 	char *return_tokenBuffer;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1391,7 +1389,6 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 {
-	struct reference *ref;
 	struct glueCommands data;
 	char *ptr = tokenBuffer ;
 	int args = 0;
