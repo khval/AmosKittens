@@ -71,7 +71,7 @@ const char *bankTypes[] = {
 
 void *getBankObject(int id)
 {
-	int n;
+	unsigned int n;
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		if (id == kittyBankList[n].id) return kittyBankList[n].object_ptr;
