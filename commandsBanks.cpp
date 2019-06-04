@@ -363,8 +363,6 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 {
 	struct kittyBank *bank;
 
-	printf("%s:%s:%d - bank (%d)\n",__FILE__,__FUNCTION__,__LINE__, bankNr);
-
 	freeBank( bankNr );
 	bank = allocBank( bankNr );
 	if (bank)
@@ -410,7 +408,7 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 
 char *_bankReserveAsWork( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	if (args==2)
@@ -424,7 +422,7 @@ char *_bankReserveAsWork( struct glueCommands *data, int nextToken )
 
 char *_bankReserveAsChipWork( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	if (args==2)
@@ -438,7 +436,7 @@ char *_bankReserveAsChipWork( struct glueCommands *data, int nextToken )
 
 char *_bankReserveAsData( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	if (args==2)
@@ -452,7 +450,7 @@ char *_bankReserveAsData( struct glueCommands *data, int nextToken )
 
 char *_bankReserveAsChipData( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	if (args==2)
@@ -910,7 +908,7 @@ void __load_bank__(const char *name, int bankNr )
 
 char *_bankLoad( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 
@@ -976,7 +974,7 @@ void __write_banks__( FILE *fd )
 
 char *_bankSave( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	char *filename = NULL;
@@ -1026,10 +1024,10 @@ char *bankSave(nativeCommand *cmd, char *tokenBuffer)
 
 char *_bankBGrab( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
-	printf("Not yet working, sorry only a dummy command.\n");
+	printf("%s:%s is not yet working, sorry only a dummy command.\n",__FILE__,__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1044,7 +1042,7 @@ char *bankBGrab(nativeCommand *cmd, char *tokenBuffer)
 
 char *_bankBankSwap( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int b1,b2;
 
@@ -1083,7 +1081,7 @@ char *bankBankSwap(nativeCommand *cmd, char *tokenBuffer)
 
 char *_bankResourceBank( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 
 	switch (args)
@@ -1100,6 +1098,7 @@ char *_bankResourceBank( struct glueCommands *data, int nextToken )
 
 char *bankResourceBank(nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _bankResourceBank, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1126,6 +1125,8 @@ char *getResourceStr(int id)
 	char *ret = NULL;
 	int retry = 0;
 	int cbank = current_resource_bank;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (id>0)
 	{
@@ -1190,10 +1191,11 @@ char *getResourceStr(int id)
 
 char *_bankResourceStr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
 	int id;
 	char *ret = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -1218,6 +1220,8 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 
 char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	stackCmdNormal( _bankResourceStr, tokenBuffer );
 	return tokenBuffer;
 }

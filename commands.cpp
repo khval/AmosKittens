@@ -188,8 +188,6 @@ char *_if( struct glueCommands *data, int nextToken )
 
 	if (args > 1) 
 	{
-		dump_stack();
-		dump_prog_stack();
 		setError(22,data -> tokenBuffer);
 	}
 
@@ -430,7 +428,6 @@ char *_setVar( struct glueCommands *data, int nextToken )
 				kittyStack[stack].type, 
 				data -> lastVar, 
 				var -> type & 7);
-			dump_stack();
 			setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 
@@ -834,12 +831,7 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 					{
 						case type_int:		// jump to label with same name as var.
 								{
-									dump_prog_stack();
 									dropProgStackAllFlag( cmd_true | cmd_false );	// just kill the if condition, if any.
-	
-									printf("********** deleted ? \n");
-
-									dump_prog_stack();
 
 									struct label *label = var_JumpToName( (struct reference *) (tokenBuffer+2) );		// after function, amos kittens try access next token and adds +2 (+0 data)
 
@@ -1051,7 +1043,6 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 	cmdTmp[cmdStack-1].step = 1;		// set default counter step
 	do_to[parenthesis_count] = do_for_to;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	return tokenBuffer;
 }
@@ -1239,7 +1230,6 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else
 	{
-		dump_prog_stack();	// wtf unexpected....
 		setError(22,tokenBuffer);
 	}
 
@@ -2018,16 +2008,10 @@ char *_cmdExitIf(struct glueCommands *data, int nextToken)
 		exit_loops--;
 	}
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	dump_prog_stack();
-
 	if (dropProgStackToFlag( cmd_loop ))
 	{
 		ptr = cmdTmp[cmdStack-1].tokenBuffer;
 		token = *((unsigned short *) (ptr - 2)) ;
-
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		switch (token)
 		{
@@ -2066,6 +2050,9 @@ char *_cmdEvery( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("%s is not yet supported\n", __FUNCTION__);
+
 	return  NULL;
 }
 

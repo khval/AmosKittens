@@ -78,7 +78,6 @@ enum
 #define cmd_true			2048
 #define cmd_false			4096
 
-
 enum
 {
 	type_undefined = 0,
