@@ -98,6 +98,25 @@ struct nativeCommand
 	char *(*fn) (struct nativeCommand *cmd, char *tokenBuffer);
 };
 
+enum 
+{
+	glue_option_for_int = 1,
+	glue_option_for_float
+};
+
+
+struct kittyForInt
+{
+	int step;	
+	int have_to;
+};
+
+struct kittyForDouble 
+{
+	double step;	
+	double have_to;
+};
+
 struct glueCommands
 {
 	char *(*cmd) ( struct glueCommands *data, int nextToken );	// can return token location
@@ -118,11 +137,9 @@ struct glueCommands
 	int lastVar;
 	int lastToken;
 
-	union
-	{
-		int step;	
-		int have_to;
-	};
+	int optionsType;
+	struct kittyForInt optionsInt;
+	struct kittyForDouble optionsFloat;
 
 	int stack;
 	int parenthesis_count;

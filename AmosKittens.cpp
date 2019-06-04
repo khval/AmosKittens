@@ -1341,6 +1341,24 @@ const char *TokenName( unsigned short token )
 	return noName;
 }
 
+
+char *skipToken( char *ptr, unsigned short token )
+{
+	struct nativeCommand *cmd;
+	char *ret;
+
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+	{
+		if (token == cmd->id ) 
+		{
+			if (ret) ret += cmd -> size;
+			return ret;
+		}
+	}
+
+	return NULL;
+}
+
 #ifdef enable_fast_execution_no
 
 char *executeToken( char *ptr, unsigned short token )

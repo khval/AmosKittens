@@ -1035,12 +1035,35 @@ char *do_for_to( struct nativeCommand *cmd, char *tokenBuffer);
 
 char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	kittyData *var = NULL;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	stackCmdNormal( _for, tokenBuffer );
-	cmdTmp[cmdStack-1].step = 1;		// set default counter step
-	do_to[parenthesis_count] = do_for_to;
+	if (NEXT_TOKEN( (tokenBuffer+2) ) == 0x0006 )	// Next var
+	{
+		struct reference *ref = (struct reference *) (tokenBuffer + 4);
+		var = &globalVars[ref -> ref -1].var;
 
+		stackCmdNormal( _for, tokenBuffer );
+
+		switch (var -> type)
+		{
+			case type_int:
+					{
+						cmdTmp[cmdStack-1].optionsType = glue_option_for_int;
+						cmdTmp[cmdStack-1].optionsInt.step = 1.0;
+					}
+					break;
+			case type_float:
+					{
+						cmdTmp[cmdStack-1].optionsType = glue_option_for_float;
+						cmdTmp[cmdStack-1].optionsFloat.step = 1.0f;
+					}
+					break;
+		}
+	}
+
+	do_to[parenthesis_count] = do_for_to;
 
 	return tokenBuffer;
 }
@@ -1059,7 +1082,7 @@ char *do_for_to( struct nativeCommand *cmd, char *tokenBuffer)
 
 		if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag & cmd_normal ))
 		{
-			cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer ;
+			cmdTmp[cmdStack-1].FOR_NUM_TOKENBUFFER = tokenBuffer ;
 			cmdTmp[cmdStack-1].cmd_type = cmd_loop;
 			popStack( stack - cmdTmp[cmdStack-1].stack );
 		}
@@ -1087,13 +1110,28 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_step( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%d--------\n",__FUNCTION__,__LINE__);
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (( cmdTmp[cmdStack-1].cmd == _for ) && (cmdTmp[cmdStack-1].flag == cmd_loop ))
+	struct glueCommands *gcmd = &cmdTmp[cmdStack-1];
+	
+	if (( gcmd -> cmd == _for ) && ( gcmd -> flag & cmd_loop ))
 	{
-		cmdTmp[cmdStack-1].step = kittyStack[stack].value;
+		struct kittyData *var = &kittyStack[stack];
+		switch (gcmd -> optionsType)
+		{
+			case glue_option_for_int:
+					gcmd -> optionsInt.step = (var -> type == type_int) ? var -> value :  (int) var -> decimal ;
+					printf("int %lf\n", gcmd -> optionsInt.step);
+					break;
+			case glue_option_for_float:
+					gcmd -> optionsFloat.step = (var -> type == type_int) ? (double) var -> value : var -> decimal ;
+					printf("float %lf\n", gcmd -> optionsFloat.step);
+					break;
+		}
 	}
 	popStack(stack - data->stack);
+
+	getchar();
 
 	return NULL;
 }
@@ -1118,7 +1156,10 @@ extern char *executeToken( char *ptr, unsigned short token );
 
 #undef NEXT_INT
 
-int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
+extern char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
+
+
+void FOR_NEXT_VALUE_ON_STACK( char *tokenBuffer , char **new_ptr )
 {
 	unsigned short token;
 	char *ptr = tokenBuffer;
@@ -1143,6 +1184,11 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 		ptr += 2;
 	};
 
+	if (token == 0x0356 )	// skip Step...
+	{
+		ptr = FinderTokenInBuffer( ptr-2, token , 0x0000, 0x0054, _file_end_ )+2;
+	}
+
 	*new_ptr = ptr - 2;
 
 	// forcefully flush all cmds
@@ -1152,24 +1198,29 @@ int FOR_NEXT_INT( char *tokenBuffer , char **new_ptr )
 		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 	}
 
-	return getStackNum(stack);
+	printf("--- END GET TO VALUE --\n");
+
+//	return getStackNum(stack);
 }
+
 
 char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	char *ptr = tokenBuffer ;
 	char *new_ptr = NULL;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( cmdTmp[cmdStack-1].cmd == _for )
 	{
-		int idx_var = -1;
+		kittyData *var = NULL;
+
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
 		{
 			struct reference *ref = (struct reference *) (ptr + 2);
-			idx_var = ref -> ref -1;
+			var = &globalVars[ref -> ref -1].var;
 		}
 		else 	// For var=
 		{
@@ -1177,45 +1228,86 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 			{
 				char *ptr = cmdTmp[cmdStack-1].tokenBuffer + 2  ;	// first short is JMP address, next after is token.
 	
+				printf("NEXT_TOKEN() = %08x\n",NEXT_TOKEN(ptr));
+
 				if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
 				{
 					struct reference *ref = (struct reference *) (ptr + 2);
-					idx_var = ref -> ref -1;
+					var = &globalVars[ref -> ref -1].var;
 				}
 			}
 		}
 		
-		if (idx_var>-1)
+		if (var)
 		{
 			unsigned short next_num;
+			double next_float;
+
+			struct glueCommands *gcmd;
+
+			gcmd = &cmdTmp[cmdStack-1];
 
 			ptr = cmdTmp[cmdStack-1].FOR_NUM_TOKENBUFFER;
-			globalVars[idx_var].var.value +=cmdTmp[cmdStack-1].step; 
-			next_num = FOR_NEXT_INT(ptr, &new_ptr);
 
-			if (cmdTmp[cmdStack-1].step > 0)
+			FOR_NEXT_VALUE_ON_STACK(ptr, &new_ptr);
+
+			switch ( var -> type )
 			{
-				if (globalVars[idx_var].var.value <= next_num )
-				{
-					tokenBuffer = new_ptr;
-				}
-				else
-				{
-					cmdStack--;
-				}
+				case type_int:	
+
+						switch ( kittyStack[stack].type )
+						{
+							case type_int:		next_num = kittyStack[stack].value;	break;
+							case type_float:	next_num = (int) kittyStack[stack].decimal;	break;
+						}
+						break;
+
+				case type_float:
+
+						switch ( kittyStack[stack].type )
+						{
+							case type_int:		next_float = (double) kittyStack[stack].value;	break;
+							case type_float:	next_float = kittyStack[stack].decimal;	break;
+						}
+						break;
 			}
-			else	if (cmdTmp[cmdStack-1].step < 0)
+
+			switch (gcmd->optionsType)
 			{
-				if (globalVars[idx_var].var.value >= next_num  )
-				{
-					tokenBuffer = new_ptr;
-				}
-				else
-				{
-					cmdStack--;
-				}
+				case glue_option_for_int:
+
+					var -> value += gcmd->optionsInt.step; 
+
+					if (gcmd->optionsInt.step > 0)  {
+						if (var -> value < next_num )	{
+							tokenBuffer = new_ptr;
+						} else cmdStack--;
+					} else if (gcmd->optionsInt.step < 0) {
+						if (var -> value > next_num  )	{
+							tokenBuffer = new_ptr;
+						} else cmdStack--;
+					} else setError(23,tokenBuffer);
+					break;
+
+				case glue_option_for_float:
+
+					var -> decimal += gcmd->optionsFloat.step; 
+
+					if (gcmd->optionsFloat.step > 0.0)  {
+
+						printf("%0.2lf + %0.2lf <= %0.2lf \n",var -> decimal, gcmd->optionsFloat.step, next_float );
+
+						if (var -> decimal <= next_float )	{
+							tokenBuffer = new_ptr;
+						} else cmdStack--;
+					} else if (gcmd->optionsFloat.step < 0.0) {
+						if (var -> decimal > next_float  )	{
+							tokenBuffer = new_ptr;
+						} else cmdStack--;
+					} else setError(23,tokenBuffer);
+					break;
 			}
-			else setError(23,tokenBuffer);
+
 		}
 		else
 		{
@@ -1224,7 +1316,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else	if (cmdTmp[cmdStack-1].cmd == _exit )
 	{
-		cmdStack --;
+		cmdStack--;
 	}
 	else
 	{
