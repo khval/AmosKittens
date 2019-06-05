@@ -283,7 +283,8 @@ char *_mathAtan( struct glueCommands *data, int nextToken )
 {
 	double r =0.0;
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
-	int args = stack - data->stack +1;
+
+	if (args == 1)	r = getStackDecimal( stack );
 	popStack(stack - data->stack);
 	setStackDecimal( atan( r ) * to_degree_factor );
 	kittyStack[stack].state = state_none;
