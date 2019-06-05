@@ -370,12 +370,32 @@ char *_mathSqr( struct glueCommands *data, int nextToken )
 
 char *_mathAbs( struct glueCommands *data, int nextToken )
 {
-	int n = 0;
 	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 	if (args == 1)
-	if (args == 1)	n = getStackNum( stack );
-	popStack(stack - data->stack);
-	setStackNum( abs(n) );
+	{
+		switch (kittyStack[stack].type)
+		{
+			case type_int:	 
+				{
+					int n = kittyStack[stack].value;
+					popStack(stack - data->stack);
+					setStackNum( abs(n) );
+				}
+				break;
+
+			case type_float:  
+				{
+					double r = kittyStack[stack].decimal;
+					popStack(stack - data->stack);
+					setStackNum( fabs(r) );
+				}
+				break;
+
+			default: 
+				popStack(stack - data->stack);
+		}
+	}
+
 	kittyStack[stack].state = state_none;
 	return NULL;
 }
