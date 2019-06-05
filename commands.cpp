@@ -1131,14 +1131,12 @@ char *_step( struct glueCommands *data, int nextToken )
 	}
 	popStack(stack - data->stack);
 
-	getchar();
-
 	return NULL;
 }
 
 char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
 
