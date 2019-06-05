@@ -682,13 +682,22 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
+
+#define fast_float_yes
+#define fast_exp_yes
+
+#ifdef fast_float_yes
+
 double _float[256];
+double _exp[0x7F];
 
 void make_float_lookup()
 {
-	double f;
 	unsigned int number1;
 	int n = 0;
+	int e;
+	int ee;
+	double f;
 
 	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -701,7 +710,31 @@ void make_float_lookup()
 		}
 		_float[number1]=f;
 	}
+
+
+	for (n=0;n<=0x7F;n++)
+	{
+		f = 1.0f;
+		e = n & 0x3F;
+		if ( ( n & 0x40)  == 0)	e = -(65 - e);
+
+		ee = e;
+
+		if (e==0) { f/=2.0; }
+		else if (e<0) { while (e) {  f /= 2.0f; e++; } }
+		else if (e>0) { while (--e) { f *= 2.0; } }
+
+		_exp[n]=f;
+
+//		printf("n %d, e %d is %lf\n",n, ee, _exp[n]);
+
+	}
+
+//	printf("done\n");
+//	getchar();
 }
+
+#endif
 
 char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
@@ -725,23 +758,32 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	{
 		unsigned int data = *((unsigned int *) ptr);
 		unsigned int number1 = data >> 8;
+
+#ifdef fast_exp_no
 		int e = (data & 0x3F) ;
-
 		if ( (data & 0x40)  == 0)	e = -(65 - e);
+#endif
 
-#if 1
+#ifdef fast_float_yes
 		f = _float[ (number1 & 0xFF0000) >> 16 ] ;
 		f += (_float[ (number1  & 0xFF00) >> 8 ] ) / (double) (1<<8);
 		f += _float[ (number1  & 0xFF) ]  / (double) (1<<16);
 #else
+
 		for (int n=23;n>-1;n--)
 		{
-			if ((1<<n)&number1) f += 1.0f / (double) (1<<(23-n));
+			if ((1<<n) & number1) f += 1.0f / (double) (1<<(23-n));
 		}
 #endif
 
-		if (e>0) { while (--e) { f *= 2.0; } }
-		if (e<0) { while (e) {  f /= 2.0f; e++; } }
+#if defined(fast_float_yes) && defined(fast_exp_yes)
+		f *= _exp[ data & 0x7F ];
+#else
+		if (e==0) { f/=2.0; }
+		else if (e<0) { while (e) {  f /= 2.0f; e++; } }
+		else if (e>0) { while (--e) { f *= 2.0; } }
+#endif
+
 	}
 
 	setStackDecimal( f );
