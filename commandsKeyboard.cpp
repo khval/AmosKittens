@@ -59,7 +59,7 @@ std::string input_str;
 using namespace std;
 
 int keyboardLag = 20*1000/50;	// ms
-int keyboardSpeed = 20*1000/50;	// ms
+int keyboardSpeed = 10*1000/50;	// ms
 
 
 #ifdef __linux__
