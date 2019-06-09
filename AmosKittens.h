@@ -24,6 +24,7 @@ typedef void * APTR;
 #define token_power	0xFFF6
 #define token_or		0xFF4C
 #define token_and		0xFF58
+#define token_xor		0xFF3E
 #define token_mod		0xFFD4
 
 #define token_more_or_equal	0xFF8E
@@ -34,6 +35,8 @@ typedef void * APTR;
 #define token_equal			0xFFA2
 #define token_more			0xFFB6
 #define token_less				0xFFAC
+
+#define token_trap				0x259A
 
 #define joy_up 1
 #define joy_down 2
