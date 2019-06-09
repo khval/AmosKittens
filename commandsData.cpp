@@ -48,12 +48,12 @@ bool correct_order( int last_token, int next_token )
 				|| (next_token == token_more )
 				|| (next_token == token_less ) 
 				|| (next_token == token_or)
-//				|| (next_token == token_xor)		// don't know the token number yet.
+				|| (next_token == token_xor)		// don't know the token number yet.
 				|| (next_token == token_and)) return false;
 			break;
 
 		case token_or:
-//		case token_xor:
+		case token_xor:
 		case token_and:
 			if ((next_token == token_add)
 				|| (next_token == token_sub)
