@@ -1028,7 +1028,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			dprintf("%lf * %d\n",  item0->decimal , (double) item1->value );
+			dprintf("%lf * %d\n",  item0->decimal , item1->value );
 			setStackDecimal( item0->decimal * (double) item1->value );
 			success = TRUE;
 		}
@@ -1043,13 +1043,13 @@ char *_mulData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			dprintf(" %d * %d\n", item0->value , item1->value );
+			dprintf("%d * %d\n", item0->value , item1->value );
 			setStackNum( item0->value * item1->value );
 			success = TRUE;
 		}
 		else if (type1 == type_float)
 		{
-			printf("%lf * %f\n",  (double) item0->value , item1->decimal );
+			dprintf("%d * %lf\n", item0->value , item1->decimal );
 			setStackDecimal( (double) item0->value * item1->decimal );
 			success = TRUE;
 		}
