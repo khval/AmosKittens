@@ -371,13 +371,13 @@ struct PacPicContext
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
-#define stackCmdOnBreakOrNewCmd( fn, buf )				\
+#define stackCmdOnBreakOrNewCmd(fn,buf,_token)				\
 	cmdTmp[cmdStack].cmd = fn;		\
 	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
+	cmdTmp[cmdStack].flag = cmd_para | cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = 0; \
+	cmdTmp[cmdStack].token = _token; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 

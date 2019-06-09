@@ -325,6 +325,7 @@ char *_print( struct glueCommands *data, int nextToken )
 	struct retroScreen *screen = screens[current_screen];
 	int n;
 
+	flushCmdParaStack( nextToken );
 	if (screen)
 	{
 		struct retroTextWindow *textWindow = screen -> currentTextWindow;
@@ -347,7 +348,7 @@ char *_print( struct glueCommands *data, int nextToken )
 					break;
 			}
 
-			if ((n<stack)&&( kittyStack[n+1].type != type_none ))  __print_text( screen, "    ",0);
+			if ( n < stack ) textWindow -> locateX += textWindow -> locateX % _tab_size ? _tab_size - textWindow -> locateX % _tab_size : 0;
 		}
 
 		draw_cursor(screen);
@@ -432,7 +433,7 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 
 	flushCmdParaStack( nextToken );
 
-	stackCmdOnBreakOrNewCmd( _addDataToText, tokenBuffer );
+	stackCmdOnBreakOrNewCmd( _addDataToText, tokenBuffer, token_add );
 	stack++;
  	kittyStack[stack].type = type_none;
 }
