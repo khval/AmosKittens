@@ -104,7 +104,6 @@ struct retroScreen *screens[8] ;
 int parenthesis_count = 0;
 int cmdStack = 0;
 int procStackCount = 0;
-unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 int last_var = 0;
 int32_t tokenlength;
 
@@ -159,6 +158,7 @@ struct glueCommands input_cmd_context;
 extern char *nextToken_pass1( char *ptr, unsigned short token );
 
 bool breakpoint = false;
+bool token_is_fresh = true;
 
 const char *str_dump_stack = "dump stack";
 const char *str_dump_prog_stack = "dump prog stack";
@@ -355,6 +355,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
+	token_is_fresh = true;
 
 	if (ret) return ret -2;		// when exit +2 token 
 
@@ -382,6 +383,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	do_to[parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
+	token_is_fresh = true;
 
 	if (breakpoint)
 	{
@@ -447,15 +449,10 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
-			if ( correct_order( self -> lastToken,  nextToken ) == false )
+			if ( correct_order( getLastProgStackToken(),  nextToken ) == false )
 			{
 				dprintf("---hidden ( symbol \n");
-
-				// hidden ( condition.
-				kittyStack[stack].str = NULL;
-				kittyStack[stack].value = 0;
-				kittyStack[stack].state = state_hidden_subData;
-				stack++;
+				setStackHiddenCondition();
 			}
 
 			switch (var -> type & 3)
@@ -584,6 +581,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	token_is_fresh = false;
+
 	last_var = ref -> ref;
 
 	if (next_token == 0x0074)	// ( symbol
@@ -592,7 +591,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
-		if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
+		if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 		{
 			// hidden ( condition.
 			setStackHiddenCondition();
@@ -638,7 +637,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	length2 += (length & 1);		// align to 2 bytes
 	next_token = *((short *) (ptr+2+length2) );
 
-	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
+	if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 	{
 		// hidden ( condition.
 		setStackHiddenCondition();
@@ -663,19 +662,15 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 
 	// check if - or + comes before *, / or ; symbols
 
-	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
+	if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 	{
 		dprintf("---hidden ( symbol \n");
 		setStackHiddenCondition();
 	}
 
-	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
-
 	setStackNum( *((int *) ptr) );
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack( next_token );
-
-	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 	return ptr;
 }
@@ -732,12 +727,12 @@ void make_float_lookup()
 char *cmdFloat(nativeCommand *cmd,char *ptr)
 {
 	double f = 0.0f;
-	unsigned short next_token = *((short *) (ptr+4) );
+	unsigned short next_token = *((short *) (ptr+4 ));
 	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
 	// check if - or + comes before *, / or ; symbols
 
-	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
+	if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 	{
 		dprintf("---hidden ( symbol \n");
 		setStackHiddenCondition();
@@ -1479,7 +1474,7 @@ char *executeToken( char *ptr, unsigned short token )
 
 char *_for( struct glueCommands *data, int nextToken );
 
-char *token_reader( char *start, char *ptr, unsigned short lastToken, unsigned short token, int tokenlength )
+char *token_reader( char *start, char *ptr, unsigned short token, int tokenlength )
 {
 	ptr = executeToken( ptr, token );
 
@@ -1512,13 +1507,12 @@ char *code_reader( char *start, int tokenlength )
 {
 	char *ptr;
 	int token = 0;
-	last_tokens[parenthesis_count] = 0;
 	
 	interpreter_running = true;
 
 	currentLine = 0;
 	ptr = start;
-	while ( ptr = token_reader(  start, ptr,  last_tokens[parenthesis_count], token, tokenlength ) )
+	while ( ptr = token_reader(  start, ptr,  token, tokenlength ) )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
@@ -1556,7 +1550,6 @@ char *code_reader( char *start, int tokenlength )
 			}
 		}
 
-		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.		
 

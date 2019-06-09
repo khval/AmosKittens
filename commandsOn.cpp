@@ -95,7 +95,6 @@ static char *collect_data(char *ptr)
 
 	while ( (ptr = executeOnToken(  ptr,  token )) && (is_token == 0) )
 	{
-		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr );
 		printf("Next\n");
 		ptr += 2;	// next token.	

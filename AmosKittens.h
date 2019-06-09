@@ -138,7 +138,7 @@ struct glueCommands
 	};
 
 	int lastVar;
-	int lastToken;
+	int token;
 
 	int optionsType;
 	struct kittyForInt optionsInt;
@@ -195,7 +195,12 @@ struct kittyData
 		char *tokenBufferPos;	
 	};
 
-	int index;
+	union		// we don't need to wast space.
+	{
+		int index;
+		int prev_last_token;
+	};
+
 	int cells;
 
 	union
@@ -307,7 +312,9 @@ struct PacPicContext
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[cmdStack].token = 0; \
 	cmdStack++; \
+	token_is_fresh = false; 
 
 #define stackCmdLoop( fn, buf )				\
 	cmdTmp[cmdStack].cmd = fn;		\
@@ -339,7 +346,7 @@ struct PacPicContext
 	cmdTmp[cmdStack].flag = cmd_index ;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \
+	cmdTmp[cmdStack].token = 0; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; } \
 
@@ -349,7 +356,18 @@ struct PacPicContext
 	cmdTmp[cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].lastToken = last_tokens[parenthesis_count]; \
+	cmdTmp[cmdStack].token = 0; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
+	cmdStack++; \
+	token_is_fresh = false; 
+
+#define stackCmdMathOperator(fn,_buffer,_token)				\
+	cmdTmp[cmdStack].cmd = fn;		\
+	cmdTmp[cmdStack].tokenBuffer = _buffer;	\
+	cmdTmp[cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol; \
+	cmdTmp[cmdStack].lastVar = last_var;	\
+	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].token = _token; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
@@ -359,6 +377,7 @@ struct PacPicContext
 	cmdTmp[cmdStack].flag = cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
+	cmdTmp[cmdStack].token = 0; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 
@@ -385,7 +404,7 @@ extern int stack;
 extern int cmdStack;
 extern int procStackCount;
 
-extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
+//extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 
 extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
@@ -413,8 +432,7 @@ extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
 
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
-
-
+extern bool token_is_fresh;
 extern struct glueCommands input_cmd_context;
 
 #endif

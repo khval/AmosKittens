@@ -56,6 +56,8 @@ extern uint32_t _file_bank_size;
 extern uint32_t bank_crc;
 #endif
 
+unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
+
 enum
 {
 	pass1_bracket_none,

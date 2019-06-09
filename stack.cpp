@@ -71,6 +71,11 @@ void remove_parenthesis(int black_at_stack )
 	}
 }
 
+unsigned short getLastProgStackToken()
+{
+	if (cmdStack) return cmdTmp[cmdStack-1].token;
+	return 0;
+}
 
 void _unLockPara()
 {
@@ -115,13 +120,10 @@ char *flushCmdParaStack( int nextToken )
 
 			if ( isArgsClean( cmd ) ) 
 			{
-
 				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
-
-				last_tokens[parenthesis_count] = cmd -> lastToken;
 				cmdStack--;
 
-				if ( correct_order( last_tokens[parenthesis_count] ,  nextToken ) == false )
+				if ( correct_order( getLastProgStackToken() ,  nextToken ) == false )
 				{
 //					printf("**** Looks like I need to exit here, not the correct order ***\n");
 					return ret;		// exit here.

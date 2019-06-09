@@ -11,6 +11,8 @@ extern void	setStackDecimal( double decimal );
 extern void	setStackStr( char *str );
 extern void	setStackStrDup(const char *str);
 extern void	setStackNone( void );
+extern unsigned short getLastProgStackToken();
+
 #define setStackHiddenCondition()			\
 			kittyStack[stack].str = NULL;		\
 			kittyStack[stack].value = 0;		\

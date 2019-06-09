@@ -507,7 +507,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
 	}
 
-	lastToken = last_tokens[parenthesis_count];
+	lastToken = getLastProgStackToken();
 
 	if ( correct_order( lastToken ,  nextToken ) == false )
 	{
@@ -561,6 +561,8 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
 
+	token_is_fresh = false;
+
 	setStackNum(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
 
@@ -575,6 +577,8 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	
 	// empty the stack for what ever is inside the IF.
+
+	token_is_fresh = true;
 
 	while (cmdStack)
 	{
@@ -609,6 +613,8 @@ char *nextCmd(nativeCommand *cmd, char *ptr);
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
+
+	token_is_fresh = true;
 
 	char *retTokenBuffer = nextCmd(NULL, tokenBuffer);
 	if (retTokenBuffer != tokenBuffer) tokenBuffer = retTokenBuffer + 2;	// nextCmd() should expect +2 token
@@ -1174,7 +1180,6 @@ void FOR_NEXT_VALUE_ON_STACK( char *tokenBuffer , char **new_ptr )
 			break;
 		}
 
-		last_tokens[parenthesis_count] = token;
 		token = *( (short *) ptr);
 		ptr += 2;
 	};
@@ -2260,7 +2265,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( ((last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( ((getLastProgStackToken() == 0x0000) || (getLastProgStackToken() == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_timer;
@@ -2335,7 +2340,7 @@ char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( last_tokens[parenthesis_count] == 0x02BE )
+	if ( getLastProgStackToken() == 0x02BE )
 	{
 		int nextToken = *((unsigned short *) tokenBuffer);
 

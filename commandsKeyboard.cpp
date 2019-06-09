@@ -139,10 +139,7 @@ void atomic_get_char( char *buf)
 			if (current_key.event == kitty_key_down )
 			{
 				gettimeofday(&ctime, NULL);
-
-				printf("lag time: %d > %d\n", delta_time_ms(key_press_time,ctime), (keyboardLag+keyboardSpeed));
-				printf("keyboard speed: %d > %d\n", delta_time_ms(repeat_time,ctime),keyboardSpeed);
-				
+	
 				if (delta_time_ms(key_press_time,ctime) > (keyboardLag+keyboardSpeed))
 				{
 					if (delta_time_ms(repeat_time,ctime) > keyboardSpeed  )

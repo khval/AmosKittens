@@ -353,7 +353,7 @@ void dump_prog_stack()
 		printf("cmdTmp[%d].tokenBuffer = %08x  - at line: %d \n", n, cmdTmp[n].tokenBuffer, getLineFromPointer(cmdTmp[n].tokenBuffer));
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
-		printf("cmdTmp[%d].lastToken = %04x\n", n, cmdTmp[n].lastToken);
+		printf("cmdTmp[%d].token = %04x\n", n, cmdTmp[n].token);
 		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
 	}
 }

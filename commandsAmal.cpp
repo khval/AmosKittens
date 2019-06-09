@@ -190,7 +190,7 @@ char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 
 char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if ((last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054))
+	if (token_is_fresh)	// token_is_fresh, if do not start with variable
 	{
 		stackCmdParm( _amalSetAmReg, tokenBuffer );
 	}

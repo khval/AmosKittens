@@ -705,12 +705,12 @@ char *discDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (( last_tokens[parenthesis_count] == 0x0000) || (last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( (token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_dir_str;
 	}
-	else if ( (( last_tokens[parenthesis_count]== 0x0000) || ( last_tokens[parenthesis_count] == 0x0054)) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
+	else if ( (token_is_fresh) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		stackCmdNormal( _discDirStr, tokenBuffer );
@@ -1618,7 +1618,6 @@ char *discField(struct nativeCommand *cmd, char *ptr)
 				break;
 		}
 
-		last_tokens[parenthesis_count] = token;
 		token = *( (short *) ptr);
 		ptr += 2;
 

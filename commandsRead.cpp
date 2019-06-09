@@ -128,7 +128,7 @@ static void collect_data()
 
 	while ( ptr = executeDataToken(  ptr,  token ) )
 	{
-		last_tokens[parenthesis_count] = token;
+//		last_tokens[parenthesis_count] = token;
 		token = *((short *) ptr );
 		ptr += 2;	// next token.	
 		procStcakFrame[proc_stack_frame].dataPointer = ptr;	// store last valid.
