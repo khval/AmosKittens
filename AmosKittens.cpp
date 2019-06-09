@@ -593,7 +593,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	{
 		if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 		{
-			// hidden ( condition.
+			dprintf(" hidden ( condition.\n");
 			setStackHiddenCondition();
 		}
 
