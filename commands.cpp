@@ -1275,11 +1275,11 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 					var -> value += gcmd->optionsInt.step; 
 
 					if (gcmd->optionsInt.step > 0)  {
-						if (var -> value < next_num )	{
+						if (var -> value <= next_num )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else if (gcmd->optionsInt.step < 0) {
-						if (var -> value > next_num  )	{
+						if (var -> value >= next_num  )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else setError(23,tokenBuffer);
@@ -1297,7 +1297,7 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else if (gcmd->optionsFloat.step < 0.0) {
-						if (var -> decimal > next_float  )	{
+						if (var -> decimal >= next_float  )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else setError(23,tokenBuffer);
