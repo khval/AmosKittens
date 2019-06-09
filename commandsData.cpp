@@ -763,7 +763,8 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 	args = stack - data -> stack + 1;
 
-	if ((data -> stack > -1) &&(args<2))
+	printf(" args: %d\n ",args );
+	if (args<2)
 	{
 		return NULL;
 	}
