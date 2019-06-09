@@ -115,8 +115,6 @@ struct extension_lib	kitty_extensions[32];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
-//char *data_read_pointers[PROC_STACK_SIZE];
-
 struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 
 char *_get_var_index( glueCommands *self, int nextToken);
@@ -1461,7 +1459,6 @@ char *executeToken( char *ptr, unsigned short token )
 {
 	char *(*fn) (struct nativeCommand *cmd, char *tokenBuffer);
 	uint16_t size;
-
 	char *ret;
 
 	fn = (char* (*)(nativeCommand*, char*)) *((void **) (fast_lookup + token)) ;
@@ -1473,6 +1470,7 @@ char *executeToken( char *ptr, unsigned short token )
 		_cmd.size = size;
 		ret = fn( &_cmd, ptr ) ;
 		if (ret) ret += size;
+
 		return ret;
 	}
 

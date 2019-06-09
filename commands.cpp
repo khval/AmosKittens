@@ -1195,10 +1195,6 @@ void FOR_NEXT_VALUE_ON_STACK( char *tokenBuffer , char **new_ptr )
 	{
 		cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 	}
-
-	printf("--- END GET TO VALUE --\n");
-
-//	return getStackNum(stack);
 }
 
 

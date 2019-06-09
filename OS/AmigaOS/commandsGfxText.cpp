@@ -54,8 +54,6 @@ int os_text_width(char *txt)
 int os_text_height(char *txt)
 {
 	struct TextExtent te;
-	int l = strlen(txt);
-
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
 	return -te.te_Extent.MinY;
 }
@@ -63,10 +61,7 @@ int os_text_height(char *txt)
 int os_text_base(char *txt)
 {
 	struct TextExtent te;
-	int l = strlen(txt);
-
 	TextExtent( &font_render_rp, txt, strlen( txt), &te );
-
 	return -te.te_Extent.MinY - te.te_Extent.MaxY;
 }
 

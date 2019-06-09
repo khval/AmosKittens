@@ -30,8 +30,6 @@ bool correct_order( int last_token, int next_token )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-//	printf("last_token %04x next token %04x\n\n", last_token, next_token);
-
 	switch (last_token)
 	{
 		case token_semi:
