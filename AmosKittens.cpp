@@ -595,10 +595,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 		if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 		{
 			// hidden ( condition.
-			kittyStack[stack].str = NULL;
-			kittyStack[stack].value = 0;
-			kittyStack[stack].state = state_hidden_subData;
-			stack++;
+			setStackHiddenCondition();
 		}
 
 		if (ref -> ref)
@@ -644,10 +641,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
 		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
+		setStackHiddenCondition();
 	}
 
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
@@ -672,12 +666,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
 		dprintf("---hidden ( symbol \n");
-
-		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
+		setStackHiddenCondition();
 	}
 
 	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
@@ -735,12 +724,7 @@ void make_float_lookup()
 
 		_exp[n]=f;
 
-//		printf("n %d, e %d is %lf\n",n, ee, _exp[n]);
-
 	}
-
-//	printf("done\n");
-//	getchar();
 }
 
 #endif
@@ -756,12 +740,7 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	if ( correct_order( last_tokens[parenthesis_count],  next_token ) == false )
 	{
 		dprintf("---hidden ( symbol \n");
-
-		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
+		setStackHiddenCondition();
 	}
 
 	{

@@ -512,10 +512,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	if ( correct_order( lastToken ,  nextToken ) == false )
 	{
 		// hidden ( condition.
-		kittyStack[stack].str = NULL;
-		kittyStack[stack].value = 0;
-		kittyStack[stack].state = state_hidden_subData;
-		stack++;
+		setStackHiddenCondition();
 	}
 
 	ret = flushCmdParaStack(nextToken);

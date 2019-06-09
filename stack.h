@@ -11,6 +11,11 @@ extern void	setStackDecimal( double decimal );
 extern void	setStackStr( char *str );
 extern void	setStackStrDup(const char *str);
 extern void	setStackNone( void );
+#define setStackHiddenCondition()			\
+			kittyStack[stack].str = NULL;		\
+			kittyStack[stack].value = 0;		\
+			kittyStack[stack].state = state_hidden_subData;	\
+			stack++;
 
 extern int		getStackNum( int n );
 extern double	getStackDecimal( int n );
