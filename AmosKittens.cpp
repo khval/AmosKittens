@@ -213,6 +213,29 @@ void free_video()
 
 struct timeval debug_time_start,debug_time_end;
 
+bool show_var ( char *ptr, char *var_name, int proc )
+{
+	int ref = findVar( var_name, false, type_int, proc );
+
+	if (ref)
+	{
+		printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.value);
+		return true;
+	}
+	else
+	{
+		ref = findVar( var_name, false, type_string, proc );
+
+		if (ref)
+		{
+			printf("line %d, string var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 char *cmdRem(nativeCommand *cmd, char *ptr)
 {
 	int length = *((short *) ptr);
@@ -258,29 +281,17 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			{
 				char *var_name = txt +strlen(str_show_var);
 				char *c;
-				int ref;
 
 				for (c=var_name;*c;c++) if (*c==' ') *c = 0;
 
-				ref = findVar( var_name, false, type_int, 0 );
-
-				if (ref)
+				if (show_var( ptr, var_name, procStcakFrame[ proc_stack_frame].id ) == false )
 				{
-					printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.value);
-				}
-				else
-				{
-					ref = findVar( var_name, false, type_string, 0 );
-
-					if (ref)
+					if (show_var( ptr, var_name, 0) == false )
 					{
-						printf("line %d, string var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
-					}
-					else
-					{
-						printf("line %d, int var: [%s] is not found\n",getLineFromPointer( ptr ), var_name);
+						printf("line %d, var: [%s] not found\n", getLineFromPointer( ptr ), var_name);
 					}
 				}
+				getchar();
 			}
 			else if (strncmp(txt,str_breakpoint_on,strlen(str_breakpoint_on))==0)
 			{
