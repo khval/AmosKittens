@@ -119,9 +119,7 @@ void atomic_get_char( char *buf)
 	buf[0]=0;
 	buf[1]=1;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (engine_started)
+	if (engine_ready())
 	{
 		engine_lock();
 		if ( ! keyboardBuffer.empty() )
@@ -186,7 +184,7 @@ void kitty_getline(string &input)
 		textWindow = screen -> currentTextWindow;
 	}
 
-	if ((engine_started)&&(textWindow))
+	if ((engine_ready())&&(textWindow))
 	{
 		draw_cursor( screen );
 		rightx = textWindow -> locateX;
@@ -459,7 +457,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && engine_started ) kitty_getline( input_str);
+			while (input_str.empty() && engine_ready() ) kitty_getline( input_str);
 
 			i = input_str.find(",");	
 			if (i != std::string::npos)
@@ -471,7 +469,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 				arg = input_str; input_str = "";
 			}
 		}
-		while ( arg.empty() && engine_started );
+		while ( arg.empty() && engine_ready() );
 
 		if (last_var)
 		{
@@ -486,7 +484,7 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 			}
 		}
 	}
-	while (!success && engine_started);
+	while (!success && engine_ready());
 
 	clear_cursor( screens[current_screen] );
 
@@ -563,13 +561,13 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		do
 		{
-			while (input_str.empty() && engine_started ) kitty_getline(input_str);
+			while (input_str.empty() && engine_ready() ) kitty_getline(input_str);
 
 			clear_cursor( screens[current_screen] );
 
 			arg = input_str; input_str = "";
 		}
-		while ( arg.empty() && engine_started );
+		while ( arg.empty() && engine_ready() );
 
 		if (last_var)
 		{
@@ -587,7 +585,7 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		printf("%s:%d -- success = %s\n",__FUNCTION__,__LINE__, success ? "True" : "False");
 
 	}
-	while (!success && (engine_started) );
+	while ( (!success) && engine_ready() );
 
 	__print_text( screen, "\n" ,0 );
 

@@ -375,7 +375,7 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	if (screen = screens[current_screen])
 	{
-		if (engine_started)
+		if (engine_ready())
 		{
 			struct retroTextWindow *textWindow = screen -> currentTextWindow;
 			txt = getStackString(stack);
