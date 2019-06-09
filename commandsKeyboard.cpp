@@ -265,20 +265,16 @@ void kitty_getline(string &input)
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	char buf[2];
 
-	if (engine_started)
+	do
 	{
-		engine_wait_key = true;
-		do
-		{
-			Delay(1);
-		} while ((engine_wait_key == true) && (engine_stopped==false));
-	}
-	else
-	{
-		printf("<engine has stoped press enter>");
-		getchar();
-	}
+		atomic_get_char(buf);
+		Delay(1);
+
+		if (engine_ready() == false) break;
+
+	} while (buf[0]==0);
 
 	return tokenBuffer;
 }
