@@ -7,6 +7,10 @@ assignees: ''
 
 ---
 
+**Importent**
+Before posting bug repport, make sure you have the lastest retromode.library installed.
+and have the lastest files from github.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
