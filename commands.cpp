@@ -888,19 +888,32 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 		case 0x0018:	// label
 		case 0x0006: 	// variable
 
-					switch ( var_type_is( (struct reference *) (tokenBuffer+2), 0x7 ))
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+					switch ( var_type_is( (struct reference *) (tokenBuffer + 2), 0x7 ))
 					{
 						case type_int:		// jump to label with same name as var.
 
 								{
 									struct label *label;
 
-									return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
+									label = var_JumpToName( (struct reference *) (tokenBuffer+2) ); 			// after function, amos kittens try access next token and adds +2 (+0 data)
+									if (label)
+									{
+										printf("name: %s\n",label -> name ? label -> name : "NULL");
+										if (label -> tokenLocation)
+										{ 
+											return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
+											stackCmdLoop( _gosub_return, return_tokenBuffer );
+											return label -> tokenLocation -2;
+										}
+										else
+										{
+											printf("location not found\n");
+										}
+									}
+									else printf("label not found\n");
 
-									label = var_JumpToName( (struct reference *) (tokenBuffer+2) ) - 2; 			// after function, amos kittens try access next token and adds +2 (+0 data)
-									tokenBuffer = label ? label -> tokenLocation : NULL ; 
-
-									if (tokenBuffer) stackCmdLoop( _gosub_return, return_tokenBuffer );
+									setError(22,tokenBuffer);
 								}
 								break;
 
