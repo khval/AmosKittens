@@ -231,7 +231,7 @@ struct label *findLabel( char *name, int _proc )
 	unsigned int n;
 	struct label *label;
 
-	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
+	dprintf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
 
 	for (n=0;n<labels.size();n++)
 	{
@@ -241,10 +241,11 @@ struct label *findLabel( char *name, int _proc )
 		{
 			if (strcasecmp( label -> name, name)==0)
 			{
-				return &labels[n];
+				return label;
 			}
 		}
 	}
+
 	return NULL;
 }
 
