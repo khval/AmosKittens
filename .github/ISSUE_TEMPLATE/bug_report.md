@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Importen:t**
+**Importent:**
 
 Before posting bug repport, make sure you have the lastest retromode.library installed.
 and have the lastest files from github.
