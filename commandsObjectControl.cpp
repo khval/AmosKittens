@@ -208,24 +208,14 @@ char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocMouseZone( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	int rz;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	rz = find_zone_in_any_screen( engine_mouse_x, engine_mouse_y );
-
-	popStack( stack - data->stack );
-	setStackNum( rz );
-
-	return NULL;
-}
 
 char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _ocMouseZone, tokenBuffer );
+
+	int rz = find_zone_in_any_screen( engine_mouse_x, engine_mouse_y );
+	setStackNum( rz );
+
 	return tokenBuffer;
 }
 
