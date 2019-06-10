@@ -9,7 +9,7 @@ assignees: ''
 **Read this before posting feature request:**
 
 While Amos kittens is a replica project, and tries to stay compatible with Amos The Creator and Amos Pro, 
-however there is room for improvements, if does do not break compatibility. (New commands are not likely to be added.)
+however there is room for improvements, if does not break compatibility. (New commands are not likely to be added.)
 
 **Is your feature request related to a problem? Please describe.**
 
