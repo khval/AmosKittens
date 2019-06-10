@@ -23,8 +23,9 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [...]
+ - OS Version [...]
  - CPU: [...]
- - Version [...]
-
+ - Hardware: [...]
+ 
 **Additional context**
 Add any other context about the problem here.
