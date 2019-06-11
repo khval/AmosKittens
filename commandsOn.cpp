@@ -275,8 +275,11 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 					tokenBuffer +=2;
 					break;
 
-				default: 
+				case 0x0000:	// exit at end of list..
+				case 0x0054:
+					ret = tokenBuffer +2;
 
+				default: 
 					goto exit_on_for_loop;
 			}
 		}
