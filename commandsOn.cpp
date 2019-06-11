@@ -320,8 +320,18 @@ exit_on_for_loop:
 
 				case PROC:
 
-						stackCmdProc( _procedure, tokenBuffer);  
-						ret = globalVars[ref_num-1].var.tokenBufferPos;
+						dprintf("--PROC--\n");
+
+						{
+							int idx = ref_num - 1;
+							int oldStack = stack;
+							stackCmdProc( _procedure, tokenBuffer);  
+							cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
+
+							tokenMode = mode_store;
+							stack_frame_up(idx);
+							ret = globalVars[idx].var.tokenBufferPos;
+						}
 						break;
 			}
 		}
