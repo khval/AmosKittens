@@ -30,9 +30,12 @@ extern const char *TokenName( unsigned short token );
 extern unsigned short token_not_found;
 extern char *_gosub_return( struct glueCommands *data, int nextToken );
 
-
 extern struct globalVar globalVars[1000];
 extern char *dupRef( struct reference *ref );
+
+extern void stack_frame_up(int varIndex);
+extern int tokenMode;
+
 
 extern std::vector<struct label> labels;
 
@@ -57,7 +60,7 @@ char *executeOnToken(char *ptr, unsigned short token)
 		case GOTO:
 		case GOSUB:	
 		case PROC:
-					printf("GOSUB OR GOTO\n");
+					printf("PROC, GOSUB OR GOTO\n");
 					is_token = token;
 					return ptr;
 		case 0x0000:
@@ -99,6 +102,7 @@ static char *collect_data(char *ptr)
 		printf("Next\n");
 		ptr += 2;	// next token.	
 	}
+	flushCmdParaStack( 0x0000 );
 	return ptr;
 }
 
