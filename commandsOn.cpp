@@ -161,6 +161,8 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 	char *ret = NULL;
 	struct reference *ref = NULL;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	if ( (token==PROC) || (token==GOTO) || (token==GOSUB) ) 
 	{
 
