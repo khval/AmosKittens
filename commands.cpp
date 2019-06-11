@@ -1454,34 +1454,31 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmdStack)
 	{
-		printf("next token is %04x\n",NEXT_TOKEN(tokenBuffer));
-
-		if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
+		if (cmdTmp[cmdStack-1].cmd == _procedure )
 		{
-			proc_names_printf("yes we are here\n");
-
-			// changes function pointer only so that ']' don't think its end of proc by accident.
-			// we aslo push result of stack into Param.
-
-			if (cmdTmp[cmdStack-1].cmd == _procedure ) cmdTmp[cmdStack-1].cmd = _endProc;
-
-			// _endProc -- calls "proc_stack_frame--"
-
-			do_input[parenthesis_count] = _set_return_param;
-
-		}
-		else 	// End Proc
-		{
-			if (cmdTmp[cmdStack-1].cmd == _procedure )
+			if (proc_stack_frame)
 			{
-				tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-				proc_stack_frame--;		// move stack frame down.
+				if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
+				{
+					if (cmdTmp[cmdStack-1].cmd == _procedure ) cmdTmp[cmdStack-1].cmd = _endProc;
+					do_input[parenthesis_count] = _set_return_param;
+				}
+				else 	// End Proc
+				{
+					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+					proc_stack_frame--;		// move stack frame down.
+				}
 			}
 			else
 			{
-				dump_prog_stack();
-				setError(23,tokenBuffer);
+				printf("bad stack frame\n");
+				setError(22,tokenBuffer);
 			}
+		}
+		else
+		{
+			dump_prog_stack();
+			setError(23,tokenBuffer);
 		}
 	}
 
