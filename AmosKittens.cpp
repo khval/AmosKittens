@@ -877,6 +877,8 @@ struct nativeCommand nativeCommands[]=
 	{0x04BE, "Line Input #",0,discLineInputFile },
 	{0x04D0, "Input",0,cmdInput },
 	{0x04DC, "Line Input", 0, cmdLineInput },
+//	{0x04F6, "Run", 0, cmdRun },
+	{0x04F6, "Run",0,cmdEnd },
 	{0x04FE, "Set Buffers", 0, cmdSetBuffers },
 	{0x050E, "Mid$",0,cmdMid },
 	{0x051E, "Mid$(a$,start)",0, cmdMid },
