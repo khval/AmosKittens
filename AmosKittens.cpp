@@ -1056,6 +1056,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1160,"Get Block [n,x,y,w,h,?] ",0,bgGetBlock },
 	{0x1172,"Put Block",0,bgPutBlock },	// Put Block (Num)
 	{0x1184,"Put Block",0,bgPutBlock },
+	{0x11AE,"Del Block",0,bgDelBlock },	// Del Block (no args)
 	{0x11BE,"Del Block",0,bgDelBlock },
 	{0x11C6,"Key Speed",0,cmdKeySpeed },
 	{0x11D8,"Key State",0,cmdKeyState },

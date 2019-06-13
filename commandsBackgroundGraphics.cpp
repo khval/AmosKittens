@@ -444,25 +444,35 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen;
 	struct retroBlock *block = NULL;
+	int id;
 	int x=0,y=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 3:
+		case 1:
+			id = getStackNum(stack);
+			block = findBlock(blocks, id);
+			if (block)
 			{
-				int id = getStackNum(stack-2);
-				x = getStackNum(stack-1);
-				y = getStackNum(stack);
-				block = findBlock(blocks, id);
-			}		
+				x=block->x;
+				y=block->y;
+			}
 			break;
+
+		case 3:
+			id = getStackNum(stack-2);
+			x = getStackNum(stack-1);
+			y = getStackNum(stack);
+			block = findBlock(blocks, id);
+			popStack( stack - data->stack );
+			break;
+
 		default:
+			popStack( stack - data->stack );
 			setError(22,data->tokenBuffer);
 	}
-
-	popStack( stack - data->stack );
 
 	if (block)
 	{
@@ -493,14 +503,26 @@ char *_bgDelBlock( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			id = getStackNum(stack);
-			del_block( blocks, id );
+			switch (kittyStack[stack].type)
+			{
+				case type_none:
+					while (blocks.size()) del_block( blocks, blocks.size() -1 ); 
+					setError(22,data->tokenBuffer);			
+					break;
+
+				case type_int: 
+					del_block( blocks, kittyStack[stack].value ); 
+					break;
+
+				default:
+					setError(22,data->tokenBuffer);
+			}
 			break;
 		default:
+			popStack( stack - data->stack );
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
 	return NULL;
 }
 
@@ -508,6 +530,8 @@ char *bgDelBlock(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	// some thing to do with drawing, not sure.
 	stackCmdNormal( _bgDelBlock, tokenBuffer );
+	setStackNone();
+
 	return tokenBuffer;
 }
 
