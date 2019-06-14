@@ -213,6 +213,7 @@ void setChannelToken(struct kittyChannel *item,int token, int number)
 		case 0x1A94:	item -> objectAPI = &sprite_api; break;
 		case 0x1B9E: 	item -> objectAPI = &bob_api; break;
 		case 0x0A18:	item -> objectAPI = &screen_display_api; break;
+		case 0x0A36:	item -> objectAPI = &screen_offset_api; break;
 	}
 
 	if (item -> objectAPI) 
@@ -276,6 +277,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 		case 0x1A94:	// Channel x To Sprite y
 		case 0x1B9E: 	// Channel x To Bob y
 		case 0x0A18:	// Channel x To Display y
+		case 0x0A36:	// Channel x to Screen Offset Y
 		case 0x0DDC:  // Channel x to Rainbow y
 
 					stack ++;
