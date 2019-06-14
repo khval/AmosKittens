@@ -45,7 +45,7 @@ extern struct retroRGB DefaultPalette[256];
 
 int priorityReverse = 0;
 
-int find_zone_in_any_screen( int hx, int hy)
+int find_zone_in_any_screen_hard( int hx, int hy)
 {
 	int z,x,y;
 	struct zone *zz;
@@ -67,7 +67,29 @@ int find_zone_in_any_screen( int hx, int hy)
 	return -1;
 }
 
-int find_zone_in_only_screen( int screen, int hx, int hy)
+int find_zone_in_any_screen_pixel( int hx, int hy)
+{
+	int z,x,y;
+	struct zone *zz;
+	struct retroScreen *s;
+
+	for (z=0;z<zones_allocated;z++)
+	{
+		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		{
+			if (s = screens[zones[z].screen])
+			{
+				x = XScreen_formula( s, hx );
+				y = YScreen_formula( s, hy );
+				zz = &zones[z];
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+			}
+		}
+	}
+	return -1;
+}
+
+int find_zone_in_only_screen_hard( int screen, int hx, int hy)
 {
 	int z,x,y;
 	struct zone *zz;
@@ -88,6 +110,23 @@ int find_zone_in_only_screen( int screen, int hx, int hy)
 	}
 	return -1;
 }
+
+int find_zone_in_only_screen_pixel( int screen, int x, int y)
+{
+	int z;
+	struct zone *zz;
+
+	for (z=0;z<zones_allocated;z++)
+	{
+		if (zones[z].screen == screen)
+		{
+			zz = &zones[z];
+			if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+		}
+	}
+	return -1;
+}
+
 
 char *ocXMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -216,7 +255,7 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	int rz = find_zone_in_any_screen( engine_mouse_x, engine_mouse_y );
+	int rz = find_zone_in_any_screen_hard( engine_mouse_x, engine_mouse_y );
 	setStackNum( rz );
 
 	return tokenBuffer;
@@ -606,13 +645,13 @@ char *_ocHZone( struct glueCommands *data, int nextToken )
 		case 2:
 				x = getStackNum( stack-1 );
 				y = getStackNum( stack );
-				ret = find_zone_in_any_screen( x,y );
+				ret = find_zone_in_any_screen_hard( x,y );
 				break;
 		case 3:
 				s = getStackNum( stack-2 );
 				x = getStackNum( stack-1 );	
 				y = getStackNum( stack );
-				ret = find_zone_in_only_screen( s, x,y );
+				ret = find_zone_in_only_screen_hard( s, x,y );
 				break;
 		default:
 				setError(22, data-> tokenBuffer);
@@ -631,6 +670,39 @@ char *ocHZone(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _ocHZone, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ocZone( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = -1;
+	int s=-1,x=-1,y=-1;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+				x = getStackNum( stack-1 );
+				y = getStackNum( stack );
+				ret = find_zone_in_only_screen_pixel( current_screen, x,y );
+				break;
+		default:
+				setError(22, data-> tokenBuffer);
+	}
+
+	printf("Zone(%d,%d,%d) is %d\n",s,x,y,ret);
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *ocZone(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _ocHZone, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 char *_ocJoy( struct glueCommands *data, int nextToken )
 {
