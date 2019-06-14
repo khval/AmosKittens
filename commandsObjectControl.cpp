@@ -116,13 +116,16 @@ char *ocMouseClick(struct nativeCommand *cmd, char *tokenBuffer)
 char *ocHide(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	// hide mouse pointer.
+	NYI(__FUNCTION__);
+
 	return tokenBuffer;
 }
 
 char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	NYI(__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -221,8 +224,9 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocChangeMouse( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	NYI(__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;

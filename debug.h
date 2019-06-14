@@ -88,3 +88,6 @@ void Printf_iso(const char *fmt,...);
 #ifdef __linux__
 #define Printf_iso(fmt,...) fprintf(engine_fd,fmt,__VA_ARGS__)
 #endif
+
+
+#define NYI(name) printf("%s not yet implemented\n",name)

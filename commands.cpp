@@ -1954,10 +1954,9 @@ char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdEvery( struct glueCommands *data, int nextToken )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("%s is not yet supported\n", __FUNCTION__);
+	NYI(__FUNCTION__);
 
 	return  NULL;
 }
