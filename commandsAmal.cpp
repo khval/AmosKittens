@@ -287,7 +287,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 					ret = tokenbuffer+2;
 					break;
 		default:
-			printf("bad token for TO command %04x\n",token);
+			printf("bad token for CHANNEL ... TO command %04x\n",token);
 			getchar();
 			setError(22,tokenbuffer);
 	}

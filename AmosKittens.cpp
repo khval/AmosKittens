@@ -340,8 +340,6 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	{
 		flags = cmdTmp[cmdStack-1].flag;
 
-		printf("flags %08x\n",flags);
-
 		if  ( ! (flags & cmd_onNextCmd) ) break;		// needs to be include tags, (if commands be excuted on endOfLine or Next command)
 		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
 
@@ -1129,6 +1127,8 @@ struct nativeCommand nativeCommands[]=
 	{0x15F2,"Y Curs",0,textYCurs },
 	{0x15FE,"X Graphic",0,textXGraphic },
 	{0x160E,"Y Graphic",0,textYGraphic },
+	{0x161E,"xgr",0,gfxXGR },
+	{0x1628,"ygr",0,gfxYGR },
 	{0x1632,"Reserve Zone", 0, ocReserveZone },
 	{0x1646,"Reserve Zone", 0, ocReserveZone },
 	{0x164E,"Reset Zone", 0, ocResetZone },
@@ -1348,8 +1348,7 @@ struct nativeCommand nativeCommands[]=
 	{0xFFF6,"^", 0, powerData },
 //	{0x0000,"GFXCALL",0,machineGFXCALL},	
 //	{0x0000,"INTCALL",0,machineINTCALL},	
-	{0x161E,"xgr",0,gfxXGR },
-	{0x1628,"ygr",0,gfxYGR },
+
 };
 
 int nativeCommandsSize = sizeof(nativeCommands)/sizeof(struct nativeCommand);
