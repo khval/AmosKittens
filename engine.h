@@ -50,5 +50,6 @@ struct amosMenuItem
 	int levels;
 	int index[3];
 	char *str;
+	bool active;
 };
 
