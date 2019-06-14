@@ -1185,6 +1185,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1ABE,"Bob Update Off",0,boBobUpdateOff },
 	{0x1AD2,"Bob Update On",0,boBobUpdateOn },
 	{0x1AE6,"Bob Update",0,boBobUpdate },
+	{0x1AF6,"Bob Clear",0,boBobClear },
+	{0x1B06,"Bob Draw",0,boBobDraw },
 	{0x1B36,"Bob Col",0,boBobCol },
 	{0x1B46,"Bob Col",0,boBobCol },
 	{0x1B52,"Col",0,boCol },

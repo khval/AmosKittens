@@ -823,3 +823,21 @@ char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *boBobClear(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	
+	clearBobs();
+
+	return tokenBuffer;
+}
+
+char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	drawBobs();
+
+	return tokenBuffer;
+}
+
