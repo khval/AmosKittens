@@ -839,8 +839,6 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 
 									if (label)
 									{
-										printf("printf loopLocation: %08x\n",label -> loopLocation);
-
 										tokenBuffer = label -> tokenLocation-2;
 									}
 								}
@@ -899,7 +897,6 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 									label = var_JumpToName( (struct reference *) (tokenBuffer+2) ); 			// after function, amos kittens try access next token and adds +2 (+0 data)
 									if (label)
 									{
-										printf("name: %s\n",label -> name ? label -> name : "NULL");
 										if (label -> tokenLocation)
 										{ 
 											return_tokenBuffer = tokenBuffer + 4 + sizeof(struct reference ) + ReferenceByteLength(tokenBuffer + 2);
@@ -1126,7 +1123,7 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_step( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct glueCommands *gcmd = &cmdTmp[cmdStack-1];
 	
@@ -1152,7 +1149,7 @@ char *_step( struct glueCommands *data, int nextToken )
 
 char *cmdStep(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	stackCmdNormal( _step, tokenBuffer );	// we need to store the step counter.
 
@@ -1218,13 +1215,11 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 	char *ptr = tokenBuffer ;
 	char *new_ptr = NULL;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( cmdTmp[cmdStack-1].cmd == _for )
 	{
 		kittyData *var = NULL;
-
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
 		{
@@ -1237,8 +1232,6 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 			{
 				char *ptr = cmdTmp[cmdStack-1].tokenBuffer + 2  ;	// first short is JMP address, next after is token.
 	
-				printf("NEXT_TOKEN() = %08x\n",NEXT_TOKEN(ptr));
-
 				if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
 				{
 					struct reference *ref = (struct reference *) (ptr + 2);
@@ -2061,10 +2054,7 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdWait( struct glueCommands *data, int nextToken )
 {
-	int args = stack - cmdTmp[cmdStack-1].stack +1;
-
-	Delay( getStackNum(data->stack) / 2 );
-
+	Delay( getStackNum(stack) / 2 );
 	return  NULL ;
 }
 
@@ -2154,7 +2144,6 @@ char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer )
 char *_cmdNot( struct glueCommands *data, int nextToken )
 {
 	int res;
-	int args = stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	res = getStackNum( stack );
