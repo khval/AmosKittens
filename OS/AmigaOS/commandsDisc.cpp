@@ -223,7 +223,7 @@ char *_discRename( struct glueCommands *data, int nextToken )
 
 char *_discFselStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - cmdTmp[cmdStack].stack +1;
+	int args = stack - data -> stack +1;
 	struct FileRequester	 *filereq;
 	char *ret = NULL;
 	char *amigaPattern = NULL;
@@ -233,10 +233,11 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	const char *_path_ = NULL;
 	const char *_default_ = NULL;
 	const char *_title_ = NULL;
+	const char *_title2_ = NULL;
+	char *_title_temp_ = NULL;
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
-
 		switch (args)
 		{
 			case 1:
@@ -266,6 +267,32 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
 					break;
+
+			case 4:
+					_path_ = getStackString( stack -3 );
+					_default_ = getStackString( stack -2 );
+					_title_ = getStackString( stack-1 );
+					_title2_ = getStackString( stack );
+
+					_title_temp_ = (char *) malloc( strlen(_title_) + 1 + strlen(_title2_) +1 );
+
+					if (_title_temp_)
+					{
+						sprintf(_title_temp_,"%s\n%s",_title_,_title2_);
+
+						amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+
+						success = AslRequestTags( (void *) filereq, 
+							ASLFR_DrawersOnly, FALSE,	
+							ASLFR_TitleText, _title_temp_,
+							ASLFR_InitialFile, _default_,
+							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
+							ASLFR_DoPatterns, TRUE,
+							TAG_DONE );
+					}
+
+					break;
+
 		}
 
 		if (success)
@@ -293,6 +320,8 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	if (ret) setStackStr(ret);		// we don't need to copy no dup.
 
 	if (amigaPattern) free(amigaPattern);
+
+	if (success == false) setError(22, data -> tokenBuffer);
 
 	return NULL;
 }
