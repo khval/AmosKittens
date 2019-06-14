@@ -24,6 +24,7 @@ char *boVrev(struct nativeCommand *cmd, char *tokenBuffer);
 char *boRev(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobCol(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *boBobUpdateOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *boCol(struct nativeCommand *cmd, char *tokenBuffer);
 char *boDelBob(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer);
