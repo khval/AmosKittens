@@ -698,6 +698,13 @@ char *_ocZone( struct glueCommands *data, int nextToken )
 				y = getStackNum( stack );
 				ret = find_zone_in_only_screen_pixel( current_screen, x,y );
 				break;
+		case 3:
+				s = getStackNum( stack-2 );
+				x = getStackNum( stack-1 );
+				y = getStackNum( stack );
+				ret = find_zone_in_only_screen_pixel( s,x,y );
+				break;
+
 		default:
 				setError(22, data-> tokenBuffer);
 	}
