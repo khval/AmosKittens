@@ -1291,6 +1291,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2416,"Priority Reverse Off",0,ocPriorityReverseOff },
 	{0x2430,"Dev First$",0,discDevFirstStr },
 	{0x2442,"Dev Next$",0,discDevNextStr },
+	{0x2452,"Hrev Block",0,bgHrevBlock },
 	{0x2464,"Vrev Block",0,bgVrevBlock },
 	{0x2476,"Hrev(n)",0,boHrev},
 	{0x2482,"Vrev(n)",0,boVrev},
