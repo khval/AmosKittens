@@ -1071,6 +1071,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1248,"FALSE",0, cmdFalse },
 	{0x1254,"Put Key",0,cmdPutKey },
 	{0x1262,"Scancode",0,cmdScancode },
+	{0x1270,"Scanshift",0,cmdScanshift },
 	{0x1280,"Clear Key",0,cmdClearKey },
 	{0x1290,"Wait Key",0,cmdWaitKey },
 	{0x129E, "Wait", 0, cmdWait },

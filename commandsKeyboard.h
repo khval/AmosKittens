@@ -11,4 +11,5 @@ char *cmdLineInput(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdPutKey(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdKeySpeed(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdKeyStr(struct nativeCommand *cmd, char *tokenBuffer);
+char *cmdScanshift(struct nativeCommand *cmd, char *tokenBuffer);
 
