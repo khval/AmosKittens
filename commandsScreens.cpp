@@ -1241,5 +1241,41 @@ char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *gfxScreenBase(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	NYI(__FUNCTION__);
+
+	setError(23,tokenBuffer);
+	return tokenBuffer;
+}
+
+char *_gfxIffAnim( struct glueCommands *data, int nextToken )
+{
+//	int args = stack - data->stack +1 ;
+//	struct retroScreen *screen;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+/*
+	switch (args)
+	{
+		case 2:
+			break;
+	}
+*/
+
+	NYI(__FUNCTION__);
+	setError(22, data->tokenBuffer );
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _gfxIffAnim, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 

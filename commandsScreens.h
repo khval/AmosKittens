@@ -40,4 +40,5 @@ char *gfxYScreen(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxXHard(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxYHard(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer);
-
+char *gfxScreenBase(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer);

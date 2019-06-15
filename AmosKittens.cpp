@@ -968,6 +968,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0B16,"View",0,ocView },
 	{0x0B20,"Auto View Off", 0, ocAutoViewOff },
 	{0x0B34,"Auto View On", 0, ocAutoViewOn },
+	{0x0B46,"Screen Base", 0, gfxScreenBase },
 	{0x0B58,"Screen Width", 0, gfxScreenWidth },
 	{0x0B88,"Screen Height", 0, gfxScreenHeight },		// =Screen Height(screen nr)
 	{0x0B74,"Screen Height", 0, gfxScreenHeight },		// =Screen Height
@@ -1139,6 +1140,7 @@ struct nativeCommand nativeCommands[]=
 	{0x168E,"Zone",0,ocZone },			// Zone(screen,x,y)
 	{0x16AA,"HZone",0,ocHZone },
 	{0x16B6,"Scin(x,y)",0,gfxScin },
+	{0x16D0,"Mouse Screen",0,ocMouseScreen },
 	{0x16E2,"Mouse Zone",0,ocMouseZone },
 	{0x16F2,"Set input", 0, discSetInput },
 	{0x1704, "Close Workbench", 0, cmdCloseWorkbench },
@@ -1302,6 +1304,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
+	{0x260C,"Iff Anim",0,gfxIffAnim },
 	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, bankEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
