@@ -1132,7 +1132,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1628,"ygr",0,gfxYGR },
 	{0x1632,"Reserve Zone", 0, ocReserveZone },
 	{0x1646,"Reserve Zone", 0, ocReserveZone },
-	{0x164E,"Reset Zone", 0, ocResetZone },
+	{0x164E,"Reset Zone", 0, ocResetZone },	// Reset Zone
+	{0x1660,"Reset Zone", 0, ocResetZone },	// Reset Zone <n>
 	{0x1668,"Set Zone",0,ocSetZone },
 	{0x1680,"Zone",0,ocZone },
 	{0x16AA,"HZone",0,ocHZone },

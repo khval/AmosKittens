@@ -320,19 +320,31 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		int z = getStackNum( stack );
-
-		if ((zones)&&(z>-1)&&(z<zones_allocated))
+		switch (kittyStack[stack].type)
 		{
-			zones[z].screen = NULL;
-			zones[z].x0 = 0;
-			zones[z].y0 = 0;
-			zones[z].x1 = 0;
-			zones[z].y1 = 0;
+			case type_none:
+					setError(23,data->tokenBuffer);
+					break;
+
+			case type_int:
+					{
+						int z = kittyStack[stack].value;
+
+						if ((zones)&&(z>-1)&&(z<zones_allocated))
+						{
+							zones[z].screen = NULL;
+							zones[z].x0 = 0;
+							zones[z].y0 = 0;
+							zones[z].x1 = 0;
+							zones[z].y1 = 0;
+						}
+					}
+					popStack( stack - data->stack );
+					return NULL;
 		}
 	}
-	else setError(22,data->tokenBuffer);;
 
+	setError(22,data->tokenBuffer);
 	popStack( stack - data->stack );
 	return NULL;
 }
@@ -341,6 +353,7 @@ char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _ocResetZone, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
