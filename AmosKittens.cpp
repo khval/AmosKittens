@@ -1305,6 +1305,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
+	{0x25C0,"Array",0,machineArray },
 	{0x260C,"Iff Anim",0,gfxIffAnim },
 	{0x2694,"Call Editor", 0, cmdCallEditor },
 	{0x26D8,"Erase All", 0, bankEraseAll },
@@ -1333,8 +1334,11 @@ struct nativeCommand nativeCommands[]=
 	{0x28EE,"Resource Screen Open",0,guiResourceScreenOpen},
 	{0x2952,"Assign",0,discAssign },
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
-	{0x2A4A,"Lvo", 6, machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
-	{0x2A90,"Bsend",0, NULL }, 
+	{0x2A4A,"Lvo",6,machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
+	{0x2A74,"Bstart",0,bankBstart },
+	{0x2A82,"Blength",0,bankBlength },
+	{0x2A90,"Bsend",0,bankBsend}, 
+	{0x2A9C,"Bank Shrink",0, bankBankShrink },
 	{0x2AB0,"Prg Under",0,cmdPrgUnder },
 	{0x2B3E,"Exec",0,cmdExec },
 	{0x2B58,"Screen Mode",0,gfxScreenMode },

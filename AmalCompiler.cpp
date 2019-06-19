@@ -1027,7 +1027,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	struct amalTab *found;
 	struct amalTab write_cmd;
 	char txt[30];
-	const char *script = channel -> amal_script;
+	struct stringData *script = channel -> amal_script;
 	struct amalBuf *amalProg = &channel -> amalProg;
 	struct amalWriterData data;
 
@@ -1046,7 +1046,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	data.pos = 0;
 	autotest_start_ptr_offset = -1;
 
-	s=script;
+	s=&script -> ptr;
 	while (*s)
 	{
 //		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");

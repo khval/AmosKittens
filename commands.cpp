@@ -27,6 +27,7 @@
 #include "errors.h"
 #include "engine.h"
 #include "label.h"
+#include "amosString.h"
 
 extern void clear_local_vars( int proc );
 
@@ -51,8 +52,7 @@ extern int last_var;
 extern struct globalVar globalVars[];
 extern int tokenMode;
 extern int tokenlength;
-extern void setStackStr( char *str );
-extern void setStackStrDup( const char *str );
+
 extern int findVarPublic( char *name, int type );
 extern int ReferenceByteLength(char *ptr);
 
@@ -191,7 +191,7 @@ char *_if( struct glueCommands *data, int nextToken )
 		setError(22,data -> tokenBuffer);
 	}
 
-	if (kittyStack[stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
+	if (kittyStack[stack].integer.value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
 
@@ -222,7 +222,7 @@ char *_whileCheck( struct glueCommands *data, int nextToken )
 	// while loop is removed from stack, if check is false
 	// and we jump over the wend
 
-	if (kittyStack[data->stack].value == 0)
+	if (kittyStack[data->stack].integer.value == 0)
 	{
 		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _while ) 
 		{
@@ -254,7 +254,7 @@ char *_repeat( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// jump back to repeat, until true
-	if (kittyStack[stack].value == 0) return data -> tokenBuffer;
+	if (kittyStack[stack].integer.value == 0) return data -> tokenBuffer;
 	return 0;
 }
 
@@ -263,11 +263,11 @@ BOOL setVarInt( struct kittyData *var )
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
-			var->value = kittyStack[stack].value;
+			var->integer.value = kittyStack[stack].integer.value;
 			return TRUE;
 
 		case type_float:
-			var->value = (int) kittyStack[stack].decimal;
+			var->integer.value = (int) kittyStack[stack].decimal.value;
 			return TRUE;
 	}
 
@@ -279,11 +279,11 @@ BOOL setVarDecimal( struct kittyData *var )
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
-			var->decimal = (double) kittyStack[stack].value;
+			var->decimal.value =  (double) kittyStack[stack].integer.value;
 			return TRUE;
 
 		case type_float:
-			var->decimal = kittyStack[stack].decimal;
+			var->decimal.value =  kittyStack[stack].decimal.value;
 			return TRUE;
 	}
 
@@ -299,13 +299,12 @@ BOOL setVarString( struct kittyData *var )
 
 			if (kittyStack[stack].str)
 			{
-				var->str = strdup(kittyStack[stack].str);
-				var->len = kittyStack[stack].len;
+				var->str = amos_strdup(kittyStack[stack].str);
 			}
 			else
 			{
-				var->str = NULL;
-				var->len = 0;
+				var->str->ptr = 0;
+				var->str->size = 0;
 			}
 
 			return TRUE;
@@ -323,11 +322,11 @@ BOOL setVarIntArray( struct kittyData *var, char *tokenBuffer )
 		switch (kittyStack[stack].type)
 		{
 			case type_int:
-				var->int_array[var -> index] = kittyStack[stack].value;
+				var->int_array[var -> index].value = kittyStack[stack].integer.value;
 				return TRUE;
 
 			case type_float:
-				var->int_array[var -> index] = (int) kittyStack[stack].decimal;
+				var->int_array[var -> index].value = (int) kittyStack[stack].decimal.value;
 				return TRUE;
 		}
 	}
@@ -345,11 +344,11 @@ BOOL setVarDecimalArray( struct kittyData *var, char *tokenBuffer )
 		switch (kittyStack[stack].type)
 		{
 			case type_int:
-				var->float_array[var -> index] = (double) kittyStack[stack].value;
+				var->float_array[var -> index].value = (double) kittyStack[stack].integer.value;
 				return TRUE;
 
 			case type_float:
-				var->float_array[var -> index] = kittyStack[stack].decimal;
+				var->float_array[var -> index].value = kittyStack[stack].decimal.value;
 				return TRUE;
 		}
 	}
@@ -368,7 +367,7 @@ BOOL setVarStringArray( struct kittyData *var, char *tokenBuffer )
 		{
 			case type_string:
 				if (var->str_array[var -> index] ) free(var->str_array[var->index]);
-				var->str_array[var -> index] = strdup(kittyStack[stack].str);	
+				var->str_array[var -> index] = amos_strdup(kittyStack[stack].str);	
 				return TRUE;
 		}
 	}
@@ -643,7 +642,7 @@ char *_else_if( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	char *ptr;
 
-	if (kittyStack[data->stack].value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
+	if (kittyStack[data->stack].integer.value == 0)	// 0 is FALSE always -1 or 1 can be TRUE
 	{
 		int offset = *((unsigned short *) data -> tokenBuffer);
 
@@ -722,15 +721,15 @@ char *_gosub( struct glueCommands *data, int nextToken )
 		case type_int:	
 				{
 					char num[50];
-					sprintf(num,"%d", kittyStack[stack].value );
+					sprintf(num,"%d", kittyStack[stack].integer.value );
 					ref_num = findLabelRef( num , procStcakFrame[proc_stack_frame].id  );
 				}
 				break;
 
 		case type_string:
 				{
-					char *txt = getStackString( stack );
-					ref_num = findLabelRef( txt, procStcakFrame[proc_stack_frame].id );
+					struct stringData *str = getStackString( stack );
+					ref_num = findLabelRef( &str -> ptr, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
@@ -778,15 +777,15 @@ char *_goto( struct glueCommands *data, int nextToken )
 		case type_int:	
 				{
 					char num[50];
-					sprintf(num,"%d", kittyStack[stack].value );
+					sprintf(num,"%d", kittyStack[stack].integer.value );
 					ref_num = findLabelRef( num, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
 		case type_string:
 				{
-					char *txt = getStackString( stack );
-					ref_num = findLabelRef( txt, procStcakFrame[proc_stack_frame].id );
+					struct stringData *str = getStackString( stack );
+					ref_num = findLabelRef( &str -> ptr, procStcakFrame[proc_stack_frame].id );
 				}
 				break;
 
@@ -1133,11 +1132,11 @@ char *_step( struct glueCommands *data, int nextToken )
 		switch (gcmd -> optionsType)
 		{
 			case glue_option_for_int:
-					gcmd -> optionsInt.step = (var -> type == type_int) ? var -> value :  (int) var -> decimal ;
+					gcmd -> optionsInt.step = (var -> type == type_int) ? var -> integer.value :  (int) var -> decimal.value ;
 					printf("int %lf\n", gcmd -> optionsInt.step);
 					break;
 			case glue_option_for_float:
-					gcmd -> optionsFloat.step = (var -> type == type_int) ? (double) var -> value : var -> decimal ;
+					gcmd -> optionsFloat.step = (var -> type == type_int) ? (double) var -> integer.value : var -> decimal.value ;
 					printf("float %lf\n", gcmd -> optionsFloat.step);
 					break;
 		}
@@ -1259,8 +1258,8 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 
 						switch ( kittyStack[stack].type )
 						{
-							case type_int:		next_num = kittyStack[stack].value;	break;
-							case type_float:	next_num = (int) kittyStack[stack].decimal;	break;
+							case type_int:		next_num = kittyStack[stack].integer.value;	break;
+							case type_float:	next_num = (int) kittyStack[stack].decimal.value;	break;
 						}
 						break;
 
@@ -1268,8 +1267,8 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 
 						switch ( kittyStack[stack].type )
 						{
-							case type_int:		next_float = (double) kittyStack[stack].value;	break;
-							case type_float:	next_float = kittyStack[stack].decimal;	break;
+							case type_int:		next_float = (double) kittyStack[stack].integer.value;	break;
+							case type_float:	next_float = kittyStack[stack].decimal.value;	break;
 						}
 						break;
 			}
@@ -1278,14 +1277,14 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 			{
 				case glue_option_for_int:
 
-					var -> value += gcmd->optionsInt.step; 
+					var -> integer.value += gcmd->optionsInt.step; 
 
 					if (gcmd->optionsInt.step > 0)  {
-						if (var -> value <= next_num )	{
+						if (var -> integer.value <= next_num )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else if (gcmd->optionsInt.step < 0) {
-						if (var -> value >= next_num  )	{
+						if (var -> integer.value >= next_num  )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else setError(23,tokenBuffer);
@@ -1293,17 +1292,17 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 
 				case glue_option_for_float:
 
-					var -> decimal += gcmd->optionsFloat.step; 
+					var -> decimal.value += gcmd->optionsFloat.step; 
 
 					if (gcmd->optionsFloat.step > 0.0)  {
 
-						printf("%0.2lf + %0.2lf <= %0.2lf \n",var -> decimal, gcmd->optionsFloat.step, next_float );
+						printf("%0.2lf + %0.2lf <= %0.2lf \n",var -> decimal.value, gcmd->optionsFloat.step, next_float );
 
-						if (var -> decimal <= next_float )	{
+						if (var -> decimal.value <= next_float )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else if (gcmd->optionsFloat.step < 0.0) {
-						if (var -> decimal >= next_float  )	{
+						if (var -> decimal.value >= next_float  )	{
 							tokenBuffer = new_ptr;
 						} else cmdStack--;
 					} else setError(23,tokenBuffer);
@@ -1418,14 +1417,14 @@ void _set_return_param( struct nativeCommand *cmd, char *tokenBuffer )
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
-			var_param_num = kittyStack[stack].value;
+			var_param_num = kittyStack[stack].integer.value;
 			break;
 		case type_float:
-			var_param_decimal = kittyStack[stack].decimal;
+			var_param_decimal = kittyStack[stack].decimal.value;
 			break;
 		case type_string:
 			if (var_param_str) free(var_param_str);
-			var_param_str = strdup(kittyStack[stack].str);
+			var_param_str = amos_strdup(kittyStack[stack].str);
 			break;
 	}
 }
@@ -1717,7 +1716,18 @@ exit_for:
 
 char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	setStackStrDup(var_param_str ? var_param_str : "" );
+	if (var_param_str)
+	{
+		setStackStrDup( var_param_str );
+	}
+	else
+	{
+		struct stringData tmp;
+		tmp.size = 0;
+		tmp.ptr = 0;
+		setStackStrDup( &tmp );
+	}
+
 	return tokenBuffer;
 }
 
@@ -1759,10 +1769,10 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	char *ptr = NULL;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	char *name = getStackString( stack );
+	struct stringData *name = getStackString( stack );
 	if (name)	
 	{
-		struct label *label = findLabel(name, procStcakFrame[proc_stack_frame].id );
+		struct label *label = findLabel( &name -> ptr, procStcakFrame[proc_stack_frame].id );
 		ptr = label -> tokenLocation;
 	}
 	popStack( stack - data->stack  );
@@ -2278,8 +2288,13 @@ char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer )
 {
+	struct stringData tmp;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackStrDup("");
+
+	tmp.size = 0;
+	tmp.ptr = 0;
+
+	setStackStrDup(&tmp);
 	return tokenBuffer;
 }
 
@@ -2287,14 +2302,14 @@ char *_cmdExec( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data -> stack + 1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	char *cmd;
+	struct stringData *cmd;
 
 	switch (args)
 	{
 		case 1:	cmd = getStackString(stack);
 
 #ifdef __amigaos4__
-				if (cmd) SystemTags( cmd, 
+				if (cmd) SystemTags( &cmd -> ptr, 
 							SYS_Asynch, FALSE, 
 							TAG_END);
 #endif

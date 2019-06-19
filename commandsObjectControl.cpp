@@ -27,6 +27,7 @@
 #include "commandsScreens.h"
 #include "errors.h"
 #include "engine.h"
+#include "amosstring.h"
 
 extern int sig_main_vbl;
 
@@ -211,23 +212,23 @@ char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocZoneStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	char *newstr = NULL;
+	struct stringData *newstr = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		char *txt = getStackString( stack-1 );
+		struct stringData *txt = getStackString( stack-1 );
 		int zone = getStackNum( stack );
-
-		dump_stack();
 
 		if ((txt)&&(zone>-1)&&(zone<zones_allocated))
 		{
-			newstr = (char *) malloc( strlen(txt) + 6 + 1 ); 
+			newstr = alloc_amos_string( txt -> size + 6 );
+
 			if (newstr)
 			{
-				sprintf(newstr,"%cZ0%s%cR%c",27,txt,27,48+ zone );
+				sprintf( &newstr -> ptr,"%cZ0%s%cR%c",27,txt,27,48+ zone );
+				newstr -> size = strlen(&newstr -> ptr);
 			}
 		}
 
@@ -328,7 +329,7 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 
 			case type_int:
 					{
-						int z = kittyStack[stack].value;
+						int z = kittyStack[stack].integer.value;
 
 						if ((zones)&&(z>-1)&&(z<zones_allocated))
 						{

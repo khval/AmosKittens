@@ -43,6 +43,7 @@ extern FILE *engine_fd;
 #include "errors.h"
 #include "engine.h"
 #include "bitmap_font.h"
+#include "amosstring.h"
 
 extern struct TextFont *topaz8_font;
 
@@ -64,7 +65,7 @@ void isetvarnum( struct cmdcontext *context, int index, int num );
 void dump_context_stack( struct cmdcontext *context );
 void pop_context( struct cmdcontext *context, int pop );
 void push_context_num(struct cmdcontext *context, int num);
-void push_context_string(struct cmdcontext *context, char *str);
+void push_context_string(struct cmdcontext *context, struct stringData *str);
 void push_context_var(struct cmdcontext *context, int num);
 
 extern uint8_t getByte( char *adr, int &pos );
@@ -75,12 +76,12 @@ extern bool convertPacPic( unsigned char *data, struct PacPicContext *context );
 extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
 
-extern int os_text_height(char *txt);
-extern int os_text_base(char *txt);
-extern int os_text_width(char *txt);
-extern void os_text(struct retroScreen *screen,int x, int y, char *txt, int ink0, int ink1);
-extern void os_text_outline(struct retroScreen *screen,int x, int y, char *txt, int pen,int outline);
-extern void os_text_no_outline(struct retroScreen *screen,int x, int y, char *txt, int pen);
+extern int os_text_height(struct stringData *txt);
+extern int os_text_base(struct stringData *txt);
+extern int os_text_width(struct stringData *txt);
+extern void os_text(struct retroScreen *screen,int x, int y, struct stringData *txt, int ink0, int ink1);
+extern void os_text_outline(struct retroScreen *screen,int x, int y, struct stringData *txt, int pen,int outline);
+extern void os_text_no_outline(struct retroScreen *screen,int x, int y, struct stringData *txt, int pen);
 
 extern bool breakpoint ;
 
@@ -480,7 +481,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 				{
 					case type_string:
 						{
-							char *txt  = context -> stack[context -> stackp-2].str;
+							struct stringData *txt  = context -> stack[context -> stackp-2].str;
 							if (txt)
 							{
 								int th = os_text_height( txt );
@@ -495,16 +496,19 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 
 					case type_int:
 						{
-							char txt[30];
+							char tmp[50];
+							struct stringData *str = (struct stringData *) tmp;
 							int n = context -> stack[context -> stackp-2].num;
-							sprintf( txt, "%d", n);
-							if (txt)
-							{
-								int th = os_text_height( txt );
-								int tb = os_text_base( txt );
 
-								os_text_no_outline(screen, x,y+tb ,txt,pen);
-								context -> xgc += os_text_width( txt ) ;
+
+							sprintf( &str -> ptr, "%d", n);
+							if (str)
+							{
+								int th = os_text_height( str );
+								int tb = os_text_base( str );
+
+								os_text_no_outline(screen, x,y+tb ,str,pen);
+								context -> xgc += os_text_width( str ) ;
 								context -> ygc += th;
 							}
 						}
@@ -661,7 +665,7 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 			int tb;
 			int x = context -> stack[context -> stackp-5].num;
 			int y = context -> stack[context -> stackp-4].num;
-			char *txt = context -> stack[context -> stackp-3].str;
+			struct stringData *txt = context -> stack[context -> stackp-3].str;
 			uint16_t outline = context -> stack[context -> stackp-2].num;
 			uint16_t pen = context -> stack[context -> stackp-1].num;
 
@@ -1033,7 +1037,7 @@ void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_int )
 		{
-			char *ret ;
+			struct stringData *ret ;
 			ret = getResourceStr( arg1.num );
 			pop_context( context, 1);
 
@@ -1043,7 +1047,7 @@ void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 			}
 			else
 			{
-				push_context_string(context, strdup("NULL") );
+				push_context_string(context, toAmosString("NULL",4) );
 			}
 		}
 	}
@@ -1882,7 +1886,7 @@ void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> has_return_value = true;
 	context -> exit_run = true;
-	context -> at = context -> script + strlen(context -> script);
+	context -> at = &(context -> script) -> ptr + context -> script -> size;
 	context -> l = 0;
 }
 
@@ -2290,7 +2294,9 @@ void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	char str[30];
+	char tmp[30];
+	struct stringData *str = (struct stringData *) tmp;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>0)
@@ -2303,7 +2309,8 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 					ret = os_text_width( arg1.str );
 					break;
 			case type_int:
-					sprintf( str, "%d", arg1.num );
+					sprintf( &str -> ptr, "%d", arg1.num );
+					str -> size = strlen(&str -> ptr);
 					ret = os_text_width( str );
 					break;
 			default:
@@ -2328,7 +2335,7 @@ void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_string ) 
 		{
-			ret = strlen( arg1.str );
+			ret = os_text_width(arg1.str);
 		}
 		else ret = 0;
 
@@ -2383,7 +2390,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> at = context -> script + strlen(context -> script);
+	context -> at = &(context -> script -> ptr) + context -> script -> size;
 	context -> cmd_done = NULL;
 	context -> args = 0;
 	context -> l = 0;
@@ -2420,7 +2427,7 @@ void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
-void isetvarstr( struct cmdcontext *context,int index, char *str)
+void isetvarstr( struct cmdcontext *context,int index, struct stringData *str)
 {
 	struct ivar &var = context -> vars[index];
 
@@ -2429,7 +2436,7 @@ void isetvarstr( struct cmdcontext *context,int index, char *str)
 		if (var.str) free(var.str);
 	}
 	else var.type = type_string;
-	var.str = strdup(str);
+	var.str = amos_strdup(str);
 }
 
 void isetvarnum( struct cmdcontext *context,int index,int num)
@@ -2446,10 +2453,10 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 	var.num = num;
 }
 
-char *igetvarstr( struct cmdcontext *context, int index)
+struct stringData *igetvarstr( struct cmdcontext *context, int index)
 {
 	struct ivar &var = context -> vars[index];
-	return (var.type == type_string) ? strdup(var.str) : NULL;
+	return (var.type == type_string) ? amos_strdup(var.str) : NULL;
 }
 
 int igetvarnum( struct cmdcontext *context,int index )
@@ -2753,19 +2760,17 @@ int find_command( char *at, int &l )
 	return -1;
 }
 
-bool is_string( char *at, char *&str, int &l )
+bool is_string( char *at, struct stringData *&str, int &l )
 {
 	l=0;
 
 	if (*at!='\'') return false;
 
-	printf("{%s}\n",at);
-
 	at++;
 	{
 		char *p;
 		for (p = at; ((*p !='\'') && (*p!=0));p++ ) l++;
-		str =strndup( at, l );
+		str =toAmosString( at, l );
 		l+=2;
 	}
 
@@ -2808,7 +2813,7 @@ void push_context_num(struct cmdcontext *context, int num)
 	printf("push %d\n",num);
 }
 
-void push_context_string(struct cmdcontext *context, char *str)
+void push_context_string(struct cmdcontext *context, struct stringData *str)
 {
 	struct ivar &self = context -> stack[context -> stackp];
 	self.type = type_string;
@@ -2834,7 +2839,7 @@ void push_context_var(struct cmdcontext *context, int index)
 			case type_string:
 
 					stackd.type = type_string;
-					stackd.str = strdup( var.str );
+					stackd.str = amos_strdup( var.str );
 					stackd.num = 0;
 					context -> stackp++;
 					break;
@@ -2873,19 +2878,19 @@ void dump_context_stack( struct cmdcontext *context )
 	}
 }
 
-void init_interface_context( struct cmdcontext *context, int id, char *script, int x, int y, int varSize, int bufferSize  )
+void init_interface_context( struct cmdcontext *context, int id, struct stringData *script, int x, int y, int varSize, int bufferSize  )
 {
 	int n;
 	struct dialog &dialog = context -> dialog[0];
 
 	bzero( context, sizeof( struct cmdcontext ) );
 
-	remove_lower_case( script );
+	remove_lower_case( &script->ptr );
 
 	context -> id = id;
 	context -> stackp = 0;
-	context -> script = strdup( script );
-	context -> at = context -> script;
+	context -> script = amos_strdup( script );
+	context -> at = &(context -> script -> ptr);
 	context -> max_vars = varSize;
 	context -> selected_dialog = 0;
 	context -> block_level = 0;
@@ -2960,7 +2965,7 @@ void test_interface_script( struct cmdcontext *context)
 {
 	int sym,cmd;
 	int num;
-	char *str = NULL;
+	struct stringData *str = NULL;
 
 	if (context -> at == 0)
 	{
@@ -3038,7 +3043,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 	int initial_block_level = context -> block_level;
 	int initial_command_length = context -> l;
 
-	char *str = NULL;
+	struct stringData *str = NULL;
 	char *backup_at = context -> at;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3147,7 +3152,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 {
 	int sym,cmd;
 	int num;
-	char *str = NULL;
+	struct stringData *str = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -3176,7 +3181,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	 	test_interface_script( context );
 	}
 
-	context -> at = context -> script;	// default
+	context -> at = &(context -> script -> ptr);	// default
 
 	if (label != -1)
 	{

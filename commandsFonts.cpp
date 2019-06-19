@@ -13,6 +13,7 @@
 #include <proto/dos.h>
 #include <proto/diskfont.h>
 #include <proto/graphics.h>
+#include "amosString.h"
 
 extern struct RastPort font_render_rp;
 #endif
@@ -170,7 +171,7 @@ char *_fontsSetFont( struct glueCommands *data, int nextToken )
 	{
 		case 1: ret = getStackNum( stack ) ;
 
-			if ((ret>=0)&&(ret<=fonts.size()))
+			if ((ret>=0)&&(ret<=(int) fonts.size()))
 			{
 				if (gfx_font) CloseFont(gfx_font);		
 				gfx_font = open_font( fonts[ret].name.c_str(),fonts[ret].size );
@@ -215,7 +216,10 @@ char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 				if ((index>0) && (index <= fonts.size()))
 				{
 					popStack( stack - data->stack );
-					setStackStrDup( fonts[ index-1 ].amosString.c_str() );
+					setStackStr( 
+						toAmosString( 
+							fonts[ index-1 ].amosString.c_str(), 
+							strlen(fonts[ index-1 ].amosString.c_str()) ) );
 					return NULL;
 				}
 				break;
@@ -224,7 +228,7 @@ char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-	setStackStrDup("");
+	setStackStrDup(toAmosString("",0));
 	return NULL;
 }
 

@@ -511,7 +511,7 @@ char *_bgDelBlock( struct glueCommands *data, int nextToken )
 					break;
 
 				case type_int: 
-					del_block( blocks, kittyStack[stack].value ); 
+					del_block( blocks, kittyStack[stack].integer.value ); 
 					break;
 
 				default:

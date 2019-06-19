@@ -80,11 +80,11 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 	if (args==2)
 	{
 		int color = getStackNum( stack-1 );
-		char *str = getStackString( stack );
+		struct stringData *str = getStackString( stack );
 
 		if (screens[current_screen])
 		{
-			if (str) retroFlash( screens[current_screen], color, str );
+			if (str) retroFlash( screens[current_screen], color, &(str->ptr) );
 		}
 		success = true;
 	}
@@ -1183,9 +1183,9 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 		int n = getStackNum( stack-5 );
 		int colour = getStackNum( stack-4 );
 		int length = getStackNum( stack-3 );
-		char *r = getStackString( stack-2 );
-		char *g = getStackString( stack-1 );
-		char *b = getStackString( stack );
+		struct stringData *r = getStackString( stack-2 );
+		struct stringData *g = getStackString( stack-1 );
+		struct stringData *b = getStackString( stack );
 		unsigned char *rgb;
 
 		engine_lock();
@@ -1198,9 +1198,9 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 		if (rgb = (unsigned char *) video -> rainbow[n].table)
 		{
 			 int lines, step, count;
-			if (r)	if (sscanf( r,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
-			if (g)	if (sscanf( g,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,g), lines, step, count, length );
-			if (b)	if (sscanf( b,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,b), lines, step, count, length );
+			if (r)	if (sscanf( &r -> ptr ,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
+			if (g)	if (sscanf( &g -> ptr,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,g), lines, step, count, length );
+			if (b)	if (sscanf( &b -> ptr,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,b), lines, step, count, length );
 		}
 
 		engine_unlock();

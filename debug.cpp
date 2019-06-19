@@ -219,7 +219,7 @@ void dump_var( int n )
 				printf("%d -- %d::%s%s=%d\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, globalVars[n].var.value );
+					globalVars[n].varName, globalVars[n].var.integer.value );
 				break;
 			case type_float:
 				printf("%d -- %d::%s%s=%0.2lf\n",n,
@@ -231,7 +231,7 @@ void dump_var( int n )
 				printf("%d -- %d::%s%s=%c%s%c\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, 34, globalVars[n].var.str ? globalVars[n].var.str : "NULL", 34 );
+					globalVars[n].varName, 34, globalVars[n].var.str ? &(globalVars[n].var.str -> ptr) : "NULL", 34 );
 				break;
 			case type_proc:
 
@@ -384,7 +384,7 @@ void dump_stack()
 					printf("<Nothing>\n");
 					break;
 				case type_int:
-					v = kittyStack[n].value;
+					v = kittyStack[n].integer.value;
 					if (  ((v>='a')&&(v<='z'))  ||  ((v>='A')&&(v<='Z'))  )
 					{
 						printf("%d '%c'\n",v, (char) v );

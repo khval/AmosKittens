@@ -24,6 +24,7 @@
 #include "var_helper.h"
 #include "pass1.h"
 #include "label.h"
+#include "amosstring.h"
 
 const char *types[]={"","#","$",""};
 
@@ -300,8 +301,8 @@ struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type 
 		_new = &globalVars[global_var_count-1];
 		_new -> varName = *tmp;	// tmp is alloced and used here.
 		_new -> var.type = type;
-		_new -> var.len = 0;
-		if (_new -> var.type == type_string) _new -> var.str = strdup("");
+
+		if (_new -> var.type == type_string) _new -> var.str = toAmosString("",0);
 
 		*tmp = NULL;
 	}

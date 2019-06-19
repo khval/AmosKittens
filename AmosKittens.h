@@ -177,22 +177,38 @@ struct extension_lib
 	uint32_t crc;
 };
 
+struct dataBase
+{
+	short id;
+};
+
+struct stringData : dataBase
+{
+	short size;
+	char ptr;
+};
+
+struct desimalData :  dataBase
+{
+	double value;
+};
+
+struct valueData : dataBase
+{
+	int value;
+};
+
 struct kittyData
 {
-	union		// we don't need to wast space.
-	{
-		int len;
-		int value;
-		int count;
-	};
+	int count;
 	
 	union
 	{
-		char *str;
-		char **str_array;
-		int *int_array;
-		double *float_array;	
-		char *tokenBufferPos;	
+		struct valueData *int_array;
+		struct stringData *str;
+		struct stringData **str_array;
+		struct desimalData *float_array;	
+		char *tokenBufferPos;
 	};
 
 	union		// we don't need to wast space.
@@ -209,10 +225,12 @@ struct kittyData
 		char *procDataPointer;
 	};
 
-	double decimal;
+	struct valueData integer;
+	struct desimalData decimal;
 	int state;
 	int type;
 };
+
 
 struct label
 {
@@ -410,7 +428,7 @@ extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
 extern char *jump_mode_gosub (struct reference *ref, char *ptr);
 
-extern char *var_param_str;
+extern struct stringData *var_param_str;
 extern int var_param_num;
 extern double var_param_decimal;
 

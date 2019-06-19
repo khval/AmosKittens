@@ -8,20 +8,20 @@ extern void	setStackParenthesis();
 #define 		setStackPtr(adr) setStackNum((int) adr) 
 extern void	setStackNum( int num );
 extern void	setStackDecimal( double decimal );
-extern void	setStackStr( char *str );
-extern void	setStackStrDup(const char *str);
+extern void	setStackStr( struct stringData *str );
+extern void	setStackStrDup(struct stringData *str);
+extern void	setStackCharArrayDup(char *str);
 extern void	setStackNone( void );
 extern unsigned short getLastProgStackToken();
 
 #define setStackHiddenCondition()			\
 			kittyStack[stack].str = NULL;		\
-			kittyStack[stack].value = 0;		\
 			kittyStack[stack].state = state_hidden_subData;	\
 			stack++;
 
 extern int		getStackNum( int n );
 extern double	getStackDecimal( int n );
-extern char*	getStackString( int n );
+extern struct stringData *getStackString( int n );
 
 extern bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1);
 extern bool stackStrAddDecimal(struct kittyData *item0, struct kittyData *item1);

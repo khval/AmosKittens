@@ -32,7 +32,6 @@ char *machineBtst(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineBset(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineBchg(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineBclr(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer);
@@ -45,10 +44,9 @@ char *machineDOSCALL(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineEXECALL(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineGFXCALL(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineINTCALL(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *machinePload(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineCall(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *machineFree(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer);
+char *machineArray(struct nativeCommand *cmd, char *tokenBuffer);
 

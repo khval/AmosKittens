@@ -13,6 +13,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "debug.h"
+#include "amosstring.h"
 
 int stack = 0;
 struct kittyData kittyStack[100];
@@ -151,7 +152,7 @@ void popStack(int n)
 	}
 }
 
-char *getStackString( int n )
+struct stringData *getStackString( int n )
 {
 	if (kittyStack[n].type == type_string)
 	{
@@ -164,8 +165,8 @@ double getStackDecimal( int n )
 {
 	switch (kittyStack[n].type)
 	{
-		case type_int:	return (double) kittyStack[n].value;
-		case type_float: return kittyStack[n].decimal;
+		case type_int:	return (double) kittyStack[n].integer.value;
+		case type_float: return kittyStack[n].decimal.value;
 	}
 	return 0.0;
 }
@@ -174,8 +175,8 @@ int getStackNum( int n )
 {
 	switch (kittyStack[n].type)
 	{
-		case type_int:	return kittyStack[n].value;
-		case type_float: return (int) kittyStack[n].decimal;
+		case type_int:	return kittyStack[n].integer.value;
+		case type_float: return (int) kittyStack[n].decimal.value;
 	}
 	return 0;
 }
@@ -184,8 +185,8 @@ void stack_get_if_int( int n, int *ret )
 {
 	switch (kittyStack[n].type)
 	{
-		case type_int:	*ret = kittyStack[n].value; break;
-		case type_float: *ret = (int) kittyStack[n].decimal; break;
+		case type_int:	*ret = kittyStack[n].integer.value; break;
+		case type_float: *ret = (int) kittyStack[n].decimal.value; break;
 	}
 }
 
@@ -197,7 +198,7 @@ void setStackNone( void )
 		kittyStack[stack].str = NULL;
 	}
 
-	kittyStack[stack].value = 0;
+	kittyStack[stack].integer.value = 0;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_none;
 }
@@ -210,7 +211,7 @@ void setStackNum( int num )
 		kittyStack[stack].str = NULL;
 	}
 
-	kittyStack[stack].value = num;
+	kittyStack[stack].integer.value = num;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_int;
 }
@@ -223,22 +224,20 @@ void setStackDecimal( double decimal )
 		kittyStack[stack].str = NULL;
 	}
 
-	kittyStack[stack].decimal = decimal;
+	kittyStack[stack].decimal.value = decimal;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_float;
 }
 
-void setStackStrDup(const char *str)
+void setStackStrDup( struct stringData *str)
 {
 	if (kittyStack[stack].str)	free(kittyStack[stack].str);
-	kittyStack[stack].str = str ? strdup( str ) : NULL;
-
-	kittyStack[stack].len = kittyStack[stack].str ? strlen( kittyStack[stack].str ) : 0;
+	kittyStack[stack].str = str ? amos_strdup( str ) : NULL;
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
 
-void setStackStr( char *str)
+void setStackStr( struct stringData *str)
 {
 	if ((str != kittyStack[stack].str)&&(kittyStack[stack].str))
 	{
@@ -248,13 +247,11 @@ void setStackStr( char *str)
 	if (str)
 	{
 		kittyStack[stack].str = str ;
-		kittyStack[stack].len = strlen( str );
 	}
 	else
 	{
 		printf("setStackStr(): string is a NULL pointer??\n");
 		kittyStack[stack].str = 0 ;
-		kittyStack[stack].len = 0;
 	}
 
 	kittyStack[stack].state = state_none;
@@ -265,7 +262,6 @@ void setStackParenthesis()
 {
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
 	kittyStack[stack].str = NULL ;
-	kittyStack[stack].len = 0;
 	kittyStack[stack].state = state_subData;
 	kittyStack[stack].type = type_none;
 }
@@ -273,22 +269,23 @@ void setStackParenthesis()
 
 bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 {
-	int new_size = item0 -> len + 20;
-	char *str;
+	int new_size = item0 -> str -> size + 20;
+	struct stringData *str;
 
 	if (item0 -> str == NULL) return false;
 
-	str = (char *) malloc ( new_size );
+	str = alloc_amos_string( new_size );
 	if (str)
 	{
-		if (item1->value> -1)
+		if ( item1->integer.value > -1 )
 		{
-			sprintf(str,"%s  %d", item0 -> str, item1 -> value);
+			sprintf(&str -> ptr,"%s  %d", item0 -> str, item1 -> integer.value);
 		}
 		else
 		{
-			sprintf(str,"%s %d", item0 -> str, item1 -> value);
+			sprintf(&str -> ptr,"%s %d", item0 -> str, item1 -> integer.value);
 		}
+		str -> size = strlen( &str -> ptr );
 
 		setStackStr( str );
 		return true;
@@ -298,21 +295,29 @@ bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 
 bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 {
-	int new_size = item0 -> len + 100;
-	char *str;
+	int new_size = item0 -> str -> size + 100;
+	struct stringData *str;
 
 	if (item0 -> str == NULL) return false;
 
-	str = (char *) malloc ( new_size );
+	str = alloc_amos_string( new_size );
 	if (str)
 	{
-		if (item1->decimal>= 0.0)
+		char *dest = &(str -> ptr);
+
+		memcpy( dest, item0 -> str, item0 -> str -> size );
+		dest += item0 -> str -> size;
+		str -> size += item0 -> str -> size;
+
+		if (item1->decimal.value>= 0.0)
 		{
-			sprintf(str,"%s  %f", item0 -> str, item1 -> decimal);
+			sprintf( dest,"  %f",item1->decimal.value );
+			str -> size += strlen(dest);
 		}
 		else
 		{
-			sprintf(str,"%s %f", item0 -> str, item1 -> decimal);
+			sprintf( dest," %f",item1->decimal.value );
+			str -> size += strlen(dest);
 		}
 
 		setStackStr( str );
@@ -323,15 +328,19 @@ bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 
 bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int new_size = item0 -> len + item1 -> len +1;
-	char *str;
+	int new_size = item0 -> str -> size + item1 -> str -> size ;
+	struct stringData *str;
 
 	if (item0 -> str == NULL) return false;
 
-	str = (char *) malloc ( new_size );
+	str = alloc_amos_string( new_size );
 	if (str)
 	{
-		sprintf(str,"%s%s", item0 -> str, item1 -> str);
+		char *dest = &(str -> ptr);
+
+		memcpy( dest, item0 -> str, item0 -> str -> size );	dest += item0 -> str -> size;
+		memcpy( dest, item1 -> str, item1 -> str -> size );	dest += item1 -> str -> size;
+
 		setStackStr( str );
 		return true;
 	}
@@ -340,76 +349,174 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 
 bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
+	s0 = item0 -> str;
+	s1 = item1 -> str;
 
-	setStackNum( ret > 0 ? ~0 : 0  );
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret > 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( lendiff > 0 ? ~0 : 0  );
+	}
 
 	return true;
 }
 
 bool stackLessStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
-	setStackNum( ret < 0  ? ~0 : 0 );
+	s0 = item0 -> str;
+	s1 = item1 -> str;
+
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret < 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( lendiff < 0 ? ~0 : 0  );
+	}
 
 	return true;
 }
 
 bool stackLessOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
-	setStackNum( ret <= 0   ? ~0 : 0 );
+	s0 = item0 -> str;
+	s1 = item1 -> str;
+
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret <= 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( lendiff < 0 ? ~0 : 0  );
+	}
+
 	return true;
 }
 
 bool stackMoreOrEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
-	setStackNum( ret >= 0 ? ~0 : 0 );
+	s0 = item0 -> str;
+	s1 = item1 -> str;
+
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret >= 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( lendiff > 0 ? ~0 : 0  );
+	}
 	return true;
 }
 
 bool stackEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
-	setStackNum( ret == 0  ? ~0 : 0  );
+	s0 = item0 -> str;
+	s1 = item1 -> str;
+
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret == 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( 0 );
+	}
+
 	return true;
 }
 
 bool stackNotEqualStr(struct kittyData *item0,	struct kittyData *item1)
 {
-	int ret;
+	int ret, lendiff;
+	struct stringData *s0,*s1;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((item0 -> str == NULL)||(item1 -> str == NULL))  return false;
-	ret = strcmp( item0->str , item1->str );
-	popStack(1);	
-	setStackNum( ret != 0  ? ~0 : 0  );
+	s0 = item0 -> str;
+	s1 = item1 -> str;
+
+	if ((s0 == NULL)||(s1 == NULL))  return false;
+
+	lendiff = ( s0->size - s1->size) ;
+
+	if (lendiff == 0)
+	{
+		ret = memcmp( &s0->ptr , &s1->ptr , s0->size );
+		popStack(1);	
+		setStackNum( ret != 0 ? ~0 : 0  );
+	}
+	else
+	{
+		popStack(1);	
+		setStackNum( ~0 );
+	}
+
 	return true;
 }
 

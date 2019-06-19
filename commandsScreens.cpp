@@ -857,15 +857,15 @@ char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 	{
 		case 1:	// load iff image to current screen.
 				{
-					char *name= getStackString( stack );
-					if (name)	LoadIff(name,current_screen);
+					struct stringData *name= getStackString( stack );
+					if (name)	LoadIff(&(name->ptr),current_screen);
 				}
 				break;
 		case 2:	// load iff image to new screen.
 				{
-					char *name= getStackString( stack -1);
+					struct stringData *name= getStackString( stack -1);
 					int screen_num = getStackNum( stack );
-					if (name)	LoadIff(name,screen_num);
+					if (name)	LoadIff( &(name->ptr),screen_num);
 				}
 				break;
 	}
@@ -963,15 +963,15 @@ char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 	{
 		case 1:	// save iff image from current screen.
 				{
-					char *name= getStackString( stack );
-					if (name)	SaveIff(name,current_screen);
+					struct stringData *name= getStackString( stack );
+					if (name)	SaveIff( &(name->ptr),current_screen);
 				}
 				break;
 		case 2:	// save iff image from screen X.
 				{
-					char *name= getStackString( stack -1);
+					struct stringData *name= getStackString( stack -1);
 					int screen_num = getStackNum( stack );
-					if (name)	SaveIff(name,screen_num);
+					if (name)	SaveIff( &(name->ptr),screen_num);
 				}
 				break;
 	}
@@ -1023,7 +1023,7 @@ char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 
 			if (kittyStack[stack].type == type_int)
 			{
-				screen_num = kittyStack[stack].value;
+				screen_num = kittyStack[stack].integer.value;
 			}
 			else screen_num = current_screen;
 

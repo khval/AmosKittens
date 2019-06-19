@@ -55,11 +55,11 @@ char *_mathInc( struct glueCommands *data, int nextToken )
 		switch (var->type)
 		{
 			case type_int:
-				var->value++;
+				var->integer.value++;
 				break;
 	
 			case type_int | type_array:
-				var->int_array[var -> index]++;
+				var->int_array[var -> index].value++;
 				break;
 	
 			default:
@@ -89,11 +89,11 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 		switch (var->type)
 		{
 			case type_int:
-				var->value--;
+				var->integer.value--;
 				break;
 	
 			case type_int | type_array:
-				var->int_array[var -> index]--;
+				var->int_array[var -> index].value--;
 				break;
 	
 			default:
@@ -166,11 +166,11 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 			switch (var->type)
 			{
 				case type_int:
-					var->value= _value;
+					var->integer.value= _value;
 					break;
 	
 				case type_int | type_array:
-					var->int_array[var -> index]= _value;
+					var->int_array[var -> index].value = _value;
 					break;
 	
 				default:
@@ -379,11 +379,11 @@ char *_mathAbs( struct glueCommands *data, int nextToken )
 		switch (kittyStack[stack].type)
 		{
 			case type_int:	 
-					kittyStack[stack].value =  abs(kittyStack[stack].value);
+					kittyStack[stack].integer.value =  abs(kittyStack[stack].integer.value);
 					break;
 
 			case type_float:  
-					kittyStack[stack].decimal = fabs( kittyStack[stack].decimal );
+					kittyStack[stack].decimal.value = fabs( kittyStack[stack].decimal.value );
 					break;
 		}
 	}

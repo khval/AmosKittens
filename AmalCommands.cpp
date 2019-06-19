@@ -23,6 +23,7 @@
 #include "amoskittens.h"
 #include "commandsScreens.h"
 #include "debug.h"
+#include "amosstring.h"
 
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
@@ -863,7 +864,7 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 	printf("str: %s\n", animCode);
 
 #else 
-	setChannelAnim( self, strdup(  animCode ) );
+	setChannelAnim( self,toAmosString(  animCode, 2 ) );
 #endif
 
 	return code+1+le;	// 

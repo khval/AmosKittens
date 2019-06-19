@@ -273,7 +273,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
-	char *script = NULL;
+	struct stringData *script = NULL;
 	struct cmdcontext context ;
 
 	context.return_value = 0;
@@ -294,7 +294,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				{
 					script = getStackString(stack-2);
 					int var1 = getStackNum(stack-1);
-					char *var2s = getStackString(stack);
+					struct stringData *var2s = getStackString(stack);
 
 					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 
@@ -310,7 +310,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				{
 					script = getStackString(stack-4);
 					int var1 = getStackNum(stack-3);
-					char *var2s = getStackString(stack-2);
+					struct stringData *var2s = getStackString(stack-2);
 					int x = getStackNum(stack-1);
 					int y = getStackNum(stack);
 
@@ -370,7 +370,7 @@ char *_guiDialogClose( struct glueCommands *data, int nextToken )
 						break;
 
 					case type_int:
-						id = kittyStack[stack].value;
+						id = kittyStack[stack].integer.value;
 						break;
 				}
 
@@ -412,7 +412,7 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
-	char *script;
+	struct stringData *script;
 	int id = -1;
 	int ret = 0;
 	int varSize=17,bufferSize=0;
@@ -506,7 +506,7 @@ char *_set_interface_str_command ( struct glueCommands *data, int nextToken )
 
 		if (item)
 		{
-			char *str = getStackString(stack);
+			struct stringData *str = getStackString(stack);
 			if (str)
 			{
 				isetvarstr( item,_set_var_, str); 
@@ -628,7 +628,7 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 					int screen_num = getStackNum(stack-3);
 					int w = getStackNum(stack-2);
 					int h = getStackNum(stack-1);
-					int f = getStackNum(stack);
+//					int f = getStackNum(stack);
 
 					engine_lock();
 					if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
