@@ -33,8 +33,8 @@ extern int current_screen;
 
 extern struct retroScreen *screens[8] ;
 
-extern void setStackStr( char *str );
-extern void setStackStrDup( const char *str );
+extern void setStackStr( struct stringData *str );
+extern void setStackStrDup( struct stringData *str );
 
 using namespace std;
 
@@ -280,7 +280,8 @@ char *_bin( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	unsigned int num= 0,len =0,n;
-	char *str,*p;
+	struct stringData *str;
+	char *p;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -303,12 +304,13 @@ char *_bin( struct glueCommands *data, int nextToken )
 		len = len ? len : len + 1;	// always one number in bin number.
 	}
 
-	str = (char *) malloc(len+2);	 //  '%' and '\0' symbols
+	str = alloc_amos_string(len+1);	 //  '%' 
 
 	if (str)
 	{
-		str[0]='%';
-		p = str+1;
+		p = &(str -> ptr);
+
+		*p++='%';
 
 		for (n=len;n>0;n--)
 		{
@@ -547,16 +549,26 @@ char *_val( struct glueCommands *data, int nextToken )
 char *_chr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
-	char _str[2];
+	struct stringData *_str = alloc_amos_string( 1 );
+	char *p;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	_str[0] = args == 1 ? (char) getStackNum( stack ) : 0;
-	_str[1] =0;
+	if (args == 1)
+	{
+		if (_str)
+		{
+			p = &(_str -> ptr);
+			*p++ = args == 1 ? (char) getStackNum( stack ) : 0;
+			*p = 0;
+		}
+		setStackStr(_str);
+		return NULL;
+	}
 
+	setError(22,data -> tokenBuffer);
 	popStack(stack - data->stack);
-
-	setStackStrDup(_str);
+	setStackStr(_str);
 
 	return NULL;
 }
@@ -591,17 +603,18 @@ char *_len( struct glueCommands *data, int nextToken )
 
 char *_space( struct glueCommands *data, int nextToken )
 {
-//	int args = stack - data->stack + 1 ;
 	int i,_len;
-	char *str;
+	struct stringData *str;
+	char *p;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_len = getStackNum( stack );
-	str = (char *) malloc(_len+1);
 
-	for (i=0;i<_len;i++) str[i]=' ';
-	str[i]= 0;
+	str = alloc_amos_string(_len);
+	p = &str -> ptr;
+	for (i=0;i<_len;i++) *p++=' ';
+	*p= 0;
 
 	popStack(stack - data->stack);
 
@@ -612,7 +625,6 @@ char *_space( struct glueCommands *data, int nextToken )
 
 char *_upper( struct glueCommands *data, int nextToken )
 {
-//	int args = stack - data->stack + 1  ;
 	struct stringData *str;
 	char *s;
 
@@ -1092,8 +1104,16 @@ char *cmdRepeatStr(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdTabStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	char txt[2] = {9,0};
-	setStackStrDup(txt);
+	struct stringData *txt = alloc_amos_string(1);
+
+	if (txt)
+	{
+		char *p = &txt -> ptr ;
+		*p++=9; 
+		*p=0;
+	}
+
+	setStackStr(txt);
 	return tokenBuffer;
 }
 

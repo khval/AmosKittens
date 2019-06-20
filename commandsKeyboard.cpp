@@ -284,14 +284,14 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	char buf[2];
+	struct stringData * str = alloc_amos_string( 1 );
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_scancode = 0;
-	atomic_get_char(buf);
+	atomic_get_char( &str->ptr );
 
-	setStackCharArrayDup(buf);
+	setStackStr(str);
 	return tokenBuffer;
 }
 
