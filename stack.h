@@ -10,7 +10,6 @@ extern void	setStackNum( int num );
 extern void	setStackDecimal( double decimal );
 extern void	setStackStr( struct stringData *str );
 extern void	setStackStrDup(struct stringData *str);
-extern void	setStackCharArrayDup(char *str);
 extern void	setStackNone( void );
 extern unsigned short getLastProgStackToken();
 

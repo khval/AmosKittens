@@ -673,33 +673,33 @@ char *_textAt( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 
-	switch (index)
+	if  (index &1)
 	{
-		case 1:
-				{
-					char str[] = {27,'X','0',0};
-					if (x>-1) str[2]='0'+x;
-					setStackCharArrayDup( str );
-				}
-				break;
-		case 2:
-				{
-					char str[] = {27,'Y','0',0};
-					if (y>-1) str[2]='0'+y;
-					setStackCharArrayDup( str );
-				}
-				break;
-		case 3:
-				{
-					char str[] = {27,'X','0',27,'Y','0',0};
-					if (x>-1) str[2]='0'+x;
-					if (y>-1) str[5]='0'+y;
-					setStackCharArrayDup( str );
-				}
-				break;
-		default:
-				setStackCharArrayDup( (char *) "");
-				break;
+		struct stringData *str = alloc_amos_string( 3 );
+		char *p = &str -> ptr;
+		*p++ =27;
+		*p++ = 'X';
+		*p++ = (x>-1) ? '0'+x : '0';
+		*p = 0;
+		setStackStr( str );
+	}
+
+
+	if  (index &2)
+	{
+		struct stringData *str = alloc_amos_string( 3 );
+		char *p = &str -> ptr;
+		*p++ =27;
+		*p++ = 'Y';
+		*p++ = (y>-1) ? '0'+y : '0';
+		*p = 0;
+		setStackStr( str );
+	}
+
+	if (index == 0)
+	{
+		struct stringData *str = alloc_amos_string( 0 );
+		setStackStr( str );
 	}
 
 	return NULL;
@@ -716,19 +716,23 @@ extern char *textAt(nativeCommand *cmd, char *ptr)
 char *_textPenStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	char str[] = {27,'P','0',0};
+	struct stringData *str = alloc_amos_string( 3 );
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
 		int n = getStackNum( stack );
-		if (n>-1) str[2]='0'+n;
+		char *p = &str -> ptr;
+		*p++ =27;
+		*p++ = 'Y';
+		*p++ = (n>-1) ? '0'+n : '0';
+		*p = 0;
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackCharArrayDup( str );
+	setStackStr( str );
 
 	return NULL;
 }
@@ -743,19 +747,23 @@ extern char *textPenStr(nativeCommand *cmd, char *ptr)
 char *_textPaperStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	char str[] = {27,'B','0',0};
+	struct stringData *str = alloc_amos_string( 3 );
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
 		int n = getStackNum( stack );
-		if (n>-1) str[2]='0'+n;
+		char *p = &str -> ptr;
+		*p++ =27;
+		*p++ = 'B';
+		*p++ = (n>-1) ? '0'+n : '0';
+		*p = 0;
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackCharArrayDup( str );
+	setStackStr( str );
 
 	return NULL;
 }
