@@ -286,37 +286,60 @@ char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *machineVarPtr(struct nativeCommand *cmd, char *ptr)
+extern int _last_var_index;
+
+char *_machineVarPtr( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int amosptr = 0;
+
+	if (args==1)
+	{
+		if (last_var)
+		{
+			struct kittyData *var = &globalVars[data -> lastVar-1].var;
+
+			switch (var->type)
+			{
+				case type_int:
+					amosptr = (int) &var -> integer.value;
+					break;
+				case type_float:
+					amosptr = (int) &var -> decimal.value;
+					break;
+				case type_string:
+					amosptr = (int) &var -> str -> ptr;
+					break;
+				case type_int | type_array:
+					 amosptr = (int) &(var -> int_array[_last_var_index].value);
+					break;
+				case type_float | type_array:
+					 amosptr = (int) &(var -> float_array[_last_var_index].value);
+					break;
+				case type_string | type_array:
+					amosptr = (int) &(var -> str_array[_last_var_index] -> ptr);
+					break;
+			}
+		}
+
+		setStackNum(amosptr);
+		return NULL;
+	}
+
+	setError(25,data->tokenBuffer);
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+
+char *machineVarPtr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (NEXT_TOKEN( ptr ) == 0x0074) ptr+=2;
+	stackCmdParm( _machineVarPtr, tokenBuffer );
 
-	if (NEXT_TOKEN( ptr ) == 0x0006)
-	{
-		struct reference *ref = (struct reference *) (ptr + 2);
-		int idx = ref->ref-1;
-
-		switch ( globalVars[idx].var.type )
-		{
-			case type_float:
-				setStackPtr( &globalVars[idx].var.decimal );
-				break;
-
-			case type_int:
-				setStackPtr( &globalVars[idx].var.integer.value );
-				break;
-
-			case type_string:
-				setStackPtr( globalVars[idx].var.str );
-				break;
-		}
-		ptr += (2 + sizeof(struct reference) + ref -> length) ;
-	}
-
-	if (NEXT_TOKEN( ptr ) == 0x007C) ptr+=2;
-
-	return ptr;
+	return tokenBuffer;
 }
 
 char *_machineFill( struct glueCommands *data, int nextToken )
