@@ -136,19 +136,19 @@ void setChannelAmal( struct kittyChannel *item, struct stringData *str)
 	item -> amal_at = &str->ptr;
 }
 
-void setChannelMoveX( struct kittyChannel *item, char *str)
+void setChannelMoveX( struct kittyChannel *item, struct stringData *str)
 {
 	if (item -> movex_script) free(item -> movex_script);
 	item -> movex_script = str;
-	item -> movex_at = str;
+	item -> movex_at = &str->ptr;
 	item -> deltax = 0;
 }
 
-void setChannelMoveY( struct kittyChannel *item, char *str)
+void setChannelMoveY( struct kittyChannel *item, struct stringData *str)
 {
 	if (item -> movey_script) free(item -> movey_script);
 	item -> movey_script = str;
-	item -> movey_at = str;
+	item -> movey_at = &str->ptr;
 	item -> deltay = 0;
 }
 

@@ -740,7 +740,7 @@ void channel_movex( struct kittyChannel *self )
 
 		for (c=self->movex_at;*c;c++)
 		{
-			if (*c=='L') c = self -> movex_script;
+			if (*c=='L') c = &self -> movex_script -> ptr;
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
@@ -789,7 +789,7 @@ void channel_movey( struct kittyChannel *self )
 
 		for (c=self->movey_at;*c;c++)
 		{
-			if (*c=='L') c = self -> movey_script;
+			if (*c=='L') c = &self -> movey_script -> ptr;
 			if (*c=='(') para++;
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;

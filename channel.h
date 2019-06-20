@@ -54,9 +54,9 @@ struct kittyChannel
 	int anim_loops;
 
 	// move x and move y
-	char *movex_script;
+	struct stringData *movex_script;
 	char *movex_at;
-	char *movey_script;
+	struct stringData *movey_script;
 	char *movey_at;
 	int deltax;
 	int deltay;
