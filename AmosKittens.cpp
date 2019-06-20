@@ -67,6 +67,7 @@
 #include "channel.h"
 #include "spawn.h"
 #include "label.h"
+#include "amosstring.h"
 
 #include "ext_compact.h"
 #include "ext_turbo.h"
@@ -89,7 +90,7 @@ unsigned int vars_crc();
 uint32_t bank_crc = 0;
 #endif
 
-char *var_param_str = NULL;
+struct stringData *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
 
@@ -219,7 +220,7 @@ bool show_var ( char *ptr, char *var_name, int proc )
 
 	if (ref)
 	{
-		printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.value);
+		printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.integer.value);
 		return true;
 	}
 	else
@@ -438,7 +439,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 		mul  = 1;
 		for (n = self -> stack;n<=stack; n++ )
 		{
-			_last_var_index += (mul * kittyStack[n].value);
+			_last_var_index += (mul * kittyStack[n].integer.value);
 			mul *= var -> sizeTab[n- self -> stack];
 		}
 
@@ -456,15 +457,15 @@ char *_get_var_index( glueCommands *self , int nextToken )
 			switch (var -> type & 3)
 			{
 				case type_int: 
-					setStackNum( var -> int_array[_last_var_index] );	break;
+					setStackNum( var -> int_array[_last_var_index].value );	break;
 
 				case type_float:
-					setStackDecimal( var -> float_array[_last_var_index] );	
+					setStackDecimal( var -> float_array[_last_var_index].value );	
 					break;
 
 				case type_string:	
-					char *str = var -> str_array[_last_var_index];
-					setStackStrDup( str ? str : "" );
+					struct stringData *str = var -> str_array[_last_var_index];
+					setStackStrDup( str );
 					break;
 			}
 
@@ -509,7 +510,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 		var -> count = 1;
 		for (n= 0; n<var -> cells; n++ ) 
 		{
-			var -> sizeTab[n] = kittyStack[cmd -> stack + n].value + 1;
+			var -> sizeTab[n] = kittyStack[cmd -> stack + n].integer.value + 1;
 			var -> count *= var -> sizeTab[n];
 		}
 
@@ -517,15 +518,15 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 		{
 			case type_int | type_array:
 				size = var -> count * sizeof(int);
-				var -> int_array = (int *) malloc( size ) ;
+				var -> int_array = (struct valueData *) malloc( sizeof(struct valueData) * size ) ;
 				break;
 			case type_float | type_array:
 				size = var -> count * sizeof(double);
-				var -> float_array = (double *) malloc( size ) ;
+				var -> float_array = (struct desimalData *) malloc( sizeof(struct desimalData) * size ) ;
 				break;
 			case type_string | type_array:
 				size = var -> count * sizeof(char *);
-				var -> str_array = (char **) malloc( size ) ;
+				var -> str_array = (struct stringData **) malloc( sizeof(struct stringData *) * size ) ;
 				break;
 			default: setError(22, cmd -> tokenBuffer);
 		}
@@ -602,10 +603,10 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 			switch (globalVars[idx].var.type & 7)
 			{
 				case type_int:
-					setStackNum(globalVars[idx].var.value);
+					setStackNum(globalVars[idx].var.integer.value);
 					break;
 				case type_float:
-					setStackDecimal(globalVars[idx].var.decimal);
+					setStackDecimal(globalVars[idx].var.decimal.value);
 					break;
 				case type_string:
 					setStackStrDup(globalVars[idx].var.str);		// always copy.
@@ -642,8 +643,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	}
 
 	if (kittyStack[stack].str) free(kittyStack[stack].str);
-	kittyStack[stack].str = strndup( ptr + 2, length );
-	kittyStack[stack].len = strlen( kittyStack[stack].str );
+	kittyStack[stack].str = toAmosString( ptr + 2, length );
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = 2;
 

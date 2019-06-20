@@ -225,7 +225,7 @@ void dump_var( int n )
 				printf("%d -- %d::%s%s=%0.2lf\n",n,
 					globalVars[n].proc, 
 					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, globalVars[n].var.decimal );
+					globalVars[n].varName, globalVars[n].var.decimal.value );
 				break;
 			case type_string:
 				printf("%d -- %d::%s%s=%c%s%c\n",n,
@@ -392,7 +392,7 @@ void dump_stack()
 					else	printf("%d\n",v);
 					break;
 				case type_float:
-					printf("%f\n",kittyStack[n].decimal);
+					printf("%f\n",kittyStack[n].decimal.value);
 					break;
 				case type_string:
 					if (kittyStack[n].str)

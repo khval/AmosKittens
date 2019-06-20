@@ -121,19 +121,19 @@ int ChannelTableClass::_size()
 	return used;
 }
 
-void setChannelAnim( struct kittyChannel *item, char *str)
+void setChannelAnim( struct kittyChannel *item, struct stringData *str)
 {
 	if (item -> anim_script) free(item -> anim_script);
 	item -> anim_script = str;
-	item -> anim_at = str;
+	item -> anim_at = &str->ptr;
 	item -> anim_loops = 0;
 }
 
-void setChannelAmal( struct kittyChannel *item, char *str)
+void setChannelAmal( struct kittyChannel *item, struct stringData *str)
 {
 	if (item -> amal_script) free(item -> amal_script);
 	item -> amal_script = str;
-	item -> amal_at = str;
+	item -> amal_at = &str->ptr;
 }
 
 void setChannelMoveX( struct kittyChannel *item, char *str)
