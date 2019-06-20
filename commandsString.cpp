@@ -221,7 +221,7 @@ char *_cmdStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack + 1;
 	int num;
-	char _str[30];
+	struct stringData *_str = alloc_amos_string( 50 );
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -229,19 +229,22 @@ char *_cmdStr( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 				num = getStackNum( stack );
-				_str[0]=0;
 
 				if (num>-1)
-					sprintf(_str," %d",num);
+					sprintf(&_str->ptr," %d",num);
 				else
-					sprintf(_str,"%d",num);
+					sprintf(&_str->ptr,"%d",num);
+
+				_str->size = strlen(&_str->ptr);				
 				break;
 		default:
 				setError(22,data->tokenBuffer);
 	}
 
 	popStack(stack - data->stack);
-	setStackStrDup(_str);
+
+	_str -> size = strlen( &_str->ptr );
+	setStackStr(_str);
 
 	return NULL;
 }
@@ -250,8 +253,8 @@ char *_hex( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int num,chars;
-	char _str[12];
 	char fmt[10];
+	struct stringData *_str = alloc_amos_string( 50 );
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
@@ -259,19 +262,20 @@ char *_hex( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 				num = getStackNum( stack );
-				sprintf(_str,"$%X",num);
+				sprintf(&_str->ptr,"$%X",num);
 				break;
 		case 2:
 				num = getStackNum( stack-1 );
 				chars = getStackNum( stack );	
 				sprintf(fmt,"$%%0%dX",chars);
-				sprintf(_str,fmt,num);
+				sprintf(&_str->ptr,fmt,num);
 				break;
 	}
 
 	popStack(stack - data->stack);
 
-	setStackStrDup(_str);
+	_str -> size = strlen( &_str->ptr );
+	setStackStr(_str);
 
 	return NULL;
 }
@@ -319,6 +323,7 @@ char *_bin( struct glueCommands *data, int nextToken )
 		*p = 0;
 	}
 
+	str -> size = strlen( &str->ptr );
 	setStackStr(str);
 
 	return NULL;

@@ -1306,34 +1306,40 @@ char *textCline(struct nativeCommand *cmd, char *ptr)
 
 char *textCDownStr(nativeCommand *cmd, char *ptr)
 {
-	char str[] = {31,0};
+	struct stringData *str = alloc_amos_string(1);	 //  '%' 
+	str -> ptr = 31;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackCharArrayDup(str);
+	setStackStr(str);
 	return ptr;
 }
 
 char *textCUpStr(nativeCommand *cmd, char *ptr)
 {
-	char str[] = {30,0};
+	struct stringData *str = alloc_amos_string(1);	 //  '%' 
+	str -> ptr = 30;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackCharArrayDup(str);
+	setStackStr(str);
 	return ptr;
 }
 
 char *textCLeftStr(nativeCommand *cmd, char *ptr)
 {
-	char str[] = {29,0};
+	struct stringData *str = alloc_amos_string(1);	 //  '%' 
+	str -> ptr = 29;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	setStackCharArrayDup(str);
-	dump_stack();
+	setStackStr(str);
 	return ptr;
 }
 
 char *textCRightStr(nativeCommand *cmd, char *ptr)
 {
-	char str[] = {28,0};
+	struct stringData *str = alloc_amos_string(1);	 //  '%' 
+	str -> ptr = 28;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackCharArrayDup(str);
+	setStackStr(str);
 	return ptr;
 }
 

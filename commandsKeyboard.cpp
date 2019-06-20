@@ -325,7 +325,12 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 		setError(22,data->tokenBuffer);
 	}
 
-	setStackCharArrayDup( (char *) tmp.c_str());
+	{
+		struct stringData *ret = alloc_amos_string( tmp.length() );
+		sprintf( &ret -> ptr, "%s", tmp.c_str()  );
+		setStackStr( ret ); 
+	}
+
 	return NULL;
 }
 
@@ -501,13 +506,20 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		switch (globalVars[last_var -1].var.type & 7)
 		{	
 			case type_string:
-				setStackCharArrayDup( (char *) arg.c_str() ); break;
+				{
+					struct stringData *ret = alloc_amos_string( arg.length() );
+					sprintf( &ret -> ptr, "%s", arg.c_str()  );
+					setStackStr( ret ); 
+				}
+				break;
 
 			case type_int:
-				sscanf(arg.c_str(),"%d",&num); setStackNum(num); break;
+				sscanf(arg.c_str(),"%d",&num); setStackNum(num); 
+				break;
 
 			case type_float:
-				sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); break;
+				sscanf(arg.c_str(),"%lf",&des); setStackDecimal(des); 
+				break;
 		}
 	}
 
@@ -598,7 +610,12 @@ void _inputLine_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	switch (globalVars[last_var -1].var.type & 7)
 	{	
 		case type_string:
-			setStackCharArrayDup( (char *) arg.c_str()); break;
+			{
+				struct stringData *ret = alloc_amos_string( arg.length() );
+				sprintf( &ret -> ptr, "%s", arg.c_str()  );
+				setStackStr( ret ); 
+			}
+			break;
 
 		case type_int:
 			sscanf(arg.c_str(),"%d",&num); setStackNum(num); break;
