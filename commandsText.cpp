@@ -377,8 +377,6 @@ char *_print( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-int strlen_no_esc(struct stringData *txt);
-
 
 char *_textCentre( struct glueCommands *data, int nextToken )
 {

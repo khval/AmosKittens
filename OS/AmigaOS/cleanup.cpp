@@ -40,16 +40,16 @@ void clear_local_vars( int proc )
 			switch (var->type)
 			{
 				case type_int:
-					var -> value = 0;
+					var -> integer.value = 0;
 					break;
 
 				case type_float:
-					var -> decimal = 0;
+					var -> decimal.value = 0;
 					break;
 
 				case type_string:
-					if (var->str) var->str[0] = 0;
-					var->len = 0;
+					if (var->str) free(var->str);
+					var->str = NULL;
 					break;
 
 				case type_int | type_array:

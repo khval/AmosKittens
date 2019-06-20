@@ -887,13 +887,12 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 	}
 }
 
-int strlen_no_esc(const char *txt)
+int strlen_no_esc(struct stringData *txt)
 {
 	int _l = 0;
 	const char *c;
-	char buffer[1000];
 
-	for (c=txt;*c;c++)
+	for (c=&txt -> ptr;*c;c++)
 	{
 		switch (*c)
 		{
@@ -927,11 +926,9 @@ int strlen_no_esc(const char *txt)
 					}
 					break;
 			default:
-					buffer[_l]=*c;
 					_l++;
 		}
 	}
-	buffer[_l] = 0;
 
 	return _l;
 }

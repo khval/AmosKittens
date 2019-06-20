@@ -937,20 +937,20 @@ struct amalTab *find_amal_command(const char *str , int class_flags )
 	return NULL;
 }
 
-void remove_lower_case(char *txt)
+void remove_lower_case(struct stringData *txt)
 {
 	char *c;
 	char *d;
 	bool space_repeat;
 
-	d=txt;
-	for (c=txt;*c;c++)
+	d=&txt -> ptr;
+	for (c=&txt -> ptr;*c;c++)
 	{
 		// remove noice.
 		while (((*c>='a')&&(*c<='z'))||(*c=='#'))	{ c++;  }
 
 		space_repeat = false;
-		if (d!=txt)
+		if (d!=&txt->ptr)
 		{
 			char ld = *(d-1);
 			if (	((ld==' ')||(ld==',')||(ld==';'))	&&	(*c==' ')	)	space_repeat = true;
@@ -962,6 +962,8 @@ void remove_lower_case(char *txt)
 		}
 	}
 	*d = 0;
+	txt -> size = strlen( &txt -> ptr );
+
 }
 
 void allocAmalBuf( struct amalBuf *i, int e )

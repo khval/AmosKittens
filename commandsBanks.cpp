@@ -912,6 +912,17 @@ void __load_bank__(struct stringData *name, int bankNr )
 	update_objects();
 }
 
+void __load_bank__(char *_name, int bankNr )
+{
+	struct stringData *name = toAmosString(_name,strlen(_name));
+	
+	if (name)
+	{
+		__load_bank__(name, bankNr);
+		free(name);
+	}
+}
+
 
 char *_bankLoad( struct glueCommands *data, int nextToken )
 {

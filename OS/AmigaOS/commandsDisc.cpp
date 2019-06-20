@@ -27,6 +27,7 @@
 #include "commands.h"
 #include "debug.h"
 #include "errors.h"
+#include "amosString.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -36,7 +37,7 @@ std::vector<std::string> devList;
 
 APTR contextDir = NULL;
 char *dir_first_pattern = NULL;
-char *dir_first_path = NULL;
+struct stringData *dir_first_path = NULL;
 
 extern char *_setVar( struct glueCommands *data, int nextToken );
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
@@ -71,10 +72,10 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 			switch (kittyStack[n].type)
 			{
 				case type_int:
-					fprintf(fd,"%d", kittyStack[n].value);
+					fprintf(fd,"%d", kittyStack[n].integer.value);
 					break;
 				case type_float:
-					fprintf(fd,"%f", kittyStack[n].decimal);
+					fprintf(fd,"%f", kittyStack[n].decimal.value);
 					break;
 				case type_string:
 					if (kittyStack[n].str) fprintf(fd,"%s", kittyStack[n].str);
@@ -93,7 +94,7 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 
 char *_open_file_( struct glueCommands *data, const char *access )
 {
-	char *_str;
+	struct stringData *_str;
 	int num;
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
 
@@ -118,7 +119,7 @@ char *_open_file_( struct glueCommands *data, const char *access )
 			}
 
 			_str = getStackString( stack );
-			if (_str) kittyFiles[ num ].fd = fopen( _str, access );
+			if (_str) kittyFiles[ num ].fd = fopen( &_str->ptr, access );
 
 			if (kittyFiles[ num ].fd  == NULL) setError(81,data->tokenBuffer);
 		}
@@ -179,7 +180,7 @@ char *_discClose( struct glueCommands *data, int nextToken )
 char *_discKill( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
-	char *_str;
+	struct stringData *_str;
 	int32 success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -187,7 +188,7 @@ char *_discKill( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		_str = getStackString( stack );
-		if (_str) success = Delete(_str);
+		if (_str) success = Delete( &_str -> ptr );
 
 		if (success == false)
 		{
@@ -207,9 +208,9 @@ char *_discRename( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		char *oldName = getStackString( stack - 1 );
-		char *newName = getStackString( stack );
-		if ((oldName)&&(newName))	success = Rename(  oldName, newName );
+		struct stringData *oldName = getStackString( stack - 1 );
+		struct stringData *newName = getStackString( stack );
+		if ((oldName)&&(newName))	success = Rename(  &oldName->ptr, &newName->ptr );
 	}
 
 	if (success == false)
@@ -225,16 +226,16 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data -> stack +1;
 	struct FileRequester	 *filereq;
-	char *ret = NULL;
+	struct stringData *ret = NULL;
 	char *amigaPattern = NULL;
 	char c;
 	int l;
 	bool success = false;
-	const char *_path_ = NULL;
-	const char *_default_ = NULL;
-	const char *_title_ = NULL;
-	const char *_title2_ = NULL;
-	char *_title_temp_ = NULL;
+	struct stringData *_path_ = NULL;
+	struct stringData *_default_ = NULL;
+	struct stringData *_title_ = NULL;
+	struct stringData *_title2_ = NULL;
+	struct stringData *_title_temp_ = NULL;
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
@@ -274,17 +275,17 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					_title_ = getStackString( stack-1 );
 					_title2_ = getStackString( stack );
 
-					_title_temp_ = (char *) malloc( strlen(_title_) + 1 + strlen(_title2_) +1 );
+					_title_temp_ = alloc_amos_string( _title_ -> size + 1 + _title2_ -> size  );
 
 					if (_title_temp_)
 					{
-						sprintf(_title_temp_,"%s\n%s",_title_,_title2_);
+						sprintf(&_title_temp_ -> ptr,"%s\n%s",&_title_ -> ptr ,&_title2_ -> ptr);
 
-						amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+						amigaPattern = amos_to_amiga_pattern( (char *) &_path_ -> ptr);
 
 						success = AslRequestTags( (void *) filereq, 
 							ASLFR_DrawersOnly, FALSE,	
-							ASLFR_TitleText, _title_temp_,
+							ASLFR_TitleText, &_title_temp_ -> ptr,
 							ASLFR_InitialFile, _default_,
 							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 							ASLFR_DoPatterns, TRUE,
@@ -305,12 +306,12 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 				{
 					c = filereq -> fr_Drawer[l-1];
 
-					if (ret = (char *) malloc( strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
+					if (ret = (struct stringData *) malloc( sizeof(struct stringData) + strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
 					{
-						sprintf( ret, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
+						sprintf( &ret -> ptr, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
 					}
 				}
-				else 	ret = strdup(filereq -> fr_File);
+				else 	ret = toAmosString(filereq -> fr_File, strlen(filereq -> fr_File));
 			}
 		}
 		 FreeAslRequest( filereq );
@@ -329,7 +330,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 char *_discExist( struct glueCommands *data, int nextToken )
 {
 	int args = stack - cmdTmp[cmdStack-1].stack +1;
-	char *_str;
+	struct stringData *_str;
 	BPTR lock = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -338,7 +339,7 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	{
 		_str = getStackString( stack );
 
-		lock = Lock( _str, SHARED_LOCK );
+		lock = Lock( &_str -> ptr, SHARED_LOCK );
 
 		if (lock)
 		{
@@ -454,7 +455,8 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 
 char *_discDirNextStr( struct glueCommands *data, int nextToken )
 {
-	char *outStr = NULL;
+	struct stringData *outStr = NULL;
+	char *tmp;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -466,13 +468,23 @@ char *_discDirNextStr( struct glueCommands *data, int nextToken )
 		{
 			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
 			{
-				outStr = dir_item_formated(dat, dir_first_path, dir_first_pattern );
+				tmp = dir_item_formated(dat, &dir_first_path->ptr, dir_first_pattern );
+
+				if (tmp)
+				{
+					outStr = toAmosString( tmp, strlen(tmp) );
+					free(tmp);
+				}
 			}
 		} while ((outStr == NULL) && (dat));
 	}
 	
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	if (outStr) setStackStr(outStr);
+	if (outStr)
+	{	
+		setStackStr(outStr);
+		free(outStr);
+	}
 
 	return NULL;
 }
@@ -541,21 +553,21 @@ bool pattern_match( char *name , const char *pattern )
 	return (*p == 0);	// if we are at end of patten then it match.
 }
 
-void split_path_pattern(const char *str, char **path, const char **pattern)
+void split_path_pattern( struct stringData *str, struct stringData **path, struct stringData **pattern)
 {
 	int _len;
 	char c;
 	int i;
 
-	_len = strlen( str );
+	_len = str -> size;
 
 	if (_len>0) 
 	{
-		c = str[_len-1];
+		c = (&str -> ptr) [_len-1];
 
 		if ((c == '/') || ( c == ':'))
 		{
-			*path = strdup(str);
+			*path = amos_strdup(str);
 		}
 		else
 		{
@@ -563,25 +575,25 @@ void split_path_pattern(const char *str, char **path, const char **pattern)
 
 			for (i=_len-1; i>=0;i--)
 			{
-				c = str[i];
+				c = (&str->ptr) [i];
 
 				if ((c == '/') || ( c == ':'))
 				{
-					*path = strndup( str, i+1 );
+					*path = amos_strndup( str, i+1 );
 					*pattern = str + i +1;
 				}
 			}
 
 			if (*path == NULL)
 			{
-				*path = strdup("");
+				*path = toAmosString("",0);
 				*pattern = str;	
 			}
 		}		
 	}
 	else
 	{
-		*path = strdup("");
+		*path = toAmosString("",0);
 		*pattern = str;
 	}
 }
@@ -589,9 +601,9 @@ void split_path_pattern(const char *str, char **path, const char **pattern)
 
 char *_discDir( struct glueCommands *data, int nextToken )
 {
-	char *str;
-	char *_path = NULL;
-	const char *_pattern = NULL;
+	struct stringData *str;
+	struct stringData *_path = NULL;
+	struct stringData *_pattern = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -654,7 +666,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 	        }
 	        else if( EXD_IS_FILE(dat) )           /* a plain file */
 	        {
-			if (pattern_match( dat->Name, _pattern )) Printf("filename=%s\n", dat->Name);			
+			if (pattern_match( dat->Name, &_pattern->ptr )) Printf("filename=%s\n", dat->Name);			
 	        }
 	        else if ( EXD_IS_DIRECTORY(dat) )     /* a plain directory */
 	        {
@@ -691,7 +703,7 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	BPTR lock;
 	BPTR oldLock;
-	char *_str;
+	struct stringData *_str;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -701,7 +713,7 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 
 		if (_str)
 		{
-			lock = Lock( _str, SHARED_LOCK );
+			lock = Lock( &_str->ptr, SHARED_LOCK );
 			if (lock)
 			{
 				oldLock = SetCurrentDir( lock );
@@ -718,11 +730,9 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 
 char *_set_dir_str( struct glueCommands *data, int nextToken )
 {
-	char *_new_path = getStackString( stack );
+	struct stringData *_new_path = getStackString( stack );
 
-//	printf("%s\n",_new_path);
-
-	if (_new_path) { chdir(_new_path); }
+	if (_new_path) { chdir( &_new_path->ptr); }
 
 	_do_set = _setVar;
 	return NULL;
@@ -749,8 +759,11 @@ char *discDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 		char buffer[4000];
 		int32 success = NameFromLock(GetCurrentDir(), buffer, sizeof(buffer) );
 
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-		setStackStrDup( success ? buffer : (char *) "" );
+		if (success)
+		{
+			struct stringData *ret = toAmosString( buffer, strlen(buffer) );
+			setStackStr( ret );
+		}
 	}
 
 	return tokenBuffer;
@@ -833,9 +846,9 @@ char *discExist(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 {
-	char *str;
-	const char *_pattern;
-	char *outStr = NULL;
+	struct stringData *str;
+	struct stringData *_pattern;
+	stringData *outStr = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -873,14 +886,21 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 		{
 			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
 			{
-				outStr = dir_item_formated(dat, dir_first_path, dir_first_pattern );
-
+				char *tmp = dir_item_formated(dat, &dir_first_path -> ptr, dir_first_pattern );
+				if (tmp)
+				{
+					outStr = toAmosString(tmp,strlen(tmp));
+					free(tmp);
+				}
 			}
 		} while ((outStr == NULL) && (dat));
 	} 
 	
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	if (outStr) setStackStr(outStr);
+	if (outStr)
+	{
+		setStackStr(outStr);
+	}
 
 	return NULL;
 }
@@ -939,12 +959,13 @@ char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 
 	if (devList.size())
 	{
-		setStackStrDup( devList[0].c_str() );
+		struct stringData *str = toAmosString( devList[0].c_str(),devList[0].length());
+		setStackStr( str );
 		dev_index++;
 	}
 	else
 	{
-		setStackStrDup( "" );
+		setStackStr( NULL );
 	}
 
 	return NULL;
@@ -963,12 +984,13 @@ char *_discDevNextStr( struct glueCommands *data, int nextToken )
 
 	if (dev_index<devList.size())
 	{
-		setStackStrDup( devList[dev_index].c_str() );
+		struct stringData *str = toAmosString( devList[dev_index].c_str(),devList[dev_index].length());
+		setStackStr( str );
 		dev_index++;
 	}
 	else
 	{
-		setStackStrDup( "" );
+		setStackStr( NULL );
 		devList.clear();
 		dev_index = 0;
 	}
@@ -1078,7 +1100,11 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 				case type_string:
 
 					ret = fscanf( fd, "%[^,],", buffer );
-					if (ret==1) setStackStrDup( buffer );
+					if (ret==1) 
+					{
+						struct stringData *str = toAmosString( buffer,strlen(buffer) );
+						setStackStr( str );
+					}
 					break;
 			}
 			
@@ -1203,7 +1229,8 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 			if (line) 
 			{
-				setStackStr( line );		
+				struct stringData *str = toAmosString( line, strlen(line) );
+				setStackStr( str );		
 				struct glueCommands varData;
 				varData.lastVar = last_var;
 				_setVar( &varData, 0 );
@@ -1300,7 +1327,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 	int args = stack - cmdTmp[cmdStack-1].stack;
 	int channel = 0;
 	int len = 0;
-	char *newstr;
+	struct stringData *newstr;
 	FILE *fd;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1318,9 +1345,9 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 			{
 				popStack( stack - cmdTmp[cmdStack].stack  );
 				
-				newstr = (char *) malloc(len +1);
+				newstr = (struct stringData *) malloc( sizeof(struct stringData) + len +1);
 
-				if (newstr)	 if (fgets( newstr, len ,fd ))
+				if (newstr)	 if (fgets( &newstr -> ptr, len ,fd ))
 				{
 					popStack( stack - cmdTmp[cmdStack].stack  );
 					setStackStr(newstr);
@@ -1498,7 +1525,7 @@ char *_discGet( struct glueCommands *data, int nextToken )
 	int n, index;
 	struct kittyField *fields = NULL;
 	FILE *fd;
-	char *str;
+	struct stringData *str;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1520,8 +1547,13 @@ char *_discGet( struct glueCommands *data, int nextToken )
 			{
 				if (globalVars[ fields -> ref -1 ].var.str) free(globalVars[ fields -> ref -1 ].var.str);
 
-				str = (char *) malloc( fields -> size + 1);
-				fgets(str,fields -> size+1,fd);
+				str = (struct stringData *) malloc( sizeof(struct stringData) + fields -> size + 1);
+
+				fgets( &str -> ptr ,fields -> size+1,fd);
+
+				str -> size = strlen(&str -> ptr);
+
+				if (globalVars[ fields -> ref -1 ].var.str) free(globalVars[ fields -> ref -1 ].var.str);
 				globalVars[ fields -> ref -1 ].var.str = str;
 				
 				fields ++;
@@ -1682,9 +1714,9 @@ char *_discMakedir( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		char *_str = getStackString( stack );
+		struct stringData *_str = getStackString( stack );
 
-		lock = CreateDir( _str );
+		lock = CreateDir( &_str->ptr );
 		if (lock) 
 		{
 			UnLock( lock );
@@ -1711,15 +1743,15 @@ char *_discAssign( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		char *_volume = getStackString( stack-1 );
-		char *_path = getStackString( stack );
+		struct stringData *_volume = getStackString( stack-1 );
+		struct stringData *_path = getStackString( stack );
 
 		if ((_volume)&&(_path))
 		{
-			int vl = strlen (_volume);
-			if (vl)	 if (_volume[ vl -1 ]==':') _volume[ vl -1 ]=0 ;
+			int vl = _volume -> size;
+			if (vl)	 if ( (&_volume -> ptr)[ vl -1 ]==':') (&_volume -> ptr)[ vl -1 ]=0 ;
 
-			if (AssignLate(_volume,_path)) success = true;
+			if (AssignLate( &_volume->ptr,&_path->ptr)) success = true;
 		}
 	}
 

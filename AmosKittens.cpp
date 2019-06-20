@@ -1694,8 +1694,8 @@ int main(int args, char **arg)
 	{
 		bool init_error = false;
 
-		__load_bank__( "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
-		__load_bank__("Amos-the-creator:AMOS_System/mouse.abk",-3);
+		__load_bank__( (char *) "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
+		__load_bank__( (char *) "Amos-the-creator:AMOS_System/mouse.abk",-3);
 
 		// set up a fake extention lookup
 

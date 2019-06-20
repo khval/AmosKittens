@@ -183,8 +183,7 @@ char *_instr( struct glueCommands *data, int nextToken )
 				{
 					if ((_str -> size) &&(_find -> size))		// not empty
 					{
-						ret = amos_instr( _str, 0, _find );
-						_pos = ret ? (unsigned int) (ret - _str) +1 : 0;
+						_pos = amos_instr( _str, 0, _find );
 					}
 				}
 				break;
@@ -201,8 +200,7 @@ char *_instr( struct glueCommands *data, int nextToken )
 
 						if (_start >= str_len) _start = str_len-1;
 
-						ret = amos_instr( _str , _start, _find );
-						_pos = ret ? (unsigned int) (ret - _str) +1 + _start : 0;
+						_pos = amos_instr( _str , _start, _find );
 					}
 				}
 				break;
