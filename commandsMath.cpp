@@ -59,7 +59,7 @@ char *_mathInc( struct glueCommands *data, int nextToken )
 				break;
 	
 			case type_int | type_array:
-				var->int_array[var -> index].value++;
+				(&var->int_array -> ptr) [var -> index].value++;
 				break;
 	
 			default:
@@ -93,7 +93,7 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 				break;
 	
 			case type_int | type_array:
-				var->int_array[var -> index].value--;
+				(&var->int_array->ptr) [var -> index].value--;
 				break;
 	
 			default:
@@ -170,7 +170,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 					break;
 	
 				case type_int | type_array:
-					var->int_array[var -> index].value = _value;
+					(&var->int_array -> ptr) [var -> index].value = _value;
 					break;
 	
 				default:

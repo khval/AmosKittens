@@ -767,10 +767,11 @@ void	_match_int( struct kittyData *array, int value )
 	int closest = INT_MAX;
 	int new_delta;
 	int delta =INT_MAX;
+	struct valueData *ptr = &(array -> int_array -> ptr);
 
 	for (n =0; n< array -> count; n++)
 	{
-		new_delta = abs(array -> int_array[n].value - value) ;
+		new_delta = abs( ptr[n].value - value) ;
 
 		if ( new_delta < delta )
 		{
@@ -796,10 +797,11 @@ void _match_float( struct kittyData *array, double decimal )
 	int closest = INT_MAX;
 	int new_delta;
 	double delta =INT_MAX;	// yes I know double supports larger numbers, but this should work here.
+	struct desimalData *ptr = &(array -> float_array -> ptr);
 
 	for (n =0; n< array -> count; n++)
 	{
-		new_delta = array -> float_array[n].value - decimal ;
+		new_delta = ptr[n].value - decimal ;
 		new_delta = new_delta < 0.0f ? -new_delta : new_delta;	// abs() but double.
 
 		if ( new_delta < delta )
@@ -833,24 +835,25 @@ void _match_str( struct kittyData *array,  struct stringData *strArg )
 	int _l = strArg->size;
 
 	char c;
-	char *item;
+	struct stringData **item = &array -> str_array -> ptr; 
+	char *itemStr;
 
 	for (n =0; n< array -> count; n++)
 	{
-		item = &(array -> str_array[n] -> ptr);
+		itemStr = &(item[n] -> ptr);
 
-		if (item)
+		if (itemStr)
 		{
 			found_chars = 0;
 
 			for ( i=0;i<_l;i++)
 			{
-				c = item[i];
+				c = itemStr[i];
 				if (c == 0) break;
 				if (c == str[i]) found_chars++;
 			}
 
-			new_delta = abs( max( _l , (int) strlen( item ) )  - found_chars ) ;
+			new_delta = abs( max( _l , (int) strlen( itemStr ) )  - found_chars ) ;
 
 			if ( new_delta < delta )
 			{
@@ -880,7 +883,7 @@ void	sort_int_array(	struct kittyData *var )
 	do
 	{
 		sorted = false;
-		i0 = var -> int_array; i1 = i0+1;
+		i0 = &var -> int_array -> ptr; i1 = i0+1;
 		for (n=1; n< var -> count; n++)
 		{
 			if ( i0 -> value > i1 -> value  )
@@ -905,7 +908,7 @@ void	sort_float_array( struct kittyData *var )
 	do
 	{
 		sorted = false;
-		f0 = var -> float_array; f1 = f0+1;
+		f0 = &var -> float_array -> ptr; f1 = f0+1;
 		for (n=1; n< var -> count; n++)
 		{
 			if ( f0 -> value > f1 -> value  )
@@ -929,7 +932,7 @@ void	sort_string_array( struct kittyData *var )
 	do
 	{
 		sorted = false;
-		s0 = var -> str_array; s1 = s0+1;
+		s0 = &var -> str_array -> ptr; s1 = s0+1;
 		for (n=1; n< var -> count; n++)
 		{
 			if ( strcmp( &(*s0)->ptr, &(*s1)->ptr ) > 0  )

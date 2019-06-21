@@ -322,11 +322,11 @@ BOOL setVarIntArray( struct kittyData *var, char *tokenBuffer )
 		switch (kittyStack[stack].type)
 		{
 			case type_int:
-				var->int_array[var -> index].value = kittyStack[stack].integer.value;
+				(&(var->int_array -> ptr) + var -> index) -> value = kittyStack[stack].integer.value;
 				return TRUE;
 
 			case type_float:
-				var->int_array[var -> index].value = (int) kittyStack[stack].decimal.value;
+				(&(var->int_array -> ptr) + var -> index) -> value = (int) kittyStack[stack].decimal.value;
 				return TRUE;
 		}
 	}
@@ -344,11 +344,11 @@ BOOL setVarDecimalArray( struct kittyData *var, char *tokenBuffer )
 		switch (kittyStack[stack].type)
 		{
 			case type_int:
-				var->float_array[var -> index].value = (double) kittyStack[stack].integer.value;
+				(&(var->float_array -> ptr) + var -> index) -> value = (double) kittyStack[stack].integer.value;
 				return TRUE;
 
 			case type_float:
-				var->float_array[var -> index].value = kittyStack[stack].decimal.value;
+				(&(var->float_array -> ptr) + var -> index) -> value = kittyStack[stack].decimal.value;
 				return TRUE;
 		}
 	}
@@ -366,8 +366,13 @@ BOOL setVarStringArray( struct kittyData *var, char *tokenBuffer )
 		switch (kittyStack[stack].type)
 		{
 			case type_string:
-				if (var->str_array[var -> index] ) free(var->str_array[var->index]);
-				var->str_array[var -> index] = amos_strdup(kittyStack[stack].str);	
+				{
+					struct stringData **str_item = &(var->str_array -> ptr) + var -> index;
+
+					if (*str_item) free(*str_item);
+					*str_item = amos_strdup(kittyStack[stack].str);	
+
+				}
 				return TRUE;
 		}
 	}
@@ -553,6 +558,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 		if (tokenMode == mode_standard) tokenMode = mode_logical;		// first equal is set, next equal is logical
 	}
+
 	return tokenBuffer;
 }
 

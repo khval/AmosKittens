@@ -179,24 +179,42 @@ struct extension_lib
 
 struct dataBase
 {
-	short id;
-};
+	uint16_t type;
+} __attribute__((packed)) ;
 
 struct stringData : dataBase
 {
-	short size;
+	uint16_t size;
 	char ptr;
-};
+} __attribute__((packed));
 
 struct desimalData :  dataBase
 {
 	double value;
-};
+} __attribute__((packed));
 
 struct valueData : dataBase
 {
 	int value;
-};
+} __attribute__((packed));
+
+struct stringArrayData : dataBase
+{
+	uint16_t size;
+	struct stringData *ptr;
+} __attribute__((packed));
+
+struct desimalArrayData : dataBase
+{
+	uint16_t size;
+	struct desimalData ptr;
+} __attribute__((packed));
+
+struct valueArrayData : dataBase
+{
+	uint16_t size;
+	struct valueData ptr;
+} __attribute__((packed));
 
 struct kittyData
 {
@@ -204,10 +222,10 @@ struct kittyData
 	
 	union
 	{
-		struct valueData *int_array;
 		struct stringData *str;
-		struct stringData **str_array;
-		struct desimalData *float_array;	
+		struct valueArrayData *int_array;
+		struct desimalArrayData *float_array;
+		struct stringArrayData *str_array;
 		char *tokenBufferPos;
 	};
 

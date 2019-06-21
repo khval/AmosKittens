@@ -294,11 +294,13 @@ char *_machineVarPtr( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int amosptr = 0;
 
+//	printf("_last_var_index %d\n",_last_var_index);
+
 	if (args==1)
 	{
 		if (last_var)
 		{
-			struct kittyData *var = &globalVars[data -> lastVar-1].var;
+			struct kittyData *var = &globalVars[last_var-1].var;
 
 			switch (var->type)
 			{
@@ -312,14 +314,18 @@ char *_machineVarPtr( struct glueCommands *data, int nextToken )
 					amosptr = (int) &var -> str -> ptr;
 					break;
 				case type_int | type_array:
-					 amosptr = (int) &(var -> int_array[_last_var_index].value);
+					amosptr = (int) &(( (&var->int_array->ptr) + _last_var_index) -> value);
 					break;
 				case type_float | type_array:
-					 amosptr = (int) &(var -> float_array[_last_var_index].value);
+					amosptr = (int) &(( (&var->float_array->ptr) + _last_var_index) -> value);
 					break;
 				case type_string | type_array:
-					amosptr = (int) &(var -> str_array[_last_var_index] -> ptr);
+					amosptr = (int) &(var->str_array->ptr +_last_var_index ) -> ptr;
 					break;
+
+				default:
+
+					printf( "var -> type: %d\n ", var -> type);
 			}
 		}
 
@@ -1230,39 +1236,61 @@ char *machinePokeStr(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *machineArray(struct nativeCommand *cmd, char *ptr)
+char *_machineArray( struct glueCommands *data, int nextToken )
 {
+	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int amosptr = 0;
 
-	NYI(__FUNCTION__);
-
-	if (NEXT_TOKEN( ptr ) == 0x0074) ptr+=2;
-
-	if (NEXT_TOKEN( ptr ) == 0x0006)
+	if (args==1)
 	{
-		struct reference *ref = (struct reference *) (ptr + 2);
-		int idx = ref->ref-1;
-
-		switch ( globalVars[idx].var.type )
+		if (last_var)
 		{
-			case type_float:
-				setStackPtr( &globalVars[idx].var.decimal );
-				break;
+			struct kittyData *var = &globalVars[last_var-1].var;
 
-			case type_int:
-				setStackPtr( &globalVars[idx].var.integer.value );
-				break;
+			switch (var->type)
+			{
+				case type_int | type_array:
+					amosptr = (int) var->int_array;
 
-			case type_string:
-				setStackPtr( globalVars[idx].var.str );
-				break;
+					printf("type: %x\n",&var->int_array -> type);
+					printf("size: %x\n",&var->int_array -> size);
+
+					setStackNum(amosptr);
+					return NULL;
+			
+				case type_float | type_array:
+					 amosptr = (int) var->float_array;
+
+					printf("type: %d\n",var->float_array -> type);
+					printf("size: %d\n",var->float_array -> size);
+
+					setStackNum(amosptr);
+					return NULL;
+			
+				case type_string | type_array:
+					amosptr = (int) var->str_array;
+
+					printf("type: %d\n",var->str_array -> type);
+					printf("size: %d\n",var->str_array -> size);
+
+
+					setStackNum(amosptr);
+					return NULL;			
+			}
 		}
-		ptr += (2 + sizeof(struct reference) + ref -> length) ;
 	}
 
-	if (NEXT_TOKEN( ptr ) == 0x007C) ptr+=2;
+	setError(25,data->tokenBuffer);
+	popStack( stack - data->stack );
+	return NULL;
+}
 
-	return ptr;
+
+char *machineArray(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineArray, tokenBuffer );
+	return tokenBuffer;
 }
 
 

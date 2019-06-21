@@ -457,14 +457,15 @@ char *_get_var_index( glueCommands *self , int nextToken )
 			switch (var -> type & 3)
 			{
 				case type_int: 
-					setStackNum( var -> int_array[_last_var_index].value );	break;
+					setStackNum( (&(var -> int_array -> ptr) + _last_var_index) -> value );
+					break;
 
 				case type_float:
-					setStackDecimal( var -> float_array[_last_var_index].value );	
+					setStackDecimal( (&(var -> float_array -> ptr) + _last_var_index) -> value );	
 					break;
 
 				case type_string:	
-					struct stringData *str = var -> str_array[_last_var_index];
+					struct stringData *str = *(&(var -> str_array -> ptr) + _last_var_index);
 					setStackStrDup( str );
 					break;
 			}
@@ -517,22 +518,40 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 		switch (var -> type)
 		{
 			case type_int | type_array:
-				size = var -> count * sizeof(int);
-				var -> int_array = (struct valueData *) malloc( sizeof(struct valueData) * size ) ;
+
+				size = var -> count * sizeof(valueData);
+
+				var -> int_array = (struct valueArrayData *) malloc( sizeof(struct valueArrayData) + size ) ;
+				var -> int_array -> type = type_int | type_array;
+				var -> int_array -> size = var -> count;
+				memset( &var -> int_array -> ptr, 0, size );
 				break;
+
 			case type_float | type_array:
-				size = var -> count * sizeof(double);
-				var -> float_array = (struct desimalData *) malloc( sizeof(struct desimalData) * size ) ;
+
+				size = var -> count * sizeof(desimalData);
+
+				var -> float_array = (struct desimalArrayData *) malloc( sizeof(struct desimalArrayData) + size ) ;
+				var -> float_array -> type = type_float | type_array;
+				var -> float_array -> size = var -> count;
+				memset( &var -> float_array -> ptr, 0, size );
 				break;
+
 			case type_string | type_array:
-				size = var -> count * sizeof(char *);
-				var -> str_array = (struct stringData **) malloc( sizeof(struct stringData *) * size ) ;
+
+				size = var -> count * sizeof(struct stringData *);
+
+				var -> str_array = (struct stringArrayData *) malloc( sizeof(struct stringArrayData) + size ) ;
+				var -> str_array -> type = type_string | type_array;
+				var -> str_array -> size = var -> count;
+				memset( &var -> str_array -> ptr, 0, size );
 				break;
+
 			default: setError(22, cmd -> tokenBuffer);
 		}
 	}
 
-	if (var -> str) memset( var -> str, 0, size );	// str is a union :-)
+ 
 
 	popStack(stack - cmd -> stack);
 
