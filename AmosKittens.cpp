@@ -661,11 +661,8 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 		setStackHiddenCondition();
 	}
 
-	if (kittyStack[stack].str) free(kittyStack[stack].str);
-	kittyStack[stack].str = toAmosString( ptr + 2, length );
+	setStackStr( toAmosString( ptr + 2, length ) );
 	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = 2;
-
 	flushCmdParaStack( (int) next_token );
 
 	return ptr + length2;
