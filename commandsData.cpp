@@ -814,42 +814,36 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-bool _subStr( void )
+bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 {
 	proc_names_printf("%s%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct stringData *string;
 	struct stringData *remove;
- 	int remove_len;
 	int spos;
 	char *d,*s;
 
-	stack++;	// subdata has -1 stack.
-
-	string = getStackString(stack-1);
-	remove = getStackString(stack);
+	string = item0 -> str;
+	remove = item1 -> str;
 
 	if ((string)&&(remove))
 	{
-		int new_len = string -> size;
-	 	remove_len = remove -> size;
-
+		int new_len = string->size;
 		s=d=&string -> ptr;
-		for(spos=0;spos < string -> size - remove_len ;spos++)
+		for(spos=0;spos < (new_len - remove->size) ;spos++)
 		{
-			if (memcmp(s,&remove -> ptr,remove_len)==0) 
-			{
-				s+=remove_len;
-				new_len -= remove_len;
+			if (memcmp(s,&remove -> ptr,remove -> size)==0) 
+			{		
+				s+=remove -> size;
+				new_len -= remove -> size;
+				printf("removed %d\n",remove -> size);
 			}
 
-			if (*s) *d++=*s;
-
-			s++;
+			*d++=*s++;
 		}
 		*d = 0;
 
-		kittyStack[stack-1].str -> size = new_len;
+		string -> size = new_len;
 		return true;
 	}
 
@@ -879,53 +873,55 @@ char *_subData( struct glueCommands *data, int nextToken )
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
 
-	if (type0 == type_none)
+	switch (type0)
 	{
-		if (type1 == type_int)
-		{
-			setStackNum( - item1->integer.value );
-			dprintf(" 0 - %d = %d\n",  item1->integer.value, - item1->integer.value );
-			success = TRUE;
-		}
-		else if (type1 == type_float)
-		{
-			setStackDecimal( - item1->decimal.value );
-			success = TRUE;
-		}
-	}
-	if (type0 == type_float) 
-	{
-		if (type1 == type_int)
-		{
-			setStackDecimal( item0->decimal.value - (double) item1->integer.value );
-			success = TRUE;
-		}
-		else if (type1 == type_float)
-		{
-			setStackDecimal( item0->decimal.value - item1->decimal.value );
-			success = TRUE;
-		}
-	}
-	else if (type0 == type_int) 
-	{
-		if (type1 == type_int)
-		{
-			dprintf(" = %d - %d\n", item0->integer.value , item1->integer.value );
-			setStackNum( item0->integer.value - item1->integer.value );
-			success = TRUE;
-		}
-		else if (type1 == type_float)
-		{
-			setStackDecimal( (double) item0->integer.value - item1->decimal.value );
-			success = TRUE;
-		}
-	}
-	else if ( type0 == type_string) 
-	{
-		switch (type1)
-		{
-			case type_string:	success = _subStr(); break;
-		}
+		case type_none:
+				if (type1 == type_int)
+				{
+					setStackNum( - item1->integer.value );
+					dprintf(" 0 - %d = %d\n",  item1->integer.value, - item1->integer.value );
+					success = TRUE;
+				}
+				else if (type1 == type_float)
+				{
+					setStackDecimal( - item1->decimal.value );
+					success = TRUE;
+				}
+				break;
+
+		case type_float:
+				if (type1 == type_int)
+				{
+					setStackDecimal( item0->decimal.value - (double) item1->integer.value );
+					success = TRUE;
+				}
+				else if (type1 == type_float)
+				{
+					setStackDecimal( item0->decimal.value - item1->decimal.value );
+					success = TRUE;
+				}
+				break;
+		case type_int:
+				if (type1 == type_int)
+				{
+					dprintf(" = %d - %d\n", item0->integer.value , item1->integer.value );
+					setStackNum( item0->integer.value - item1->integer.value );
+					success = TRUE;
+				}
+				else if (type1 == type_float)
+				{
+					setStackDecimal( (double) item0->integer.value - item1->decimal.value );
+					success = TRUE;
+				}
+				break;
+		case type_string: 
+				if ( type1 == type_string ) 
+				{
+					success = _subStr( item0 , item1 ); 
+					stack++;
+					popStack( 1 );
+				}
+				break;
 	}
 
 	correct_for_hidden_sub_data();
