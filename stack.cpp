@@ -277,13 +277,19 @@ bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 	str = alloc_amos_string( new_size );
 	if (str)
 	{
+		char *dest = &(str -> ptr);
+
+		memcpy( dest, &(item0 -> str -> ptr), item0 -> str -> size );
+		dest += item0 -> str -> size;
+		str -> size += item0 -> str -> size;
+
 		if ( item1->integer.value > -1 )
 		{
-			sprintf(&str -> ptr,"%s  %d", item0 -> str, item1 -> integer.value);
+			sprintf( dest,"  %d", item0 -> str, item1 -> integer.value);
 		}
 		else
 		{
-			sprintf(&str -> ptr,"%s %d", item0 -> str, item1 -> integer.value);
+			sprintf( dest," %d", item0 -> str, item1 -> integer.value);
 		}
 		str -> size = strlen( &str -> ptr );
 
@@ -305,7 +311,7 @@ bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 	{
 		char *dest = &(str -> ptr);
 
-		memcpy( dest, item0 -> str, item0 -> str -> size );
+		memcpy( dest, &(item0 -> str -> ptr), item0 -> str -> size );
 		dest += item0 -> str -> size;
 		str -> size += item0 -> str -> size;
 
@@ -319,6 +325,7 @@ bool stackStrAddDecimal(struct kittyData *item0,	struct kittyData *item1)
 			sprintf( dest," %f",item1->decimal.value );
 			str -> size += strlen(dest);
 		}
+		str -> size = strlen( &str -> ptr );
 
 		setStackStr( str );
 		return true;
@@ -338,8 +345,8 @@ bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1)
 	{
 		char *dest = &(str -> ptr);
 
-		memcpy( dest, item0 -> str, item0 -> str -> size );	dest += item0 -> str -> size;
-		memcpy( dest, item1 -> str, item1 -> str -> size );	dest += item1 -> str -> size;
+		memcpy( dest, &item0 -> str -> ptr, item0 -> str -> size );	dest += item0 -> str -> size;
+		memcpy( dest, &item1 -> str -> ptr, item1 -> str -> size );	dest += item1 -> str -> size;
 
 		setStackStr( str );
 		return true;
