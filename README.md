@@ -68,8 +68,8 @@ Note:
 -----
 Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
 
-Note Machine Code 
------------------
+Note about machine Code (or Amos lowlevel commands)
+------------------------------------
 Be careful with these commands.
 
 String in Amos kittens are \0 terminated.
