@@ -299,8 +299,9 @@ void dump_var( int n )
 #ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					strptr =&(globalVars[n].var.str_array -> ptr)[i];
-					printf("[%d]=%s ,",i, &strptr -> ptr);
+					strptr =(&(globalVars[n].var.str_array -> ptr))[i];
+
+					printf("[%d]=%s ,",i, strptr ? &(strptr -> ptr) : "<NULL>");
 				}
 #else
 				printf("...");
@@ -399,7 +400,7 @@ void dump_stack()
 				case type_string:
 					if (kittyStack[n].str)
 					{
-						printf("'%s' (0x%x)\n", kittyStack[n].str, kittyStack[n].str) ;
+						printf("'%s' (0x%x)\n", &(kittyStack[n].str->ptr), &(kittyStack[n].str -> ptr)) ;
 					}
 					else
 					{
