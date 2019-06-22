@@ -85,7 +85,8 @@ char *cmdCallEditor(struct nativeCommand *cmd, char *tokenBuffer);
 char *cmdPrgUnder(struct nativeCommand *cmd, char *tokenBuffer);
 
 // not used outside of commands.cpp, normally but just for testing.
-char *_addStr( struct glueCommands *data, int nextToken );
+//char *_addStr( struct glueCommands *data, int nextToken );
+
 char *_print( struct glueCommands *data, int nextToken );
 char *_gosub( struct glueCommands *data, int nextToken );
 char *_procedure( struct glueCommands *data, int nextToken );
