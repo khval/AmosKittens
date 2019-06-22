@@ -208,6 +208,7 @@ unsigned int mem_crc( char *mem, uint32_t size )
 
 void dump_var( int n )
 {
+	struct stringData *strptr;
 #ifdef show_array_yes
 	int i;
 #endif
@@ -262,7 +263,7 @@ void dump_var( int n )
 #ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					printf("[%d]=%d ,",i, globalVars[n].var.int_array[i]);
+					printf("[%d]=%d ,",i, (&(globalVars[n].var.int_array -> ptr) +i) -> value );
 				}
 #else
 				printf("...");
@@ -280,7 +281,7 @@ void dump_var( int n )
 #ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					printf("[%d]=%0.2f ,",i, globalVars[n].var.float_array[i]);
+					printf("[%d]=%0.2f ,",i, (&(globalVars[n].var.float_array -> ptr)+i) -> value );
 				}
 #else
 				printf("...");
@@ -298,7 +299,8 @@ void dump_var( int n )
 #ifdef show_array_yes
 				for (i=0; i<globalVars[n].var.count; i++)
 				{
-					printf("[%d]=%s ,",i, globalVars[n].var.str_array[i]);
+					strptr =&(globalVars[n].var.str_array -> ptr)[i];
+					printf("[%d]=%s ,",i, &strptr -> ptr);
 				}
 #else
 				printf("...");
