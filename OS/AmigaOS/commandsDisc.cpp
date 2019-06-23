@@ -258,12 +258,12 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					_default_ = getStackString( stack -1 );
 					_title_ = getStackString( stack );
 
-					amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+					amigaPattern = amos_to_amiga_pattern( &_path_ -> ptr);
 
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
-						ASLFR_TitleText, _title_,
-						ASLFR_InitialFile, _default_,
+						ASLFR_TitleText, &_title_ -> ptr,
+						ASLFR_InitialFile, &_default_ -> ptr,
 						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
@@ -281,13 +281,13 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					{
 						sprintf(&_title_temp_ -> ptr,"%s\n%s",&_title_ -> ptr ,&_title2_ -> ptr);
 
-						amigaPattern = amos_to_amiga_pattern( (char *) &_path_ -> ptr);
+						amigaPattern = amos_to_amiga_pattern( &_path_ -> ptr );
 
 						success = AslRequestTags( (void *) filereq, 
 							ASLFR_DrawersOnly, FALSE,	
 							ASLFR_TitleText, &_title_temp_ -> ptr,
-							ASLFR_InitialFile, _default_,
-							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
+							ASLFR_InitialFile, &_default_ -> ptr,
+							ASLFR_InitialPattern, amigaPattern ? amigaPattern  : "",
 							ASLFR_DoPatterns, TRUE,
 							TAG_DONE );
 					}
