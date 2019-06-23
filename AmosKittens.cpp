@@ -466,7 +466,15 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 				case type_string:	
 					struct stringData *str = *(&(var -> str_array -> ptr) + _last_var_index);
-					setStackStrDup( str );
+
+					if (str == NULL) 
+					{
+						setStackStr( toAmosString( "", 0) );
+					}
+					else
+					{
+						setStackStrDup( str );
+					}
 					break;
 			}
 
@@ -1423,6 +1431,8 @@ char *executeToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
 	char *ret;
+
+	dump_stack();
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
