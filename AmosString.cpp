@@ -68,20 +68,20 @@ struct stringData *amos_right( struct stringData *var, int len )
 	return newstr;
 }
 
-int amos_instr( struct stringData *var,int start,struct stringData *find  )
+int amos_instr( struct stringData *string,int start,struct stringData *find  )
 {
-	char *p = &(var -> ptr) + start;
+	char *p = &(string -> ptr) + start;
 	int l; 
 	int n;
 
-	if (var -> size < find -> size) return 0;
+	if (string -> size < find -> size) return 0;
 
-	l = var -> size - start - find -> size;
+	l = string -> size - start - find -> size;
 	for (n=0;n<l;n++)
 	{
-		if (strncmp(p+n,&(find -> ptr),find -> size))
+		if (memcmp(p+n,&(find -> ptr),find -> size)==0)
 		{
-			return n+1;
+			return n+start+1;
 		}
 	}
 
