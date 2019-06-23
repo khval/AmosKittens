@@ -105,21 +105,18 @@ char *_mid( struct glueCommands *data, int nextToken )
 
 		case 3:
 			str = getStackString( stack - 2 );
-			_start = getStackNum( stack -1 ) ;
+			_start = getStackNum( stack -1 ) -1 ;
 			_len = getStackNum( stack );
 
-			if (_start == 0 ) _start = 1;
-			if (_start>0)
+			if (_start>-1)
 			{
-				_start--;
-				_slen = str -> size;
-				if (_start>_slen-1) 
+				if (_start>str -> size) 
 				{
 					tmp = toAmosString("",0);
 				}
 				else
 				{
-					if (_start<0) _start=0;
+					if ( (_start+_len) > str->size) _len = str->size- _start;
 					tmp = amos_mid(str, _start, _len );
 				}
 			}	

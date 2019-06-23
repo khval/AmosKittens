@@ -38,16 +38,22 @@ struct stringData *amos_strndup( struct stringData *var, int len )
 	return newstr;
 }
 
-struct stringData *amos_mid( struct stringData *var, int start, int len )
+struct stringData *amos_mid( struct stringData *string, int start, int len )
 {
 	struct stringData *newstr;
-	if ( start > var->size ) start = var->size;
-	if ( (var->size - start) <len) len = (var -> size - start);
+
+	if ( start >= string->size ) start = string->size;
+	if ( (string->size - start) <len) len = (string->size - start);
 	if (len<0) len =0;
+
 	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
 	newstr -> size = len;
-	(&newstr -> ptr)[len]=0;	// unlike AmosPro, Amos kitten strings should be 0 terminaled, so they will work with standard OS libraryes and C libs.
-	memcpy(&(newstr -> ptr),&(var -> ptr),len);
+
+	if (len>0)
+	{
+		memcpy(&(newstr->ptr),&(string->ptr)+start,len);
+		(&newstr->ptr)[len]=0;	
+	}
 	return newstr;
 }
 
