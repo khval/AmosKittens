@@ -1349,6 +1349,10 @@ struct nativeCommand nativeCommands[]=
 	{0x27E6,"Dialog$",0,guiDialogStr },
 	{0x2804,"EDialog",0,guiEDialog },
 	{0x2812,"Dialog Clr",0,guiDialogClr },
+	{0x2824,"Dialog Update", 0, guiDialogUpdate },
+	{0x283C,"Dialog Update", 0, guiDialogUpdate },
+	{0x2848,"Dialog Update", 0, guiDialogUpdate },
+	{0x2856,"Dialog Update", 0, guiDialogUpdate },
 	{0x2866,"Dialog Freeze",0,guiDialogFreeze },
 	{0x2882,"Dialog Unfreeze",0,guiDialogUnfreeze },
 	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)

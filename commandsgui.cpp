@@ -706,3 +706,37 @@ char *guiRdialog(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _guiRdialog, tokenBuffer );
 	return tokenBuffer;
 }
+char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int a;
+
+	NYI(__FUNCTION__);
+
+	switch (args)
+	{
+		case 2:	// Dialog Update channel,zone
+				break;
+		case 3:	// Dialog Update channel,zone,param1
+				break;
+		case 4:	// Dialog Update channel,zone,param1,param2
+				break;
+		case 5:	// Dialog Update channel,zone,param1,param2,param3
+				break;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+ char *guiDialogUpdate(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _guiDialogUpdate, tokenBuffer );
+	return tokenBuffer;
+}
+
