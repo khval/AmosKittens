@@ -14,6 +14,7 @@ extern char *onErrorBreak(char *ptr);
 extern char *onErrorGoto(char *ptr);
 extern char *onErrorProc(char *ptr);
 
+extern char *errErrStr(nativeCommand *err, char *ptr);
 extern char *errTrap(nativeCommand *err, char *ptr);
 extern char *errErrTrap(nativeCommand *err, char *ptr);
 extern char *errError(nativeCommand *err, char *ptr);

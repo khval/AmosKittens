@@ -26,6 +26,7 @@
 #include "commandsErrors.h"
 #include "errors.h"
 #include "label.h"
+#include "amosString.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -291,5 +292,28 @@ char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
+
+char *_errErrStr( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+
+	if (args == 1)
+	{
+		int err = getStackNum(stack);
+		struct stringData *err_str = toAmosString( errorsRunTime[ err ].errorText, strlen(errorsRunTime[ err ].errorText) );
+		setStackStr( err_str );
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *errErrStr(nativeCommand *err, char *tokenBuffer)
+{
+	stackCmdParm( _errErrStr, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
