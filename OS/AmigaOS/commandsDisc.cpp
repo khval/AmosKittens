@@ -78,7 +78,7 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 					fprintf(fd,"%f", kittyStack[n].decimal.value);
 					break;
 				case type_string:
-					if (kittyStack[n].str) fprintf(fd,"%s", kittyStack[n].str);
+					if (kittyStack[n].str) fprintf(fd,"%s", &(kittyStack[n].str -> ptr));
 					break;
 			}
 
