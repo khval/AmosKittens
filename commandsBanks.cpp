@@ -1234,6 +1234,8 @@ struct stringData *getResourceStr(int id)
 
 	}
 
+	if (ret==NULL)  ret = toAmosString( "",0 );
+
 	return ret;
 }
 
