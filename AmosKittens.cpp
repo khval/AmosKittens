@@ -1330,24 +1330,44 @@ struct nativeCommand nativeCommands[]=
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
 	{0x25C0,"Array",0,machineArray },
+//	{0x25CC,"Frame Load",0,gfxFrameLoad},
+//	{0x25E0,"Frame Load",0,gfxFrameLoad},		//	Frame Load(n To n,n)
+//	{0x25EC,"Frame Play",0,gfxFramePlay},		//	Frame Play n,n
+//	{0x2600,"Frame Play",0,gfxFramePlay},		//	Frame Play n,n,n
+//	{0x260C,"Iff Anim",0,gfxIffAnim },
+//	{0x261E,"Iff Anim",0,gfxIffAnim },
 	{0x260C,"Iff Anim",0,gfxIffAnim },
-	{0x2694,"Call Editor", 0, cmdCallEditor },
+	{0x261E,"Iff Anim",0,gfxIffAnim },
+//	{0x262A,"Frame Length",0,gfxFrameLength},	//	Frame Length(n)
+//	{0x263E,"Frame Length",0,gfxFrameLength},	//	Frame Length(n,n)
+//	{0x2664,"Wait Frame",0,gfxWaitFrame},		//	Wait Frame n
+//	{0x2676,"Call Editor", 0, cmdCallEditor },
+//	{0x268A,"Call Editor", 0, cmdCallEditor },
+//	{0x2694,"Call Editor", 0, cmdCallEditor },
+//	{0x26A0,"Ask Editor", 0, cmdAskEditor  },
+//	{0x26B2,"Ask Editor", 0, cmdAskEditor  },
+//	{0x26BC,"Ask Editor", 0, cmdAskEditor  },
 	{0x26C8,"Erase Temp",0,bankEraseTemp },
 	{0x26D8,"Erase All", 0, bankEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
 	{0x2704,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$,value,b$)
 	{0x2710,"Dialog Box",0,guiDialogBox },		// d=Dialog Box(a$,value,b$,n,n)
-	{0x2720,"Dialog Open",0,guiDialogOpen },		// d=Dialog Open n,a$
+	{0x2720,"Dialog Open",0,guiDialogOpen },	// d=Dialog Open n,a$
+	{0x2736,"Dialog Open",0,guiDialogOpen },	//	Dialog Open n,n,n
 	{0x2742,"Dialog Open",0,guiDialogOpen },
 	{0x2750,"Dialog Close",0,guiDialogClose },
 	{0x2764,"Dialog Close",0,guiDialogClose },	// Dialog Close <NR>
 	{0x276C,"Dialog Run", 0, guiDialogRun },
 	{0x277E,"Dialog Run", 0, guiDialogRun },
+	{0x2788,"Dialog Run", 0, guiDialogRun },
 	{0x2796,"Dialog",0,guiDialog },
 	{0x27A4,"Vdialog",0,guiVdialog },
 	{0x27B6,"Vdialog$",0,guiVdialogStr },
 	{0x27C8,"Rdialog",0,guiRdialog },
+	{0x27DA,"Rdialog",0,guiRdialog },
 	{0x27E6,"Dialog$",0,guiDialogStr },
+	{0x27E6,"Rdialog$",0,guiRdialogStr },
+	{0x27F8,"Rdialog$",0,guiRdialogStr },
 	{0x2804,"EDialog",0,guiEDialog },
 	{0x2812,"Dialog Clr",0,guiDialogClr },
 	{0x2824,"Dialog Update", 0, guiDialogUpdate },
@@ -1355,14 +1375,18 @@ struct nativeCommand nativeCommands[]=
 	{0x2848,"Dialog Update", 0, guiDialogUpdate },
 	{0x2856,"Dialog Update", 0, guiDialogUpdate },
 	{0x2866,"Dialog Freeze",0,guiDialogFreeze },
+	{0x287A,"Dialog Freeze",0,guiDialogFreeze },
 	{0x2882,"Dialog Unfreeze",0,guiDialogUnfreeze },
-	{0x28A0,"Poke$",0,machinePokeStr },	// Poke$(adr, string)
-	{0x28AE,"Peek$",0,machinePeekStr },	// Peek$(adr, length)
-	{0x28BE,"Peek$",0,machinePeekStr },	// Peek$(adr, termChar) // returns string
-	{0x28CA,"Resource Bank", 0,bankResourceBank }, // AmosPro Command.
-	{0x28DE,"Resource$",0,bankResourceStr }, // Resource$
+	{0x2898,"Dialog Unfreeze",0,guiDialogUnfreeze },
+	{0x28A0,"Poke$",0,machinePokeStr },						// Poke$(adr, string)
+	{0x28AE,"Peek$",0,machinePeekStr },						// Peek$(adr, length)
+	{0x28BE,"Peek$",0,machinePeekStr },						// Peek$(adr, termChar) // returns string
+	{0x28CA,"Resource Bank", 0,bankResourceBank },			// AmosPro Command.
+	{0x28DE,"Resource$",0,bankResourceStr },					 // Resource$
 	{0x28EE,"Resource Screen Open",0,guiResourceScreenOpen},
-	{0x2946,"Err$" ,0, errErrStr },
+	{0x2910,"Resource Unpack",0,guiResourceUnpack},			// Resource Unpack n,n
+	{0x292A,"Read Text",0,discReadText},
+	{0x2946,"Err$" ,0, errErrStr},
 	{0x2952,"Assign",0,discAssign },
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
 	{0x2A4A,"Lvo",6,machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
