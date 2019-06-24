@@ -706,6 +706,42 @@ char *guiRdialog(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _guiRdialog, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_guiRdialogStr( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	int _channel_,_button_,_object_;
+	int ret = 0;
+
+	switch (args)
+	{
+		case 2:	_channel_ = getStackNum(stack-1);
+				_button_ = getStackNum(stack);
+				setError(23,data->tokenBuffer);
+				break;
+
+		case 3:	_channel_ = getStackNum(stack-2);
+				_button_ = getStackNum(stack-1);
+				_object_ = getStackNum(stack);
+				setError(23,data->tokenBuffer);
+				break;
+
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum( ret );
+	return NULL;
+}
+
+char *guiRdialogStr(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _guiRdialogStr, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -734,9 +770,30 @@ char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
- char *guiDialogUpdate(nativeCommand *cmd, char *tokenBuffer)
+char *guiDialogUpdate(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _guiDialogUpdate, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_guiResourceUnpack( struct glueCommands *data, int nextToken )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+
+	NYI(__FUNCTION__);
+
+	popStack( stack - data->stack );
+	setStackNum( 0 );
+
+	return NULL;
+}
+
+char *guiResourceUnpack(nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _guiResourceUnpack, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 

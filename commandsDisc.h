@@ -44,6 +44,5 @@ char *discPut(struct nativeCommand *disc, char *tokenBuffer);
 
 char *discMakedir(struct nativeCommand *disc, char *tokenBuffer);
 char *discAssign(struct nativeCommand *disc, char *tokenBuffer);
-
-
+char *discReadText(struct nativeCommand *disc, char *tokenBuffer);
 
