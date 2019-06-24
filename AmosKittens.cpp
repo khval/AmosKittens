@@ -1332,6 +1332,7 @@ struct nativeCommand nativeCommands[]=
 	{0x25C0,"Array",0,machineArray },
 	{0x260C,"Iff Anim",0,gfxIffAnim },
 	{0x2694,"Call Editor", 0, cmdCallEditor },
+	{0x26C8,"Erase Temp",0,bankEraseTemp },
 	{0x26D8,"Erase All", 0, bankEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
 	{0x2704,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$,value,b$)

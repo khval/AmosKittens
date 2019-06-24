@@ -63,6 +63,7 @@ extern char *bankReserveAsChipData(nativeCommand *cmd, char *ptr);
 extern char *bankListBank(nativeCommand *cmd, char *ptr);
 extern char *bankErase(nativeCommand *cmd, char *ptr);
 extern char *bankEraseAll(nativeCommand *cmd, char *ptr);
+extern char *bankEraseTemp(nativeCommand *cmd, char *ptr);
 extern char *bankStart(nativeCommand *cmd, char *ptr);
 extern char *bankLength(nativeCommand *cmd, char *ptr);
 extern char *bankBload(nativeCommand *cmd, char *ptr);

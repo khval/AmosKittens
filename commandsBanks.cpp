@@ -241,6 +241,37 @@ char *bankEraseAll(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+char *bankEraseTemp(nativeCommand *cmd, char *tokenBuffer)
+{
+	int n;
+	bool erased;
+	struct kittyBank *bank = NULL;
+
+	do
+	{
+		erased = false;
+		for (n=0;n<kittyBankList.size();n++)
+		{
+			bank = &kittyBankList[n];
+
+			switch (bank -> type)
+			{
+				case 0:
+				case 1:
+					engine_lock();
+					freeBank( n );
+					engine_unlock();
+					erased = true;
+					break;
+			}
+			if (erased) break;
+		}
+	} while (erased);
+
+	return tokenBuffer;
+}
+
 char *_bankStart( struct glueCommands *data, int nextToken )
 {
 	int n;
