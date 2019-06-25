@@ -1439,11 +1439,11 @@ const char *TokenName( unsigned short token )
 	return noName;
 }
 
-
+/*
 char *skipToken( char *ptr, unsigned short token )
 {
 	struct nativeCommand *cmd;
-	char *ret;
+	char *ret = ptr;
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
@@ -1456,6 +1456,7 @@ char *skipToken( char *ptr, unsigned short token )
 
 	return NULL;
 }
+*/
 
 #ifdef enable_fast_execution_no
 
