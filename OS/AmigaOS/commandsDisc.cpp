@@ -1768,3 +1768,21 @@ char *discAssign(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_discReadText( struct glueCommands *data, int nextToken )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	NYI(__FUNCTION__);
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return NULL;
+}
+
+
+char *discReadText(struct nativeCommand *disc, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _discReadText, tokenBuffer );
+	return tokenBuffer;
+}
