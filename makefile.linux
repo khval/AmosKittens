@@ -65,7 +65,8 @@ main_objects = commands.cpp \
 			os/linux/spawn.cpp \
 			os/linux/memory.cpp \
 			commandsScreens.cpp \
-			os/littleendian/littleendian.cpp 
+			os/littleendian/littleendian.cpp \
+			AmosString.cpp
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}

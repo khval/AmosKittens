@@ -52,13 +52,14 @@ main_objects = commands.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
 			screen_helper.cpp \
-			os\aros\engine.cpp \
-			os\aros\bitmap_font.cpp 
-			os\aros\init.cpp \
-			os\aros\cleanup.cpp \
-			os\aros\joystick.cpp \
-			os\aros\spawn.cpp
-
+			os/aros/engine.cpp \
+			os/aros/bitmap_font.cpp 
+			os/aros/init.cpp \
+			os/aros/cleanup.cpp \
+			os/aros/joystick.cpp \
+			os/aros/spawn.cpp \
+			os/aros/iconify.cpp \
+			AmosString.cpp
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp

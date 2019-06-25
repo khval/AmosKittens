@@ -52,13 +52,13 @@ main_objects = commands.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
 			screen_helper.cpp \
-			os\morphos\engine.cpp \
-			os\morphos\bitmap_font.cpp 
-			os\morphos\init.cpp \
-			os\morphos\cleanup.cpp \
-			os\morphos\joystick.cpp \
-			os\morphos\spawn.cpp
-
+			os/morphos/engine.cpp \
+			os/morphos/bitmap_font.cpp 
+			os/morphos/init.cpp \
+			os/morphos/cleanup.cpp \
+			os/morphos/joystick.cpp \
+			os/morphos/spawn.cpp \
+			AmosString.cpp
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
