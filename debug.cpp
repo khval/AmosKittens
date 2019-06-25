@@ -208,12 +208,9 @@ unsigned int mem_crc( char *mem, uint32_t size )
 
 void dump_var( int n )
 {
-	struct stringData *strptr;
 #ifdef show_array_yes
 	int i;
 #endif
-
-
 		switch (globalVars[n].var.type)
 		{
 			case type_int:
