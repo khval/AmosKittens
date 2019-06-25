@@ -165,7 +165,7 @@ void joy_stick(int joy,void *controller)
 	{
 		j = 0;
 
-		for (n=0;n<4;n++)	if (joysticks[n].id == ain_mess -> ID) j =n;
+		for (n=0;n<4;n++)	if ( (unsigned int) joysticks[n].id == ain_mess -> ID) j =n;
 
 
 		switch (ain_mess -> Type)
