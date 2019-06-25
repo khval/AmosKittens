@@ -809,6 +809,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0018, "<label>", sizeof(struct reference),cmdVar},	
 	{0x001E, "<Bin>",4,cmdNumber },		// binrary
 	{0x0026, "<Text>",2, cmdQuote },
+	{0x002E, "<Text2>",2,cmdQuote },
 	{0x0036, "<Hex>",4,cmdNumber },		// hex
 	{0x003E, "<number>",4,cmdNumber },
 	{0x0046, "<float>",4,cmdFloat },
