@@ -1779,10 +1779,98 @@ char *_discReadText( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
 char *discReadText(struct nativeCommand *disc, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _discReadText, tokenBuffer );
 	return tokenBuffer;
 }
+
+
+char *findVolumeName(char *name)
+{
+	char deviceName[30];
+	struct Node *nd;
+	char *ret = NULL;
+	BPTR l;
+
+	struct List *list = (struct List *) AllocDosObjectTags( DOS_VOLUMELIST,
+	                             ADO_Type,LDF_VOLUMES,
+	                             ADO_AddColon,TRUE, TAG_END);
+	if( list )
+	{
+		int32 success;
+		for( nd = GetHead(list); nd; nd = GetSucc(nd))
+		{
+			success = FALSE;
+			l = Lock(nd->ln_Name,SHARED_LOCK);
+
+			if (l)
+			{
+				success = DevNameFromLock(l, deviceName, sizeof(deviceName), DN_DEVICEONLY);
+				UnLock(l);
+			}
+
+			if (success)
+			{
+				if ((strcasecmp(name, nd->ln_Name) == 0)|| (strcasecmp(name,deviceName) == 0))
+				{
+					ret = strdup( nd->ln_Name );	
+					break;
+				}
+			}
+			else
+			{
+				if ( strcasecmp(name,deviceName) == 0 ) 
+				{
+					ret = strdup( nd->ln_Name );	
+					break;
+				}
+			}
+		}
+		FreeDosObject(DOS_VOLUMELIST,list);
+	}
+
+	return ret;
+}
+
+
+char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
+{
+	int args = stack - cmdTmp[cmdStack-1].stack +1;
+	struct stringData *ret;
+	struct stringData *path;
+	char  *volumeName;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	NYI(__FUNCTION__);
+
+	switch (args)
+	{
+		case 1:
+			path = getStackString( stack );
+			volumeName = path ? findVolumeName( &path -> ptr ) : NULL;
+
+			if (volumeName)
+			{
+				ret = toAmosString(volumeName, strlen(volumeName));
+				setStackStr(ret);
+			}
+			break;
+		default:
+			popStack( stack - cmdTmp[cmdStack].stack  );
+			setError(23,data-> tokenBuffer);
+			break;
+	}
+
+	return NULL;
+}
+
+char *cmdDiskInfoStr(struct nativeCommand *disc, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _cmdDiskInfoStr, tokenBuffer );
+	return tokenBuffer;
+}
+
