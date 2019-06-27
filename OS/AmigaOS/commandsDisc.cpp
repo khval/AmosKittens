@@ -978,29 +978,34 @@ char *discDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
-char *_discDevNextStr( struct glueCommands *data, int nextToken )
+char *discDevNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	popStack( stack - cmdTmp[cmdStack].stack  );
 
 	if (dev_index<devList.size())
 	{
-		struct stringData *str = toAmosString( devList[dev_index].c_str(),devList[dev_index].length());
+		char *buf;
+		struct stringData *str; 
+
+		buf = (char *) malloc( 1 + devList[dev_index].length() + 30 + 1 );
+
+		if (buf)
+		{
+			sprintf( buf, " %s", devList[dev_index].c_str());
+			str = toAmosString( buf, strlen(buf) );
+			free(buf);
+			buf = NULL;
+		}
+
 		setStackStr( str );
 		dev_index++;
 	}
 	else
 	{
-		setStackStr( NULL );
+		setStackStr( toAmosString( "",0) ) ;
 		devList.clear();
 		dev_index = 0;
 	}
 
-	return NULL;
-}
-
-char *discDevNextStr(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _discDevNextStr, tokenBuffer );
 	return tokenBuffer;
 }
 
