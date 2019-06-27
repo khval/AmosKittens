@@ -76,7 +76,7 @@ int amos_instr( struct stringData *string,int start,struct stringData *find  )
 
 	if (string -> size < find -> size) return 0;
 
-	l = string -> size - start - find -> size;
+	l = string -> size - start - (find -> size -1);
 	for (n=0;n<l;n++)
 	{
 		if (memcmp(p+n,&(find -> ptr),find -> size)==0)
