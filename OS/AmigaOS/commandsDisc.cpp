@@ -955,7 +955,7 @@ char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 	dev_index = 0;
 	init_dev_first();
 
-	popStack( stack - cmdTmp[cmdStack].stack  );
+	popStack( stack - data -> stack  );
 
 	if (devList.size())
 	{
@@ -973,7 +973,7 @@ char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 
 char *discDevFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _discDevFirstStr, tokenBuffer );
+	stackCmdParm( _discDevFirstStr, tokenBuffer );
 	return tokenBuffer;
 }
 
