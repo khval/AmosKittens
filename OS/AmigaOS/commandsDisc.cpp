@@ -897,10 +897,8 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 	} 
 	
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	if (outStr)
-	{
-		setStackStr(outStr);
-	}
+
+	if (outStr)	setStackStr(outStr);
 
 	return NULL;
 }

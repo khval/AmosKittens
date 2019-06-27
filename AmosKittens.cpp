@@ -1327,6 +1327,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
 	{0x2520,"Laced",0, gfxLaced },
 	{0x253C,"Command Line$", 0, cmdCommandLineStr },
+	{0x2550,"Disc Info$",0, cmdDiskInfoStr },
 	{0x2578,"Set Accessory",0, cmdSetAccessory },
 	{0x259A,"Trap", 0, errTrap },
 	{0x25A4,"Else If", 2, cmdElseIf },
