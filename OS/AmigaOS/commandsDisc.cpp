@@ -920,7 +920,6 @@ void init_dev_first()
 	char buffer[1000];
 	struct DosList *dl;
 	ULONG flags;
-	unsigned int n;
 
 	flags = LDF_DEVICES|LDF_READ;
 	dl = LockDosList(flags);
@@ -931,9 +930,7 @@ void init_dev_first()
 	{
 		if (dl -> dol_Port)
 		{
-			int32 success = DevNameFromPort(dl -> dol_Port,  buffer, sizeof(buffer), TRUE);
-
-			if (success)
+			if (DevNameFromPort(dl -> dol_Port,  buffer, sizeof(buffer), TRUE))
 			{
 				devList.push_back(buffer);
 			}
@@ -942,7 +939,7 @@ void init_dev_first()
 
 	UnLockDosList(flags);
 
-	for (n=0;n<devList.size();n++) printf( "%s\n",devList[n].c_str() );
+//	for (n=0;n<devList.size();n++) printf( "%s\n",devList[n].c_str() );
 }
 
 
