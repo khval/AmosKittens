@@ -409,12 +409,19 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 
 	if (pattern)
 	{
-		ParsePattern( pattern, matchpattern, 100 );
+		if ( pattern[0] )
+		{
+			ParsePattern( pattern, matchpattern, 100 );
+		}
+		else
+		{
+			ParsePattern( "#?", matchpattern, 100 );
+		}
+
 		_match = MatchPattern( matchpattern, dat->Name );
 	}
 
 	if (_match == false) return NULL;
-
 
 			if( EXD_IS_LINK(dat) ) /* all links, must check these first ! */
 			{
