@@ -459,43 +459,6 @@ char *dir_item_formated(struct ExamineData *dat, const char *path, const char *p
 }
 
 
-
-char *_discDirNextStr( struct glueCommands *data, int nextToken )
-{
-	struct stringData *outStr = NULL;
-	char *tmp;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if( contextDir )
-	{
-		struct ExamineData *dat;
-
-		do
-		{
-			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
-			{
-				tmp = dir_item_formated(dat, &dir_first_path->ptr, dir_first_pattern );
-
-				if (tmp)
-				{
-					outStr = toAmosString( tmp, strlen(tmp) );
-					free(tmp);
-				}
-			}
-		} while ((outStr == NULL) && (dat));
-	}
-	
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	if (outStr)
-	{	
-		setStackStr(outStr);
-		free(outStr);
-	}
-
-	return NULL;
-}
-
 char *amos_to_amiga_pattern(const char *amosPattern)
 {
 	int _new_len = 0;
@@ -575,6 +538,7 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 		if ((c == '/') || ( c == ':'))
 		{
 			*path = amos_strdup(str);
+			*pattern = toAmosString("",0);
 		}
 		else
 		{
@@ -586,22 +550,24 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 
 				if ((c == '/') || ( c == ':'))
 				{
-					*path = amos_strndup( str, i+1 );
-					*pattern = str + i +1;
+					*path = amos_strndup( str, i );
+					*pattern =  toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
 				}
 			}
 
 			if (*path == NULL)
 			{
 				*path = toAmosString("",0);
-				*pattern = str;	
+				*pattern =  amos_strdup( str );	
 			}
 		}		
 	}
-	else
+	
+
+	if (*path == NULL);
 	{
 		*path = toAmosString("",0);
-		*pattern = str;
+		*pattern =  amos_strdup( str );
 	}
 }
 
@@ -693,7 +659,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 	
 	ReleaseDirContext(context);             /* NULL safe */
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack( stack - data -> stack  );
 
 	return  NULL ;
 }
@@ -853,11 +819,28 @@ char *discExist(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 {
-	struct stringData *str;
-	struct stringData *_pattern;
+	int args = stack - data -> stack + 1;
+	struct stringData *str = NULL;
+	struct stringData *_pattern = NULL;
 	stringData *outStr = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			str  = getStackString( stack );
+			if (str == NULL) 
+			{
+				setError(22, data-> tokenBuffer);
+				return NULL;
+			}
+			break;
+		default:
+			popStack( stack - data -> stack  );
+			setError(22, data-> tokenBuffer);
+			return NULL;
+	}
 
 	if (contextDir)
 	{
@@ -865,25 +848,25 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 		contextDir = NULL;
 	}
 
-	str  = getStackString( stack );
-	if (str == NULL) return NULL;
-
 	if (dir_first_path)
 	{
 		free(dir_first_path);
 		dir_first_path = NULL;
 	}
 
+
 	split_path_pattern(str, &dir_first_path, &_pattern);
 
 	if (dir_first_pattern) free(dir_first_pattern);
-	dir_first_pattern = amos_to_amiga_pattern( (char *) _pattern);
 
 
-	contextDir = ObtainDirContextTags(EX_StringNameInput, dir_first_path,
+
+
+	dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
+
+	contextDir = ObtainDirContextTags(EX_StringNameInput, &dir_first_path -> ptr,
 	                   EX_DoCurrentDir,TRUE, 
 	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
-
 
 	if( contextDir )
 	{
@@ -903,22 +886,59 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 		} while ((outStr == NULL) && (dat));
 	} 
 	
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (outStr)	setStackStr(outStr);
+	if (outStr)	
+	{ 
+		setStackStr(outStr);
+	}
+	else
+	{
+		setStackStr( toAmosString("",0) );
+	}
+
+	getchar();
 
 	return NULL;
 }
 
 char *discDirFirstStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _discDirFirstStr, tokenBuffer );
+	stackCmdParm( _discDirFirstStr, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *discDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _discDirNextStr, tokenBuffer );
+	struct stringData *outStr = NULL;
+	char *tmp;
+
+	if( contextDir )
+	{
+		struct ExamineData *dat;
+		do
+		{
+			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
+			{
+				tmp = dir_item_formated(dat, &dir_first_path->ptr, dir_first_pattern );
+				if (tmp)
+				{
+					outStr = toAmosString( tmp, strlen(tmp) );
+					free(tmp);
+				}
+			}
+		} while ((outStr == NULL) && (dat));
+	}
+	
+	if (outStr)	
+	{
+		setStackStr(outStr);
+	}
+	else
+	{
+		setStackStr(toAmosString("",0));
+	}
+
 	return tokenBuffer;
 }
 
