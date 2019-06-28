@@ -355,7 +355,7 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *formated_dir(bool is_dir, const char *path, char *name, int64 size )
+char *formated_dir(bool is_dir, struct stringData *path, char *name, int64 size )
 {
 	char *buffer;
 	int _l;
@@ -366,20 +366,22 @@ char *formated_dir(bool is_dir, const char *path, char *name, int64 size )
 	{
 		if (is_dir)
 		{
-			sprintf(buffer,"*%-32.32s%10s\n",  name ,"");
+			sprintf(buffer,"*%-32.32s%10s",  name ,"");
 		}
 		else
 		{
 			if (size == -1)	// i have no idea way this has no size :-(
 			{
 				char *fullname;
-				_l = strlen(path);
-				c = _l ? path[_l-1] : 0;
+				_l = path -> size;
+				c = _l ? (&path -> ptr) [_l-1] : 0;
+
 				fullname = (char *) malloc( _l + strlen(name) + 2 ); 
 				if (fullname)
 				{
 					BPTR fd;
-					sprintf(fullname, "%s%s%s", path, ((c==':')&&(c=='/')) ? "" : (_l ? "/" : ""), name );
+					sprintf(fullname, "%s%s%s", &path -> ptr, ((c==':')||(c=='/')) ? "" : ( c==':' ? ":" : "/"), name );
+
 					fd = Open(fullname, MODE_OLDFILE);
 					if (fd)
 					{
@@ -391,7 +393,7 @@ char *formated_dir(bool is_dir, const char *path, char *name, int64 size )
 				}
 			}
 
-			sprintf(buffer," %-32.32s%lld\n", name, size );
+			sprintf(buffer," %-32.32s%lld", name, size );
 		}
 	}
 
@@ -399,7 +401,7 @@ char *formated_dir(bool is_dir, const char *path, char *name, int64 size )
 }
 
 
-char *dir_item_formated(struct ExamineData *dat, const char *path, const char *pattern)
+char *dir_item_formated(struct ExamineData *dat, struct stringData *path, const char *pattern)
 {
 	bool _match = true;
 	struct ExamineData *target;
@@ -537,6 +539,7 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 		{
 			*path = amos_strdup(str);
 			*pattern = toAmosString("",0);
+			return;
 		}
 		else
 		{
@@ -548,24 +551,15 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 				if ((c == '/') || ( c == ':'))
 				{
 					*path = amos_strndup( str, i );
-					*pattern =  toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
+					*pattern = toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
+					return;
 				}
-			}
-
-			if (*path == NULL)
-			{
-				*path = toAmosString("",0);
-				*pattern =  amos_strdup( str );	
 			}
 		}		
 	}
-	
 
-	if (*path == NULL);
-	{
-		*path = toAmosString("",0);
-		*pattern =  amos_strdup( str );
-	}
+	*path = toAmosString("",0);
+	*pattern = amos_strdup( str );
 }
 
 
@@ -587,9 +581,12 @@ char *_discDir( struct glueCommands *data, int nextToken )
 
 	if (_path == NULL) return NULL;
 
-	APTR context = ObtainDirContextTags(EX_StringNameInput, _path,
-	                   EX_DoCurrentDir,TRUE, /* for ExamineObjectTags() */
-	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
+	printf("path: '%s'\n",_path ? &_path -> ptr : "");
+
+	APTR context = ObtainDirContextTags(EX_StringNameInput, _path ? &_path -> ptr : "",
+			EX_DoCurrentDir,TRUE,
+			EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), 
+			TAG_END);
 
 	if( context )
 	{
@@ -839,31 +836,34 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 			return NULL;
 	}
 
-	if (contextDir)
-	{
-		ReleaseDirContext(contextDir);
+	// delete old context
+
+		if (contextDir)	ReleaseDirContext(contextDir);
 		contextDir = NULL;
-	}
 
-	if (dir_first_path)
-	{
-		free(dir_first_path);
+		if (dir_first_path) free(dir_first_path);
 		dir_first_path = NULL;
-	}
 
+		if (dir_first_pattern) free(dir_first_pattern);
+		dir_first_pattern = NULL;
 
-	split_path_pattern(str, &dir_first_path, &_pattern);
+	// create new context
 
-	if (dir_first_pattern) free(dir_first_pattern);
+		printf("%s\n", &str -> ptr);
 
+		split_path_pattern(str, &dir_first_path, &_pattern);
 
+		printf("dir_first_path '%s'\n", &dir_first_path -> ptr);
 
+		dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
 
-	dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
-
-	contextDir = ObtainDirContextTags(EX_StringNameInput, &dir_first_path -> ptr,
+		contextDir = ObtainDirContextTags(EX_StringNameInput, &dir_first_path -> ptr,
 	                   EX_DoCurrentDir,TRUE, 
 	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
+
+	getchar();
+
+	// ready.
 
 	if( contextDir )
 	{
@@ -873,7 +873,7 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 		{
 			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
 			{
-				char *tmp = dir_item_formated(dat, &dir_first_path -> ptr, dir_first_pattern );
+				char *tmp = dir_item_formated(dat, dir_first_path, dir_first_pattern );
 				if (tmp)
 				{
 					outStr = toAmosString(tmp,strlen(tmp));
@@ -913,7 +913,7 @@ char *discDirNextStr(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			if ((dat = ExamineDir(contextDir)))  /* until no more data.*/
 			{
-				tmp = dir_item_formated(dat, &dir_first_path->ptr, dir_first_pattern );
+				tmp = dir_item_formated(dat, dir_first_path, dir_first_pattern );
 				if (tmp)
 				{
 					outStr = toAmosString( tmp, strlen(tmp) );
