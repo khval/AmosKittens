@@ -530,11 +530,9 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 	int i;
 
 	_len = str -> size;
-
 	if (_len>0) 
 	{
 		c = (&str -> ptr) [_len-1];
-
 		if ((c == '/') || ( c == ':'))
 		{
 			*path = amos_strdup(str);
@@ -543,7 +541,6 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 		else
 		{
 			*path = NULL;
-
 			for (i=_len-1; i>=0;i--)
 			{
 				c = (&str->ptr) [i];
@@ -886,8 +883,6 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 		} while ((outStr == NULL) && (dat));
 	} 
 	
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	if (outStr)	
 	{ 
 		setStackStr(outStr);
@@ -896,8 +891,6 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 	{
 		setStackStr( toAmosString("",0) );
 	}
-
-	getchar();
 
 	return NULL;
 }
