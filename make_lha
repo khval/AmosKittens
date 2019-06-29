@@ -1,0 +1,35 @@
+
+if exists ram:AmosKittens.lha
+	delete ram:AmosKittens.lha
+endif
+
+if exists ram:AmosKittens
+	delete ram:AmosKittens/#? all
+endif
+
+if not exists ram:AmosKittens
+	makedir ram:AmosKittens
+endif
+
+if not exists ram:AmosKittens/libs
+	makedir ram:AmosKittens/libs
+endif
+
+if not exists ram:AmosKittens/docs
+	makedir ram:AmosKittens/docs
+endif
+
+copy AmosKittens.exe ram:AmosKittens/AmosKittens
+copy AmosKittens.exe.info ram:AmosKittens/AmosKittens.info
+copy libs:retromode.library ram:AmosKittens/libs
+copy #?(.txt) ram:AmosKittens/docs
+
+
+echo lha stuff
+
+cd ram:
+lha -er a AmosKittens.lha RAM:AmosKittens
+
+echo cd back
+
+cd Work:pro_2017/amoskittens
