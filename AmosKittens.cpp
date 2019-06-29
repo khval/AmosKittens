@@ -1906,23 +1906,15 @@ int main(int args, char **arg)
 			free( (void *) do_to );
 			do_to = NULL;
 		}
-
-		printf("-- close & free video --\n");
-
-		free_video();
-
-		printf("-- clean up vars --\n");
-
-		clean_up_vars();
-
-		printf("-- clean up stack --\n");
-
-		clean_up_stack();
-		clean_up_files();
-		clean_up_special();	// we add other stuff to this one.
-
-		closedown();
 	}
+
+
+	free_video();
+	clean_up_vars();
+	clean_up_stack();
+	clean_up_files();
+	clean_up_special();	// we add other stuff to this one.
+	closedown();
 
 	if (sig_main_vbl) 
 	{
