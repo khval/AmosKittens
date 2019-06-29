@@ -16,6 +16,8 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+
+extern char *asl();
 #endif
 
 #ifdef __linux__
@@ -107,6 +109,8 @@ int cmdStack = 0;
 int procStackCount = 0;
 int last_var = 0;
 int32_t tokenlength;
+
+bool startup = false;
 
 unsigned int amiga_joystick_dir[4];
 unsigned int amiga_joystick_button[4];
@@ -1470,6 +1474,7 @@ char *executeToken( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id ) 
 		{
+
 #ifdef show_token_numbers_yes
 			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
 					getLineFromPointer(ptr), (unsigned int) ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
@@ -1583,7 +1588,10 @@ char *code_reader( char *start, int tokenlength )
 	
 
 	if (start == NULL) return NULL;
+
+	interpreter_running = true;
 	ptr = start;
+
 	while ( ptr = token_reader(  start, ptr,  token, tokenlength ) )
 	{
 		// this basic for now, need to handel "on error " commands as well.
@@ -1711,8 +1719,20 @@ int main(int args, char **arg)
 #endif
 
 
+	if (init())
 	{
-		filename = strdup(arg[1]);
+		startup = true;
+
+		switch (args)
+		{
+			case 2:	filename = strdup(arg[1]);
+					break;
+#if defined(__amigaos4__)
+			case 0:
+					filename = asl();
+					break;	
+#endif
+		}
 	}
 
 	amosid[16] = 0;	// /0 string.
@@ -1745,7 +1765,7 @@ int main(int args, char **arg)
 
 	channels = new ChannelTableClass();
 
-	if (init() && channels)
+	if ( (startup) && (channels) )
 	{
 		bool init_error = false;
 
@@ -1846,8 +1866,9 @@ int main(int args, char **arg)
 
 					init_banks( _file_end_ ,  _file_bank_size );
 
-#ifdef run_program_yes
 					gfxDefault(NULL, NULL);
+
+#ifdef run_program_yes
 					code_reader( data, tokenlength );
 #endif
 				}
