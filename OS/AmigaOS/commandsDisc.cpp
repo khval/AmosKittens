@@ -46,7 +46,7 @@ char *_discInputIn( struct glueCommands *data, int nextToken );
 char *_discLineInputFile( struct glueCommands *data, int nextToken );
 
 char *amos_to_amiga_pattern(const char *amosPattern);
-void split_path_pattern(const char *str, char **path, const char **pattern);
+void split_path_pattern( struct stringData *str, struct stringData **path, struct stringData **pattern);
 
 char *_discSetDir( struct glueCommands *data, int nextToken )
 {
@@ -231,7 +231,9 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	char c;
 	int l;
 	bool success = false;
-	struct stringData *_path_ = NULL;
+	struct stringData *str = NULL;
+	struct stringData *path = NULL;
+	struct stringData *pattern = NULL;
 	struct stringData *_default_ = NULL;
 	struct stringData *_title_ = NULL;
 	struct stringData *_title2_ = NULL;
@@ -242,35 +244,44 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 		switch (args)
 		{
 			case 1:
-					_path_ = getStackString( stack );
+					str = getStackString( stack );
 
-					amigaPattern = amos_to_amiga_pattern( (char *) _path_);
+					split_path_pattern( str, &path, &pattern );
+					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
+						ASLFR_InitialDrawer, path ? &path -> ptr : "",
 						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
 					break;
 
 			case 3:
-					_path_ = getStackString( stack -2 );
+					str = getStackString( stack -2 );
+
+					split_path_pattern( str, &path, &pattern );
+					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
+
 					_default_ = getStackString( stack -1 );
 					_title_ = getStackString( stack );
-
-					amigaPattern = amos_to_amiga_pattern( &_path_ -> ptr);
 
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
 						ASLFR_TitleText, &_title_ -> ptr,
 						ASLFR_InitialFile, &_default_ -> ptr,
+						ASLFR_InitialDrawer, path ? &path -> ptr : "",
 						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 						ASLFR_DoPatterns, TRUE,
 						TAG_DONE );
 					break;
 
 			case 4:
-					_path_ = getStackString( stack -3 );
+					str = getStackString( stack -3 );
+
+					split_path_pattern( str, &path, &pattern );
+					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
+
 					_default_ = getStackString( stack -2 );
 					_title_ = getStackString( stack-1 );
 					_title2_ = getStackString( stack );
@@ -280,8 +291,6 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					if (_title_temp_)
 					{
 						sprintf(&_title_temp_ -> ptr,"%s\n%s",&_title_ -> ptr ,&_title2_ -> ptr);
-
-						amigaPattern = amos_to_amiga_pattern( &_path_ -> ptr );
 
 						success = AslRequestTags( (void *) filereq, 
 							ASLFR_DrawersOnly, FALSE,	
@@ -295,6 +304,13 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					break;
 
 		}
+
+		if (path) free(path);
+		if (pattern) free(pattern);
+		if (amigaPattern) free(amigaPattern);
+		path = NULL;
+		pattern = NULL;
+		amigaPattern = NULL;
 
 		if (success)
 		{
@@ -577,11 +593,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 
 	split_path_pattern(str, &_path, &_pattern);
 	
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	if (_path == NULL) return NULL;
-
-	printf("path: '%s'\n",_path ? &_path -> ptr : "");
 
 	APTR context = ObtainDirContextTags(EX_StringNameInput, _path ? &_path -> ptr : "",
 			EX_DoCurrentDir,TRUE,
@@ -849,19 +861,12 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 
 	// create new context
 
-		printf("%s\n", &str -> ptr);
-
 		split_path_pattern(str, &dir_first_path, &_pattern);
-
-		printf("dir_first_path '%s'\n", &dir_first_path -> ptr);
-
 		dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
 
 		contextDir = ObtainDirContextTags(EX_StringNameInput, &dir_first_path -> ptr,
 	                   EX_DoCurrentDir,TRUE, 
 	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
-
-	getchar();
 
 	// ready.
 
