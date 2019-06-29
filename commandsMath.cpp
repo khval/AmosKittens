@@ -724,8 +724,6 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
 
 char *_mathFnReturn( struct glueCommands *data, int nextToken )
 {
-	printf("End of Line\n");
-	getchar();
 	return data -> tokenBuffer;
 }
 

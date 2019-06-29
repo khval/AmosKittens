@@ -1466,8 +1466,6 @@ char *executeToken( char *ptr, unsigned short token )
 	struct nativeCommand *cmd;
 	char *ret;
 
-	dump_stack();
-
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id ) 
@@ -1483,7 +1481,6 @@ char *executeToken( char *ptr, unsigned short token )
 	}
 
 	token_not_found = token;
-	currentLine = getLineFromPointer( ptr );
 	setError(23, ptr);
 	printf("Addr %08x, token not found %04X at line %d\n", 
 				(unsigned int) ptr, 
@@ -1537,7 +1534,6 @@ char *executeToken( char *ptr, unsigned short token )
 	}
 
 	token_not_found = token;
-	currentLine = getLineFromPointer( ptr );
 	setError(23, ptr);
 	printf("Addr %08x, token not found %04X at line %d\n", 
 				(unsigned int) ptr, 
@@ -1585,9 +1581,8 @@ char *code_reader( char *start, int tokenlength )
 	char *ptr;
 	int token = 0;
 	
-	interpreter_running = true;
 
-	currentLine = 0;
+	if (start == NULL) return NULL;
 	ptr = start;
 	while ( ptr = token_reader(  start, ptr,  token, tokenlength ) )
 	{
@@ -1715,7 +1710,7 @@ int main(int args, char **arg)
 
 #endif
 
-	if (args == 2)
+
 	{
 		filename = strdup(arg[1]);
 	}

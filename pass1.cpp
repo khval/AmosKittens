@@ -572,11 +572,7 @@ void pass1label(char *ptr)
 
 				if (thisNest = find_nest_loop())
 				{
-					printf("label inside %s at %08x\n", nest_names[thisNest -> cmd], thisNest -> ptr);
-
 					tmp.loopLocation = thisNest -> ptr;
-
-					getchar();
 				}
 
 				labels.push_back(tmp);

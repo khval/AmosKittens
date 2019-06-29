@@ -444,11 +444,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 	}
 
 	if (success == false) setError(22, data-> tokenBuffer);
-
-
 	popStack( stack - data->stack );
-
-	getchar();
 
 	return NULL;
 }

@@ -35,11 +35,6 @@ void read_from_data()
 				try_next_token = false;
 				token = *((short *) data_read_pointers[proc_stack_frame]);
 
-				printf("data pointers[%d] %08x (line %d) - token %04x\n",
-					proc_stack_frame,
-					data_read_pointers[proc_stack_frame], 
-					getLineFromPointer(data_read_pointers[proc_stack_frame]), token);
-
 				switch (token)
 				{
 					case 0x0404:	// data
@@ -149,8 +144,6 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("proc_stack_frame: %d\n",proc_stack_frame);
 
 	if (data_read_pointers[proc_stack_frame] == 0x0000) 
 	{
