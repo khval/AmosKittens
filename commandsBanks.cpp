@@ -744,7 +744,7 @@ void init_banks( char *data , int size)
 {
 	struct retroMemFd fd;
 	char id[5];
-	unsigned short banks = 0;
+	unsigned short banks = -1;
 	int n;
 	int type = -1;
 	struct kittyBank *bank = NULL;
@@ -771,11 +771,19 @@ void init_banks( char *data , int size)
 			}
 		}
 
-		if (banks == 0) 
+		switch (banks)
 		{
-			mseek( fd, 0, SEEK_SET );	// set set, to start no header found.
-			banks = 1;
+			case -1:		// No number of banks header.
+						mseek( fd, 0, SEEK_SET );	// set set, to start no header found.
+						banks = 1;
+						break;
+
+			case 0:		// No banks.
+						printf("no banks\n");
+						return;
 		}
+
+		printf ("ready to read %d banks\n",banks);
 
 		for (n=0;n<banks;n++)
 		{
