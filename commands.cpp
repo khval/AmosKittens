@@ -1678,7 +1678,7 @@ exit_for:
 	return tokenBuffer;
 }
 
-char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
+char *main_cmdGlobal( char *tokenBuffer )
 {
 	unsigned short token =*((short *) tokenBuffer);
 
@@ -1687,7 +1687,84 @@ char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 		switch (token)
 		{
 			case 0x0006:	// var
+					tokenBuffer += 2 + sizeof(struct reference) + ReferenceByteLength( tokenBuffer );
+					break;
+
+			case 0x005C:	tokenBuffer +=2;	break;
+			case 0x0074:	tokenBuffer +=2;	break;
+			case 0x007C:	tokenBuffer +=2;	break;
+
+			case 0x0054:
+			case 0x0000:
+					goto exit_for;
+
+			default:
+					printf("bad exit on token %4x\n",token);
+					setError(22,tokenBuffer);
+					goto exit_for;
+		}
+
+		token = *((unsigned short *) (tokenBuffer));
+	}
+
+exit_for:
+	return tokenBuffer;
+}
+
+int findVar( char *name, bool is_first_token, int type, int _proc );
+
+char *local_cmdGlobal( char *tokenBuffer )
+{
+	unsigned short token =*((short *) tokenBuffer);
+	struct reference *ref;
+
+	struct kittyData *localVar,*mainVar;
+
+	int localVar_ref;
+	int mainVar_ref;
+
+	char *str;
+
+	for (;;)
+	{
+		switch (token)
+		{
+			case 0x0006:	// var
 					tokenBuffer +=2;
+
+					printf("%s\n", tokenBuffer + sizeof(struct reference) );
+
+					ref = (struct reference *) tokenBuffer;
+					str = (char *) malloc( ref -> length+1 );
+
+					localVar_ref = findVar( tokenBuffer + sizeof(struct reference) , false , ref -> flags, procStcakFrame[proc_stack_frame].id );
+					mainVar_ref = findVar( tokenBuffer + sizeof(struct reference) , false , ref -> flags, 0 );
+
+					if ((mainVar_ref)&&(localVar_ref))
+					{
+						mainVar = &globalVars[mainVar_ref-1].var;
+						localVar = &globalVars[localVar_ref-1].var;
+
+						if ((mainVar)&&(localVar))
+						{
+							switch ( ref -> flags )
+							{
+								case type_int:
+									localVar -> integer = mainVar -> integer;
+									break;
+								case type_float:
+									localVar -> decimal = mainVar -> decimal;
+									break;
+								case type_string:
+									if (localVar -> str) free(mainVar -> str);
+									localVar -> str = amos_strdup(mainVar -> str);
+									break;
+								default:
+									setError(22,tokenBuffer);
+							}
+						}
+					}
+
 					tokenBuffer += sizeof(struct reference) + ReferenceByteLength( tokenBuffer );
 					break;
 
@@ -1717,8 +1794,22 @@ char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 
 exit_for:
-
 	return tokenBuffer;
+}
+
+
+char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	unsigned short token =*((short *) tokenBuffer);
+
+	if ( procStcakFrame[proc_stack_frame].id )
+	{
+		return local_cmdGlobal( tokenBuffer );
+	}
+	else
+	{
+		return main_cmdGlobal( tokenBuffer );
+	}
 }
 
 char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer )
