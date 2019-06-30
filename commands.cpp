@@ -1396,6 +1396,7 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 
 	stackCmdNormal( _procAndArgs, tokenBuffer );
 	cmdTmp[cmdStack-1].tokenBuffer2  = NULL;	// must be reset, is used
+	tokenMode = mode_logical;					// parmiters should be handled logicaly, not as store.
 
 	tokenBuffer += ref -> length ;
 
