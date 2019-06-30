@@ -723,7 +723,7 @@ char *_textPenStr( struct glueCommands *data, int nextToken )
 		int n = getStackNum( stack );
 		char *p = &str -> ptr;
 		*p++ =27;
-		*p++ = 'Y';
+		*p++ = 'P';
 		*p++ = (n>-1) ? '0'+n : '0';
 		*p = 0;
 	}
