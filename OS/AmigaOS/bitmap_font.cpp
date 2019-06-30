@@ -659,9 +659,9 @@ struct esc_cmd esc_codes[]=
 	{"Z0",esc_zone},	// 1, zone
 	{"E0",esc_border},	// 2, border
 	{"B",NULL},		// 3
-	{"P",NULL},		// 4
-	{"X",NULL},		// 5
-	{"Y",NULL},		// 6
+	{"P",NULL},		// 4, pen
+	{"X",NULL},		// 5, x pos
+	{"Y",NULL},		// 6, y pos
 	{NULL,NULL}
 };
 
