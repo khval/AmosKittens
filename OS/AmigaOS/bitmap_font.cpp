@@ -890,9 +890,10 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 int strlen_no_esc(struct stringData *txt)
 {
 	int _l = 0;
-	const char *c;
+	const char *c=&txt -> ptr;
+	const char *s_end = &(txt -> ptr) + txt -> size;
 
-	for (c=&txt -> ptr;*c;c++)
+	for (;c<s_end;c++)
 	{
 		switch (*c)
 		{
@@ -905,20 +906,20 @@ int strlen_no_esc(struct stringData *txt)
 						switch (code)
 						{
 							case -1:	break;
-							case 0:	if (*c)	// not \0
+							case 0:	if (c<s_end)	// not \0
 									{
 										c++;
 									}
 									break;
-							case 2:	if (*c) c++;	// border
+							case 2:	if (c<s_end) c++;	// border
 									break;
-							case 3:	if (*c) c++;	// Paper
+							case 3:	if (c<s_end) c++;	// Paper
 									break;
-							case 4:	if (*c) c++;	// Pen
+							case 4:	if (c<s_end) c++;	// Pen
 									break;
-							case 5:	if (*c) c++;	// X
+							case 5:	if (c<s_end) c++;	// X
 									break;
-							case 6:	if (*c) c++;	// Y
+							case 6:	if (c<s_end) c++;	// Y
 									break;
 							default: 	
 									break;
