@@ -1122,8 +1122,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							{
 								ret = pass1_global( ptr );
 							}
-							else
-								setError(11,ptr);
+							// inside procedure this command should copies from global to local..
+
 							break;
 
 				case 0x0404:	// Data
