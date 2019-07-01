@@ -1395,7 +1395,9 @@ struct nativeCommand nativeCommands[]=
 	{0x2946,"Err$" ,0, errErrStr},
 	{0x2952,"Assign",0,discAssign },
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
+	{0x2A40,"Equ",6,machineEqu },
 	{0x2A4A,"Lvo",6,machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
+	{0x2A54,"Struc",6,machineStruc },
 	{0x2A74,"Bstart",0,bankBstart },
 	{0x2A82,"Blength",0,bankBlength },
 	{0x2A90,"Bsend",0,bankBsend}, 

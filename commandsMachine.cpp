@@ -1075,30 +1075,40 @@ char *machineFree(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-struct LVO 
+struct idTable 
 {
 	const char *name;
-	int lvo ;
+	int value ;
 };
 
-struct LVO lvos[]= {
+struct idTable _lvos[]= {
 					{NULL,0}	// End of list
 				};
 
-int findLVO( struct stringData *name )
-{
-	struct LVO *lvop;
+struct idTable _equs[]= {
+					{NULL,0}	// End of list
+				};
 
-	for ( lvop = lvos; lvop->lvo; lvop++ )
+struct idTable _structs[]= {
+					{NULL,0}	// End of list
+				};
+
+bool findId( struct idTable *tab, struct stringData *name, int *out )
+{
+	struct idTable *p;
+
+	for ( p = tab; p->name; p++ )
 	{
-		if (strcmp(&name -> ptr,lvop->name)==0)
+		if (strcmp(&name -> ptr,p->name)==0)
 		{
-			return lvop->lvo;
+			*out = p->value;
+			return true;
 		}
 	}
 
-	return 0;
+	return false;
 }
+
 
 char *_machineLvo( struct glueCommands *data, int nextToken )
 {
@@ -1109,9 +1119,7 @@ char *_machineLvo( struct glueCommands *data, int nextToken )
 
 	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
 	{
-		ret = findLVO( getStackString(stack) );
-
-		if ( ret == 0x00000)
+		if ( findId( _lvos, getStackString(stack) , &ret ) == false )
 		{
 			setError( 40, data->tokenBuffer);	// yes I know its not correct error ;-)
 		}
@@ -1129,7 +1137,69 @@ char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_machineEqu( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int ret = 0;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)	// commands have never 0 args, but arg 1 can be unset.
+	{
+		if ( findId( _equs, getStackString(stack) , &ret ) == false )
+		{
+			setError( 40, data->tokenBuffer);	// yes I know its not correct error ;-)
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(ret);
+	return NULL;
+}
+
+char *machineEqu(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineEqu, tokenBuffer );
+	return tokenBuffer;
+}
+
+//-----
+
+char *_machineStruc( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==2)	// commands have never 0 args, but arg 1 can be unset.
+	{
+		unsigned int ret ;
+
+		if ( findId( _structs, getStackString(stack) , (int *) &ret ) )
+		{
+			unsigned int base = getStackNum(stack-1);
+			popStack( stack - data->stack );
+			setStackNum(base + ret);
+			return NULL;
+		}
+		else
+		{
+			setError( 40, data->tokenBuffer);	// yes I know its not correct error ;-)
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	return NULL;
+}
+
+char *machineStruc(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _machineStruc, tokenBuffer );
+	return tokenBuffer;
+}
+
+//-----
 
 char *_machinePeekStr( struct glueCommands *data, int nextToken )
 {

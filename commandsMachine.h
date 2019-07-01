@@ -21,7 +21,6 @@ char *machineCopy(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineVarPtr(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineFill(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineHunt(struct nativeCommand *cmd, char *tokenBuffer);
-
 char *machineRolB(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineRolW(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineRolL(struct nativeCommand *cmd, char *tokenBuffer);
@@ -48,5 +47,7 @@ char *machinePload(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineCall(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineFree(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineLvo(struct nativeCommand *cmd, char *tokenBuffer);
+char *machineEqu(struct nativeCommand *cmd, char *tokenBuffer);
 char *machineArray(struct nativeCommand *cmd, char *tokenBuffer);
+char *machineStruc(struct nativeCommand *cmd, char *tokenBuffer);
 
