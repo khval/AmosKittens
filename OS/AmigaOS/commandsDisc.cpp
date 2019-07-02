@@ -1899,3 +1899,68 @@ char *cmdDiskInfoStr(struct nativeCommand *disc, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+extern char *_file_end_;
+
+char *_discRun( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack +1;
+	struct stringData *filename;
+	char *newCmd = NULL;
+	BPTR l = 0;
+	char *progpath = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+
+	switch (args)
+	{
+		case 1:
+			filename = getStackString( stack );
+
+			l = Lock("PROGDIR:",SHARED_LOCK);
+
+			progpath = (char *) malloc(1000);
+
+			if ((l)&&(progpath))
+			{
+				NameFromLock(l,progpath,1000);
+
+				newCmd = (char *) malloc( strlen(progpath) + filename -> size + 20 );
+
+				if (newCmd)
+				{
+					sprintf(newCmd,"%s/amosKittens.exe %c%s%c",progpath, 34,&filename -> ptr,34);
+					printf("%s\n",newCmd);
+
+					SystemTags(newCmd, 
+//						SYS_Input, NULL,
+//						SYS_Output, NULL,
+//						SYS_Asynch,TRUE, 
+						TAG_END);
+				}
+			}
+
+			if (l)	UnLock(l);
+			if (progpath) free(progpath);
+			if (newCmd) free(newCmd);
+
+			break;
+
+		default:
+			popStack( stack - data -> stack );
+			setError(23,data-> tokenBuffer);
+			break;
+	}
+
+	return _file_end_;
+}
+
+char *discRun(struct nativeCommand *disc, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _discRun, tokenBuffer );
+	return tokenBuffer;
+}
+
+
