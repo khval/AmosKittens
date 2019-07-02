@@ -1686,17 +1686,12 @@ char *main_cmdGlobal( char *tokenBuffer )
 	{
 		switch (token)
 		{
-			case 0x0006:	// var
-					tokenBuffer += 2 + sizeof(struct reference) + ReferenceByteLength( tokenBuffer );
-					break;
-
+			case 0x0006:	tokenBuffer +=2 + sizeof(struct reference) + ReferenceByteLength( tokenBuffer +2 );	break;
 			case 0x005C:	tokenBuffer +=2;	break;
 			case 0x0074:	tokenBuffer +=2;	break;
 			case 0x007C:	tokenBuffer +=2;	break;
-
 			case 0x0054:
-			case 0x0000:
-					goto exit_for;
+			case 0x0000:	goto exit_for;
 
 			default:
 					printf("bad exit on token %4x\n",token);
@@ -1800,8 +1795,6 @@ exit_for:
 
 char *cmdGlobal(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	unsigned short token =*((short *) tokenBuffer);
-
 	if ( procStcakFrame[proc_stack_frame].id )
 	{
 		return local_cmdGlobal( tokenBuffer );
