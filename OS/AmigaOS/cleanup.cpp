@@ -154,11 +154,6 @@ void clean_up_special()
 
 	printf("should clean up menus here, don't forget me\n");
 
-	if (cursor_block)
-	{
-		retroFreeBlock(cursor_block);
-		cursor_block = NULL;
-	}
 
 	printf("clean up channels!!\n");
 
@@ -168,11 +163,21 @@ void clean_up_special()
 		channels = NULL;
 	}
 
-	printf("clean up bobs!!\n");
-
-	for (n=0;n<64;n++)
+	if (IRetroMode)
 	{
-		retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
+
+		if (cursor_block)
+		{
+			retroFreeBlock(cursor_block);
+			cursor_block = NULL;
+		}
+
+		printf("clean up bobs!!\n");
+
+		for (n=0;n<64;n++)
+		{
+			retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
+		}
 	}
 
 	printf("clean up banks!!\n");
