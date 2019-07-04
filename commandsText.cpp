@@ -617,14 +617,22 @@ char *_textBorderStr( struct glueCommands *data, int nextToken )
 	{
 		struct stringData *txt = getStackString( stack-1 );
 		int border = getStackNum( stack );
+		char *ptr;
 
 		if ((txt)&&(border>=0)&&(border<16))
 		{
-			newstr = alloc_amos_string( txt->size + 6 ); 
+			newstr = alloc_amos_string( txt->size + 7 ); 
 			if (newstr)
 			{
-				sprintf(&newstr -> ptr,"%cE0%s%cR%c",27,txt,27,48+ border );
-				newstr -> size = strlen(&newstr -> ptr);
+				ptr = &newstr -> ptr;
+				*ptr++ = 27;
+				memcpy( ptr, "E0",2); ptr+=2;
+				memcpy( ptr, &txt->ptr, txt -> size); ptr += txt -> size;
+				*ptr++ = 27;
+				*ptr++ = 'R';
+				*ptr++ = 48+ border;
+				*ptr = 0;
+				newstr -> size = 3 + txt -> size + 4;
 			}
 		}
 
