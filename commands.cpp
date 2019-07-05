@@ -1864,7 +1864,7 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	if (name)	
 	{
 		struct label *label = findLabel( &name -> ptr, procStcakFrame[proc_stack_frame].id );
-		ptr = label -> tokenLocation;
+		ptr = label ? label -> tokenLocation : NULL;
 	}
 	popStack( stack - data->stack  );
 
@@ -1875,7 +1875,6 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		if (name) 	printf("find name: '%s'\n",name);
 		setError( 40, data->tokenBuffer );
 	}
 
