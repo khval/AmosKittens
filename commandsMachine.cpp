@@ -625,7 +625,7 @@ char *_machineBtst( struct glueCommands *data, int nextToken )
 {
 	unsigned int bit;
 	int args = stack - data->stack +1 ;
-	bool ret = false;
+	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -636,7 +636,7 @@ char *_machineBtst( struct glueCommands *data, int nextToken )
 		if (last_var)
 		{
 			struct kittyData *var = &globalVars[last_var -1].var;
-			ret = var -> integer.value & (1<<bit) ? true : false;
+			ret = var -> integer.value & (1<<bit) ? ~0 : 0;
 		}
 	}
 	else setError(22,data->tokenBuffer);
