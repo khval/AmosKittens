@@ -292,14 +292,16 @@ BOOL setVarDecimal( struct kittyData *var )
 
 BOOL setVarString( struct kittyData *var )
 {
-	switch (kittyStack[stack].type)
+	kittyData *s = &kittyStack[stack];
+
+	switch (s -> type)
 	{
 		case type_string:
 			if (var->str) free(var->str);
 
-			if (kittyStack[stack].str)
+			if (s -> str)
 			{
-				var->str = amos_strdup(kittyStack[stack].str);
+				var->str = amos_strdup(s -> str);
 			}
 			else
 			{
