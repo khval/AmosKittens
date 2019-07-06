@@ -37,7 +37,7 @@ extern struct Library			*RetroModeBase;
 extern struct RetroModeIFace		*IRetroMode;
 
 struct Library 			*AslBase = NULL;
-struct AslIFace 		*IAsl = NULL;
+struct AslIFace			*IAsl = NULL;
 
 struct LocaleIFace		*ILocale  = NULL;
 struct Library			*LocaleBase = NULL;
@@ -57,23 +57,24 @@ ULONG				*codeset_page = NULL;
 struct Library 			* RetroModeBase = NULL;
 struct RetroModeIFace 	*IRetroMode = NULL;
 
-struct WorkbenchIFace *IWorkbench = NULL;
-struct Library *WorkbenchBase = NULL;
+struct WorkbenchIFace	*IWorkbench = NULL;
+struct Library			*WorkbenchBase = NULL;
 
-struct IconIFace *IIcon = NULL;
-struct Library *IconBase = NULL;
+struct IconIFace		*IIcon = NULL;
+struct Library			*IconBase = NULL;
 
-struct Library * IntuitionBase = NULL;
-struct IntuitionIFace *IIntuition = NULL;
+struct Library			*IntuitionBase = NULL;
+struct IntuitionIFace		*IIntuition = NULL;
 
-struct Library * GraphicsBase = NULL;
-struct GraphicsIFace *IGraphics = NULL;
+struct Library			*GraphicsBase = NULL;
+struct GraphicsIFace		*IGraphics = NULL;
 
-struct Library * LayersBase = NULL;
-struct LayersIFace *ILayers = NULL;
+struct Library			*LayersBase = NULL;
+struct LayersIFace		*ILayers = NULL;
 
 APTR engine_mx = 0;
 
+UWORD *EmptyPointer = NULL;
 
 BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
 {
@@ -130,6 +131,13 @@ BOOL init()
 
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
+
+	EmptyPointer = (UWORD*)  AllocVecTags( 12, 
+					AVT_Type, MEMF_SHARED,
+					AVT_ClearWithValue, 0,
+					TAG_END );
+
+	if ( ! EmptyPointer ) return FALSE;
 
 	return TRUE;
 }
@@ -195,6 +203,12 @@ void closedown()
 	{
 		FreeSysObject(ASOT_MUTEX, engine_mx); 
 		engine_mx = NULL;
+	}
+
+	if ( EmptyPointer ) 
+	{
+		FreeVec( EmptyPointer );
+		EmptyPointer = NULL;
 	}
 }
 

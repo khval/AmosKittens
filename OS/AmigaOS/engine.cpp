@@ -40,16 +40,17 @@ enum
 	GID_PREFS
 };
 
-
 extern struct Menu *amiga_menu;
 extern struct retroSprite *sprite;
 
 struct Process *EngineTask = NULL;
+extern UWORD *EmptyPointer;
 
 bool engine_wait_key = false;
 bool engine_stopped = false;
 bool engine_key_repeat = false;
 bool engine_key_down = false;
+bool engine_mouse_hidden = false;
 
 extern bool curs_on;
 extern int _keyshift;
@@ -458,6 +459,24 @@ void empty_que( struct MsgPort *port )
 	}
 }
 
+
+void engine_ShowMouse( ULONG enable )
+{
+	if (engine)
+	{
+		if(enable)
+		{
+			ClearPointer( engine -> window );
+		}
+		else if(EmptyPointer)
+		{
+			SetPointer( engine -> window, EmptyPointer, 1, 16, 0, 0);
+		}
+	}
+
+	engine_mouse_hidden = !enable;
+}
+
 void handel_window()
 {
 	ULONG Class;
@@ -502,6 +521,7 @@ void handel_window()
 
 							engine_mouse_x = mouse_x - engine -> window -> BorderLeft;
 							engine_mouse_y = mouse_y - engine -> window -> BorderTop;
+							
 							break;
 
 					case IDCMP_MENUPICK:
