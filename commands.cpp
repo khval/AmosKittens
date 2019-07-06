@@ -1247,8 +1247,8 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		
 		if (var)
 		{
-			unsigned short next_num;
-			double next_float;
+			unsigned short next_num=0;
+			double next_float=0.0;
 
 			struct glueCommands *gcmd;
 
