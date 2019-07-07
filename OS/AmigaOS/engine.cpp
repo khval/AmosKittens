@@ -202,7 +202,8 @@ void close_engine_window( )
 			IcoImg = NULL;
 		}
 
-		CloseWindow(My_Window);
+		ClearPointer( My_Window );
+		CloseWindow( My_Window );
 		My_Window = NULL;
 	}
 }
