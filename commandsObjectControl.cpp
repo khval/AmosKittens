@@ -46,6 +46,18 @@ extern struct retroRGB DefaultPalette[256];
 
 int priorityReverse = 0;
 
+extern struct retroEngine *engine ;
+
+#ifdef __amigaos3__
+extern UWORD *ImagePointer ;
+#endif
+
+#ifdef __amigaos4__
+extern uint32 *ImagePointer ;
+extern Object *objectPointer ;
+#endif
+
+
 int find_zone_in_any_screen_hard( int hx, int hy)
 {
 	int z,x,y;
@@ -277,13 +289,151 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern struct retroSprite *patterns ;
+
+char getPixelFromFrame(struct retroFrameHeader *frame , int x, int y )
+{
+	int _x = x %  frame -> width;
+	int _y = y % frame -> height;
+	return frame -> data[ frame -> bytesPerRow * _y + _x  ];
+}
+
+UWORD getUWord( struct retroFrameHeader *frame, int x, int y, int plane )
+{
+	UWORD ret = 0;
+	int readBit = 1 << plane;
+	int r;
+	int xx;
+	int writeBit[] = {
+		0x8000 | 0x4000,	// 0
+		0x2000 | 0x1000,	// 1
+		0x0800 | 0x0400,	// 2
+		0x0200 | 0x0100,	// 3
+		0x0080 | 0x0040,	// 4
+		0x0020 | 0x0010,	// 5
+		0x0008 | 0x0004, 	// 6
+		0x0002 | 0x0001};	// 7
+
+	for ( xx = 0; xx < 8; xx++ )
+	{
+		r = getPixelFromFrame(frame , xx + (x*8),  y ) & readBit;
+		ret |= r ? writeBit[ xx ] : 0;
+	}
+	return ret;
+}
+
+#ifdef __amigaos3__
+
+void frameToPointer(struct retroFrameHeader *frame)
+{
+	if (ImagePointer)
+	{
+		int x,y,p,r;
+
+		ImagePointer[0]=255;
+		ImagePointer[1]=255;
+
+		for (y=0;y<frame -> height;y++)
+		{
+			for (x=0;x<2;x++)
+			{
+				for (p=0;p<2;p++)
+				{
+					r = getUWord( frame, 0, y, p );
+					if (y<16) ImagePointer[(4*y)+2 + p ] = r;
+					if (y<16) ImagePointer[(4*y)+4 + p ] = r;
+				}
+			}
+		}
+
+		SetPointer( engine -> window, ImagePointer, 32, 32, 0, 0);
+	}
+}
+
+#endif
+
+#ifdef __amigaos4__
+
+void frameToPointer(struct retroFrameHeader *frame)
+{
+	int c;
+	int x,y;
+	int xx,yy;
+	int ww,hh;
+	uint32 argb;
+
+	memset( ImagePointer, 0, 64*64 * sizeof(uint32) );
+	
+	if (ww>16) ww = 16;
+	if ( hh>16) hh = 16; 
+
+	for (y=0;y<hh;y++)
+	{
+		for (x=0;x<ww;x++)
+		{
+			c = getPixelFromFrame( frame,  x,  y );
+
+			argb = 0;
+
+			if (c)
+			{
+				c+=15;
+				argb = 0xFF000000;
+				argb |= DefaultPalette[c].r	* 0x0010000;
+				argb |= DefaultPalette[c].g	* 0x0000100;
+				argb |= DefaultPalette[c].b	* 0x0000001;
+			}
+
+			xx = x * 2;
+			yy = y * 2;
+
+			ImagePointer[ yy * 64 + xx ] = argb ;
+			ImagePointer[ (yy+1) * 64 + xx ] = argb ;
+			ImagePointer[ yy * 64 + (xx+1) ] = argb ;
+			ImagePointer[ (yy+1) * 64 + (xx+1) ] = argb ;
+
+		}
+	}
+
+	if (objectPointer)
+	{
+		SetWindowPointer( engine -> window, 
+				WA_Pointer, objectPointer, TAG_END );
+	}
+}
+
+
+#endif
+
+
 char *_ocChangeMouse( struct glueCommands *data, int nextToken )
 {
+	int args = stack - data->stack +1 ;
+	struct retroFrameHeader *frame = NULL;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
+	switch (args)
+	{
+		case 1:	{
+					int image = getStackNum( stack ) -1;
+					if (image>-1) frame = patterns ? patterns -> frames + image : NULL;
+				}
+				break;
 
-	popStack( stack - data->stack );
+		default:	popStack( stack - data->stack );
+				setError(22, data -> tokenBuffer );
+				break;
+	}
+
+	engine_lock();
+	if (engine_ready())
+	{
+		frameToPointer( frame );
+	}
+ 	engine_unlock();
+
+
 	return NULL;
 }
 
@@ -373,6 +523,7 @@ char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
 char *ocShowOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -384,6 +535,7 @@ char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
+
 
 char *ocPriorityOn(struct nativeCommand *cmd, char *tokenBuffer)
 {

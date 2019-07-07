@@ -2,8 +2,8 @@
 extern bool start_engine();
 extern void wait_engine();
 
-extern void engine_unlock();
 extern void engine_lock();
+extern void engine_unlock();
 extern bool engine_ready();
 extern void engine_ShowMouse( ULONG enable );
 

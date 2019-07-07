@@ -13,6 +13,8 @@
 #include <proto/Amigainput.h>
 #include <proto/icon.h>
 #include <proto/wb.h>
+#include <proto/intuition.h>
+#include <intuition/pointerclass.h>
 
 #include "joysticks.h"
 #include "amoskittens.h"
@@ -76,6 +78,17 @@ APTR engine_mx = 0;
 
 UWORD *EmptyPointer = NULL;
 
+#ifdef __amigaos3__
+UWORD *ImagePointer = NULL;
+#endif
+
+#ifdef __amigaos4__
+uint32 *ImagePointer = NULL;
+Object *objectPointer = NULL;
+#endif
+
+struct BitMap *pointerBitmap = NULL;
+
 BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
 {
 	*interface = NULL;
@@ -132,10 +145,55 @@ BOOL init()
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
 
-	EmptyPointer = (UWORD*)  AllocVecTags( 12, 
+	// bitmap 16 bit alighed width = 2 bytes, 8 layers = 16 bytes
+
+	EmptyPointer = (UWORD*)  AllocVecTags( 16, 
 					AVT_Type, MEMF_SHARED,
 					AVT_ClearWithValue, 0,
 					TAG_END );
+
+#ifdef __amigaos4__
+
+	ImagePointer = (uint32*)  AllocVecTags( 64 * 64 * sizeof(uint32), AVT_Type, MEMF_SHARED,
+					AVT_ClearWithValue, 0, TAG_END );
+
+	pointerBitmap = AllocBitMapTags(64,64, 32, BMATags_PixelFormat, PIXF_CLUT, TAG_END );
+
+	if ((ImagePointer)&&(pointerBitmap))
+	{
+		struct RastPort rp;
+		int x,y;
+
+		InitRastPort(&rp);
+		rp.BitMap = pointerBitmap;
+
+		for (y=0;y<64;y++)
+		{
+			for (x=0;x<64;x++)
+			{
+				WritePixel( &rp, x, y );
+				ImagePointer[ y*64+x ] = (x*255/63)*0x01010101;
+			}
+		}
+
+		objectPointer = NewObject( NULL, POINTERCLASS,
+					POINTERA_BitMap, pointerBitmap, 
+					POINTERA_ImageData, ImagePointer,
+					POINTERA_Width, 64,
+					POINTERA_Height, 64,
+ 					TAG_END );
+	}
+
+#endif
+
+#ifdef __amigsos3__
+	ImagePointer = (UWORD*)  AllocVecTags( 32 * 32, 
+					AVT_Type, MEMF_SHARED,
+					AVT_ClearWithValue, 0,
+					TAG_END );
+
+	if ( ! ImagePointer ) return FALSE;
+#endif
 
 	if ( ! EmptyPointer ) return FALSE;
 
@@ -162,6 +220,27 @@ void closedown()
 	if (topaz8_font) CloseFont(topaz8_font); topaz8_font= NULL;
 
 	if (_locale) CloseLocale(_locale); _locale = NULL;
+
+
+	if ( EmptyPointer ) 
+	{
+		FreeVec( EmptyPointer );
+		EmptyPointer = NULL;
+	}
+
+	if ( ImagePointer ) 
+	{
+		FreeVec( ImagePointer );
+		ImagePointer = NULL;
+	}
+
+#ifdef __amigaos4__
+	if ( objectPointer )
+	{
+		DisposeObject( objectPointer );
+		objectPointer = NULL;
+	}
+#endif
 
 	if (IIcon) DropInterface((struct Interface*) IIcon); IIcon = 0;
 	if (IconBase) CloseLibrary(IconBase); IconBase = 0;
@@ -205,10 +284,6 @@ void closedown()
 		engine_mx = NULL;
 	}
 
-	if ( EmptyPointer ) 
-	{
-		FreeVec( EmptyPointer );
-		EmptyPointer = NULL;
-	}
+
 }
 
