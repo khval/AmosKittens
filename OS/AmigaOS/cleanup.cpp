@@ -11,6 +11,7 @@
 #include "commandsbanks.h"
 #include "amalcompiler.h"
 #include "channel.h"
+#include "debug.h"
 
 extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
@@ -172,7 +173,7 @@ void clean_up_special()
 			cursor_block = NULL;
 		}
 
-		printf("clean up bobs!!\n");
+		dprintf("clean up bobs!!\n");
 
 		for (n=0;n<64;n++)
 		{
@@ -180,11 +181,11 @@ void clean_up_special()
 		}
 	}
 
-	printf("clean up banks!!\n");
+	dprintf("clean up banks!!\n");
 
 	clean_up_banks();
 
-	printf("clean up contextDir\n");
+	dprintf("clean up contextDir\n");
 
 	if (contextDir)
 	{
@@ -192,7 +193,7 @@ void clean_up_special()
 		contextDir = NULL;
 	}
 
-	printf("clean up dir first pattern");
+	dprintf("clean up dir first pattern\n");
 
 	if (dir_first_pattern)
 	{
@@ -200,7 +201,7 @@ void clean_up_special()
 		dir_first_pattern = NULL;
 	}
 
-	printf("clean up zones\n");
+	dprintf("clean up zones\n");
 
 	if (zones)
 	{
