@@ -167,11 +167,11 @@ char *ocMouseClick(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocHide(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	engine_mouse_hidden = true;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	extern void engine_unlock();
+	engine_lock();
 	engine_ShowMouse( false );
-	extern void engine_lock();
+	engine_unlock();
 
 	return tokenBuffer;
 }
@@ -180,11 +180,10 @@ char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	extern void engine_unlock();
+	engine_lock();
 	engine_ShowMouse( true );
-	extern void engine_lock();
+	engine_unlock();
 
-	autoView = 1;
 	return tokenBuffer;
 }
 
