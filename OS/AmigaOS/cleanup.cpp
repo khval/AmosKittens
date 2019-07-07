@@ -8,7 +8,10 @@
 #include "amosKittens.h"
 #include <vector>
 #include <proto/retroMode.h>
+#include "amoskittens.h"
 #include "commandsbanks.h"
+#include "commands.h"
+#include "engine.h"
 #include "amalcompiler.h"
 #include "channel.h"
 #include "debug.h"
@@ -24,7 +27,45 @@ extern struct retroSprite *icons ;
 extern ChannelTableClass *channels;
 extern struct retroBlock *cursor_block;
 
+extern std::vector<struct amosMenuItem *> menuitems;
+extern std::vector<struct amos_selected> amosSelected;
+extern std::vector<struct defFn> defFns;
 extern std::vector<struct kittyBank> kittyBankList;
+
+void clean_up_defFns()
+{
+	struct defFn *item;
+
+	while (defFns.size())
+	{
+		if (item = &defFns[0])
+		{
+			menuitems[0] = NULL;
+			if (item -> name) free (item -> name);
+			item -> name = NULL;
+		}
+		
+		defFns.erase( defFns.begin() );
+	}
+}
+
+void clean_up_menus()
+{
+	struct amosMenuItem *item;
+
+	while (menuitems.size())
+	{
+		if (item = menuitems[0])
+		{
+			menuitems[0] = NULL;
+			if (item -> str) free (item -> str);
+			item -> str = NULL;
+			free(item);
+		}
+		
+		menuitems.erase( menuitems.begin() );
+	}
+}
 
 
 void clear_local_vars( int proc )
@@ -153,10 +194,15 @@ void clean_up_special()
 {
 	int n;
 
-	printf("should clean up menus here, don't forget me\n");
+	dprintf("clean up defFns\n");
 
+	clean_up_defFns();
 
-	printf("clean up channels!!\n");
+	dprintf("clean up menus\n");
+
+	clean_up_menus();
+
+	dprintf("clean up channels!!\n");
 
 	if (channels) 
 	{
