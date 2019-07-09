@@ -16,7 +16,7 @@ typedef void * APTR;
 #define VAR_BUFFERS 1000
 #define MAX_PARENTHESIS_COUNT 1000
 
-#define token_semi	0x0064
+#define token_semi		0x0064
 #define token_add		0xFFC0
 #define token_sub		0xFFCA
 #define token_mul		0xFFE2
@@ -27,13 +27,16 @@ typedef void * APTR;
 #define token_xor		0xFF3E
 #define token_mod		0xFFD4
 
-#define token_more_or_equal	0xFF8E
+#define token_parenthesis_start	0x0074
+#define token_parenthesis_end	0x007C
+
+#define token_more_or_equal		0xFF8E
 #define token_less_or_equal		0xFF7A
-#define token_less_or_equal2	0xFF84
+#define token_less_or_equal2		0xFF84
 #define token_more_or_equal2	0xFF98
-#define token_not_equal		0xFF66
+#define token_not_equal			0xFF66
 #define token_equal			0xFFA2
-#define token_more			0xFFB6
+#define token_more				0xFFB6
 #define token_less				0xFFAC
 
 #define token_trap				0x259A

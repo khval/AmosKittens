@@ -33,7 +33,10 @@ double to_degree_factor=1.0f ;
 int decimals = 2;		// FIX sets text formating 
 extern char *_file_pos_ ;
 
-extern char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
+extern int parenthesis[MAX_PARENTHESIS_COUNT];
+
+//extern char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
+extern char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_token );
 
 #define args (stack - data->stack +1)
 
@@ -489,7 +492,7 @@ char *_mathSwap( struct glueCommands *data, int nextToken )
 
 		// read the stack back in.
 		// read kitty_args pop's stack.
-		read_kitty_args(data -> tokenBuffer, data);
+		read_kitty_args( data -> tokenBuffer, data -> stack, 0x0000 );
 	}
 	else
 	{
@@ -720,37 +723,63 @@ char *mathDefFn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata);
+
+char *_mathFnArgsEnd( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__ ,__LINE__);
+	flushCmdParaStack( 0 );
+
+	return NULL;
+}
+
 
 char *_mathFnReturn( struct glueCommands *data, int nextToken )
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__ ,__LINE__);
+
+	getchar();
+
 	return data -> tokenBuffer;
 }
+
 
 char *_mathFn( struct glueCommands *data, int nextToken )
 {
 	int ref = data -> lastVar;
-	char *ptr;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
-	
+	proc_names_printf("%s:%s:%d: args %d\n",__FILE__,__FUNCTION__ ,__LINE__, (stack - data -> stack + 1) );
 
 	if (ref)
 	{
-		printf("ref->ref %d, %08x\n", ref, defFns[  ref -1 ].fnAddr);
-		ptr = defFns[  ref -1 ].fnAddr;
+		char *ptr = defFns[  ref -1 ].fnAddr;
 
 		if (NEXT_TOKEN(ptr)==0x0074)
 		{
-			ptr+=2;
-			ptr = read_kitty_args(ptr, data);
+			struct kittyData backup;
+
+			// execute at end of args 
+
+				data -> cmd_type = cmd_onEol;	// force flush to stop.
+				data -> cmd = _mathFnArgsEnd;
+
+			// Start reading args.
+
+				ptr+=2;
+				ptr = read_kitty_args( ptr, data -> stack, token_parenthesis_end );
+
+				if ( (*(unsigned short *) ptr) == token_parenthesis_end) ptr+=2;
+				if ( (*(unsigned short *) ptr) == token_equal) ptr+=2;
 
 			data -> tokenBuffer = _file_pos_;
-			data -> cmd = _mathFnReturn;
-			data -> cmd_type = cmd_onEol;	// force flush to stop.
-			cmdStack++;		// stop stack from being deleted
 
-			printf("args read, next addr: %08x\n",ptr);
+			backup = kittyStack[stack];
+			popStack(stack - data->stack);
+			setStackNone();
+			kittyStack[stack] = backup;
+
+				data -> cmd_type = cmd_onEol;	// force flush to stop.
+				data -> cmd = _mathFnReturn;
+				cmdStack++;		// stop stack from being deleted
 
 			return ptr;
 		}
@@ -773,11 +802,13 @@ char *mathFn(struct nativeCommand *cmd, char *tokenBuffer)
 	if (NEXT_TOKEN(tokenBuffer) == 0x0006 )
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 2);
-
+		int l = ref -> length;
+			
 		stackCmdParm( _mathFn, tokenBuffer );
 		cmdTmp[cmdStack-1].lastVar = ref -> ref;
 
-		tokenBuffer += 2 + sizeof(struct reference) + ref -> length;
+		l += ref -> length & 1;		
+		tokenBuffer += 2 + sizeof(struct reference) + l;
 	}
 	return tokenBuffer;
 }

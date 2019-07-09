@@ -462,7 +462,7 @@ char *_setVarReverse( struct glueCommands *data, int nextToken )
 
 //--------------------------------------------------------
 
-int parenthesis[100];
+int parenthesis[MAX_PARENTHESIS_COUNT];
 extern int parenthesis_count ;
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
@@ -500,7 +500,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 
 	_file_pos_ = tokenBuffer;		// needed by "Fn", need to return End Bracket after Fn call.
 
-	ret = flushCmdParaStack(nextToken);
+	ret = flushCmdParaStack(0);
 	if (ret) return ret;
 
 	if (parenthesis_count)
@@ -1486,29 +1486,40 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
+char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_token )
 {
 	struct glueCommands data;
 	char *ptr = tokenBuffer ;
 	int args = 0;
-	int read_args ;
-	int read_stack;
+	int read_args = 1;
 	unsigned short token;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	args = stack - sdata->stack +1;
+	args = stack - read_stack +1;
 
 	// the idea, stack to be read is stored first,
 
-	read_stack = sdata -> stack;
 	stack ++;					// prevent read stack form being trached.
 
-	read_args = 1;
 	token = *((unsigned short *) ptr);
+
+	printf("token %04x\n", token);
 
 	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<=args) ;)
 	{
+		if (token == end_token)
+		{
+			// save stack
+			int tmp_stack = stack;
+			stack = read_stack;
+
+			// set var
+			data.lastVar = last_var;
+			_setVar( &data,0 );
+			break;
+		}
+
 		ptr+=2;	// skip token
 		ptr = executeToken( ptr, token );
 
@@ -1549,52 +1560,7 @@ char *read_kitty_args(char *tokenBuffer, struct glueCommands *sdata)
 		read_stack ++;
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	return ptr;
-}
-
-char *read_kitty_args_old(char *tokenBuffer, struct glueCommands *sdata)
-{
-	struct reference *ref;
-	struct glueCommands data;
-	char *ptr;
-	int args = 0;
-	int n;
-	unsigned short token;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	args = stack - sdata->stack +1;
-	stack -= (args-1);	// move to start of args.
-
-	n=0;
-	for (ptr = tokenBuffer; (*((unsigned short *) ptr) != 0x008C) &&(n<args) ;ptr+=2)
-	{
-		token = *((unsigned short *) ptr);
-
-		switch ( token )
-		{
-			case 0x0006:	
-
-				ref = (struct reference *) (ptr+2);
-
-				data.lastVar = ref->ref;
-				_setVar( &data,0 );
-
-				ptr += sizeof(struct reference ) + ref -> length;
-				n++;
-				stack ++;
-				break;
-
-			case 0x005C:
-				break;
-		}
-
-		ptr += 2;	 // next token
-	}
-
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-
+	popStack( stack - read_stack );
 	return ptr;
 }
 
@@ -1608,7 +1574,7 @@ char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if ( scmd == _procedure )
 	{
-		return read_kitty_args(tokenBuffer, &cmdTmp[cmdStack-1]);
+		return read_kitty_args(tokenBuffer, cmdTmp[cmdStack-1].stack, 0x0000 );
 	}
 
 	return tokenBuffer;
