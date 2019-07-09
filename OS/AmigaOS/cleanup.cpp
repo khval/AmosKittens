@@ -40,7 +40,6 @@ void clean_up_defFns()
 	{
 		if (item = &defFns[0])
 		{
-			menuitems[0] = NULL;
 			if (item -> name) free (item -> name);
 			item -> name = NULL;
 		}
