@@ -109,6 +109,7 @@ void openUnpackedScreen(int screen_num,
 	struct retroTextWindow *textWindow = NULL;
 
 	videomode = 0;
+	if (context -> mode & 0x0004) videomode |= retroInterlaced;
 
 	if (context -> mode & 0x8000)
 	{
@@ -119,7 +120,7 @@ void openUnpackedScreen(int screen_num,
 		 videomode |= retroLowres_pixeld; 
 	}
 
-	if (context -> mode & 0x2000) videomode |= retroHam6;
+	if ( (context -> mode & 0x7000) == 0x6000 ) videomode |= retroHam6;
 
 	engine_lock();
 
