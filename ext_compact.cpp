@@ -173,14 +173,12 @@ bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 {
 	//  int o = 20;
 	int o=0;
-	unsigned short mode = 0;
-
 
 	if( get4(o) == 0x12031990 )
 	{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-		mode = get2(o+20);
+		context -> mode = get2(o+20);
 
 		// fetch palette
 		for( int i=0; i<32; ++i )
