@@ -1746,7 +1746,7 @@ int main(int args, char **arg)
 	cmdStack = 0;
 	onError = onErrorBreak;
 
-	memset(globalVars,0,sizeof(globalVars));
+	memset(globalVars,0,sizeof(struct globalVar) * VAR_BUFFERS);
 
 #ifdef __amigaos4__
 	sig_main_vbl = AllocSignal(-1);
