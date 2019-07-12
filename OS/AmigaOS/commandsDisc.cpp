@@ -334,11 +334,17 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data -> stack  );
-	if (ret) setStackStr(ret);		// we don't need to copy no dup.
 
 	if (amigaPattern) free(amigaPattern);
 
-	if (success == false) setError(22, data -> tokenBuffer);
+	if (ret) 
+	{
+		setStackStr(ret);		// we don't need to copy no dup.
+	}
+	else
+	{
+		setStackStr(toAmosString("", 0));
+	}
 
 	return NULL;
 }
