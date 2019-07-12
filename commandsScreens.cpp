@@ -789,10 +789,19 @@ void LoadIff( char *name, const int n )
 	struct BitMap *dt_bitmap;
 	struct ColorRegister *cr;
 	ULONG modeid; 
-	ULONG colors;		
+	ULONG colors;
+	ULONG bformat;
+	ULONG mode;
+	uint32_t argb;
+	int luminate;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if(dto = (struct DataType *) NewDTObject( name, DTA_GroupID, GID_PICTURE, TAG_DONE))
 	{
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 		SetDTAttrs ( (Object*) dto, NULL,NULL,	PDTA_DestMode, (ULONG) PMODE_V43,TAG_DONE);
 		DoDTMethod ( (Object*) dto,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE); 
 		GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	
@@ -802,11 +811,29 @@ void LoadIff( char *name, const int n )
 					PDTA_ModeID, &modeid,
 					TAG_DONE);
 
+	bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
+
+	printf("colors %d\n",colors);
+	printf("mode id %08x\n",modeid);
+	printf("bformat %d\n",bformat);
+	printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
+	
+	switch (modeid)
+	{
+		case 0x800: 
+			mode = retroLowres | retroHam6;
+			break;
+
+		default:
+			mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
+			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+	 }
+
 		if (screens[n]) 	kitten_screen_close( n );	// this function locks engine ;-)
 
 		engine_lock();
 
-		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height,1);
+		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
 
 		if (screens[n])
 		{
@@ -824,9 +851,21 @@ void LoadIff( char *name, const int n )
 
 			if (cr)
 			{
-				for (c=0;c<colors;c++)		
+				if (bformat==PIXF_NONE)
 				{
-					retroScreenColor(screens[n],c,cr[c].red,cr[c].green,cr[c].blue);
+					for (c=0;c<colors;c++)		
+					{
+						retroScreenColor(screens[n],c,cr[c].red,cr[c].green,cr[c].blue);
+					}
+				}
+				else
+				{
+					colors = 256;
+
+					for (c=0;c<colors;c++)		
+					{
+						retroScreenColor(screens[n],c,c,c,c);
+					}
 				}
 			}
 
@@ -835,17 +874,34 @@ void LoadIff( char *name, const int n )
 
 			for (y=0;y<screens[n]->realHeight;y++)
 			{
-				for (x=0;x<screens[n]->realWidth;x++)
+				if (bformat==PIXF_NONE)
 				{
-					retroPixel( screens[n], x,y, ReadPixel(&rp,x,y));
+					for (x=0;x<screens[n]->realWidth;x++)
+					{
+						retroPixel( screens[n], x,y, ReadPixel(&rp,x,y));
+					}
+				}
+				else
+				{
+					for (x=0;x<screens[n]->realWidth;x++)
+					{
+						argb = ReadPixelColor(&rp,x,y);
+
+						luminate = (((argb & 0xFF0000) >> 16)
+							+ ((argb & 0xFF00) >> 8)
+							+ (argb & 0xFF)) / 3; 
+						retroPixel( screens[n], x,y, luminate );
+
+					}
 				}
 			}
 		}
 
 		DisposeDTObject((Object*) dto);
-
 		engine_unlock();
 	}
+
+//	getchar();
 }
 
 char *_gfxLoadIff( struct glueCommands *data, int nextToken )
