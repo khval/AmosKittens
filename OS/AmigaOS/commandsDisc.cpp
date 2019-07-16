@@ -230,6 +230,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	char *amigaPattern = NULL;
 	char c;
 	int l;
+	int size;
 	bool success = false;
 	struct stringData *str = NULL;
 	struct stringData *path = NULL;
@@ -321,10 +322,12 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 				if (l>1)
 				{
 					c = filereq -> fr_Drawer[l-1];
+					size = strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) + (((c == '/') || (c==':')) ? 0 : 1);
 
-					if (ret = (struct stringData *) malloc( sizeof(struct stringData) + strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
+					if (ret = (struct stringData *) malloc( sizeof(struct stringData) + size ))
 					{
 						sprintf( &ret -> ptr, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
+						ret -> size = size;
 					}
 				}
 				else 	ret = toAmosString(filereq -> fr_File, strlen(filereq -> fr_File));
