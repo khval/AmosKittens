@@ -290,27 +290,39 @@ BOOL setVarDecimal( struct kittyData *var )
 	return FALSE;
 }
 
-BOOL setVarString( struct kittyData *var )
+BOOL setVarString( struct kittyData *var, kittyData *s )
 {
-	kittyData *s = &kittyStack[stack];
+	if (var == NULL)
+	{
+		setError(22,NULL);
+		return NULL;
+	}
 
 	switch (s -> type)
 	{
 		case type_string:
-			if (var->str) free(var->str);
+
+			printf("var->str %08x\n",var->str);
 
 			if (s -> str)
 			{
+				if (var->str) free(var->str);
 				var->str = amos_strdup(s -> str);
 			}
 			else
 			{
-				var->str->ptr = 0;
-				var->str->size = 0;
+				if (var->str)
+				{
+					var->str->ptr = 0;
+					var->str->size = 0;
+				}
+
+				getchar();
 			}
 
 			return TRUE;
 	}
+
 
 	return FALSE;
 }
@@ -406,7 +418,8 @@ char *_setVar( struct glueCommands *data, int nextToken )
 			success = setVarDecimal( var );
 			break;
 		case type_string:
-			success = setVarString( var );
+
+			success = setVarString( var , &kittyStack[stack] );
 			break;
 		case type_int | type_array:
 			success = setVarIntArray( var, data -> tokenBuffer );
