@@ -395,12 +395,6 @@ char *_setVar( struct glueCommands *data, int nextToken )
 
 	var = &globalVars[data -> lastVar-1].var;
 
-	#ifdef show_debug_printf_yes
-		printf("SET var %s",globalVars[ data->lastVar-1].varName);
-		if (var -> type & type_array)	printf("(%d)=",_set_var_index);
-		printf("\n");
-	#endif
-
 	success = FALSE;
 
 	switch (var->type)

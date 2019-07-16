@@ -1312,14 +1312,6 @@ char *_gfxIffAnim( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-/*
-	switch (args)
-	{
-		case 2:
-			break;
-	}
-*/
-
 	NYI(__FUNCTION__);
 	setError(22, data->tokenBuffer );
 
