@@ -383,13 +383,15 @@ void dump_stack()
 		}
 		else
 		{
-			switch( kittyStack[n].type )
+			struct kittyData *var = &kittyStack[n];
+
+			switch( var -> type )
 			{	
 				case type_none:
 					printf("<Nothing>\n");
 					break;
 				case type_int:
-					v = kittyStack[n].integer.value;
+					v = var -> integer.value;
 					if (  ((v>='a')&&(v<='z'))  ||  ((v>='A')&&(v<='Z'))  )
 					{
 						printf("%d '%c'\n",v, (char) v );
@@ -397,16 +399,20 @@ void dump_stack()
 					else	printf("%d\n",v);
 					break;
 				case type_float:
-					printf("%f\n",kittyStack[n].decimal.value);
+					printf("%f\n", var -> decimal.value);
 					break;
 				case type_string:
-					if (kittyStack[n].str)
+					if (var -> str)
 					{
-						printf("'%s' (0x%x)\n", &(kittyStack[n].str->ptr), &(kittyStack[n].str -> ptr)) ;
+						printf("[0x%08x] '%s' (0x%08X) length %d\n", 
+							var -> str,
+							&var -> str -> ptr, 
+							&var -> str -> ptr, 
+							var -> str -> size) ;
 					}
 					else
 					{
-						printf("no string found\n");
+						printf("<NULL>\n");
 					}
 					break;
 			}
