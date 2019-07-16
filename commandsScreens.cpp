@@ -982,7 +982,7 @@ void SaveIff( char *name, const int n )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-#if 0
+#if 1
 
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
@@ -1036,8 +1036,8 @@ void SaveIff( char *name, const int n )
 
 		if (bm_header)
 		{
-			bm_header -> bmh_Width = 320;
-			bm_header -> bmh_Height = 200;
+			bm_header -> bmh_Width = screens[n] -> realWidth;
+			bm_header -> bmh_Height = screens[n]-> realHeight;
 			bm_header -> bmh_Depth = 8;
 			bm_header -> bmh_XAspect = 22;
 			bm_header -> bmh_YAspect = 22;
