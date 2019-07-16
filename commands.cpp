@@ -1518,7 +1518,7 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 		if (token == end_token)
 		{
 			// save stack
-			int tmp_stack = stack;
+//			int tmp_stack = stack;
 			stack = read_stack;
 
 			// set var
