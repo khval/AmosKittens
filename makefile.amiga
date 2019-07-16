@@ -67,7 +67,8 @@ main_objects = commands.cpp \
 			os/amigaos/joystick.cpp \
 			os/amigaos/spawn.cpp \
 			os/amigaos/iconify.cpp \
-			AmosString.cpp
+			AmosString.cpp \
+			floyd.cpp
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp

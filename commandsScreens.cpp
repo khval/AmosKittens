@@ -28,6 +28,7 @@
 #include "commandsBlitterObject.h"
 #include "errors.h"
 #include "engine.h"
+#include <math.h>
 
 extern int last_var;
 extern struct retroScreen *screens[8] ;
@@ -782,7 +783,55 @@ char *gfxScreenCopy(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void LoadIff( char *name, const int n )
+void grayScalePalette( struct retroScreen *screen, int colors )
+{
+	int c;
+	for (c=0;c<colors;c++)		
+	{
+		retroScreenColor(screen,c,c,c,c);
+	}
+}
+
+void argbToGrayScale(struct RastPort *rp, int y, struct retroScreen *screen)
+{
+	int x;
+	int luminate;
+	uint32_t argb;
+
+	for (x=0;x<screen->realWidth;x++)
+	{
+		argb = ReadPixelColor(rp,x,y);
+
+		luminate = (((argb & 0xFF0000) >> 16)
+				+ ((argb & 0xFF00) >> 8)
+				+ (argb & 0xFF)) / 3; 
+
+		retroPixel( screen, x,y, luminate );
+	}
+}
+
+void floydPalette( struct retroScreen *screen, int colors )
+{
+	int c;
+	int r,g,b;
+
+	for (c=0;c<256;c++)		
+	{
+		r =	(( c >> 0) & 3) * 255 / 3;
+		g =	(( c >> 2) & 7) * 255 / 7;
+		b =	(( c >> 5) & 3) * 255 / 3;
+
+		retroScreenColor(screen,c,r,g,b);
+	}
+}
+
+extern void get_most_used_colors(struct RastPort *rp, int w, int h, struct retroScreen *screen);
+
+extern void floydChannel( double *image, int w, int h );
+
+extern void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen);
+
+void LoadIff( char *name, const int sn )
 {
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
@@ -792,8 +841,6 @@ void LoadIff( char *name, const int n )
 	ULONG colors;
 	ULONG bformat;
 	ULONG mode;
-	uint32_t argb;
-	int luminate;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -829,25 +876,28 @@ void LoadIff( char *name, const int n )
 			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
 	 }
 
-		if (screens[n]) 	kitten_screen_close( n );	// this function locks engine ;-)
+		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
 		engine_lock();
 
-		screens[n] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
+		screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
 
-		if (screens[n])
+		if (screens[sn])
 		{
-			struct RastPort rp;
 			unsigned int c;
+			struct RastPort rp;
 			int x,y;
+			InitRastPort(&rp);
 
-			init_amos_kittens_screen_default_text_window(screens[n], 256);
+			init_amos_kittens_screen_default_text_window(screens[sn], 256);
 
-			retroApplyScreen( screens[n], video, 0, 20, screens[n] -> realWidth,screens[n]->realHeight );
-			retroBAR( screens[n], 0,0, screens[n] -> realWidth,screens[n]->realHeight, screens[n] -> paper );
-			set_default_colors( screens[n] );
+			retroApplyScreen( screens[sn], video, 0, 20, screens[sn] -> realWidth,screens[sn]->realHeight );
+			retroBAR( screens[sn], 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
+			set_default_colors( screens[sn] );
 
-			current_screen = n;
+			current_screen = sn;
+
+			rp.BitMap = dt_bitmap;
 
 			if (cr)
 			{
@@ -855,45 +905,43 @@ void LoadIff( char *name, const int n )
 				{
 					for (c=0;c<colors;c++)		
 					{
-						retroScreenColor(screens[n],c,cr[c].red,cr[c].green,cr[c].blue);
+						retroScreenColor(screens[sn],c,cr[c].red,cr[c].green,cr[c].blue);
 					}
 				}
 				else
 				{
 					colors = 256;
 
-					for (c=0;c<colors;c++)		
-					{
-						retroScreenColor(screens[n],c,c,c,c);
-					}
+//					grayScalePalette( screens[n], colors );
+//					floydPalette( screens[n], colors );
+
+					get_most_used_colors( &rp, screens[sn]->realHeight,  screens[sn]->realWidth, screens[sn]);
 				}
 			}
 
-			InitRastPort(&rp);
-			rp.BitMap = dt_bitmap;
 
-			for (y=0;y<screens[n]->realHeight;y++)
+
+			if (bformat==PIXF_NONE)
 			{
-				if (bformat==PIXF_NONE)
+				for (y=0;y<screens[sn]->realHeight;y++)
 				{
-					for (x=0;x<screens[n]->realWidth;x++)
+					for (x=0;x<screens[sn]->realWidth;x++)
 					{
-						retroPixel( screens[n], x,y, ReadPixel(&rp,x,y));
+						retroPixel( screens[sn], x,y, ReadPixel(&rp,x,y));
 					}
 				}
-				else
+			}
+			else
+			{
+				floyd( &rp, screens[sn]->realWidth,  screens[sn]-> realHeight , screens[sn] );
+
+/*
+				for (y=0;y<screens[sn]->realHeight;y++)
 				{
-					for (x=0;x<screens[n]->realWidth;x++)
-					{
-						argb = ReadPixelColor(&rp,x,y);
-
-						luminate = (((argb & 0xFF0000) >> 16)
-							+ ((argb & 0xFF00) >> 8)
-							+ (argb & 0xFF)) / 3; 
-						retroPixel( screens[n], x,y, luminate );
-
-					}
+					argbToGrayScale( &rp, y, screens[sn] );
 				}
+*/
+
 			}
 		}
 
