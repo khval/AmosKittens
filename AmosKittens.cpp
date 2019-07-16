@@ -993,6 +993,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0AE2,"Screen Swap",0,gfxScreenSwap },	// screen swap
 	{0x0AF4,"Screen Swap",0,gfxScreenSwap },	// screen swap <screen num>
 	{0x0AFC,"Save Iff",0,gfxSaveIff },
+	{0x0B0C,"Save iff",0,gfxSaveIff },
 	{0x0B16,"View",0,ocView },
 	{0x0B20,"Auto View Off", 0, ocAutoViewOff },
 	{0x0B34,"Auto View On", 0, ocAutoViewOn },
