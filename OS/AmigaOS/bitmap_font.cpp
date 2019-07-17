@@ -7,6 +7,7 @@
 #include <string>
 #include <proto/retroMode.h>
 #include "AmosKittens.h"
+#include "debug.h"
 
 extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
@@ -786,6 +787,8 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 	int cnt = 0;
 	int esc_count = 0;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	while (c =*text ++) 
 	{
 		if (maxchars) 
@@ -799,6 +802,7 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 			case 27:	// ESC code sequence.
 					{
 						int code = what_esc_code( (const char *) text);
+
 						switch (code)
 						{
 							case -1:	break;

@@ -860,10 +860,10 @@ void LoadIff( char *name, const int sn )
 
 	bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
-	printf("colors %d\n",colors);
-	printf("mode id %08x\n",modeid);
-	printf("bformat %d\n",bformat);
-	printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
+	dprintf("colors %d\n",colors);
+	dprintf("mode id %08x\n",modeid);
+	dprintf("bformat %d\n",bformat);
+	dprintf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
 	switch (modeid)
 	{

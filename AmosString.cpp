@@ -9,10 +9,13 @@
 #include "amoskittens.h"
 #include "amosString.h"
 #include "amosstring.h"
+#include "debug.h"
 
 struct stringData *alloc_amos_string( int size )
 {
 	struct stringData *newstr = (struct stringData *) malloc( sizeof(struct stringData) + size ); 
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (newstr)
 	{
@@ -24,6 +27,7 @@ struct stringData *alloc_amos_string( int size )
 
 struct stringData *amos_strdup( struct stringData *var )
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct stringData *newstr = (struct stringData *) malloc( sizeof(struct stringData) + var -> size ); 
 
@@ -46,6 +50,9 @@ struct stringData *amos_strndup( struct stringData *var, int len )
 {
 	struct stringData *newstr;
 	if (var->size<len) len = var->size;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
 
 	if (newstr)
@@ -60,6 +67,8 @@ struct stringData *amos_strndup( struct stringData *var, int len )
 struct stringData *amos_mid( struct stringData *string, int start, int len )
 {
 	struct stringData *newstr;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( start >= string->size ) start = string->size;
 	if ( (string->size - start) <len) len = (string->size - start);
@@ -82,6 +91,8 @@ struct stringData *amos_right( struct stringData *var, int len )
 	if (var->size<len) len = var->size;
 	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	if (newstr)
 	{
 		newstr -> size = len;
@@ -96,6 +107,8 @@ int amos_instr( struct stringData *string,int start,struct stringData *find  )
 	char *p = &(string -> ptr) + start;
 	int l; 
 	int n;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (string -> size < find -> size) return 0;
 
@@ -115,6 +128,8 @@ struct stringData *toAmosString( const char *txt,int len)
 {
 	struct stringData *newstr;
 	int _l = strlen(txt);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (_l<len) len = _l;
 
