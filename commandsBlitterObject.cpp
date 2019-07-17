@@ -388,6 +388,32 @@ char *boYBob(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_boIBob( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int i=0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int n;
+		n = getStackNum(stack);
+		i= bobs[ n & 63 ].image;
+
+	} else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(i);
+	return NULL;
+}
+
+char *boIBob(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _boIBob, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_boPasteBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
