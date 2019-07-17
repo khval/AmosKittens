@@ -107,6 +107,9 @@ char *_ifThenNotSuccess( struct glueCommands *data, int nextToken )
 char *_procedure( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	// Executed after "End Proc"
+	popStack(stack - data->stack);
 	return  data -> tokenBuffer ;
 }
 
