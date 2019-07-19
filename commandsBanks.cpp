@@ -324,8 +324,6 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 	int n;
 	char *adr = NULL;
 
-	dump_stack();
-
 	if (args==2)
 	{
 		struct stringData *name = getStackString( stack - 1 );

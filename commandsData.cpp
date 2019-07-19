@@ -752,7 +752,7 @@ char *_addData( struct glueCommands *data, int nextToken )
 
 char *_addDataToText( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	int args;
 	struct kittyData *item0;
@@ -763,7 +763,6 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 	args = stack - data -> stack + 1;
 
-	printf(" args: %d\n ",args );
 	if (args<2)
 	{
 		return NULL;

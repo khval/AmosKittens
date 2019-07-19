@@ -421,7 +421,6 @@ char *_setVar( struct glueCommands *data, int nextToken )
 			success = setVarDecimal( var );
 			break;
 		case type_string:
-
 			success = setVarString( var , &kittyStack[stack] );
 			break;
 		case type_int | type_array:
@@ -1151,11 +1150,11 @@ char *_step( struct glueCommands *data, int nextToken )
 		{
 			case glue_option_for_int:
 					gcmd -> optionsInt.step = (var -> type == type_int) ? var -> integer.value :  (int) var -> decimal.value ;
-					printf("int %lf\n", gcmd -> optionsInt.step);
+					dprintf("step (int %d)\n", gcmd -> optionsInt.step);
 					break;
 			case glue_option_for_float:
 					gcmd -> optionsFloat.step = (var -> type == type_int) ? (double) var -> integer.value : var -> decimal.value ;
-					printf("float %lf\n", gcmd -> optionsFloat.step);
+					dprintf("step (float %lf)\n", gcmd -> optionsFloat.step);
 					break;
 		}
 	}

@@ -652,6 +652,8 @@ char *_boLimitBob( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	NYI(__FUNCTION__);
+
 	dump_stack();
 
 	popStack( stack - data->stack );
