@@ -279,19 +279,22 @@ bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 	{
 		char *dest = &(str -> ptr);
 
+		str -> size = 0;
 		memcpy( dest, &(item0 -> str -> ptr), item0 -> str -> size );
+
 		dest += item0 -> str -> size;
 		str -> size += item0 -> str -> size;
 
 		if ( item1->integer.value > -1 )
 		{
-			sprintf( dest,"  %d", item0 -> str, item1 -> integer.value);
+			sprintf( dest,"  %d", item1 -> integer.value);
 		}
 		else
 		{
-			sprintf( dest," %d", item0 -> str, item1 -> integer.value);
+			sprintf( dest," %d", item1 -> integer.value);
 		}
-		str -> size = strlen( &str -> ptr );
+
+		str -> size += strlen( dest );
 
 		setStackStr( str );
 		return true;
