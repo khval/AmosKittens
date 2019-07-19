@@ -446,8 +446,8 @@ char *boPasteBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-
 	stackCmdNormal( _boPasteBob, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
