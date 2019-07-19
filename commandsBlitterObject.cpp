@@ -50,19 +50,27 @@ extern struct retroSpriteObject bobs[64];
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
 void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
 
+
+void clearBob(struct retroSpriteObject *bob)
+{
+	struct retroScreen *screen = screens[bob->screen_id];
+	struct retroSpriteClear *clear;
+
+	if (screen)
+	{
+		clear = &bob -> clear[ 0 ];
+
+		if (clear -> mem)
+		{
+			copyClearToScreen( clear,screen );
+		}
+	}
+}
+
 void clearBobs()
 {
 	int n;
-	struct retroScreen *screen;
-	struct retroSpriteObject *bob;
-	struct retroSpriteClear *clear;
-
-	if (!sprite) return;
-	if (!sprite -> frames) return;
-
 	int start=0,end=0,dir=0;
-
-	if (!sprite) return;
 
 	switch ( priorityReverse )
 	{
@@ -76,18 +84,7 @@ void clearBobs()
 
 	for (n=start;n!=end;n+=dir)
 	{
-		bob = &bobs[n];
-		screen = screens[bob->screen_id];
-
-		if (screen)
-		{
-			clear = &bob -> clear[ 0 ];
-
-			if (clear -> mem)
-			{
-				copyClearToScreen( clear,screen );
-			}
-		}
+		clearBob(&bobs[n]);
 	}
 }
 
@@ -295,12 +292,6 @@ char *boBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boBob, tokenBuffer );
-	return tokenBuffer;
-}
-
-char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
 
@@ -871,3 +862,38 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_boBobOff( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int del = 0;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		del = getStackNum(stack);
+
+		if ((del>-1)&&(del<64))
+		{
+			engine_lock();
+			clearBob(&bobs[del]);
+
+			if (bobs[del].clear[0].mem) sys_free(bobs[del].clear[0].mem);
+			bobs[del].clear[0].mem = NULL;
+
+			bobs[del].image = -1;
+			engine_unlock();
+		}
+	}
+	else setError(22, data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _boBobOff, tokenBuffer );
+	return tokenBuffer;
+}
