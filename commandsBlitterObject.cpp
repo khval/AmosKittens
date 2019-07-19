@@ -400,7 +400,9 @@ char *_boIBob( struct glueCommands *data, int nextToken )
 		n = getStackNum(stack);
 		i= bobs[ n & 63 ].image;
 
-	} else setError(22,data->tokenBuffer);
+		if (i<0) setError(23,data->tokenBuffer);
+
+	} else setError(23,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	setStackNum(i);
