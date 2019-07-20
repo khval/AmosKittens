@@ -269,19 +269,30 @@ char *_boBob( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	num = getStackNum( stack - 3 );
-	bob = &bobs[num];
-
-	stack_get_if_int( stack - 2 , &bob->x );
-	stack_get_if_int( stack - 1 , &bob->y );
-
-	bob->image = getStackNum( stack );
-	bob->screen_id = current_screen;
-
-
-	if (screens[current_screen])
+	switch (args)
 	{
-		screens[current_screen] -> force_swap = TRUE;
+		case 4:
+			num = getStackNum( stack - 3 );
+			bob = &bobs[num];
+
+			stack_get_if_int( stack - 2 , &bob->x );
+			stack_get_if_int( stack - 1 , &bob->y );
+
+			bob->image = getStackNum( stack );
+			bob->screen_id = current_screen;
+			break;
+
+		default:
+			setError(22, data->tokenBuffer);
+	 }
+
+	if (struct retroScreen *screen = screens[current_screen])
+	{
+		if (screen -> Memory[1])
+		{
+			printf("face swaped\n");
+			screen -> force_swap = TRUE;
+		}
 	}
 
 	popStack( stack - data->stack );
