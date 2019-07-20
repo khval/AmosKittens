@@ -144,12 +144,15 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+extern int bobUpdate;
+
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
 #if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 	if (( sig_main_vbl )&&( EngineTask ))
 	{
 		Wait(1<<sig_main_vbl);
+		bobUpdate = 1;
 	}
 	else
 	{
