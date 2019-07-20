@@ -74,7 +74,7 @@ Be careful with these commands.
 
 String in Amos kittens are \0 terminated.
 VarPtr(a#) will return a address to double not a float.
-Call don't support arguments (yet, arguments has to be converted from Amos Kitty to Amos Pro, and freed on command exit)
+Call don't support arguments (yet)
 
 On X86 Linux you might run into endieness issues if your using VarPtr(var), to peek into local or global variable.
 
