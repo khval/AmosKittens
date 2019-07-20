@@ -326,7 +326,21 @@ char *boNoMask(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boSetBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroSpriteObject *bob;
+	int n;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 4:	n = getStackNum(stack-3);
+				bob = &bobs[ n & 63 ];
+				bob -> background = getStackNum(stack-2);
+				bob -> planes = getStackNum(stack-1);
+				bob -> mask = getStackNum(stack);
+				break;
+		default:
+				break;
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
