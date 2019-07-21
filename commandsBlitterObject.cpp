@@ -60,9 +60,19 @@ void clearBob(struct retroSpriteObject *bob)
 	{
 		clear = &bob -> clear[ 0 ];
 
-		if (clear -> mem)
+		if ((clear -> mem)&&(bob->background==0))
 		{
+			printf("clear with bitmap\n");
 			copyClearToScreen( clear,screen );
+		}
+		else
+		{
+			if (bob->background>0)
+			{
+				printf("clear with color\n");
+				retroBAR( screen, clear -> x, clear -> y, clear->x +clear->w, clear->y+clear->h,bob->background-1);
+			}
+			else printf("don't clear\n");
 		}
 	}
 }
@@ -240,21 +250,25 @@ void drawBobs()
 				clear -> image = bob -> image;
 				clear -> drawn = 1;
 
-				size = clear -> w * clear -> h;
-
-				if (clear -> mem)
+				if (bob-> background == 0)
 				{
-					sys_free(clear -> mem);
-					clear -> mem = NULL;
+					size = clear -> w * clear -> h;
+
+					if (clear -> mem)
+					{
+						sys_free(clear -> mem);
+						clear -> mem = NULL;
+					}
+
+					if (size) 
+					{
+						clear -> mem = (char *) sys_public_alloc_clear(size);
+						clear -> size = size;
+					}
+		
+					if (clear -> mem) copyScreenToClear( screen,clear );
 				}
 
-				if (size) 
-				{
-					clear -> mem = (char *) sys_public_alloc_clear(size);
-					clear -> size = size;
-				}
-
-				if (clear -> mem) copyScreenToClear( screen,clear );
 				retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags);
 			}
 		}
@@ -339,6 +353,7 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 				bob -> mask = getStackNum(stack);
 				break;
 		default:
+				setError(22, data-> tokenBuffer);
 				break;
 	}
 
@@ -349,7 +364,7 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 char *boSetBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _boNoMask, tokenBuffer );
+	stackCmdNormal( _boSetBob, tokenBuffer );
 	return tokenBuffer;
 }
 
