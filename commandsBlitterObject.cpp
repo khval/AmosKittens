@@ -269,7 +269,7 @@ void drawBobs()
 					if (clear -> mem) copyScreenToClear( screen,clear );
 				}
 
-				retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags);
+				retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags, bob -> plains);
 			}
 		}
 	}
@@ -281,7 +281,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	int num;
 	struct retroSpriteObject *bob;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -349,7 +349,7 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 		case 4:	n = getStackNum(stack-3);
 				bob = &bobs[ n & 63 ];
 				bob -> background = getStackNum(stack-2);
-				bob -> planes = getStackNum(stack-1);
+				bob -> plains = getStackNum(stack-1);
 				bob -> mask = getStackNum(stack);
 				break;
 		default:
@@ -464,7 +464,7 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 					int flags = image & 0xC000;
 					image &= 0x3FFF;
 
-					retroPasteSprite(screens[current_screen],sprite,x,y,image-1,flags);
+					retroPasteSprite(screens[current_screen],sprite,x,y,image-1,flags, 0 );
 				}
 				break;
 		default:
@@ -577,7 +577,8 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 				retroPasteSprite(screens[current_screen],sprite,
 						bobs[ n & 63 ].x,
 						bobs[ n & 63 ].y,
-						image -1, flags);
+						image -1, flags,
+						bobs[ n & 63].plains);
 				break;
 	 }
 
