@@ -62,17 +62,15 @@ void clearBob(struct retroSpriteObject *bob)
 
 		if ((clear -> mem)&&(bob->background==0))
 		{
-			printf("clear with bitmap\n");
+			printf("clear bob\n");
 			copyClearToScreen( clear,screen );
 		}
 		else
 		{
 			if (bob->background>0)
 			{
-				printf("clear with color\n");
 				retroBAR( screen, clear -> x, clear -> y, clear->x +clear->w, clear->y+clear->h,bob->background-1);
 			}
-			else printf("don't clear\n");
 		}
 	}
 }
@@ -281,7 +279,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	int num;
 	struct retroSpriteObject *bob;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
