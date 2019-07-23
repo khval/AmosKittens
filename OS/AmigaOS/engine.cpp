@@ -66,11 +66,14 @@ int engine_mouse_key = 0;
 int engine_mouse_x = 0;
 int engine_mouse_y = 0;
 int autoView = 1;
-int bobUpdate = 1;
+int bobUpdate = 0;
 int cursor_color = 3;
 
 void clearBobs();
+void clearBobsOnScreen(retroScreen *screen);
 void drawBobs();
+void drawBobsOnScreen(retroScreen *screen);
+
 struct Gadeget *IcoGad = NULL;
 struct Image * IcoImg = NULL;
 
@@ -609,6 +612,17 @@ void handel_iconify()
 	}
 }
 
+void swap_buffer(struct retroScreen *screen )
+{
+	memcpy( 
+		screen -> Memory[1 - screen -> double_buffer_draw_frame], 
+		screen -> Memory[screen -> double_buffer_draw_frame],
+
+	screen -> bytesPerRow * screen -> realHeight );
+
+	screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+}
+
 
 void main_engine()
 {
@@ -664,14 +678,6 @@ void main_engine()
 				retroClearVideo( video );
 				engine_lock();
 
-#if 1
-				if ((bobUpdate==1)||(screen -> force_swap))
-				{
-					drawBobs();
-				}
-#endif
-
-#if 1
 				for (n=0; n<8;n++)
 				{
 					screen = screens[n];
@@ -682,34 +688,22 @@ void main_engine()
 
 						if (screen -> Memory[1]) 	// has double buffer
 						{
-							Printf_iso("screen %d - force swap %s\n", n, screen -> force_swap ? "Yes" : "No" );
-
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
-								screen -> force_swap = FALSE;
-
-								memcpy( 
-									screen -> Memory[1 - screen -> double_buffer_draw_frame], 
-									screen -> Memory[screen -> double_buffer_draw_frame],
-									screen -> bytesPerRow * screen -> realHeight );
-
-								screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+								drawBobsOnScreen(screen);
+								swap_buffer( screen );
+								clearBobsOnScreen(screen);
 							}
+						}
+						else if (bobUpdate==1)
+						{
+							clearBobsOnScreen(screen);
+							drawBobsOnScreen(screen);
 						}
 					}
 				}	// next
-#endif
 
-#if 1
 				retroDrawVideo( video );
-#endif
-
-#if 1
-				if ((bobUpdate==1)||(screen -> force_swap))
-				{
-					clearBobs();
-				}
-#endif
 
 #if 1
 				if (channels)

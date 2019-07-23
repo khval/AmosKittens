@@ -96,6 +96,31 @@ void clearBobs()
 	}
 }
 
+void clearBobsOnScreen(struct retroScreen *screen)
+{
+	int n;
+	int start=0,end=0,dir=0;
+
+	switch ( priorityReverse )
+	{
+		case 0:
+			start = 63; end = -1; dir = -1;
+			break;
+		case 1:
+			start = 0; end = 64; dir = 1;
+			break;
+	}
+
+	for (n=start;n!=end;n+=dir)
+	{
+		if (screens[bobs[n].screen_id] == screen)
+		{
+			clearBob(&bobs[n]);
+		}
+	}
+}
+
+
 
 void freeScreenBobs( int screen_id )
 {
@@ -200,15 +225,88 @@ void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *scre
 	}
 }
 
-void drawBobs()
+void drawBob(struct retroSpriteObject *bob)
 {
-	int n;
-	struct retroScreen *screen;
-	struct retroSpriteObject *bob;
+	struct retroScreen *screen = screens[bob->screen_id];
 	struct retroFrameHeader *frame;
 	struct retroSpriteClear *clear;
 	int image, flags;
 	int size;
+
+	if (screen)
+	{
+		image = (bob->image & 0x3FFFF) - 1;
+		flags = bob -> image & 0xC000;
+
+		if ( (image >= 0 ) && (image < sprite -> number_of_frames) )
+		{
+			frame = &sprite -> frames[ image ];
+
+			clear = &bob -> clear[ 0 ];
+
+			clear -> x = bob -> x - frame -> XHotSpot;
+			clear -> y = bob -> y - frame -> YHotSpot;
+			clear -> w = frame -> width;
+			clear -> h = frame -> height;
+			clear -> image = bob -> image;
+			clear -> drawn = 1;
+
+			if (bob-> background == 0)
+			{
+				size = clear -> w * clear -> h;
+
+				if (clear -> mem)
+				{
+					sys_free(clear -> mem);
+					clear -> mem = NULL;
+				}
+
+				if (size) 
+				{
+					clear -> mem = (char *) sys_public_alloc_clear(size);
+					clear -> size = size;
+				}
+
+				if (clear -> mem) copyScreenToClear( screen,clear );
+			}
+
+			retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags, bob -> plains);
+		}
+	}
+}
+
+void drawBobs()
+{
+	int n;
+	struct retroSpriteObject *bob;
+
+	int start=0,end=0,dir=0;
+
+	if (!sprite) return;
+	if (!sprite -> frames) return;
+
+	switch ( priorityReverse )
+	{
+		case 0:
+			start = 0; end = 64; dir = 1;
+			break;
+		case 1:
+			start = 63; end = -1; dir = -1;
+			break;
+	}
+
+	for (n=start;n!=end;n+=dir)
+	{
+		bob = &bobs[n];
+		drawBob(bob);
+	}
+}
+
+void drawBobsOnScreen(struct retroScreen *screen)
+{
+	int n;
+	struct retroSpriteObject *bob;
+
 	int start=0,end=0,dir=0;
 
 	if (!sprite) return;
@@ -228,50 +326,13 @@ void drawBobs()
 	{
 		bob = &bobs[n];
 
-		screen = screens[bob->screen_id];
-
-		if (screen)
+		if (screens[bob->screen_id] == screen)
 		{
-			image = (bob->image & 0x3FFFF) - 1;
-			flags = bob -> image & 0xC000;
-
-			if ( (image >= 0 ) && (image < sprite -> number_of_frames) )
-			{
-				frame = &sprite -> frames[ image ];
-
-				clear = &bob -> clear[ 0 ];
-
-				clear -> x = bob -> x - frame -> XHotSpot;
-				clear -> y = bob -> y - frame -> YHotSpot;
-				clear -> w = frame -> width;
-				clear -> h = frame -> height;
-				clear -> image = bob -> image;
-				clear -> drawn = 1;
-
-				if (bob-> background == 0)
-				{
-					size = clear -> w * clear -> h;
-
-					if (clear -> mem)
-					{
-						sys_free(clear -> mem);
-						clear -> mem = NULL;
-					}
-
-					if (size) 
-					{
-						clear -> mem = (char *) sys_public_alloc_clear(size);
-						clear -> size = size;
-					}
-		
-					if (clear -> mem) copyScreenToClear( screen,clear );
-				}
-
-				retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags, bob -> plains);
-			}
+			drawBob(bob);
 		}
 	}
 }
+
 
 char *_boBob( struct glueCommands *data, int nextToken )
 {
