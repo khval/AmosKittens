@@ -891,7 +891,7 @@ void LoadIff( char *name, const int sn )
 
 			init_amos_kittens_screen_default_text_window(screens[sn], 256);
 
-			retroApplyScreen( screens[sn], video, 0, 20, screens[sn] -> realWidth,screens[sn]->realHeight );
+			retroApplyScreen( screens[sn], video, 0, 0, screens[sn] -> realWidth,screens[sn]->realHeight );
 			retroBAR( screens[sn], 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
 			set_default_colors( screens[sn] );
 
