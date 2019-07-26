@@ -42,6 +42,10 @@ extern struct globalVar globalVars[];
 int _scancode;
 int _keyshift;
 int keyState[256];
+
+extern int bobDoUpdate ;
+extern int bobUpdateNextWait ;
+
 extern struct retroScreen *screens[8] ;
 extern int current_screen;
 
@@ -271,6 +275,14 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	do
 	{
+		engine_lock();
+		if (bobUpdateNextWait)
+		{
+			bobDoUpdate = 1;
+			bobUpdateNextWait = 0;
+		}
+		engine_unlock();
+
 		atomic_get_char(buf);
 		Delay(1);
 

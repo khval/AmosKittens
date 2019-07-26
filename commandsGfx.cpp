@@ -44,6 +44,8 @@ extern struct RastPort font_render_rp;
 extern bool next_print_line_feed;
 extern retroSprite *patterns;
 
+extern int bobDoUpdate ;
+extern int bobUpdateNextWait ;
 
 int xgr = 0,  ygr = 0;
 
@@ -144,20 +146,28 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-extern int bobUpdate;
 
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	engine_lock();
+	if (bobUpdateNextWait)
+	{
+		bobDoUpdate = 1;
+		bobUpdateNextWait = 0;
+	}
+	engine_unlock();
+
 #if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 	if (( sig_main_vbl )&&( EngineTask ))
 	{
 		Delay(1);
 		Wait(1<<sig_main_vbl);
-		bobUpdate = 1;
+		printf("normal vbl\n");
 	}
 	else
 	{
 		Delay(1);
+		printf("no engine vbl\n");
 	}
 #endif
 

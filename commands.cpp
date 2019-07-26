@@ -53,6 +53,9 @@ extern struct globalVar globalVars[];
 extern int tokenMode;
 extern int tokenlength;
 
+extern int bobDoUpdate ;
+extern int bobUpdateNextWait ;
+
 extern int findVarPublic( char *name, int type );
 extern int ReferenceByteLength(char *ptr);
 
@@ -2130,6 +2133,14 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdWait( struct glueCommands *data, int nextToken )
 {
+	engine_lock();
+	if (bobUpdateNextWait)
+	{
+		bobDoUpdate = 1;
+		bobUpdateNextWait = 0;
+	}
+	engine_unlock();
+
 	Delay( getStackNum(stack) / 2 );
 	return  NULL ;
 }

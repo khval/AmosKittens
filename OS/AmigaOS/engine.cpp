@@ -66,7 +66,9 @@ int engine_mouse_key = 0;
 int engine_mouse_x = 0;
 int engine_mouse_y = 0;
 int autoView = 1;
-int bobUpdate = 0;
+int bobDoUpdate = 0;			// when we are ready to update bobs.
+int bobAutoUpdate = 1;
+int bobUpdateNextWait = 0;
 int cursor_color = 3;
 
 void clearBobs();
@@ -626,6 +628,8 @@ void swap_buffer(struct retroScreen *screen )
 
 void main_engine()
 {
+	int bobIsUpdated = 0; 
+
 	Printf("init engine\n");
 
 	if (init_engine())		// libs open her.
@@ -695,15 +699,22 @@ void main_engine()
 								clearBobsOnScreen(screen);
 							}
 						}
-						else if (bobUpdate==1)
+						else if (bobDoUpdate)
 						{
 							clearBobsOnScreen(screen);
 							drawBobsOnScreen(screen);
+							bobIsUpdated = 1;
 						}
 					}
 				}	// next
 
 				retroDrawVideo( video );
+
+				if (bobIsUpdated)
+				{
+					bobIsUpdated = 0;
+					bobDoUpdate = 0;
+				}
 
 #if 1
 				if (channels)

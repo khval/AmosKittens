@@ -37,7 +37,9 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 extern int priorityReverse;
-extern int bobUpdate;
+extern int bobDoUpdate;
+extern int bobAutoUpdate;
+extern int bobUpdateNextWait;
 
 extern int current_screen;
 
@@ -353,6 +355,8 @@ char *_boBob( struct glueCommands *data, int nextToken )
 
 			bob->image = getStackNum( stack );
 			bob->screen_id = current_screen;
+
+			bobUpdateNextWait = 1;
 			break;
 
 		default:
@@ -832,23 +836,23 @@ char *boRev(struct nativeCommand *cmd, char *tokenBuffer)
 char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	bobUpdate = 0;
+	bobAutoUpdate = 0;
 	return tokenBuffer;
 }
 
 char *boBobUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	bobUpdate = 1;
+	bobAutoUpdate = 1;
 	return tokenBuffer;
 }
 
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	bobDoUpdate = 1;
 	return tokenBuffer;
 }
-
 
 char *_boBobCol( struct glueCommands *data, int nextToken )
 {
@@ -948,8 +952,9 @@ char *boBobClear(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	
+	engine_lock();
 	clearBobs();
-
+	engine_unlock();
 	return tokenBuffer;
 }
 
@@ -957,8 +962,9 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	engine_lock();	
 	drawBobs();
-
+	engine_unlock();
 	return tokenBuffer;
 }
 
