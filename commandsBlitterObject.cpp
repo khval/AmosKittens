@@ -386,9 +386,34 @@ char *boBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boNoMask( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int image;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	popStack( stack - data->stack );
+	switch (args)
+	{
+		case 1:
+			image = getStackNum( stack )-1;
+
+			if (sprite)
+			{
+				if (image < sprite -> number_of_frames)
+				{
+					struct retroFrameHeader *frame = &sprite -> frames[image];
+
+					if (frame)
+					{
+						frame -> alpha = 0;
+						return NULL;
+					}
+				}
+			}
+
+			setError( 23, data -> tokenBuffer );
+			break;
+		default:
+			popStack( stack - data->stack );
+			setError(22, data -> tokenBuffer);
+	}
 	return NULL;
 }
 
