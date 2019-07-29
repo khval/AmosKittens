@@ -1113,11 +1113,23 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void __swap_screen( struct retroScreen *screen )
+{
+	if (screen) 
+	{
+		engine_lock();
+		if (screen -> Memory[1])		// have buffer2
+		{
+			screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
+		}
+		engine_unlock();
+	}
+}
+
 char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int screen_num;
-	struct retroScreen *screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1125,23 +1137,28 @@ char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 
-			if (kittyStack[stack].type == type_int)
+			switch (kittyStack[stack].type)
 			{
-				screen_num = kittyStack[stack].integer.value;
-			}
-			else screen_num = current_screen;
+				case type_int:
+						screen_num = kittyStack[stack].integer.value;
+						if ((screen_num>-1)&&(screen_num<8))
+						{
+							__swap_screen( screens[screen_num] );
+							return NULL;
+						}
+						break;
 
-			if (screen = screens[screen_num]) 
-			{
-				engine_lock();
-				if (screen -> Memory[1])		// have buffer2
-				{
-					screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
-				}
-				engine_unlock();
+				case type_none:
+
+						for (screen_num=0; screen_num<8; screen_num++)
+						{
+							__swap_screen( screens[screen_num] );
+						}
+						return NULL;
 			}
-			break;
 	}
+
+	setError(22, data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1149,11 +1166,8 @@ char *_gfxScreenSwap( struct glueCommands *data, int nextToken )
 
 char *gfxScreenSwap(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	struct retroScreen *screen = screens[current_screen];
-
 	stackCmdNormal( _gfxScreenSwap, tokenBuffer );
 	setStackNone();
-
 	return tokenBuffer;
 }
 
