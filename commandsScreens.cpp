@@ -73,7 +73,7 @@ void init_amos_kittens_screen_default_colors(struct retroScreen *screen)
 {
 	set_default_colors( screen );
 	retroFlash( screen, 3, (char *) "(100,5),(200,5),(300,5),(400,5),(500,5),(600,5)(700,5),(800,5),(900,5),(A00,5),(B00,5),(A00,5),(900,5),(800,5),(700,5),(600,5),(500,5)(400,5),(300,5),(200,5)");
-	retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
+	retroBAR( screen, 0, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 }
 
 char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
@@ -797,6 +797,7 @@ void argbToGrayScale(struct RastPort *rp, int y, struct retroScreen *screen)
 	int x;
 	int luminate;
 	uint32_t argb;
+	unsigned char *mem = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 	for (x=0;x<screen->realWidth;x++)
 	{
@@ -806,7 +807,7 @@ void argbToGrayScale(struct RastPort *rp, int y, struct retroScreen *screen)
 				+ ((argb & 0xFF00) >> 8)
 				+ (argb & 0xFF)) / 3; 
 
-		retroPixel( screen, x,y, luminate );
+		retroPixel( screen, mem, x,y, luminate );
 	}
 }
 
@@ -892,7 +893,7 @@ void LoadIff( char *name, const int sn )
 			init_amos_kittens_screen_default_text_window(screens[sn], 256);
 
 			retroApplyScreen( screens[sn], video, 0, 0, screens[sn] -> realWidth,screens[sn]->realHeight );
-			retroBAR( screens[sn], 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
+			retroBAR( screens[sn], 0, 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
 			set_default_colors( screens[sn] );
 
 			current_screen = sn;
@@ -912,8 +913,7 @@ void LoadIff( char *name, const int sn )
 				{
 					colors = 256;
 
-//					grayScalePalette( screens[n], colors );
-//					floydPalette( screens[n], colors );
+					grayScalePalette( screens[sn], colors );
 
 					get_most_used_colors( &rp, screens[sn]->realHeight,  screens[sn]->realWidth, screens[sn]);
 				}
@@ -927,20 +927,20 @@ void LoadIff( char *name, const int sn )
 				{
 					for (x=0;x<screens[sn]->realWidth;x++)
 					{
-						retroPixel( screens[sn], x,y, ReadPixel(&rp,x,y));
+						retroPixel( screens[sn], 0, x,y, ReadPixel(&rp,x,y));
 					}
 				}
 			}
 			else
 			{
-				floyd( &rp, screens[sn]->realWidth,  screens[sn]-> realHeight , screens[sn] );
+//				floyd( &rp, screens[sn]->realWidth,  screens[sn]-> realHeight , screens[sn] );
 
-/*
+
 				for (y=0;y<screens[sn]->realHeight;y++)
 				{
 					argbToGrayScale( &rp, y, screens[sn] );
 				}
-*/
+
 
 			}
 		}

@@ -640,7 +640,7 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 						init_amos_kittens_screen_resource_colors(screen);
 
 						screen -> paper = 2;
-						retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
+						retroBAR( screen,  0, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 
 						retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
 

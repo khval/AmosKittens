@@ -93,6 +93,8 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 void effect_byte_replace ( effect_args )
 {
 	int x;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -101,11 +103,11 @@ void effect_byte_replace ( effect_args )
 		{
 			if (data & (1<<(7-x)) ) 
 			{ 
-				if (w2&1) retroPixel( screen,destx + x + bit_offset - _bit_start, desty + y, pen);
+				if (w2&1) retroPixel( screen, memory, destx + x + bit_offset - _bit_start, desty + y, pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen,destx + x + bit_offset - _bit_start, desty + y, paper);
+				if (w2&2) retroPixel( screen, memory, destx + x + bit_offset - _bit_start, desty + y, paper);
 			}
 		}
 	}
@@ -114,6 +116,8 @@ void effect_byte_replace ( effect_args )
 void effect_byte_replace_shade ( effect_args )
 {
 	int x;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -122,11 +126,11 @@ void effect_byte_replace_shade ( effect_args )
 		{
 			if (data & (((x^y)&1)<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen,destx + x + bit_offset - _bit_start, desty + y, pen);
+				if (w2&1)  retroPixel( screen, memory, destx + x + bit_offset - _bit_start, desty + y, pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen,destx + x + bit_offset - _bit_start, desty + y, paper);
+				if (w2&2) retroPixel( screen, memory, destx + x + bit_offset - _bit_start, desty + y, paper);
 			}
 		}
 	}
@@ -136,6 +140,8 @@ void effect_byte_or ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -149,11 +155,11 @@ void effect_byte_or ( effect_args )
 			
 			if (data & (1<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp | pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp | pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp | paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp | paper);
 			}
 		}
 	}
@@ -163,6 +169,8 @@ void effect_byte_or_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -176,11 +184,11 @@ void effect_byte_or_shade ( effect_args )
 		{
 			if (data & (((x^y)&1)<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp | pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp | pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp | paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp | paper);
 			}
 		}
 	}
@@ -190,6 +198,8 @@ void effect_byte_xor ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -203,11 +213,11 @@ void effect_byte_xor ( effect_args )
 			
 			if (data & (1<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp ^ pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp ^ pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp ^ paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp ^ paper);
 			}
 		}
 	}
@@ -217,6 +227,8 @@ void effect_byte_xor_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -230,11 +242,11 @@ void effect_byte_xor_shade ( effect_args )
 		{
 			if (data & (((x^y)&1)<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp ^ pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp ^ pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp ^ paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp ^ paper);
 			}
 		}
 	}
@@ -244,6 +256,8 @@ void effect_byte_and ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -257,11 +271,11 @@ void effect_byte_and ( effect_args )
 			
 			if (data & (1<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp & pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp & pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp & paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp & paper);
 			}
 		}
 	}
@@ -271,6 +285,8 @@ void effect_byte_and_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+
 	w2=~w2;	// invert
 
 	for (x=0;x< num_bits_in_byte ;x++)
@@ -284,11 +300,11 @@ void effect_byte_and_shade ( effect_args )
 		{
 			if (data & (((x^y)&1)<<(7-x)) ) 
 			{
-				if (w2&1)  retroPixel( screen, ix, iy , sp & pen);
+				if (w2&1)  retroPixel( screen, memory, ix, iy , sp & pen);
 			}
 			else
 			{
-				if (w2&2) retroPixel( screen, ix, iy, sp & paper);
+				if (w2&2) retroPixel( screen, memory, ix, iy, sp & paper);
 			}
 		}
 	}
@@ -440,6 +456,7 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 	int num_bits_in_byte;
 	int _bit_start;
 	int n;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 	if ((glyph<font -> tf_LoChar)||(glyph>font -> tf_HiChar))
 	{
@@ -476,10 +493,7 @@ void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int
 				{
 					if (data & (1<<(7-x)) ) 
 					{
-//						draw_bit( screen, rp_x + x + bit_offset - _bit_start, rp_y + y ) ;
-
-						retroPixel( screen,rp_x + x + bit_offset - _bit_start, rp_y + y, pen);
-
+						retroPixel( screen, memory, rp_x + x + bit_offset - _bit_start, rp_y + y, pen);
 					}
 				}
 			}
@@ -502,6 +516,7 @@ void draw_glyph_shade(struct retroScreen *screen, struct TextFont *font, int rp_
 	int _bit_start;
 	int n;
 	int _y;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 	if ((glyph<font -> tf_LoChar)||(glyph>font -> tf_HiChar))
 	{
@@ -541,10 +556,7 @@ void draw_glyph_shade(struct retroScreen *screen, struct TextFont *font, int rp_
 
 					if (data & (1<<(7-x)) ) 
 					{
-//						draw_bit( screen, rp_x + x + bit_offset - _bit_start, rp_y + y ) ;
-
-						retroPixel( screen,rp_x + x + bit_offset - _bit_start, rp_y + _y, pen);
-
+						retroPixel( screen, memory, rp_x + x + bit_offset - _bit_start, rp_y + _y, pen);
 					}
 				}
 			}
@@ -745,7 +757,7 @@ void limit_location(struct retroScreen *screen )
 				int gy = _y * 8;
 				int gw = _w * 8;
 
-				retroBAR( screen, 
+				retroBAR( screen, screen -> double_buffer_draw_frame,
 					gx, gy + paper_height-8,
 					gx + gw, gy + paper_height,
 					screen -> paper);
@@ -882,7 +894,7 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 							shade,w1,w2);
 					}
 
-					if (underLine) retroLine(screen,textWindow -> locateX*8,textWindow -> locateY*8+6,textWindow -> locateX*8+7,textWindow -> locateY*8+6, screen -> pen);
+					if (underLine) retroLine(screen,screen -> double_buffer_draw_frame, textWindow -> locateX*8,textWindow -> locateY*8+6,textWindow -> locateX*8+7,textWindow -> locateY*8+6, screen -> pen);
 
 					textWindow -> locateX ++;
 		}

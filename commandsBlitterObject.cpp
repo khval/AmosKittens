@@ -64,14 +64,13 @@ void clearBob(struct retroSpriteObject *bob)
 
 		if ((clear -> mem)&&(bob->background==0))
 		{
-			printf("clear bob\n");
 			copyClearToScreen( clear,screen );
 		}
 		else
 		{
 			if (bob->background>0)
 			{
-				retroBAR( screen, clear -> x, clear -> y, clear->x +clear->w, clear->y+clear->h,bob->background-1);
+				retroBAR( screen, screen -> double_buffer_draw_frame, clear -> x, clear -> y, clear->x +clear->w, clear->y+clear->h,bob->background-1);
 			}
 		}
 	}

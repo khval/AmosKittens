@@ -61,17 +61,18 @@ std::vector<struct retroBlock> cblocks;
 char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *screen;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 3:	if (icons)
+		case 3:	if ((icons) && (screen = screens[current_screen]))
 				{
 					int x = getStackNum( stack-2 );
 					int y = getStackNum( stack-1 );
 					int image = getStackNum( stack );
 
-					retroPasteIcon(screens[current_screen],icons,x,y,image-1);
+					retroPasteIcon( screen, screen -> double_buffer_draw_frame,  icons,x,y,image-1);
 				}
 				break;
 			break;

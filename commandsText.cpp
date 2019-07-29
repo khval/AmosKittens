@@ -96,6 +96,7 @@ void draw_cursor(struct retroScreen *screen)
 	if (screen)
 	{
 		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+		unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 		if ((curs_on)&&(textWindow))
 		{
@@ -103,6 +104,7 @@ void draw_cursor(struct retroScreen *screen)
 			int d,m;
 			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
 			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+
 			gx=8*x;	gy=8*y;
 
 			if (cursor_block == NULL) cursor_block = retroAllocBlock( 8, 8 );
@@ -112,8 +114,6 @@ void draw_cursor(struct retroScreen *screen)
 				retroGetBlock( screen, cursor_block, gx, gy );
 			}
 
-//			retroBAR( screen, gx,gy+6,gx+6,gy+7, cursor_color);
-
 			for (y=0;y<8;y++)
 			{
 				if (d = curs_lines[y])
@@ -122,7 +122,7 @@ void draw_cursor(struct retroScreen *screen)
 					m = 0x80;
 					while (m>0)
 					{
-						if (d&m) retroPixel( screen, gx+x,gy+y, cursor_color );
+						if (d&m) retroPixel( screen, memory, gx+x,gy+y, cursor_color );
 						m>>=1;
 						x++;
 					}
@@ -1230,7 +1230,7 @@ char *_textClw( struct glueCommands *data, int nextToken )
 				textWindow -> locateX = 0;
 				textWindow -> locateY = 0;
 
-				retroBAR( screen, 
+				retroBAR( screen, screen -> double_buffer_draw_frame,
 					gx, gy ,
 					gx + gw, gy + gh,
 					screen -> paper);
@@ -1294,7 +1294,7 @@ char *_textCline( struct glueCommands *data, int nextToken )
 					break;
 			}
 
-			retroBAR(screen,x0,y0,x1,y1,screen -> paper);
+			retroBAR(screen,screen -> double_buffer_draw_frame,x0,y0,x1,y1,screen -> paper);
 		}
 	}
 
@@ -1675,7 +1675,7 @@ void renderWindow( struct retroScreen *screen, struct retroTextWindow *textWindo
 	x1 = x0 + (textWindow -> charsPerRow*8)-1;
 	y1 = y0 + (textWindow -> rows*8)-1;
 
-	retroBAR( screen, x0,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,screen -> paper);
 }
 
 void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *textWindow )
@@ -1690,18 +1690,18 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 
 	if (textWindow -> border == 0) return;
 
-	retroBAR( screen, x0,y0,x1,y0+7,screen -> paper);
-	retroBAR( screen, x0,y0,x0+7,y1,screen -> paper);
-	retroBAR( screen, x1-7,y0,x1,y1,screen -> paper);
-	retroBAR( screen, x0,y1-7,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
 
 	x0+=2;
 	y0+=2;
 	x1-=2;
 	y1-=2;
 
-	retroBox( screen, x0,y0,x1,y1, 2 );
-	retroBox( screen, x0+1,y0+1,x1-1,y1-1, 2 );
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	retroBox( screen, screen -> double_buffer_draw_frame,x0+1,y0+1,x1-1,y1-1, 2 );
 
 
 	x0-=2;
@@ -1714,7 +1714,7 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 
 	if (textWindow -> title_top)
 	{
-		retroBAR( screen, _x*8,y0,(_x + strlen(textWindow -> title_top) )*8,y0+7,screen -> paper);
+		retroBAR( screen, screen -> double_buffer_draw_frame,_x*8,y0,(_x + strlen(textWindow -> title_top) )*8,y0+7,screen -> paper);
 
 		for (c = textWindow -> title_top; *c; c++)
 		{
@@ -1728,7 +1728,7 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 
 	if (textWindow -> title_bottom)
 	{
-		retroBAR( screen, _x*8,y1-7,(_x + strlen(textWindow -> title_bottom) )*8,y1,screen -> paper);
+		retroBAR( screen, screen -> double_buffer_draw_frame,_x*8,y1-7,(_x + strlen(textWindow -> title_bottom) )*8,y1,screen -> paper);
 
 		for (c = textWindow -> title_bottom; *c; c++)
 		{
@@ -2118,7 +2118,7 @@ char *_textWindClose( struct glueCommands *data, int nextToken )
 				int gw = textWindow -> charsPerRow * 8 - 1;
 				int gh = textWindow -> rows * 8  -1;
 
-				retroBAR( screen, 
+				retroBAR( screen, screen -> double_buffer_draw_frame,
 					gx, gy ,
 					gx + gw, gy + gh,
 					screen -> paper);

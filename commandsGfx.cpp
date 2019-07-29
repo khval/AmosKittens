@@ -184,6 +184,17 @@ char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void __bar( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y1 )
+{
+	if ((currentPattern)&&(patterns))
+	{
+		retroBarPattern( screen, buffer, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern+3 : -currentPattern, screen -> ink0, screen -> ink1 );
+	}
+	else retroBAR( screen, buffer, x0,y0,x1,y1,screen -> ink0 );
+
+	if (paintMode) retroBox( screen, buffer, x0,y0,x1,y1,screen -> ink2);
+}
+
 char *_gfxBar( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -202,14 +213,14 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 
 		if (screen)
 		{
-			if ((currentPattern)&&(patterns))
+			switch (screen -> autoback)
 			{
-				retroBarPattern( screen, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern+3 : -currentPattern, screen -> ink0, screen -> ink1 );
+				case 0:	__bar( screen, screen -> double_buffer_draw_frame, x0, y0, x1, y1 );
+						break;
+				default:	__bar( screen, 0,  x0, y0,  x1,  y1 );
+						__bar( screen, 1,  x0, y0,  x1,  y1 );
+						break;
 			}
-			else retroBAR( screen, x0,y0,x1,y1,screen -> ink0 );
-
-			if (paintMode) retroBox( screen,x0,y0,x1,y1,screen -> ink2);
-
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -224,20 +235,25 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 	int color = 0;
 	struct retroScreen *screen = screens[current_screen];
 	struct retroTextWindow *textWindow = NULL;
+	int x0=0,y0=0,x1=0,y1=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (screen)
 	{
 		textWindow = screen -> currentTextWindow;
+
+		if (textWindow)
+		{
+			textWindow -> locateX = 0;
+			textWindow -> locateY = 0;
+			next_print_line_feed = false;
+		}
 	}
 
 	switch (args)
 	{
 		case 1:
-
-			if (textWindow)
-			{
 				if (kittyStack[stack].type == type_none)
 				{
 					color = screen -> paper;
@@ -247,40 +263,31 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 					 color = getStackNum( stack );
 				}
 
-				if ((color >-1)&&(color<256))
-				{
-
-					retroBAR( screen,0,0,screen->realWidth,screen->realHeight,color );
-					textWindow -> locateX = 0;
-					textWindow -> locateY = 0;
-					next_print_line_feed = false;
-				}
-			}
-			break;
+				x1 = screen->realWidth;
+				y1 = screen->realHeight;
+				break;
 
 		case 5:
+				color = getStackNum( stack -4 );
+				x0 = getStackNum( stack -3 );
+				y0 = getStackNum( stack -2 );
+				x1 = getStackNum( stack -1 )-1;
+				y1 = getStackNum( stack )-1;
 
-			if (textWindow)
-			{
-				int color = getStackNum( stack -4 );
-				int x0 = getStackNum( stack -3 );
-				int y0 = getStackNum( stack -2 );
-				int x1 = getStackNum( stack -1 )-1;
-				int y1 = getStackNum( stack )-1;
-
-				if ((color >-1)&&(color<256))
-				{
-					retroBAR( screen, x0,y0,x1,y1,color );
-					textWindow -> locateX = 0;
-					textWindow -> locateY = 0;
-					next_print_line_feed = false;
-				}
-			}
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 	popStack( stack - data->stack );
+
+	switch (screen -> autoback)
+	{
+		case 0:	retroBAR( screen,screen -> double_buffer_draw_frame, x0,y0,x1,y1,color );
+				break;
+		default:
+				retroBAR( screen,0, x0,y0,x1,y1,color );
+				break;
+	}
 
 	return NULL;
 }
@@ -289,7 +296,7 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 char *_gfxDraw( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x0 = xgr ,y0 = ygr,x1,y1;
+	int x0 = xgr ,y0 = ygr,x1=0,y1=0;
 	struct retroScreen *screen = screens[current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -299,7 +306,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 		case 2:
 			xgr = x1 = getStackNum( stack-1 );
 			ygr = y1 = getStackNum( stack );
-			if (screen) retroLine( screen, x0,y0,x1,y1,screen -> ink0 );
+
 			break;
 
 		case 4:
@@ -308,7 +315,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 			xgr = x1 = getStackNum( stack-1 );
 			ygr = y1 = getStackNum( stack );
 
-			if (screen) retroLine( screen, x0,y0,x1,y1,screen -> ink0 );
+			if (screen) retroLine( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1,screen -> ink0 );
 			break;
 
 		default:
@@ -316,6 +323,23 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
+
+	switch (screen ->autoback)
+	{
+		case 0:
+				if (screen) retroLine( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1,screen -> ink0 );
+				break;
+
+		default:
+				if (screen)
+				{
+					 retroLine( screen, 0,x0,y0,x1,y1,screen -> ink0 );
+					 retroLine( screen, 1,x0,y0,x1,y1,screen -> ink0 );
+				}
+				break;
+	}
+
+
 	return NULL;
 }
 
@@ -342,7 +366,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 		array[n] = array[1]; n++;
 
 
-		retroPolyGonArray( screen, screen -> ink0, (args+2) * sizeof(int), array );
+		retroPolyGonArray( screen, screen -> double_buffer_draw_frame,screen -> ink0, (args+2) * sizeof(int), array );
 
 		if (paintMode)
 		{
@@ -352,12 +376,12 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 			{
 				xgr = array[ n*2 ];
 				ygr = array[ n*2+1];
-				retroLine( screen, lx,ly,xgr,ygr,screen -> ink2 );
+				retroLine( screen, screen -> double_buffer_draw_frame, lx,ly,xgr,ygr,screen -> ink2 );
 				lx = xgr;
 				ly=ygr;
 			}
 
-			retroLine( screen, lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
+			retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
 		}
 	}
 	else	setError(22,data->tokenBuffer);
@@ -376,7 +400,6 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 
 	if (screen)
 	{
-		
 		if ( (args>2) && ((args&1) == 0))
 		{
 			int coordinates = args >> 1;
@@ -387,14 +410,32 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 			lx = getStackNum( _stack++ );
 			ly = getStackNum( _stack++ );
 
-			for (n=1;n<coordinates;n++)
+			switch (screen -> autoback)
 			{
-				xgr = getStackNum( _stack++ );
-				ygr = getStackNum( _stack++ );
-				retroLine( screen, lx,ly,xgr,ygr,screen -> ink0 );
-				lx = xgr;
-				ly=ygr;
+				case 0:
+						for (n=1;n<coordinates;n++)
+						{
+							xgr = getStackNum( _stack++ );
+							ygr = getStackNum( _stack++ );
+							retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,xgr,ygr,screen -> ink0 );
+							lx = xgr;
+							ly=ygr;
+						}
+						break;
+				default:
+						for (n=1;n<coordinates;n++)
+						{
+							xgr = getStackNum( _stack++ );
+							ygr = getStackNum( _stack++ );
+							retroLine( screen, 0 ,lx,ly,xgr,ygr,screen -> ink0 );
+							retroLine( screen, 1 ,lx,ly,xgr,ygr,screen -> ink0 );
+							lx = xgr;
+							ly=ygr;
+						}
+						break;
 			}
+
+
 			success = true;
 		}
 		else if (args == 3)
@@ -402,7 +443,15 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 			int x,y;
 			x = getStackNum( stack-1 );
 			y = getStackNum( stack );
-			retroLine( screen, xgr,ygr,x,y,screen -> ink0 );
+
+			switch (screen -> autoback)
+			{
+				case 0:	retroLine( screen, screen -> double_buffer_draw_frame,xgr,ygr,x,y,screen -> ink0 );
+						break;
+				default:
+						retroLine( screen, 0,xgr,ygr,x,y,screen -> ink0 );
+						retroLine( screen, 1,xgr,ygr,x,y,screen -> ink0 );
+			}
 			xgr=x;ygr=y;
 			success = true;
 		}
@@ -428,7 +477,18 @@ char *_gfxCircle( struct glueCommands *data, int nextToken )
 		stack_get_if_int( stack-1, &y0 );
 		r = getStackNum( stack );
 
-		if (screen)  retroCircle( screen, x0,y0,r,screen -> ink0 );
+		if (screen) 
+		{
+			switch(screen -> autoback)
+			{
+				case 0:	retroCircle( screen, screen -> double_buffer_draw_frame,x0,y0,r,screen -> ink0 ); 
+						break;
+				default:
+						retroCircle( screen, 0,x0,y0,r,screen -> ink0 ); 
+						retroCircle( screen, 1,x0,y0,r,screen -> ink0 ); 
+						break;
+			}
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -451,7 +511,18 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 		r0 = getStackNum( stack-1 );
 		r1 = getStackNum( stack );
 
-		if (screen) retroEllipse( screen, x0,y0,r0,r1,0,screen -> ink0 );
+		if (screen) 
+		{
+			switch (screen->autoback)
+			{
+				case 0:	retroEllipse( screen, screen -> double_buffer_draw_frame,x0,y0,r0,r1,0,screen -> ink0 ); 
+						break;
+				default:
+						retroEllipse( screen, 0,x0,y0,r0,r1,0,screen -> ink0 ); 
+						retroEllipse( screen, 1,x0,y0,r0,r1,0,screen -> ink0 ); 
+						break;
+			}
+		}
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -478,11 +549,25 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 		if (x1<x0) { t = x0; x0 = x1; x1 = t; }
 		if (y1<y0) { t = y0; y0 = y1; y1 = t; }
 
-		if (screen) retroBox( screen, x0,y0,x1,y1,screen -> ink0 );
+		if (screen) 
+		{
+			switch (screen -> autoback)
+			{
+				case 0 :
+						retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1,screen -> ink0 );
+						break;
+				default:
+						retroBox( screen, 0, x0,y0,x1,y1,screen -> ink0 );
+						retroBox( screen, 1, x0,y0,x1,y1,screen -> ink0 );
+						break;
+			}
+		}
+
 	}
 	else setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
+
 	return NULL;
 }
 
@@ -604,12 +689,12 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 		case 2:
 			stack_get_if_int( stack-1, &xgr );
 			stack_get_if_int( stack, &ygr );
-			if (screen) retroPixel( screen, xgr,ygr,screen -> ink0 );
+			if (screen) retroPixel( screen, screen -> Memory[ screen -> double_buffer_draw_frame ], xgr,ygr,screen -> ink0 );
 			break;
 		case 3:
 			stack_get_if_int( stack-2, &xgr );
 			stack_get_if_int( stack-1, &ygr );
-			if (screen) retroPixel( screen, xgr,ygr,getStackNum( stack ) );
+			if (screen) retroPixel( screen, screen -> Memory[ screen -> double_buffer_draw_frame ], xgr,ygr,getStackNum( stack ) );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -632,13 +717,13 @@ char *_gfxPaint( struct glueCommands *data, int nextToken )
 		case 2:
 			stack_get_if_int( stack-1, &x0 );
 			stack_get_if_int( stack, &y0 );
-			if (screen) retroFill( screen, x0,y0,screen -> ink0 );
+			if (screen) retroFill( screen, screen -> double_buffer_draw_frame, x0,y0,screen -> ink0 );
 			break;
 		case 3:
 			stack_get_if_int( stack-2, &x0 );
 			stack_get_if_int( stack-1, &y0 );
 			c = getStackNum( stack );
-			if (screen) retroFill( screen, x0,y0,c );
+			if (screen) retroFill( screen, screen -> double_buffer_draw_frame, x0,y0,c );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -1395,6 +1480,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 			int mw = fscreen->realWidth < tscreen->realWidth ? fscreen->realWidth : tscreen->realWidth;
 			int mh = fscreen->realHeight < tscreen->realHeight ? fscreen->realHeight : tscreen->realHeight;
 			int updateEveryNPixels = (mh * 10 / 100) * mw;
+			unsigned char *mem = tscreen -> Memory[ tscreen -> double_buffer_draw_frame ];
 
 			if (pixels == 0) pixels = mw *mh;
 
@@ -1403,7 +1489,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 				n += step;
 				x = n % mw;
 				y = ((n-x)/mw) % mh;
-				retroPixel(tscreen,x,y,retroPoint(fscreen,x,y));
+				retroPixel(tscreen, mem ,x,y,retroPoint(fscreen,x,y));
 
 				if ( (n % updateEveryNPixels) == 0 )
 				{
@@ -1941,16 +2027,17 @@ char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void dotBAR( struct retroScreen *screen, int x0,int y0, int x1, int y1, int bc, int oc )
+void dotBAR( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y1, int bc, int oc )
 {
 	int x,y,n;
+	unsigned char *mem = screen -> Memory[ buffer ];
 
 	for (y=y0;y<=y1;y++)
 	{
 		n=y&1;
 		for (x=x0;x<=x1;x++)
 		{
-			retroPixel(screen,x,y, (x^y) & 1 ? bc : oc );
+			retroPixel(screen, mem,x,y, (x^y) & 1 ? bc : oc );
 		}
 	}
 }
@@ -1959,6 +2046,7 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
+	struct retroScreen *screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1972,36 +2060,34 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 		pos = getStackNum( stack-1 );
 		size = getStackNum( stack );
 
-		if (screens[current_screen])
+		if (screen = screens[current_screen])
 		{
 			int xpos1,xpos2;
 
 			xpos1 =  (x2-x1) * pos / total;
 			xpos2 =  (x2-x1) * (pos+size) / total;
 
-			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
+			retroBox( screen, screen -> double_buffer_draw_frame, x1,y1,x2,y2,sliderBOutline );
 
 			if (sliderBStyle)
 			{
-				retroBarPattern( screens[current_screen],x1+1, y1+1,x2-1,y2-1, patterns, sliderBStyle+3, sliderBOutline, sliderBPaper );
+				retroBarPattern( screen, screen -> double_buffer_draw_frame, x1+1, y1+1,x2-1,y2-1, patterns, sliderBStyle+3, sliderBOutline, sliderBPaper );
 			}
 			else
 			{
-				retroBAR( screens[current_screen],x1+1, y1+1,x2-1,y2-1, sliderBOutline );
+				retroBAR( screen, screen -> double_buffer_draw_frame, x1+1, y1+1,x2-1,y2-1, sliderBOutline );
 			}
 
-			retroBox( screens[current_screen], x1+xpos1,y1,x1+xpos2,y2,sliderSOutline );
+			retroBox( screen, screen -> double_buffer_draw_frame, x1+xpos1,y1,x1+xpos2,y2,sliderSOutline );
 
 			if (sliderSStyle)
 			{
-				retroBarPattern( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,patterns, sliderSStyle+3, sliderSOutline, sliderSPaper );
+				retroBarPattern( screen, screen -> double_buffer_draw_frame, x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,patterns, sliderSStyle+3, sliderSOutline, sliderSPaper );
 			}
 			else
 			{
-				retroBAR( screens[current_screen],x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSOutline );
+				retroBAR( screen, screen -> double_buffer_draw_frame, x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSOutline );
 			}
-
-//			retroBAR( screens[current_screen], x1+xpos1+1,y1+1,x1+xpos2-1,y2-1,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);
@@ -2020,6 +2106,7 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
+	struct retroScreen *screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -2033,18 +2120,18 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 		pos = getStackNum( stack-1 );
 		size = getStackNum( stack );
 
-		if (screens[current_screen])
+		if ( screen = screens[current_screen])
 		{
 			int ypos1,ypos2;
 
 			ypos1 =  (y2-y1) * pos / total;
 			ypos2 =  (y2-y1) * (pos+size) / total;
 
-			retroBox( screens[current_screen], x1,y1,x2,y2,sliderBOutline );
-			dotBAR( screens[current_screen],x1+1,	y1+1,x2-1,y2-1,sliderBPaper, sliderBOutline );
+			retroBox( screen, screen -> double_buffer_draw_frame, x1,y1,x2,y2,sliderBOutline );
+			dotBAR( screen, screen -> double_buffer_draw_frame, x1+1,	y1+1,x2-1,y2-1,sliderBPaper, sliderBOutline );
 
-			retroBox( screens[current_screen], x1,y1+ypos1,x2,y1+ypos2-2,sliderSOutline );
-			retroBAR( screens[current_screen], x1+1,y1+ypos1+1,x2-1,y1+ypos2-1,sliderSPaper );
+			retroBox( screen, screen -> double_buffer_draw_frame, x1,y1+ypos1,x2,y1+ypos2-2,sliderSOutline );
+			retroBAR( screen, screen -> double_buffer_draw_frame, x1+1,y1+ypos1+1,x2-1,y1+ypos2-1,sliderSPaper );
 		}
 	}
 	else setError(22,data->tokenBuffer);

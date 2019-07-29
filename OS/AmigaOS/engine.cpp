@@ -616,11 +616,12 @@ void handel_iconify()
 
 void swap_buffer(struct retroScreen *screen )
 {
+/*
 	memcpy( 
 		screen -> Memory[1 - screen -> double_buffer_draw_frame], 
 		screen -> Memory[screen -> double_buffer_draw_frame],
-
-	screen -> bytesPerRow * screen -> realHeight );
+		screen -> bytesPerRow * screen -> realHeight );
+*/
 
 	screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
 }

@@ -90,7 +90,7 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 				planeOffset += bytesPerPlan;
 			}
 
-			retroPixel( screen, x +x0,y +y0, color );	
+			retroPixel( screen, 0, x +x0,y +y0, color );	
 		}
 	}
 }
@@ -108,6 +108,13 @@ void openUnpackedScreen(int screen_num,
 	struct retroScreen *screen = NULL;
 	struct retroTextWindow *textWindow = NULL;
 
+	printf("mode %08x\n", context -> mode);
+
+	// mode & 0x8000 is Hires
+	// mode & 0x7000 is colors 
+	// mode & 0x0004 is Laced
+	// mode = $6A00 is HAM6
+
 	videomode = 0;
 	if (context -> mode & 0x0004) videomode |= retroInterlaced;
 
@@ -121,6 +128,9 @@ void openUnpackedScreen(int screen_num,
 	}
 
 	if ( (context -> mode & 0x7000) == 0x6000 ) videomode |= retroHam6;
+
+	printf("retromode: %08x\n", videomode);
+	getchar();
 
 	engine_lock();
 
@@ -157,7 +167,7 @@ void openUnpackedScreen(int screen_num,
 			retroScreenColor( screen, n,r[n],g[n],b[n]);
 		}
 
-		retroBAR( screen, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
+		retroBAR( screen, 0, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 
 		plotUnpackedContext( context, screen, 0,0 );
 

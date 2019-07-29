@@ -555,7 +555,7 @@ void draw_HyperText(struct zone_hypertext *zh)
 
 	if (screen)
 	{
-		retroBAR( screen, zh -> x0, zh -> y0, zh -> x1, zh -> y1, zh -> paper );
+		retroBAR( screen, screen -> double_buffer_draw_frame,  zh -> x0, zh -> y0, zh -> x1, zh -> y1, zh -> paper );
 
 		c = (char *) zh -> address;
 
@@ -1080,7 +1080,7 @@ void _icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroLine( screen, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroLine( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,context -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -1121,7 +1121,7 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBAR( screen, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,context -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -1148,9 +1148,9 @@ void render_hslider(struct zone_slider *zl)
 	
 	if (screen) 
 	{
-		if (zl->x0+t0 != zl->x0 ) retroBAR( screen, zl->x0,zl->y0,zl->x0+t0-1,zl->y1, 0 );
-		retroBAR( screen, zl->x0+t0,zl->y0,zl->x0+t1,zl->y1, 4 );
-		if (zl->x0+t1 != zl->x1 ) retroBAR( screen, zl->x0+t1+1,zl->y0,zl->x1,zl->y1, 0 );
+		if (zl->x0+t0 != zl->x0 ) retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0,zl->y0,zl->x0+t0-1,zl->y1, 0 );
+		retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0+t0,zl->y0,zl->x0+t1,zl->y1, 4 );
+		if (zl->x0+t1 != zl->x1 ) retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0+t1+1,zl->y0,zl->x1,zl->y1, 0 );
 	}
 }
 
@@ -1167,9 +1167,9 @@ void render_vslider(struct zone_slider *zl)
 
 	if (screen) 
 	{
-		if (zl->y0+t0 != zl->y0 ) retroBAR( screen, zl->x0,zl->y0,zl->x1,zl->y0+t0-1, 0 );
-		retroBAR( screen, zl->x0,zl->y0+t0,zl->x1,zl->y0+t1, 4 );
-		if (zl->y0+t1 != zl->y1 ) retroBAR( screen, zl->x0,zl->y0+t1+1,zl->x1,zl->y1, 0 );
+		if (zl->y0+t0 != zl->y0 ) retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0,zl->y0,zl->x1,zl->y0+t0-1, 0 );
+		retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0,zl->y0+t0,zl->x1,zl->y0+t1, 4 );
+		if (zl->y0+t1 != zl->y1 ) retroBAR( screen, screen -> double_buffer_draw_frame,  zl->x0,zl->y0+t1+1,zl->x1,zl->y1, 0 );
 	}
 }
 
@@ -1500,7 +1500,7 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBox( screen, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,context -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -2060,7 +2060,7 @@ void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
 			x.num+=get_dialog_x(context);
 			y.num+=get_dialog_y(context);
 	
-			retroBox( screen, x.num, y.num, x.num+width.num-2, y.num+9,2 );
+			retroBox( screen, screen -> double_buffer_draw_frame,x.num, y.num, x.num+width.num-2, y.num+9,2 );
 
 			engine_lock();
 			if (engine_ready())

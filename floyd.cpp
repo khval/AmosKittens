@@ -232,7 +232,8 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 	double *G = (double*) malloc( sizeof(double) * w* h ); 
 	double *B = (double*) malloc( sizeof(double) * w* h ); 
 	int c,i;
-	double r,g,b;	
+	double r,g,b;
+	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 	if ( (R) && (G) && (B) )
 	{
@@ -262,7 +263,7 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 			{
 				i = index(x,y);
 				c = findBestColor( screen, (int) R[i], (int) G[i], (int) B[i] , &r,&g,&b );
-				retroPixel( screen, x, y, c );
+				retroPixel( screen, memory, x, y, c );
 			}
 		}
 	}
