@@ -1285,24 +1285,6 @@ char *_set_rain( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_gfxAutoback( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (args==1)
-	{
-		if (screens[current_screen])
-		{
-			screens[current_screen]->autoback = getStackNum( stack );
-		}
-	}
-	else setError(22,data->tokenBuffer);
-
-	popStack( stack - data->stack );
-	return NULL;
-}
 
 
 char *_gfxRain( struct glueCommands *data, int nextToken )
@@ -1642,6 +1624,26 @@ char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNum( 0 );
 	return tokenBuffer;
 }
+
+char *_gfxAutoback( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		if (screens[current_screen])
+		{
+			screens[current_screen]->autoback = getStackNum( stack );
+		}
+	}
+	else setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 
 char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 {
