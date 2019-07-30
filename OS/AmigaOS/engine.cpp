@@ -216,6 +216,9 @@ void close_engine_window( )
 struct RastPort font_render_rp;
 struct retroEngine *engine = NULL;
 
+extern struct TextFont *open_font( char const *filename, int size );
+extern struct TextFont *gfx_font;
+
 bool init_engine()
 {
 	if ( ! open_engine_window( 200, 100, 640,480) ) return false;
@@ -231,6 +234,11 @@ bool init_engine()
 
 	font_render_rp.Font =  My_Window -> RPort -> Font;
 	SetBPen( &font_render_rp, 0 );
+
+	if (gfx_font = open_font( "topaz.font", 8 ))
+	{
+		 SetFont( &font_render_rp, gfx_font );
+	}
 
 	engine =  retroAllocEngine( My_Window, video );
 
@@ -255,6 +263,12 @@ void close_engine()
 	}
 
 	close_engine_window();
+
+	if (gfx_font)
+	{
+		CloseFont( gfx_font );
+		gfx_font = NULL;
+	}
 
 	if (engine)
 	{
