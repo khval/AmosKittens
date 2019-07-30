@@ -76,7 +76,15 @@ void os_text(struct retroScreen *screen,int x, int y, struct stringData *txt, in
 	Move( &font_render_rp, 0,-te.te_Extent.MinY );
 	Text( &font_render_rp, &txt->ptr, txt -> size );
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y + te.te_Extent.MinY);
+	switch (screen -> autoback)
+	{
+		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
+				break;
+		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
+				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				break;
+
+	}
 }
 
 void os_text_no_outline(struct retroScreen *screen,int x, int y, struct stringData *txt, int pen)
@@ -96,8 +104,17 @@ void os_text_no_outline(struct retroScreen *screen,int x, int y, struct stringDa
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y + te.te_Extent.MinY);
+	switch (screen -> autoback)
+	{
+		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
+				break;
+		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
+				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				break;
+
+	}
 }
+
 
 void os_text_outline(struct retroScreen *screen,int x, int y, struct stringData *txt, int pen,int outline)
 {
@@ -135,14 +152,14 @@ void os_text_outline(struct retroScreen *screen,int x, int y, struct stringData 
 
 	SetDrMd( &font_render_rp, mode );	// restore mode
 
-	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, x , y+ te.te_Extent.MinY);
+	switch (screen -> autoback)
+	{
+		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
+				break;
+		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
+				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				break;
+	}
 }
-
-
-
-
-
-
-
 
 

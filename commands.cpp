@@ -307,9 +307,6 @@ BOOL setVarString( struct kittyData *var, kittyData *s )
 	switch (s -> type)
 	{
 		case type_string:
-
-			printf("var->str %08x\n",var->str);
-
 			if (s -> str)
 			{
 				if (var->str) free(var->str);
