@@ -160,14 +160,12 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 #if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 	if (( sig_main_vbl )&&( EngineTask ))
 	{
-		Delay(1);
+//		Delay(1);
 		Wait(1<<sig_main_vbl);
-		printf("normal vbl\n");
 	}
 	else
 	{
 		Delay(1);
-		printf("no engine vbl\n");
 	}
 #endif
 
@@ -942,6 +940,55 @@ char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+
+void _scroll( struct retroScreen *screen, int buf, int x0,int y0, int x1, int y1, int dx,int dy )
+{
+	int bytesPerRow = screen -> bytesPerRow;
+	unsigned char *mem = screen -> Memory[ buf ];
+	unsigned char *src;
+	unsigned char *des;
+	int x,y;
+
+	if (dy>0)
+	{
+		if (dx>0)
+		{
+			for (y=y1;y>=y0;y--)
+			{
+				src = mem + (bytesPerRow * y) + x1;	des = mem + (bytesPerRow * (y+dy)) + x1 +dx;
+				for (x=x1;x>=x0;x--) *des--=*src--;		
+			}
+		}
+		else
+		{
+			for (y=y1;y>=y0;y--)
+			{
+				src = mem + (bytesPerRow * y) + x0; 	des = mem + (bytesPerRow * (y+dy)) + x0 +dx;
+				for (x=x0;x<=x1;x++) *des++=*src++;		
+			}
+		}
+	}
+	else
+	{
+		if (dx>0)
+		{
+			for (y=y0;y<=y1;y++)
+			{
+				src = mem + (bytesPerRow * (y-dy)) + x1;	des = mem + (bytesPerRow * y) + x1 +dx;
+				for (x=x1;x>=x0;x--) *des--=*src--;		
+			}
+		}
+		else
+		{
+			for (y=y0;y<=y1;y++)
+			{
+				src = mem + (bytesPerRow * (y-dy)) + x0; 	des = mem + (bytesPerRow * y) + x0 +dx;
+				for (x=x0;x<=x1;x++) *des++=*src++;		
+			}
+		}
+	}
+}
+
 char *_gfxScroll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -955,12 +1002,6 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 
 				if ((n>-1)&&(n<16))
 				{
-					unsigned char *mem ;
-					unsigned int bytesPerRow ;
-					unsigned char *src;
-					unsigned char *des;
-					int x,y;
-
 					struct retroScreen *screen = screens[current_screen];
 					int x0 = defScrolls[n].x0 ;
 					int y0 = defScrolls[n].y0 ;
@@ -989,50 +1030,17 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 						} 
 						else 
 						{
-							 if (y0+dy<0) y0=-(y0+dy);
+							if (y0+dy<0) y0=-(y0+dy);
 							y1 = y1 + dy;
 						}
 
-						mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
-						bytesPerRow = screen -> bytesPerRow;
 
-						if (dy>0)
+						switch (screen -> autoback)
 						{
-							if (dx>0)
-							{
-								for (y=y1;y>=y0;y--)
-								{
-									src = mem + (bytesPerRow * y) + x1;	des = mem + (bytesPerRow * (y+dy)) + x1 +dx;
-									for (x=x1;x>=x0;x--) *des--=*src--;		
-								}
-							}
-							else
-							{
-								for (y=y1;y>=y0;y--)
-								{
-									src = mem + (bytesPerRow * y) + x0; 	des = mem + (bytesPerRow * (y+dy)) + x0 +dx;
-									for (x=x0;x<=x1;x++) *des++=*src++;		
-								}
-							}
-						}
-						else
-						{
-							if (dx>0)
-							{
-								for (y=y0;y<=y1;y++)
-								{
-									src = mem + (bytesPerRow * (y-dy)) + x1;	des = mem + (bytesPerRow * y) + x1 +dx;
-									for (x=x1;x>=x0;x--) *des--=*src--;		
-								}
-							}
-							else
-							{
-								for (y=y0;y<=y1;y++)
-								{
-									src = mem + (bytesPerRow * (y-dy)) + x0; 	des = mem + (bytesPerRow * y) + x0 +dx;
-									for (x=x0;x<=x1;x++) *des++=*src++;		
-								}
-							}
+							case 0:	_scroll( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,dx,dy );
+									break;
+							default:	_scroll( screen, 0, x0,y0,x1,y1,dx,dy );
+									_scroll( screen, 1, x0,y0,x1,y1,dx,dy );
 						}
 					}
 				}
