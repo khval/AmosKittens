@@ -1752,6 +1752,8 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	NYI(__FUNCTION__);
+
 	switch (args)
 	{
 		case 1:
