@@ -72,6 +72,7 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 	int imageWidth = context -> w * 8;
 	int imageHeight = context -> h * context -> ll;
 	int bytesPerPlan = context -> w * imageHeight;
+	unsigned char *mem = screen -> Memory[0];
 
 	for (int y=0; y < imageHeight; y++)
 	{
@@ -90,7 +91,7 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 				planeOffset += bytesPerPlan;
 			}
 
-			retroPixel( screen, 0, x +x0,y +y0, color );	
+			retroPixel( screen, mem, x +x0,y +y0, color );	
 		}
 	}
 }

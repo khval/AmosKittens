@@ -927,7 +927,7 @@ void LoadIff( char *name, const int sn )
 				{
 					for (x=0;x<screens[sn]->realWidth;x++)
 					{
-						retroPixel( screens[sn], 0, x,y, ReadPixel(&rp,x,y));
+						retroPixel( screens[sn], screens[sn] -> Memory[0], x,y, ReadPixel(&rp,x,y));
 					}
 				}
 			}
