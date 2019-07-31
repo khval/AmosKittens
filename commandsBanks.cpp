@@ -30,6 +30,7 @@
 #include "engine.h"
 #include "bitmap_font.h"
 #include "amosString.h"
+#include "cleanup.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -219,15 +220,13 @@ char *bankErase(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-extern void clean_up_banks();
-
 char *_bankEraseAll( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
 	if (args==1)
 	{
-		clean_up_banks();
+		clean_up_user_banks();
 	}
 	else setError(22,data->tokenBuffer);
 

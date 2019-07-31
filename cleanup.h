@@ -5,6 +5,7 @@ void clean_up_files();
 void clean_up_stack();
 void clean_up_special();
 void clean_up_banks();
+void clean_up_user_banks();
 void clean_up_menus();
 
 

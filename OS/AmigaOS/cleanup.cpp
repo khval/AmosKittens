@@ -188,6 +188,28 @@ void clean_up_banks()
 	}
 }
 
+struct kittyBank *get_first_user_bank()
+{
+	unsigned int n;
+
+	for (n=0; n<kittyBankList.size();n++)
+	{
+		if (kittyBankList[n].id > 0) return &kittyBankList[n];
+	}
+
+	return NULL;
+}
+
+void clean_up_user_banks()
+{
+	struct kittyBank *userBank = NULL;
+
+	while ( userBank = get_first_user_bank())
+	{
+		freeBank( userBank -> id );
+	}
+}
+
 void clean_up_special()
 {
 	int n;
