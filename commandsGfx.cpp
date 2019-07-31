@@ -216,7 +216,7 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 				case 0:	__bar( screen, screen -> double_buffer_draw_frame, x0, y0, x1, y1 );
 						break;
 				default:	__bar( screen, 0,  x0, y0,  x1,  y1 );
-						__bar( screen, 1,  x0, y0,  x1,  y1 );
+						if (screen -> Memory[1]) __bar( screen, 1,  x0, y0,  x1,  y1 );
 						break;
 			}
 		}
@@ -331,8 +331,8 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 		default:
 				if (screen)
 				{
-					 retroLine( screen, 0,x0,y0,x1,y1,screen -> ink0 );
-					 retroLine( screen, 1,x0,y0,x1,y1,screen -> ink0 );
+					retroLine( screen, 0,x0,y0,x1,y1,screen -> ink0 );
+					if (screen -> Memory[1])	 retroLine( screen, 1,x0,y0,x1,y1,screen -> ink0 );
 				}
 				break;
 	}
@@ -426,7 +426,7 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 							xgr = getStackNum( _stack++ );
 							ygr = getStackNum( _stack++ );
 							retroLine( screen, 0 ,lx,ly,xgr,ygr,screen -> ink0 );
-							retroLine( screen, 1 ,lx,ly,xgr,ygr,screen -> ink0 );
+							if (screen -> Memory[1])	retroLine( screen, 1 ,lx,ly,xgr,ygr,screen -> ink0 );
 							lx = xgr;
 							ly=ygr;
 						}
@@ -448,7 +448,7 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 						break;
 				default:
 						retroLine( screen, 0,xgr,ygr,x,y,screen -> ink0 );
-						retroLine( screen, 1,xgr,ygr,x,y,screen -> ink0 );
+						if (screen -> Memory[1])	retroLine( screen, 1,xgr,ygr,x,y,screen -> ink0 );
 			}
 			xgr=x;ygr=y;
 			success = true;
@@ -483,7 +483,7 @@ char *_gfxCircle( struct glueCommands *data, int nextToken )
 						break;
 				default:
 						retroCircle( screen, 0,x0,y0,r,screen -> ink0 ); 
-						retroCircle( screen, 1,x0,y0,r,screen -> ink0 ); 
+						if (screen -> Memory[1]) retroCircle( screen, 1,x0,y0,r,screen -> ink0 ); 
 						break;
 			}
 		}
@@ -517,7 +517,7 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 						break;
 				default:
 						retroEllipse( screen, 0,x0,y0,r0,r1,0,screen -> ink0 ); 
-						retroEllipse( screen, 1,x0,y0,r0,r1,0,screen -> ink0 ); 
+						if (screen -> Memory[1]) retroEllipse( screen, 1,x0,y0,r0,r1,0,screen -> ink0 ); 
 						break;
 			}
 		}
@@ -556,7 +556,7 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 						break;
 				default:
 						retroBox( screen, 0, x0,y0,x1,y1,screen -> ink0 );
-						retroBox( screen, 1, x0,y0,x1,y1,screen -> ink0 );
+						if (screen -> Memory[1]) retroBox( screen, 1, x0,y0,x1,y1,screen -> ink0 );
 						break;
 			}
 		}
@@ -1040,7 +1040,7 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 							case 0:	_scroll( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,dx,dy );
 									break;
 							default:	_scroll( screen, 0, x0,y0,x1,y1,dx,dy );
-									_scroll( screen, 1, x0,y0,x1,y1,dx,dy );
+									if (screen -> Memory[1]) _scroll( screen, 1, x0,y0,x1,y1,dx,dy );
 						}
 					}
 				}
