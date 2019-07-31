@@ -2356,9 +2356,19 @@ char *cmdFastFree( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer );
+
 char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	return tokenBuffer;
+	printf("** command stop **\n");
+	dump_prog_stack();
+	dump_stack();
+	dump_global();
+	dump_680x0_regs();
+	dumpScreenInfo();
+	printf("** press a key to quit **\n");
+	cmdWaitKey(cmd, tokenBuffer );
+	return NULL;
 }
 
 char *cmdCommandLineStr( struct nativeCommand *cmd, char *tokenBuffer )
