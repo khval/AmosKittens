@@ -343,7 +343,7 @@ char *ext_cmd_unpack(nativeCommand *cmd, char *tokenBuffer)
 
 void set_planar_pixel( unsigned char **plain, int bpr, int x, int y, unsigned char c  )
 {
-	unsigned char mask = 0x80 >> x  % 7;
+	unsigned char mask = 0x80 >> x  % 8;
 	unsigned char umask = ~mask;
 	int p = 0;
 	int xbyte = x / 8;
@@ -529,6 +529,9 @@ static void clean_up_context(struct PacPicContext *context)
 	context -> ready_to_encode = false;
 }
 
+#define  set2(a,v) *(unsigned short *) (a) = v
+#define  set4(a,v) *(unsigned int *) (a) = v
+
 char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 {
 	int bank_num;
@@ -579,6 +582,7 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			int x,y;
 			unsigned char c;
 			int maxc = 0;
+			struct kittyBank *bank;
 
 			for (y = 0 ; y < screen -> realHeight; y++ )
 			{
@@ -592,6 +596,7 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 
 			context.h = screen -> realHeight;
 			context.ll = 1;
+			context.d = 1;
 
 			while ( ( ( context.h & 1) == 0 ) && (context.ll != 0x80))
 			{
@@ -605,6 +610,37 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			printf("context.h %d, ll %d\n",context.h,context.ll);
 
 			spack( plains, &context );
+
+
+			if (bank = __ReserveAs( 0, 5, 5000 , "Pic.Pac.", NULL ))
+			{
+				unsigned char *a = (unsigned char *) bank -> start;
+				unsigned int o = 0;
+				unsigned int o_data, o_rle, o_points;
+				
+				set4(a+o, 0x06071963);
+
+				set2(a+o+8, context.w);
+				set2(a+o+10,context.h);
+				set2(a+o+12,context.ll);
+				set2(a+o+14,context.d);
+
+				o_data = 24;
+				o_rle = 24+context.data_used;
+				o_points = 24+context.data_used+context.rledata_used;
+
+				set4( a+o+16, o_rle );
+				set4( a+o+20, o_points );
+
+				memcpy( a+o_data, context.data,  context.data_used );
+				memcpy( a+o_rle, context.rledata,  context.rledata_used );
+				memcpy( a+o_points, context.points,  context.points_used );
+
+
+//	unsigned char *picdata = &data[o+24];
+//	unsigned char *rledata = &data[o+get4(o+16)];
+//	unsigned char *points  = &data[o+get4(o+20)];
+			}
 		}
 
 		for (n=0;n<8;n++)	if (plains[n]) free(plains[n]);
