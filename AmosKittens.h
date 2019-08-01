@@ -322,16 +322,6 @@ struct zone
 	int y1;
 };
 
-struct PacPicContext
-{
-	int w;
-	int h;
-	int ll;
-	int d;
-	unsigned char* raw;
-	unsigned short mode;
-};
-
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
