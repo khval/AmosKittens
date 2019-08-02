@@ -434,7 +434,6 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 					{
 						save_byte( context, *row );
 						rle |= 1;
-						wy++;
 					}
 
 					if (rle & 0x80)
@@ -590,10 +589,6 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				memcpy( a+o_rle, context.rledata,  context.rledata_used );
 				memcpy( a+o_points, context.points,  context.points_used );
 
-
-//	unsigned char *picdata = &data[o+24];
-//	unsigned char *rledata = &data[o+get4(o+16)];
-//	unsigned char *points  = &data[o+get4(o+20)];
 			}
 		}
 
