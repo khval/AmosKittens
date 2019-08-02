@@ -379,23 +379,24 @@ void save_rle( struct PacPicContext *context, unsigned char rle )
 	}
 	else
 	{
-		context -> rrle = context -> rrle << 1;
+		context -> rrle_bit --;
 
 		if ( context -> last_rle != rle)
 		{
 			context -> rledata[ context -> rledata_used ] = rle;
 			context -> rledata_used++;
-			context -> rrle |= 1;
+			context -> rrle |= (1 << context -> rrle_bit);
 		}
 
-		if (context -> rrle & 0x80)
+		if (context -> rrle_bit == 0)	// run out bits..
 		{
 			context -> points[ context -> points_used ] = context -> rrle;
 			context -> points_used++;
-			context -> rrle = 1;
-			context -> first_rle = true;
+			context -> rrle = 0;
+			context -> rrle_bit = 8;		// msb is first rle byte
 		}
 	}
+	context -> last_rle = rle;
 }
 
 void spack( unsigned char **plains, struct PacPicContext *context )
@@ -403,7 +404,6 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 	unsigned char *lump_start;
 	unsigned char rle,last;
 	bool first;
-	int wy;
 
 	lump_start = plains[0];
 
@@ -459,7 +459,8 @@ static void init_context(struct PacPicContext *context, int size)
 	context -> rledata = (unsigned char *) malloc( size * 8 );
 	context -> points = (unsigned char *) malloc( size * 8 );
 
-	context -> rrle = 1;
+	context -> rrle_bit = 8;	// msb is first byte.
+	context -> rrle = 0;
 	context -> first_rle = true;
 	context -> data_used = 0;
 	context -> rledata_used = 0;
