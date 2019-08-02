@@ -32,6 +32,7 @@ struct PacPicContext
 	unsigned char last_rle;
 	bool first_rle;
 	bool ready_to_encode;
+	int rrle_bit;
 };
 
 extern char *ext_cmd_unpack(nativeCommand *cmd, char *ptr);
