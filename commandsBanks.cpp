@@ -606,7 +606,7 @@ struct bankItemDisk
 	char name[8];
 } __attribute__((packed)) ;
 
-void __save_work_data__(FILE *fd,int bankno,struct kittyBank *bank)
+void __save_work_data__(FILE *fd,struct kittyBank *bank)
 {
 	struct bankItemDisk item;
 	int type = bank -> type;
@@ -618,7 +618,7 @@ void __save_work_data__(FILE *fd,int bankno,struct kittyBank *bank)
 		case 9:	type-=8;	flags = 0x80000000; break;
 	}
 
-	item.bank = bankno;
+	item.bank = bank->id;
 	item.type = type;
 	item.length = (bank -> length + 8) | flags;
 	memcpy( item.name, bank->start-8, 8 );
@@ -988,15 +988,12 @@ char *bankLoad(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void __write_banks__( FILE *fd )
+void __write_bank__( FILE *fd, int bankid )
 {
-	unsigned int n=0;
-	struct kittyBank *bank = NULL;
+	struct kittyBank *bank = findBank( bankid );
 
-	for (n=0;n<kittyBankList.size();n++)
+	if (bank)
 	{
-		bank = &kittyBankList[n];
-
 		if (bank->start)
 		{
 			switch (bank->type)
@@ -1007,7 +1004,7 @@ void __write_banks__( FILE *fd )
 				case type_FastData:
 
 						fwrite("AmBk",4,1,fd);
-						__save_work_data__(fd,n+1,bank);
+						__save_work_data__(fd,bank);
 						break;
 /*
 				case type_Music:
@@ -1023,6 +1020,18 @@ void __write_banks__( FILE *fd )
 				default: printf("can't save bank, not supported yet\n");
 			}
 		}
+	}
+}
+
+void __write_banks__( FILE *fd )
+{
+	unsigned int n=0;
+	struct kittyBank *bank = NULL;
+
+	for (n=0;n<kittyBankList.size();n++)
+	{
+		bank = &kittyBankList[n];
+		if (bank) __write_bank__( fd, bank -> id );
 	}
 }
 
@@ -1057,6 +1066,7 @@ char *_bankSave( struct glueCommands *data, int nextToken )
 			fd = fopen( &filename -> ptr , "w");
 			if (fd)
 			{
+				__write_bank__(fd,banknr);
 				fclose(fd);
 			}
 			break;
