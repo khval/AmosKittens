@@ -535,6 +535,7 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			unsigned char c;
 			int maxc = 0;
 			struct kittyBank *bank;
+			int _size;
 
 			for (y = 0 ; y < screen -> realHeight; y++ )
 			{
@@ -563,8 +564,9 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 
 			spack( plains, &context );
 
+			_size = 90 + 24 + context.data_used + context.rledata_used + context.points_used;
 
-			if (bank = __ReserveAs( 0, 5, 5000 , "Pic.Pac.", NULL ))
+			if (bank = __ReserveAs( 0, bank_num, _size , "Pic.Pac.", NULL ))
 			{
 				unsigned char *a = (unsigned char *) bank -> start;
 				unsigned int o = 0;
