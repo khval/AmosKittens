@@ -363,54 +363,6 @@ void set_planar_pixel( unsigned char **plain, int bpr, int x, int y, unsigned ch
 }
 
 
-void get_rle(unsigned char **plains, int bytesPerRow, int h)
-{
-	unsigned char *row;
-	unsigned char last;
-	int b;
-	int n;
-	int y = 0;
-	int wy = 0;	// writen y bytes
-	int rle = 1;
-
-	for (b=0;b<bytesPerRow;b++)
-	{
-		row = plains[0] + b;
-		last = *row;
-		y = 1;
-		wy = 0;
-
-
-		do
-		{
-			rle = 1;
-
-			printf("w %02x\n",last);
-
-			for (n=1;n<8;n++)
-			{
-				row += bytesPerRow;
-				rle = rle << 1 ;
-
-				if ( last != *row)
-				{
-					printf("w %02x\n",*row);
-					rle |= 1;
-					wy++;
-				}
-
-				last = *row;
-				y++;
-			}
-		printf("rle %02x\n",rle);
-
-		} while (y < h);
-
-
-		printf("y %d wy %d h %d\n",y,wy,h);
-	}
-}
-
 void save_byte( struct PacPicContext *context, unsigned char value )
 {
 	context -> data[ context -> data_used ] = value;
