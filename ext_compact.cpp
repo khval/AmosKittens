@@ -423,7 +423,7 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 			{
 				if ( first )
 				{
-					save_byte( context, last );
+					save_byte( context, *row );
 					first = false;
 				}
 				else
@@ -577,9 +577,9 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				set2(a+o+12,context.ll);
 				set2(a+o+14,context.d);
 
-				o_data = 24;
-				o_rle = 24+context.data_used;
-				o_points = 24+context.data_used+context.rledata_used;
+				o_data = o+24;
+				o_rle = o+24+context.data_used;
+				o_points = o+24+context.data_used+context.rledata_used;
 
 				set4( a+o+16, o_rle );
 				set4( a+o+20, o_points );
