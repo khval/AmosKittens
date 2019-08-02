@@ -570,7 +570,13 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				unsigned char *a = (unsigned char *) bank -> start;
 				unsigned int o = 0;
 				unsigned int o_data, o_rle, o_points;
-				
+
+				context.mode = 0;
+
+				set4(a+o,0x12031990 );
+				set2(a+o+20,context.mode);
+				o+=90;
+
 				set4(a+o, 0x06071963);
 
 				set2(a+o+8, context.w);
@@ -582,8 +588,8 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				o_rle = o+24+context.data_used;
 				o_points = o+24+context.data_used+context.rledata_used;
 
-				set4( a+o+16, o_rle );
-				set4( a+o+20, o_points );
+				set4( a+o+16, o_rle - o );
+				set4( a+o+20, o_points - o);
 
 				memcpy( a+o_data, context.data,  context.data_used );
 				memcpy( a+o_rle, context.rledata,  context.rledata_used );
