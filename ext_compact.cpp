@@ -63,6 +63,78 @@ void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB
 	b = (data[pos+1] & 0x0F) * 0x11;
 }
 
+#define _debug_spack
+
+#ifdef debug_spack
+
+unsigned char d_data[40*200];
+int d_data_pos;
+
+unsigned char d_rle[40*200];
+int d_rle_pos;
+
+unsigned char d_rrle[40*200];
+int d_rrle_pos;
+
+void _sd(unsigned char d)
+{
+	printf("save DATA %02X at %d\n",d,d_data_pos);
+	d_data[d_data_pos] = d;
+	d_data_pos++;
+
+	if (d) getchar();
+}
+
+void _srle(unsigned char d)
+{
+	printf("save RLE %02X at %d\n",d,d_data_pos);
+	d_rle[d_rle_pos] = d;
+	d_rle_pos++;
+
+	if (d) getchar();
+}
+
+void _srrle(unsigned char d)
+{
+	printf("save RRLE %02X at %d\n",d,d_data_pos);
+	d_rrle[d_rle_pos] = d;
+	d_rrle_pos++;
+
+	if (d) getchar();
+}
+
+void _cd(unsigned char d)
+{
+	if (d_data[d_data_pos] != d)
+	{
+		printf("DATA pos %d, expected %02x, got %02X\n",d_data_pos,d_data[d_data_pos],d);
+		getchar();
+	}
+	d_data_pos++;
+}
+
+void _crle(unsigned char d)
+{
+	if (d_rle[d_rle_pos] != d)
+	{
+		printf("RLE pos %d, expected %02x, got %02X\n",d_rle_pos,d_rle[d_rle_pos],d);
+		getchar();
+	}
+	d_rle_pos++;
+}
+
+void _crrle(unsigned char d)
+{
+	if (d_rrle[d_rle_pos] != d)
+	{
+		printf("RRLE pos %d, expected %02x, got %02X\n",d_rrle_pos,d_rrle[d_rrle_pos],d);
+		getchar();
+	}
+	d_rrle_pos++;
+}
+
+#endif
+
 void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 )
 {
 	int row;
@@ -103,6 +175,7 @@ void openUnpackedScreen(int screen_num,
 			
 {
 	int n;
+	int x,y,yy;
 
 	int colors = 1 << context -> d;
 	unsigned int videomode = retroLowres_pixeld;
@@ -130,8 +203,8 @@ void openUnpackedScreen(int screen_num,
 
 	if ( (context -> mode & 0x7000) == 0x6000 ) videomode |= retroHam6;
 
-	printf("retromode: %08x\n", videomode);
-	getchar();
+//	printf("retromode: %08x\n", videomode);
+//	getchar();
 
 	engine_lock();
 
@@ -172,6 +245,24 @@ void openUnpackedScreen(int screen_num,
 
 		plotUnpackedContext( context, screen, 0,0 );
 
+#ifdef debug_spack
+		yy = 0;
+		for (y=0;y<context->h;y++)
+		{
+			for (x=0;x<context->w*8;x++)
+				if (x&16) if (x&1) retroPixel( screen, screen -> Memory[0], x, yy,4);
+
+			yy += context -> ll;
+		}
+#endif
+
+	}
+	else
+	{
+		printf("no screen opened\n");
+		printf("Screen Open %d,%d,%d,%08x\n", screen_num, context -> w * 8, context -> h * context -> ll, videomode);
+		getchar();
+
 	}
 
 	video -> refreshAllScanlines = TRUE;
@@ -185,6 +276,12 @@ bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 {
 	//  int o = 20;
 	int o=0;
+
+#ifdef debug_spack
+	d_data_pos = 0;
+	d_rle_pos = 0;
+	d_rrle_pos = 0;
+#endif
 
 	if( get4(o) == 0x12031990 )
 	{
@@ -241,12 +338,19 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 	unsigned char *rledata = &data[o+get4(o+16)];
 	unsigned char *points  = &data[o+get4(o+20)];
 
+#ifdef debug_spack
+	printf("picdata %d, rledata %d points %d\n", o+24, get4(o+16), get4(o+20));
+	printf(" *picdata = %02x, *rledata = %02x,  *points %02x\n ",*picdata, *rledata,  *points);
+	getchar();
+#endif
+
 	if (context -> raw)
 	{
 		unsigned char *&raw = context -> raw;
 		int rrbit = 6, rbit = 7;
 		int picbyte = *picdata++;
 		int rlebyte = *rledata++;
+
 		if (*points & 0x80) rlebyte = *rledata++;
 
 		for( int i = 0; i < context -> d; i++)
@@ -263,32 +367,50 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 
 					for( int l = 0; l < context -> ll; l++ )
 					{
+//						printf("rlebyte %2x rbit %02x\n", rlebyte, (1 << rbit));
+
 						/* if the current RLE bit is set to 1, read in a new picture byte */
 						if (rlebyte & (1 << rbit--)) picbyte = *picdata++;
 
 						/* write picture byte and move down by one line in the picture */
+#ifdef debug_spack
+						_cd( picbyte );
+						if (d_data_pos == 10) return true; 
+#endif
+
 						*dd = picbyte;
          					dd += context -> w;
 
 						/* if we've run out of RLE bits, check the POINTS bits to see if a new RLE byte is needed */
+
 						if (rbit < 0)
 						{
 							rbit = 7;
-							if (*points & (1 << rrbit--)) rlebyte = *rledata++;
-							if (rrbit < 0)  rrbit = 7, points++;
+
+							if (*points & (1 << rrbit--)) 
+							{
+								rlebyte = *rledata++;
+#ifdef debug_spack
+								_crle(rlebyte);
+#endif
+							}
+							if (rrbit < 0)  
+							{
+								rrbit = 7;
+								points++;
+#ifdef debug_spack
+								_crrle( *points );
+#endif
+							}
 						}
 					}
-
 					lump_offset++;
 				}
-
 				lump_start += context -> w * context -> ll;
 			}
 		}
-
 		return true;
 	}
-
 	return false;
 }
 
@@ -304,8 +426,6 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 	{
 		n = getStackNum(stack-1);
 		screen_num = getStackNum(stack);
-
-		printf("unpack %d to %d\n",n,screen_num);
 
 		bank = findBank(n);
 		if (bank)
@@ -359,7 +479,6 @@ void set_planar_pixel( unsigned char **plain, int bpr, int x, int y, unsigned ch
 		c = c >> 1;
 		p++;
 	}
-
 }
 
 
@@ -373,6 +492,9 @@ void save_rle( struct PacPicContext *context, unsigned char rle )
 {
 	if ( context -> first_rle )
 	{
+#ifdef debug_spack
+		_srle( rle );
+#endif
 		context -> rledata[ context -> rledata_used ] = rle;
 		context -> rledata_used ++;
 		context -> first_rle = false;
@@ -383,6 +505,9 @@ void save_rle( struct PacPicContext *context, unsigned char rle )
 
 		if ( context -> last_rle != rle)
 		{
+#ifdef debug_spack
+			_srle( rle );
+#endif
 			context -> rledata[ context -> rledata_used ] = rle;
 			context -> rledata_used++;
 			context -> rrle |= (1 << context -> rrle_bit);
@@ -390,12 +515,16 @@ void save_rle( struct PacPicContext *context, unsigned char rle )
 
 		if (context -> rrle_bit == 0)	// run out bits..
 		{
+#ifdef debug_spack
+			_srrle( context -> rrle );
+#endif
 			context -> points[ context -> points_used ] = context -> rrle;
 			context -> points_used++;
 			context -> rrle = 0;
 			context -> rrle_bit = 8;		// msb is first rle byte
 		}
 	}
+
 	context -> last_rle = rle;
 }
 
@@ -403,17 +532,29 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 {
 	unsigned char *lump_start;
 	unsigned char rle,last;
+	int rle_bit;
 	bool first;
 
-	lump_start = plains[0];
+	last = *plains[0];
+
+	rle = 0;
+	rle_bit = 7;
+	first = true;
+
+#ifdef debug_spack
+	d_data_pos = 0;
+	d_rle_pos = 0;
+	d_rrle_pos = 0;
+#endif
+
+
+	for (int d = 0 ; d < context -> d; d++)
+	{
+		lump_start = plains[d];
 
 	for( int j = 0; j < context -> h; j++ )
 	{
 		unsigned char *lump_offset = lump_start;
-
-		rle = 1;
-		first = true;
-		last = *lump_offset;
 
 		for( int k = 0; k < context -> w; k++ )
 		{
@@ -423,24 +564,30 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 			{
 				if ( first )
 				{
+#ifdef debug_spack
+					_sd( *row );
+#endif
 					save_byte( context, *row );
 					first = false;
 				}
 				else
 				{
-					rle = rle << 1;
-
+					rle_bit --;
+	
 					if ( last != *row)
 					{
+#ifdef debug_spack
+						_sd( *row );
+#endif
 						save_byte( context, *row );
-						rle |= 1;
+						rle |= 1 << rle_bit;
 					}
 
-					if (rle & 0x80)
+					if (rle_bit == 0)
 					{
 						save_rle( context, rle );
-						rle = 1;
-						first = true;
+						rle = 0;
+						rle_bit = 8;
 					}
 				}
 
@@ -451,15 +598,22 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 		}
 		lump_start += context -> w * context -> ll;
 	}
+	}
 }
 
 static void init_context(struct PacPicContext *context, int size)
 {
+
 	context -> data = (unsigned char *) malloc( size * 8 );
 	context -> rledata = (unsigned char *) malloc( size * 8 );
 	context -> points = (unsigned char *) malloc( size * 8 );
 
-	context -> rrle_bit = 8;	// msb is first byte.
+	memset( context -> data, 0, size * 8 );
+	memset( context -> rledata, 0, size * 8 );
+	memset( context -> points, 0, size * 8 );
+	
+
+	context -> rrle_bit = 7;	// msb is first byte.
 	context -> rrle = 0;
 	context -> first_rle = true;
 	context -> data_used = 0;
@@ -524,7 +678,7 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			plains[n] = (unsigned char *) malloc( size );
 			if (plains[n]) 
 			{
-				memset( plains[n], 0, size );
+				memset( plains[n], 0x00, size );
 				allocated ++;
 			}
 		}
@@ -537,19 +691,35 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			struct kittyBank *bank;
 			int _size;
 
+			printf("BIN:\n");
+
 			for (y = 0 ; y < screen -> realHeight; y++ )
 			{
 				for ( x = 0 ; x < screen -> realWidth; x++ )
 				{
 					c = retroPoint( screen, x, y);
+
+//					if ((x<30)&&(y<5)) printf("%c", c ? '1' : ' ');
+
 					set_planar_pixel( plains, context.w, x, y, c );
 					if (c>maxc) maxc = c;
 				}
+//				if (y<5) printf("\n");
 			}
+
+
+
+			printf("%02x\n", *plains[0] );
+			getchar();
 
 			context.h = screen -> realHeight;
 			context.ll = 1;
+
 			context.d = 1;
+			while ( (1L<<context.d) < maxc ) context.d++;
+
+//			if (context.d>2) context.d = 3;
+
 
 			while ( ( ( context.h & 1) == 0 ) && (context.ll != 0x80))
 			{
