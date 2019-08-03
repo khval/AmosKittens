@@ -169,6 +169,25 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 	}
 }
 
+unsigned int toAmosMode(int retromode)
+{
+	int mode = 0;
+
+	if (retromode & retroInterlaced)	
+		mode |= 0x0004;
+
+	if (retromode & retroHires)
+		mode |= 0x8000;
+
+	if (retromode & retroLowres_pixeld)
+		mode |= 0x0000;
+
+	if (retromode & retroHam6)
+		mode |= 0x6000;
+
+	return mode;
+}
+
 void openUnpackedScreen(int screen_num, 
 //		int bytesPerRow, int height, 
 		struct PacPicContext *context )
@@ -718,9 +737,6 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			context.d = 1;
 			while ( (1L<<context.d) < maxc ) context.d++;
 
-//			if (context.d>2) context.d = 3;
-
-
 			while ( ( ( context.h & 1) == 0 ) && (context.ll != 0x80))
 			{
 				context.ll *= 2; 
@@ -742,9 +758,18 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				unsigned int o = 0;
 				unsigned int o_data, o_rle, o_points;
 
-				context.mode = 0;
+				context.mode = toAmosMode( screen -> videomode );
+				context.mode += (context.d * 0x1000) + 0x1200;
 
 				set4(a+o,0x12031990 );
+				set2(a+o+4, screen -> realWidth );
+				set2(a+o+6, screen -> realHeight );
+				set2(a+o+8, (screen -> scanline_x +128) / 2 );
+				set2(a+o+10, (screen -> scanline_y + (50*2)) / 2);
+				set2(a+o+12, screen -> realWidth );
+				set2(a+o+14, screen -> realHeight );
+				// 0x0000 // +16
+				// 0x0000 // +18
 				set2(a+o+20,context.mode);
 				o+=90;
 
