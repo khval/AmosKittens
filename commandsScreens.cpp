@@ -1339,23 +1339,48 @@ char *_gfxScreenMode( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-	}
-	else setError(22,data->tokenBuffer);
+		int screen_num =0;
 
-	if (screens[current_screen])
+		if (kittyStack[stack].type == type_int )
+		{
+			screen_num  = getStackNum(stack);
+		}
+		else
+		{
+			screen_num = current_screen;
+		}
+
+		if (screens[screen_num])
+		{
+			ret = screens[screen_num]->videomode;
+			setStackNum(ret);
+			return NULL;
+		}
+		setError(22,data->tokenBuffer);
+	}
+	else 
 	{
-		ret = screens[current_screen]->videomode;
+		popStack( stack - data->stack );
+		setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
-	setStackNum(ret);
 	return NULL;
 }
 
 char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	// some thing to do with drawing, not sure.
-	stackCmdParm( _gfxScreenMode, tokenBuffer );
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+
+	if (next_token == 0x0074)
+	{
+		stackCmdParm( _gfxScreenMode, tokenBuffer );
+		setStackNone();
+	}
+	else if (screens[current_screen])	// check if current screen is open.
+	{
+		setStackNum(screens[current_screen] -> videomode);
+	}
+
 	return tokenBuffer;
 }
 
