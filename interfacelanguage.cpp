@@ -44,6 +44,7 @@ extern FILE *engine_fd;
 #include "engine.h"
 #include "bitmap_font.h"
 #include "amosstring.h"
+#include "ext_compact.h"
 
 extern struct TextFont *topaz8_font;
 
