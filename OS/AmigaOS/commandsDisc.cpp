@@ -552,6 +552,7 @@ bool pattern_match( char *name , const char *pattern )
 
 void split_path_pattern( struct stringData *str, struct stringData **path, struct stringData **pattern)
 {
+	bool has_pattern = false;
 	int _len;
 	char c;
 	int i;
@@ -572,12 +573,23 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 			for (i=_len-1; i>=0;i--)
 			{
 				c = (&str->ptr) [i];
+		
+				if (c=='*') has_pattern = true;
 
 				if ((c == '/') || ( c == ':'))
 				{
-					*path = amos_strndup( str, i );
-					*pattern = toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
-					return;
+					if (has_pattern)
+					{
+						*path = amos_strndup( str, i+1 );
+						*pattern = toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
+						return;
+					}
+					else 
+					{
+						*path = amos_strdup(str);
+						*pattern = toAmosString("",0);
+						return;
+					}
 				}
 			}
 		}		
