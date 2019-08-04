@@ -153,7 +153,36 @@ struct kittyBank * allocBank( int banknr )
 	return findBank( banknr );
 }
 
-#define bankCount()  kittyBankList.size()
+int bankCount(int opt) 
+{
+	int ret = 0;
+
+	switch (opt)
+	{
+		case -1:
+			{
+				int n = 0;
+				for (n=0;n<kittyBankList.size();n++)
+				{
+					if (kittyBankList[n].id<0) ret++;
+				}
+			}
+			break;
+		case 0:
+			ret = kittyBankList.size();
+			break;
+		case 1:
+			{
+				int n = 0;
+				for (n=0;n<kittyBankList.size();n++)
+				{
+					if (kittyBankList[n].id>0) ret++;
+				}
+			}
+			break;
+	}
+	return ret;	
+}
 
 bool bank_is_object( struct kittyBank *bank, void *ptr);
 
@@ -969,7 +998,7 @@ char *_bankLoad( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-				__load_bank__( getStackString( stack  ) , -1 );
+			__load_bank__( getStackString( stack  ) , -1 );
 			break;
 
 		case 2:
@@ -1031,7 +1060,7 @@ void __write_banks__( FILE *fd )
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		bank = &kittyBankList[n];
-		if (bank) __write_bank__( fd, bank -> id );
+		if (bank) if (bank -> id>0) __write_bank__( fd, bank -> id );
 	}
 }
 
@@ -1052,7 +1081,7 @@ char *_bankSave( struct glueCommands *data, int nextToken )
 			fd = fopen( &filename -> ptr , "w");
 			if (fd)
 			{
-				__write_ambs__( fd, bankCount() );
+				__write_ambs__( fd, bankCount(1) );
 				__write_banks__(fd);
 				fclose(fd);
 			}
