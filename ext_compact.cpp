@@ -57,11 +57,19 @@ static int r[32]={0},g[32]={0},b[32]={0};
 #define get2( pos ) (int(data[pos])*256 + int(data[pos+1]))
 #define get4(  pos ) ( ( ( int(data[pos])*256 + int(data[pos+1]) )*256 + int(data[pos+2]) ) * 256 + int(data[pos+3]) )
 
-void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB converted to 0..255
+static void getRGB( unsigned char *data, int pos, int &r, int &g, int &b ) { // get RGB converted to 0..255
 	r = (data[pos] & 0x0F) * 0x11;
 	g = ((data[pos+1] & 0xF0)>>4) * 0x11;
 	b = (data[pos+1] & 0x0F) * 0x11;
 }
+
+static void setRGB( unsigned char *data, int pos, int r, int g, int b )
+{
+	data[pos] |= 0x01 * (r >> 4);
+	data[pos+1] |= 0x10 * (g >> 4);
+	data[pos+1] |= 0x01 * (b >> 4);
+}
+
 
 #define _debug_spack
 
@@ -194,7 +202,6 @@ void openUnpackedScreen(int screen_num,
 			
 {
 	int n;
-	int x,y,yy;
 
 	int colors = 1 << context -> d;
 	unsigned int videomode = retroLowres_pixeld;
@@ -771,6 +778,16 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				// 0x0000 // +16
 				// 0x0000 // +18
 				set2(a+o+20,context.mode);
+
+				// set palette
+				for( int i=0; i<32; ++i )
+				{ 
+					setRGB( a, o+26+i*2, 
+						screen -> orgPalette[i].r,
+						screen -> orgPalette[i].g,
+						screen -> orgPalette[i].b ); 
+				}
+
 				o+=90;
 
 				set4(a+o, 0x06071963);
