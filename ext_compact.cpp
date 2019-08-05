@@ -48,6 +48,8 @@ extern void _my_print_text(struct retroScreen *screen, char *text, int maxchars)
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
+int get_pac_pic_option( int bank_num, unsigned int block_id, int offset);
+
 // palette data for RLE
 static int r[32]={0},g[32]={0},b[32]={0};
 
@@ -445,6 +447,40 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 	return false;
 }
 
+int get_pac_pic_option( int bank_num, unsigned int block_id, int offset)
+{
+	struct kittyBank *bank;
+	unsigned char *ptr;
+	unsigned int this_id;
+
+	bank = findBank(bank_num);
+	if (bank)
+	{
+		int o=0;
+		ptr = (unsigned char *) bank -> start;
+				
+		while(true)
+		{
+			this_id = *((unsigned int *) (ptr+o));	
+			if (block_id != this_id )
+			{
+				switch (this_id)
+				{
+					case 0x12031990:	o+= 90;	break;	// known size of block, move to next.
+					default:	return 0;
+				}
+			}
+			else
+			{
+				o+=offset;
+				return (int) *((unsigned short *) (ptr+o));
+			}
+		}
+	}
+
+	return 0;
+}
+
 void unpack( struct glueCommands *data, int bank_num, int screen_num, int x0, int y0 )
 {
 	struct kittyBank *bank;
@@ -493,6 +529,9 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		case 1:
 			bank_num = getStackNum(stack);
 			screen_num = current_screen;
+
+			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
 			break;
 
 		case 2:
@@ -503,16 +542,24 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 
 		case 3:
 			bank_num = getStackNum(stack-2);
-			x0 = getStackNum(stack-1);
-			y0 = getStackNum(stack);
+
+			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
+
+			stack_get_if_int(stack-1,&x0);
+			stack_get_if_int(stack,&y0);
 			screen_num = current_screen;
 			break;
 
 		case 4:
 			bank_num = getStackNum(stack-3);
 			screen_num = getStackNum(stack-2);
-			x0 = getStackNum(stack-1);
-			y0 = getStackNum(stack);
+
+			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
+
+			stack_get_if_int(stack-1,&x0);
+			stack_get_if_int(stack,&y0);
 			__close_screen( screen_num );
 			break;
 
@@ -725,9 +772,7 @@ void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 	int allocated;
 	int size;
 	struct PacPicContext context;
-	struct kittyBank *bank;
 	unsigned char *plains[8];
-
 
 		freeBank(bank_num);
 
@@ -873,7 +918,6 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 	int screen_num;
 
 	int args = stack - data -> stack  +1;
-	int w;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
