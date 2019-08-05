@@ -763,7 +763,7 @@ static void clean_up_context(struct PacPicContext *context)
 #define  set2(a,v) *(unsigned short *) (a) = v
 #define  set4(a,v) *(unsigned int *) (a) = v
 
-void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int y1 )
+bool spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int y1, bool include_screen )
 {
 	int imageWidth;
 	int imageHeight;
@@ -773,6 +773,8 @@ void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 	int size;
 	struct PacPicContext context;
 	unsigned char *plains[8];
+
+	if (screen == NULL) return false;
 
 		freeBank(bank_num);
 
@@ -845,34 +847,42 @@ void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 				unsigned char *a = (unsigned char *) bank -> start;
 				unsigned int o = 0;
 				unsigned int o_data, o_rle, o_points;
-
+			
 				context.mode = toAmosMode( screen -> videomode );
-				context.mode += (context.d * 0x1000) + 0x1200;
 
-				set4(a+o,0x12031990 );
-				set2(a+o+4, screen -> realWidth );
-				set2(a+o+6, screen -> realHeight );
-				set2(a+o+8, (screen -> scanline_x +128) / 2 );
-				set2(a+o+10, (screen -> scanline_y + (50*2)) / 2);
-				set2(a+o+12, screen -> realWidth );
-				set2(a+o+14, screen -> realHeight );
-				// 0x0000 // +16
-				// 0x0000 // +18
-				set2(a+o+20,context.mode);
+				// bitmask 0x8000 is Hires, so can't give it that high depth, most limit it.
+				// Better to get depth from the image data.
 
-				// set palette
-				for( int i=0; i<32; ++i )
-				{ 
-					setRGB( a, o+26+i*2, 
-						screen -> orgPalette[i].r,
-						screen -> orgPalette[i].g,
-						screen -> orgPalette[i].b ); 
+				context.mode |= context.d <6 ? (context.d * 0x1000) : 0x6000 ;		
+				context.mode |= 0x0200;		// not sure but this bit is set while testing in AMOS PRO.
+
+				if (include_screen)
+				{
+					set4(a+o,0x12031990 );
+					set2(a+o+4, screen -> realWidth );
+					set2(a+o+6, screen -> realHeight );
+					set2(a+o+8, (screen -> scanline_x +128) / 2 );
+					set2(a+o+10, (screen -> scanline_y + (50*2)) / 2);
+					set2(a+o+12, screen -> displayWidth );
+					set2(a+o+14, screen -> displayHeight );
+					set2(a+o+16, screen -> offset_x );
+					set2(a+o+18, screen -> offset_y );
+					set2(a+o+20,context.mode);
+					set2(a+o+22,2624);	// ??
+					set2(a+o+24,context.d);
+
+					// set palette
+					for( int i=0; i<32; ++i )
+					{ 
+						setRGB( a, o+26+i*2, 
+							screen -> orgPalette[i].r,
+							screen -> orgPalette[i].g,
+							screen -> orgPalette[i].b ); 
+					}
+					o+=90;
 				}
 
-				o+=90;
-
 				set4(a+o, 0x06071963);
-
 				set2(a+o+4, x0 >> 2 );
 				set2(a+o+6, y0 );
 				set2(a+o+8, context.w);
@@ -909,6 +919,7 @@ void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 
 		clean_up_context( &context );
 
+	return true;
 }
 
 char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
@@ -952,7 +963,7 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 
 	printf("spack %d to %d,%d,%d,%d,%d\n",screen_num, bank_num,x0,y0,x1,y1);
 
-	spack( screens[screen_num] , bank_num, x0,y0,x1,y1 );
+	spack( screens[screen_num] , bank_num, x0,y0,x1,y1, true );
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -964,4 +975,59 @@ char *ext_cmd_spack(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _ext_cmd_spack, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ext_cmd_pack( struct glueCommands *data, int nextToken )
+{
+	int x0=0,y0=0,x1=0,y1=0;
+	int bank_num;
+	int screen_num;
+
+	int args = stack - data -> stack  +1;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			screen_num = getStackNum(stack-1);
+			bank_num = getStackNum(stack);
+
+			if (struct retroScreen *screen = screens[screen_num])
+			{
+				x1 = screen -> realWidth-1;
+				y1 = screen -> realHeight-1;
+			}
+			break;
+
+		case 6:
+			screen_num = getStackNum(stack-5);
+			bank_num = getStackNum(stack-4);
+			x0 = getStackNum(stack-3);
+			y0 = getStackNum(stack-2);
+			x1 = getStackNum(stack-1);
+			y1 = getStackNum(stack);
+			break;
+
+		default:
+			setError(22, data->tokenBuffer);	// wrong number of args.
+			popStack( stack - data->stack );
+			return NULL;
+			break;
+	}
+
+	dprintf("pack %d to %d,%d,%d,%d,%d\n",screen_num, bank_num,x0,y0,x1,y1);
+
+	spack( screens[screen_num] , bank_num, x0,y0,x1,y1, false );
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *ext_cmd_pack(nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_pack, tokenBuffer );
+	return tokenBuffer;
+}
+
 
