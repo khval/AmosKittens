@@ -155,6 +155,8 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 	int bytesPerPlan = context -> w * imageHeight;
 	unsigned char *mem = screen -> Memory[0];
 
+	printf(" plotUnpackedContext %d,%d\n ",x0,y0);
+
 	for (int y=0; y < imageHeight; y++)
 	{
 		row = context -> w * y;
@@ -162,7 +164,7 @@ void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *scr
 		for (int x=0; x < imageWidth; x++)
 		{
 			byte = x / 8;
-			bit = 1<<(7-(x & 7));
+			bit = 0x80 >> (x&7);
 			planeOffset = 0;
 
 			color = 0;
@@ -194,6 +196,18 @@ unsigned int toAmosMode(int retromode)
 		mode |= 0x6000;
 
 	return mode;
+}
+
+void __close_screen( int screen_num )
+{
+	if (screens[screen_num]) 
+	{
+//		videomode = screens[screen_num] -> videomode;
+
+		freeScreenBobs(screen_num);
+		freeAllTextWindows( screens[screen_num] );
+		retroCloseScreen(&screens[screen_num]);
+	}
 }
 
 void openUnpackedScreen(int screen_num, 
@@ -233,15 +247,6 @@ void openUnpackedScreen(int screen_num,
 //	getchar();
 
 	engine_lock();
-
-	if (screens[screen_num]) 
-	{
-		videomode = screens[screen_num] -> videomode;
-
-		freeScreenBobs(screen_num);
-		freeAllTextWindows( screens[screen_num] );
-		retroCloseScreen(&screens[screen_num]);
-	}
 
 	screens[screen_num] = retroOpenScreen(context -> w * 8, context -> h * context -> ll, videomode );
 
@@ -440,39 +445,86 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 	return false;
 }
 
+void unpack( struct glueCommands *data, int bank_num, int screen_num, int x0, int y0 )
+{
+	struct kittyBank *bank;
+
+	x0 -= x0 %8; 
+
+	bank = findBank(bank_num);
+	if (bank)
+	{
+		if (bank -> start)
+		{
+			struct PacPicContext context;
+
+			if ( convertPacPic( (unsigned char *) bank -> start, &context ) )
+			{
+				if (screens[screen_num] == NULL)	// no screen, open new screen.
+				{
+					openUnpackedScreen( screen_num, &context );
+				}
+				else
+				{
+					plotUnpackedContext( &context, screens[screen_num], x0,y0 );
+				}
+
+				free( context.raw);
+			}
+
+			if (screens[screen_num] == NULL) setError(47,data->tokenBuffer );
+		}
+		else setError(36,data->tokenBuffer);	// Bank not reserved
+	}
+	else setError(25, data->tokenBuffer);
+}
+
 char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 {
-	int n;
-	int screen_num;
-	struct kittyBank *bank;
+	int bank_num = 0;
+	int screen_num = 0;
+	int x0 = 0, y0 = 0;
+
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data -> stack  +1;
 
-	if (args==2)
+	switch (args)
 	{
-		n = getStackNum(stack-1);
-		screen_num = getStackNum(stack);
+		case 1:
+			bank_num = getStackNum(stack);
+			screen_num = current_screen;
+			break;
 
-		bank = findBank(n);
-		if (bank)
-		{
-			if (bank -> start)
-			{
-				struct PacPicContext context;
+		case 2:
+			bank_num = getStackNum(stack-1);
+			screen_num = getStackNum(stack);
+			__close_screen( screen_num );
+			break;
 
-				if ( convertPacPic( (unsigned char *) bank -> start, &context ) )
-				{
-					openUnpackedScreen( screen_num, &context );
-					free( context.raw);
-				}
+		case 3:
+			bank_num = getStackNum(stack-2);
+			x0 = getStackNum(stack-1);
+			y0 = getStackNum(stack);
+			screen_num = current_screen;
+			break;
 
-				if (screens[screen_num] == NULL) setError(47,data->tokenBuffer );
-			}
-			else setError(36,data->tokenBuffer);	// Bank not reserved
-		}
-		else setError(25, data->tokenBuffer);
+		case 4:
+			bank_num = getStackNum(stack-3);
+			screen_num = getStackNum(stack-2);
+			x0 = getStackNum(stack-1);
+			y0 = getStackNum(stack);
+			__close_screen( screen_num );
+			break;
+
+		default:
+			setError(22, data->tokenBuffer);	// wrong number of args.
+			popStack( stack - data->stack );
+			return NULL;
 	}
-	else setError(22, data->tokenBuffer);	// wrong number of args.
+
+	printf( "unpack( %08x, %d  %d, %d, %d )\n" ,  data, bank_num, screen_num, x0, y0 );
+
+	unpack( data, bank_num, screen_num, x0, y0 );
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -554,7 +606,7 @@ void save_rle( struct PacPicContext *context, unsigned char rle )
 	context -> last_rle = rle;
 }
 
-void spack( unsigned char **plains, struct PacPicContext *context )
+void spack_image( unsigned char **plains, struct PacPicContext *context )
 {
 	unsigned char *lump_start;
 	unsigned char rle,last;
@@ -578,52 +630,52 @@ void spack( unsigned char **plains, struct PacPicContext *context )
 	{
 		lump_start = plains[d];
 
-	for( int j = 0; j < context -> h; j++ )
-	{
-		unsigned char *lump_offset = lump_start;
-
-		for( int k = 0; k < context -> w; k++ )
+		for( int j = 0; j < context -> h; j++ )
 		{
-			unsigned char *row = lump_offset;
+			unsigned char *lump_offset = lump_start;
 
-			for( int l = 0; l < context -> ll; l++ )
+			for( int k = 0; k < context -> w; k++ )
 			{
-				if ( first )
+				unsigned char *row = lump_offset;
+
+				for( int l = 0; l < context -> ll; l++ )
 				{
-#ifdef debug_spack
-					_sd( *row );
-#endif
-					save_byte( context, *row );
-					first = false;
-				}
-				else
-				{
-					rle_bit --;
-	
-					if ( last != *row)
+					if ( first )
 					{
 #ifdef debug_spack
 						_sd( *row );
 #endif
 						save_byte( context, *row );
-						rle |= 1 << rle_bit;
+						first = false;
 					}
-
-					if (rle_bit == 0)
+					else
 					{
-						save_rle( context, rle );
-						rle = 0;
-						rle_bit = 8;
-					}
-				}
+						rle_bit --;
+	
+						if ( last != *row)
+						{
+#ifdef debug_spack
+							_sd( *row );
+#endif
+							save_byte( context, *row );
+							rle |= 1 << rle_bit;
+						}
 
-				last = *row;
-				row += context -> w;
+						if (rle_bit == 0)
+						{
+							save_rle( context, rle );
+							rle = 0;
+							rle_bit = 8;
+						}
+					}
+
+					last = *row;
+					row += context -> w;
+				}
+				lump_offset++;
 			}
-			lump_offset++;
+			lump_start += context -> w * context -> ll;
 		}
-		lump_start += context -> w * context -> ll;
-	}
 	}
 }
 
@@ -664,37 +716,29 @@ static void clean_up_context(struct PacPicContext *context)
 #define  set2(a,v) *(unsigned short *) (a) = v
 #define  set4(a,v) *(unsigned int *) (a) = v
 
-char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
+void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int y1 )
 {
-	int bank_num;
-	int screen_num;
-	struct kittyBank *bank;
-	unsigned char *plains[8];
-	struct retroScreen *screen;
-	int args = stack - data -> stack  +1;
+	int imageWidth;
+	int imageHeight;
 	int planarWidth;
 	int n;
 	int allocated;
 	int size;
 	struct PacPicContext context;
+	struct kittyBank *bank;
+	unsigned char *plains[8];
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args==2)
-	{
-		screen_num = getStackNum(stack-1);
-		bank_num = getStackNum(stack);
-
-		printf("spack %d to %d\n",screen_num, bank_num);
 		freeBank(bank_num);
 
-		screen = screens[screen_num];
+		imageWidth = x1 - x0 + 1;
+		imageHeight = y1 - y0 + 1;
 
-		planarWidth = screen -> realWidth;
-		planarWidth += planarWidth % 8 ?  7 - screen -> realWidth % 8 : 0;
+		planarWidth = imageWidth;
+		planarWidth -= planarWidth % 8 ;
 		context.w = planarWidth / 8;
 
-		size = context.w * screen -> realHeight;
+		size = context.w * imageHeight;
 		allocated = 0;
 
 		init_context( &context , size );
@@ -709,6 +753,8 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			}
 		}
 
+		printf("allocated plains %d\n",allocated);
+
 		if ((allocated == 8) && (context.ready_to_encode))
 		{
 			int x,y;
@@ -717,32 +763,18 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			struct kittyBank *bank;
 			int _size;
 
-			printf("BIN:\n");
-
-			for (y = 0 ; y < screen -> realHeight; y++ )
+			for (y = 0 ; y < imageHeight; y++ )
 			{
-				for ( x = 0 ; x < screen -> realWidth; x++ )
+				for ( x = 0 ; x < planarWidth; x++ )
 				{
-					c = retroPoint( screen, x, y);
-
-//					if ((x<30)&&(y<5)) printf("%c", c ? '1' : ' ');
-
+					c = retroPoint( screen, x+x0, y+y0);
 					set_planar_pixel( plains, context.w, x, y, c );
 					if (c>maxc) maxc = c;
 				}
-//				if (y<5) printf("\n");
 			}
 
-
-
-			printf("%02x\n", *plains[0] );
-			getchar();
-
-			context.h = screen -> realHeight;
+			context.h = imageHeight;
 			context.ll = 1;
-
-			context.d = 1;
-			while ( (1L<<context.d) < maxc ) context.d++;
 
 			while ( ( ( context.h & 1) == 0 ) && (context.ll != 0x80))
 			{
@@ -750,17 +782,21 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 				context.h /= 2;
 			}
 
+			context.d = 1;
+			while ( (1L<<context.d) < maxc ) context.d++;
+
 			printf("looks like success to me\n");
 			printf("highest color value is %d\n",maxc);
 			printf("bytes per row: %d\n",context.w);
 			printf("context.h %d, ll %d\n",context.h,context.ll);
 
-			spack( plains, &context );
+			spack_image( plains, &context );
 
 			_size = 90 + 24 + context.data_used + context.rledata_used + context.points_used;
 
 			if (bank = __ReserveAs( 9, bank_num, _size , "Pac.Pic.", NULL ))
 			{
+
 				unsigned char *a = (unsigned char *) bank -> start;
 				unsigned int o = 0;
 				unsigned int o_data, o_rle, o_points;
@@ -811,15 +847,66 @@ char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
 			}
 		}
 
-		for (n=0;n<8;n++)	if (plains[n]) free(plains[n]);
+		for (n=0;n<8;n++)
+		{
+			if (plains[n])
+			{
+				free(plains[n]);
+				plains[n] = NULL;
+			}
+		}
 
 		printf ("context -> data_used %d\n", context.data_used);
 		printf ("context -> rledata_used %d\n", context.rledata_used);
 		printf ("context -> points_used %d\n", context.points_used);
 
 		clean_up_context( &context );
+
+}
+
+char *_ext_cmd_spack( struct glueCommands *data, int nextToken )
+{
+	int x0=0,y0=0,x1=0,y1=0;
+	int bank_num;
+	int screen_num;
+
+	int args = stack - data -> stack  +1;
+	int w;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			screen_num = getStackNum(stack-1);
+			bank_num = getStackNum(stack);
+
+			if (struct retroScreen *screen = screens[screen_num])
+			{
+				x1 = screen -> realWidth-1;
+				y1 = screen -> realHeight-1;
+			}
+			break;
+
+		case 6:
+			screen_num = getStackNum(stack-5);
+			bank_num = getStackNum(stack-4);
+			x0 = getStackNum(stack-3);
+			y0 = getStackNum(stack-2);
+			x1 = getStackNum(stack-1);
+			y1 = getStackNum(stack);
+			break;
+
+		default:
+			setError(22, data->tokenBuffer);	// wrong number of args.
+			popStack( stack - data->stack );
+			return NULL;
+			break;
 	}
-	else setError(22, data->tokenBuffer);	// wrong number of args.
+
+	printf("spack %d to %d,%d,%d,%d,%d\n",screen_num, bank_num,x0,y0,x1,y1);
+
+	spack( screens[screen_num] , bank_num, x0,y0,x1,y1 );
 
 	popStack( stack - data->stack );
 	return NULL;

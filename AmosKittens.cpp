@@ -1794,8 +1794,10 @@ int main(int args, char **arg)
 		if (kitty_extensions[2].lookup)
 		{	
 			*((void **) (kitty_extensions[2].lookup + 0x0026)) = (void *) ext_cmd_spack;
+			*((void **) (kitty_extensions[2].lookup + 0x0036)) = (void *) ext_cmd_spack;
 			*((void **) (kitty_extensions[2].lookup + 0x0048)) = (void *) ext_cmd_unpack;
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
+			*((void **) (kitty_extensions[2].lookup + 0x0060)) = (void *) ext_cmd_unpack;
 		}
 
 		// function table init.
