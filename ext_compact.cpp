@@ -828,6 +828,8 @@ void spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 
 				set4(a+o, 0x06071963);
 
+				set2(a+o+4, x0 >> 2 );
+				set2(a+o+6, y0 );
 				set2(a+o+8, context.w);
 				set2(a+o+10,context.h);
 				set2(a+o+12,context.ll);
