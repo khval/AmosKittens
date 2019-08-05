@@ -450,14 +450,23 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 			const char *ptr;
 			char *dest = bank->start-bank_header;
 
-			for (ptr = bankTypes[type]; *ptr ; ptr++ )
+			if (name)
 			{
-				dest[n]=*ptr;	n++;
+				int tl = strlen( name );
+				memset( dest, ' ', 8 );	// fill mem with space.
+				memcpy( dest, name, tl > 8 ? 8 : tl );
 			}
-
-			while (n<8)
+			else
 			{
-				dest[n] = ' '; n++;
+				for (ptr = bankTypes[type]; *ptr ; ptr++ )
+				{
+					dest[n]=*ptr;	n++;
+				}
+
+				while (n<8)
+				{
+					dest[n] = ' '; n++;
+				}
 			}
 		}
 
