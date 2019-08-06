@@ -287,6 +287,7 @@ char *errErrn(struct nativeCommand *cmd, char *tokenBuffer)
 char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	setStackNum( kittyError.trapCode );
 	kittyError.trapCode = 0;
 	return tokenBuffer;
@@ -296,15 +297,33 @@ char *_errErrStr( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = stack - data->stack +1 ;
+	struct stringData *err_str = NULL;
+	int err = 0;
 
-	if (args == 1)
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
 	{
-		int err = getStackNum(stack);
-		struct stringData *err_str = toAmosString( errorsRunTime[ err ].errorText, strlen(errorsRunTime[ err ].errorText) );
-		setStackStr( err_str );
+		case 1: 	err = getStackNum(stack);
+				break;
+		default:
+				popStack( stack - data->stack );
+				setError(22,data->tokenBuffer);
+				return NULL;
 	}
 
-	popStack( stack - data->stack );
+	for (struct error *e = errorsRunTime; *e->errorText;e++ )
+	{
+		if (e -> errorCode == err )
+		{
+			err_str = toAmosString( e -> errorText, strlen(e -> errorText) );
+			break;
+		}
+	}
+
+	if (err_str == NULL) err_str = toAmosString( "", 0 );
+	setStackStr( err_str );
+
 	return NULL;
 }
 
