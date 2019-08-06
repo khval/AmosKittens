@@ -352,8 +352,6 @@ char *guiDialogUnfreeze(nativeCommand *cmd, char *tokenBuffer)
 
 int current_dialog = -1;
 
-void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
-
 char *_guiDialogClose( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -388,7 +386,8 @@ char *_guiDialogClose( struct glueCommands *data, int nextToken )
 		{
 			if (context -> saved_block)
 			{
-				retroPutBlock( screens[current_screen], context -> saved_block, context -> dialog[0].x, context -> dialog[0].y, 0xFF );
+				struct retroScreen *screen = screens[current_screen];
+				retroPutBlock( screen , screen -> double_buffer_draw_frame, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y, 0xFF );
 			}
 
 			cleanup_inerface_context( context );

@@ -64,11 +64,22 @@ extern void os_text_no_outline(struct retroScreen *screen,int x, int y, struct s
 extern void os_text(struct retroScreen *screen,int x, int y, struct stringData *txt, int ink0, int ink1);
 extern int os_text_width(struct stringData *txt);
 
-void retroPutBlock(struct retroScreen *screen, struct retroBlock *block,  int x, int y, unsigned char bitmask);
-
 struct retroBlock *cursor_block = NULL; 
 
 int curs_lines[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+
+void __clear_cursor(struct retroScreen *screen, struct retroTextWindow *textWindow, int buffer)
+{
+	int gx,gy;
+	int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+	int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+	gx=8*x;	gy=8*y;
+
+	if (cursor_block)
+	{
+		retroPutBlock( screen, screen -> double_buffer_draw_frame, cursor_block, gx, gy, 0xFF );
+	}
+}
 
 void clear_cursor( struct retroScreen *screen )
 {
@@ -78,14 +89,15 @@ void clear_cursor( struct retroScreen *screen )
 
 		if ((curs_on)&&(textWindow))
 		{
-			int gx,gy;
-			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
-			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
-			gx=8*x;	gy=8*y;
-
-			if (cursor_block)
+			switch ( screen -> autoback )
 			{
-				retroPutBlock( screen, cursor_block, gx, gy, 0xFF );
+				case 0:
+					__clear_cursor( screen, textWindow, screen -> double_buffer_draw_frame);
+					break;
+				default:
+					__clear_cursor( screen, textWindow, 0 );
+					__clear_cursor( screen, textWindow, 1 );
+					break;
 			}
 		}
 	}
@@ -111,7 +123,7 @@ void draw_cursor(struct retroScreen *screen)
 
 			if (cursor_block)
 			{
-				retroGetBlock( screen, cursor_block, gx, gy );
+				retroGetBlock( screen, screen -> double_buffer_draw_frame, cursor_block, gx, gy );
 			}
 
 			for (y=0;y<8;y++)
@@ -1531,7 +1543,7 @@ struct retroTextWindow *redrawWindowsExceptID(struct retroScreen *screen,int exc
 				{
 					if ((*tab) -> saved) 
 					{
-						retroPutBlock( screen, (*tab) -> saved, (*tab) -> x * 8, (*tab) -> y * 8, 0xFF );
+						retroPutBlock( screen, screen -> double_buffer_draw_frame, (*tab) -> saved, (*tab) -> x * 8, (*tab) -> y * 8, 0xFF );
 					}
 				}
 			}
@@ -1564,7 +1576,7 @@ char *_textWindow( struct glueCommands *data, int nextToken )
 
 						if (textWindow -> saved) 
 						{
-							retroPutBlock( screen, textWindow -> saved, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+							retroPutBlock( screen, screen -> double_buffer_draw_frame, textWindow -> saved, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
 						}
 					}
 					else printf("not found id: %d\n",id);
@@ -1857,16 +1869,16 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 
 		if (block)
 		{
-			retroGetBlock(screen,block, textWindow -> x * 8, textWindow -> y *8 );
+			retroGetBlock(screen, screen -> double_buffer_draw_frame, block, textWindow -> x * 8, textWindow -> y *8 );
 
 			redrawWindowsExceptID( screen, textWindow -> id );
 
 			textWindow -> x = x /8;
 			textWindow -> y = y /8; 
 
-			if (textWindow -> saved) retroGetBlock(screen,textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
+			if (textWindow -> saved) retroGetBlock(screen, screen -> double_buffer_draw_frame, textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
 
-			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+			retroPutBlock( screen, screen -> double_buffer_draw_frame, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
 			retroFreeBlock(block);
 
 			clear_cursor(screens[current_screen]);
@@ -1923,7 +1935,7 @@ char *_textWindSize( struct glueCommands *data, int nextToken )
 		minH = (textWindow -> rows < h) ? textWindow -> rows : h;
 
 		block = retroAllocBlock( (minW-1)*8, (minH-1)*8 );
-		if (block)	retroGetBlock( screen, block, textWindow -> x * 8, textWindow -> y *8 );
+		if (block)	retroGetBlock( screen, screen -> double_buffer_draw_frame, block, textWindow -> x * 8, textWindow -> y *8 );
 
 		textWindow -> charsPerRow = w;
 		textWindow -> rows = h;
@@ -1934,7 +1946,7 @@ char *_textWindSize( struct glueCommands *data, int nextToken )
 
 		if (block)
 		{
-			retroPutBlock( screen, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
+			retroPutBlock( screen, screen -> double_buffer_draw_frame, block, textWindow -> x * 8, textWindow -> y * 8, 0xFF );
 			retroFreeBlock(block);
 		}
 
@@ -2185,7 +2197,7 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 		{
 			if (textWindow -> saved) retroFreeBlock( textWindow -> saved );
 			textWindow -> saved = retroAllocBlock( textWindow -> charsPerRow * 8, textWindow -> rows *8 );
-			if (textWindow -> saved)	retroGetBlock( screen, textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
+			if (textWindow -> saved)	retroGetBlock( screen, screen -> double_buffer_draw_frame,textWindow -> saved, textWindow -> x * 8, textWindow -> y *8 );
 		}
 	}
 

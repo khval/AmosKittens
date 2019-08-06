@@ -331,7 +331,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 
 					del_block( blocks, block.id );
 					block.mem  = (unsigned char *) malloc( block.w * block.h );		
-					retroGetBlock(screens[current_screen],&block, block.x, block.y);
+					retroGetBlock(screens[current_screen],0,&block, block.x, block.y);
 					blocks.push_back(block);
 				}
 				break;
@@ -346,7 +346,7 @@ char *_bgGetBlock( struct glueCommands *data, int nextToken )
 
 					del_block( blocks, block.id );	// delete old
 					block.mem  = (unsigned char *) malloc( block.w * block.h );
-					retroGetBlock(screens[current_screen],&block, block.x, block.y);
+					retroGetBlock(screens[current_screen],0,&block, block.x, block.y);
 
 					blocks.push_back(block);
 
@@ -407,7 +407,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 		screen = screens[ current_screen ];
 		if (screen)
 		{
-			if (block) retroPutBlock(screen, block, x,y, 255);
+			if (block) retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
 		}
 	}
 
@@ -472,7 +472,9 @@ char *_bgGetCBlock( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 5:	{
+					struct retroScreen *screen;
 					struct retroBlock block;
+
 					block.id = getStackNum(stack-4);
 					block.x = getStackNum(stack-3);
 					block.y = getStackNum(stack-2);
@@ -482,7 +484,9 @@ char *_bgGetCBlock( struct glueCommands *data, int nextToken )
 
 					del_block( cblocks, block.id );
 					block.mem  = (unsigned char *) malloc( block.w * block.h );		
-					retroGetBlock(screens[current_screen],&block, block.x, block.y);
+					screen = screens[current_screen];
+
+					retroGetBlock(screen ,screen -> double_buffer_draw_frame,&block, block.x, block.y);
 					cblocks.push_back(block);
 				}
 				break;
@@ -537,7 +541,7 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 		screen = screens[ current_screen ];
 		if (screen)
 		{
-			if (block) retroPutBlock(screen, block, x,y, 255);
+			if (block) retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
 		}
 	}
 

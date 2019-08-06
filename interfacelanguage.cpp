@@ -1994,7 +1994,7 @@ void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 
 			if (context -> saved_block)
 			{
-				retroGetBlock( screen, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y );
+				retroGetBlock( screen, screen -> double_buffer_draw_frame, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y );
 			} 
 		}
 
