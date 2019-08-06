@@ -36,5 +36,6 @@ struct PacPicContext
 };
 
 extern char *ext_cmd_unpack(nativeCommand *cmd, char *ptr);
+extern char *ext_cmd_pack(nativeCommand *cmd, char *tokenBuffer);
 extern char *ext_cmd_spack(nativeCommand *cmd, char *tokenBuffer);
 

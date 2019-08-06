@@ -528,7 +528,17 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		case 2:
 			bank_num = getStackNum(stack-1);
 			screen_num = getStackNum(stack);
-			__close_screen( screen_num );
+
+			if (get_pac_pic_option( bank_num, 0x12031990, 0 ) == 0x1203 )
+			{
+				__close_screen( screen_num );
+			}
+			else 
+			{
+				popStack( stack - data->stack );
+				setError(512,data->tokenBuffer);
+				return NULL;
+			}
 			break;
 
 		case 3:
@@ -551,7 +561,17 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 
 			stack_get_if_int(stack-1,&x0);
 			stack_get_if_int(stack,&y0);
-			__close_screen( screen_num );
+
+			if (get_pac_pic_option( bank_num, 0x12031990, 0 ) == 0x1203 )
+			{
+				__close_screen( screen_num );
+			}
+			else 
+			{
+				popStack( stack - data->stack );
+				setError(512,data->tokenBuffer);
+				return NULL;
+			}
 			break;
 
 		default:
