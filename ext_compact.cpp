@@ -245,8 +245,6 @@ void openUnpackedScreen(int screen_num,
 
 	if ( (context -> mode & 0x7000) == 0x6000 ) videomode |= retroHam6;
 
-//	printf("retromode: %08x\n", videomode);
-//	getchar();
 
 	engine_lock();
 
@@ -340,7 +338,6 @@ bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 	}
 
 	return convertPacPicData( data, o , context );
-
 }
 
 
@@ -352,12 +349,6 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 	context -> ll = get2(o+12),
 	context -> d  = get2(o+14);
 
-	printf( " w %d, h %d, ll %d, d %d\n",
-		context -> w,	context -> h,	context -> ll,	context -> d );
-
-	printf("data w %d,h %d\n",
-				context->w*8,
-				context->h*context->ll);
 
 	if (context->w*8 > 640) return false;
 

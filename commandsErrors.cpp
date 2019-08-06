@@ -289,7 +289,6 @@ char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum( kittyError.trapCode );
 	kittyError.trapCode = 0;
-
 	return tokenBuffer;
 }
 

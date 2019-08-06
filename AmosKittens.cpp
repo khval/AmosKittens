@@ -1512,6 +1512,8 @@ void init_fast_lookup()
 	int token;
 	struct nativeCommand *cmd;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		token = (int) ((unsigned short) cmd->id) ;
@@ -1591,7 +1593,6 @@ char *code_reader( char *start, int tokenlength )
 {
 	char *ptr;
 	int token = 0;
-	
 
 	if (start == NULL) return NULL;
 
