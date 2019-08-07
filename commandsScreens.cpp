@@ -40,6 +40,18 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
+int	physical( retroScreen *screen )
+{
+	return  (screen ->Memory[1]) ? 1-screen -> double_buffer_draw_frame : 0;
+}
+
+
+int	logical( retroScreen *screen )
+{
+	return screen -> double_buffer_draw_frame;
+}
+
+
 void init_amos_kittens_screen_default_text_window( struct retroScreen *screen, int colors )
 {
 	struct retroTextWindow *textWindow = NULL;
@@ -696,67 +708,73 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct retroScreen *src_screen = NULL;
+	struct retroScreen *dest_screen = NULL;
+	int src_buffer, dest_buffer;
+	int src_screen_nr = 0;
+	int dest_screen_nr = 0;
+	int src_x0 = 0;
+	int src_y0 = 0;
+	int src_x1 = 0;
+	int src_y1 = 0;
+	int dest_x = 0;
+	int dest_y = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 2:
-			{
-				int src_screen = getStackNum( stack-1 );
-				int dest_screen = getStackNum( stack );
-				unsigned int src_mode = ((src_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
-				unsigned int dest_mode = ((dest_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+		case 2:	// Screen Copy {source} to {dest}
 
-				src_screen &=0xFF;
-				dest_screen &= 0xFF;
+				src_screen_nr = getStackNum( stack-1 );
+				dest_screen_nr = getStackNum( stack );
 
-				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
+				src_screen_nr &=0xFF;
+				dest_screen_nr &= 0xFF;
+
+				if ((src_screen_nr>-1)&&(src_screen_nr<8)&&(dest_screen_nr>-1)&&(dest_screen_nr<8))
 				{
-					if ((screens[src_screen])&&(screens[dest_screen]))
-					{
-						retroScreenBlit( screens[src_screen],src_mode, 0, 0, screens[src_screen]->realWidth, screens[src_screen]->realHeight,
-								screens[dest_screen],dest_mode, 0, 0);
-
-					}
-					else setError(47,data->tokenBuffer);
+					src_screen = screens[src_screen_nr];
+					src_x1 = src_screen->realWidth;
+					src_y1 = src_screen->realHeight;
+					dest_screen = screens[dest_screen_nr];
 				}
-			}
-			break;
+				break;
 
-		case 8:	// Screen Copy 1,x0,y0,x1,y1 to 2,x,y
-			{
-				int src_screen = getStackNum( stack-7 );
-				int src_x0 = getStackNum( stack-6 );
-				int src_y0 = getStackNum( stack-5 );
-				int src_x1 = getStackNum( stack-4 );
-				int src_y1 = getStackNum( stack-3 );
-				int dest_screen = getStackNum( stack-2 );
-				int dest_x = getStackNum( stack-1 );
-				int dest_y = getStackNum( stack );
-				unsigned int src_mode = ((src_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
-				unsigned int dest_mode = ((dest_screen & 0xFFFFFF00) == 0xC0000000) ? 1 : 0;
+		case 8:	// Screen Copy {source},x0,y0,x1,y1 to {dest},x,y
+			
+				src_screen_nr = getStackNum( stack-7 );
+				src_x0 = getStackNum( stack-6 );
+				src_y0 = getStackNum( stack-5 );
+				src_x1 = getStackNum( stack-4 );
+				src_y1 = getStackNum( stack-3 );
+				dest_screen_nr = getStackNum( stack-2 );
+				dest_x = getStackNum( stack-1 );
+				dest_y = getStackNum( stack );
 
-				src_screen &=0xFF;
-				dest_screen &= 0xFF;
+				src_screen_nr &=0xFF;
+				dest_screen_nr &= 0xFF;
 
-				if ((src_screen>-1)&&(src_screen<8)&&(dest_screen>-1)&&(dest_screen<8))
+				if ((src_screen_nr>-1)&&(src_screen_nr<8)&&(dest_screen_nr>-1)&&(dest_screen_nr<8))
 				{
-
-					if ((screens[src_screen])&&(screens[dest_screen]))
-					{
-						retroScreenBlit( screens[src_screen], src_mode ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0,
-								screens[dest_screen], dest_mode, dest_x, dest_y);
-					}
-					else setError(47,data->tokenBuffer);
-				}
-			}
-			break;
+					src_screen = screens[src_screen_nr];
+					dest_screen = screens[dest_screen_nr];
+				}	
+				break;
 
 		default:
- 			setError(22,data->tokenBuffer);
-			break;
+	 			setError(22,data->tokenBuffer);
+				break;
 	}
+
+	if ( (src_screen) && (dest_screen) )
+	{
+		src_buffer = ((src_screen_nr & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
+		dest_buffer = ((dest_screen_nr & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
+
+		retroScreenBlit( src_screen, src_buffer ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0, dest_screen, dest_buffer, dest_x, dest_y);
+	}
+	else setError(47,data->tokenBuffer);
 
 	popStack( stack - data->stack );
 	return NULL;
