@@ -13,14 +13,14 @@ extern struct DiskfontIFace *IDiskfont;
 extern struct TextFont *topaz8_font;
 extern struct TextFont *gfx_font;
 
-#define effect_args unsigned char data, int bit_offset, int num_bits_in_byte , int _bit_start,int y,struct retroScreen *screen, int destx, int desty, int pen, int paper, int w2
+#define effect_args unsigned char data, int bit_offset, int num_bits_in_byte , int _bit_start,int y,struct retroScreen *screen, int buffer, int destx, int desty, int pen, int paper, int w2
 
 void draw_glyph(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen);
 void draw_glyph_shade(struct retroScreen *screen, struct TextFont *font, int rp_x, int rp_y, int glyph, int pen);
 
 void effect_byte_replace ( effect_args );
 void effect_byte_replace_shade ( effect_args );
-void draw_glyph_effect(struct retroScreen *screen, struct TextFont *font, int destx, int desty, int glyph, int pen, int paper, int w2, void (*heffect) ( effect_args ) );
+void draw_glyph_effect(struct retroScreen *screen, int buffer, struct TextFont *font, int destx, int desty, int glyph, int pen, int paper, int w2, void (*heffect) ( effect_args ) );
 
 void freeAllTextWindows(struct retroScreen *screen)
 {
@@ -93,7 +93,7 @@ struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id )
 void effect_byte_replace ( effect_args )
 {
 	int x;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -116,7 +116,7 @@ void effect_byte_replace ( effect_args )
 void effect_byte_replace_shade ( effect_args )
 {
 	int x;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -140,7 +140,7 @@ void effect_byte_or ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -169,7 +169,7 @@ void effect_byte_or_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -198,7 +198,7 @@ void effect_byte_xor ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -227,7 +227,7 @@ void effect_byte_xor_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -256,7 +256,7 @@ void effect_byte_and ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer]; 
 
 	w2=~w2;	// invert
 
@@ -285,7 +285,7 @@ void effect_byte_and_shade ( effect_args )
 {
 	int x;
 	int ix,iy,sp;
-	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
+	unsigned char *memory = screen -> Memory[ buffer ]; 
 
 	w2=~w2;	// invert
 
@@ -355,29 +355,45 @@ void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, i
 	int b = (textWindow -> border ? 1 : 0);
 	int x = textWindow -> x + lX + b;
 	int y = textWindow -> y + lY + b;
+	int buffer = 0;
+
+	if ((screen -> Memory[1]) && (screen -> autoback ==0))
+	{
+		printf("has DB, is autoback 0\n");
+		 buffer = screen -> double_buffer_draw_frame ;
+	}
 
 	x *= 8;
 	y *= 8;
 
 	if (shade)
 	{
+//		printf("shade w1: %d\n",w1);
+
 		switch (w1)
 		{
-			case 0:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_replace_shade  );	break;
-			case 1:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_or_shade  ); break;
-			case 2:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_xor_shade  ); break;
-			case 3:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_and_shade  );	break;
+			case 0:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_replace_shade  );	break;
+			case 1:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_or_shade  ); break;
+			case 2:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_xor_shade  ); break;
+			case 3:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_and_shade  );	break;
 		}
 	}
 	else
 	{
+//		printf("w1: %d\n",w1);
+
 		switch (w1)
 		{
-			case 0:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_replace  );	break;
-			case 1:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_or  ); break;
-			case 2:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_xor  ); break;
-			case 3:	draw_glyph_effect( screen, topaz8_font, x, y, c, pen, paper, w2, effect_byte_and  );	break;
+			case 0:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_replace  );	break;
+			case 1:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_or  ); break;
+			case 2:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_xor  ); break;
+			case 3:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_and  );	break;
 		}
+	}
+	
+	if ((screen -> Memory[1]) && (screen -> autoback != 0))
+	{
+		retroScreenBlit( screen, 0 ,x, y, 8, 8, screen, 1, x, y);
 	}
 }
 
@@ -396,7 +412,7 @@ int offset_y = 0;
 
 
 
-void draw_glyph_effect(struct retroScreen *screen, struct TextFont *font, int destx, int desty, int glyph, int pen, int paper, int w2, void (*heffect) ( effect_args ) )
+void draw_glyph_effect(struct retroScreen *screen, int buffer, struct TextFont *font, int destx, int desty, int glyph, int pen, int paper, int w2, void (*heffect) ( effect_args ) )
 {
 	int y;
 	short bit_start ;
@@ -436,7 +452,7 @@ void draw_glyph_effect(struct retroScreen *screen, struct TextFont *font, int de
 			data = ( (char *) font -> tf_CharData) [ n + (y * font -> tf_Modulo)  ];
 			bit_offset = (n-start_byte)<<3;
 			num_bits_in_byte = (bit_width - bit_offset) >8 ? 8 : (bit_width - bit_offset) ;
-			heffect( data,  bit_offset, num_bits_in_byte, bit_start, y, screen,  destx,  desty,  pen,  paper , w2);
+			heffect( data,  bit_offset, num_bits_in_byte, bit_start, y, screen, buffer, destx,  desty,  pen,  paper , w2);
 		}
 	}
 }

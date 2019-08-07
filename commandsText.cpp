@@ -89,15 +89,58 @@ void clear_cursor( struct retroScreen *screen )
 
 		if ((curs_on)&&(textWindow))
 		{
-			switch ( screen -> autoback )
+			if (screen -> Memory[1])
 			{
-				case 0:
-					__clear_cursor( screen, textWindow, screen -> double_buffer_draw_frame);
-					break;
-				default:
-					__clear_cursor( screen, textWindow, 0 );
-					__clear_cursor( screen, textWindow, 1 );
-					break;
+				switch ( screen -> autoback )
+				{
+					case 0:
+						__clear_cursor( screen, textWindow, screen -> double_buffer_draw_frame);
+						break;
+					default:
+						engine_lock();
+						__clear_cursor( screen, textWindow, 0 );
+						__clear_cursor( screen, textWindow, 1 );
+						engine_unlock();
+						break;
+				}
+			}
+			else
+			{
+				__clear_cursor( screen, textWindow, 0);
+			}
+		}
+	}
+}
+
+
+void __draw_cursor(struct retroScreen *screen, struct retroTextWindow *textWindow, int buffer)
+{
+	int gx,gy;
+	int d,m;
+	int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
+	int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
+	unsigned char *memory = screen -> Memory[ buffer ]; 
+
+	gx=8*x;	gy=8*y;
+
+	if (cursor_block == NULL) cursor_block = retroAllocBlock( 8, 8 );
+
+	if (cursor_block)
+	{
+		retroGetBlock( screen, 0, cursor_block, gx, gy );
+	}
+
+	for (y=0;y<8;y++)
+	{
+		if (d = curs_lines[y])
+		{
+			x=0;
+			m = 0x80;
+			while (m>0)
+			{
+				if (d&m) retroPixel( screen, memory, gx+x,gy+y, cursor_color );
+				m>>=1;
+				x++;
 			}
 		}
 	}
@@ -108,39 +151,28 @@ void draw_cursor(struct retroScreen *screen)
 	if (screen)
 	{
 		struct retroTextWindow *textWindow = screen -> currentTextWindow;
-		unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 
 
 		if ((curs_on)&&(textWindow))
 		{
-			int gx,gy;
-			int d,m;
-			int x = (textWindow -> x + textWindow -> locateX) + (textWindow -> border ? 1 : 0);
-			int y = (textWindow -> y + textWindow -> locateY) + (textWindow -> border ? 1 : 0);
-
-			gx=8*x;	gy=8*y;
-
-			if (cursor_block == NULL) cursor_block = retroAllocBlock( 8, 8 );
-
-			if (cursor_block)
+			if (screen -> Memory[1])
 			{
-				retroGetBlock( screen, screen -> double_buffer_draw_frame, cursor_block, gx, gy );
-			}
-
-			for (y=0;y<8;y++)
-			{
-				if (d = curs_lines[y])
+				switch ( screen -> autoback )
 				{
-					x=0;
-					m = 0x80;
-					while (m>0)
-					{
-						if (d&m) retroPixel( screen, memory, gx+x,gy+y, cursor_color );
-						m>>=1;
-						x++;
-					}
+					case 0:
+						__draw_cursor( screen, textWindow, screen -> double_buffer_draw_frame);
+						break;
+					default:
+						engine_lock();
+						__draw_cursor( screen, textWindow, 0 );
+						__draw_cursor( screen, textWindow, 1 );
+						engine_unlock();
+						break;
 				}
 			}
-
+			else
+			{
+				__draw_cursor( screen, textWindow, 0);
+			}
 		}
 	}
 }
