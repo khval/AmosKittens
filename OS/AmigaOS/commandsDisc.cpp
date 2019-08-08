@@ -364,6 +364,12 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	{
 		_str = getStackString( stack );
 
+		if (_str -> size == 0) 
+		{
+			setStackNum( 0 );
+			return NULL;
+		}
+
 		lock = Lock( &_str -> ptr, SHARED_LOCK );
 
 		if (lock)
@@ -376,7 +382,6 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	popStack( stack - data -> stack  );
 
 	setStackNum( lock ? ~0 : 0 );
-
 	return NULL;
 }
 
