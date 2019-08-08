@@ -81,7 +81,7 @@ void os_text(struct retroScreen *screen,int x, int y, struct stringData *txt, in
 		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
 				break;
 		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
-				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				if (screen -> Memory[1]) retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
 				break;
 
 	}
@@ -109,7 +109,7 @@ void os_text_no_outline(struct retroScreen *screen,int x, int y, struct stringDa
 		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
 				break;
 		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
-				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				if (screen -> Memory[1]) retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
 				break;
 
 	}
@@ -157,7 +157,7 @@ void os_text_outline(struct retroScreen *screen,int x, int y, struct stringData 
 		case 0:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, screen -> double_buffer_draw_frame, x , y + te.te_Extent.MinY);
 				break;
 		default:	retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 0, x , y + te.te_Extent.MinY);
-				retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
+				if (screen -> Memory[1]) retroBitmapBlit( font_render_rp.BitMap, 0,0, te.te_Width,te.te_Height, screen, 1, x , y + te.te_Extent.MinY);
 				break;
 	}
 }

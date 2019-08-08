@@ -2390,6 +2390,7 @@ char *_textText( struct glueCommands *data, int nextToken )
 					engine_lock();
 					if (engine_ready())
 					{
+
 						switch (GrWritingMode)
 						{
 							case 0:	// 
@@ -2440,7 +2441,9 @@ char *_textText( struct glueCommands *data, int nextToken )
 char *textText(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	// some thing to do with drawing, not sure.
+	setStackNone();
 	stackCmdNormal( _textText, tokenBuffer );
 	return tokenBuffer;
 }
