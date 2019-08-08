@@ -489,8 +489,6 @@ char *_val( struct glueCommands *data, int nextToken )
 		// skip spaces in the start of the string.
 		while (*c == ' ') c++;
 
-		printf("%s\n",c);
-
 		// check for symbol until first space or end of string.
 		for (; (*c)  && (*c != ' ') ;c++)
 		{
@@ -505,8 +503,6 @@ char *_val( struct glueCommands *data, int nextToken )
 		if (type_count<2)
 		{
 			success = true;
-
-			printf("type %d\n",type);
 
 			switch (type)
 			{

@@ -815,7 +815,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 {
-	proc_names_printf("%s%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	struct stringData *string;
 	struct stringData *remove;

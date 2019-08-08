@@ -539,10 +539,6 @@ void _input_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 
-	printf (" last_var %d\n", last_var);
-	printf (" _last_var_index %d\n", _last_var_index );
-	dump_stack();
-
 	data.lastVar = last_var;
 	_set_var_index = _last_var_index;
 

@@ -1143,12 +1143,10 @@ char *textCursPen(struct nativeCommand *cmd, char *ptr)
 
 char *_textVscroll( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+//	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args==1)
-	{
-	}
+	NYI(__FUNCTION__);
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -1378,7 +1376,7 @@ char *textCLeftStr(nativeCommand *cmd, char *ptr)
 	struct stringData *str = alloc_amos_string(1);	 //  '%' 
 	str -> ptr = 29;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackStr(str);
 	return ptr;
 }
@@ -2067,6 +2065,8 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 
 char *textYGraphic(nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	stackCmdParm( _textYGraphic, tokenBuffer );
 	return tokenBuffer;
 }
@@ -2181,6 +2181,8 @@ char *_textWindClose( struct glueCommands *data, int nextToken )
 
 char *textWindClose(nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	stackCmdNormal( _textWindClose, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
@@ -2221,6 +2223,8 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	if (screen)
 	{
 		struct retroTextWindow *textWindow = screen -> currentTextWindow;
@@ -2239,7 +2243,7 @@ char *textWindSave(nativeCommand *cmd, char *tokenBuffer)
 char *textTextBase(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	int ret = 0;
-	proc_names_printf("%s:s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	const char *alpha = "abcdefghijklmnopqrstuvwxyz";
 	char buffer[ sizeof(struct stringData) + 50 ];
@@ -2295,6 +2299,7 @@ char *_textSetText( struct glueCommands *data, int nextToken )
 
 char *textSetText(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	// some thing to do with drawing, not sure.
 	stackCmdParm( _textSetText, tokenBuffer );
 	return tokenBuffer;
@@ -2302,6 +2307,7 @@ char *textSetText(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *textTextStyles(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	// some thing to do with drawing, not sure.
 	setStackNum(text_style);
 	return tokenBuffer;
@@ -2345,7 +2351,7 @@ char *textBorder(struct nativeCommand *disc, char *tokenBuffer)
 char *_textGrWriting( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -2371,8 +2377,8 @@ char *_textText( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = screens[current_screen];
-
-	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -2436,6 +2442,7 @@ char *_textText( struct glueCommands *data, int nextToken )
 
 char *textText(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	// some thing to do with drawing, not sure.
 	stackCmdNormal( _textText, tokenBuffer );
 	return tokenBuffer;
@@ -2446,7 +2453,7 @@ char *_textTextLength( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	unsigned short ret = 0;
 	struct stringData *txt;
-	proc_names_printf("%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
