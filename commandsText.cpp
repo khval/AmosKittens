@@ -1072,8 +1072,6 @@ char *textCDown(nativeCommand *cmd, char *ptr)
 char *_textSetTab( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int x = 0, y = 0;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
@@ -1247,7 +1245,6 @@ char *_textClw( struct glueCommands *data, int nextToken )
 
 	struct retroScreen *screen ;
 	struct retroTextWindow *textWindow = NULL;
-	int x=0,y=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -2008,7 +2005,7 @@ char *_textXGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int gx=0;
-	int x=0,b=0;
+	int b=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -2040,7 +2037,7 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int gy=0;
-	int y=0,b=0;
+	int b=0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
