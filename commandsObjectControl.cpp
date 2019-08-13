@@ -935,9 +935,26 @@ char *ocIconMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocMouseScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	struct retroScreen *screen;
+	int x,y;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
+	for (int s=0;s<8;s++)
+	{
+		if (screen = screens[s])
+		{
+			x = XScreen_formula( screen, engine_mouse_x );
+			y = YScreen_formula( screen, engine_mouse_y );
+
+			if	((y>=0)&&(y<screen -> displayHeight)
+			&&	(x>=0)&&(x<screen -> displayWidth))
+			{
+				setStackNum(s);
+				return tokenBuffer;
+			}
+		}
+	}
+	setStackNum(-123456789);
 
 	return tokenBuffer;
 }
