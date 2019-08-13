@@ -909,6 +909,7 @@ char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+/*
 char *_ocIconMakeMask( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -932,6 +933,7 @@ char *ocIconMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _ocIconMakeMask, tokenBuffer );
 	return tokenBuffer;
 }
+*/
 
 char *ocMouseScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
