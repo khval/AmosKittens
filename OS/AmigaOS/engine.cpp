@@ -62,9 +62,11 @@ std::vector<struct keyboard_buffer> keyboardBuffer;
 std::vector<struct amos_selected> amosSelected;
 
 
-int engine_mouse_key = 0;
-int engine_mouse_x = 0;
-int engine_mouse_y = 0;
+int		engine_mouse_key = 0;
+int		engine_mouse_x = 0;
+int		engine_mouse_y = 0;
+uint32_t	engine_back_color = 0x000000;
+
 int autoView = 1;
 int bobDoUpdate = 0;			// when we are ready to update bobs.
 int bobAutoUpdate = 1;
@@ -661,7 +663,7 @@ void main_engine()
 		Signal( &main_task->pr_Task, SIGF_CHILD );
 
 		Printf("clear video\n");
-		retroClearVideo(video);
+		retroClearVideo(video, engine_back_color);
 
 		Printf("init joysticks..\n");
 		init_joysticks();
@@ -694,7 +696,7 @@ void main_engine()
 
 			if (autoView)
 			{
-				retroClearVideo( video );
+				retroClearVideo( video, engine_back_color );
 				engine_lock();
 
 				for (n=0; n<8;n++)
@@ -798,7 +800,7 @@ void main_engine()
 				if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 			}
 
-			Delay(4);
+			Delay(1);
 		} // while
 	}
 	else

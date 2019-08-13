@@ -16,6 +16,7 @@ extern bool engine_wait_key;
 extern int engine_mouse_key;
 extern int engine_mouse_x;
 extern int engine_mouse_y;
+extern uint32_t engine_back_color;
 extern bool engine_stopped;
 extern bool engine_mouse_hidden;
 

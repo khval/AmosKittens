@@ -1749,17 +1749,18 @@ char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 char *_gfxColourBack( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-
+	uint32_t color;
+	uint16_t r,g,b;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	NYI(__FUNCTION__);
 
 	switch (args)
 	{
 		case 1:
-				if (screens[current_screen])
-				{
-				}
+				color = getStackNum(stack);
+				r = (color & 0xF00) >> 8;
+				g = (color & 0x0F0) >> 4;
+				b = color & 0xF;
+				engine_back_color = (r * 0x110000) | (g * 0x001100) | ( b * 0x000011 );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
