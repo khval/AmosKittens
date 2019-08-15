@@ -1164,6 +1164,22 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 				}
 
 				if (bank2)	bank2 -> id = b1;
+				
+				// update active data objects.
+
+				engine_lock();
+
+				icons = NULL;
+				sprite = NULL;
+
+				bank1 = findBank(1);
+				if (bank1) if (bank1 -> type == type_Sprites ) sprite = (struct retroSprite *) bank1 -> object_ptr;
+
+				bank1 = findBank(2);
+				if (bank1) if (bank1 -> type == type_Icons ) sprite = (struct retroSprite *) bank1 -> object_ptr;
+
+				engine_unlock();
+
 				break;
 		default:
 				setError(22,data->tokenBuffer);
