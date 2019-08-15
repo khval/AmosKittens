@@ -543,7 +543,7 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 3:	// past bob x,y,i
-				if ( screens[current_screen] )
+				if (( screens[current_screen] ) && (sprite))
 				{
 					int x = getStackNum( stack-2 );
 					int y = getStackNum( stack-1 );
