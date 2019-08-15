@@ -60,7 +60,7 @@ void clearBob(struct retroSpriteObject *bob)
 
 	if (screen)
 	{
-		clear = &bob -> clear[ 0 ];
+		clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
 
 		if ((clear -> mem)&&(bob->background==0))
 		{
@@ -243,7 +243,7 @@ void drawBob(struct retroSpriteObject *bob)
 		{
 			frame = &sprite -> frames[ image ];
 
-			clear = &bob -> clear[ 0 ];
+			clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
 
 			clear -> x = bob -> x - frame -> XHotSpot;
 			clear -> y = bob -> y - frame -> YHotSpot;
@@ -366,7 +366,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	{
 		if (screen -> Memory[1])
 		{
-			printf("face swaped\n");
+			dprintf("force swaped\n");
 			screen -> force_swap = TRUE;
 		}
 	}
@@ -871,10 +871,13 @@ char *boBobUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern void __wait_vbl();
+
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	bobDoUpdate = 1;
+	__wait_vbl();
 	return tokenBuffer;
 }
 

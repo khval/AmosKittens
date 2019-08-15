@@ -146,8 +146,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-
-char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
+void __wait_vbl()
 {
 	engine_lock();
 	if (bobUpdateNextWait)
@@ -160,7 +159,6 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 #if defined(__amigaos4__) || defined(__morphos__) || defined(__aros__)
 	if (( sig_main_vbl )&&( EngineTask ))
 	{
-//		Delay(1);
 		Wait(1<<sig_main_vbl);
 	}
 	else
@@ -172,6 +170,12 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 #ifdef __linux__
 	sleep(1);
 #endif
+}
+
+
+char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	__wait_vbl();
 
 	return tokenBuffer;
 }

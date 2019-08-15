@@ -707,13 +707,24 @@ void main_engine()
 					{
 						retroFadeScreen_beta(screen);
 
+//						Printf("bobAutoUpdate %ld, bobDoUpdate %ld\n",bobAutoUpdate, bobDoUpdate);
+
 						if (screen -> Memory[1]) 	// has double buffer
 						{
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
-								drawBobsOnScreen(screen);
-								swap_buffer( screen );
-								clearBobsOnScreen(screen);
+								if ((bobDoUpdate)||(bobAutoUpdate))		// if "bob update off" is true, you need to do "bob update"
+								{
+									clearBobsOnScreen(screen);
+									drawBobsOnScreen(screen);
+
+									swap_buffer( screen );
+									bobIsUpdated = 1;
+								}
+								else
+								{
+									swap_buffer( screen );
+								}
 							}
 						}
 						else if (bobDoUpdate)
