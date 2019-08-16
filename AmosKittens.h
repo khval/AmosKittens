@@ -252,6 +252,19 @@ struct kittyData
 	int type;
 };
 
+struct kittyVideoInfo
+{
+	uint16_t videoWidth;
+	uint16_t videoHeight;
+} __attribute__((packed)); 
+
+struct kittyInfo		// where amos programs look for info about the editor.
+{
+	struct kittyVideoInfo *video;
+	uint32_t dummy[6];
+	uint16_t rgb[8];
+
+} __attribute__((packed));
 
 struct label
 {

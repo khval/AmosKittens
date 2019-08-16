@@ -116,6 +116,7 @@ unsigned int amiga_joystick_dir[4];
 unsigned int amiga_joystick_button[4];
 
 struct extension_lib	kitty_extensions[32];
+unsigned int regs[16];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
@@ -187,6 +188,9 @@ int findVar( char *name, bool  is_first_token, int type, int _proc );
 
 extern void dumpScreenInfo();
 
+struct kittyVideoInfo KittyBaseVideoInfo;
+struct kittyInfo KittyBaseInfo;
+
 bool alloc_video()
 {
 
@@ -198,6 +202,14 @@ bool alloc_video()
 	video = retroAllocVideo();
 #endif
 
+	if (video)
+	{
+		KittyBaseVideoInfo.videoWidth = video -> width;
+		KittyBaseVideoInfo.videoHeight = video -> height;
+	}
+
+	KittyBaseInfo.video = &KittyBaseVideoInfo;
+	
 	retroAllocSpriteObjects(video,64);
 	return true;
 }
@@ -1776,6 +1788,11 @@ int main(int args, char **arg)
 	{
 		bool init_error = false;
 
+		alloc_video();
+
+#ifdef __amigaos4__
+		regs[3] = (unsigned int) &KittyBaseInfo;	// set D3 to kittyInfo.
+#endif
 		__load_bank__( (char *) "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
 		__load_bank__( (char *) "Amos-the-creator:AMOS_System/mouse.abk",-3);
 
@@ -1822,8 +1839,6 @@ int main(int args, char **arg)
 			if (do_input) do_input[n] = do_std_next_arg;
 			if (do_to) do_to[n] = do_to_default;
 		}
-
-		alloc_video();
 
 		if (video) start_engine();
 
