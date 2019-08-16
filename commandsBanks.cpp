@@ -161,7 +161,7 @@ int bankCount(int opt)
 	{
 		case -1:
 			{
-				int n = 0;
+				unsigned int n = 0;
 				for (n=0;n<kittyBankList.size();n++)
 				{
 					if (kittyBankList[n].id<0) ret++;
@@ -173,7 +173,7 @@ int bankCount(int opt)
 			break;
 		case 1:
 			{
-				int n = 0;
+				unsigned int n = 0;
 				for (n=0;n<kittyBankList.size();n++)
 				{
 					if (kittyBankList[n].id>0) ret++;
@@ -272,7 +272,7 @@ char *bankEraseAll(nativeCommand *cmd, char *tokenBuffer)
 
 char *bankEraseTemp(nativeCommand *cmd, char *tokenBuffer)
 {
-	int n;
+	unsigned int n;
 	bool erased;
 	struct kittyBank *bank = NULL;
 
