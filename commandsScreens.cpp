@@ -1006,7 +1006,6 @@ void SaveIff( char *name, const int n )
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
 	struct ColorRegister *cr;
-	ULONG modeid; 
 	struct RastPort rp;
 
 	printf("we try to create a datatype\n");
