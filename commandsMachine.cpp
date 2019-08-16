@@ -745,7 +745,7 @@ char *machineBclr(struct nativeCommand *cmd, char *tokenBuffer)
 
 
 int reg = 0;
-unsigned int regs[16];
+extern unsigned int regs[16];
 
 extern char *_setVar( struct glueCommands *data, int nextToken );
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
@@ -766,7 +766,6 @@ char *_machineAREG( struct glueCommands *data, int nextToken )
 	{
 		reg = getStackNum(stack) + 8;
 		if ((reg>7)&&(reg<16)) setStackNum( regs[reg] );
-		_do_set = _set_reg;
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -783,7 +782,7 @@ char *_machineDREG( struct glueCommands *data, int nextToken )
 	{
 		reg = getStackNum(stack);
 		if ((reg>-1)&&(reg<8)) setStackNum( regs[reg] );
-		_do_set = _set_reg;
+
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -794,12 +793,26 @@ char *_machineDREG( struct glueCommands *data, int nextToken )
 char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineAREG, tokenBuffer );
+
+	if (token_is_fresh) 
+	{
+		tokenMode = mode_store;
+		_do_set = _set_reg;
+	}
+
 	return tokenBuffer;
 }
 
 char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	if (token_is_fresh)
+	{
+		tokenMode = mode_store;
+		_do_set = _set_reg;
+	}
+
 	stackCmdParm( _machineDREG, tokenBuffer );
+
 	return tokenBuffer;
 }
 
