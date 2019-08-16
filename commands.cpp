@@ -757,10 +757,30 @@ char *_gosub( struct glueCommands *data, int nextToken )
 	if (ref_num)
 	{
 		char *return_tokenBuffer = data -> tokenBuffer;
+		int token_size;
+		uint16_t token;
 
-//		printf("jump to %08x\n",labels[ref_num-1].tokenLocation);
+		dprintf("next token %04x\n", nextToken);
 
-		while ( *((unsigned short *) return_tokenBuffer) != nextToken  ) return_tokenBuffer += 2;
+		token =   *((unsigned short *) return_tokenBuffer );
+
+		while ( token != nextToken  ) 
+		{
+			return_tokenBuffer += 2;
+
+			dprintf("%04x\n", token);
+			token_size = 0;
+			switch ( token )
+			{
+				case 0006:	token_size = sizeof(struct reference) + ReferenceByteLength(return_tokenBuffer); break;
+			}
+			dprintf("token_size: %d\n",token_size);
+			return_tokenBuffer += token_size ;	// skip token data, we have skiped token before
+			token =   *((unsigned short *) return_tokenBuffer );
+		}
+
+		return_tokenBuffer += 2;
+
 		stackCmdLoop( _gosub_return, return_tokenBuffer );
 		return labels[ref_num-1].tokenLocation;
 	}
