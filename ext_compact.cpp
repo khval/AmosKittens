@@ -475,6 +475,7 @@ int get_pac_pic_option( int bank_num, unsigned int block_id, int offset)
 void unpack( struct glueCommands *data, int bank_num, int screen_num, int x0, int y0 )
 {
 	struct kittyBank *bank;
+	struct PacPicContext context;
 
 	x0 -= x0 %8; 
 
@@ -483,8 +484,6 @@ void unpack( struct glueCommands *data, int bank_num, int screen_num, int x0, in
 	{
 		if (bank -> start)
 		{
-			struct PacPicContext context;
-
 			if ( convertPacPic( (unsigned char *) bank -> start, &context ) )
 			{
 				if (screens[screen_num] == NULL)	// no screen, open new screen.
@@ -503,7 +502,30 @@ void unpack( struct glueCommands *data, int bank_num, int screen_num, int x0, in
 		}
 		else setError(36,data->tokenBuffer);	// Bank not reserved
 	}
-	else setError(25, data->tokenBuffer);
+	else	// so it has to be a address.
+	{
+		if (bank_num == 0)	// there is no picture at NULL
+		{
+			setError(25, data->tokenBuffer);
+			return;
+		}
+
+		if ( convertPacPic( (unsigned char *) bank_num, &context ) )
+		{
+			if (screens[screen_num] == NULL)	// no screen, open new screen.
+			{
+				openUnpackedScreen( screen_num, &context );
+			}
+			else
+			{
+				plotUnpackedContext( &context, screens[screen_num], x0,y0 );
+			}
+
+			free( context.raw);
+		}
+
+		if (screens[screen_num] == NULL) setError(47,data->tokenBuffer );
+	}
 }
 
 char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
