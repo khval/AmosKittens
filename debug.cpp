@@ -424,21 +424,20 @@ void dump_banks()
 {
 	unsigned int n = 0;
 	struct kittyBank *bank;
-	printf( "%s\n", "Nr   Type       Start       Length\n\n");
-
+	printf( "Nr   Type       Start       Length\n\n");
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		bank = &kittyBankList[n];
-
 		if (bank -> start)
 		{
-			printf("%2d - %.8s S:$%08X L:%d\n", 
+			printf("%03d - %.8s S:$%08X L:%d\n", 
 				bank -> id,
 				(char *) bank->start-8,
 				bank -> start, 
 				bank -> length);
 		}
 	}
+	printf("\n");
 }
 
 void dump_end_of_program()
@@ -456,6 +455,9 @@ void dump_end_of_program()
 
 	printf("\n--- label dump ---\n");
 	dump_labels();
+
+	printf("\n-- banks loaded --\n");
+	dump_banks();
 }
 
 int getLineFromPointer( char *address )
