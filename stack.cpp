@@ -266,7 +266,6 @@ void setStackParenthesis()
 	kittyStack[stack].type = type_none;
 }
 
-
 bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
 {
 	int new_size = item0 -> str -> size + 20;

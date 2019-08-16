@@ -67,6 +67,8 @@ char *_andData (struct glueCommands *data, int nextToken);
 char *_ifSuccess (struct glueCommands *data, int nextToken);
 char *_ifThenSuccess (struct glueCommands *data, int nextToken);
 char *_machinePeek(struct glueCommands *data, int nextToken);
+char *_machineDeek( struct glueCommands *data, int nextToken);
+char *_machineLeek( struct glueCommands *data, int nextToken);
 char *_bankStart(struct glueCommands *data, int nextToken);
 char *_chr(struct glueCommands *data, int nextToken);
 char *_gfxPoint(struct glueCommands *data, int nextToken);
@@ -90,6 +92,8 @@ char *_exit( struct glueCommands *data, int nextToken );
 char *_errTrap( struct glueCommands *data, int nextToken );
 char *_mathFn( struct glueCommands *data, int nextToken );
 char *_mathFnReturn( struct glueCommands *data, int nextToken );
+char *_machineAREG( struct glueCommands *data, int nextToken );
+char *_machineDREG( struct glueCommands *data, int nextToken );
 
 
 struct stackDebugSymbol
@@ -116,6 +120,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_ifSuccess,"If Success" },
 	{_ifThenSuccess,"If Then Success" },
 	{_machinePeek,"Peek" },
+	{_machineDeek,"Deek" },
+	{_machineLeek,"Leek" },
 	{_bankStart,"Start" },
 	{_chr,"Chr$" },
 	{_gfxPoint,"Point" },
@@ -146,6 +152,8 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_errTrap,"Trap"},
 	{_mathFn,"Fn"},
 	{_mathFnReturn, "Fn (Return)"},
+	{_machineAREG,"_machineAREG"},
+	{_machineDREG,"_machineDREG"},
 	{NULL, NULL}
 };
 
