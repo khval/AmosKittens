@@ -207,6 +207,8 @@ bool alloc_video()
 	{
 		KittyBaseVideoInfo.videoWidth = video -> width;
 		KittyBaseVideoInfo.videoHeight = video -> height;
+		KittyBaseVideoInfo.display_x = 128;
+		KittyBaseVideoInfo.display_y = 50;
 	}
 
 	KittyBaseInfo.video = &KittyBaseVideoInfo;
@@ -1702,6 +1704,8 @@ ULONG exceptCode ( struct ExecBase *SysBase, ULONG signals, ULONG exceptData)
 
 #endif
 
+extern struct retroRGB DefaultPalette[256];
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1794,6 +1798,12 @@ int main(int args, char **arg)
 #ifdef __amigaos4__
 		regs[3] = (unsigned int) &KittyBaseInfo;	// set D3 to kittyInfo.
 #endif
+
+		for (n=0;n<8;n++)
+		{
+			KittyBaseInfo.rgb[n] = (DefaultPalette[n].r << 4 & 0xF00) | (DefaultPalette[n].g & 0xF0) | (DefaultPalette[n].b >> 4);
+		}
+
 		__load_bank__( (char *) "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
 		__load_bank__( (char *) "Amos-the-creator:AMOS_System/mouse.abk",-3);
 
