@@ -73,6 +73,7 @@ extern char *asl();
 
 #include "ext_compact.h"
 #include "ext_turbo.h"
+#include "ext_music.h"
 
 bool running = true;
 bool interpreter_running = false;
@@ -1802,13 +1803,26 @@ int main(int args, char **arg)
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
 		// alloc tabels for 2 fake extentions
-		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );		// compat.lib
+		kitty_extensions[1].lookup = (char *) malloc( 0xFFFF );	// music.lib
+		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );	// compat.lib
 		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
 
 		// init default values for fake extentions
 		for (n=0;n<32;n++) if (kitty_extensions[n].lookup) memset(kitty_extensions[n].lookup,0,0xFFFF);
 
 		// function table init.
+
+		if (kitty_extensions[1].lookup)
+		{	
+			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
+			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
+//			*((void **) (kitty_extensions[1].lookup + 0x0026)) = (void *) ext_cmd_spack;
+//			*((void **) (kitty_extensions[1].lookup + 0x0036)) = (void *) ext_cmd_spack;
+//			*((void **) (kitty_extensions[1].lookup + 0x0048)) = (void *) ext_cmd_unpack;
+//			*((void **) (kitty_extensions[1].lookup + 0x0056)) = (void *) ext_cmd_unpack;
+//			*((void **) (kitty_extensions[1].lookup + 0x0060)) = (void *) ext_cmd_unpack;
+		}
+
 		if (kitty_extensions[2].lookup)
 		{	
 			*((void **) (kitty_extensions[2].lookup + 0x0006)) = (void *) ext_cmd_pack;
