@@ -699,11 +699,13 @@ void __load_work_data__(FILE *fd,int bank)
 
 				if (bank != -1)
 				{
-					if (__ReserveAs( item.type, bank, item.length,NULL, mem ) == false) free(mem);
+					if (__ReserveAs( item.type, bank, item.length,item.name, mem ) == false) free(mem);
 				}
 				else
 				{
-					if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+					if ( strncasecmp( item.name , "Samples",7) == 0) item.bank=5;
+					if (__ReserveAs( item.type, item.bank, item.length,item.name, mem ) == false) free(mem);
+					getchar();
 				}
 			}
 		}
