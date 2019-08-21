@@ -17,6 +17,7 @@
 #define show_debug_amal_no
 #define show_array_no
 #define enable_engine_debug_output_no
+#define enable_audio_debug_output_no
 
 // --------- debug options pass1 ----------- (debug options for pretest)
 
