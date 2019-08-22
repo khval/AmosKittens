@@ -60,10 +60,6 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
-	dump_stack();
-
 	switch (args)
 	{
 		case 2:
