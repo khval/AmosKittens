@@ -107,8 +107,8 @@ char *ext_cmd_sam_play(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 {
-	int ret = 0,voice, freq;
-	uint8_t *start,*end;
+	int ret = 0,voice,length, freq;
+	uint8_t *start;
 	int args = stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -124,7 +124,7 @@ char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 		case 4:
 			voice = getStackNum( stack-2 );
 			start = (uint8_t *) getStackNum( stack-2 );
-			end = (uint8_t *) getStackNum( stack-1 );
+			length = getStackNum( stack-1 );
 			freq = getStackNum( stack );
 	
 			break;
