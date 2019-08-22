@@ -27,6 +27,7 @@
 #include "commandsBlitterObject.h"
 #include "errors.h"
 #include "engine.h"
+#include "os/amigaos/ahi_dev.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -46,7 +47,8 @@ struct sampleHeader
 	uint16_t	hertz;
 	uint32_t	bytes;
 	uint8_t	ptr;
-};
+} __attribute__((packed));
+
 
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 {
