@@ -78,6 +78,7 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
 
 					printf("%s\n",sam -> name);			
+					play( &sam -> ptr, sam -> bytes );
 				}
 				else setError(22,data->tokenBuffer);
 
@@ -123,6 +124,8 @@ char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 			length = getStackNum( stack-1 );
 			freq = getStackNum( stack );
 	
+			if (start)	play( start, length );
+
 			break;
 		default:
 			setError(22,data->tokenBuffer);

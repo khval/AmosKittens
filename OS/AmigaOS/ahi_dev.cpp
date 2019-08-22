@@ -19,6 +19,7 @@
 
 #include "ahi_dev.h"
 #include "spawn.h"
+#include "debug.h"
 
 //some define for this nice AHI driver !
 #define AHI_CHUNKSIZE         (65536/2)
@@ -135,6 +136,8 @@ static void cleanup_task(void)
 
 void audio_engine (void) {
 
+	static struct AHIRequest *io;
+
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 static struct audioIO *tempRequest;
@@ -187,19 +190,24 @@ static struct audioIO *tempRequest;
 
 		if ( audioBuffer[0] -> size > 0)
 		{
-			static struct AHIRequest *io = AHIio -> io;
+			io = AHIio -> io;
 			AHIio-> data = audioBuffer[0];
 
-			io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
-			io->ahir_Std.io_Command  = CMD_WRITE;
-			io->ahir_Std.io_Offset   = 0;
-			io->ahir_Frequency       = (ULONG) samplerate;
-			io->ahir_Volume          = AHI_Volume;       
-			io->ahir_Position        = 0x8000;           // Centered
-			io->ahir_Std.io_Data     =  audioBuffer[0] -> ptr; 
-			io->ahir_Std.io_Length   = (ULONG) audioBuffer[0] -> size; 
-			io->ahir_Type = AHIType;
-			io->ahir_Link = link -> io;     
+
+			if (io)
+			{
+				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
+				io->ahir_Std.io_Command  = CMD_WRITE;
+				io->ahir_Std.io_Offset   = 0;
+				io->ahir_Frequency       = (ULONG) samplerate;
+				io->ahir_Volume          = AHI_Volume; 
+				io->ahir_Position        = 0x8000;           // Centered
+				io->ahir_Std.io_Data     =  AHIio-> data -> ptr; 
+				io->ahir_Std.io_Length   = (ULONG) audioBuffer[0] -> size; 
+				io->ahir_Type = AHIType;
+				io->ahir_Link = link ? link -> io : NULL;
+			}
+
 		}
 
 		audio_unlock();
@@ -237,7 +245,7 @@ end_audioTask:
 bool audio_start(int rate,int channels)
 {
 #ifdef enable_audio_debug_output_yes
-	BPTR audio_debug_output = Open("CON:660/50/600/480/Kittens engine",MODE_NEWFILE);
+	BPTR audio_debug_output = Open("CON:660/50/600/480/Kitty audio output",MODE_NEWFILE);
 #else
 	BPTR audio_debug_output = NULL;
 #endif
@@ -255,7 +263,7 @@ bool audio_start(int rate,int channels)
 	return false;
 }
 
-void play(uint8_t * data,int len,int flags)
+void play(uint8_t * data,int len)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
