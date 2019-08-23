@@ -26,7 +26,7 @@
 #define AHI_CHUNKMAX          (131072/2)
 #define AHI_DEFAULTUNIT       0
 
-int samplerate;
+int samplerate = 44100;
 
 bool audio_stopped = false;
 
@@ -57,7 +57,7 @@ struct audioIO *new_audio( struct AHIRequest *io)
 
 std::vector<struct audioChunk *> audioBuffer;
 
-BOOL AHIDevice;
+int AHIDevice = -666;
 
 extern struct AHIIFace		*IAHI ;
 
@@ -82,17 +82,14 @@ void ahi_dev_uninit(int immed);
 
 static void cleanup_task(void)
 {
-
-	audio_lock();
 	while ( audioBuffer.size() > 0 )
 	{
+		Printf("clearing buffer\n");
 		free( audioBuffer[0] );
 		audioBuffer.erase( audioBuffer.begin() );
 	}
-	audio_unlock();
 
-
-	if (! AHIDevice )
+	if ( AHIDevice == 0 )
 	{
 		if (link) if (link -> io)
 		{
@@ -109,13 +106,17 @@ static void cleanup_task(void)
 
    	if (AHIio_orig)
 	{
-		if (AHIio_orig -> io) DeleteIORequest( (struct IORequest *) AHIio_orig -> io);
+		Printf("Free AHIio\n");
+
+		if (AHIio_orig -> io) FreeSysObject ( ASOT_IOREQUEST, (struct IORequest *) AHIio_orig -> io);
 		free(AHIio_orig);
 		AHIio_orig = NULL;
 	}
 
 	if (AHIio2_orig)
 	{
+		Printf("Free AHIio2\n");
+
 		if (AHIio2_orig -> io) FreeVec(AHIio2_orig -> io);
 		free(AHIio2_orig);
 		AHIio2_orig = NULL;
@@ -123,6 +124,8 @@ static void cleanup_task(void)
 
 	if (AHIMsgPort) 
 	{
+		Printf("Free AHIMsgPort\n");
+
 		FreeSysObject( ASOT_PORT, AHIMsgPort);
 		AHIMsgPort = NULL;
 	}
@@ -137,26 +140,55 @@ static void cleanup_task(void)
 void audio_engine (void) {
 
 	static struct AHIRequest *io;
+	static struct audioIO *tempRequest;
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+	Printf("AHIDevice is %ld\n", AHIDevice);
 
-static struct audioIO *tempRequest;
-
-	if(  AHIMsgPort = (struct MsgPort*) AllocSysObjectTags(ASOT_PORT, TAG_DONE) )
+	if( AHIMsgPort = (struct MsgPort*) AllocSysObjectTags(ASOT_PORT, TAG_END) )
 	{
-		if ( (AHIio = new_audio( (struct AHIRequest *)CreateIORequest(AHIMsgPort,sizeof(struct AHIRequest)))))
-		{
-			 AHIio->io->ahir_Version = 4;
-			 AHIDevice = OpenDevice(AHINAME, AHI_DEFAULTUNIT,(struct IORequest *) AHIio -> io, 0);
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
-#ifdef __amigaos4__
-			AHIBase = (struct Device *)AHIio->io->ahir_Std.io_Device;
-			IAHI = (struct AHIIFace*) GetInterface( (struct Library *) AHIBase,"main",1L,NULL) ;
-#endif
+		io = (struct AHIRequest *) AllocSysObjectTags ( 
+					ASOT_IOREQUEST, 
+					ASOIOR_ReplyPort, AHIMsgPort, 
+					ASOIOR_Size, sizeof(struct AHIRequest), 
+					TAG_END );
+
+		if (io)
+		{
+			 if ( AHIio = new_audio( io ) ) 
+			{
+				Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+				AHIio->io->ahir_Version = 4;
+				AHIDevice = OpenDevice(AHINAME, AHI_DEFAULTUNIT,(struct IORequest *) AHIio -> io, 0);
+
+				if (AHIDevice == 0)
+				{
+					Printf("%s:%s:%ld -- success \n",__FILE__,__FUNCTION__,__LINE__);
+
+					AHIBase = (struct Device *)AHIio->io->ahir_Std.io_Device;
+					IAHI = (struct AHIIFace*) GetInterface( (struct Library *) AHIBase,"main",1L,NULL) ;
+				}
+				else
+				{
+					Printf("Open device error code %ld\n", AHIDevice);
+					goto end_audioTask;
+				}
+			}
+			else 	goto end_audioTask;
+		}
+		else
+		{
+			FreeSysObject( ASOT_IOREQUEST, io );
+			goto end_audioTask;
 		}
 	}
-
-	if(AHIDevice) goto end_audioTask;
+	else
+	{
+		Printf("Failed to create port %ld\n", AHIDevice);
+		goto end_audioTask;
+	}
 
 	AHIio2 = new_audio((struct AHIRequest*) AllocVecTags(sizeof(struct AHIRequest), AVT_Type, MEMF_SHARED, TAG_END )) ;
 
@@ -164,14 +196,16 @@ static struct audioIO *tempRequest;
 	{
 		goto end_audioTask;
 	}
+	else
+	{
+		Printf("Cool we got a copy..\n");
+		memcpy(AHIio2 -> io, AHIio -> io, sizeof(struct AHIRequest));
+	}
 
 	AHIio_orig = AHIio;
 	AHIio2_orig= AHIio2;
 
-	if (AHIio2) 
-	{
-		memcpy(AHIio2 -> io, AHIio -> io, sizeof(struct AHIRequest));
-	}
+	Printf("audio ready, waiting for input ;-)\n");
 
 	Signal( (struct Task *) main_task, SIGF_CHILD );
 
@@ -190,33 +224,47 @@ static struct audioIO *tempRequest;
 
 		if ( audioBuffer[0] -> size > 0)
 		{
-			io = AHIio -> io;
+			if (AHIio-> data)	free( AHIio-> data );	// free old data.
 			AHIio-> data = audioBuffer[0];
+			audio_unlock();
 
+			Printf("We have data\n");
 
-			if (io)
+			Printf("AHIio %08lx, (io: %08lx, data: %08lx)\n", AHIio, AHIio -> io, AHIio-> data);
+
+			if (io = AHIio -> io)
 			{
+				Printf("samplerate: %ld\n",samplerate);
+				Printf("Volume: %ld\n",AHI_Volume);
+
 				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
 				io->ahir_Std.io_Command  = CMD_WRITE;
 				io->ahir_Std.io_Offset   = 0;
+				io->ahir_Std.io_Data     =  AHIio-> data -> ptr; 
+				io->ahir_Std.io_Length   = (ULONG) AHIio-> data -> size; 
+
 				io->ahir_Frequency       = (ULONG) samplerate;
 				io->ahir_Volume          = AHI_Volume; 
 				io->ahir_Position        = 0x8000;           // Centered
-				io->ahir_Std.io_Data     =  AHIio-> data -> ptr; 
-				io->ahir_Std.io_Length   = (ULONG) audioBuffer[0] -> size; 
-				io->ahir_Type = AHIType;
+				io->ahir_Type = AHIST_M8S;
 				io->ahir_Link = link ? link -> io : NULL;
 			}
 
+			Printf("io->ahir_Std.io_Data %08lx\n",io->ahir_Std.io_Data);
 		}
+		else 	audio_unlock();
 
-		audio_unlock();
+		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", AHIio, AHIio -> io );
 
 		SendIO( (struct IORequest *) AHIio -> io );
 
 		if (link)
 		{
+			Printf("wait for link %08lx (io: %08lx, len %ld) \n", link, link -> io, link -> io ? link -> io -> ahir_Std.io_Length : 0 );
+
 			WaitIO ( (struct IORequest *) link -> io );
+
+			Printf("check if main is done... \n");
 
 			if (CheckIO( (struct IORequest *) AHIio -> io ))
 			{
@@ -227,19 +275,36 @@ static struct audioIO *tempRequest;
 			}
 		}
 
-		link = AHIio;
+		Printf("swap the order of buffers\n");
+
+		Printf("%08lx, %08lx ( link is %08lx)\n", AHIio, AHIio2, link);
+
 		// Swap requests
 		tempRequest = AHIio;
 		AHIio  = AHIio2;
 		AHIio2 = tempRequest;
+		link = AHIio2;
+
+		Printf("after swap\n");
+
+		Printf("%08lx, %08lx ( link is %08lx)\n",  AHIio, AHIio2, link);
+
+
 	} 
 
 end_audioTask:
 
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
+
 	audio_lock();
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	cleanup_task();
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	Signal( (struct Task *) main_task, SIGF_CHILD );
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	audio_unlock();
+
+	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 }
 
 bool audio_start(int rate,int channels)
@@ -274,17 +339,26 @@ void play(uint8_t * data,int len)
 
 	while (blocks--)
 	{
+		printf("offset at %d, max %d\n", offset, len);
+
+		printf("\nallocated\n");
 		chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk));
 
 		if (chunk)
 		{
+			printf("memcpy\n");
+
 			chunk -> size = AHI_CHUNKSIZE;
 			memcpy( chunk -> ptr, (void *) (data + offset),  chunk -> size );
+
+			printf("add to buffer, (wait, if table is locked)\n");
 
 			audio_lock();
 			audioBuffer.push_back( chunk );
 			audio_unlock();
 			offset += chunk -> size;
+
+			printf("its added \n");
 		}
 	}
 
@@ -292,30 +366,63 @@ void play(uint8_t * data,int len)
 
 	if (lastLen)
 	{
+		printf("offset at %d, max %d\n", offset, len);
+
+		printf("\nallocated\n");
 		chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk));
 
 		if (chunk)
 		{
+			printf("memcpy\n");
+
 			chunk -> size = lastLen;
 			memcpy( chunk -> ptr, (data + offset),  chunk -> size );
+
+			printf("add to buffe, (wait, if table is locked)r\n");
 
 			audio_lock();
 			audioBuffer.push_back( chunk );
 			audio_unlock();
+
+			printf("its added\n");
+
 			offset += chunk -> size;
 		}
 	}
 }
 
+#define debug_lock
+
+#ifdef debug_lock
+int audio_locked = 0;
+#endif
+
 void audio_lock()
 {
+#ifdef debug_lock
+	if (audio_locked != 0)  Printf("***** audio is already locked *****\n");
+#endif
 	MutexObtain(audio_mx);
+	audio_locked ++;
 }
 
 void audio_unlock()
 {
+#ifdef debug_lock
+	if (audio_locked == 0)  
+	{
+		Printf("***** audio is not locked, nothing to unlock *****\n");
+	}
+	else if (audio_locked > 0)  
+	{
+		Printf("**** unlocked with success ****\n");
+	}
+	else
+	{
+		Printf("**** unlock this is none sense  ****\n");
+	}
+#endif 
+	audio_locked--;
 	MutexRelease(audio_mx);
 }
-
-
 
