@@ -41,10 +41,11 @@ extern int current_screen;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
 
+
 struct sampleHeader
 {
 	char		name[8];
-	uint16_t	hertz;
+	uint16_t	frequency;
 	uint32_t	bytes;
 	uint8_t	ptr;
 } __attribute__((packed));
@@ -78,7 +79,8 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
 
 					printf("%s\n",sam -> name);			
-					play( &sam -> ptr, sam -> bytes );
+					printf("bytes: %d (%08x)\n",sam -> bytes, sam -> bytes);
+					play( &sam -> ptr, sam -> bytes, sam -> frequency );
 				}
 				else setError(22,data->tokenBuffer);
 
@@ -104,27 +106,22 @@ char *ext_cmd_sam_play(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 {
-	int ret = 0,voice,length, freq;
+	int ret = 0,voice,length, frequency;
 	uint8_t *start;
 	int args = stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("args: %d\n",args);
-
-	dump_stack();
-
 	switch (args)
 	{
-		case 1:
-			break;
-
 		case 4:
 			voice = getStackNum( stack-2 );
 			start = (uint8_t *) getStackNum( stack-2 );
 			length = getStackNum( stack-1 );
-			freq = getStackNum( stack );
+			frequency = getStackNum( stack );
 	
-			if (start)	play( start, length );
+			printf("play sound form start: %08x, length %d, frequency %d\n",start,length,frequency);
+
+			if (start)	play( start, length, frequency );
 
 			break;
 		default:

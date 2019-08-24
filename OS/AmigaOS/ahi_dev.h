@@ -5,5 +5,5 @@ extern void audio_unlock();
 
 extern bool audio_start(int rate,int channels);
 extern void audio_close();
-extern void play(uint8_t * data,int len);
+extern bool play(uint8_t * data,int len, int frequency);
 

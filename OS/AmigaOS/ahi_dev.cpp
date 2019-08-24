@@ -26,16 +26,15 @@
 #define AHI_CHUNKMAX          (131072/2)
 #define AHI_DEFAULTUNIT       0
 
-int samplerate = 44100;
-
 bool audio_stopped = false;
 
 extern bool running;
 
 struct audioChunk
 {
-	int size;
 	char ptr[AHI_CHUNKSIZE];
+	int size;
+	int frequency;
 };
 
 struct audioIO
@@ -58,8 +57,6 @@ struct audioIO *new_audio( struct AHIRequest *io)
 std::vector<struct audioChunk *> audioBuffer;
 
 int AHIDevice = -666;
-
-extern struct AHIIFace		*IAHI ;
 
  struct MsgPort *     AHIMsgPort  = NULL;     // The msg port we will use for the ahi.device
  struct audioIO *  AHIio       = NULL;     // First AHIRequest structure
@@ -141,6 +138,7 @@ void audio_engine (void) {
 
 	static struct AHIRequest *io;
 	static struct audioIO *tempRequest;
+	extern struct AHIIFace	*IAHI ;		// instence.
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 	Printf("AHIDevice is %ld\n", AHIDevice);
@@ -226,15 +224,15 @@ void audio_engine (void) {
 		{
 			if (AHIio-> data)	free( AHIio-> data );	// free old data.
 			AHIio-> data = audioBuffer[0];
+			audioBuffer.erase( audioBuffer.begin());
 			audio_unlock();
 
 			Printf("We have data\n");
 
-			Printf("AHIio %08lx, (io: %08lx, data: %08lx)\n", AHIio, AHIio -> io, AHIio-> data);
+			Printf("AHIio %08lx, (io: %08lx,  frequency: %ld)\n", AHIio, AHIio -> io, AHIio->data -> frequency);
 
 			if (io = AHIio -> io)
 			{
-				Printf("samplerate: %ld\n",samplerate);
 				Printf("Volume: %ld\n",AHI_Volume);
 
 				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
@@ -242,8 +240,7 @@ void audio_engine (void) {
 				io->ahir_Std.io_Offset   = 0;
 				io->ahir_Std.io_Data     =  AHIio-> data -> ptr; 
 				io->ahir_Std.io_Length   = (ULONG) AHIio-> data -> size; 
-
-				io->ahir_Frequency       = (ULONG) samplerate;
+				io->ahir_Frequency       = (ULONG) AHIio-> data ->frequency;
 				io->ahir_Volume          = AHI_Volume; 
 				io->ahir_Position        = 0x8000;           // Centered
 				io->ahir_Type = AHIST_M8S;
@@ -328,12 +325,19 @@ bool audio_start(int rate,int channels)
 	return false;
 }
 
-void play(uint8_t * data,int len)
+bool play(uint8_t * data,int len, int frequency)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
 	struct audioChunk *chunk;
 	int offset = 0;
+
+	if ((frequency <= 0) || (frequency > (44800*4)))
+	{
+		printf("bad frequency\n"); getchar();
+		return false;	// avoid getting stuck...
+	}
+
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -349,6 +353,7 @@ void play(uint8_t * data,int len)
 			printf("memcpy\n");
 
 			chunk -> size = AHI_CHUNKSIZE;
+			chunk -> frequency = frequency;
 			memcpy( chunk -> ptr, (void *) (data + offset),  chunk -> size );
 
 			printf("add to buffer, (wait, if table is locked)\n");
@@ -376,6 +381,7 @@ void play(uint8_t * data,int len)
 			printf("memcpy\n");
 
 			chunk -> size = lastLen;
+			chunk -> frequency = frequency;
 			memcpy( chunk -> ptr, (data + offset),  chunk -> size );
 
 			printf("add to buffe, (wait, if table is locked)r\n");
@@ -389,6 +395,8 @@ void play(uint8_t * data,int len)
 			offset += chunk -> size;
 		}
 	}
+
+	return true;
 }
 
 #define debug_lock
