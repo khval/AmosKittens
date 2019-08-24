@@ -1274,13 +1274,13 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 					var = &globalVars[ref -> ref -1].var;
 				}
 			}
+			else setError( 22,  tokenBuffer );
 		}
 		
 		if (var)
 		{
-			unsigned short next_num=0;
+			int next_num=0;
 			double next_float=0.0;
-
 			struct glueCommands *gcmd;
 
 			gcmd = &cmdTmp[cmdStack-1];
