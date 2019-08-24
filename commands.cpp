@@ -2261,7 +2261,7 @@ char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( getLastProgStackToken() == 0x02BE )
+	if ( getLastProgStackFn() == _if )
 	{
 		int nextToken = *((unsigned short *) tokenBuffer);
 
