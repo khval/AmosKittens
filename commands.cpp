@@ -319,8 +319,6 @@ BOOL setVarString( struct kittyData *var, kittyData *s )
 					var->str->ptr = 0;
 					var->str->size = 0;
 				}
-
-				getchar();
 			}
 
 			return TRUE;
