@@ -78,9 +78,13 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 
 					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
 
-					printf("%s\n",sam -> name);			
+					printf("name: %s\n",sam -> name);
 					printf("bytes: %d (%08x)\n",sam -> bytes, sam -> bytes);
-					play( &sam -> ptr, sam -> bytes, sam -> frequency );
+					printf("data %08x\n",&sam -> ptr);
+					printf("frequency %08x\n",sam -> frequency);
+
+					play( &sam -> ptr, sam -> bytes, voice, sam -> frequency );
+
 				}
 				else setError(22,data->tokenBuffer);
 
@@ -121,7 +125,7 @@ char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 	
 			printf("play sound form start: %08x, length %d, frequency %d\n",start,length,frequency);
 
-			if (start)	play( start, length, frequency );
+			if (start)	play( start, length, voice, frequency );
 
 			break;
 		default:
