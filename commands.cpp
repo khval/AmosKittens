@@ -550,7 +550,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (tokenMode == mode_logical)
 	{
-		stackCmdParm(_equalData, tokenBuffer);
+		stackCmdMathOperator(_equalData, tokenBuffer, token_equal );
 		stack++;
 		setStackNum(0);	// prevent random data from being on the stack.
 	}
