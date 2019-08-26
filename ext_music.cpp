@@ -51,6 +51,8 @@ struct sampleHeader
 } __attribute__((packed));
 
 
+struct sampleHeader *voicePlay[4] = {NULL,NULL,NULL,NULL};
+
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 {
 	int ret = 0,voice,sample;
@@ -75,19 +77,10 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 				if ((sample>=0) && (sample < samples))
 				{
 					offset = ((uint32_t *) (bank -> start + sizeof( uint16_t )));
-
 					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
-
-					printf("name: %s\n",sam -> name);
-					printf("bytes: %d (%08x)\n",sam -> bytes, sam -> bytes);
-					printf("data %08x\n",&sam -> ptr);
-					printf("frequency %08x\n",sam -> frequency);
-
 					play( &sam -> ptr, sam -> bytes, voice, sam -> frequency );
-
 				}
 				else setError(22,data->tokenBuffer);
-
 			}
 
 			break;
@@ -144,3 +137,115 @@ char *ext_cmd_sam_raw(struct nativeCommand *cmd, char *tokenBuffer )
 	stackCmdNormal( _ext_cmd_sam_raw, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ext_cmd_sample( struct glueCommands *data, int nextToken )
+{
+	int sample,voice;
+	int args = stack - data->stack +1;
+	struct kittyBank *bank;
+	struct sampleHeader *sam;
+	uint32_t	*offset;
+	int n;
+	int size;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			sample = getStackNum( stack-1 );
+			voice = getStackNum( stack );
+
+			printf("%d,%d\n",sample, voice);
+
+			bank = findBank( 5 );
+			if (bank)
+			{
+				uint16_t samples = *((uint16_t *) bank -> start);
+
+				if ((sample>=0) && (sample < samples))
+				{
+					offset = ((uint32_t *) (bank -> start + sizeof( uint16_t )));
+					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
+
+					// copy to playback voices.
+
+					for (n=0;n<4;n++)
+					{
+						if (voice & (1<<n))
+						{
+							if (voicePlay[n]) free(voicePlay[n]);
+							size =  sizeof(struct sampleHeader) + sam -> bytes -1;
+							voicePlay[n]=(struct sampleHeader *) malloc( size );
+							if (voicePlay[n])	memcpy( voicePlay[n] , sam, size );
+						}
+					}
+
+				}
+				else setError(22,data->tokenBuffer);
+			}
+
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+
+	return  NULL ;
+}
+
+char *ext_cmd_sample(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_sample, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ext_cmd_play( struct glueCommands *data, int nextToken )
+{
+	int pitch,delay;
+	int n;
+
+	int args = stack - data->stack +1;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			pitch = getStackNum( stack-1 );
+			delay = getStackNum( stack );
+
+			for (n=0;n<4;n++)
+			{
+				if (voicePlay[n])
+				{
+					play( &voicePlay[n] -> ptr , voicePlay[n] -> bytes, (1L << n), voicePlay[n] -> frequency + (( pitch - 50 ) * 2) );
+				}
+			}
+
+			Delay( delay / 2 );
+
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	return  NULL ;
+}
+
+
+char *ext_cmd_play(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	stackCmdNormal( _ext_cmd_play, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+
