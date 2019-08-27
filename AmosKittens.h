@@ -256,6 +256,8 @@ struct kittyVideoInfo
 {
 	uint16_t videoWidth;
 	uint16_t videoHeight;
+	uint16_t display_x;
+	uint16_t display_y; 
 } __attribute__((packed)); 
 
 struct kittyInfo		// where amos programs look for info about the editor.
@@ -335,6 +337,15 @@ struct zone
 	int y1;
 };
 
+struct sampleHeader
+{
+	char		name[8];
+	uint16_t	frequency;
+	uint32_t	bytes;
+	uint8_t	ptr;
+} __attribute__((packed));
+
+
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
@@ -353,8 +364,8 @@ struct zone
 	cmdTmp[cmdStack].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdTmp[cmdStack].token = 0; \
+	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; \
 	token_is_fresh = false; 
 

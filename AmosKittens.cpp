@@ -1824,13 +1824,15 @@ int main(int args, char **arg)
 
 		if (kitty_extensions[1].lookup)
 		{	
+			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
+			*((void **) (kitty_extensions[1].lookup + 0x0118)) = (void *) ext_cmd_bell;
 			*((void **) (kitty_extensions[1].lookup + 0x00CE)) = (void *) ext_cmd_sample;
 			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
+			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
 
-//			*((void **) (kitty_extensions[1].lookup + 0x0048)) = (void *) ext_cmd_unpack;
-//			*((void **) (kitty_extensions[1].lookup + 0x0056)) = (void *) ext_cmd_unpack;
+
 //			*((void **) (kitty_extensions[1].lookup + 0x0060)) = (void *) ext_cmd_unpack;
 		}
 
