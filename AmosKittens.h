@@ -346,6 +346,13 @@ struct sampleHeader
 } __attribute__((packed));
 
 
+
+struct wave
+{
+	int id;
+	struct sampleHeader sample;
+};
+
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\

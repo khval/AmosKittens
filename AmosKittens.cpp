@@ -192,6 +192,9 @@ extern void dumpScreenInfo();
 struct kittyVideoInfo KittyBaseVideoInfo;
 struct kittyInfo KittyBaseInfo;
 
+extern void make_wave_noice();
+extern void make_wave_bell();
+
 bool alloc_video()
 {
 
@@ -1830,6 +1833,7 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
+			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
 
 
@@ -1846,6 +1850,9 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
 			*((void **) (kitty_extensions[2].lookup + 0x0060)) = (void *) ext_cmd_unpack;
 		}
+
+		make_wave_noice();
+		make_wave_bell();
 
 		// function table init.
 		if (kitty_extensions[12].lookup)
