@@ -36,7 +36,7 @@
 
 extern int last_var;
 extern struct globalVar globalVars[];
-extern unsigned short last_token;
+//extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
