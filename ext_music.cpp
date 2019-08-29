@@ -50,6 +50,8 @@ std::vector<struct wave *> waves;
 struct wave *allocWave( int id, int size );
 struct sampleHeader *allocSample( int size );
 
+extern LONG volume;
+
 void make_wave_noice()
 {
 	int n;
@@ -93,6 +95,7 @@ void make_wave_bell()
 		waves.push_back(newWave);
 	}
 }
+
 
 
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
@@ -217,10 +220,34 @@ struct wave *getWave( int id )
 }
 
 
+bool delWave( int id )
+{
+	unsigned int n;
+	if (index<0) return NULL;
+
+	printf("try to delete wave %d\n",id);
+
+	for (n=0;n<waves.size();n++)
+	{
+		printf("waves[n] -> id = %d\n",waves[n] -> id);
+
+		if (waves[n] -> id == id )
+		{
+			free(waves[n]);
+			waves.erase(waves.begin() + n );
+			return true ;
+		}
+	}
+	return false;
+}
+
+
 void copy_sample_to_playback_voices(struct sampleHeader *sam, int voices)
 {
 	int n;
 	int size;
+
+	printf("sam -> bytes: %d\n", sam -> bytes);
 
 	for (n=0;n<4;n++)
 	{
@@ -435,8 +462,6 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("args %d\n",args);
-
 	switch (args)
 	{
 		case 2:
@@ -455,7 +480,6 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 					memcpy( &newWave -> sample.ptr, &waveStr -> ptr, waveStr->size );
 					newWave -> sample.bytes = waveStr->size;
 					newWave -> sample.frequency = 44800;
-
 					waves.push_back(newWave);
 				}
 			}
@@ -470,15 +494,12 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-
 	return  NULL ;
 }
-
 
 char *ext_cmd_set_wave(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	stackCmdNormal( _ext_cmd_set_wave, tokenBuffer );
 	return tokenBuffer;
 }
@@ -486,12 +507,10 @@ char *ext_cmd_set_wave(nativeCommand *cmd, char *tokenBuffer)
 char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1;
-	unsigned int waveId, phase, duration, volume;
+	int waveId,phase, duration, volume;
 	struct wave *wave;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("args %d\n",args);
 
 	switch (args)
 	{
@@ -516,16 +535,73 @@ char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-
 	return  NULL ;
 }
-
 
 char *ext_cmd_set_envel(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	stackCmdNormal( _ext_cmd_set_envel, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ext_cmd_del_wave( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	int waveId;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			waveId = getStackNum( stack  );
+			if (delWave(waveId)==false)
+			{
+				setError(22,data->tokenBuffer);
+			}
+			return  NULL ;
+			break;
+
+	}
+
+	setError(22,data->tokenBuffer);
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+char *ext_cmd_del_wave(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_del_wave, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ext_cmd_volume( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			volume = (LONG) (( uint32_t) (0x10000 * getStackNum( stack )) / 63);
+			return  NULL ;
+			break;
+	}
+
+	setError(22,data->tokenBuffer);
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+
+char *ext_cmd_volume(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_volume, tokenBuffer );
 	return tokenBuffer;
 }
 

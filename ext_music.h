@@ -16,6 +16,8 @@ extern char *ext_cmd_boom(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_bell(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_shoot(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_wave(nativeCommand *cmd, char *ptr);
+extern char *ext_cmd_del_wave(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_set_wave(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_set_envel(nativeCommand *cmd, char *ptr);
+extern char *ext_cmd_volume(nativeCommand *cmd, char *ptr);
 

@@ -71,9 +71,7 @@ struct audioIO *new_audio( struct AHIRequest *io)
 std::vector<struct audioChunk *> audioBuffer[4];
 
 
-
-
-static LONG AHI_Volume=0x10000;
+LONG volume=0x10000;
 
 static struct Process *main_task = NULL;
 static struct Process *audioTask[4] = { NULL, NULL, NULL, NULL };
@@ -249,7 +247,7 @@ void audio_engine (void) {
 				io->ahir_Std.io_Data     =  context.AHIio-> data -> ptr; 
 				io->ahir_Std.io_Length   = (ULONG) context.AHIio-> data -> size; 
 				io->ahir_Frequency       = (ULONG) context.AHIio-> data -> frequency;
-				io->ahir_Volume          = AHI_Volume; 
+				io->ahir_Volume          = volume; 
 				io->ahir_Position        = (ULONG) context.AHIio-> data -> position;
 				io->ahir_Type = AHIST_M8S;
 				io->ahir_Link = context.link ? context.link -> io : NULL;
