@@ -31,6 +31,8 @@ extern std::vector<struct amosMenuItem *> menuitems;
 extern std::vector<struct amos_selected> amosSelected;
 extern std::vector<struct defFn> defFns;
 extern std::vector<struct kittyBank> kittyBankList;
+extern std::vector<struct wave *> waves;
+
 
 void clean_up_defFns()
 {
@@ -188,6 +190,16 @@ void clean_up_banks()
 	}
 }
 
+void clean_up_waves()
+{
+	while (waves.size())
+	{
+		if( waves[0]) free( waves[0] );
+		waves.erase(waves.begin() );
+	}
+}
+
+
 struct kittyBank *get_first_user_bank()
 {
 	unsigned int n;
@@ -274,5 +286,9 @@ void clean_up_special()
 		free(zones);
 		zones = NULL;
 	}
+
+	dprintf("clean up waves\n");
+
+	clean_up_waves();
 }
 
