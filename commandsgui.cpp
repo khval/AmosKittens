@@ -416,15 +416,23 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 	int ret = 0;
 	int varSize=17,bufferSize=0;
 
+	printf("args: %d\n",args);
+
 	switch (args)
 	{
 		case 2:	id = getStackNum(stack-1);
-				script = getStackString(stack);
+				script = getStackString(stack);			// this can also be a number
+				break;
+
+		case 3:
+				id = getStackNum(stack-2);
+				script = getStackString(stack-1);		// this can also be a number
+				varSize = getStackNum(stack);
 				break;
 
 		case 4:
 				id = getStackNum(stack-3);
-				script = getStackString(stack-2);
+				script = getStackString(stack-2);		// this can also be a number 
 				varSize = getStackNum(stack-1);
 				bufferSize = getStackNum(stack);
 				break;
