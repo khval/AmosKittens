@@ -13,6 +13,9 @@ extern void	setStackStrDup(struct stringData *str);
 extern void	setStackNone( void );
 extern unsigned short getLastProgStackToken();
 
+#define getLastProgStackFn()	((cmdStack) ? cmdTmp[cmdStack-1].cmd : NULL)
+#define getLastProgStackToken() ((cmdStack) ? cmdTmp[cmdStack-1].token : 0 )
+
 #define setStackHiddenCondition()			\
 			kittyStack[stack].str = NULL;		\
 			kittyStack[stack].state = state_hidden_subData;	\

@@ -72,11 +72,6 @@ void remove_parenthesis(int black_at_stack )
 	}
 }
 
-unsigned short getLastProgStackToken()
-{
-	if (cmdStack) return cmdTmp[cmdStack-1].token;
-	return 0;
-}
 
 void _unLockPara()
 {
