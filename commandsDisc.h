@@ -47,4 +47,5 @@ char *discAssign(struct nativeCommand *disc, char *tokenBuffer);
 char *discReadText(struct nativeCommand *disc, char *tokenBuffer);
 
 char *cmdDiskInfoStr(struct nativeCommand *disc, char *tokenBuffer);
+char *discRun(struct nativeCommand *disc, char *tokenBuffer);
 
