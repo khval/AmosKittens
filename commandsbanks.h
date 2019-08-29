@@ -26,7 +26,8 @@ enum
 	type_Menu,		// 7
 	type_ChipData,	// 8
 	type_FastData,	// 9
-	type_Code
+	type_Code,		// 10
+	type_num_of_banks
 };
 
 struct resourcebank_header
