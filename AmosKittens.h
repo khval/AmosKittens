@@ -345,11 +345,16 @@ struct sampleHeader
 	uint8_t	ptr;
 } __attribute__((packed));
 
-
+struct envel
+{
+	int duration;
+	int volume;
+};
 
 struct wave
 {
 	int id;
+	struct envel envels[7];
 	struct sampleHeader sample;
 };
 

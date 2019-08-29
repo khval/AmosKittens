@@ -201,20 +201,16 @@ struct wave *allocWave( int id, int size )
 	return data;
 }
 
-struct sampleHeader *getWave( int id )
+struct wave *getWave( int id )
 {
 	unsigned int n;
 	if (index<0) return NULL;
 
-	printf("try to get wave %d\n", id);
-
 	for (n=0;n<waves.size();n++)
 	{
-		printf("id %d\n", waves[n]-> id);
-
 		if (waves[n] -> id == id )
 		{
-			return &waves[n] -> sample;
+			return waves[n] ;
 		}
 	}
 	return NULL;
@@ -235,7 +231,7 @@ void copy_sample_to_playback_voices(struct sampleHeader *sam, int voices)
 
 			if (voicePlay[n])
 			{
-				size =  sizeof(struct wave) + sam -> bytes -1;
+				size =  sizeof(struct sampleHeader) + sam -> bytes -1;
 				memcpy( voicePlay[n] , sam, size );
 			}
 		}	
@@ -336,74 +332,48 @@ char *ext_cmd_play(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-char *_ext_cmd_boom( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1;
-	struct sampleHeader *sam;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 1:
-
-			sam = getWave(0);
-			if (sam)
-			{
-				play( &sam -> ptr, sam -> bytes, 0xF, sam -> frequency );
-			}
-			else setError(22,data->tokenBuffer);
-
-
-			break;
-		default:
-			setError(22,data->tokenBuffer);
-	}
-
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-
-	return  NULL ;
-}
-
 char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 {
+	struct wave *wave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	stackCmdNormal( _ext_cmd_boom, tokenBuffer );
-	return tokenBuffer;
-}
-
-char *_ext_cmd_bell( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1;
-	struct sampleHeader *sam;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
+	wave = getWave(0);
+	if (wave)
 	{
-		case 1:
-			sam = getWave(1);
-			if (sam)
-			{
-				play( &sam -> ptr, sam -> bytes, 0xF, sam -> frequency );
-			}
-			else setError(22,data->tokenBuffer);
-			break;
-		default:
-			setError(22,data->tokenBuffer);
+		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
 	}
+	else setError(22,tokenBuffer);
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
-
-	return  NULL ;
+	return tokenBuffer;
 }
 
 char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 {
+	struct wave *wave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	stackCmdNormal( _ext_cmd_bell, tokenBuffer );
+	wave = getWave(1);
+	if (wave)
+	{
+		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
+	}
+	else setError(22,tokenBuffer);
+
+	return tokenBuffer;
+}
+
+char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
+{
+	struct wave *wave;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	wave = getWave(0);
+	if (wave)
+	{
+		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
+	}
+	else setError(22,tokenBuffer);
+
 	return tokenBuffer;
 }
 
@@ -412,7 +382,7 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1;
 	int voices;
 	int waveId;
-	struct sampleHeader *sam = NULL;
+	struct wave *wave = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -424,11 +394,11 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 			waveId = getStackNum( stack-1  );
 			voices = getStackNum( stack );
 
-				sam = getWave(waveId);
-				if (sam)
-				{
-					copy_sample_to_playback_voices(sam,voices);
-				}
+			wave = getWave(waveId);
+			if (wave)
+			{
+				copy_sample_to_playback_voices( &(wave -> sample),voices);
+			}
 
 			break;
 		default:
@@ -438,7 +408,7 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 			break;
 	}
 
-	if (sam == NULL)
+	if (wave == NULL)
 	{
 		setError(178,data->tokenBuffer);
 	}
@@ -512,5 +482,52 @@ char *ext_cmd_set_wave(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _ext_cmd_set_wave, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	unsigned int waveId, phase, duration, volume;
+	struct wave *wave;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("args %d\n",args);
+
+	switch (args)
+	{
+		case 4:
+			waveId = getStackNum( stack -3  );
+			phase = getStackNum( stack -2 );
+			duration = getStackNum( stack -1 );
+			volume = getStackNum( stack );
+
+			wave = getWave(waveId);
+			if ((wave)&&(phase>-1)&&(phase<7))
+			{
+				wave -> envels[phase].volume = volume;
+				wave -> envels[phase].duration = duration;
+			}
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			return  NULL ;
+			break;
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+
+	return  NULL ;
+}
+
+
+char *ext_cmd_set_envel(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	stackCmdNormal( _ext_cmd_set_envel, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 

@@ -1828,8 +1828,10 @@ int main(int args, char **arg)
 		if (kitty_extensions[1].lookup)
 		{	
 			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
-			*((void **) (kitty_extensions[1].lookup + 0x0118)) = (void *) ext_cmd_bell;
+			*((void **) (kitty_extensions[1].lookup + 0x007E)) = (void *) ext_cmd_shoot;	
 			*((void **) (kitty_extensions[1].lookup + 0x00CE)) = (void *) ext_cmd_sample;
+			*((void **) (kitty_extensions[1].lookup + 0x0118)) = (void *) ext_cmd_bell;
+			*((void **) (kitty_extensions[1].lookup + 0x0180)) = (void *) ext_cmd_set_envel;
 			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
