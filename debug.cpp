@@ -558,7 +558,7 @@ void dumpScreenInfo()
 				n,
 				screens[n]->displayWidth, screens[n]->displayHeight,
 				screens[n]->realWidth,screens[n]->realHeight,
-				screens[n]->scanline_x,screens[n]->scanline_y,
+				screens[n]->scanline_x/2+128,screens[n]->scanline_y/2+50,
 				screens[n]->offset_x,screens[n]->offset_y,
 				screens[n]->Memory[1] ? "Yes" : "No ",
 				screens[n]->double_buffer_draw_frame,
