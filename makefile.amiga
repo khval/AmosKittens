@@ -68,8 +68,10 @@ main_objects = commands.cpp \
 			os/amigaos/joystick.cpp \
 			os/amigaos/spawn.cpp \
 			os/amigaos/iconify.cpp \
+			os/amigaos/ahi_dev.cpp \
 			AmosString.cpp \
-			floyd.cpp
+			floyd.cpp 
+
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 main_SRCS = AmosKittens.cpp
@@ -78,6 +80,9 @@ objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
 
 all:	 config.h $(objects_in_dir) $(programs) 
+
+debug:
+	echo $(objects_in_dir)
 
 $(objects_dir)%.o:	%.cpp debug.h 
 	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
