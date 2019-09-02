@@ -22,12 +22,12 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
-#include "stack.h"
 #include "amosKittens.h"
+#include "stack.h"
 #include "commands.h"
 #include "commandsBanks.h"
 #include "commandsBlitterObject.h"
-#include "errors.h"
+#include "KittyErrors.h"
 #include "engine.h"
 #include "os/amigaos/ahi_dev.h"
 
@@ -51,6 +51,29 @@ struct wave *allocWave( int id, int size );
 struct sampleHeader *allocSample( int size );
 
 extern LONG volume;
+
+
+void make_wave_test()
+{
+	int n;
+	struct wave *newWave = allocWave(999, 10);
+
+	newWave->sample.bytes = 10;
+
+	if (newWave)
+	{
+		for (n = 0; n<newWave->sample.bytes; n++)
+		{
+			(&newWave->sample.ptr)[n] = sin( (float) n / (float) newWave->sample.bytes * M_PI *2 ) * 126 + 127;
+		}
+
+		newWave->sample.frequency = newWave->sample.bytes;	// sample rate
+
+		waves.push_back(newWave);
+	}
+}
+
+
 
 void make_wave_noice()
 {
@@ -85,7 +108,7 @@ void make_wave_bell()
 	{
 		for (n=0;n<256;n++)
 		{
-			(&newWave -> sample.ptr)[n] = sin( r ) * 126;
+			(&newWave -> sample.ptr)[n] = (uint8_t) sin( r ) * 126;
 			r+=s;
 		}
 
@@ -96,6 +119,73 @@ void make_wave_bell()
 	}
 }
 
+struct sampleHeader *allocSample( int size )
+{
+	size =  sizeof(struct sampleHeader) + size -1;
+	return (struct sampleHeader *) malloc( size );
+}
+
+struct wave *allocWave( int id, int size )
+{
+	struct wave *data;
+
+	size =  sizeof(struct wave) + size -1;
+	data = (struct wave *) malloc( size );
+
+	if (data)
+	{
+		data -> id = id;
+	}
+
+	return data;
+}
+
+struct wave *getWave(int id)
+{
+	unsigned int n;
+
+	for (n=0;n<waves.size();n++)
+	{
+		if (waves[n] -> id == id )
+		{
+			return waves[n] ;
+		}
+	}
+	return NULL;
+}
+
+
+bool delWave( int id )
+{
+	unsigned int n;
+
+	for (n=0;n<waves.size();n++)
+	{
+		if (waves[n] -> id == id )
+		{
+			free(waves[n]);
+			waves.erase(waves.begin() + n );
+			return true ;
+		}
+	}
+	return false;
+}
+
+void setEnval(struct wave *wave, int phase, int duration, int volume)
+{
+	int n;
+	int startDuration = 0;
+	if ((wave)&&(phase>-1)&&(phase<7))
+	{
+		for (n = 0; n < phase; n++) startDuration += wave->envels[n].duration;
+
+		wave -> envels[phase].volume = volume;
+		wave -> envels[phase].startDuration = startDuration;
+		wave -> envels[phase].duration = duration;
+	}
+}
+
+#ifdef __amoskittens__
 
 
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
@@ -183,63 +273,6 @@ char *ext_cmd_sam_raw(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
-struct sampleHeader *allocSample( int size )
-{
-	size =  sizeof(struct sampleHeader) + size -1;
-	return (struct sampleHeader *) malloc( size );
-}
-
-struct wave *allocWave( int id, int size )
-{
-	struct wave *data;
-
-	size =  sizeof(struct wave) + size -1;
-	data = (struct wave *) malloc( size );
-
-	if (data)
-	{
-		data -> id = id;
-	}
-
-	return data;
-}
-
-struct wave *getWave( int id )
-{
-	unsigned int n;
-	if (index<0) return NULL;
-
-	for (n=0;n<waves.size();n++)
-	{
-		if (waves[n] -> id == id )
-		{
-			return waves[n] ;
-		}
-	}
-	return NULL;
-}
-
-
-bool delWave( int id )
-{
-	unsigned int n;
-	if (index<0) return NULL;
-
-	printf("try to delete wave %d\n",id);
-
-	for (n=0;n<waves.size();n++)
-	{
-		printf("waves[n] -> id = %d\n",waves[n] -> id);
-
-		if (waves[n] -> id == id )
-		{
-			free(waves[n]);
-			waves.erase(waves.begin() + n );
-			return true ;
-		}
-	}
-	return false;
-}
 
 
 void copy_sample_to_playback_voices(struct sampleHeader *sam, int voices)
@@ -521,11 +554,7 @@ char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
 			volume = getStackNum( stack );
 
 			wave = getWave(waveId);
-			if ((wave)&&(phase>-1)&&(phase<7))
-			{
-				wave -> envels[phase].volume = volume;
-				wave -> envels[phase].duration = duration;
-			}
+			setEnval( wave, phase, duration, volume );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -605,5 +634,5 @@ char *ext_cmd_volume(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
+#endif
 

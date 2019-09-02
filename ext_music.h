@@ -21,3 +21,10 @@ extern char *ext_cmd_set_wave(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_set_envel(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_volume(nativeCommand *cmd, char *ptr);
 
+void make_wave_test();
+void make_wave_bell();
+void make_wave_noice();
+struct wave *getWave(int id);
+bool delWave(int id);
+void setEnval(struct wave *wave, int phase, int duration, int volume);
+
