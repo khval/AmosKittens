@@ -30,6 +30,7 @@ extern struct globalVar globalVars[1000];
 extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern std::vector<struct kittyBank> kittyBankList;
+extern std::vector<struct wave *> waves;
 extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
@@ -570,4 +571,24 @@ void dumpScreenInfo()
 		}
 	}
 };
+
+void dumpWaves( )
+{
+	unsigned int n,nn;
+	printf("-- waves --\n");
+	for (n=0;n<waves.size();n++)
+	{
+		printf("waves[%d] -> id %d\n",n, waves[n] -> id);
+
+		for (nn=0;nn<7;nn++)
+		{
+			printf("waves[%d] -> envels[%d] = {%d,%d,%d}\n",n, nn,
+				waves[n] -> envels[nn].volume, 
+				waves[n] -> envels[nn].startDuration,
+				waves[n] -> envels[nn].duration );
+		}
+	}
+}
+
+
 
