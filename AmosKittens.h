@@ -1,15 +1,16 @@
 
 #ifndef __amoskittens_h__
 
-#ifdef _MSC_VER
-#define BOOL bool
-#define PACKED
-typedef void * APTR;
-#else
-#define PACKED __attribute__ ((__packed__))
+#if defined(_MSC_VER) || defined(_linux_)
+typedef bool BOOL;
+typedef void* APTR;
 #endif
 
-
+#ifdef _MSC_VER
+#define PACKED 
+#else
+#define PACKED __attribute__((packed))
+#endif
 #define __amoskittens_h__
 
 #define PROC_STACK_SIZE 1000
@@ -182,42 +183,84 @@ struct extension_lib
 
 struct dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t type;
-} __attribute__((packed)) ;
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct stringData : dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t size;
 	char ptr;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct desimalData :  dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	double value;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct valueData : dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	int value;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct stringArrayData : dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t size;
 	struct stringData *ptr;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct desimalArrayData : dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t size;
 	struct desimalData ptr;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct valueArrayData : dataBase
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t size;
 	struct valueData ptr;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED;
 
 struct kittyData
 {
@@ -254,19 +297,30 @@ struct kittyData
 
 struct kittyVideoInfo
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	uint16_t videoWidth;
 	uint16_t videoHeight;
 	uint16_t display_x;
 	uint16_t display_y; 
-} __attribute__((packed)); 
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED ; 
 
 struct kittyInfo		// where amos programs look for info about the editor.
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	struct kittyVideoInfo *video;
 	uint32_t dummy[6];
 	uint16_t rgb[8];
-
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED ;
 
 struct label
 {
@@ -339,14 +393,21 @@ struct zone
 
 struct sampleHeader
 {
+#ifdef _MSC_VER
+#pragma pack(push, 1)
+#endif
 	char		name[8];
 	uint16_t	frequency;
 	uint32_t	bytes;
 	uint8_t	ptr;
-} __attribute__((packed));
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
+} PACKED ;
 
 struct envel
 {
+	int startDuration;
 	int duration;
 	int volume;
 };
