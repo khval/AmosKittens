@@ -24,7 +24,7 @@
 #include "commands.h"
 #include "commandsData.h"
 #include "var_helper.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "label.h"
 #include "amosString.h"

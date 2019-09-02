@@ -27,7 +27,7 @@
 #include "commands.h"
 #include "commandsBanks.h"
 #include "commandsBlitterObject.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "ext_compact.h"
 

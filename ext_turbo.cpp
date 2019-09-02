@@ -25,7 +25,7 @@
 #include "commands.h"
 #include "commandsBanks.h"
 #include "commandsBlitterObject.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 
 extern int last_var;

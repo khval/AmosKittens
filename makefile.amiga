@@ -53,7 +53,7 @@ main_objects = commands.cpp \
 			ext_music.cpp \
 			debug.cpp \
 			pass1.cpp \
-			errors.cpp \
+			kittyErrors.cpp \
 			stack.cpp \
 			var_helper.cpp \
 			channel.cpp \

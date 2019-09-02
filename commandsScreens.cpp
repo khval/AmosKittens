@@ -26,7 +26,7 @@
 #include "amosKittens.h"
 #include "commandsScreens.h"
 #include "commandsBlitterObject.h"
-#include "errors.h"
+#include "KittyErrors.h"
 #include "engine.h"
 #include <math.h>
 

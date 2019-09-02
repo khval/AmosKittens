@@ -24,7 +24,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsErrors.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "label.h"
 #include "amosString.h"
 

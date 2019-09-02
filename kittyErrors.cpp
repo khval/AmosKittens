@@ -12,7 +12,7 @@
 
 #include "amosKittens.h"
 #include "stack.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "debug.h"
 
 struct errorAt kittyError = { 0, 0 };

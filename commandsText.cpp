@@ -29,7 +29,7 @@ extern struct RastPort font_render_rp;
 #include "commandsData.h"
 #include "commandsText.h"
 #include "commandsScreens.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "bitmap_font.h"
 #include "amosString.h"

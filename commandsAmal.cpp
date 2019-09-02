@@ -26,7 +26,7 @@
 #include "commands.h"
 #include "commandsAmal.h"
 #include "var_helper.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "AmalCompiler.h"
 #include "channel.h"

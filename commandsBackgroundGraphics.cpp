@@ -24,7 +24,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsBackgroundGraphics.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "commandsbanks.h"
 		

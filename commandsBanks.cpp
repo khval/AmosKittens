@@ -26,7 +26,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsBanks.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "bitmap_font.h"
 #include "amosString.h"

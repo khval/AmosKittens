@@ -18,7 +18,7 @@
 #include "amosKittens.h"
 #include "commands.h"
 #include "commandsData.h"
-#include "errors.h"
+#include "kittyErrors.h"
 
 extern std::vector<struct defFn> defFns;
 

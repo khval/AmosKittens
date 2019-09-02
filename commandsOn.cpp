@@ -18,7 +18,7 @@
 #include "commands.h"
 #include "engine.h"
 #include "debug.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "var_helper.h"
 #include "label.h"
 

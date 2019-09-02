@@ -20,7 +20,7 @@
 #include "debug.h"
 #include <vector>
 #include "AmosKittens.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "var_helper.h"
 #include "pass1.h"
 #include "label.h"

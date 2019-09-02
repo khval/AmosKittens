@@ -29,7 +29,7 @@
 #include "commands.h"
 #include "commandsMachine.h"
 #include "commandsBanks.h"
-#include "errors.h"
+#include "kittyErrors.h"
 
 
 #include "var_helper.h"

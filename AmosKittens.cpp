@@ -60,7 +60,7 @@ extern char *asl();
 #include "commandsFonts.h"
 #include "commandsgui.h"
 #include "debug.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "pass1.h"
 #include "init.h"
 #include "cleanup.h"

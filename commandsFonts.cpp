@@ -31,7 +31,7 @@ extern struct RastPort font_render_rp;
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsFonts.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 
 extern int last_var;

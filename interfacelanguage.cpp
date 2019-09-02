@@ -40,7 +40,7 @@ extern FILE *engine_fd;
 #include "AmosKittens.h"
 #include "interfacelanguage.h"
 #include "commandsBanks.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 #include "bitmap_font.h"
 #include "amosstring.h"
