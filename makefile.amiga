@@ -12,6 +12,8 @@ VERSION = 1
 
 warnings = -Wuninitialized -Wsign-compare -Wunused-variable
 
+COPT = -D__USE_INLINE__ -D__amoskittens__
+
 inc = -I./ -I../../
 
 objects_dir = objs_amoskittens/
@@ -85,16 +87,16 @@ debug:
 	echo $(objects_in_dir)
 
 $(objects_dir)%.o:	%.cpp debug.h 
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
+	g++ $(warnings) -c -O2  $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
-ccmosKittens.exe:	config.h	AmosKittens.cpp	 $(objects_in_dir)
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
+amosKittens.exe:	config.h	AmosKittens.cpp	 $(objects_in_dir)
+	g++ $(warnings) -O2 $(COPT) $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
+	g++ $(warnings) -O2 $(COPT) $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 config_tools/check_cpu.tool.exe:		config_tools/check_cpu.tool.cpp 
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) -o $@
+	g++ $(warnings) -O2 $(COPT) $(@:.exe=.cpp) -o $@
 
 config.h: $(config_tools:.tool.cpp=.tool.exe)
 	echo > config.h
