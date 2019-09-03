@@ -1,42 +1,41 @@
 
+
+#include <stdafx.h>
+
+#ifdef _MSC_VER
+#include <stdint.h>
+typedef uint32_t LONG;
+#endif
+
+#ifdef __amigaos__
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/ahi.h>
+#include <dos/dostags.h>
+#include <dos/dos.h>
+#endif
+
 
 #include <vector>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <proto/ahi.h>
-#include <proto/exec.h>
-#include <proto/dos.h>
-
-#include <dos/dostags.h>
-#include <dos/dos.h>
-
 #include "ahi_dev.h"
+
+#ifdef __amoskittens__
 #include "spawn.h"
 #include "debug.h"
+#else
+#include "../../AmosKittens.h"
+#endif
 
-//some define for this nice AHI driver !
-#define AHI_CHUNKSIZE         (65536/2)
-#define AHI_CHUNKMAX          (131072/2)
-#define AHI_DEFAULTUNIT       0
+
 
 int current_audio_channel = 0;
 
 extern bool running;
 
-struct audioChunk
-{
-	char ptr[AHI_CHUNKSIZE];
-	int size;
-	int frequency;
-	int position;
-};
 
 struct audioIO
 {
@@ -81,6 +80,9 @@ static struct Process *audioTask[4] = { NULL, NULL, NULL, NULL };
 
 int ahi_dev_init(int rate,int channels,int format,int flags);
 void ahi_dev_uninit(int immed);
+
+
+#ifdef __amoskittens__
 
 static void cleanup_task(struct contextChannel *c, struct AHIIFace	*IAHI)
 {
@@ -328,15 +330,16 @@ bool audio_start()
 	init_channel(3);
 }
 
+#endif
 
-void makeChunk(uint8_t * data,int size, int channel, int frequency, struct audioChunk **chunk )
+void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, int frequency, struct audioChunk **chunk )
 {
-	*chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk));
+	chunk[0] = (struct audioChunk *) malloc(sizeof(struct audioChunk));
 
 	if (chunk)
 	{
-		(*chunk) -> size = size;
-		(*chunk) -> frequency = frequency;
+		chunk[0] -> size = size;
+		chunk[0] -> frequency = frequency;
 
 		switch (channel)
 		{
@@ -347,10 +350,66 @@ void makeChunk(uint8_t * data,int size, int channel, int frequency, struct audio
 		}
 
 
-		memcpy( (*chunk) -> ptr, (void *) data,  (*chunk) -> size );
+		memcpy( chunk[0] -> ptr, (void *) (data + offset),  chunk[0] -> size );
 	}
 }
 
+void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int channel, struct audioChunk **chunk)
+{
+	//	int	totDuration = wave->envels[6].startDuration;
+
+	int n;
+	uint8_t *waveData = &wave->sample.ptr;
+	int phase;
+	int endDuration, deltaAmplitude;
+	int d, w, reln, amplitude;
+
+	*chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk));
+
+	if (*chunk)
+	{
+		(*chunk)->size = size;
+		(*chunk)->frequency = wave->sample.frequency;
+
+		switch (channel)
+		{
+			case 0: 		(*chunk)->position = 0x00000;	break;
+			case 1: 		(*chunk)->position = 0x10000;	break;
+			case 2: 		(*chunk)->position = 0x10000;	break;
+			case 3: 		(*chunk)->position = 0x00000;	break;
+		}
+
+		phase = 0;
+		endDuration = wave->envels[phase].startDuration + wave->envels[phase].duration;
+		deltaAmplitude = wave->envels[phase + 1].volume - wave->envels[phase].volume;
+
+		printf("(*chunk) =%08x\n", *chunk);
+		printf("(*chunk)->size = %d\n", (*chunk)->size);
+		printf("(*chunk)->frequency = %d\n", (*chunk)->frequency);
+		
+		for (n = offset; n < offset+size; n++)
+		{
+			while (n>endDuration*wave->sample.frequency)
+			{
+				phase++;
+				if (phase == 6) break;
+				endDuration = wave->envels[phase].startDuration + wave->envels[phase].duration;
+				deltaAmplitude = wave->envels[phase + 1].volume - wave->envels[phase].volume;
+			}
+
+			d = n % wave->sample.bytes;
+			w = ((int)waveData[d] - 127);
+			reln = n - wave->envels[phase].startDuration*wave->sample.frequency;
+			amplitude = (deltaAmplitude * reln / (wave->envels[phase].duration*wave->sample.frequency)) + wave->envels[phase].volume;
+			w = w* amplitude / 64;
+
+			(*chunk)->ptr[n - offset] = w;
+		}
+	}
+}
+
+
+#ifdef __amoskittens__
 
 bool play(uint8_t * data,int len, int channel, int frequency)
 {
@@ -449,3 +508,4 @@ void audio_unlock()
 	MutexRelease(audio_mx);
 }
 
+#endif

@@ -55,16 +55,17 @@ extern LONG volume;
 
 void make_wave_test()
 {
-	int n;
-	struct wave *newWave = allocWave(999, 10);
+	int bytes = 30;
+	unsigned int n;
+	struct wave *newWave = allocWave(999, bytes);
 
-	newWave->sample.bytes = 10;
+	newWave->sample.bytes = bytes;
 
 	if (newWave)
 	{
 		for (n = 0; n<newWave->sample.bytes; n++)
 		{
-			(&newWave->sample.ptr)[n] = sin( (float) n / (float) newWave->sample.bytes * M_PI *2 ) * 126 + 127;
+			(&newWave->sample.ptr)[n] = (uint8_t)(sin((float)n * M_PI * 2 / (float)newWave->sample.bytes) * 126 + 127);
 		}
 
 		newWave->sample.frequency = newWave->sample.bytes;	// sample rate
