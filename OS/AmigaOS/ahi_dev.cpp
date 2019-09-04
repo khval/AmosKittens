@@ -26,10 +26,9 @@ typedef uint32_t LONG;
 #ifdef __amoskittens__
 #include "spawn.h"
 #include "debug.h"
-#else
-#include "../../AmosKittens.h"
 #endif
 
+#include "../../AmosKittens.h"
 
 
 int current_audio_channel = 0;
@@ -425,18 +424,13 @@ bool play(uint8_t * data,int len, int channel, int frequency)
 		return false;	// avoid getting stuck...
 	}
 
-
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 	while (blocks--)
 	{
-		printf("offset at %d, max %d\n", offset, len);
-
 		for ( c=0;c<4; c++)
 		{
 			if (channel & (1<<c))
 			{
-				makeChunk( data + offset, AHI_CHUNKSIZE, c, frequency, &chunk[c] );
+				makeChunk( data , offset, AHI_CHUNKSIZE,  len, c, frequency, &chunk[c] );
 			}
 			else chunk[c] = NULL;
 		}
@@ -444,21 +438,16 @@ bool play(uint8_t * data,int len, int channel, int frequency)
 		audio_lock();
 		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
 		audio_unlock();
-
 		offset += AHI_CHUNKSIZE;
 	}
 
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
 	if (lastLen)
 	{
-		printf("offset at %d, max %d\n", offset, len);
-
 		for ( c=0;c<4; c++)
 		{
 			if (channel & (1<<c))
 			{
-				makeChunk( data + offset, lastLen, c,  frequency, &chunk[c] );
+				makeChunk( data , offset,  lastLen, len,  c,  frequency, &chunk[c] );
 			}
 			else chunk[c] = NULL;
 		}
@@ -509,3 +498,4 @@ void audio_unlock()
 }
 
 #endif
+
