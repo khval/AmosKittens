@@ -408,6 +408,65 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 }
 
 
+bool play_wave(struct wave *wave, int len, int channel, int frequency)
+{
+	int blocks = len / AHI_CHUNKSIZE;
+	int lastLen = len % AHI_CHUNKSIZE;
+	struct audioChunk *chunk[4];
+	int offset = 0;
+	int c;
+
+	if ((frequency <= 0) || (frequency > (44800 * 4)))
+	{
+		return false;	// avoid getting stuck...
+	}
+
+
+	while (blocks--)
+	{
+		for (c = 0; c<4; c++)
+		{
+			if (channel & (1 << c))
+			{
+				makeChunk_wave(wave, offset, AHI_CHUNKSIZE, len, channel, &chunk[c]);
+				if (chunk[c]) draw_chunk(chunk[c]);
+			}
+			else chunk[c] = NULL;
+		}
+
+#ifdef __amoskittens__
+		audio_lock();
+		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
+		audio_unlock();
+#endif
+		offset += AHI_CHUNKSIZE;
+	}
+
+
+	if (lastLen)
+	{
+		for (c = 0; c<4; c++)
+		{
+			if (channel & (1 << c))
+			{
+				makeChunk_wave(wave, offset, lastLen, len, channel, &chunk[c]);
+				if (chunk[c]) draw_chunk(chunk[c]);
+			}
+			else chunk[c] = NULL;
+		}
+
+#ifdef __amoskittens__
+		audio_lock();
+		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
+		audio_unlock();
+#endif
+	}
+
+	return true;
+}
+
+
+
 #ifdef __amoskittens__
 
 bool play(uint8_t * data,int len, int channel, int frequency)
