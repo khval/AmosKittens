@@ -233,10 +233,10 @@ void audio_engine (void) {
 			Delay(1);
 			continue; 
 		}    
-		else if ( audioBuffer[context.channel][0])
+		else if ( audioBuffer[context.channel].front() )
 		{
 			if (context.AHIio-> data)	free( context.AHIio-> data );	// free old data.
-			context.AHIio-> data = audioBuffer[context.channel][0];
+			context.AHIio-> data = audioBuffer[context.channel].front();
 			audioBuffer[context.channel].erase( audioBuffer[context.channel].begin());
 			channel_unlock(context.channel);
 
