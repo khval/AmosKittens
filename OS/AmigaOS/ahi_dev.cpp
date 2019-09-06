@@ -531,6 +531,27 @@ bool play_wave(struct wave *wave, int len, int channel)
 
 #ifdef __amoskittens__
 
+void audio_device_flush()
+{
+	struct audioChunk *chunk;
+	int c;
+
+	// block audio, and clear list.
+
+	audio_lock();
+	for ( c=0;c<4; c++)
+	{
+		if (audioBuffer[c].size())
+		{
+			chunk = audioBuffer[c].back();
+			if (chunk) free(chunk);
+			audioBuffer[c].pop_back();
+		}
+	}
+
+	audio_unlock();
+}
+
 bool play(uint8_t * data,int len, int channel, int frequency)
 {
 	int blocks = len / AHI_CHUNKSIZE;

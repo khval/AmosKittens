@@ -234,35 +234,39 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 	uint32_t	*offset;
 	struct sampleHeader *sam;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
+		case 1:
+			sample = getStackNum( stack )-1;
+			voices = 0xF;
+			break;
 		case 2:
 			sample = getStackNum( stack-1 )-1;
 			voices = getStackNum( stack );
-	
-			bank = findBank( 5 );
-			if (bank)
-			{
-				uint16_t samples = *((uint16_t *) bank -> start);
-
-				if ((sample>=0) && (sample < samples))
-				{
-					offset = ((uint32_t *) (bank -> start + sizeof( uint16_t )));
-					sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
-					play( &sam -> ptr, sam -> bytes, voices, sam -> frequency );
-				}
-				else setError(22,data->tokenBuffer);
-			}
-
 			break;
 		default:
 			setError(22,data->tokenBuffer);
+			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			return  NULL ;
 	}
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
-	setStackNum(ret);
+
+	bank = findBank( sample_bank );
+	if (bank)
+	{
+		uint16_t samples = *((uint16_t *) bank -> start);
+
+		if ((sample>=0) && (sample < samples))
+		{
+			offset = ((uint32_t *) (bank -> start + sizeof( uint16_t )));
+			sam = (struct sampleHeader *) ( (uint8_t *) bank -> start + offset[ sample ] );
+			play( &sam -> ptr, sam -> bytes, voices, sam -> frequency );
+		}
+		else setError(22,data->tokenBuffer);
+	}
 
 	return  NULL ;
 }
@@ -461,6 +465,9 @@ char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	audio_device_flush();
+	getchar();
+
 	wave = getWave(0);
 	if (wave)
 	{
@@ -472,6 +479,7 @@ char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 
 			*localwave = *wave;
 			localwave -> bytesPerSecond = 50;
+
 			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
 
 			setEnval( localwave, 0, 1, 63 );
@@ -482,7 +490,10 @@ char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 			setEnval( localwave, 5, 1, 63 );
 			setEnval( localwave, 6, 1, 63 );
 
+			localwave->sample = wave->sample;
+			localwave->sample.frequency = localwave -> bytesPerSecond;
 			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
+
 			play_wave( localwave, localwave -> sample.bytes, 0xF );
 
 			free( localwave );
@@ -499,6 +510,9 @@ char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	audio_device_flush();
+	getchar();
+
 	wave = getWave(1);
 	if (wave)
 	{
@@ -509,18 +523,20 @@ char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 			int len;
 
 			*localwave = *wave;
-			localwave -> bytesPerSecond = wave -> sample.bytes *1000;
-			localwave -> sample.frequency = localwave -> bytesPerSecond;
+			localwave -> bytesPerSecond = wave -> sample.bytes ;
+
 			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
 
 			setEnval( localwave, 0, 1, 0 );
 			setEnval( localwave, 1, 1, 63 );
-			setEnval( localwave, 2, 1, 63);
+			setEnval( localwave, 2, 1, 50);
 			setEnval( localwave, 3, 1, 63 );
-			setEnval( localwave, 4, 1, 63 );
-			setEnval( localwave, 5, 1, 63 );
+			setEnval( localwave, 4, 1, 50 );
+			setEnval( localwave, 5, 1, 25 );
 			setEnval( localwave, 6, 1, 0 );
 
+			localwave->sample = wave->sample;
+			localwave->sample.frequency = localwave -> bytesPerSecond;
 			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
 
 			play_wave( localwave, len, 0xF );
@@ -541,6 +557,9 @@ char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	audio_device_flush();
+	getchar();
+
 	wave = getWave(0);
 	if (wave)
 	{
@@ -552,19 +571,22 @@ char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
 
 			*localwave = *wave;
 			localwave -> bytesPerSecond = wave -> sample.bytes *4;
+
 			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
 
-			setEnval( localwave, 0, 1, 63 );
+			setEnval( localwave, 0, 1, 15 );
 			setEnval( localwave, 1, 1, 63 );
-			setEnval( localwave, 2, 1, 63 );
-			setEnval( localwave, 3, 1, 63 );
-			setEnval( localwave, 4, 1, 63 );
-			setEnval( localwave, 5, 1, 63 );
-			setEnval( localwave, 6, 1, 63 );
+			setEnval( localwave, 2, 1, 40);
+			setEnval( localwave, 3, 1, 40 );
+			setEnval( localwave, 4, 1, 30 );
+			setEnval( localwave, 5, 1, 15 );
+			setEnval( localwave, 6, 1, 0 );
 
+			localwave->sample = wave->sample;
+			localwave->sample.frequency = localwave -> bytesPerSecond;
 			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
 
-			play_wave( localwave, len, 0xF );
+			play_wave( localwave, len, 1 );
 
 			free( localwave );
 		}
