@@ -52,6 +52,7 @@ struct sampleHeader *allocSample( int size );
 
 extern LONG volume;
 
+int sample_bank = 5;
 
 void make_wave_test()
 {
@@ -310,6 +311,31 @@ char *ext_cmd_sam_raw(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_ext_cmd_sam_bank( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			sample_bank = getStackNum( stack );
+			break;
+
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+char *ext_cmd_sam_bank(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_sam_bank, tokenBuffer );
+	return tokenBuffer;
+}
 
 
 void copy_sample_to_playback_voices(struct sampleHeader *sam, int voices)
@@ -353,7 +379,7 @@ char *_ext_cmd_sample( struct glueCommands *data, int nextToken )
 
 			printf("%d,%d\n",sample, voices);
 
-			bank = findBank( 5 );
+			bank = findBank( sample_bank );
 			if (bank)
 			{
 				uint16_t samples = *((uint16_t *) bank -> start);

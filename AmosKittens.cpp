@@ -51,7 +51,6 @@ extern char *asl();
 #include "commandsText.h"
 #include "commandsKeyboard.h"
 #include "commandsObjectControl.h"
-#include "commandsSound.h"
 #include "commandsHardwareSprite.h"
 #include "commandsBlitterObject.h"
 #include "commandsBackgroundGraphics.h"
@@ -1054,7 +1053,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0D62,"Shift Up",0,gfxShiftUp },
 	{0x0D78,"Shift Down",0,gfxShiftDown },
 	{0x0D90,"Set Rainbow",0,gfxSetRainbow },
-	{0x0DC2,"Tempo",0,soundTempo },
+//	{0x0DC2,"Tempo",0,soundTempo },
 	{0x0DD4,"Rainbow Del",0,gfxRainbowDel },
 	{0x0DDC,"Rainbow",0,gfxRainbow },
 	{0x0DF0,"Rain",0,gfxRain },
@@ -1828,13 +1827,15 @@ int main(int args, char **arg)
 		if (kitty_extensions[1].lookup)
 		{	
 			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
+			*((void **) (kitty_extensions[1].lookup + 0x008A)) = (void *) ext_cmd_sam_bank;
 			*((void **) (kitty_extensions[1].lookup + 0x007E)) = (void *) ext_cmd_shoot;	
+			*((void **) (kitty_extensions[1].lookup + 0x00DE)) = (void *) ext_cmd_sam_play;
+			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x00CE)) = (void *) ext_cmd_sample;
 			*((void **) (kitty_extensions[1].lookup + 0x0118)) = (void *) ext_cmd_bell;
 			*((void **) (kitty_extensions[1].lookup + 0x0170)) = (void *) ext_cmd_del_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x0180)) = (void *) ext_cmd_set_envel;
 			*((void **) (kitty_extensions[1].lookup + 0x01A4)) = (void *) ext_cmd_volume;
-			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
 			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
