@@ -415,8 +415,9 @@ struct envel
 struct wave
 {
 	int id;
+	int	bytesPerSecond;	// bytesPerSecond
 	struct envel envels[7];
-	struct sampleHeader sample;
+	struct sampleHeader sample;	// this one most be last
 };
 
 #define stackIfSuccess()					\

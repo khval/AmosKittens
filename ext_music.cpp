@@ -95,29 +95,65 @@ void make_wave_noice()
 	}
 }
 
+#define harmonic(h,n,m) h * ((double) n) * 2.0f * M_PI / ((double) m) ;
+
+
+
+void draw_wave(struct wave *wave)
+{
+	int n;
+	signed char *data;
+	data = (signed char *) &(wave -> sample.ptr);
+
+	open_debug_window();
+	for (n=0;n<wave -> sample.bytes;n++) 	WritePixelColor( debug_Window -> RPort, 50+n, 400 + data[n] , 0xFF0000FF); 
+	getchar();
+	close_debug_window();
+}
 
 void make_wave_bell()
 {
 	int n;
-	double r;
-	double s;
-	struct wave *newWave = allocWave( 1, 256 );
+	double r1,r3,r5;
+	int bytes = 256;
+	struct wave *newWave = allocWave( 1, bytes );
+	signed char *data;
 
-	r = 0.0f;
-	s = 2* M_PI / 256.0f * 8.0f;
+	open_debug_window();
+
+	r1 = 0x0f;
+	r3 = M_PI ;
+	r5 = 0.0f;
+
 	if (newWave)
 	{
-		for (n=0;n<256;n++)
+		data = (signed char *) &(newWave -> sample.ptr);
+
+		for (n=0;n<bytes;n++)
 		{
-			(&newWave -> sample.ptr)[n] = (uint8_t) sin( r ) * 126;
-			r+=s;
+			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) + sin( r5)) /3.0 * 127.0)  ;
+			r1=harmonic(1,n,bytes);
+			r3=harmonic(3,n,bytes) + M_PI;
+			r5=harmonic(5,n,bytes);
+
+			WritePixelColor( debug_Window -> RPort, n+50, 400, 0xFFFFFFFF); 
+			WritePixelColor( debug_Window -> RPort, n+50, 400+ (signed char) data[n] , 0xFFFFFFFF); 
+			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r1) * 50) , 0xFFFF0000); 
+			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r3) * 50) , 0xFF00FF00); 
+			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r5) * 50) , 0xFF0000FF); 
+
+			printf("%-3d - %-5d\n",n, data[n]);
 		}
 
-		newWave -> sample.bytes = 256;
-		newWave -> sample.frequency = 44800;
+		newWave -> sample.bytes = bytes;
+		newWave -> sample.frequency = bytes;
 
 		waves.push_back(newWave);
 	}
+
+	getchar();
+
+	close_debug_window();
 }
 
 struct sampleHeader *allocSample( int size )
@@ -396,12 +432,35 @@ char *ext_cmd_play(struct nativeCommand *cmd, char *tokenBuffer )
 char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct wave *wave;
+	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	wave = getWave(0);
 	if (wave)
 	{
-		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
+		localwave = allocWave( wave -> id,  wave -> sample.bytes );
+
+		if (localwave)
+		{
+			int len;
+
+			*localwave = *wave;
+			localwave -> bytesPerSecond = 50;
+			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
+
+			setEnval( localwave, 0, 1, 63 );
+			setEnval( localwave, 1, 1, 63 );
+			setEnval( localwave, 2, 1, 63 );
+			setEnval( localwave, 3, 1, 63 );
+			setEnval( localwave, 4, 1, 63 );
+			setEnval( localwave, 5, 1, 63 );
+			setEnval( localwave, 6, 1, 63 );
+
+			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
+			play_wave( localwave, localwave -> sample.bytes, 0xF );
+
+			free( localwave );
+		}
 	}
 	else setError(22,tokenBuffer);
 
@@ -411,12 +470,39 @@ char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct wave *wave;
+	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	wave = getWave(1);
 	if (wave)
 	{
-		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
+		localwave = allocWave( wave -> id,  wave -> sample.bytes );
+
+		if (localwave)
+		{
+			int len;
+
+			*localwave = *wave;
+			localwave -> bytesPerSecond = wave -> sample.bytes *1000;
+			localwave -> sample.frequency = localwave -> bytesPerSecond;
+			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
+
+			setEnval( localwave, 0, 1, 0 );
+			setEnval( localwave, 1, 1, 63 );
+			setEnval( localwave, 2, 1, 63);
+			setEnval( localwave, 3, 1, 63 );
+			setEnval( localwave, 4, 1, 63 );
+			setEnval( localwave, 5, 1, 63 );
+			setEnval( localwave, 6, 1, 0 );
+
+			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
+
+			play_wave( localwave, len, 0xF );
+
+			draw_wave( localwave );
+
+			free( localwave );
+		}
 	}
 	else setError(22,tokenBuffer);
 
@@ -426,12 +512,36 @@ char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
 {
 	struct wave *wave;
+	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	wave = getWave(0);
 	if (wave)
 	{
-		play( &wave -> sample.ptr, wave -> sample.bytes, 0xF, wave -> sample.frequency );
+		localwave = allocWave( wave -> id,  wave -> sample.bytes );
+
+		if (localwave)
+		{
+			int len;
+
+			*localwave = *wave;
+			localwave -> bytesPerSecond = wave -> sample.bytes *4;
+			memcpy( &(localwave->sample.ptr), &(wave -> sample.ptr), wave -> sample.bytes);
+
+			setEnval( localwave, 0, 1, 63 );
+			setEnval( localwave, 1, 1, 63 );
+			setEnval( localwave, 2, 1, 63 );
+			setEnval( localwave, 3, 1, 63 );
+			setEnval( localwave, 4, 1, 63 );
+			setEnval( localwave, 5, 1, 63 );
+			setEnval( localwave, 6, 1, 63 );
+
+			len = localwave -> bytesPerSecond * localwave -> envels[6].startDuration;
+
+			play_wave( localwave, len, 0xF );
+
+			free( localwave );
+		}
 	}
 	else setError(22,tokenBuffer);
 

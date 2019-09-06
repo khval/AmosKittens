@@ -1,5 +1,4 @@
 
-
 #include <stdafx.h>
 
 #ifdef _MSC_VER
@@ -13,14 +12,15 @@ typedef uint32_t LONG;
 #include <proto/ahi.h>
 #include <dos/dostags.h>
 #include <dos/dos.h>
+#include <proto/retroMode.h>
 #endif
-
 
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 #include "ahi_dev.h"
 
 #ifdef __amoskittens__
@@ -245,7 +245,7 @@ void audio_engine (void) {
 				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
 				io->ahir_Std.io_Command  = CMD_WRITE;
 				io->ahir_Std.io_Offset   = 0;
-				io->ahir_Std.io_Data     =  context.AHIio-> data -> ptr; 
+				io->ahir_Std.io_Data     =  &(context.AHIio-> data -> ptr); 
 				io->ahir_Std.io_Length   = (ULONG) context.AHIio-> data -> size; 
 				io->ahir_Frequency       = (ULONG) context.AHIio-> data -> frequency;
 				io->ahir_Volume          = volume; 
@@ -333,7 +333,7 @@ bool audio_start()
 
 void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, int frequency, struct audioChunk **chunk )
 {
-	chunk[0] = (struct audioChunk *) malloc(sizeof(struct audioChunk));
+	chunk[0] = (struct audioChunk *) malloc(sizeof(struct audioChunk) + size);
 
 	if (chunk)
 	{
@@ -348,27 +348,69 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 			case 3: 		(*chunk) -> position = 0x00000;	break;
 		}
 
-
-		memcpy( chunk[0] -> ptr, (void *) (data + offset),  chunk[0] -> size );
+		memcpy( &(chunk[0] -> ptr), (void *) (data + offset),  chunk[0] -> size );
 	}
 }
+
+uint32_t color =0;
+int bcount, lx,ly;
+
+void debug_draw_line(int x0,int y0, int x1, int y1)
+{
+	int x,y;
+	int dx = x1-x0;
+	int dy = y1-y0;
+	int n;
+	struct RastPort *rp = debug_Window -> RPort;
+
+	if (abs(dx)>abs(dy))
+	{
+		int d = dx<0 ? -1 : 1;
+
+		for (x=0;x!=dx;x+=d)
+		{
+			y = dy * x / dx;
+			WritePixelColor( rp, x0+x, y0+y , color); 
+		}
+	}
+	else
+	{
+		int d = dy<0 ? -1 : 1;
+
+		if (d==0)
+		{
+			WritePixelColor( rp, x0, y0 , color); 
+			return;
+		}
+
+		for (y=0;y!=dy;y+=d)
+		{
+			x = dx * y / dy;
+			WritePixelColor( rp, x0+x, y0+y , color); 
+		}
+	}
+}
+
 
 void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int channel, struct audioChunk **chunk)
 {
 	//	int	totDuration = wave->envels[6].startDuration;
 
 	int n;
-	uint8_t *waveData = &wave->sample.ptr;
+	signed char *data;
+	signed char *chunk_data;
 	int phase;
 	int endDuration, deltaAmplitude;
 	int d, w, reln, amplitude;
 
-	*chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk));
+	color = (bcount & 1)==1 ? 0xFF000000 : 0xFFFFFFFF;
+
+	*chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk) + size );
 
 	if (*chunk)
 	{
 		(*chunk)->size = size;
-		(*chunk)->frequency = wave->sample.frequency;
+		(*chunk)->frequency = wave->bytesPerSecond;
 
 		switch (channel)
 		{
@@ -382,13 +424,13 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 		endDuration = wave->envels[phase].startDuration + wave->envels[phase].duration;
 		deltaAmplitude = wave->envels[phase + 1].volume - wave->envels[phase].volume;
 
-		printf("(*chunk) =%08x\n", *chunk);
-		printf("(*chunk)->size = %d\n", (*chunk)->size);
-		printf("(*chunk)->frequency = %d\n", (*chunk)->frequency);
+		data = (signed char*) &(wave -> sample.ptr);
+
+		chunk_data = (signed char*) &( (*chunk)->ptr);
 		
 		for (n = offset; n < offset+size; n++)
 		{
-			while (n>endDuration*wave->sample.frequency)
+			while (n>endDuration*wave->bytesPerSecond)
 			{
 				phase++;
 				if (phase == 6) break;
@@ -397,18 +439,34 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 			}
 
 			d = n % wave->sample.bytes;
-			w = ((int)waveData[d] - 127);
-			reln = n - wave->envels[phase].startDuration*wave->sample.frequency;
-			amplitude = (deltaAmplitude * reln / (wave->envels[phase].duration*wave->sample.frequency)) + wave->envels[phase].volume;
+
+			w=sin( (double) n * 2.0 * M_PI / (double) size )*100;
+
+			w = (int) data[d] ;
+
+			reln = n - wave->envels[phase].startDuration*wave->bytesPerSecond;
+			amplitude = (deltaAmplitude * reln / (wave->envels[phase].duration*wave->bytesPerSecond)) + wave->envels[phase].volume;
 			w = w* amplitude / 64;
 
-			(*chunk)->ptr[n - offset] = w;
+			chunk_data[n-offset] = w;
+
+			if (debug_Window)
+			{
+				int x = (n*700)/totsize;
+				int y = w;
+
+//				WritePixelColor( debug_Window -> RPort, 50 + x, 400, color ); 
+//				WritePixelColor( debug_Window -> RPort, 50 + x, 400 + data[d] , 0xFF0000FF ); 
+
+				lx = x;
+				ly = w;
+
+			}
 		}
 	}
 }
 
-
-bool play_wave(struct wave *wave, int len, int channel, int frequency)
+bool play_wave(struct wave *wave, int len, int channel)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
@@ -416,10 +474,10 @@ bool play_wave(struct wave *wave, int len, int channel, int frequency)
 	int offset = 0;
 	int c;
 
-	if ((frequency <= 0) || (frequency > (44800 * 4)))
-	{
-		return false;	// avoid getting stuck...
-	}
+	bcount = 0;
+
+	lx = 0;
+	ly = 0;
 
 
 	while (blocks--)
@@ -429,7 +487,6 @@ bool play_wave(struct wave *wave, int len, int channel, int frequency)
 			if (channel & (1 << c))
 			{
 				makeChunk_wave(wave, offset, AHI_CHUNKSIZE, len, channel, &chunk[c]);
-				if (chunk[c]) draw_chunk(chunk[c]);
 			}
 			else chunk[c] = NULL;
 		}
@@ -440,6 +497,8 @@ bool play_wave(struct wave *wave, int len, int channel, int frequency)
 		audio_unlock();
 #endif
 		offset += AHI_CHUNKSIZE;
+
+		bcount++;
 	}
 
 
@@ -450,7 +509,6 @@ bool play_wave(struct wave *wave, int len, int channel, int frequency)
 			if (channel & (1 << c))
 			{
 				makeChunk_wave(wave, offset, lastLen, len, channel, &chunk[c]);
-				if (chunk[c]) draw_chunk(chunk[c]);
 			}
 			else chunk[c] = NULL;
 		}
@@ -460,6 +518,8 @@ bool play_wave(struct wave *wave, int len, int channel, int frequency)
 		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
 		audio_unlock();
 #endif
+
+		bcount++;
 	}
 
 	return true;

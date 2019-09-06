@@ -16,10 +16,10 @@ extern APTR audio_mx;
 
 struct audioChunk
 {
-	char ptr[AHI_CHUNKSIZE];
 	int size;
 	int frequency;
 	int position;
+	char ptr;
 };
 
 extern void audio_lock();
@@ -28,4 +28,5 @@ extern void audio_unlock();
 extern bool audio_start();
 extern void audio_close();
 extern bool play(uint8_t * data,int len, int channel, int frequency);
+extern bool play_wave(struct wave *wave,int len, int channel);
 
