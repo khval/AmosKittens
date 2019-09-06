@@ -80,7 +80,7 @@ struct Library			*LayersBase = NULL;
 struct LayersIFace		*ILayers = NULL;
 
 APTR engine_mx = 0;
-APTR audio_mx = 0;
+APTR channel_mx[4] = { 0,0,0,0 };
 
 UWORD *EmptyPointer = NULL;
 
@@ -151,7 +151,10 @@ BOOL init()
 	engine_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
 	if ( ! engine_mx) return FALSE;
 
-	audio_mx = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
+	for (i=0;i<4;i++)
+	{
+		channel_mx[i] = (APTR) AllocSysObjectTags(ASOT_MUTEX, TAG_DONE);
+	}
 
 	// bitmap 16 bit alighed width = 2 bytes, 8 layers = 16 bytes
 
@@ -294,11 +297,13 @@ void closedown()
 		engine_mx = NULL;
 	}
 
-	if (audio_mx) 
+	for (i=0;i<4;i++)
 	{
-		FreeSysObject(ASOT_MUTEX, engine_mx); 
-		engine_mx = NULL;
+		if (channel_mx[i]) 
+		{
+			FreeSysObject(ASOT_MUTEX, channel_mx[i]); 
+			channel_mx[i] = NULL;
+		}
 	}
-
 }
 

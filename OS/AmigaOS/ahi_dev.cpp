@@ -158,6 +158,8 @@ void audio_engine (void) {
 	context.AHIio2_orig      = NULL;     // second one. Double buffering !
 	context.link=NULL;
 
+	SetTaskPri( FindTask(0),5);
+
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
 	Printf("AHIDevice is %ld\n", context.device);
@@ -223,11 +225,11 @@ void audio_engine (void) {
 	{
 		if ( running == false ) break;
 
-		audio_lock();
+		channel_lock(context.channel);
 
 		if ( audioBuffer[context.channel].size() == 0 )
 		{
-			audio_unlock(); 
+			channel_unlock(context.channel); 
 			Delay(1);
 			continue; 
 		}    
@@ -236,7 +238,7 @@ void audio_engine (void) {
 			if (context.AHIio-> data)	free( context.AHIio-> data );	// free old data.
 			context.AHIio-> data = audioBuffer[context.channel][0];
 			audioBuffer[context.channel].erase( audioBuffer[context.channel].begin());
-			audio_unlock();
+			channel_unlock(context.channel);
 
 			Printf("AHIio %08lx, (io: %08lx,  frequency: %ld)\n", context.AHIio, context.AHIio -> io, context.AHIio->data -> frequency);
 
@@ -254,7 +256,7 @@ void audio_engine (void) {
 				io->ahir_Link = context.link ? context.link -> io : NULL;
 			}
 		}
-		else 	audio_unlock();
+		else 	channel_unlock(context.channel);
 
 		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context.AHIio, context.AHIio -> io );
 
@@ -554,9 +556,14 @@ bool play(uint8_t * data,int len, int channel, int frequency)
 			else chunk[c] = NULL;
 		}
 
-		audio_lock();
-		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
-		audio_unlock();
+
+		for ( c=0;c<4; c++)	if (chunk[c])
+		{
+			channel_lock(c);
+			audioBuffer[c].push_back( chunk[c] );
+			channel_unlock(c);
+		}
+
 		offset += AHI_CHUNKSIZE;
 	}
 
@@ -571,49 +578,42 @@ bool play(uint8_t * data,int len, int channel, int frequency)
 			else chunk[c] = NULL;
 		}
 
-		audio_lock();
-		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
-		audio_unlock();
+		for ( c=0;c<4; c++)	if (chunk[c]) 
+		{
+			channel_lock(c);
+			audioBuffer[c].push_back( chunk[c] );
+			channel_unlock(c);
+		}
 	}
 
 	return true;
 }
 
-#define debug_lock_no
 
-#ifdef debug_lock
-int audio_locked = 0;
-#endif
+void channel_lock(int n)
+{
+	MutexObtain(channel_mx[n]);
+}
+
+void channel_unlock(int n)
+{
+	MutexRelease(channel_mx[n]);
+}
 
 void audio_lock()
 {
-#ifdef debug_lock
-	if (audio_locked != 0)  Printf("***** audio is already locked *****\n");
-#endif
-	MutexObtain(audio_mx);
-#ifdef debug_lock
-	audio_locked ++;
-#endif
+	channel_lock(0);
+	channel_lock(1);
+	channel_lock(2);
+	channel_lock(3);
 }
 
 void audio_unlock()
 {
-#ifdef debug_lock
-	if (audio_locked == 0)  
-	{
-		Printf("***** audio is not locked, nothing to unlock *****\n");
-	}
-	else if (audio_locked > 0)  
-	{
-		Printf("**** unlocked with success ****\n");
-	}
-	else
-	{
-		Printf("**** unlock this is none sense  ****\n");
-	}
-	audio_locked--;
-#endif 
-	MutexRelease(audio_mx);
+	channel_unlock(0);
+	channel_unlock(1);
+	channel_unlock(2);
+	channel_unlock(3);
 }
 
 #endif
