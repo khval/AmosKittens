@@ -46,6 +46,7 @@ struct contextChannel {
 	int device ;
 	int channel ;
 	bool audio_stopped;
+	bool audio_abort;
  	struct MsgPort *AHIMsgPort;     // The msg port we will use for the ahi.device
  	struct audioIO *AHIio; 		// First AHIRequest structure
  	struct audioIO *AHIio2;   		// second one. Double buffering !
@@ -54,6 +55,8 @@ struct contextChannel {
  	struct audioIO *link;
 };
 
+
+struct contextChannel contexts[4];
 
 struct audioIO *new_audio( struct AHIRequest *io)
 {
@@ -82,6 +85,28 @@ void ahi_dev_uninit(int immed);
 
 
 #ifdef __amoskittens__
+
+void abort_audio_channel(struct contextChannel *context, struct AHIIFace	*IAHI)
+{
+	if (context -> link) if ( context-> link -> io)
+	{
+		if (CheckIO( (struct IORequest *) context -> link -> io ))
+		{
+			AbortIO ( (struct IORequest *) context -> link -> io );
+			WaitIO( (struct IORequest *) context->link -> io);
+		}
+		context -> link = NULL;
+	}
+
+	if (context -> AHIio) if (context -> AHIio -> io)
+	{
+		if (CheckIO( (struct IORequest *) context -> AHIio -> io ))
+		{
+			AbortIO( (struct IORequest *) context -> AHIio -> io );
+			WaitIO( (struct IORequest *) context->link -> io);
+		}
+	}
+}
 
 static void cleanup_task(struct contextChannel *c, struct AHIIFace	*IAHI)
 {
@@ -140,53 +165,58 @@ static void cleanup_task(struct contextChannel *c, struct AHIIFace	*IAHI)
 }
 
 
+
 void audio_engine (void) {
 
 	static struct AHIRequest *io;
 	static struct audioIO *tempRequest;
 	struct AHIIFace	*IAHI ;		// instence.
-	struct contextChannel context;
 
-	context.device = -999;
-	context.channel = current_audio_channel;
-	context.audio_stopped = false;
+	struct contextChannel *context;
 
-	context.AHIMsgPort  = NULL;     // The msg port we will use for the ahi.device
-	context.AHIio       = NULL;     // First AHIRequest structure
- 	context.AHIio2      = NULL;     // second one. Double buffering !
- 	context.AHIio_orig       = NULL;     // First AHIRequest structure
-	context.AHIio2_orig      = NULL;     // second one. Double buffering !
-	context.link=NULL;
+	context = &contexts[current_audio_channel];
+
+	context -> device = -999;
+	context -> channel = current_audio_channel;
+	context -> audio_stopped = false;
+	context -> audio_abort = false;
+
+	context -> AHIMsgPort  = NULL;     // The msg port we will use for the ahi.device
+	context -> AHIio       = NULL;     // First AHIRequest structure
+ 	context -> AHIio2      = NULL;     // second one. Double buffering !
+ 	context -> AHIio_orig       = NULL;     // First AHIRequest structure
+	context -> AHIio2_orig      = NULL;     // second one. Double buffering !
+	context -> link=NULL;
 
 	SetTaskPri( FindTask(0),5);
 
 	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
 
-	Printf("AHIDevice is %ld\n", context.device);
+	Printf("AHIDevice is %ld\n", context -> device);
 
-	if( context.AHIMsgPort = (struct MsgPort*) AllocSysObjectTags(ASOT_PORT, TAG_END) )
+	if( context -> AHIMsgPort = (struct MsgPort*) AllocSysObjectTags(ASOT_PORT, TAG_END) )
 	{
 		io = (struct AHIRequest *) AllocSysObjectTags ( 
 					ASOT_IOREQUEST, 
-					ASOIOR_ReplyPort, context.AHIMsgPort, 
+					ASOIOR_ReplyPort, context -> AHIMsgPort, 
 					ASOIOR_Size, sizeof(struct AHIRequest), 
 					TAG_END );
 
 		if (io)
 		{
-			 if ( context.AHIio = new_audio( io ) ) 
+			 if ( context -> AHIio = new_audio( io ) ) 
 			{
-				context.AHIio->io->ahir_Version = 4;
-				context.device = OpenDevice(AHINAME, AHI_DEFAULTUNIT,(struct IORequest *) context.AHIio -> io, 0);
+				context -> AHIio->io->ahir_Version = 4;
+				context -> device = OpenDevice(AHINAME, AHI_DEFAULTUNIT,(struct IORequest *) context -> AHIio -> io, 0);
 
-				if (context.device == 0)
+				if (context -> device == 0)
 				{
-					AHIBase = (struct Device *) context.AHIio->io->ahir_Std.io_Device;
+					AHIBase = (struct Device *) context -> AHIio->io->ahir_Std.io_Device;
 					IAHI = (struct AHIIFace*) GetInterface( (struct Library *) AHIBase,"main",1L,NULL) ;
 				}
 				else
 				{
-					Printf("Open device error code %ld\n", context.device);
+					Printf("Open device error code %ld\n", context -> device);
 					goto end_audioTask;
 				}
 			}
@@ -200,24 +230,24 @@ void audio_engine (void) {
 	}
 	else
 	{
-		Printf("Failed to create port %ld\n", context.device);
+		Printf("Failed to create port %ld\n", context -> device);
 		goto end_audioTask;
 	}
 
-	context.AHIio2 = new_audio((struct AHIRequest*) AllocVecTags(sizeof(struct AHIRequest), AVT_Type, MEMF_SHARED, TAG_END )) ;
+	context -> AHIio2 = new_audio((struct AHIRequest*) AllocVecTags(sizeof(struct AHIRequest), AVT_Type, MEMF_SHARED, TAG_END )) ;
 
-	if(! context.AHIio2)
+	if(! context -> AHIio2)
 	{
 		goto end_audioTask;
 	}
 	else
 	{
 		Printf("Cool we got a copy..\n");
-		memcpy(context.AHIio2 -> io, context.AHIio -> io, sizeof(struct AHIRequest));
+		memcpy(context -> AHIio2 -> io, context -> AHIio -> io, sizeof(struct AHIRequest));
 	}
 
-	context.AHIio_orig = context.AHIio;
-	context.AHIio2_orig= context.AHIio2;
+	context -> AHIio_orig = context -> AHIio;
+	context -> AHIio2_orig= context -> AHIio2;
 
 	Signal( (struct Task *) main_task, SIGF_CHILD );
 
@@ -225,74 +255,83 @@ void audio_engine (void) {
 	{
 		if ( running == false ) break;
 
-		channel_lock(context.channel);
+		channel_lock(context -> channel);
 
-		if ( audioBuffer[context.channel].size() == 0 )
+		if ( context -> audio_abort )
 		{
-			channel_unlock(context.channel); 
+			abort_audio_channel( context, IAHI );
+			channel_unlock(context -> channel); 
+			context -> audio_abort = false;
+			continue; 
+		}
+
+		if ( audioBuffer[context -> channel].size() == 0 )
+		{
+			channel_unlock(context -> channel); 
 			Delay(1);
 			continue; 
 		}    
-		else if ( audioBuffer[context.channel].front() )
+		else if ( audioBuffer[context -> channel].front() )
 		{
-			if (context.AHIio-> data)	free( context.AHIio-> data );	// free old data.
-			context.AHIio-> data = audioBuffer[context.channel].front();
-			audioBuffer[context.channel].erase( audioBuffer[context.channel].begin());
-			channel_unlock(context.channel);
+			if (context -> AHIio-> data)	free( context -> AHIio-> data );	// free old data.
+			context -> AHIio-> data = audioBuffer[context -> channel].front();
+			audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
+			channel_unlock(context -> channel);
 
-			Printf("AHIio %08lx, (io: %08lx,  frequency: %ld)\n", context.AHIio, context.AHIio -> io, context.AHIio->data -> frequency);
+//			Printf("AHIio %08lx, (io: %08lx,  frequency: %ld)\n", context.AHIio, context.AHIio -> io, context.AHIio->data -> frequency);
 
-			if (io = context.AHIio -> io)
+			if (io = context -> AHIio -> io)
 			{
 				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
 				io->ahir_Std.io_Command  = CMD_WRITE;
 				io->ahir_Std.io_Offset   = 0;
-				io->ahir_Std.io_Data     =  &(context.AHIio-> data -> ptr); 
-				io->ahir_Std.io_Length   = (ULONG) context.AHIio-> data -> size; 
-				io->ahir_Frequency       = (ULONG) context.AHIio-> data -> frequency;
+				io->ahir_Std.io_Data     =  &(context -> AHIio-> data -> ptr); 
+				io->ahir_Std.io_Length   = (ULONG) context -> AHIio-> data -> size; 
+				io->ahir_Frequency       = (ULONG) context -> AHIio-> data -> frequency;
 				io->ahir_Volume          = volume; 
-				io->ahir_Position        = (ULONG) context.AHIio-> data -> position;
+				io->ahir_Position        = (ULONG) context -> AHIio-> data -> position;
 				io->ahir_Type = AHIST_M8S;
-				io->ahir_Link = context.link ? context.link -> io : NULL;
+				io->ahir_Link = context -> link ? context -> link -> io : NULL;
 			}
 		}
-		else 	channel_unlock(context.channel);
+		else 	channel_unlock(context -> channel);
 
-		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context.AHIio, context.AHIio -> io );
+//		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context.AHIio, context -> AHIio -> io );
 
-		SendIO( (struct IORequest *) context.AHIio -> io );
+		SendIO( (struct IORequest *) context->AHIio -> io );
 
-		if (context.link)
+		if (context -> link)
 		{
+/*
 			Printf("wait for link %08lx (io: %08lx, len %ld) \n", 
-					context.link, 
-					context.link -> io, 
-					context.link -> io ? context.link -> io -> ahir_Std.io_Length : 0 );
+					context -> link, 
+					context -> link -> io, 
+					context -> link -> io ? context.link -> io -> ahir_Std.io_Length : 0 );
+*/
+			WaitIO ( (struct IORequest *) context -> link -> io );
 
-			WaitIO ( (struct IORequest *) context.link -> io );
+//			Printf("check if main is done... \n");
 
-			Printf("check if main is done... \n");
-
-			if (CheckIO( (struct IORequest *) context.AHIio -> io ))
+			if (CheckIO( (struct IORequest *) context -> AHIio -> io ))
 			{
 				// Playback caught up with us, rebuffer... 
-				WaitIO( (struct IORequest *) context.AHIio -> io );
-				context.link = NULL;
+				WaitIO( (struct IORequest *) context -> AHIio -> io );
+				context -> link = NULL;
 				continue;
 			}
 		}
 
 		// Swap requests
-		tempRequest = context.AHIio;
-		context.AHIio  = context.AHIio2;
-		context.AHIio2 = tempRequest;
-		context.link = context.AHIio2;
+		tempRequest = context -> AHIio;
+		context -> AHIio  = context -> AHIio2;
+		context -> AHIio2 = tempRequest;
+		context -> link = context -> AHIio2;
 	} 
 
 end_audioTask:
 
 	audio_lock();
-	cleanup_task( &context, IAHI );
+	cleanup_task( context, IAHI );
 	Signal( (struct Task *) main_task, SIGF_CHILD );
 	audio_unlock();
 }
@@ -362,7 +401,6 @@ void debug_draw_line(int x0,int y0, int x1, int y1)
 	int x,y;
 	int dx = x1-x0;
 	int dy = y1-y0;
-	int n;
 	struct RastPort *rp = debug_Window -> RPort;
 
 	if (abs(dx)>abs(dy))
@@ -442,7 +480,7 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 
 			d = n % wave->sample.bytes;
 
-			w=sin( (double) n * 2.0 * M_PI / (double) size )*100;
+//			w=sin( (double) n * 2.0 * M_PI / (double) size )*100;
 
 			w = (int) data[d] ;
 
@@ -452,18 +490,19 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 
 			chunk_data[n-offset] = w;
 
+/*
 			if (debug_Window)
 			{
 				int x = (n*700)/totsize;
 				int y = w;
 
-//				WritePixelColor( debug_Window -> RPort, 50 + x, 400, color ); 
-//				WritePixelColor( debug_Window -> RPort, 50 + x, 400 + data[d] , 0xFF0000FF ); 
+				WritePixelColor( debug_Window -> RPort, 50 + x, 400, color ); 
+				WritePixelColor( debug_Window -> RPort, 50 + x, 400 + data[d] , 0xFF0000FF ); 
 
 				lx = x;
 				ly = w;
-
 			}
+*/
 		}
 	}
 }
@@ -549,7 +588,13 @@ void audio_device_flush()
 		}
 	}
 
+	for ( c=0;c<4; c++)
+	{
+		contexts[c].audio_abort = true;
+	}
+
 	audio_unlock();
+
 }
 
 bool play(uint8_t * data,int len, int channel, int frequency)

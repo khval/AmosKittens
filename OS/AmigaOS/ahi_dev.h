@@ -1,10 +1,13 @@
 
+#warning ahi_dev.h included
+
+
 #ifdef __amoskittens__
 
 extern APTR channel_mx[4];
 
 //some define for this nice AHI driver !
-#define AHI_CHUNKSIZE         (65536/2)
+#define AHI_CHUNKSIZE         1024
 #define AHI_CHUNKMAX          (131072/2)
 #define AHI_DEFAULTUNIT       0
 
