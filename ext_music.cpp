@@ -242,9 +242,9 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 			sample = getStackNum( stack )-1;
 			voices = 0xF;
 			break;
-		case 2:
-			sample = getStackNum( stack-1 )-1;
-			voices = getStackNum( stack );
+		case 2:	// Sam Play 	voices, sample
+			voices = getStackNum( stack-1 );		
+			sample = getStackNum( stack )-1;
 			break;
 		default:
 			setError(22,data->tokenBuffer);
