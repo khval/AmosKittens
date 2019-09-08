@@ -54,6 +54,8 @@ extern LONG volume;
 
 int sample_bank = 5;
 
+extern bool sample_loop;
+
 void make_wave_test()
 {
 	int bytes = 30;
@@ -102,9 +104,9 @@ void make_wave_noice()
 
 void draw_wave(struct wave *wave)
 {
-	int n;
-	signed char *data;
-	data = (signed char *) &(wave -> sample.ptr);
+	unsigned int n;
+	 char *data;
+	data = ( char *) &(wave -> sample.ptr);
 
 	open_debug_window();
 	for (n=0;n<wave -> sample.bytes;n++) 	WritePixelColor( debug_Window -> RPort, 50+n, 400 + data[n] , 0xFF0000FF); 
@@ -118,7 +120,7 @@ void make_wave_bell()
 	double r1,r3,r5;
 	int bytes = 256;
 	struct wave *newWave = allocWave( 1, bytes );
-	signed char *data;
+	 char *data;
 
 	open_debug_window();
 
@@ -128,20 +130,24 @@ void make_wave_bell()
 
 	if (newWave)
 	{
-		data = (signed char *) &(newWave -> sample.ptr);
+		data = ( char *) &(newWave -> sample.ptr);
 
 		for (n=0;n<bytes;n++)
 		{
-			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) + sin( r5)) /3.0 * 127.0)  ;
+
+//			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) ) /2.0 * 127.0)  ;
+//			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) + sin( r5)) /3.0 * 127.0)  ;
 			r1=harmonic(1,n,bytes);
-			r3=harmonic(3,n,bytes) + M_PI;
-			r5=harmonic(5,n,bytes);
+//			r3=harmonic(3,n,bytes) + M_PI;
+//			r5=harmonic(5,n,bytes);
+
+			data[n] =  (signed char) ( sin( r1 ) * 127.0)  +127;
 
 			WritePixelColor( debug_Window -> RPort, n+50, 400, 0xFFFFFFFF); 
 			WritePixelColor( debug_Window -> RPort, n+50, 400+ (signed char) data[n] , 0xFFFFFFFF); 
 			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r1) * 50) , 0xFFFF0000); 
-			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r3) * 50) , 0xFF00FF00); 
-			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r5) * 50) , 0xFF0000FF); 
+//			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r3) * 50) , 0xFF00FF00); 
+//			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r5) * 50) , 0xFF0000FF); 
 
 			printf("%-3d - %-5d\n",n, data[n]);
 		}
@@ -228,7 +234,7 @@ void setEnval(struct wave *wave, int phase, int duration, int volume)
 
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 {
-	int ret = 0,voices,sample;
+	int voices,sample;
 	int args = stack - data->stack +1;
 	struct kittyBank *bank;
 	uint32_t	*offset;
@@ -465,7 +471,7 @@ char *ext_cmd_boom(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	audio_device_flush();
+	audio_device_flush(0xF);
 	getchar();
 
 	wave = getWave(0);
@@ -510,7 +516,7 @@ char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	audio_device_flush();
+	audio_device_flush(0xF);
 	getchar();
 
 	wave = getWave(1);
@@ -557,7 +563,7 @@ char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
 	struct wave *localwave;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	audio_device_flush();
+	audio_device_flush(0xF);
 	getchar();
 
 	wave = getWave(0);
@@ -790,6 +796,54 @@ char *ext_cmd_volume(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _ext_cmd_volume, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+char *ext_cmd_sam_loop_on(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	sample_loop = true;
+
+	return tokenBuffer;
+}
+
+char *ext_cmd_sam_loop_off(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	sample_loop = false;
+
+	return tokenBuffer;
+}
+
+char *_ext_cmd_sam_stop( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	int voices;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			voices = getStackNum( stack );
+			audio_device_flush(voices);
+			return NULL;
+			break;
+	}
+
+	setError(22,data->tokenBuffer);
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+char *ext_cmd_sam_stop(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_sam_stop, tokenBuffer );
+	setStackNum(15);		// set default value.
 	return tokenBuffer;
 }
 

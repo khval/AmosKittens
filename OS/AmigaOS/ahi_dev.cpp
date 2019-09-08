@@ -35,6 +35,7 @@ int current_audio_channel = 0;
 
 extern bool running;
 
+bool sample_loop = false;
 
 struct audioIO
 {
@@ -273,7 +274,18 @@ void audio_engine (void) {
 		}    
 		else if ( audioBuffer[context -> channel].front() )
 		{
-			if (context -> AHIio-> data)	free( context -> AHIio-> data );	// free old data.
+			if (sample_loop == false)
+			{
+				if (context -> AHIio-> data)
+				{
+					free( context -> AHIio-> data );	// free old data.
+				}
+			}
+			else
+			{
+				audioBuffer[context -> channel].push_back( context -> AHIio-> data);
+			}			
+
 			context -> AHIio-> data = audioBuffer[context -> channel].front();
 			audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
 			channel_unlock(context -> channel);
@@ -570,31 +582,28 @@ bool play_wave(struct wave *wave, int len, int channel)
 
 #ifdef __amoskittens__
 
-void audio_device_flush()
+
+void audio_channel_flush( int c )
 {
 	struct audioChunk *chunk;
+
+	if (audioBuffer[c].size())
+	{
+		chunk = audioBuffer[c].back();
+		if (chunk) free(chunk);
+		audioBuffer[c].pop_back();
+	}
+
+	contexts[c].audio_abort = true;
+}
+
+void audio_device_flush(int voices)
+{
 	int c;
 
-	// block audio, and clear list.
-
 	audio_lock();
-	for ( c=0;c<4; c++)
-	{
-		if (audioBuffer[c].size())
-		{
-			chunk = audioBuffer[c].back();
-			if (chunk) free(chunk);
-			audioBuffer[c].pop_back();
-		}
-	}
-
-	for ( c=0;c<4; c++)
-	{
-		contexts[c].audio_abort = true;
-	}
-
+	for ( c=0;c<4; c++)	if (voices & (1<<c) ) audio_channel_flush( c );
 	audio_unlock();
-
 }
 
 bool play(uint8_t * data,int len, int channel, int frequency)
