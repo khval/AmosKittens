@@ -39,6 +39,7 @@ bool sample_loop = false;
 
 struct audioIO
 {
+	bool sendt;
 	struct AHIRequest *io;
 	struct audioChunk *data;
 };
@@ -61,9 +62,10 @@ struct contextChannel contexts[4];
 
 struct audioIO *new_audio( struct AHIRequest *io)
 {
-	struct audioIO *_new = (struct audioIO *) malloc( sizeof( struct audioIO *) );
+	struct audioIO *_new = (struct audioIO *) malloc( sizeof( struct audioIO ) );
 	if (_new)
 	{
+		_new -> sendt = false;
 		_new -> io = io;
 		_new -> data = NULL;
 	}
@@ -89,22 +91,35 @@ void ahi_dev_uninit(int immed);
 
 void abort_audio_channel(struct contextChannel *context, struct AHIIFace	*IAHI)
 {
-	if (context -> link) if ( context-> link -> io)
+	Printf("%s:%s:%ld - link\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (context -> link)
 	{
-		if (CheckIO( (struct IORequest *) context -> link -> io ))
+		if (context -> link -> sendt)
 		{
-			AbortIO ( (struct IORequest *) context -> link -> io );
-			WaitIO( (struct IORequest *) context->link -> io);
+			 if ( context-> link -> io)
+			{
+				AbortIO ( (struct IORequest *) context -> link -> io );
+				WaitIO( (struct IORequest *) context->link -> io);
+			}
+
+			context -> link -> sendt = false;
+			context -> link = NULL;
 		}
-		context -> link = NULL;
 	}
 
-	if (context -> AHIio) if (context -> AHIio -> io)
+	Printf("%s:%s:%ld - AHIio\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (context -> AHIio) 
 	{
-		if (CheckIO( (struct IORequest *) context -> AHIio -> io ))
+		if (context -> AHIio -> sendt)
 		{
-			AbortIO( (struct IORequest *) context -> AHIio -> io );
-			WaitIO( (struct IORequest *) context->link -> io);
+			if (context -> AHIio -> io)
+			{
+				AbortIO( (struct IORequest *) context -> AHIio -> io );
+				WaitIO( (struct IORequest *) context -> AHIio -> io);
+			}
+			context -> AHIio -> sendt = false;
 		}
 	}
 }
@@ -167,8 +182,8 @@ static void cleanup_task(struct contextChannel *c, struct AHIIFace	*IAHI)
 
 
 
-void audio_engine (void) {
-
+void audio_engine (void) 
+{
 	static struct AHIRequest *io;
 	static struct audioIO *tempRequest;
 	struct AHIIFace	*IAHI ;		// instence.
@@ -208,7 +223,12 @@ void audio_engine (void) {
 			 if ( context -> AHIio = new_audio( io ) ) 
 			{
 				context -> AHIio->io->ahir_Version = 4;
-				context -> device = OpenDevice(AHINAME, AHI_DEFAULTUNIT,(struct IORequest *) context -> AHIio -> io, 0);
+
+				context -> device = OpenDevice( 
+					AHINAME, 
+					AHI_DEFAULTUNIT, 
+					(struct IORequest *) context -> AHIio -> io, 
+					0 );
 
 				if (context -> device == 0)
 				{
@@ -235,7 +255,7 @@ void audio_engine (void) {
 		goto end_audioTask;
 	}
 
-	context -> AHIio2 = new_audio((struct AHIRequest*) AllocVecTags(sizeof(struct AHIRequest), AVT_Type, MEMF_SHARED, TAG_END )) ;
+	context -> AHIio2 = new_audio((struct AHIRequest*) AllocVecTags( sizeof(struct AHIRequest), AVT_Type, MEMF_SHARED, TAG_END )) ;
 
 	if(! context -> AHIio2)
 	{
@@ -260,6 +280,7 @@ void audio_engine (void) {
 
 		if ( context -> audio_abort )
 		{
+			Printf("Audio aborted\n");
 			abort_audio_channel( context, IAHI );
 			channel_unlock(context -> channel); 
 			context -> audio_abort = false;
@@ -269,6 +290,7 @@ void audio_engine (void) {
 		if ( audioBuffer[context -> channel].size() == 0 )
 		{
 			channel_unlock(context -> channel); 
+			Printf("wait for buffer\n");
 			Delay(1);
 			continue; 
 		}    
@@ -278,61 +300,85 @@ void audio_engine (void) {
 			{
 				if (context -> AHIio-> data)
 				{
+					Printf("Free data..\n");
 					free( context -> AHIio-> data );	// free old data.
+					context -> AHIio-> data = NULL;
 				}
 			}
 			else
 			{
+				Printf("sample loop push data back..\n");
 				audioBuffer[context -> channel].push_back( context -> AHIio-> data);
 			}			
 
-			context -> AHIio-> data = audioBuffer[context -> channel].front();
-			audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
-			channel_unlock(context -> channel);
-
-//			Printf("AHIio %08lx, (io: %08lx,  frequency: %ld)\n", context.AHIio, context.AHIio -> io, context.AHIio->data -> frequency);
-
 			if (io = context -> AHIio -> io)
 			{
-				io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
-				io->ahir_Std.io_Command  = CMD_WRITE;
-				io->ahir_Std.io_Offset   = 0;
-				io->ahir_Std.io_Data     =  &(context -> AHIio-> data -> ptr); 
-				io->ahir_Std.io_Length   = (ULONG) context -> AHIio-> data -> size; 
-				io->ahir_Frequency       = (ULONG) context -> AHIio-> data -> frequency;
-				io->ahir_Volume          = volume; 
-				io->ahir_Position        = (ULONG) context -> AHIio-> data -> position;
-				io->ahir_Type = AHIST_M8S;
-				io->ahir_Link = context -> link ? context -> link -> io : NULL;
+				context -> AHIio-> data = audioBuffer[context -> channel].front();
+				audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
+				channel_unlock(context -> channel);
+
+				if (context -> AHIio-> data)
+				{
+					io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
+					io->ahir_Std.io_Command	= CMD_WRITE;
+					io->ahir_Std.io_Offset	= 0;
+					io->ahir_Std.io_Data		=  &(context -> AHIio-> data -> ptr); 
+					io->ahir_Std.io_Length	= (ULONG) context -> AHIio-> data -> size; 
+					io->ahir_Frequency		= (ULONG) context -> AHIio-> data -> frequency;
+					io->ahir_Volume		= volume; 
+					io->ahir_Position		= (ULONG) context -> AHIio-> data -> position;
+					io->ahir_Type			= AHIST_M8S;
+					io->ahir_Link			= context -> link ? context -> link -> io : NULL;
+				}
+				else
+				{
+					Printf("has no data, wtf\n");
+					running = false;
+					continue; 
+				}
+			}
+			else
+			{
+				channel_unlock(context -> channel);
+				Printf("has no IO, wtf\n");
+				running = false;
+				continue; 
 			}
 		}
-		else 	channel_unlock(context -> channel);
+		else 	
+		{
+			channel_unlock(context -> channel);
+			Printf("has buffer, but there is no data, WTF\n");
+			running = false;
+			continue; 
+		}
 
-//		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context.AHIio, context -> AHIio -> io );
+		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context -> AHIio, context -> AHIio -> io );
 
 		SendIO( (struct IORequest *) context->AHIio -> io );
 
+		Printf("context -> AHIio -> sendt = true\n" );
+
+		context -> AHIio -> sendt = true;
+
+		Printf("context -> link\n");
 		if (context -> link)
 		{
-/*
-			Printf("wait for link %08lx (io: %08lx, len %ld) \n", 
-					context -> link, 
-					context -> link -> io, 
-					context -> link -> io ? context.link -> io -> ahir_Std.io_Length : 0 );
-*/
-			WaitIO ( (struct IORequest *) context -> link -> io );
-
-//			Printf("check if main is done... \n");
-
-			if (CheckIO( (struct IORequest *) context -> AHIio -> io ))
+			Printf("check if link is sendt\n" );
+			if (context -> link -> sendt)
 			{
-				// Playback caught up with us, rebuffer... 
-				WaitIO( (struct IORequest *) context -> AHIio -> io );
-				context -> link = NULL;
-				continue;
+				Printf("context -> link -> io\n");
+			 	if (context -> link -> io)
+				{
+					Printf("Wait IO for link\n");
+					WaitIO ( (struct IORequest *) context -> link -> io );
+				}
 			}
+			context -> link -> sendt = false;
 		}
 
+		Printf("Swap buffers\n");
+	
 		// Swap requests
 		tempRequest = context -> AHIio;
 		context -> AHIio  = context -> AHIio2;

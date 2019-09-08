@@ -1,6 +1,4 @@
 
-#warning ahi_dev.h included
-
 
 #ifdef __amoskittens__
 
