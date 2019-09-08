@@ -1829,6 +1829,10 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
 			*((void **) (kitty_extensions[1].lookup + 0x008A)) = (void *) ext_cmd_sam_bank;
 			*((void **) (kitty_extensions[1].lookup + 0x007E)) = (void *) ext_cmd_shoot;	
+
+			*((void **) (kitty_extensions[1].lookup + 0x009A)) = (void *) ext_cmd_sam_loop_on;
+			*((void **) (kitty_extensions[1].lookup + 0x00B4)) = (void *) ext_cmd_sam_loop_off;
+
 			*((void **) (kitty_extensions[1].lookup + 0x00DE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
 			*((void **) (kitty_extensions[1].lookup + 0x00CE)) = (void *) ext_cmd_sample;
@@ -1840,9 +1844,7 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
 			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
-
-
-//			*((void **) (kitty_extensions[1].lookup + 0x0060)) = (void *) ext_cmd_unpack;
+			*((void **) (kitty_extensions[1].lookup + 0x0256)) = (void *) ext_cmd_sam_stop;
 		}
 
 		if (kitty_extensions[2].lookup)
