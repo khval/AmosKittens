@@ -48,6 +48,15 @@ void dump_end_of_program();
 void dumpLineAddress();
 void dump_680x0_regs();
 void dumpScreenInfo();
+
+#ifdef __amigaos__
+extern struct Window *debug_Window;
+#endif
+
+
+void open_debug_window();
+void close_debug_window();
+ 
 int getLineFromPointer( char *address );
 uint32_t mem_crc( char *mem, uint32_t size );
 
