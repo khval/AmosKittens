@@ -32,4 +32,6 @@ void make_wave_noice();
 struct wave *getWave(int id);
 bool delWave(int id);
 void setEnval(struct wave *wave, int phase, int duration, int volume);
+bool apply_wave(int waveId, int voices);
+
 

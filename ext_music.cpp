@@ -420,13 +420,61 @@ char *ext_cmd_sample(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+double noteFreq[12] = {
+		261.63,
+		277.18,
+		293.66,
+		311.13,
+		329.63,
+		349.23,
+		369.99,
+		392.0,
+		415.3,
+		440.0,
+		466.16,
+		493.88
+	};
+
+void draw_hline(int x)
+{
+	int y;
+	for (y=-30;y<=30;y++)
+	{
+		WritePixelColor( debug_Window -> RPort, 50+x, 400+y, 0xFFFF0000); 
+	}
+}
+
+
 char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 {
 	int pitch,delay;
-	int n;
+	int note,octav;
+
+#ifdef show_wave
+	int s;
+	int x;
+	int pixelWidth;
+#endif
+
+	int y;
+	double freq;
+	double r;
+	int byteOffset;
+	int secOfData;
+	int totData;
+
+	double totNumberOfFreq;
+	uint8_t	*wavedata;
+
+	struct wave *localwave;
 
 	int args = stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+
+#if show_wave
+	open_debug_window();
+#endif
 
 	switch (args)
 	{
@@ -434,13 +482,66 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 			pitch = getStackNum( stack-1 );
 			delay = getStackNum( stack );
 
-			for (n=0;n<4;n++)
+			octav = (pitch-1) / 12;
+			note = (pitch-1) % 12;
+
+			freq = noteFreq[ note ] * (double) (1L << octav);
+
+//			delay = 1;
+//			freq =  1 * (double) (1L << octav);
+
+			printf( "pitch: %d note: %d octav: %d freq %f\n", pitch, note, octav , freq );
+
+			secOfData = 44800;
+			totData = delay * secOfData;
+
+			totNumberOfFreq = freq * delay ;
+#if show_wave
+
+			pixelWidth = 700;
+			for (s=0;s<delay;s++)
 			{
-				if (voicePlay[n])
-				{
-					play( &voicePlay[n] -> ptr , voicePlay[n] -> bytes, (1L << n), voicePlay[n] -> frequency + (( pitch - 50 ) * 2) );
-				}
+				byteOffset = secOfData * s;
+				x = pixelWidth * byteOffset / totData;
+				draw_hline( x );
 			}
+#endif
+			localwave = allocWave( 0, totData );
+			if (localwave)
+			{
+				localwave -> bytesPerSecond = secOfData;
+
+				wavedata = &(localwave -> sample.ptr);
+
+				for (byteOffset=0;byteOffset<totData;byteOffset++)
+				{
+					r =  (double) byteOffset * (2.0 * M_PI * freq) / (double) secOfData;
+					y= sin(r)*64.0f;
+
+					wavedata[ byteOffset ] = y;
+#ifdef show_wave
+					x = pixelWidth * byteOffset / totData;
+					WritePixelColor( debug_Window -> RPort, 50+x, 400+y, 0xFFFFFFFF); 
+#endif
+				}
+
+				setEnval( localwave, 0, 1, 63 );
+				setEnval( localwave, 1, 1, 63 );
+				setEnval( localwave, 2, 1, 63 );
+				setEnval( localwave, 3, 1, 63 );
+				setEnval( localwave, 4, 1, 63 );
+				setEnval( localwave, 5, 1, 63 );
+				setEnval( localwave, 6, 1, 63 );
+
+				localwave->sample.frequency = localwave -> bytesPerSecond;
+				localwave -> sample.bytes = totData;
+
+				audio_device_flush(0x1);
+				play_wave( localwave, localwave -> sample.bytes, 0x1 );
+
+				free( localwave );
+			}
+
 
 			Delay( delay / 2 );
 
@@ -449,9 +550,11 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+#if show_wave
+	close_debug_window();
+#endif
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
 
 	return  NULL ;
 }
@@ -602,12 +705,21 @@ char *ext_cmd_shoot(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+bool apply_wave(int waveId, int voices)
+{
+	struct wave *wave = getWave(waveId);
+	if (wave)
+	{
+		copy_sample_to_playback_voices( &(wave -> sample),voices);
+		return true;
+	}
+	return false;
+}
+
 char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1;
-	int voices;
-	int waveId;
-	struct wave *wave = NULL;
+	int waveId,voices;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -619,23 +731,16 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 			waveId = getStackNum( stack-1  );
 			voices = getStackNum( stack );
 
-			wave = getWave(waveId);
-			if (wave)
+			if ( apply_wave( waveId,  voices)  == false)
 			{
-				copy_sample_to_playback_voices( &(wave -> sample),voices);
+				setError(178,data->tokenBuffer);
 			}
-
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 			popStack( stack - cmdTmp[cmdStack-1].stack  );
 			return  NULL ;
 			break;
-	}
-
-	if (wave == NULL)
-	{
-		setError(178,data->tokenBuffer);
 	}
 
 	popStack( stack - cmdTmp[cmdStack-1].stack  );
@@ -669,6 +774,8 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 			if (waveStr)
 			{
 				printf("string length %d\n",waveStr->size);
+
+				delWave(waveId);
 
 				newWave = allocWave( waveId, waveStr->size );
 				if (newWave)

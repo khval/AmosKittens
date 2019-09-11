@@ -452,7 +452,6 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 }
 
 uint32_t color =0;
-int bcount, lx,ly;
 
 void debug_draw_line(int x0,int y0, int x1, int y1)
 {
@@ -489,51 +488,69 @@ void debug_draw_line(int x0,int y0, int x1, int y1)
 	}
 }
 
+struct phase 
+{
+	int phase;
+	int endDuration;
+	int deltaAmplitude;
+	struct audioChunk *chunk;
+};
 
-void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int channel, struct audioChunk **chunk)
+
+void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, int size, int totsize, int channel)
 {
 	//	int	totDuration = wave->envels[6].startDuration;
 
 	int n;
 	signed char *data;
 	signed char *chunk_data;
-	int phase;
-	int endDuration, deltaAmplitude;
+
 	int d, w, reln, amplitude;
 
-	color = (bcount & 1)==1 ? 0xFF000000 : 0xFFFFFFFF;
+	phaseContext -> endDuration = wave->envels[phaseContext -> phase].startDuration + wave->envels[phaseContext -> phase].duration;
+	phaseContext -> deltaAmplitude = wave->envels[phaseContext -> phase + 1].volume - wave->envels[phaseContext -> phase].volume;
 
-	*chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk) + size );
-
-	if (*chunk)
+	if (offset>phaseContext -> endDuration*wave->bytesPerSecond)
 	{
-		(*chunk)->size = size;
-		(*chunk)->frequency = wave->bytesPerSecond;
+		if (phaseContext -> phase == 5) 
+		{
+			Printf("can't make chunk\n");
+			phaseContext -> chunk = NULL;
+			return;
+		}
+	}
+
+	phaseContext -> chunk = (struct audioChunk *) malloc(sizeof(struct audioChunk) + size );
+	if (phaseContext -> chunk)
+	{
+		phaseContext -> chunk -> size = size;
+		phaseContext -> chunk -> frequency = wave->bytesPerSecond;
 
 		switch (channel)
 		{
-			case 0: 		(*chunk)->position = 0x00000;	break;
-			case 1: 		(*chunk)->position = 0x10000;	break;
-			case 2: 		(*chunk)->position = 0x10000;	break;
-			case 3: 		(*chunk)->position = 0x00000;	break;
+			case 0: 		phaseContext -> chunk -> position = 0x00000;	break;
+			case 1: 		phaseContext -> chunk -> position = 0x10000;	break;
+			case 2: 		phaseContext -> chunk -> position = 0x10000;	break;
+			case 3: 		phaseContext -> chunk -> position = 0x00000;	break;
 		}
 
-		phase = 0;
-		endDuration = wave->envels[phase].startDuration + wave->envels[phase].duration;
-		deltaAmplitude = wave->envels[phase + 1].volume - wave->envels[phase].volume;
-
 		data = (signed char*) &(wave -> sample.ptr);
-
-		chunk_data = (signed char*) &( (*chunk)->ptr);
+		chunk_data = (signed char*) &( phaseContext -> chunk -> ptr);
 		
 		for (n = offset; n < offset+size; n++)
 		{
-			while (n>endDuration*wave->bytesPerSecond)
+			while (n>phaseContext -> endDuration*wave->bytesPerSecond)
 			{
-				phase++;
-				if (phase == 6) break;
-				endDuration = wave->envels[phase].startDuration + wave->envels[phase].duration;
-				deltaAmplitude = wave->envels[phase + 1].volume - wave->envels[phase].volume;
+				if (phaseContext -> phase == 5) 
+				{
+					int remain = (offset+size)-n;
+					if (remain>0) memset( chunk_data, 0, remain );
+					break;
+				}
+
+				phaseContext -> phase++;
+				phaseContext -> endDuration = wave->envels[phaseContext -> phase].startDuration + wave->envels[phaseContext -> phase].duration;
+				phaseContext -> deltaAmplitude = wave->envels[phaseContext -> phase + 1].volume - wave->envels[phaseContext -> phase].volume;
 			}
 
 			d = n % wave->sample.bytes;
@@ -542,8 +559,8 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 
 			w = (int) data[d] ;
 
-			reln = n - wave->envels[phase].startDuration*wave->bytesPerSecond;
-			amplitude = (deltaAmplitude * reln / (wave->envels[phase].duration*wave->bytesPerSecond)) + wave->envels[phase].volume;
+			reln = n - wave->envels[phaseContext -> phase].startDuration*wave->bytesPerSecond;
+			amplitude = (phaseContext -> deltaAmplitude * reln / (wave->envels[phaseContext -> phase].duration*wave->bytesPerSecond)) + wave->envels[phaseContext -> phase].volume;
 			w = w* amplitude / 64;
 
 			chunk_data[n-offset] = w;
@@ -565,69 +582,71 @@ void makeChunk_wave(struct wave *wave, int offset, int size, int totsize, int ch
 	}
 }
 
-bool play_wave(struct wave *wave, int len, int channel)
+bool play_wave(struct wave *wave, int len, int channels)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
-	struct audioChunk *chunk[4];
+	struct phase phaseContexts[4];
 	int offset = 0;
 	int c;
 
-	bcount = 0;
+	printf("-- blocks %d lastLen %d\n",blocks,lastLen);
 
-	lx = 0;
-	ly = 0;
-
+	for (c=0;c<4;c++) phaseContexts[c].phase = 0;
 
 	while (blocks--)
 	{
 		for (c = 0; c<4; c++)
 		{
-			if (channel & (1 << c))
+			if (channels & (1 << c))
 			{
-				makeChunk_wave(wave, offset, AHI_CHUNKSIZE, len, channel, &chunk[c]);
+				makeChunk_wave(
+					wave, 
+					&phaseContexts[c], 
+					offset, 
+					AHI_CHUNKSIZE, 
+					len, 
+					channels );
 			}
-			else chunk[c] = NULL;
+			else phaseContexts[c].chunk = NULL;
 		}
 
 #ifdef __amoskittens__
 		audio_lock();
-		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
+		for ( c=0;c<4; c++)	if (phaseContexts[c].chunk) audioBuffer[c].push_back( phaseContexts[c].chunk );
 		audio_unlock();
 #endif
 		offset += AHI_CHUNKSIZE;
-
-		bcount++;
 	}
-
 
 	if (lastLen)
 	{
 		for (c = 0; c<4; c++)
 		{
-			if (channel & (1 << c))
+			if (channels & (1 << c))
 			{
-				makeChunk_wave(wave, offset, lastLen, len, channel, &chunk[c]);
+				makeChunk_wave(
+					wave, 
+					&phaseContexts[c], 
+					offset, 
+					lastLen, 
+					len, 
+					channels);
 			}
-			else chunk[c] = NULL;
+			else phaseContexts[c].chunk = NULL;
 		}
 
 #ifdef __amoskittens__
 		audio_lock();
-		for ( c=0;c<4; c++)	if (chunk[c]) audioBuffer[c].push_back( chunk[c] );
+		for ( c=0;c<4; c++)	if (phaseContexts[c].chunk) audioBuffer[c].push_back( phaseContexts[c].chunk );
 		audio_unlock();
 #endif
-
-		bcount++;
 	}
 
 	return true;
 }
 
-
-
 #ifdef __amoskittens__
-
 
 void audio_channel_flush( int c )
 {
@@ -660,12 +679,13 @@ bool play(uint8_t * data,int len, int channel, int frequency)
 	int offset = 0;
 	int c;
 
+/*
 	if ((frequency <= 0) || (frequency > (44800*4)))
 	{
 		printf("bad frequency\n"); getchar();
 		return false;	// avoid getting stuck...
 	}
-
+*/
 	while (blocks--)
 	{
 		for ( c=0;c<4; c++)
