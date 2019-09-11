@@ -27,7 +27,6 @@ main_objects = commands.cpp \
 			commandsBanks.cpp \
 			commandsErrors.cpp \
 			commandsMachine.cpp \
-			commandsSound.cpp \
 			commandsObjectControl.cpp \
 			commandsHardwareSprite.cpp \
 			commandsBlitterObject.cpp \
