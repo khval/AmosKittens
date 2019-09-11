@@ -92,6 +92,7 @@ void ahi_dev_uninit(int immed);
 void abort_audio_channel(struct contextChannel *context, struct AHIIFace	*IAHI)
 {
 	Printf("%s:%s:%ld - link\n",__FILE__,__FUNCTION__,__LINE__);
+	Delay(10);
 
 	if (context -> link)
 	{
@@ -187,13 +188,34 @@ void audio_engine (void)
 	static struct AHIRequest *io;
 	static struct audioIO *tempRequest;
 	struct AHIIFace	*IAHI ;		// instence.
-
 	struct contextChannel *context;
+	struct Process *thisProcess;
+	int this_channel = -1;
+	int c;
 
-	context = &contexts[current_audio_channel];
+
+	thisProcess = (struct Process *) FindTask(NULL);
+
+	do
+	{
+		for (c=0;c<4;c++)
+		{
+			Printf("channel %ld %08lx == %08lx\n", c, audioTask[c], thisProcess );
+
+			if (audioTask[c]==thisProcess)
+			{
+				this_channel = c;
+				break;
+			}
+		}
+		Delay(1);
+	} while ( this_channel == -1 );
+
+
+	context = &contexts[this_channel];
 
 	context -> device = -999;
-	context -> channel = current_audio_channel;
+	context -> channel = this_channel;
 	context -> audio_stopped = false;
 	context -> audio_abort = false;
 
@@ -270,19 +292,27 @@ void audio_engine (void)
 	context -> AHIio_orig = context -> AHIio;
 	context -> AHIio2_orig= context -> AHIio2;
 
+	Printf("send SIGF_CHILD here\n");
 	Signal( (struct Task *) main_task, SIGF_CHILD );
 
 	for(;;)
 	{
+		Printf("for(;;)\n");
+
 		if ( running == false ) break;
 
+		Printf("channel_lock(%ld)\n",context -> channel);
 		channel_lock(context -> channel);
 
-		if ( context -> audio_abort )
+		Printf("context -> audio_abort %ld\n",context -> audio_abort);
+
+		if ( context -> audio_abort == true )
 		{
 			Printf("Audio aborted\n");
 			abort_audio_channel( context, IAHI );
+			Printf("channel_unlock(%ld)\n",context -> channel);
 			channel_unlock(context -> channel); 
+			Printf("abort done\n");
 			context -> audio_abort = false;
 			continue; 
 		}
@@ -290,7 +320,7 @@ void audio_engine (void)
 		if ( audioBuffer[context -> channel].size() == 0 )
 		{
 			channel_unlock(context -> channel); 
-			Printf("wait for buffer\n");
+			Printf("wait for buffer %ld\n",context -> channel);
 			Delay(1);
 			continue; 
 		}    
@@ -385,6 +415,7 @@ void audio_engine (void)
 		context -> AHIio2 = tempRequest;
 		context -> link = context -> AHIio2;
 	} 
+	Printf("exited\n");
 
 end_audioTask:
 
@@ -408,8 +439,9 @@ bool init_channel(int channel)
 
 	current_audio_channel = channel;
 	main_task = (struct Process *) FindTask(NULL);
-	audioTask[channel] = spawn( audio_engine, "Amos audio engine",audio_debug_output);
 
+	SetSignal(0L,SIGF_CHILD);	 // clear SIGF_CHILD 
+	audioTask[channel] = spawn( audio_engine, "Amos audio engine",audio_debug_output);
 	if (audioTask[channel])
 	{
 		Wait(SIGF_CHILD);
@@ -658,8 +690,29 @@ void audio_channel_flush( int c )
 		if (chunk) free(chunk);
 		audioBuffer[c].pop_back();
 	}
+}
 
+void abort_channel( int c )
+{
 	contexts[c].audio_abort = true;
+
+	if (audioTask[c])	// check that task is running maybe.
+	{
+		Printf("waiting for abort on channel %d\n",c);
+
+		while (contexts[c].audio_abort == true)
+		{
+			printf("contexts[%d].audio_abort is %d\n",
+				contexts[c].channel,
+				contexts[c].audio_abort);
+
+			printf("contexts[%d].audio_abort is %d\n",
+				c,
+				contexts[c].audio_abort);
+
+			Delay(1);
+		}
+	}
 }
 
 void audio_device_flush(int voices)
@@ -669,6 +722,8 @@ void audio_device_flush(int voices)
 	audio_lock();
 	for ( c=0;c<4; c++)	if (voices & (1<<c) ) audio_channel_flush( c );
 	audio_unlock();
+
+	for ( c=0;c<4; c++)	if (voices & (1<<c) ) abort_channel( c );
 }
 
 bool play(uint8_t * data,int len, int channel, int frequency)
