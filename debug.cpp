@@ -604,7 +604,7 @@ void open_debug_window()
 	debug_Window = OpenWindowTags( NULL,
 				WA_Left,			820,
 				WA_Top,			20,
-				WA_InnerWidth,	800,
+				WA_InnerWidth,		800,
 				WA_InnerHeight,	800,
 				WA_SimpleRefresh,	TRUE,
 				WA_CloseGadget,	FALSE,
@@ -630,3 +630,20 @@ void close_debug_window()
 #endif
 }
 
+void debug_draw_hline(int x)
+{
+#ifdef __amigaos__
+	int y;
+	if (debug_Window)
+	{
+		for (y=-30;y<=30;y++)
+		{
+			WritePixelColor( debug_Window -> RPort, 50+x, 400+y, 0xFFFF0000); 
+		}
+	}
+	else
+	{
+		printf("debug gfx window not open\n");
+	}
+#endif 
+}

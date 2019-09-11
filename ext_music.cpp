@@ -435,16 +435,6 @@ double noteFreq[12] = {
 		493.88
 	};
 
-void draw_hline(int x)
-{
-	int y;
-	for (y=-30;y<=30;y++)
-	{
-		WritePixelColor( debug_Window -> RPort, 50+x, 400+y, 0xFFFF0000); 
-	}
-}
-
-
 char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 {
 	int pitch,delay;
