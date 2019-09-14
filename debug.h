@@ -102,5 +102,7 @@ void Printf_iso(const char *fmt,...);
 #define Printf_iso(fmt,...) fprintf(engine_fd,fmt,__VA_ARGS__)
 #endif
 
+void debug_draw_wave(struct wave *wave);
 
 #define NYI(name) printf("%s not yet implemented\n",name)
+

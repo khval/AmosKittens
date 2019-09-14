@@ -101,28 +101,13 @@ void make_wave_noice()
 #define harmonic(h,n,m) h * ((double) n) * 2.0f * M_PI / ((double) m) ;
 
 
-
-void draw_wave(struct wave *wave)
-{
-	unsigned int n;
-	 char *data;
-	data = ( char *) &(wave -> sample.ptr);
-
-	open_debug_window();
-	for (n=0;n<wave -> sample.bytes;n++) 	WritePixelColor( debug_Window -> RPort, 50+n, 400 + data[n] , 0xFF0000FF); 
-	getchar();
-	close_debug_window();
-}
-
 void make_wave_bell()
 {
 	int n;
 	double r1,r3,r5;
 	int bytes = 256;
 	struct wave *newWave = allocWave( 1, bytes );
-	 char *data;
-
-	open_debug_window();
+	char *data;
 
 	r1 = 0x0f;
 	r3 = M_PI ;
@@ -142,14 +127,6 @@ void make_wave_bell()
 //			r5=harmonic(5,n,bytes);
 
 			data[n] =  (signed char) ( sin( r1 ) * 127.0)  +127;
-
-			WritePixelColor( debug_Window -> RPort, n+50, 400, 0xFFFFFFFF); 
-			WritePixelColor( debug_Window -> RPort, n+50, 400+ (signed char) data[n] , 0xFFFFFFFF); 
-			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r1) * 50) , 0xFFFF0000); 
-//			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r3) * 50) , 0xFF00FF00); 
-//			WritePixelColor( debug_Window -> RPort, n+50, 400+(sin(r5) * 50) , 0xFF0000FF); 
-
-			printf("%-3d - %-5d\n",n, data[n]);
 		}
 
 		newWave -> sample.bytes = bytes;
@@ -157,10 +134,6 @@ void make_wave_bell()
 
 		waves.push_back(newWave);
 	}
-
-	getchar();
-
-	close_debug_window();
 }
 
 struct sampleHeader *allocSample( int size )
@@ -640,7 +613,7 @@ char *ext_cmd_bell(nativeCommand *cmd, char *tokenBuffer)
 
 			play_wave( localwave, len, 0xF );
 
-			draw_wave( localwave );
+			debug_draw_wave( localwave );
 
 			free( localwave );
 		}

@@ -630,6 +630,21 @@ void close_debug_window()
 #endif
 }
 
+void debug_draw_wave(struct wave *wave)
+{
+#ifdef __amigaos__
+	unsigned int n;
+	 char *data;
+	data = ( char *) &(wave -> sample.ptr);
+
+	open_debug_window();
+	for (n=0;n<wave -> sample.bytes;n++) 	WritePixelColor( debug_Window -> RPort, 50+n, 400 + data[n] , 0xFF0000FF); 
+	getchar();
+	close_debug_window();
+#endif
+}
+
+
 void debug_draw_hline(int x)
 {
 #ifdef __amigaos__
