@@ -696,7 +696,7 @@ void audio_channel_flush( int c )
 {
 	struct audioChunk *chunk;
 
-	if (audioBuffer[c].size())
+	while (audioBuffer[c].size())
 	{
 		chunk = audioBuffer[c].back();
 		if (chunk) free(chunk);
