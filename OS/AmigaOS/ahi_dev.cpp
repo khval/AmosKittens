@@ -44,11 +44,19 @@ struct audioIO
 	struct audioChunk *data;
 };
 
+enum 
+{
+	audio_not_ready,
+	audio_ready,
+	audio_closed,
+	audio_failed
+};
+
 struct contextChannel {
 	int device ;
 	int channel ;
-	bool audio_stopped;
 	bool audio_abort;
+	bool audio_status;
  	struct MsgPort *AHIMsgPort;     // The msg port we will use for the ahi.device
  	struct audioIO *AHIio; 		// First AHIRequest structure
  	struct audioIO *AHIio2;   		// second one. Double buffering !
@@ -91,9 +99,6 @@ void ahi_dev_uninit(int immed);
 
 void abort_audio_channel(struct contextChannel *context, struct AHIIFace	*IAHI)
 {
-	Printf("%s:%s:%ld - link\n",__FILE__,__FUNCTION__,__LINE__);
-	Delay(10);
-
 	if (context -> link)
 	{
 		if (context -> link -> sendt)
@@ -108,8 +113,6 @@ void abort_audio_channel(struct contextChannel *context, struct AHIIFace	*IAHI)
 			context -> link = NULL;
 		}
 	}
-
-	Printf("%s:%s:%ld - AHIio\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> AHIio) 
 	{
@@ -214,9 +217,9 @@ void audio_engine (void)
 
 	context = &contexts[this_channel];
 
+	context -> audio_status = audio_not_ready;
 	context -> device = -999;
 	context -> channel = this_channel;
-	context -> audio_stopped = false;
 	context -> audio_abort = false;
 
 	context -> AHIMsgPort  = NULL;     // The msg port we will use for the ahi.device
@@ -294,6 +297,8 @@ void audio_engine (void)
 
 	Printf("send SIGF_CHILD here\n");
 	Signal( (struct Task *) main_task, SIGF_CHILD );
+
+	context -> audio_status = audio_ready;
 
 	for(;;)
 	{
@@ -383,7 +388,10 @@ void audio_engine (void)
 			continue; 
 		}
 
-		Printf("SendIO( AHIio %08lx (io: %08lx) )\n", context -> AHIio, context -> AHIio -> io );
+		Printf("SendIO( AHIio %08lx (io: %08lx) ) -- buffer size: %ld\n", 
+				context -> AHIio, 
+				context -> AHIio -> io, 
+				audioBuffer[context -> channel].size() );
 
 		SendIO( (struct IORequest *) context->AHIio -> io );
 
@@ -391,23 +399,17 @@ void audio_engine (void)
 
 		context -> AHIio -> sendt = true;
 
-		Printf("context -> link\n");
 		if (context -> link)
 		{
-			Printf("check if link is sendt\n" );
 			if (context -> link -> sendt)
 			{
-				Printf("context -> link -> io\n");
 			 	if (context -> link -> io)
 				{
-					Printf("Wait IO for link\n");
 					WaitIO ( (struct IORequest *) context -> link -> io );
 				}
 			}
 			context -> link -> sendt = false;
 		}
-
-		Printf("Swap buffers\n");
 	
 		// Swap requests
 		tempRequest = context -> AHIio;
@@ -415,9 +417,19 @@ void audio_engine (void)
 		context -> AHIio2 = tempRequest;
 		context -> link = context -> AHIio2;
 	} 
-	Printf("exited\n");
 
 end_audioTask:
+
+	switch (context -> audio_status)
+	{
+		case audio_not_ready:
+				context -> audio_status = audio_failed;
+				break;
+
+		case audio_ready:
+				context -> audio_status = audio_closed;
+				break;
+	}
 
 	audio_lock();
 	cleanup_task( context, IAHI );
@@ -694,25 +706,27 @@ void audio_channel_flush( int c )
 
 void abort_channel( int c )
 {
+	// check if task is running.
+	if (audioTask[c] == NULL)	return;
+
+	// wait for status 
+	while ( contexts[c].audio_status == audio_not_ready ) Delay(1);
+
+	// check if audio is ready.
+	if (contexts[c].audio_status != audio_ready) return;
+
 	contexts[c].audio_abort = true;
 
-	if (audioTask[c])	// check that task is running maybe.
+	Printf("waiting for abort on channel %d\n",c);
+
+	while (contexts[c].audio_abort == true)
 	{
-		Printf("waiting for abort on channel %d\n",c);
-
-		while (contexts[c].audio_abort == true)
-		{
-			printf("contexts[%d].audio_abort is %d\n",
-				contexts[c].channel,
-				contexts[c].audio_abort);
-
-			printf("contexts[%d].audio_abort is %d\n",
-				c,
-				contexts[c].audio_abort);
-
-			Delay(1);
-		}
+		printf("contexts[%d].audio_abort is %d\n",
+			contexts[c].channel,
+			contexts[c].audio_abort);	
+		Delay(1);
 	}
+
 }
 
 void audio_device_flush(int voices)
