@@ -1845,6 +1845,7 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x0256)) = (void *) ext_cmd_sam_stop;
+			*((void **) (kitty_extensions[1].lookup + 0x0324)) = (void *) ext_cmd_ssave;
 		}
 
 		if (kitty_extensions[2].lookup)

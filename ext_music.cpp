@@ -50,6 +50,8 @@ std::vector<struct wave *> waves;
 struct wave *allocWave( int id, int size );
 struct sampleHeader *allocSample( int size );
 
+bool write_file_start_end( int channel, char *start, char *end );
+
 extern LONG volume;
 
 int sample_bank = 5;
@@ -914,6 +916,81 @@ char *ext_cmd_sam_stop(nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _ext_cmd_sam_stop, tokenBuffer );
 	setStackNum(15);		// set default value.
+	return tokenBuffer;
+}
+
+char *_ext_cmd_sam_ssave( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	int channel,start,end;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 3:
+			channel = getStackNum( stack-2 );
+			start = getStackNum( stack-1 );
+			end = getStackNum( stack );
+
+			write_file_start_end( channel, (char *) start, (char *) end );
+
+			getchar();
+			break;
+
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+char *ext_cmd_ssave(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_sam_ssave, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_ext_cmd_sam_sload( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1;
+	int voices;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			voices = getStackNum( stack );
+			audio_device_flush(voices);
+			return NULL;
+			break;
+	}
+
+	setError(22,data->tokenBuffer);
+	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	return  NULL ;
+}
+
+char *ext_cmd_sload(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _ext_cmd_sam_sload, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *ext_cmd_sam_swap(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
+
+char *ext_cmd_sam_swapped(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	setStackNum(0);
 	return tokenBuffer;
 }
 
