@@ -1297,7 +1297,7 @@ char *_machinePokeStr( struct glueCommands *data, int nextToken )
 
 				for (s=&src->ptr;s<src_end;s++)
 				{
-					*s = *dest;
+					*dest = *s;
 					dest++;
 				}
 
