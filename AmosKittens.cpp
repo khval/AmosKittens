@@ -1862,6 +1862,9 @@ int main(int args, char **arg)
 		make_wave_noice();
 		make_wave_bell();
 
+		apply_wave(1, 15);
+
+
 		// function table init.
 		if (kitty_extensions[12].lookup)
 		{
