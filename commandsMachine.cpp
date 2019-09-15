@@ -30,7 +30,7 @@
 #include "commandsMachine.h"
 #include "commandsBanks.h"
 #include "kittyErrors.h"
-
+#include "amosString.h"
 
 #include "var_helper.h"
 
@@ -1232,12 +1232,12 @@ char *_machinePeekStr( struct glueCommands *data, int nextToken )
 				switch ( kittyStack[stack].type )
 				{
 					case type_int:
-						ret = _copy_until_len(adr,kittyStack[stack].integer.value);
+						ret = toAmosString(adr,kittyStack[stack].integer.value);
 						break;
 
 					case type_string:
 						term = getStackString(stack);
-						ret = _copy_until_char(adr, term ? term -> ptr : 0 );
+						ret = toAmosString_char(adr, term ? term -> ptr : 0 );
 						break;
 				}
 				break;
@@ -1245,7 +1245,7 @@ char *_machinePeekStr( struct glueCommands *data, int nextToken )
 				adr = (char *) getStackNum(stack-2);
 				len = getStackNum(stack-1);
 				term = getStackString(stack);		
-				ret = _copy_until_len_or_char(adr, len, term ? term -> ptr : 0 );
+				ret = toAmosString_len_or_char(adr, len, term ? term -> ptr : 0 );
 				break;
 
 		default:
@@ -1262,7 +1262,6 @@ char *_machinePeekStr( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	setStackStr(ret);
-
 	return NULL;
 }
 
