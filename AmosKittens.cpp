@@ -1392,7 +1392,6 @@ struct nativeCommand nativeCommands[]=
 	{0x27B6,"Vdialog$",0,guiVdialogStr },
 	{0x27C8,"Rdialog",0,guiRdialog },
 	{0x27DA,"Rdialog",0,guiRdialog },
-	{0x27E6,"Dialog$",0,guiDialogStr },
 	{0x27E6,"Rdialog$",0,guiRdialogStr },
 	{0x27F8,"Rdialog$",0,guiRdialogStr },
 	{0x2804,"EDialog",0,guiEDialog },
