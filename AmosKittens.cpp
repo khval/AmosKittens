@@ -1900,13 +1900,6 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[2].lookup + 0x0060)) = (void *) ext_cmd_unpack;
 		}
 
-		make_wave_noice();
-		make_wave_bell();
-
-		apply_wave(1, 15);
-
-
-		// function table init.
 		if (kitty_extensions[12].lookup)
 		{
 			*((void **) (kitty_extensions[12].lookup + 0x0A08)) = (void *) ext_cmd_range;
@@ -1916,6 +1909,13 @@ int main(int args, char **arg)
 		{
 			if (kitty_extensions[n].lookup) kitty_extensions[n].crc = mem_crc( kitty_extensions[12].lookup, 0xFFFF ) ;
 		}
+
+		make_wave_noice();
+		make_wave_bell();
+
+		apply_wave(1, 15);
+
+
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
 		do_to = (char *(**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
