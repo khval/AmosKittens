@@ -1539,6 +1539,40 @@ void init_fast_lookup()
 	}
 }
 
+bool validate_fast_lookup()
+{
+	int token;
+	struct nativeCommand *cmd;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+	{
+		token = (int) ((unsigned short) cmd->id) ;
+
+		if (*((void **) (fast_lookup + token)) != (void *) cmd -> fn)
+		{
+			printf("token %04x is corrupt, function pointer is wrong (is %08x should be %08x)\n",
+				token, 
+				*((void **) (fast_lookup + token)) ,
+				cmd -> fn);
+			return false;
+		}
+
+		if (*((uint16_t *) (fast_lookup + token + sizeof(void *))) != (uint16_t) cmd -> size)
+		{
+			printf("token %d is corrupt, size is wrong (is %d should be %d)\n", 
+					token,
+					*((uint16_t *) (fast_lookup + token + sizeof(void *))),
+					cmd -> size);
+			return false;
+		}
+	}
+	return true;
+}
+
+
+
 // should be faster, draw back, no token name can be printed.
 
 struct nativeCommand _cmd;
@@ -1763,7 +1797,15 @@ int main(int args, char **arg)
 	amosid[16] = 0;	// /0 string.
 
 #ifdef enable_fast_execution_yes
+
 	init_fast_lookup();
+
+	if (validate_fast_lookup() == false)
+	{
+		getchar();
+		startup = false;
+	}
+
 #endif
 
 	stack = 0;
