@@ -726,7 +726,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 #ifdef fast_float_yes
 
 double _float[256];
-double _exp[0x7F];
+double _exp[0x80];
 
 void make_float_lookup()
 {
