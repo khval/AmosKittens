@@ -136,61 +136,53 @@ char *_machineDoke( struct glueCommands *data, int nextToken )
 char *_machineLoke( struct glueCommands *data, int nextToken )
 {
 	int *adr;
-	int value;
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int ret = 0;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
 		adr = (int *) getStackNum(stack-1);
-		value = getStackNum(stack);
 
 		if (adr)
 		{
-			*adr = (int) value;
-			success = true;
+			*adr = (int) getStackNum(stack);
+			popStack( stack - data->stack );
+			return NULL;
 		}
 	}
 
-	if (success == false) setError(25,data->tokenBuffer);
-
+	setError(25,data->tokenBuffer);
 	popStack( stack - data->stack );
-	setStackNum(ret);
 	return NULL;
+}
+
+char *machineLoke(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineLoke, tokenBuffer );
+	setStackNum(0);
+	return tokenBuffer;
 }
 
 char *_machinePeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int ret = 0;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args==1)
+	if (args==1)	// don't need to pop stack.
 	{
 		char *adr = (char *) getStackNum(stack);
-
 		if (adr)
 		{
-			ret = *adr;
-			success = true;
+			setStackNum(*adr);
+			return NULL;
 		}
-		else
-		{
-			setError(25,data->tokenBuffer);
-		}
+		else	setError(25,data->tokenBuffer);
 	}
-	else
-	{
-		setError(22,data->tokenBuffer);
-	}
+	else	setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(ret);
+	setStackNum(0);
 	return NULL;
 }
 
@@ -203,9 +195,6 @@ char *machinePeek(struct nativeCommand *cmd, char *tokenBuffer)
 char *_machineDeek( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int ret = 0;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
@@ -214,52 +203,16 @@ char *_machineDeek( struct glueCommands *data, int nextToken )
 
 		if (adr)
 		{
-			ret = *adr;
-			success = true;
+			setStackNum( *adr );
+			return NULL;
 		}
+		else setError(25,data->tokenBuffer);
 	}
-
-	if (success == false) setError(25,data->tokenBuffer);
+	else	setError(22,data->tokenBuffer);
 
 	popStack( stack - data->stack );
-	setStackNum(ret);
+	setStackNum(0);
 	return NULL;
-}
-
-
-char *_machineLeek( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	bool success = false;
-	int ret = 0;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (args==1)
-	{
-		int *adr = (int *) getStackNum(data->stack);
-
-		if (adr)
-		{
-			ret = *adr;
-			success = true;
-		}
-	}
-
-	if (success == false) setError(25,data->tokenBuffer);
-
-	popStack( stack - data->stack );
-	setStackNum(ret);
-	return NULL;
-}
-
-
-
-
-char *machineDoke(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _machineDoke, tokenBuffer );
-	return tokenBuffer;
 }
 
 char *machineDeek(struct nativeCommand *cmd, char *tokenBuffer)
@@ -268,15 +221,38 @@ char *machineDeek(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *machineLoke(struct nativeCommand *cmd, char *tokenBuffer)
+char *_machineLeek( struct glueCommands *data, int nextToken )
 {
-	stackCmdNormal( _machineLoke, tokenBuffer );
-	return tokenBuffer;
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		int *adr = (int *) getStackNum(data->stack);
+
+		if (adr)
+		{
+			setStackNum(*adr);
+			return NULL;
+		}
+		else setError(25,data->tokenBuffer);
+	}
+	else	setError(22,data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum(0);
+	return NULL;
 }
 
 char *machineLeek(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineLeek, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *machineDoke(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _machineDoke, tokenBuffer );
 	return tokenBuffer;
 }
 
