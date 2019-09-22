@@ -169,9 +169,6 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 		for(;;)
 		{	
 			next_token = NEXT_TOKEN(tokenBuffer);
-
-			printf("next token %04X - num %d\n", next_token, num);
-
 			switch (next_token)
 			{
 				case 0x0006:
@@ -229,8 +226,6 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 					tokenBuffer +=2;
 					ref = (struct reference *) (tokenBuffer);
 					num--;
-
-					printf("ref->ref %d\n",ref->ref);
 
 					if (num == 0)
 					{

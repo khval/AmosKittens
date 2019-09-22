@@ -116,7 +116,6 @@ char *_procedure( struct glueCommands *data, int nextToken )
 	return  data -> tokenBuffer ;
 }
 
-
 void stack_frame_up(int varIndex)
 {
 	struct kittyData *var = &globalVars[ varIndex ].var;
@@ -133,7 +132,6 @@ void stack_frame_up(int varIndex)
 
 void __stack_frame_down()	// so this where we should take care of local vars and so on.
 {
-	printf("---------------------> stack frame down %d\n",proc_stack_frame);
 	proc_stack_frame--;		
 }
 
@@ -1449,7 +1447,6 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (proc)
 	{
-		printf("proc num %d\n",proc);
 		clear_local_vars( proc );
 	}
 
@@ -1543,11 +1540,7 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	// the idea, stack to be read is stored first,
 
 	stack ++;					// prevent read stack form being trached.
-
 	token = *((unsigned short *) ptr);
-
-	printf("token %04x\n", token);
-
 	for (ptr = tokenBuffer; (token != 0x0000) && (token != 0x0054) && (read_args<=args) ;)
 	{
 		if (token == end_token)
