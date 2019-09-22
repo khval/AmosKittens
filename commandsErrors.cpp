@@ -49,7 +49,6 @@ void name_from_ref( char **tokenBuffer, char **name_out)
 
 	if ((next_token == 0x006) || (next_token == 0x0018))
 	{
-		char *name;
 		struct reference *ref = (struct reference *) (*tokenBuffer + 2);
 		*name_out = strndup( *tokenBuffer + 2 + sizeof(struct reference), ref->length );
 		*tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
@@ -59,8 +58,6 @@ void name_from_ref( char **tokenBuffer, char **name_out)
 char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 {
 	char *name = NULL;
-	unsigned short next_token; 
-	struct label *label;
 
 	onError = onErrorBreak;	// default.
 
@@ -74,7 +71,6 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				name_from_ref(&tokenBuffer, &name);
 				if (name)
 				{
-					printf("name %s\n",name);
 					struct label *label =  findLabel(name, procStcakFrame[proc_stack_frame].id);
 					on_error_goto_location = label -> tokenLocation;
 					onError = onErrorGoto;
@@ -155,10 +151,9 @@ char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 
 char *errResumeNext(nativeCommand *cmd, char *tokenBuffer)
 {
-	struct reference *ref;
+//	struct reference *ref;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	printf("this command is not yet working!!!\n");
-	getchar();
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 

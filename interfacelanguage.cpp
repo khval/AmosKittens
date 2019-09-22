@@ -291,7 +291,6 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 {
-	char *at;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp >= 2)
@@ -889,7 +888,6 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 
 			if (bank1)
 			{
-				int x;
 				int xp;
 				int w=0,h=0;
 				int _image =  image.num -1  + context -> image_offset ;
@@ -961,7 +959,6 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 			if (bank1)
 			{
-				int y;
 				int yp;
 				int w=0,h=0;
 				int _image =  image.num -1 + context -> image_offset ;

@@ -124,7 +124,6 @@ char *hsGetSprite(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_hsSpriteOff( struct glueCommands *data, int nextToken )
 {
-	int n;
 	int args = stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -144,7 +143,6 @@ char *_hsSpriteBase( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int pick = 0;
-	struct retroFrameHeader *frame;
 	void *ret = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
