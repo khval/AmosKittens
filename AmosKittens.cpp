@@ -1817,6 +1817,7 @@ int main(int args, char **arg)
 
 	memset(globalVars,0,sizeof(struct globalVar) * VAR_BUFFERS);
 
+
 #ifdef __amigaos4__
 	sig_main_vbl = AllocSignal(-1);
 #endif
@@ -1917,7 +1918,6 @@ int main(int args, char **arg)
 		make_wave_bell();
 
 		apply_wave(1, 15);
-
 
 
 		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
@@ -2023,7 +2023,11 @@ int main(int args, char **arg)
 			do_to = NULL;
 		}
 	}
-
+	else
+	{
+		running = false;
+		wait_spawns();
+	}
 
 	free_video();
 	clean_up_vars();
