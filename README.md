@@ -84,6 +84,9 @@ Not yet supported:
 Recursive procedure calls: due way the local variables are implmented for now, locals was implmented quick and dirty.. 
 (in the global list), This part of the code will need to be rewritten to support stack frames, (like normal programing languages does). 
 
+Some kown commands that was skiped or is currently NOP (no operation)
+https://github.com/khval/AmosKittens/issues/26
+
 Most of the new stuff in Amos Pro.
 
 Orginal source code can be found here:
