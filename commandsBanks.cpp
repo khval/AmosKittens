@@ -345,12 +345,9 @@ char *_bankLength( struct glueCommands *data, int nextToken )
 char *_bankBload( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	struct kittyBank *bank;
 	int args = stack - data->stack +1 ;
 	FILE *fd;
 	int size;
-	int n;
-	char *adr = NULL;
 
 	if (args==2)
 	{
@@ -359,7 +356,8 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 		fd = fopen( &name -> ptr , "r");
 		if (fd)
 		{
-			n = getStackNum(stack);
+			uint32_t bankid_or_address;
+			struct kittyBank *bank;
 
 			fseek(fd , 0, SEEK_END );			
 			size = ftell(fd);
@@ -367,22 +365,18 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 
 			if (size)
 			{
-				freeBank(n);
-				bank = allocBank(n);
+				bankid_or_address = getStackNum(stack);
+				bank = findBank( bankid_or_address );	// bank must be previously reserved 
 
 				if (bank)
 				{
-					char *mem = (char *) malloc( size+bank_header );
-
-					bank -> length = size;
-					if (bank -> start) free( (char *) bank -> start-bank_header );
-
-					bank -> start = mem ? mem+bank_header : NULL;
-					bank -> type = 9;	
-					adr = (char *)  bank -> start;
+					fread( bank -> start  ,size,1, fd);
 				}
-				
-				if (adr) fread( adr ,size,1, fd);
+				else if (bankid_or_address != 0)
+				{
+					fread( (void *) bankid_or_address  ,size,1, fd);
+				}
+				else setError(22, data -> tokenBuffer );
 			}
 
 			fclose(fd);
