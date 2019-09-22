@@ -2,7 +2,10 @@
 
 About
 -----
-Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project. Amos Kittens was developed under AmigaOS4.1, after running into memory corruption due to poor memory protection on AmigaOS, I decided to port it to Linux, now interpreter works under Linux x86 32bit, (it does however not have graphical display on Linux. Unlike the AmigaOS version). The Linux version will be used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux.
+Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project. Amos Kittens was developed under AmigaOS4.1, after running into memory corruption due to poor memory protection on AmigaOS.
+
+*The Linux version*
+I decided to port it to Linux, now interpreter works under Linux x86 32bit, (it does however not have graphical display on Linux. Unlike the AmigaOS version). The Linux version will be used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux.
 
 Developer's contributors to Amos kittens
 ----------------------------------------
