@@ -917,6 +917,10 @@ char *cmdGosub(struct nativeCommand *cmd, char *tokenBuffer)
 					stackCmdNormal( _gosub,tokenBuffer );
 					break;
 
+		case 0x003E:	// number
+					stackCmdNormal( _gosub,tokenBuffer );
+					break;
+
 		case 0x0018:	// label
 		case 0x0006: 	// variable
 
