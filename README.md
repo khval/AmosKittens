@@ -8,7 +8,7 @@ Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos 
 This platform this thing primary developed on, however code is some times tested on other operating systems.
 
 **MorphOS / AROS / AmigaOS3.x**
-The API's are where similar to AmigaOS4.x there for it should be relatively easy to make the changes need to make it compile, however due to having to focus on adding new features, I have no time to keep thing up to date on many different operating systems.
+The API's are whery similar to AmigaOS4.x there for it should be relatively easy to make the changes need to make it compile, however due to having to focus on adding new features, I have no time to keep thing up to date on many different operating systems.
 
 **Linux**
 I decided to port some of it to Linux, now interpreter did works under Linux x86 32bit at one time, (it did however not have a graphical display on Linux. Unlike the AmigaOS version). The Linux version is used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux. (Currently some files were removed due being outdated compare to Amiga version of this files.)
