@@ -350,32 +350,51 @@ char *machineVarPtr(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_machineFill( struct glueCommands *data, int nextToken )
 {
-	int *adrStart, *adrEnd;
-	int num;
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int _n, _size = 0;
+	uint32_t num;
+	int _size = 0;
+	char *adrStart, *adrEnd;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
-		adrStart = (int *) getStackNum(stack-2);
-		adrEnd = (int *) getStackNum(stack-1);
-		num = getStackNum(stack);
+		adrStart = (char *) getStackNum(stack-2);
+		adrEnd = (char *) getStackNum(stack-1);
+		num = (uint32_t) getStackNum(stack);
 
 		printf("%08X, %08X, %08x\n", adrStart, adrEnd, num);
 
-		if ( (adrStart) && (((int) adrStart&3)==0) && (((int)adrEnd&3)==0) )
+		if (adrStart) 
 		{
-			_size = ((int) adrEnd - (int) adrStart) / sizeof(int);
-			for (_n=0;_n<_size;_n++) adrStart[_n] = num;
-			success = true;
+			_size = ((uint32_t) adrEnd - (uint32_t) adrStart) / sizeof(uint32_t);
+
+			if ( (((int) adrStart&3)==0) && (((int) adrEnd&3)==0) )		// 32bit
+			{
+				uint32_t *ptr;
+				for ( ptr=(uint32_t *) adrStart ; ptr<(uint32_t *) adrEnd; ptr++) *ptr = num;
+				popStack( stack - data->stack );
+				return NULL;
+			}
+
+			if ( (((int) adrStart&1)==0) && (((int)adrEnd&1)==0) )		// 16bit	(maybe only works on BigEndien)
+			{
+				uint16_t *ptr;
+				uint16_t *num16 = (uint16_t *) &num;
+				int n = 0;
+
+				for ( ptr=(uint16_t *) adrStart ; ptr<(uint16_t *) adrEnd; ptr++)
+				{
+					*ptr = num16[n&1];
+					n++;
+				}
+				popStack( stack - data->stack );
+				return NULL;
+			}
 		}
 	}
 
-	if (success == false) setError(25,data->tokenBuffer);
-
+	setError(25,data->tokenBuffer);
 	popStack( stack - data->stack );
 	return NULL;
 }
