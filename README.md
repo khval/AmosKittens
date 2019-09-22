@@ -2,7 +2,7 @@
 
 About
 -----
-Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project. Amos Kittens was developed under AmigaOS4.1, after running into memory corruption due to poor memory protection on AmigaOS.
+Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project.
 
 **AmigaOS4.x**
 This platform this thing primary developed on, however code is some times tested on other operating systems.
