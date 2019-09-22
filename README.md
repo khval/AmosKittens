@@ -4,8 +4,21 @@ About
 -----
 Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is goal of this project. Amos Kittens was developed under AmigaOS4.1, after running into memory corruption due to poor memory protection on AmigaOS.
 
-*The Linux version*
-I decided to port it to Linux, now interpreter works under Linux x86 32bit, (it does however not have graphical display on Linux. Unlike the AmigaOS version). The Linux version will be used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux.
+**AmigaOS4.x**
+This platform this thing primary developed on, however code is some times tested on other operating systems.
+
+**MorphOS / AROS / AmigaOS3.x**
+The API's are where similar to AmigaOS4.x there for it should be relatively easy to make the changes need to make it compile, however due to having to focus on adding new features, I have no time to keep thing up to date on many different operating systems.
+
+**Linux**
+I decided to port some of it to Linux, now interpreter did works under Linux x86 32bit at one time, (it did however not have a graphical display on Linux. Unlike the AmigaOS version). The Linux version is used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux. (Currently some files were removed due being outdated compare to Amiga version of this files.)
+
+**Windows**
+Part of the code is sometimes tested in Virtual Studio, some headers does support visual studio compiler.
+However, no attempt at compiling a full version has been tried.
+
+**ATARI**
+I have been investigating, if that be possible due link between STOS and AMOS, from what found doing some research on ATARI ST graphics, is that it has lot less colors, and can't display as many colors in higher resolutions. I have not looked at memory limitations but AMOS Kittens is written in C++ code and bit fatter then 680x0 optimized assembler code, I been investigating Falcon if it might be able to do it, and it be cool to support it, but there is lot less users on that platform.
 
 Developer's contributors to Amos kittens
 ----------------------------------------
