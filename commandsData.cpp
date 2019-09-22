@@ -518,7 +518,7 @@ char *_orData( struct glueCommands *data, int nextToken )
 	{
 		if (type1 == type_int)
 		{
-			setStackNum( (item0->integer.value != 0) ||  (item1->integer.value != 0)  ? ~0 : 0);
+			setStackNum( item0->integer.value  |  item1->integer.value );	
 			success = true;
 		}
 		else if (type1 == type_float)
