@@ -339,7 +339,7 @@ char *_flip( struct glueCommands *data, int nextToken )
 	{
 		_str = getStackString( stack  );
 
-		if (str)
+		if (_str)
 		{
 			l = _str -> size;
 			str = &_str -> ptr;
