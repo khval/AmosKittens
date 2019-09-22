@@ -647,25 +647,27 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 		if (ref -> ref)
 		{
-			int idx = ref->ref-1;
+			struct kittyData *var = &globalVars[ref->ref-1].var;
 
-			switch (globalVars[idx].var.type & 7)
+			switch (var -> type & 7)
 			{
 				case type_int:
-					setStackNum(globalVars[idx].var.integer.value);
+					setStackNum(var -> integer.value);
 					break;
 				case type_float:
-					setStackDecimal(globalVars[idx].var.decimal.value);
+					setStackDecimal(var -> decimal.value);
 					break;
 				case type_string:
-					setStackStrDup(globalVars[idx].var.str);		// always copy.
+					setStackStrDup(var -> str);		// always copy.
 					break;
 				case type_proc:
-					stackCmdLoop( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
+					stackCmdProc( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
+
+					stack_frame_up(ref->ref); 
 
 					// size of ref is added on exit, then +2 next token
 
-					return globalVars[idx].var.tokenBufferPos - sizeof(struct reference) -2;	
+					return var -> tokenBufferPos - sizeof(struct reference) -2;	
 			}
 		}
 		flushCmdParaStack(next_token);
@@ -1605,6 +1607,7 @@ char *executeToken( char *ptr, unsigned short token )
 
 	return NULL;
 }
+
 #endif
 
 

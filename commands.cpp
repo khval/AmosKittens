@@ -131,6 +131,18 @@ void stack_frame_up(int varIndex)
 	else procStcakFrame[proc_stack_frame].dataPointer = procStcakFrame[proc_stack_frame-1].dataPointer;
 }
 
+void __stack_frame_down()	// so this where we should take care of local vars and so on.
+{
+	printf("---------------------> stack frame down %d\n",proc_stack_frame);
+	proc_stack_frame--;		
+}
+
+char *stack_frame_down()		// should only be used in end_proc, (pop proc calles end_proc)
+{
+	__stack_frame_down();
+	return cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+}
+
 char *_procAndArgs( struct glueCommands *data, int nextToken )
 {
 	int oldStack;
@@ -1475,7 +1487,7 @@ char *_endProc( struct glueCommands *data, int nextToken )
 
 	_set_return_param( NULL, NULL );
 	do_input[parenthesis_count] = do_std_next_arg;	// restore normal operations.
-	proc_stack_frame--;		// move stack frame down.
+	__stack_frame_down();
 
 	return  data -> tokenBuffer ;
 }
@@ -1492,13 +1504,12 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 			{
 				if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
 				{
-					if (cmdTmp[cmdStack-1].cmd == _procedure ) cmdTmp[cmdStack-1].cmd = _endProc;
+					cmdTmp[cmdStack-1].cmd = _endProc;
 					do_input[parenthesis_count] = _set_return_param;
 				}
 				else 	// End Proc
 				{
-					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
-					proc_stack_frame--;		// move stack frame down.
+					tokenBuffer=stack_frame_down();
 				}
 			}
 			else
