@@ -42,6 +42,10 @@ typedef void* APTR;
 
 #define token_trap				0x259A
 
+#define token_goto				0x02A8
+#define token_gosub			0x02B2
+#define token_proc				0x0386
+
 #define joy_up 1
 #define joy_down 2
 #define joy_left 4

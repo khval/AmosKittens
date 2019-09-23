@@ -39,9 +39,7 @@ extern int tokenMode;
 
 extern std::vector<struct label> labels;
 
-#define GOTO 0x02A8
-#define GOSUB 0x02B2
-#define PROC 0x0386
+
 
 static unsigned int is_token = 0;
 extern int last_var;
@@ -57,9 +55,9 @@ char *executeOnToken(char *ptr, unsigned short token)
 
 	switch (token)
 	{
-		case GOTO:
-		case GOSUB:	
-		case PROC:
+		case token_goto:
+		case token_gosub:	
+		case token_proc:
 					printf("PROC, GOSUB OR GOTO\n");
 					is_token = token;
 					return ptr;
@@ -163,7 +161,7 @@ char *execute_on( int num, char *tokenBuffer, unsigned short token )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (token==PROC) || (token==GOTO) || (token==GOSUB) ) 
+	if ( (token==token_proc) || (token==token_goto) || (token==token_gosub) ) 
 	{
 
 		for(;;)
@@ -291,7 +289,7 @@ exit_on_for_loop:
 
 			switch (token)
 			{
-				case GOTO:	
+				case token_goto:	
 
 						dprintf("--GOTO--\n");
 
@@ -303,7 +301,7 @@ exit_on_for_loop:
 						}
 						break;
 
-				case GOSUB:	
+				case token_gosub:	
 
 						dprintf("--GOSUB--\n");
 
@@ -315,7 +313,7 @@ exit_on_for_loop:
 						}
 						break;
 
-				case PROC:
+				case token_proc:
 
 						dprintf("--PROC--\n");
 
