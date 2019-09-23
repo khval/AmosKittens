@@ -22,4 +22,6 @@ char *menuMenuX(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuY(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuActive(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuKey(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer);
 

@@ -563,3 +563,31 @@ char *menuMenuKey(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	uint16_t next_token  = *((uint16_t *) tokenBuffer) ;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (next_token)
+	{
+		case token_goto:
+			tokenBuffer+=2;
+			break;
+		case token_gosub:
+			tokenBuffer+=2;
+			break;
+		case token_proc:
+			tokenBuffer+=2;
+			break;
+		default:
+			setError(22, tokenBuffer);
+	}
+
+//	stackCmdNormal( _menuOnMenu, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	return tokenBuffer;
+}

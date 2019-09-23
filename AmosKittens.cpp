@@ -859,6 +859,7 @@ struct nativeCommand nativeCommands[]=
 	{0x0140, "Start", 0, bankStart },
 	{0x014C, "Length", 0, bankLength },
 	{0x015A,"Doke",0,machineDoke},
+	{0x017A,"On Menu On",0,menuOnMenuOn },
 	{0x019C, "Every On", 0, cmdEveryOn },
 	{0x01AA, "Every Off", 0, cmdEveryOff },
 	{0x01C8,"Logic",0,gfxLogic },	// current screen
@@ -884,7 +885,8 @@ struct nativeCommand nativeCommands[]=
 	{0x02C6, "Then",0,cmdThen },
 	{0x02D0, "Else",2,cmdElse },
 	{0x02DA, "End If",0,cmdEndIf },
-	{0x02E6, "on error", 0, errOnError },
+	{0x02E6, "On error", 0, errOnError },
+	{0x0308, "On menu", 0, menuOnMenu },
 	{0x0316, "On", 4, cmdOn },
 	{0x031E, "Resume Label", 0, errResumeLabel },
 	{0x0330, "Resume", 0, errResume }, 
