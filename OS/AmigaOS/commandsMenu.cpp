@@ -563,27 +563,83 @@ char *menuMenuKey(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+
+char *onMenuTokenBuffer = NULL;
+uint16_t onMenuToken = 0;
+
 char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	uint16_t next_token  = *((uint16_t *) tokenBuffer) ;
+	struct reference *ref = NULL;
+	uint16_t next_token  = NEXT_TOKEN(tokenBuffer) ;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	switch (next_token)
+	onMenuTokenBuffer = 0;
+	onMenuToken = next_token;
+	tokenBuffer +=2;
+
+	switch (onMenuToken)
 	{
 		case token_goto:
-			tokenBuffer+=2;
-			break;
 		case token_gosub:
-			tokenBuffer+=2;
-			break;
 		case token_proc:
-			tokenBuffer+=2;
+			onMenuTokenBuffer = tokenBuffer;
 			break;
-		default:
+		default:		// return if error.
 			setError(22, tokenBuffer);
+			return tokenBuffer;
 	}
 
-//	stackCmdNormal( _menuOnMenu, tokenBuffer );
+	for(;;)	// skip the on menu options.
+	{	
+		next_token = NEXT_TOKEN(tokenBuffer);
+
+		switch (next_token)
+		{
+			case 0x0006:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x0012:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x0018:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x001E:
+			case 0x0036:
+			case 0x003E:
+				tokenBuffer += 6;	// token + data
+				break;
+
+			case 0x005C:
+				tokenBuffer +=2;
+				break;
+
+			case 0x0000:	// exit at end of list..
+				tokenBuffer +=6;
+				goto exit_on_for_loop;
+
+
+			case 0x0054:
+				tokenBuffer +=2;
+
+			default: 
+				goto exit_on_for_loop;
+		}
+	}
+
+exit_on_for_loop:
+
+
 	return tokenBuffer;
 }
 
