@@ -18,8 +18,8 @@ A small document describing how some commands works under Amos Kittens.
 
 **Screen Colour**
 
-	Will always return 256 colors, even if opened screens with just 8 colors. this not bug, 
-	its becouse Amos Kittens can only use chunky mode, and it is 8bit.
+	Will always return 256 colors, even if you have opened screens with just 8 colors. this not bug, 
+	it's becouse Amos Kittens can only use chunky mode, and it is 8bit.
 
 
 
