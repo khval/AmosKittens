@@ -29,6 +29,9 @@ Amos developers:
 You can start using this thing for small text adventures, quiz games, or something like that. snake games and other simple games.
 Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
 
+Please also read the document describing how Amos Kitten commands works.
+https://github.com/khval/AmosKittens/blob/master/COMMANDS.md
+
 To start a game you type:
 AmosKittens [dir]/[filename.amos]
   
