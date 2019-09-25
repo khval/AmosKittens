@@ -146,8 +146,13 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+extern struct amos_selected _selected_;
+extern int getMenuEvent();		// is atomic
+extern bool onMenuEnabled;
+
 void __wait_vbl()
 {
+
 	engine_lock();
 	if (bobUpdateNextWait)
 	{
@@ -172,9 +177,22 @@ void __wait_vbl()
 #endif
 }
 
+extern char *onMenuTokenBuffer ;
+extern uint16_t onMenuToken ;
+extern char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned short token );
 
 char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	if (onMenuEnabled)
+	{
+		if (getMenuEvent())
+		{
+			char *ret;
+			ret  = execute_on( _selected_.menu +1, onMenuTokenBuffer , tokenBuffer, onMenuToken );
+			if (ret) tokenBuffer = ret - 2;		// +2 will be added on exit.
+		}
+	}
+
 	__wait_vbl();
 
 	return tokenBuffer;

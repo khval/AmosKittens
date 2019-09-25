@@ -2154,8 +2154,14 @@ char *cmdEvery(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+extern struct amos_selected _selected_;
+extern int getMenuEvent();		// is atomic
+extern bool onMenuEnabled;
+
 char *_cmdWait( struct glueCommands *data, int nextToken )
 {
+	int w = getStackNum(stack);
+
 	engine_lock();
 	if (bobUpdateNextWait)
 	{
@@ -2164,13 +2170,32 @@ char *_cmdWait( struct glueCommands *data, int nextToken )
 	}
 	engine_unlock();
 
-	Delay( getStackNum(stack) / 2 );
+	// delay 	1 x tick = 20ms,  (20ms * 50 = 1000 ms)
+	// wait 50 = 1 sec, see AMOS manual.
+
+	Delay(w);
+
 	return  NULL ;
 }
+
+extern char *onMenuTokenBuffer ;
+extern uint16_t onMenuToken ;
+extern char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned short token );
 
 char *cmdWait(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (onMenuEnabled)
+	{
+		if (getMenuEvent())
+		{
+			char *ret;
+			ret  = execute_on( _selected_.menu +1, onMenuTokenBuffer , tokenBuffer, onMenuToken );
+			if (ret) tokenBuffer = ret - 2;		// +2 will be added on exit.
+		}
+	}
+
 	stackCmdNormal( _cmdWait, tokenBuffer );
 
 	return tokenBuffer;

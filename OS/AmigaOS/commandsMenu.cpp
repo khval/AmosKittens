@@ -59,6 +59,20 @@ char *set_menu_item ( struct glueCommands *data, int nextToken )
 
 struct amos_selected _selected_;
 
+int getMenuEvent()
+{
+	int ret = 0;
+	engine_lock();
+	if (!amosSelected.empty())
+	{
+		_selected_ = amosSelected[0];
+		amosSelected.erase(amosSelected.begin());
+		ret = -1;
+	}
+	engine_unlock();
+	return ret;
+}
+
 char *_menuChoice( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -71,12 +85,7 @@ char *_menuChoice( struct glueCommands *data, int nextToken )
 		case 1:
 			if (kittyStack[stack].type == type_none)
 			{
-				if (!amosSelected.empty())
-				{
-					_selected_ = amosSelected[0];
-					amosSelected.erase(amosSelected.begin());
-					ret = -1;
-				}
+				ret = getMenuEvent();
 			}
 			else
 			{
@@ -316,9 +325,6 @@ char *menuMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
 		amiga_menu = CreateMenusA( amiga_menu_data,NULL);
 		attach_menu(My_Window);
 		SetWindowAttrs( My_Window, WA_RMBTrap, FALSE, TAG_END );
-
-		printf("well done\n");
-		getchar();
 	}
 
 	return tokenBuffer;
@@ -566,6 +572,60 @@ char *menuMenuKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *onMenuTokenBuffer = NULL;
 uint16_t onMenuToken = 0;
+bool onMenuEnabled = false;
+
+char *get_on_option(char *tokenBuffer, int num)
+{
+	uint16_t next_token;
+	struct reference *ref = NULL;
+
+	if (num == 0) return tokenBuffer;
+
+	for(;;)	// skip the on menu options.
+	{	
+		next_token = NEXT_TOKEN(tokenBuffer);
+
+		switch (next_token)
+		{
+			case 0x0006:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x0012:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x0018:
+				tokenBuffer +=2;
+				ref = (struct reference *) (tokenBuffer);
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+				break;
+
+			case 0x001E:
+			case 0x0036:
+			case 0x003E:
+				tokenBuffer += 6;	// token + data
+				break;
+
+			case 0x005C:
+				num --;
+				tokenBuffer +=2;
+				return tokenBuffer;
+
+			case 0x0000:	// exit at end of list..
+			case 0x0054:
+			default: 
+				return NULL;
+		}
+	}
+
+	return NULL;
+
+}
 
 char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer )
 {
@@ -625,12 +685,11 @@ char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer )
 				break;
 
 			case 0x0000:	// exit at end of list..
-				tokenBuffer +=6;
+				tokenBuffer +=4;		// +2 is added automatic on exit.
 				goto exit_on_for_loop;
 
-
 			case 0x0054:
-				tokenBuffer +=2;
+				// +2 is added automatic on exit.
 
 			default: 
 				goto exit_on_for_loop;
@@ -645,5 +704,6 @@ exit_on_for_loop:
 
 char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	onMenuEnabled = true;
 	return tokenBuffer;
 }
