@@ -24,4 +24,6 @@ char *menuMenuActive(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuMenuKey(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuOnMenu(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuOnMenuOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuOnMenuDel(struct nativeCommand *cmd, char *tokenBuffer);
 

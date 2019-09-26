@@ -707,3 +707,17 @@ char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer )
 	onMenuEnabled = true;
 	return tokenBuffer;
 }
+
+char *menuOnMenuOff(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	onMenuEnabled = false;
+	return tokenBuffer;
+}
+
+char *menuOnMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	onMenuTokenBuffer = NULL;
+	return tokenBuffer;
+}
+
+
