@@ -57,7 +57,7 @@ work, but there is DSI error, due to mystery mem corruption.
 works,
 
 **Sprite_Plotter.AMOS**
-error at line number: 76
+works (just make sure you pick vaild sprite, no error handling in this example.)
 
 **Squash_A_Bob.AMOS**
 works.
