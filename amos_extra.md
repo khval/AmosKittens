@@ -47,7 +47,7 @@ ERROR: Undefined procedure
 ERROR: Undefined procedure
 
 **Scrolling_text_demo.AMOS**
-error at line number: 23
+DSI error at line 71, Screen Copy
 
 **Sonix.AMOS**
 work, but there is DSI error, due to mystery mem corruption.
