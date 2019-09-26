@@ -2214,6 +2214,7 @@ char *_set_timer( struct glueCommands *data, int nextToken )
 
 char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	unsigned short next_token = *((short *) tokenBuffer);
 	unsigned int ms_before;
 	unsigned int ms_after;
 
@@ -2231,6 +2232,8 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	ms_after = (timer_after.tv_sec * 1000) + (timer_after.tv_usec/1000);
 
 	setStackNum( ((ms_after - ms_before) / 20) + timer_offset );		// 1/50 sec = every 20 ms
+	kittyStack[stack].state = state_none;
+	flushCmdParaStack( next_token );
 
 	return tokenBuffer;
 }
