@@ -1,3 +1,9 @@
+**Compatibility list**
+
+This list is to keep track of bugs / incompatibility issues, 
+the list is used to track down bugs in Amos Kittens, 
+to find out way Amos Kittens reports errors, when Amos Pro does not.
+
 **AMAL_Editor.AMOS**
 ERROR: Undefined procedure
 
