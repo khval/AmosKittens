@@ -33,6 +33,7 @@ works
 
 **Keyboard_Definer.AMOS**
 error at line number: 23
+(A4 should have keyboard layout, when Amos Kittens starts.)
 
 **Map_Editor.AMOS**
 ERROR: Undefined procedure
