@@ -459,7 +459,6 @@ char *amalAmalOn(struct nativeCommand *cmd, char *tokenBuffer)
 char *_amalAmalOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -479,7 +478,6 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
 						freeAmalBuf( &item -> amalProg );
-						success = true;
 					}
 					engine_unlock();
 				}
@@ -496,7 +494,6 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
 						freeAmalBuf( &item -> amalProg );
-						success = true;
 					}
 					engine_unlock();
 				}
@@ -506,10 +503,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
-	if (success == false) setError(22,data->tokenBuffer);
-
 	popStack( stack - data->stack );
-
 	return NULL;
 }
 
