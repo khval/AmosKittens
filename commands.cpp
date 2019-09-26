@@ -1536,6 +1536,7 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	args = stack - read_stack +1;
+	token_is_fresh = false;
 
 	// the idea, stack to be read is stored first,
 
