@@ -1,0 +1,9 @@
+**Amal_Editor.AMOS**
+**Amal_Editor_Fixed.AMOS**
+**Disc_Manager.AMOS**
+**Font8x8_Editor.AMOS**
+**IFF_Compactor.AMOS**
+**Menu_Editor.AMOS**
+**Object_Editor.AMOS**
+**Resource_Bank_Maker.AMOS**
+**Sample_Bank_Maker.AMOS**
