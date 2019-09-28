@@ -1231,6 +1231,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1914,"Parent",0,discParent },
 	{0x1920,"Rename",0,discRename },
 	{0x1930,"Dfree",0,discKill },
+	{0x193C,"Drive",0,discDrive },
 	{0x1948,"Field f,size as nane$,...", 0, discField },
 	{0x1954,"Fsel$",0,discFselStr },		// found in Help_72.amos
 	{0x196C,"Fsel$",0,discFselStr },

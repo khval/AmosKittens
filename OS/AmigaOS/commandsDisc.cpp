@@ -206,6 +206,8 @@ char *_discRename( struct glueCommands *data, int nextToken )
 	int args = stack - data -> stack +1;
 	int32 success = false;
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (args == 2)
 	{
 		struct stringData *oldName = getStackString( stack - 1 );
@@ -239,6 +241,8 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	struct stringData *_title_ = NULL;
 	struct stringData *_title2_ = NULL;
 	struct stringData *_title_temp_ = NULL;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
@@ -2012,4 +2016,70 @@ char *discRun(struct nativeCommand *disc, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+//---
+
+int have_drive( struct stringData *name)
+{
+	char buffer[1000];
+	struct DosList *dl;
+	ULONG flags;
+
+	flags = LDF_DEVICES|LDF_READ;
+	dl = LockDosList(flags);
+
+	devList.clear();
+
+	while(( dl = NextDosEntry(dl,flags) ))
+	{
+		if (dl -> dol_Port)
+		{
+			if (DevNameFromPort(dl -> dol_Port,  buffer, sizeof(buffer), TRUE))
+			{
+				if (strcasecmp( &name -> ptr , buffer ) == 0 )
+				{
+					UnLockDosList(flags);
+					return -1;
+				}
+			}
+		}
+	}
+
+	UnLockDosList(flags);
+	return 0;
+}
+
+
+char *_discDrive( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack +1;
+	struct stringData *volumeName;
+	int ret = 0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			volumeName = getStackString( stack );
+			if (volumeName)
+			{
+				ret = have_drive( volumeName );
+			}
+			setStackNum(ret);
+
+			break;
+		default:
+			popStack( stack - data -> stack );
+			setError(23,data-> tokenBuffer);
+			break;
+	}
+
+	return NULL;
+}
+
+char *discDrive(struct nativeCommand *disc, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _discDrive, tokenBuffer );
+	return tokenBuffer;
+}
 
