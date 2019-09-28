@@ -10,7 +10,7 @@ Work, (need to retest)
 **Magic_Forest.AMOS**
 
 There are some problems with AMAL.
-the intro screen used to look ok, but show got broken.
+the intro screen used to look ok, but some how got broken.
 
 **Number_Leap.AMOS**
 
