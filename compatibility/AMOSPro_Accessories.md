@@ -5,15 +5,15 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor.AMOS**
 
-Error: undefined procedure
+missing token: 0x084E - command "Menu Key"
 
 **Amal_Editor_Fixed.AMOS**
 
-Error: undefined procedure
+missing token: 0x084E - command "Menu Key"
 
 **Disc_Manager.AMOS**
 
-Error: undefined procedure
+missing token: 0x2970 - command "Dev Open"
 
 **Font8x8_Editor.AMOS**
 
@@ -31,7 +31,7 @@ Syntax error at line: 9.
 
 **Object_Editor.AMOS**
 
-Error: undefined procedure
+missing token: 0x1B7A - command "Limit Bob"
 
 **Resource_Bank_Maker.AMOS**
 
