@@ -1,6 +1,6 @@
 This result of trying to run different .amos files, on Amos Kittens, there is stuff missing, the list is to keep track of problems with etch .amos program, so we can fix problems we have.
 
-Error: undefined procedure --> Normaly there is missing token, need to check again, too see..
+Error: undefined procedure --> Normaly there is a missing token (mssing command), need to check again, too see..
 
 
 **Amal_Editor.AMOS**
