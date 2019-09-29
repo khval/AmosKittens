@@ -5,7 +5,8 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor.AMOS**
 
-missing token: 0x084E - command "Menu Key"
+Illegal function call at line: 475
+("Menu Del" command)
 
 **Amal_Editor_Fixed.AMOS**
 
