@@ -992,6 +992,7 @@ struct nativeCommand nativeCommands[]=
 	{0x081E,"Set Menu",0,menuSetMenu },
 	{0x0832,"Menu X",0,menuMenuX },
 	{0x0840,"Menu Y",0,menuMenuY },
+	{0x084E,"Menu Key",0,menuMenuKey },
 	{0x08EA,"Menu Active",0,menuMenuActive },
 	{0x08FC,"Menu Inactive",0,menuMenuInactive },
 	{0x0956,"Menu Del",0,menuMenuDel },
