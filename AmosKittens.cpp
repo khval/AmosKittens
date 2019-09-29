@@ -1296,6 +1296,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1F52,"Anim",0,amalAnim },
 	{0x1F94,"Channel",0,amalChannel },
 	{0x1FA2,"Amreg",0,amalAmReg },
+	{0x1FB0,"Amreg",0,amalAmReg },
 	{0x1FBC,"Amal On",0,amalAmalOn },
 	{0x1F30,"Amal On",0,amalAmalOn },
 	{0x1FCA,"Amal On",0,amalAmalOn },
@@ -1304,7 +1305,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1FEA,"Amal Freeze",0,amalAmalFreeze },
 	{0x1FFC,"Amal Freeze",0,amalAmalFreeze },
 	{0x2004,"AmalErr",0,amalAmalErr },
-	{0x2012,"Amal",0,amalAmal },
+	{0x2012,"Amal",0,amalAmal },		// Amal n,s$
+	{0x2020,"Amal",0,amalAmal },		// Amal n,s$ to n
 	{0x204A,"Synchro On",0,ocSynchroOn },
 	{0x205A,"Synchro Off",0,ocSynchroOff },
 	{0x206C,"Synchro",0,ocSynchro },
