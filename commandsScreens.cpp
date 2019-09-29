@@ -1450,5 +1450,10 @@ char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
+char *gfxScreenSize(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	setError(16, tokenBuffer);	// should not be called, 
+	return tokenBuffer;
+}
 

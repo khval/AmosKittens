@@ -19,6 +19,7 @@ char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenOffset(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenClone(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxScreenSize(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxGetScreen(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer);
