@@ -13,7 +13,7 @@ Error: No THEN in structured test.
 
 **Menu_Editor.AMOS**
 
-Pass1 error: Undefined procedure. (maybe file is corrupt)
+missing token: 0x0882 - "Menu tline" command
 
 **Sample_Double_Buffering.AMOS**
 
