@@ -57,6 +57,6 @@ char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxHslider(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfsVslider(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer);
-char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer);
+
+
 

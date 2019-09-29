@@ -13,6 +13,7 @@ int YHard_formula( struct retroScreen *screen, int y );
 
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxHires(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenClose(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenDisplay(struct nativeCommand *cmd, char *tokenBuffer);
@@ -42,3 +43,4 @@ char *gfxYHard(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenBase(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer);

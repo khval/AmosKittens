@@ -2208,18 +2208,4 @@ char *gfxSetSlider(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setError(1000,tokenBuffer);
-	return tokenBuffer;
-}
-
-char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum(retroInterlaced);
-	return tokenBuffer;
-}
-
 
