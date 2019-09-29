@@ -1,6 +1,6 @@
 **Font8x8_Editor.AMOS**
 
-missing token 0e08
+missing token 0e08 - command "Phybase"
 
 **IFF_Compactor.AMOS**
 
