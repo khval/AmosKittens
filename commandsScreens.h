@@ -44,3 +44,5 @@ char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxScreenBase(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer);
 char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer);
+char *gfxDualPriority(struct nativeCommand *cmd, char *tokenBuffer);
+
