@@ -15,6 +15,8 @@
 #include "amalcompiler.h"
 #include "channel.h"
 #include "debug.h"
+#include "commandsDevice.h"
+
 
 extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
@@ -32,6 +34,7 @@ extern std::vector<struct amos_selected> amosSelected;
 extern std::vector<struct defFn> defFns;
 extern std::vector<struct kittyBank> kittyBankList;
 extern std::vector<struct wave *> waves;
+extern std::vector<struct kittyDevice> deviceList;
 
 
 void clean_up_defFns()
@@ -190,6 +193,15 @@ void clean_up_banks()
 	}
 }
 
+void clean_up_devices()
+{
+	while (deviceList.size())
+	{
+		kFreeDevice( deviceList[0].id );
+	}
+}
+
+
 void clean_up_waves()
 {
 	while (waves.size())
@@ -225,6 +237,10 @@ void clean_up_user_banks()
 void clean_up_special()
 {
 	int n;
+
+	dprintf("clean up devices\n");
+
+	clean_up_devices();
 
 	dprintf("clean up defFns\n");
 

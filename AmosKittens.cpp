@@ -58,6 +58,7 @@ extern char *asl();
 #include "commandsMenu.h"
 #include "commandsFonts.h"
 #include "commandsgui.h"
+#include "commandsDevice.h"
 #include "debug.h"
 #include "kittyErrors.h"
 #include "pass1.h"
@@ -155,6 +156,7 @@ std::vector<struct label> labels;	// 0 is not used.
 std::vector<struct lineAddr> linesAddress;
 std::vector<struct defFn> defFns;
 std::vector<struct kittyBank> kittyBankList;
+std::vector<struct kittyDevice> deviceList;
 
 int global_var_count = 0;
 int labels_count = 0;
@@ -1430,14 +1432,14 @@ struct nativeCommand nativeCommands[]=
 	{0x2946,"Err$" ,0, errErrStr},
 	{0x2952,"Assign",0,discAssign },
 	{0x2962,"Errtrap",0,errErrTrap },	// AmosPro command
-//	{0x2970,"Dev Open",0,discDevOpen },
-//	{0x2988,"Dev Close"0,discDevClose },
-//	{0x2998,"Dev Close",0,discDevClose },
-//	{0x29A0,"Dev Base",0,discDevBase },	
-//	{0x29B0,"Dev Do",0,discDevDo },
-//	{0x29C0,"Dev Send",0,discDevSend },
-//	{0x29D2,"Dev Abort",0,discDevAbort },
-//	{0x29E2,"Dev Check",0,discDevCheck },
+	{0x2970,"Dev Open",0,deviceDevOpen },
+	{0x2988,"Dev Close",0,deviceDevClose },
+	{0x2998,"Dev Close",0,deviceDevClose },
+	{0x29A0,"Dev Base",0,deviceDevBase },	
+	{0x29B0,"Dev Do",0,deviceDevDo },
+	{0x29C0,"Dev Send",0,deviceDevSend },
+	{0x29D2,"Dev Abort",0,deviceDevAbort },
+//	{0x29E2,"Dev Check",0,deviceDevCheck },
 //	{0x29F2,"Lib Open",0,discLibOpen },
 //	{0x2A06,"Lib Close",0,discLibClose },
 //	{0x2A16,"Lib Close",0,discLibClose },

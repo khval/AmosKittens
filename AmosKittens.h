@@ -424,6 +424,15 @@ struct wave
 	struct sampleHeader sample;	// this one most be last
 };
 
+struct kittyDevice
+{
+	int id;
+	struct MsgPort *port;
+	struct IORequest *io;
+	bool sendt;
+	int error;
+};
+
 #define stackIfSuccess()					\
 	cmdTmp[cmdStack].cmd = _ifSuccess;		\
 	cmdTmp[cmdStack].tokenBuffer = NULL;	\
