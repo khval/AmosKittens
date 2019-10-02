@@ -2027,8 +2027,6 @@ int have_drive( struct stringData *name)
 	flags = LDF_DEVICES|LDF_READ;
 	dl = LockDosList(flags);
 
-	devList.clear();
-
 	while(( dl = NextDosEntry(dl,flags) ))
 	{
 		if (dl -> dol_Port)
