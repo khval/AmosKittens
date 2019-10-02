@@ -2020,7 +2020,7 @@ char *discRun(struct nativeCommand *disc, char *tokenBuffer)
 
 int have_drive( struct stringData *name)
 {
-	char buffer[1000];
+	char buffer[256];
 	struct DosList *dl;
 	ULONG flags;
 
