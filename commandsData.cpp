@@ -1074,7 +1074,7 @@ char *_divData( struct glueCommands *data, int nextToken )
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
-	bool success = FALSE;
+	int error = 0;
 
 	if (stack==0) 
 	{
@@ -1092,44 +1092,52 @@ char *_divData( struct glueCommands *data, int nextToken )
 
 	if (type0 == type_float) 
 	{
+		double d;
 		if (type1 == type_int)
 		{
-			dprintf(" %f / %d\n", item0->decimal.value , item1->integer.value );
-			setStackDecimal( item0->decimal.value / (double) item1->integer.value );
-			success = TRUE;
+			d = (double) item1->integer.value ;
 		}
 		else if (type1 == type_float)
 		{
-			dprintf(" %f / %f\n", item0->decimal.value , item1->decimal.value );
-			setStackDecimal( item0->decimal.value / item1->decimal.value );
-			success = TRUE;
+			d = item1->decimal.value ;
 		}
+
+		if (d)	
+		{
+			setStackDecimal( item0->decimal.value / d );
+			correct_for_hidden_sub_data();
+			return NULL;
+		}
+		else error = 20;
 	}
 	else if (type0 == type_int) 
 	{
 		if (type1 == type_int)
 		{
-			dprintf(" %d / %d\n", item0->integer.value , item1->integer.value );
-			setStackNum( item0->integer.value / item1->integer.value );
-			success = TRUE;
+			int d = item1->integer.value;
+			if (d)
+			{
+				setStackNum( item0->integer.value / d );
+				correct_for_hidden_sub_data();
+				return NULL;
+			}
+			else error = 20;
 		}
 		else if (type1 == type_float)
 		{
-			dprintf(" %d / %f\n", item0->integer.value , item1->decimal.value );
-			setStackDecimal( (double) item0->integer.value / item1->decimal.value );
-			success = TRUE;
+			double d = item1->decimal.value;
+			if (d)
+			{
+				setStackDecimal( (double) item0->integer.value / d );
+				correct_for_hidden_sub_data();
+				return NULL;
+			}
+			else error = 20;
 		}
 	}
 
 	correct_for_hidden_sub_data();
-
-	if (success == FALSE)
-	{
-		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
-		setError(ERROR_Type_mismatch,data->tokenBuffer);
-		return NULL;
-	}
-
+	setError(error ? error : ERROR_Type_mismatch,data->tokenBuffer);
 	return NULL;
 }
 
