@@ -306,7 +306,8 @@ char *_errErrStr( struct glueCommands *data, int nextToken )
 				return NULL;
 	}
 
-	for (struct error *e = errorsRunTime; *e->errorText;e++ )
+
+	for (struct error *e = errorsRunTime; e->errorText;e++ )
 	{
 		if (e -> errorCode == err )
 		{
