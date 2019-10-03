@@ -268,6 +268,7 @@ char *errTrap(nativeCommand *err, char *tokenBuffer)
 	onErrorTemp = onError;
 	onError = onErrorIgnore;
 	stackCmdFlags( _errTrap, tokenBuffer, cmd_onNextCmd | cmd_onEol );
+	kittyError.trapCode = 0;
 	return tokenBuffer;
 }
 
@@ -282,9 +283,7 @@ char *errErrn(struct nativeCommand *cmd, char *tokenBuffer)
 char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	setStackNum( kittyError.trapCode );
-	kittyError.trapCode = 0;
 	return tokenBuffer;
 }
 
