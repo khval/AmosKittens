@@ -213,7 +213,22 @@ char *_deviceDevBase( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			break;
+			{
+				int id = getStackNum( stack );
+				struct kittyDevice *dev;
+
+				dev = kFindDevice( id );
+				if (dev)
+				{
+					setStackNum( (int) dev -> io );
+					return NULL;
+				}
+				else
+				{
+					setError( 141 , data -> tokenBuffer );	// Device not opened
+					return NULL;
+				}
+			}
 		default:
 			popStack( stack - data -> stack );
 			setError(23,data-> tokenBuffer);
@@ -226,9 +241,52 @@ char *_deviceDevBase( struct glueCommands *data, int nextToken )
 char *deviceDevBase(struct nativeCommand *device, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _deviceDevBase, tokenBuffer );
+	stackCmdParm( _deviceDevBase, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_deviceDevCheck( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack +1;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			{
+				int id = getStackNum( stack );
+				struct kittyDevice *dev;
+
+				dev = kFindDevice( id );
+				if (dev)
+				{
+					
+					setStackNum( (int) CheckIO( dev -> io ));
+					return NULL;
+				}
+				else
+				{
+					setError( 141 , data -> tokenBuffer );	// Device not opened
+					return NULL;
+				}
+			}
+		default:
+			popStack( stack - data -> stack );
+			setError(23,data-> tokenBuffer);
+			break;
+	}
+
+	return NULL;
+}
+
+char *deviceDevCheck(struct nativeCommand *device, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _deviceDevCheck, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 char *_deviceDevDo( struct glueCommands *data, int nextToken )
 {
@@ -239,6 +297,22 @@ char *_deviceDevDo( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
+			{
+				int id = getStackNum( stack-1 );
+				int ioCmd = getStackNum( stack );
+				struct kittyDevice *dev;
+
+				dev = kFindDevice( id );
+				if (dev)
+				{
+					if (dev ->io)
+					{
+						dev -> io->io_Command = ioCmd;
+						DoIO( dev -> io );
+					}
+				}
+			}
+
 			break;
 		default:
 			popStack( stack - data -> stack );
@@ -263,14 +337,31 @@ char *_deviceDevSend( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:
+		case 2:
+			{
+				int id = getStackNum( stack-1 );
+				int ioCmd = getStackNum( stack );
+				struct kittyDevice *dev;
+
+				dev = kFindDevice( id );
+				if (dev)
+				{
+					if (dev ->io)
+					{
+						dev -> io->io_Command = ioCmd;
+						SendIO( dev -> io );
+						dev -> sendt = true;
+					}
+				}
+			}
 			break;
 		default:
-			popStack( stack - data -> stack );
+
 			setError(23,data-> tokenBuffer);
 			break;
 	}
 
+	popStack( stack - data -> stack );
 	return NULL;
 }
 
@@ -290,7 +381,29 @@ char *_deviceDevAbort( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			break;
+			{
+				int id = getStackNum( stack );
+				struct kittyDevice *dev;
+
+				dev = kFindDevice( id );
+				if (dev)
+				{
+					if (dev -> sendt)
+					{
+						dev -> sendt = false;
+						if (dev ->io)
+						{
+							AbortIO( dev -> io );
+							WaitIO( dev -> io );
+						}
+						return NULL;
+					}
+				}
+
+				setError( 141 , data -> tokenBuffer );	// Device not opened
+				return NULL;
+			}
+
 		default:
 			popStack( stack - data -> stack );
 			setError(23,data-> tokenBuffer);

@@ -20,7 +20,7 @@ char *deviceDevBase(struct nativeCommand *device, char *tokenBuffer);
 char *deviceDevDo(struct nativeCommand *device, char *tokenBuffer);
 char *deviceDevSend(struct nativeCommand *device, char *tokenBuffer);
 char *deviceDevAbort(struct nativeCommand *device, char *tokenBuffer);
-
+char *deviceDevCheck(struct nativeCommand *device, char *tokenBuffer);
 
 
 
