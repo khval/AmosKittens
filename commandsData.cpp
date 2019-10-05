@@ -828,8 +828,9 @@ bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 	if ((string)&&(remove))
 	{
 		int new_len = string->size;
+
 		s=d=&string -> ptr;
-		for(spos=0;spos < (new_len - remove->size) ;spos++)
+		for(spos=0;spos < new_len ;spos++)
 		{
 			if (memcmp(s,&remove -> ptr,remove -> size)==0) 
 			{		
@@ -838,7 +839,7 @@ bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 				printf("removed %d\n",remove -> size);
 			}
 
-			*d++=*s++;
+			if (spos < new_len) *d++=*s++;
 		}
 		*d = 0;
 
