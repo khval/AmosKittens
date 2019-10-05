@@ -1,6 +1,6 @@
 **Boot_Disk_Maker.AMOS**
 
-missing token 258C - command "@_apml_@"
+missing token 258C - command "@__apml__@"
 
 **Editor_Config.AMOS**
 
