@@ -1,6 +1,6 @@
 **Boot_Disk_Maker.AMOS**
 
-missing token 2970 - command "Dev Open"
+missing token 258C - command "@_apml_@"
 
 **Editor_Config.AMOS**
 
