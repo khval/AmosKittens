@@ -1717,6 +1717,121 @@ void renderWindow( struct retroScreen *screen, struct retroTextWindow *textWindo
 	retroBAR( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,screen -> paper);
 }
 
+
+void __gfx_border1( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	x0+=3;
+	y0+=3;
+	x1-=2;
+	y1-=2;
+
+	retroLine( screen, screen -> double_buffer_draw_frame,x0+1,y0,x1-1,y0, 2 );
+	retroLine( screen, screen -> double_buffer_draw_frame,x0+1,y1,x1-1,y1, 2 );
+
+	retroLine( screen, screen -> double_buffer_draw_frame,x0,y0+1,x0,y1-1, 2 );
+	retroLine( screen, screen -> double_buffer_draw_frame,x1,y0+1,x1,y1-1, 2 );
+}
+
+void __gfx_border2( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+}
+
+
+#define _move(xx,yy)  	x0+=xx; y0+=yy; x1-=xx; y1-=yy
+
+void __gfx_border3( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	_move(2,2);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(2,2);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+}
+
+void __gfx_border4( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	int x,y;
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(2,2);
+	for (x=x0;x<x1;x+=2)
+	{
+		retroPixel(screen, screen ->Memory[ screen -> double_buffer_draw_frame ],x,y0, 2);
+		retroPixel(screen, screen ->Memory[ screen -> double_buffer_draw_frame ],x,y1, 2);
+	}
+	for (y=y0;y<y1;y+=2)
+	{
+		retroPixel(screen, screen ->Memory[ screen -> double_buffer_draw_frame ],x0,y, 2);
+		retroPixel(screen, screen ->Memory[ screen -> double_buffer_draw_frame ],x1,y, 2);
+	}
+	_move(2,2);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+}
+
+void __gfx_border5( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	_move(2,2);
+//	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+
+	retroLine( screen, screen -> double_buffer_draw_frame,x0+1,y0,x1-1,y0, 2 );
+	retroLine( screen, screen -> double_buffer_draw_frame,x0+1,y1,x1-1,y1, 2 );
+	retroLine( screen, screen -> double_buffer_draw_frame,x0,y0+1,x0,y1-1, 2 );
+	retroLine( screen, screen -> double_buffer_draw_frame,x1,y0+1,x1,y1-1, 2 );
+
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+}
+
+void __gfx_border6( struct retroScreen *screen, int x0,int y0,int x1,int y1)
+{
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
+	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+
+	_move(2,2);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(2,2);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+	_move(1,1);
+	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
+}
+
+
+
 void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *textWindow )
 {
 	int x0,y0,x1,y1;
@@ -1729,24 +1844,19 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 
 	if (textWindow -> border == 0) return;
 
-	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y0+7,screen -> paper);
-	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y0,x0+7,y1,screen -> paper);
-	retroBAR( screen, screen -> double_buffer_draw_frame,x1-7,y0,x1,y1,screen -> paper);
-	retroBAR( screen, screen -> double_buffer_draw_frame,x0,y1-7,x1,y1,screen -> paper);
+	switch (textWindow -> border)
+	{
+		case 0:
+				return;
+		case 1:	__gfx_border1( screen, x0,y0,x1,y1);		break;
+		case 2:	__gfx_border2( screen, x0,y0,x1,y1);		break;
+		case 3:	__gfx_border3( screen, x0,y0,x1,y1);		break;
+		case 4:	__gfx_border4( screen, x0,y0,x1,y1);		break;
+		case 5:	__gfx_border5( screen, x0,y0,x1,y1);		break;
+		case 6:	__gfx_border6( screen, x0,y0,x1,y1);		break;
+		default: 	__gfx_border1( screen, x0,y0,x1,y1);		break;
+	}
 
-	x0+=2;
-	y0+=2;
-	x1-=2;
-	y1-=2;
-
-	retroBox( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1, 2 );
-	retroBox( screen, screen -> double_buffer_draw_frame,x0+1,y0+1,x1-1,y1-1, 2 );
-
-
-	x0-=2;
-	y0-=2;
-	x1+=2;
-	y1+=2;
 
 	_x = textWindow -> x + 2;
 	_y = textWindow -> y;
@@ -1777,6 +1887,7 @@ void renderWindowBorder( struct retroScreen *screen, struct retroTextWindow *tex
 	}
 }
 
+
 char *_textWindOpen( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1786,51 +1897,57 @@ char *_textWindOpen( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	screen = screens[current_screen];
-	if (screen)
+	switch (args)
 	{
-		printf("args: %d\n",args);
+		case 5:
+				id = getStackNum( stack -4);
+				x = getStackNum( stack -3 );
+				y = getStackNum( stack -2 );
+				w = getStackNum( stack -1 );
+				h = getStackNum( stack );
+				break;
 
-		switch (args)
-		{
-			case 5:
-					id = getStackNum( stack -4);
-					x = getStackNum( stack -3 );
-					y = getStackNum( stack -2 );
-					w = getStackNum( stack -1 );
-					h = getStackNum( stack );
+		case 6:
+				id = getStackNum( stack -5 );
+				x = getStackNum( stack -4 );
+				y = getStackNum( stack -3 );
+				w = getStackNum( stack -2 );
+				h = getStackNum( stack -1 );
+				b = getStackNum( stack );
+				break;	
 
-					textWindow = newTextWindow( screen, id );
-					break;
+		case 7:
+				id = getStackNum( stack -6 );
+				x = getStackNum( stack -5 );
+				y = getStackNum( stack -4 );
+				w = getStackNum( stack -3 );
+				h = getStackNum( stack -2 );
+				b = getStackNum( stack -1 );
+				s = getStackNum( stack );
+				break;
 
-			case 6:
-					id = getStackNum( stack -5 );
-					x = getStackNum( stack -4 );
-					y = getStackNum( stack -3 );
-					w = getStackNum( stack -2 );
-					h = getStackNum( stack -1 );
-					b = getStackNum( stack );
-
-					textWindow = newTextWindow( screen, id );
-					break;	
-
-			case 7:
-					id = getStackNum( stack -6 );
-					x = getStackNum( stack -5 );
-					y = getStackNum( stack -4 );
-					w = getStackNum( stack -3 );
-					h = getStackNum( stack -2 );
-					b = getStackNum( stack -1 );
-					s = getStackNum( stack );
-
-					textWindow = newTextWindow( screen, id );
-					break;
-
-			default:
-					setError(22,data-> tokenBuffer);
-		}
+		default:
+				setError(22,data-> tokenBuffer);
+				popStack( stack - data->stack );
+				return NULL;
 	}
 
+	if ((b<0)||(b>16))
+	{
+		setError(60,data-> tokenBuffer);
+		popStack( stack - data->stack );
+		return NULL;
+	}
+
+	screen = screens[current_screen];
+	if (screen == NULL)
+	{
+		setError(22,data-> tokenBuffer);
+		popStack( stack - data->stack );
+		return NULL;
+	}
+
+	textWindow = newTextWindow( screen, id );
 	if (textWindow)
 	{
 		textWindow -> x = x / 8;
