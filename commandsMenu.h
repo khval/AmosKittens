@@ -27,3 +27,6 @@ char *menuOnMenuOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuOnMenuOff(struct nativeCommand *cmd, char *tokenBuffer);
 char *menuOnMenuDel(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *menuMenuTLine(struct nativeCommand *cmd, char *tokenBuffer);
+char *menuMenuBar(struct nativeCommand *cmd, char *tokenBuffer);
+

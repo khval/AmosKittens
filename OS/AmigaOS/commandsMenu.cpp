@@ -722,4 +722,28 @@ char *menuOnMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_menuMenuTLine( struct glueCommands *data, int nextToken )	// menu style (just a dummy command)
+{
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *menuMenuTLine(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _menuMenuTLine, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_menuMenuBar( struct glueCommands *data, int nextToken )	// menu style (just a dummy command)
+{
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *menuMenuBar(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _menuMenuBar, tokenBuffer );
+	return tokenBuffer;
+}
+
 
