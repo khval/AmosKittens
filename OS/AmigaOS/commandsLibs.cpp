@@ -11,10 +11,14 @@
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
+#include <exec/emulation.h>
+#include <proto/dos.h>
+extern unsigned int regs[16];
 #endif
 
-#include "amosKittens.h"
 
+
+#include "amosKittens.h"
 
 extern std::vector<struct kittyLib> libsList;
 
@@ -22,24 +26,20 @@ extern std::vector<struct kittyLib> libsList;
 struct kittyLib *kFindLib( int id )
 {
 	unsigned int n;
-
 	for (n=0;n<libsList.size();n++)
 	{
 		if (libsList[n].id == id ) return &libsList[n];
 	}
-
 	return NULL;
 }
 
 int kFindLibIndex( int id )
 {
 	unsigned int n;
-
 	for (n=0;n<libsList.size();n++)
 	{
 		if (libsList[n].id == id ) return n;
 	}
-
 	return -1;
 }
 
@@ -143,14 +143,48 @@ char *libLibClose(struct nativeCommand *cmd, char *tokenBuffer)
 char *_libLibCall( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data -> stack + 1;
+	int id, libVec,ret;
+	struct kittyLib *lib;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
+		case 2:
+				id = getStackNum( stack-1);
+				libVec = getStackNum( stack);
+
+				lib = kFindLib( id );
+				if (lib)
+				{
+					ret = EmulateTags( 
+						lib -> base,
+						ET_Offset, libVec,
+						ET_RegisterD0,regs[0],
+						ET_RegisterD1,regs[1],
+						ET_RegisterD2,regs[2],
+						ET_RegisterD3,regs[3],
+						ET_RegisterD4,regs[4],
+						ET_RegisterD5,regs[5],
+						ET_RegisterD6,regs[6],
+						ET_RegisterD7,regs[7],
+						ET_RegisterA0,regs[8+0],
+						ET_RegisterA1,regs[8+1],
+						ET_RegisterA2,regs[8+2],
+						ET_RegisterA6,regs[8+6],
+						TAG_END	 );
+
+					popStack( stack - data -> stack );
+					setStackNum(ret);
+					return NULL;
+				}
+
 		default:
 				setError(22,data->tokenBuffer);
 	}
 
+	setError(169,data->tokenBuffer);
+	popStack( stack - data -> stack );
 	return NULL;
 }
 
@@ -174,6 +208,9 @@ char *_libLibBase( struct glueCommands *data, int nextToken )
 				struct kittyLib *lib;
 
 				lib = kFindLib( id );
+
+				printf("%08x\n",lib);
+
 				if (lib)
 				{
 					setStackNum( (int) lib -> base );

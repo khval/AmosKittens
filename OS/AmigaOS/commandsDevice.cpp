@@ -96,8 +96,6 @@ void kFreeDevice( int id )
 
 	index = kFindDeviceIndex( id );
 
-	printf("id %d, index %d\n",id,index);
-
 	if (index>-1)
 	{
 		dev = &deviceList[index];
