@@ -2081,3 +2081,30 @@ char *discDrive(struct nativeCommand *disc, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_discPort( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data -> stack +1;
+	struct stringData *volumeName;
+	int ret = 0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			setStackNum(-1);	// always true (fix me if I'm wrong)
+			break;
+		default:
+			popStack( stack - data -> stack );
+			setError(23,data-> tokenBuffer);
+			break;
+	}
+
+	return NULL;
+}
+
+char *discPort(struct nativeCommand *disc, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _discPort, tokenBuffer );
+	return tokenBuffer;
+}

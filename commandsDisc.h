@@ -30,6 +30,7 @@ char *discOpenIn(struct nativeCommand *disc, char *tokenBuffer);
 char *discOpenOut(struct nativeCommand *disc, char *tokenBuffer);
 char *discAppend(struct nativeCommand *disc, char *tokenBuffer);
 char *discClose(struct nativeCommand *disc, char *tokenBuffer);
+char *discPort(struct nativeCommand *disc, char *tokenBuffer);
 
 char *discInputStrFile(struct nativeCommand *disc, char *tokenBuffer);
 char *discSetInput(struct nativeCommand *disc, char *tokenBuffer);
