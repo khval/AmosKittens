@@ -449,18 +449,14 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 
 			octav = (pitch-1) / 12;
 			note = (pitch-1) % 12;
+			freq = noteFreq[ note ] * (double) (1L << octav) / 4;
 
-			freq = noteFreq[ note ] * (double) (1L << octav);
-
-//			delay = 1;
-//			freq =  1 * (double) (1L << octav);
-
-			printf( "pitch: %d note: %d octav: %d freq %f\n", pitch, note, octav , freq );
+//			printf( "pitch: %d note: %d octav: %d freq %f\n", pitch, note, octav , freq );
 
 			secOfData = 44800;
 			totData = delay * secOfData;
-
 			totNumberOfFreq = freq * delay ;
+
 #if show_wave
 
 			pixelWidth = 700;
@@ -508,7 +504,7 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 			}
 
 
-			Delay( delay / 2 );
+			Delay( delay  );
 
 			break;
 		default:
