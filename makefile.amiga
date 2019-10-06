@@ -44,6 +44,7 @@ main_objects = commands.cpp \
 			os/amigaos/commandsMenu.cpp \
 			os/amigaos/commandsGfxText.cpp \
 			os/amigaos/commandsDevice.cpp \
+			os/amigaos/commandsLibs.cpp \
 			os/amigaos/stuff.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \

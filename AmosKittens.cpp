@@ -59,6 +59,7 @@ extern char *asl();
 #include "commandsFonts.h"
 #include "commandsgui.h"
 #include "commandsDevice.h"
+#include "commandsLibs.h"
 #include "debug.h"
 #include "kittyErrors.h"
 #include "pass1.h"
@@ -1442,11 +1443,11 @@ struct nativeCommand nativeCommands[]=
 	{0x29C0,"Dev Send",0,deviceDevSend },
 	{0x29D2,"Dev Abort",0,deviceDevAbort },
 	{0x29E2,"Dev Check",0,deviceDevCheck },
-//	{0x29F2,"Lib Open",0,discLibOpen },
-//	{0x2A06,"Lib Close",0,discLibClose },
-//	{0x2A16,"Lib Close",0,discLibClose },
-//	{0x2A1E,"Lib Call",0,discLibCall },
-//	{0x2A30,"Lib Base",0,discLibBase },
+	{0x29F2,"Lib Open",0,libLibOpen },
+	{0x2A06,"Lib Close",0,libLibClose },
+	{0x2A16,"Lib Close",0,libLibClose },
+	{0x2A1E,"Lib Call",0,libLibCall },
+	{0x2A30,"Lib Base",0,libLibBase },
 	{0x2A40,"Equ",6,machineEqu },
 	{0x2A4A,"Lvo",6,machineLvo },	// AmosPro command. (should look up string in pass1 says docs), maybe 16bit BOOL, 32bit offset
 	{0x2A54,"Struc",6,machineStruc },
