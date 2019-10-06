@@ -36,16 +36,16 @@ error at line number: 23
 (A4 should have keyboard layout, when Amos Kittens starts, 400 bytes)
 
 **Map_Editor.AMOS**
-ERROR: Undefined procedure
+missing token 08a8 - command: Menu Static
 
 **Map_View.AMOS**
 works
 
 **Menu_Editor.AMOS**
-ERROR: Undefined procedure
+missing token: 0882 - command: Menu Tline
 
 **RAMOS1_3_Install.AMOS**
-ERROR: Undefined procedure
+Syntax error at line 351, command Fade (5 arguments)
 
 **Scrolling_text_demo.AMOS**
 DSI error at line 71, Screen Copy
