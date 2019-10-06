@@ -471,16 +471,18 @@ char *menuMenuToBank(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+extern void clean_up_menus();
+
 char *menuMenuDel(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	stackCmdParm( _menuMenuToBank, tokenBuffer );
 
-	setError(23,tokenBuffer);		// not implemented
+	detach_menu(My_Window);
+	SetWindowAttrs( My_Window, WA_RMBTrap, TRUE, TAG_END );
+	clean_up_menus();
 
 	return tokenBuffer;
 }
-
 
 char *_menuMenuX( struct glueCommands *data, int nextToken )
 {
