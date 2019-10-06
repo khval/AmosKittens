@@ -16,6 +16,7 @@
 #include "channel.h"
 #include "debug.h"
 #include "commandsDevice.h"
+#include "commandsLibs.h"
 
 
 extern struct retroScreen *screens[8] ;
@@ -35,6 +36,7 @@ extern std::vector<struct defFn> defFns;
 extern std::vector<struct kittyBank> kittyBankList;
 extern std::vector<struct wave *> waves;
 extern std::vector<struct kittyDevice> deviceList;
+extern std::vector<struct kittyLib> libsList;
 
 
 void clean_up_defFns()
@@ -201,6 +203,13 @@ void clean_up_devices()
 	}
 }
 
+void clean_up_libs()
+{
+	while (libsList.size())
+	{
+		kFreeLib( libsList[0].id );
+	}
+}
 
 void clean_up_waves()
 {
@@ -237,6 +246,10 @@ void clean_up_user_banks()
 void clean_up_special()
 {
 	int n;
+
+	dprintf("clean up libs\n");
+
+	clean_up_libs();
 
 	dprintf("clean up devices\n");
 

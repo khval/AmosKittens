@@ -13,6 +13,9 @@ extern char *libLibClose(nativeCommand *cmd, char *ptr);
 extern char *libLibCall(nativeCommand *cmd, char *ptr);
 extern char *libLibBase(nativeCommand *cmd, char *ptr);
 
+struct kittyLib *kFindLib( int id );
+int kFindLibIndex( int id );
+void kFreeLib( int id );
 
 
 

@@ -158,6 +158,7 @@ std::vector<struct lineAddr> linesAddress;
 std::vector<struct defFn> defFns;
 std::vector<struct kittyBank> kittyBankList;
 std::vector<struct kittyDevice> deviceList;
+std::vector<struct kittyLib> libsList;
 
 int global_var_count = 0;
 int labels_count = 0;
