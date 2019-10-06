@@ -1114,11 +1114,16 @@ struct nativeCommand nativeCommands[]=
 	{0x10B6,"Appear",0,gfxAppear },
 	{0x10D6,"zoom",0,gfxZoom },
 	{0x10F4,"Get CBlock",0,bgGetCBlock },
+	{0x110E,"Put CBlock",0,bgPutCBlock },
 	{0x1120,"Put CBlock",0,bgPutCBlock },
+	{0x112C,"Del CBlock",0,bgDelCBlock },
+	{0x113E,"Del CBlock",0,bgDelCBlock },
 	{0x1146,"Get Block",0,bgGetBlock },
 	{0x1160,"Get Block [n,x,y,w,h,?] ",0,bgGetBlock },
-	{0x1172,"Put Block",0,bgPutBlock },	// Put Block (Num)
-	{0x1184,"Put Block",0,bgPutBlock },
+	{0x1172,"Put Block",0,bgPutBlock },	// Put Block num
+	{0x1184,"Put Block",0,bgPutBlock },	// Put Block num,x,y
+	{0x1190,"Put Block",0,bgPutBlock },	// Put Block num,x,y,n
+	{0x119E,"Put Block",0,bgPutBlock },	// Put Block num,x,y,n,n
 	{0x11AE,"Del Block",0,bgDelBlock },	// Del Block (no args)
 	{0x11BE,"Del Block",0,bgDelBlock },
 	{0x11C6,"Key Speed",0,cmdKeySpeed },
