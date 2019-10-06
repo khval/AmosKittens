@@ -75,19 +75,19 @@ enum
 	state_hidden_subData 
 };
 
-#define cmd_normal		1
-#define cmd_index			2 
-#define cmd_para			4
-#define cmd_loop			8
-#define cmd_proc			16
-#define cmd_onEol			32
-#define cmd_onNextCmd	64
-#define cmd_onComma		128
-#define cmd_onBreak		256
-#define cmd_never			512
-#define cmd_exit			1024
-#define cmd_true			2048
-#define cmd_false			4096
+#define cmd_normal			0x0001
+#define cmd_index			0x0002 
+#define cmd_para			0x0004
+#define cmd_loop			0x0008
+#define cmd_proc			0x0010
+#define cmd_onEol			0x0020
+#define cmd_onNextCmd		0x0040
+#define cmd_onComma		0x0080
+#define cmd_onBreak		0x0100
+#define cmd_never			0x0200
+#define cmd_exit			0x0400
+#define cmd_true			0x0800
+#define cmd_false			0x1000
 
 enum
 {
@@ -431,6 +431,12 @@ struct kittyDevice
 	struct IORequest *io;
 	bool sendt;
 	int error;
+};
+
+struct kittyLib
+{
+	int id;
+	struct Library *base;
 };
 
 #define stackIfSuccess()					\
