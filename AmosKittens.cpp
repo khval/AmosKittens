@@ -1259,7 +1259,8 @@ struct nativeCommand nativeCommands[]=
 	{0x196C,"Fsel$",0,discFselStr },
 	{0x1978,"Fsel$",0,discFselStr },
 	{0x1986,"Set Sprite Buffers",0,hsSetSpriteBuffer },
-	{0x199E,"Sprite Off",0,hsSpriteOff },
+	{0x199E,"Sprite Off",0,hsSpriteOff },		// Sprite Off
+	{0x19B0,"Sprite Off",0,hsSpriteOff },		// Sprite Off n
 	{0x1A72,"Sprite Base",0,hsSpriteBase },
 	{0x1A84,"Icon Base",0,bgIconBase },
 	{0x1A94,"Sprite",0,hsSprite },
