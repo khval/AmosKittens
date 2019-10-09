@@ -79,14 +79,13 @@ char *_hsSprite( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	engine_lock();
 	num = getStackNum( stack - 3 );
 	sprite = &video -> sprites[num];
-
 	stack_get_if_int( stack - 2 , &sprite->x );
 	stack_get_if_int( stack - 1 , &sprite->y );
-
 	sprite->image = getStackNum( stack );
-
+	engine_unlock();
 
 	popStack( stack - data->stack );
 	return NULL;
