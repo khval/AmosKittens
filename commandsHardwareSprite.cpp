@@ -125,8 +125,27 @@ char *hsGetSprite(struct nativeCommand *cmd, char *tokenBuffer)
 char *_hsSpriteOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		struct kittyData *s = &kittyStack[stack];
+		engine_lock();
+		if (s -> type == type_int)
+		{
+			video -> sprites[ s -> integer.value ].image = -1;	// not deleted, just gone.
+		}
+		else
+		{
+			int n;
+			for (n=0;n<64;n++)
+			{
+				video -> sprites[n].image = -1;
+			}
+		}
+		engine_unlock();
+		return NULL;
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -136,6 +155,7 @@ char *hsSpriteOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _hsSpriteOff, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
