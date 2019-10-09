@@ -746,4 +746,27 @@ char *menuMenuBar(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *_menuMenuStatic( struct glueCommands *data, int nextToken )	// menu style (just a dummy command)
+{
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *menuMenuStatic(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _menuMenuStatic, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *_menuMenuItemStatic( struct glueCommands *data, int nextToken )	// menu style (just a dummy command)
+{
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *menuMenuItemStatic(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdNormal( _menuMenuItemStatic, tokenBuffer );
+	return tokenBuffer;
+}
 
