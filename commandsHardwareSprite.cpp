@@ -52,11 +52,32 @@ char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((sprite)&&(screen))
+	if (args == 1)
 	{
-		for (n=0;n<256;n++)
+		if ((sprite)&&(screen))
 		{
-			retroScreenColor( screen, n, sprite -> palette[n].r, sprite -> palette[n].g, sprite -> palette[n].b );
+			switch (kittyStack[stack].type)
+			{
+				case type_none:
+
+					for (n=0;n<256;n++)
+					{
+						retroScreenColor( screen, n, sprite -> palette[n].r, sprite -> palette[n].g, sprite -> palette[n].b );		
+					}
+					break;
+
+				case type_int:
+					{
+						int mask = kittyStack[stack].integer.value;
+
+						for (n=0;n<256;n++)
+						{
+							if (mask & n) retroScreenColor( screen, n, sprite -> palette[n].r, sprite -> palette[n].g, sprite -> palette[n].b );		
+						}
+					}
+					break;
+
+			}
 		}
 	}
 
@@ -68,6 +89,7 @@ char *hsGetSpritePalette(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _hsGetSpritePalette, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
