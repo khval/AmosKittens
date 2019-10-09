@@ -18,8 +18,10 @@ extern APTR channel_mx[4];
 struct audioChunk
 {
 	int size;
-	int frequency;
+	int bytesPerSecond;
 	int position;
+	double lowpass_alpha;
+	double lowpass_n_alpha;
 	char ptr;
 };
 

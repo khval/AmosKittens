@@ -52,6 +52,8 @@ struct sampleHeader *allocSample( int size );
 
 bool write_file_start_end( int channel, char *start, char *end );
 
+extern bool audio_3k3_lowpass;
+
 extern LONG volume;
 
 int sample_bank = 5;
@@ -987,6 +989,20 @@ char *ext_cmd_sam_swapped(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	setStackNum(0);
+	return tokenBuffer;
+}
+
+char *ext_cmd_led_on(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	audio_3k3_lowpass = true;
+	return tokenBuffer;
+}
+
+char *ext_cmd_led_off(nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	audio_3k3_lowpass = false;
 	return tokenBuffer;
 }
 

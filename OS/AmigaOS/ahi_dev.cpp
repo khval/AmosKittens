@@ -35,13 +35,17 @@ int current_audio_channel = 0;
 
 extern bool running;
 
+
+bool audio_3k3_lowpass = true;
+
+
 bool sample_loop = false;
 
 struct audioIO
 {
 	bool sendt;
 	struct AHIRequest *io;
-	struct audioChunk *data;
+	struct audioChunk *chunk;
 };
 
 enum 
@@ -75,7 +79,7 @@ struct audioIO *new_audio( struct AHIRequest *io)
 	{
 		_new -> sendt = false;
 		_new -> io = io;
-		_new -> data = NULL;
+		_new -> chunk = NULL;
 	}
 	return _new;
 }
@@ -185,6 +189,17 @@ static void cleanup_task(struct contextChannel *c, struct AHIIFace	*IAHI)
 }
 
 
+void setup_lowpass( double samplerate, double cutFreq,  struct audioChunk *chunk )
+{
+	double dt = 1.0f / samplerate;
+	double rc = 1.0f / (2 * M_PI * cutFreq );
+	chunk -> lowpass_alpha = dt / (rc + dt );
+	chunk -> lowpass_n_alpha = 1.0f - chunk -> lowpass_alpha;
+}
+
+#define lowpass( value ) _new_value_ = lowpass_alpha * (value) + ( lowpass_n_alpha * last_amplitude ); last_amplitude = value; value = _new_value_;	
+	
+
 
 void audio_engine (void) 
 {
@@ -195,7 +210,7 @@ void audio_engine (void)
 	struct Process *thisProcess;
 	int this_channel = -1;
 	int c;
-
+	double last_amplitude = 0.0f;
 
 	thisProcess = (struct Process *) FindTask(NULL);
 
@@ -221,7 +236,6 @@ void audio_engine (void)
 	context -> device = -999;
 	context -> channel = this_channel;
 	context -> audio_abort = false;
-
 	context -> AHIMsgPort  = NULL;     // The msg port we will use for the ahi.device
 	context -> AHIio       = NULL;     // First AHIRequest structure
  	context -> AHIio2      = NULL;     // second one. Double buffering !
@@ -230,10 +244,6 @@ void audio_engine (void)
 	context -> link=NULL;
 
 	SetTaskPri( FindTask(0),5);
-
-	Printf("%s:%s:%ld\n",__FILE__,__FUNCTION__,__LINE__);
-
-	Printf("AHIDevice is %ld\n", context -> device);
 
 	if( context -> AHIMsgPort = (struct MsgPort*) AllocSysObjectTags(ASOT_PORT, TAG_END) )
 	{
@@ -333,37 +343,56 @@ void audio_engine (void)
 		{
 			if (sample_loop == false)
 			{
-				if (context -> AHIio-> data)
+				if (context -> AHIio-> chunk)
 				{
 					Printf("Free data..\n");
-					free( context -> AHIio-> data );	// free old data.
-					context -> AHIio-> data = NULL;
+					free( context -> AHIio-> chunk );	// free old data.
+					context -> AHIio-> chunk = NULL;
 				}
 			}
 			else
 			{
 				Printf("sample loop push data back..\n");
-				audioBuffer[context -> channel].push_back( context -> AHIio-> data);
+				audioBuffer[context -> channel].push_back( context -> AHIio-> chunk);
 			}			
 
 			if (io = context -> AHIio -> io)
 			{
-				context -> AHIio-> data = audioBuffer[context -> channel].front();
+				context -> AHIio-> chunk = audioBuffer[context -> channel].front();
 				audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
 				channel_unlock(context -> channel);
 
-				if (context -> AHIio-> data)
+				if (context -> AHIio-> chunk)
 				{
+					struct audioChunk *chunk = context -> AHIio-> chunk;
+
+
 					io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
 					io->ahir_Std.io_Command	= CMD_WRITE;
 					io->ahir_Std.io_Offset	= 0;
-					io->ahir_Std.io_Data		=  &(context -> AHIio-> data -> ptr); 
-					io->ahir_Std.io_Length	= (ULONG) context -> AHIio-> data -> size; 
-					io->ahir_Frequency		= (ULONG) context -> AHIio-> data -> frequency;
+					io->ahir_Std.io_Data		=  &(chunk -> ptr); 
+					io->ahir_Std.io_Length	= (ULONG) chunk -> size; 
+					io->ahir_Frequency		= (ULONG) chunk -> bytesPerSecond;
 					io->ahir_Volume		= volume; 
-					io->ahir_Position		= (ULONG) context -> AHIio-> data -> position;
-					io->ahir_Type			= AHIST_M8S;
+					io->ahir_Position		= (ULONG) chunk -> position;
+					io->ahir_Type			= AHIST_M8S;		// mono 8 bit signed
 					io->ahir_Link			= context -> link ? context -> link -> io : NULL;
+
+					if (audio_3k3_lowpass)
+					{
+						char *ptr = (char *)  io->ahir_Std.io_Data;
+						char *e_ptr = ptr + io->ahir_Std.io_Length;
+
+						double _new_value_;
+						double lowpass_alpha = chunk -> lowpass_alpha;
+						double lowpass_n_alpha = chunk -> lowpass_n_alpha;
+
+						for (;ptr<e_ptr;ptr++)
+						{
+							lowpass( *ptr );
+						}
+					}
+
 				}
 				else
 				{
@@ -474,14 +503,21 @@ bool audio_start()
 
 #endif
 
-void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, int frequency, struct audioChunk **chunk )
+void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, int bytesPerSecond, struct audioChunk **chunk )
 {
 	chunk[0] = (struct audioChunk *) malloc(sizeof(struct audioChunk) + size);
 
 	if (chunk)
 	{
+		int8_t *s8bit;
+		uint8_t *u8bit;
+		uint8_t *u8bit_e;
+
 		chunk[0] -> size = size;
-		chunk[0] -> frequency = frequency;
+		chunk[0] -> bytesPerSecond = bytesPerSecond;
+
+		// Amiga lowpass fliter use 3,3 Khz, precalc mixing to speed up fliter.
+		setup_lowpass(  bytesPerSecond, 3300.0f,  chunk[0] );
 
 		switch (channel)
 		{
@@ -491,7 +527,19 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 			case 3: 		(*chunk) -> position = 0x00000;	break;
 		}
 
-		memcpy( &(chunk[0] -> ptr), (void *) (data + offset),  chunk[0] -> size );
+		// AHI uses mono 8bit signed, amos uses mono 8bit unsigned, we need to convert,
+
+		s8bit = (int8_t *) &(chunk[0] -> ptr);
+		u8bit = (data + offset);
+		u8bit_e = u8bit + chunk[0] -> size;
+
+		for ( ; u8bit < u8bit_e ; u8bit++ )
+		{
+			*s8bit  = (int8_t) ((int) *u8bit -128);
+			s8bit++;
+		}
+
+//		memcpy( &(chunk[0] -> ptr), (void *) (data + offset),  chunk[0] -> size );
 	}
 }
 
@@ -543,12 +591,9 @@ struct phase
 
 void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, int size, int totsize, int channel)
 {
-	//	int	totDuration = wave->envels[6].startDuration;
-
 	int n;
 	signed char *data;
 	signed char *chunk_data;
-
 	int d, w, reln, amplitude;
 
 	phaseContext -> endDuration = wave->envels[phaseContext -> phase].startDuration + wave->envels[phaseContext -> phase].duration;
@@ -568,7 +613,10 @@ void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, i
 	if (phaseContext -> chunk)
 	{
 		phaseContext -> chunk -> size = size;
-		phaseContext -> chunk -> frequency = wave->bytesPerSecond;
+		phaseContext -> chunk -> bytesPerSecond = wave -> bytesPerSecond;
+
+		// Amiga lowpass fliter use 2,2 Khz, precalc mixing to speed up fliter.
+		setup_lowpass( wave -> bytesPerSecond, 2200.0f,  phaseContext -> chunk );
 
 		switch (channel)
 		{
@@ -598,9 +646,6 @@ void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, i
 			}
 
 			d = n % wave->sample.bytes;
-
-//			w=sin( (double) n * 2.0 * M_PI / (double) size )*100;
-
 			w = (int) data[d] ;
 
 			reln = n - wave->envels[phaseContext -> phase].startDuration*wave->bytesPerSecond;
@@ -608,20 +653,6 @@ void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, i
 			w = w* amplitude / 64;
 
 			chunk_data[n-offset] = w;
-
-/*
-			if (debug_Window)
-			{
-				int x = (n*700)/totsize;
-				int y = w;
-
-				WritePixelColor( debug_Window -> RPort, 50 + x, 400, color ); 
-				WritePixelColor( debug_Window -> RPort, 50 + x, 400 + data[d] , 0xFF0000FF ); 
-
-				lx = x;
-				ly = w;
-			}
-*/
 		}
 	}
 }
@@ -726,7 +757,6 @@ void abort_channel( int c )
 			contexts[c].audio_abort);	
 		Delay(1);
 	}
-
 }
 
 void audio_device_flush(int voices)

@@ -30,6 +30,9 @@ extern char *ext_cmd_sload(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_sam_swap(nativeCommand *cmd, char *ptr);
 extern char *ext_cmd_sam_swapped(nativeCommand *cmd, char *ptr);
 
+extern char *ext_cmd_led_on(nativeCommand *cmd, char *ptr);
+extern char *ext_cmd_led_off(nativeCommand *cmd, char *ptr);
+
 void make_wave_test();
 void make_wave_bell();
 void make_wave_noice();

@@ -1934,6 +1934,10 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
 			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
 			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
+
+			*((void **) (kitty_extensions[1].lookup + 0x01CA)) = (void *) ext_cmd_led_on;
+			*((void **) (kitty_extensions[1].lookup + 0x01D6)) = (void *) ext_cmd_led_off;
+
 			*((void **) (kitty_extensions[1].lookup + 0x0256)) = (void *) ext_cmd_sam_stop;
 			*((void **) (kitty_extensions[1].lookup + 0x0324)) = (void *) ext_cmd_ssave;
 		}
