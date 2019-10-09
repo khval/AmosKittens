@@ -83,6 +83,7 @@ Not Implemented:
 AmosPro support:
  * Resource banks
  * The Interface Language (mostly done)
+ * Devices and Libraries
 
 Note: 
 -----
