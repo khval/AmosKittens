@@ -42,7 +42,7 @@ missing token 08a8 - command: Menu Static
 works
 
 **Menu_Editor.AMOS**
-missing token: 0882 - command: Menu Tline
+missing token: 0894 - command: Menu Movable
 
 **RAMOS1_3_Install.AMOS**
 Syntax error at line 351, command Fade (5 arguments)
