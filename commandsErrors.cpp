@@ -87,7 +87,6 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 
 				if (NEXT_TOKEN(tokenBuffer ) == 0x0012)	// proc
 				{
-					char *name;
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
 					int found = var_find_proc_ref( ref );
 
@@ -95,15 +94,13 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 					{
 						on_error_proc_location = globalVars[found -1].var.tokenBufferPos;
 						onError = onErrorProc;
-
-						printf("Works\n");
 					}
 
 					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
 				}
 				else
 				{
-					printf("%04x\n",NEXT_TOKEN(tokenBuffer ));
+					setError(22,tokenBuffer);
 				}
 
 				break;
