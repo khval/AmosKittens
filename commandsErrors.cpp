@@ -27,6 +27,7 @@
 #include "kittyErrors.h"
 #include "label.h"
 #include "amosString.h"
+#include "var_helper.h"
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -80,7 +81,7 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 
 		case 0x0386:	// Proc
 
-				printf("On Error ... Gosub ...\n");
+				printf("On Error ... Proc ...\n");
 
 				tokenBuffer += 2;
 
@@ -88,22 +89,23 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				{
 					char *name;
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
-					name = strndup( tokenBuffer + 2 + sizeof(struct reference), ref->length );
+					int found = var_find_proc_ref( ref );
 
-					if (name)
+					if (found)
 					{
-						int found = findVarPublic(name, ref -> flags);
-						if (found)
-						{
-							on_error_proc_location = globalVars[found -1].var.tokenBufferPos;
-							onError = onErrorProc;
-						}
+						on_error_proc_location = globalVars[found -1].var.tokenBufferPos;
+						onError = onErrorProc;
 
-						free(name);
+						printf("Works\n");
 					}
 
 					tokenBuffer += (2 + sizeof(struct reference) + ref -> length) ;	
 				}
+				else
+				{
+					printf("%04x\n",NEXT_TOKEN(tokenBuffer ));
+				}
+
 				break;
 	}
 	return tokenBuffer;
