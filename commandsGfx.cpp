@@ -1568,7 +1568,9 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (kittyStack[stack].type == type_none)
+	printf("check if last arg is none, way\n");
+
+	if (kittyStack[data->stack].type == type_none)
 	{
 		setError(22, data -> tokenBuffer);
 		popStack( stack - data->stack );
@@ -1582,20 +1584,20 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 		int c;
 		int rgb;
 
-		fade_speed = getStackNum( data->stack );
-		screen -> fade_speed = 0;	// disable fade.. until its setup again.
-
-		if ((fade_speed == 0)&&(args>255))
-		{
-			setError(22, data -> tokenBuffer);
-			popStack( stack - data->stack );
-			return NULL;
-		}
-
 		dest_pal = screen -> fadePalette;
 
 		if (args>1)	// fade to colors listed after fade speed.
 		{
+			fade_speed = getStackNum( data->stack );
+			screen -> fade_speed = 0;	// disable fade.. until its setup again.
+
+			if ((fade_speed == 0)&&(args>255))
+			{
+				setError(22, data -> tokenBuffer);
+				popStack( stack - data->stack );
+				return NULL;
+			}
+
 			c = 0;	// color
 			for (int s = data->stack+1 ; s <= stack ; s++ )
 			{
@@ -1608,6 +1610,12 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 		}
 		else		// fade to black, if no colors after fade.
 		{
+			if (kittyStack[ stack ].type == type_int)
+			{
+				fade_speed = kittyStack[stack].integer.value;
+			}
+			else fade_speed = 1;
+
 			for (c = 0; c < 256 ; c++ )
 			{
 				dest_pal[c].r = 0;
