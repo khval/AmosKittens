@@ -110,7 +110,7 @@ int parenthesis_count = 0;
 int cmdStack = 0;
 int procStackCount = 0;
 int last_var = 0;
-int32_t tokenlength;
+uint32_t tokenFileLength;
 
 bool startup = false;
 
@@ -1988,7 +1988,7 @@ int main(int args, char **arg)
 			fseek(fd, 0, SEEK_SET);
 
 			fread( amosid, 16, 1, fd );
-			fread( &tokenlength, 4, 1, fd );
+			fread( &tokenFileLength, 4, 1, fd );
 
 #ifdef __LITTLE_ENDIAN__
 			tokenlength = __bswap_32(tokenlength);
@@ -1999,7 +1999,7 @@ int main(int args, char **arg)
 				int _file_code_start_ = ftell(fd);
 
 				_file_start_ = data;
-				_file_end_ = data + tokenlength;
+				_file_end_ = data + tokenFileLength;
 
 				fread(data,amos_filesize - _file_code_start_ ,1,fd);
 
@@ -2023,18 +2023,18 @@ int main(int args, char **arg)
 					runtime = TRUE;
 
 					_file_start_ = data;
-					_file_end_ = data + tokenlength;
+					_file_end_ = data + tokenFileLength;
 
 					// init banks
 
-					_file_bank_size = amos_filesize - tokenlength - _file_code_start_;
+					_file_bank_size = amos_filesize - tokenFileLength - _file_code_start_;
 
 					init_banks( _file_end_ ,  _file_bank_size );
 
 					gfxDefault(NULL, NULL);
 
 #ifdef run_program_yes
-					code_reader( data, tokenlength );
+					code_reader( data, tokenFileLength );
 #endif
 				}
 
