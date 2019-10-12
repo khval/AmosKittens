@@ -112,6 +112,8 @@ int procStackCount = 0;
 int last_var = 0;
 uint32_t tokenFileLength;
 
+char *tokenBufferResume =NULL;
+
 bool startup = false;
 
 unsigned int amiga_joystick_dir[4];
@@ -361,6 +363,8 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	char *ret = NULL;
 	unsigned int flags;
 
+	tokenBufferResume = ptr;
+
 	// we should empty stack, until first/normal command is not a parm command.
 
 	while (cmdStack)
@@ -390,6 +394,8 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__ );
+
+	tokenBufferResume = ptr;
 
 	if (cmdStack)
 	{

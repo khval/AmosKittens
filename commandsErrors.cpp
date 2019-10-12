@@ -217,25 +217,43 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 		char *ret;
 		struct label *label =  findLabel(name, procStcakFrame[proc_stack_frame].id);
 		ret = label -> tokenLocation;
-
 		free(name);
+
+		proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		if (ret) 
 		{
+			proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 			kittyError.code = 0;
 			kittyError.pos = 0;  
 			kittyError.newError = false;
 			return ret -2;
 		}
+
+		proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	}
 	else	// has no args, return to error.
 	{
-		if (kittyError.pos)
+		proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+		if (kittyError.posResume)
 		{
+			tokenBuffer = kittyError.posResume - 2;		// -2 for location of the error, -2 for resume command.
+
+			proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 			kittyError.code = 0;
 			kittyError.pos = 0;  
+			kittyError.posResume = 0;
 			kittyError.newError = false;
-			return kittyError.pos-2;
+			return tokenBuffer;
+		}
+		else 
+		{
+			printf("do not have resume location\n");
+			return NULL;	// exit here.
 		}
 	}
 
