@@ -112,22 +112,24 @@ char *errEndProc(struct nativeCommand *cmd, char *tokenBuffer );
 
 char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 {
-	struct reference *ref;
 	printf("Next token %04x\n",NEXT_TOKEN(tokenBuffer));
 
 	switch (NEXT_TOKEN(tokenBuffer))
 	{
 		case 0x0018:
 
-			ref = (struct reference *) (tokenBuffer + 2);
-			tokenBuffer += 2;
-
-			if (ref->ref)
 			{
-				resume_location = labels[ref->ref-1].tokenLocation+2;
-			}
+				struct reference *ref = (struct reference *) (tokenBuffer + 2);
+				struct label *label = var_JumpToName( ref );		// after function, amos kittens try access next token and adds +2 (+0 data)
 
-			tokenBuffer += sizeof(struct reference) + ref -> length;
+				if (label)
+				{
+					resume_location = label -> tokenLocation;
+				}
+
+				tokenBuffer += 2;
+				tokenBuffer += sizeof(struct reference) + ref -> length;
+			}
 			break;
 
 		case 0x0000:
@@ -138,10 +140,10 @@ char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 				if (cmdTmp[cmdStack-1].cmd == _procedure ) 
 				{
 					printf(" maybe need flush some stack here? %d - %d --\n", cmdTmp[cmdStack-1].stack, stack );
-					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0) - 2;		// +2 will be added on exit.
 				}
 			}
-			if ( resume_location ) tokenBuffer = resume_location;
+			if ( resume_location ) tokenBuffer = resume_location -2;		// +2 will be added on exit.
 			break;
 	}
 
