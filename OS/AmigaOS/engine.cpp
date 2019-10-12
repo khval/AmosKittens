@@ -317,10 +317,7 @@ void atomic_add_key( ULONG eventCode, ULONG Code, ULONG Qualifier, char Char )
 	engine_unlock();
 }
 
-#define limit_step( step ) \
-		if ( step <-0x11) step=-0x11; \
-		if ( step >0x11) step=0x11; \
-
+#define limit_step( step ) if ( step <-0x11) { step=-0x11; } else if ( step >0x11) { step=0x11; }
 
 void retroFadeScreen_beta(struct retroScreen * screen)
 {
@@ -334,13 +331,11 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 		}
 		else
 		{
-			int changed_at = 0;
+			int changed = 0;
 			int n = 0;
 			struct retroRGB *opal = screen -> orgPalette;
 			struct retroRGB *rpal = screen -> rowPalette;
 			struct retroRGB *npal = screen -> fadePalette;
-
-			Printf("doing a fade\n");
 
 			for (n=0;n<256;n++)
 			{
@@ -352,7 +347,7 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 				limit_step(dg);
 				limit_step(db);
 
-				changed_at = dr | dg | db;
+				changed |= dr | dg | db;
 
 				opal->r += dr;
 				opal->g += dg;
@@ -366,10 +361,7 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 			}
 
 			screen -> fade_count = 1;
-			if (changed_at == 0)
-			{
-				screen -> fade_speed = 0;
-			}
+			if (changed == 0) screen -> fade_speed = 0;
 		}
 	}
 }
