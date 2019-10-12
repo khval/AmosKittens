@@ -26,7 +26,7 @@
 #include "commandsDisc.h"
 #include "commands.h"
 #include "debug.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "amosString.h"
 
 extern int last_var;

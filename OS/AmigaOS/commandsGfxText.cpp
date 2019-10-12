@@ -23,7 +23,7 @@
 #include "stack.h"
 #include "amosKittens.h"
 #include "commandsGfx.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "engine.h"
 
 extern int sig_main_vbl;

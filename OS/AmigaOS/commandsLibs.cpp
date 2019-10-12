@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <vector>
 #include "commandsLibs.h"
-#include "errors.h"
+#include "kittyErrors.h"
 #include "debug.h"
 #include "stack.h"
 
