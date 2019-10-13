@@ -1,6 +1,10 @@
 
 
 A small document describing how some commands works different under Amos Kittens.
+If you like to write programs for Amos Kittens, get the Amos Pro manual, 
+most of the commands are the same and should work the same, 
+only the commands that are different are listed here.
+
 
 **Wait**
 
