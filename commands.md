@@ -36,10 +36,10 @@ see other docs like issue for more info.
 	
 **Save Iff**
 
-	Will save any to any image format supported by datatype system, should default to IFF, 
-	if no file extension is set.
+	Will save to any image format supported by amigaos datatype system, it should default to IFF, 
+	if no file extension is set. (on other operating system this might be limited to only few file formats.)
 
-**spack**
+**Spack**
 
 	This command will compress a screen or part of screen into a bank, 
 	unlike Amos Pro that is not limited 6bit graphics,
