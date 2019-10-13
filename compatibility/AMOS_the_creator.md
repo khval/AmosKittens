@@ -5,7 +5,7 @@ there are some debug text that should be removed.
 
 **Execute.AMOS**
 
-Exit qucik with any error, I think this one works.
+Exit qucik without any error, I think this one works.
 
 **Get_Time.AMOS**
 
