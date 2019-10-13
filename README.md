@@ -30,7 +30,7 @@ You can start using this thing for small text adventures, quiz games, or somethi
 Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
 
 Please also read the document describing how Amos Kitten commands works.
-https://github.com/khval/AmosKittens/blob/master/COMMANDS.md
+https://github.com/khval/AmosKittens/blob/master/commands.md
 
 To start a game you type:
 AmosKittens [dir]/[filename.amos]
