@@ -38,3 +38,19 @@ A small document describing how some commands works different under Amos Kittens
 	unlike Amos Pro that is not limited 6bit graphics,
 	this command also support 8bit graphics on Amos Kittens.
 	
+**Joy**
+
+	Almost the same as Amos Pro, but supports more buttons.
+	
+	bit 0 - value 1 - joystick up
+	bit 1 - value 2 - joystick down
+	bit 2 - value 4 - joystick left
+	bit 4 - value 8 - joystick right
+	bit 5 - value 16 - joystick button 1
+	bit 6 - value 32 - joystick button 2
+	bit 7 - value 64 - joystick button 3
+	bit 8 - value 128 - joystick button 4
+	bit 9 - value 256 - joystick button 5
+	...
+	
+	
