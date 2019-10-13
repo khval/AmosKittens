@@ -5,19 +5,20 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor.AMOS**
 
-Illegal function call at line: 475
-("Menu Del" command)
+(works maybe, takes lot time to start in debug mode)
 
 **Amal_Editor_Fixed.AMOS**
 
-missing token: 0x084E - command "Menu Key"
+(works maybe, takes lot time to start in debug mode)
 
 **Disc_Manager.AMOS**
 
-missing token: 0x2970 - command "Dev Open"
+Missing token 0x258C - command "@apml@"
++Synyax error on line 1677
 
 **Font8x8_Editor.AMOS**
 
+Missing token: 0x0E08 - command "Phybase"
 It does start AMOSPro_Producitivity2:Font8x8_editor.amos
 but exit quickly after.
 
