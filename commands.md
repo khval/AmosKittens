@@ -26,17 +26,25 @@ A small document describing how some commands works different under Amos Kittens
 	Will load .png/.jpg any file supported by datatype system on AmigaOS, 
 	true color images are converted into 8bit grayscale images, or 8bit floyd dittered images.
 	(in the future this command can load in images as truecolor), loading option will be in global variabel.
+	IFF images with HAM6 format also supported.
 	
 **Save Iff**
 
 	Will save any to any image format supported by datatype system, should default to IFF, 
 	if no file extension is set.
 
-**Unpack**
+**spack**
 
 	This command will compress a screen or part of screen into a bank, 
 	unlike Amos Pro that is not limited 6bit graphics,
 	this command also support 8bit graphics on Amos Kittens.
+	this command will count the number of colors on the screen before compressing the image,
+	if its 64 colors or less, it will use AMOS packed format, if more then 64 colors 
+	it will exstend the color platte table. 
+
+**Unpack**
+
+	This command support 1bit to 8bit compressed banks, including HAM6.
 	
 **Joy**
 
