@@ -18,9 +18,7 @@ Missing token 0x258C - command "@apml@"
 
 **Font8x8_Editor.AMOS**
 
-Missing token: 0x0E08 - command "Phybase"
-It does start AMOSPro_Producitivity2:Font8x8_editor.amos
-but exit quickly after.
+Works it starts "AMOSPro_Producitivity2:Font8x8_editor.amos"
 
 **IFF_Compactor.AMOS**
 
@@ -29,7 +27,7 @@ but menu is not working,
 
 **Menu_Editor.AMOS**
 
-Syntax error at line: 9.
+Works it starts "AMOSPro_Producitivity1:Menu_editor.amos"
 
 **Object_Editor.AMOS**
 
