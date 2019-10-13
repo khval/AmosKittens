@@ -29,10 +29,12 @@ A small document describing how some commands works different under Amos Kittens
 	
 **Save Iff**
 
-	Will save any to any image format supported by datatype system, should default to IFF, if no file extension is set.
+	Will save any to any image format supported by datatype system, should default to IFF, 
+	if no file extension is set.
 
 **Unpack**
 
-	This command will compress a screen or part of screen into a bank, unlike Amos Pro that is not limited 6bit graphics,
+	This command will compress a screen or part of screen into a bank, 
+	unlike Amos Pro that is not limited 6bit graphics,
 	this command also support 8bit graphics on Amos Kittens.
 	
