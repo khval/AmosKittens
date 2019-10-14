@@ -20,4 +20,6 @@ char *amalMoveX(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalMoveY(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalMoveOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer);
+char *amalChanmv(struct nativeCommand *cmd, char *tokenBuffer);
+char *amalChanan(struct nativeCommand *cmd, char *tokenBuffer);
 
