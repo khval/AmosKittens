@@ -2420,7 +2420,7 @@ char *cmdStop( struct nativeCommand *cmd, char *tokenBuffer )
 	dump_stack();
 	dump_global();
 	dump_680x0_regs();
-	dumpScreenInfo();
+	dump_screens();
 	printf("** press a key to quit **\n");
 	cmdWaitKey(cmd, tokenBuffer );
 	return NULL;

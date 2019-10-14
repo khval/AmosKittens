@@ -546,7 +546,7 @@ void dump_bobs(int screen_id)
 }
 
 
-void dumpScreenInfo()
+void dump_screens()
 {
 	int n;
 

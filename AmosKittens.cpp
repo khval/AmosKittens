@@ -192,8 +192,6 @@ const char *str_time_end = "time end";
 
 int findVar( char *name, bool  is_first_token, int type, int _proc );
 
-extern void dumpScreenInfo();
-
 struct kittyVideoInfo KittyBaseVideoInfo;
 struct kittyInfo KittyBaseInfo;
 
@@ -281,7 +279,7 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			}
 			else if (strncmp(txt,str_dump_screen_info,strlen(str_dump_screen_info))==0)
 			{
-				dumpScreenInfo();
+				dump_screens();
 			}
 			else if (strncmp(txt,str_dump_banks,strlen(str_dump_banks))==0)
 			{
