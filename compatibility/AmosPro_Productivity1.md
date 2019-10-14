@@ -16,5 +16,6 @@ with Error: Screen not opened.
 
 **SuperBlockout.AMOS**
 
-starts (This works maybe, might be running slow in debug mode)
-(got stuck where I should, select keyboard or joystick)
+While playing the game, if you press "spacebar" 
+the game exits, due to Syntax Error on line 615.
+Game also use a command on line 350, that has token 004C in extention 1 (music?)
