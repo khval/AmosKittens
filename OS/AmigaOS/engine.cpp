@@ -586,17 +586,16 @@ void handel_window()
 									for (p=F1_keys[idx];*p;p++) atomic_add_key( (Code & IECODE_UP_PREFIX) ? kitty_key_up : kitty_key_down, ccode, 0, *p );
 								}
 							}
+
+							if (Code & IECODE_UP_PREFIX)
+							{
+								atomic_add_key( kitty_key_up, ccode, Qualifier, 0 );
+							}
 							else
 							{
-								if (Code & IECODE_UP_PREFIX)
-								{
-									atomic_add_key( kitty_key_up, ccode, Qualifier, 0 );
-								}
-								else
-								{
-									atomic_add_key( kitty_key_down, ccode, Qualifier, 0 );
-								}
+								atomic_add_key( kitty_key_down, ccode, Qualifier, 0 );
 							}
+
 							break;
 				}
 			}
