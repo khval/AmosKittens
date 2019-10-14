@@ -958,3 +958,50 @@ char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNum(0);	// should return error pos in string.
 	return tokenBuffer;
 }
+
+char *_amalChanmv( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack  );
+					bool moved = false;
+
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						if ((item -> status == channel_status::active) && (item -> count < item -> count_to ))
+						{
+							engine_unlock();
+							setStackNum(~0);
+							return NULL;
+						}
+					}
+					engine_unlock();
+					setStackNum(0);
+					return NULL;
+				}
+				break;
+		defaut:
+				popStack( stack - data->stack );
+				setError(22,data->tokenBuffer);
+	}
+	return NULL;
+}
+
+char *amalChanmv(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _amalChanmv, tokenBuffer );
+	return tokenBuffer;
+}
+
+char *amalChanan(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	setError(22, tokenBuffer);	// not working yet.
+//	stackCmdParm( _amalChanan, tokenBuffer );
+	return tokenBuffer;
+}
