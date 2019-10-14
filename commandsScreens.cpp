@@ -711,8 +711,13 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 	struct retroScreen *src_screen = NULL;
 	struct retroScreen *dest_screen = NULL;
 	int src_buffer, dest_buffer;
-	int src_screen_nr = 0;
-	int dest_screen_nr = 0;
+
+	uint32_t src_screen_flags = 0;
+	uint32_t dest_screen_flags = 0;
+
+	uint32_t src_screen_nr = 0;
+	uint32_t dest_screen_nr = 0;
+
 	int src_x0 = 0;
 	int src_y0 = 0;
 	int src_x1 = 0;
@@ -721,18 +726,21 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 	int dest_y = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
+/*
+	dprintf("current_screen %d\n",current_screen);
+	dump_screens();
+*/
 	switch (args)
 	{
 		case 2:	// Screen Copy {source} to {dest}
 
-				src_screen_nr = getStackNum( stack-1 );
-				dest_screen_nr = getStackNum( stack );
+				src_screen_flags = getStackNum( stack-1 );
+				dest_screen_flags = getStackNum( stack );
 
-				src_screen_nr &=0xFF;
-				dest_screen_nr &= 0xFF;
+				src_screen_nr = src_screen_flags & 0xFF;
+				dest_screen_nr = dest_screen_flags & 0xFF;
 
-				if ((src_screen_nr>-1)&&(src_screen_nr<8)&&(dest_screen_nr>-1)&&(dest_screen_nr<8))
+				if ((src_screen_nr>=0)&&(src_screen_nr<8)&&(dest_screen_nr>=0)&&(dest_screen_nr<8))
 				{
 					src_screen = screens[src_screen_nr];
 					src_x1 = src_screen->realWidth;
@@ -743,19 +751,20 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 
 		case 8:	// Screen Copy {source},x0,y0,x1,y1 to {dest},x,y
 			
-				src_screen_nr = getStackNum( stack-7 );
+				src_screen_flags = getStackNum( stack-7 );
+				dest_screen_flags = getStackNum( stack-2 );
+
+				src_screen_nr = src_screen_flags & 0xFF;
+				dest_screen_nr = dest_screen_flags & 0xFF;
+
 				src_x0 = getStackNum( stack-6 );
 				src_y0 = getStackNum( stack-5 );
 				src_x1 = getStackNum( stack-4 );
 				src_y1 = getStackNum( stack-3 );
-				dest_screen_nr = getStackNum( stack-2 );
 				dest_x = getStackNum( stack-1 );
 				dest_y = getStackNum( stack );
 
-				src_screen_nr &=0xFF;
-				dest_screen_nr &= 0xFF;
-
-				if ((src_screen_nr>-1)&&(src_screen_nr<8)&&(dest_screen_nr>-1)&&(dest_screen_nr<8))
+				if ((src_screen_nr>=0)&&(src_screen_nr<8)&&(dest_screen_nr>=0)&&(dest_screen_nr<8))
 				{
 					src_screen = screens[src_screen_nr];
 					dest_screen = screens[dest_screen_nr];
@@ -763,14 +772,18 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 				break;
 
 		default:
+				printf("args: %d\n",args);
 	 			setError(22,data->tokenBuffer);
-				break;
+				popStack( stack - data->stack );
+				return NULL;
 	}
+
+	dprintf("sec %d (%08x), dest %d (%08x)\n", src_screen_nr , src_screen_flags , dest_screen_nr , dest_screen_flags ) ;
 
 	if ( (src_screen) && (dest_screen) )
 	{
-		src_buffer = ((src_screen_nr & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
-		dest_buffer = ((dest_screen_nr & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
+		src_buffer = ((src_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
+		dest_buffer = ((dest_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
 
 		retroScreenBlit( src_screen, src_buffer ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0, dest_screen, dest_buffer, dest_x, dest_y);
 	}
