@@ -10,9 +10,7 @@ missing token 0x0894 - command "Menu Movable"
 
 **Quatro.AMOS**
 
-Started, works until you pick "Demo Mode" or "Player Vs Player"
-game will run for while until "Screen Copy" on line 85, 
-with Error: Screen not opened.
+The game works, (but it does not work perfect yet, more work need on sound and so on.)
 
 **SuperBlockout.AMOS**
 
