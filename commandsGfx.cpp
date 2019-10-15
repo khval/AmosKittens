@@ -38,6 +38,7 @@ extern int tokenlength;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
+extern struct retroSprite *sprite;
 
 extern struct RastPort font_render_rp;
 
@@ -1639,7 +1640,6 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 	int fade_speed = 0;
 	int mask = 0xFFFFFFFF;	// 8 bit set, all colors in use.
 	int source_screen = 0;
-	bool valid = true;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1655,24 +1655,19 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 				mask = getStackNum( stack );
 				break;
 		default:
-				valid = false;
 				setError(22,data->tokenBuffer);
+				popStack( stack - data->stack );
 				return NULL;
 	}
 
-
-	if (valid)
+	if ((source_screen>=0)&&(source_screen<8))
 	{
-
 		if ((screens[current_screen])&&(screens[source_screen]))
 		{
 			int n;
-			int fade_speed = 0;
 			struct retroRGB *org_pal;
 			struct retroRGB *source_pal;
 			struct retroRGB *dest_pal;
-
-			fade_speed = getStackNum( data -> stack );
 
 			screens[current_screen] -> fade_count = 0;
 			screens[current_screen] -> fade_speed = 0;
@@ -1681,7 +1676,34 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 			source_pal = screens[source_screen] -> orgPalette;
 			dest_pal = screens[current_screen] -> fadePalette;
 
-			printf("setting fade pal\n");
+			n = 0;
+			while ( n<256)
+			{
+				*dest_pal=*source_pal;
+
+				source_pal++;
+				dest_pal++;
+				n++;
+			}
+
+			screens[current_screen] -> fade_speed = fade_speed;
+			screens[current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
+		}
+
+		popStack( stack - data->stack );
+		return NULL;
+	}
+
+	if (source_screen<0)
+	{
+		if ((screens[current_screen])&&(sprite))
+		{
+			int n;
+			struct retroRGB *source_pal;
+			struct retroRGB *dest_pal;
+
+			dest_pal = screens[current_screen] -> fadePalette;
+			source_pal = sprite -> palette;
 
 			n = 0;
 			while ( n<256)
@@ -1690,14 +1712,11 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 
 				source_pal++;
 				dest_pal++;
-//				org_pal++;
 				n++;
-			}
+			}	
 
 			screens[current_screen] -> fade_speed = fade_speed;
 			screens[current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
-
-			printf("fade speed is %d\n",screens[current_screen] -> fade_speed);
 		}
 	}
 
@@ -1716,6 +1735,7 @@ char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 	stack++;
+	setStackNum(0);
 	return NULL;
 }
 
