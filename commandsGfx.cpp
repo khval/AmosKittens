@@ -2022,8 +2022,16 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 
 char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _gfxPhysic, tokenBuffer );
-	setStackNone();
+	int nextToken = *((unsigned short *) tokenBuffer);
+
+	if (nextToken == token_parenthesis_start)	
+	{
+		stackCmdParm( _gfxPhysic, tokenBuffer );
+		setStackNone();
+		return tokenBuffer;
+	}
+
+	setStackNum( current_screen | 0xC0000000 );
 	return tokenBuffer;
 }
 
@@ -2060,8 +2068,16 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 
 char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _gfxLogic, tokenBuffer );
-	setStackNone();
+	int nextToken = *((unsigned short *) tokenBuffer);
+
+	if (nextToken == token_parenthesis_start)	
+	{
+		stackCmdParm( _gfxLogic, tokenBuffer );
+		setStackNone();
+		return tokenBuffer;
+	}
+
+	setStackNum( current_screen | 0x80000000 );
 	return tokenBuffer;
 }
 
