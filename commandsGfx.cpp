@@ -1630,9 +1630,6 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
-
-	Delay(3);
-
 	return NULL;
 }
 
