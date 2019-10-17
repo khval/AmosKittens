@@ -429,23 +429,25 @@ int _set_var_index;		// we need to resore index
 
 char *_get_var_index( glueCommands *self , int nextToken )
 {
-	int varNum;
+	uint32_t varNum;
 	int n = 0;
 	int mul;
 	struct kittyData *var = NULL;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__ );
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__ );
 
 	varNum = self -> lastVar;
+	if (varNum == 0) 
+	{
+		setError(11, self -> tokenBuffer);
+		return NULL;
+	}
 
-	if (varNum == 0) return NULL;
+	printf("-- varNum %d --\n",varNum-1);
 
 	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
 
-	if (varNum) 
-	{
-		var = &globalVars[varNum-1].var;
-	}
+	var = &globalVars[varNum-1].var;
 
 	if (var)
 	{
@@ -509,6 +511,11 @@ char *_get_var_index( glueCommands *self , int nextToken )
 			}
 
 			flushCmdParaStack(nextToken);
+		}
+		else
+		{
+			printf("varname %s(%d of max %d)\n",globalVars[varNum-1].varName, _last_var_index, var->count);
+			setError( 23, self -> tokenBuffer  );
 		}
 	}
 
