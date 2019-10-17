@@ -493,7 +493,7 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
 
 	parenthesis[parenthesis_count] =stack;
 	parenthesis_count++;
@@ -526,7 +526,16 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		do_input[parenthesis_count] = do_std_next_arg;
 		parenthesis_count--;
 
-		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
+		if (cmdStack) 
+		{
+			struct glueCommands *sub = &cmdTmp[cmdStack-1];
+
+			if ((sub->parenthesis_count == parenthesis_count ) && (sub -> flag == cmd_index )) 	// only if we at the right place !!!
+			{
+				sub -> cmd( sub, nextToken);
+				cmdStack --;
+			}
+		}
 	}
 
 
