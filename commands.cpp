@@ -511,7 +511,6 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	char *ret;
 	int nextToken = *((unsigned short *) tokenBuffer);
-	int lastToken;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -530,11 +529,9 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 		if (cmdStack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], nextToken);
 	}
 
-	lastToken = getLastProgStackToken();
 
-	if ( correct_order( lastToken ,  nextToken ) == false )
+	if ( correct_order( getLastProgStackToken() ,  nextToken ) == false )
 	{
-		// hidden ( condition.
 		setStackHiddenCondition();
 	}
 
