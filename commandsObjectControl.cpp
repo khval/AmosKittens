@@ -29,6 +29,8 @@
 #include "engine.h"
 #include "amosstring.h"
 
+#include "commandsData.h"
+
 extern int sig_main_vbl;
 
 extern int last_var;
@@ -155,7 +157,19 @@ char *ocYMouse(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocMouseKey(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	unsigned short next_token = *((short *) (tokenBuffer));
+
+	if ( correct_order( getLastProgStackToken(),  next_token ) == false )
+	{
+		dprintf("---hidden ( symbol \n");
+		setStackHiddenCondition();
+	}
+
 	setStackNum(engine_mouse_key);
+
+	kittyStack[stack].state = state_none;
+	flushCmdParaStack( next_token );
+
 	return tokenBuffer;
 }
 
