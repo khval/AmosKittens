@@ -726,10 +726,8 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 	int dest_y = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-/*
-	dprintf("current_screen %d\n",current_screen);
-	dump_screens();
-*/
+
+
 	switch (args)
 	{
 		case 2:	// Screen Copy {source} to {dest}
@@ -743,10 +741,11 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 				if ((src_screen_nr>=0)&&(src_screen_nr<8)&&(dest_screen_nr>=0)&&(dest_screen_nr<8))
 				{
 					src_screen = screens[src_screen_nr];
-					src_x1 = src_screen->realWidth;
-					src_y1 = src_screen->realHeight;
+					src_x1 = src_screen->realWidth-1;
+					src_y1 = src_screen->realHeight-1;
 					dest_screen = screens[dest_screen_nr];
 				}
+
 				break;
 
 		case 8:	// Screen Copy {source},x0,y0,x1,y1 to {dest},x,y
@@ -778,12 +777,10 @@ char *_gfxScreenCopy( struct glueCommands *data, int nextToken )
 				return NULL;
 	}
 
-	dprintf("sec %d (%08x), dest %d (%08x)\n", src_screen_nr , src_screen_flags , dest_screen_nr , dest_screen_flags ) ;
-
 	if ( (src_screen) && (dest_screen) )
 	{
-		src_buffer = ((src_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
-		dest_buffer = ((dest_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( dest_screen );
+		src_buffer = ((src_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( src_screen ) : logical( src_screen );
+		dest_buffer = ((dest_screen_flags & 0xFFFFFF00) == 0xC0000000) ? physical( dest_screen ) : logical( dest_screen );
 
 		retroScreenBlit( src_screen, src_buffer ,src_x0, src_y0, src_x1-src_x0, src_y1-src_y0, dest_screen, dest_buffer, dest_x, dest_y);
 	}
