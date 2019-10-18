@@ -119,11 +119,13 @@ struct timeval repeat_time;
 
 #define delta_time_ms(t1,t2) (((t2.tv_sec - t1.tv_sec) *1000)+((t2.tv_usec - t1.tv_usec) /1000))
 
-void atomic_get_char( char *buf)
+void atomic_get_char( struct stringData *str)
 {
 	struct timeval ctime;
+	char *buf = &str->ptr;
 	buf[0]=0;
-	buf[1]=1;
+	buf[1]=0;
+	str -> size = 0;
 
 	if (engine_ready())
 	{
@@ -134,6 +136,8 @@ void atomic_get_char( char *buf)
 			if (current_key.event == kitty_key_down )
 			{
 				handel_key( buf );
+				str -> size = buf[0] ? 1: 0;
+
 				gettimeofday(&key_press_time, NULL);
 				gettimeofday(&repeat_time, NULL);
 			}
@@ -151,6 +155,8 @@ void atomic_get_char( char *buf)
 					if (delta_time_ms(repeat_time,ctime) > keyboardSpeed  )
 					{
 						handel_key( buf );
+						str -> size = buf[0] ? 1: 0;
+
 						gettimeofday(&repeat_time, NULL);
 					}
 				}
@@ -166,8 +172,9 @@ void atomic_get_char( char *buf)
 void kitty_getline(string &input)
 {
 	bool done = false;
-	char buf[2];
-	buf[1] = 0;
+
+	struct stringData * str = alloc_amos_string( 1 );
+
 	int rightx;
 	int charsPerRow;
 	int charspace;
@@ -198,7 +205,7 @@ void kitty_getline(string &input)
 
 		do
 		{
-			atomic_get_char(buf);
+			atomic_get_char(str);
 
 #ifdef __amigaos4__			
 			WaitTOF();
@@ -207,9 +214,9 @@ void kitty_getline(string &input)
 			sleep(1);
 #endif
 
-			if (buf[0] != 0) printf("--%d--\n",buf[0]);
+			if (str -> size != 0) printf("--%d--\n",&(str -> ptr));
 
-			switch (buf[0])
+			switch (str->ptr)
 			{
 				case 0:
 					break;
@@ -233,7 +240,6 @@ void kitty_getline(string &input)
 						clear_cursor( screens[current_screen] );
 						draw_cursor( screens[current_screen] );
 					}
-
 					break;
 
 				case 13:
@@ -242,21 +248,16 @@ void kitty_getline(string &input)
 					break;
 
 				default:
-					input += buf;
+					input += str->ptr;
 					cursx ++;
-
 
 					clear_cursor( screens[current_screen] );
 					textWindow -> locateX = rightx;
 
-
 					if (cursx - scrollx > charspace) scrollx++;
 					__print_char_array( screen, input.c_str() + scrollx,charspace);
 
-
 					draw_cursor( screens[current_screen] );
-
-
 					break;	
 			}
 
@@ -266,12 +267,14 @@ void kitty_getline(string &input)
 	{
 		getline(cin, input);
 	}
+
+	free(str);
 }
 
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	char buf[2];
+	struct stringData * str = alloc_amos_string( 1 );
 
 	do
 	{
@@ -283,12 +286,14 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 		engine_unlock();
 
-		atomic_get_char(buf);
+		atomic_get_char( str );
 		Delay(1);
 
 		if (engine_ready() == false) break;
 
-	} while (buf[0]==0);
+	} while ( str->size == 0 );
+
+	free(str);
 
 	return tokenBuffer;
 }
@@ -301,17 +306,17 @@ char *cmdInkey(struct nativeCommand *cmd, char *tokenBuffer )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_scancode = 0;
-	atomic_get_char( &str->ptr );
-
+	atomic_get_char( str );
 	setStackStr(str);
+
 	return tokenBuffer;
 }
 
 char *_InputStrN( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct stringData * str = alloc_amos_string( 1 );
 	string tmp;
-	char buf[2];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -322,8 +327,8 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 		int n = getStackNum( stack );
 		while ((int) tmp.length()<n)
 		{
-			atomic_get_char(buf);
-			tmp += buf;
+			atomic_get_char( str);
+			tmp += str -> ptr;
 
 #ifdef __amigaos4__
 			WaitTOF();
@@ -342,6 +347,8 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 		sprintf( &ret -> ptr, "%s", tmp.c_str()  );
 		setStackStr( ret ); 
 	}
+
+	free(str);
 
 	return NULL;
 }
