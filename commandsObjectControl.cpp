@@ -526,12 +526,14 @@ char *ocResetZone(struct nativeCommand *cmd, char *tokenBuffer)
 char *ocShowOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
 char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
@@ -539,12 +541,14 @@ char *ocHideOn(struct nativeCommand *cmd, char *tokenBuffer)
 char *ocPriorityOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
 char *ocPriorityOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
@@ -585,21 +589,25 @@ char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
 char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
 char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
 char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	NYI(__FUNCTION__);
 	return tokenBuffer;
 }
 
@@ -710,6 +718,8 @@ char *_ocSynchro( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	NYI(__FUNCTION__);
+
 	if (args == 1)
 	{
 	}
@@ -736,6 +746,9 @@ char *_ocUpdateEvery( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	NYI(__FUNCTION__);
+
 
 	if (args == 1)
 	{
