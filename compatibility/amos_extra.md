@@ -66,7 +66,7 @@ on line 176
 
 **Scrolling_text_demo.AMOS**
 
-DSI error at line 71, Screen Copy
+cooper effect looks like is at the wrong location, but it looks like it works.
 
 **Sonix.AMOS**
 
