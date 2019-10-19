@@ -271,7 +271,7 @@ void drawBob(struct retroSpriteObject *bob)
 				if (clear -> mem) copyScreenToClear( screen,clear );
 			}
 
-			retroPasteSprite(screen, sprite, bob->x, bob->y, image, flags, bob -> plains);
+			retroPasteSprite(screen, screen -> double_buffer_draw_frame,  sprite, bob->x, bob->y, image, flags, bob -> plains);
 		}
 	}
 }
