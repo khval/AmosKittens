@@ -66,7 +66,6 @@ extern uint32 *ImagePointer ;
 extern Object *objectPointer ;
 #endif
 
-
 int find_zone_in_any_screen_hard( int hx, int hy)
 {
 	int z,x,y;
@@ -847,8 +846,6 @@ char *ocMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-
 char *_ocHZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -872,8 +869,6 @@ char *_ocHZone( struct glueCommands *data, int nextToken )
 		default:
 				setError(22, data-> tokenBuffer);
 	}
-
-	printf("HZone(%d,%d,%d) is %d\n",s,x,y,ret);
 
 	popStack( stack - data->stack );
 	setStackNum( ret );
@@ -925,7 +920,6 @@ char *ocZone(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _ocHZone, tokenBuffer );
 	return tokenBuffer;
 }
-
 
 char *_ocJoy( struct glueCommands *data, int nextToken )
 {
