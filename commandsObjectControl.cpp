@@ -52,6 +52,7 @@ extern int bobDoUpdate;
 extern int bobAutoUpdate;
 extern int bobUpdateEvery;
 extern int bobDoUpdateEnable;
+extern int bobUpdateOnce;
 
 int priorityReverse = 0;
 
@@ -776,11 +777,9 @@ char *_ocUpdateEvery( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
-
-
 	if (args == 1)
 	{
+		bobUpdateEvery = getStackNum(stack);
 	}
 	else setError(22,data->tokenBuffer);;
 

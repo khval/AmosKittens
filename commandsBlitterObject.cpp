@@ -39,6 +39,7 @@ extern int tokenlength;
 extern int priorityReverse;
 extern int bobDoUpdate;
 extern int bobAutoUpdate;
+extern int bobDoUpdateEnable;
 extern int bobUpdateNextWait;
 
 extern int current_screen;
@@ -1033,7 +1034,8 @@ char *_boBobOff( struct glueCommands *data, int nextToken )
 		if ((del>-1)&&(del<64))
 		{
 			engine_lock();
-			clearBob(&bobs[del]);
+
+			if (bobDoUpdateEnable)	clearBob(&bobs[del]);
 
 			if (bobs[del].clear[0].mem) sys_free(bobs[del].clear[0].mem);
 			bobs[del].clear[0].mem = NULL;
