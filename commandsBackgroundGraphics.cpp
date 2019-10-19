@@ -72,7 +72,14 @@ char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 					int y = getStackNum( stack-1 );
 					int image = getStackNum( stack );
 
-					retroPasteIcon( screen, screen -> double_buffer_draw_frame,  icons,x,y,image-1);
+					switch (screen -> autoback)
+					{
+						case 0:	retroPasteIcon( screen, screen -> double_buffer_draw_frame,  icons,x,y,image-1);
+								break;
+						default:	retroPasteIcon( screen, 0,  icons,x,y,image-1);
+								if (screen -> Memory[1]) retroPasteIcon( screen, 1,  icons,x,y,image-1);
+								break;
+					}		
 				}
 				break;
 			break;
@@ -407,7 +414,17 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 		screen = screens[ current_screen ];
 		if (screen)
 		{
-			if (block) retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
+			if (block) 
+			{
+				switch (screen -> autoback)
+				{
+					case 0:	retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
+							break;
+					default:	retroPutBlock(screen, 0, block, x,y, 255);
+							if (screen -> Memory[1]) retroPutBlock(screen, 1, block, x,y, 255);
+							break;
+				}	
+			}
 		}
 	}
 
@@ -536,12 +553,19 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 
-	if (block)
+	screen = screens[ current_screen ];
+	if (screen)
 	{
-		screen = screens[ current_screen ];
-		if (screen)
+		if (block)
 		{
-			if (block) retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
+			switch (screen -> autoback)
+			{
+				case 0:	retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
+						break;
+				default:	retroPutBlock(screen, 0, block, x,y, 255);
+						if (screen -> Memory[1]) retroPutBlock(screen, 1, block, x,y, 255);
+						break;
+			}
 		}
 	}
 
