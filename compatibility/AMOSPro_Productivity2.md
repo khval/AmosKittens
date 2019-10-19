@@ -4,4 +4,9 @@ missing token 0e08 - command "Phybase"
 
 **IFF_Compactor.AMOS**
 
-Opens a dialog menu, but the menu does not work.
+menu works, but buttons are not redrawn after being pressed.
+program mostly works.
+
+**Wonderland/wonderland.Amos"
+
+Missing token 24E0 - command ?
