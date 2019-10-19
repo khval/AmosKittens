@@ -69,7 +69,9 @@ uint32_t	engine_back_color = 0x000000;
 
 int autoView = 1;
 int bobDoUpdate = 0;			// when we are ready to update bobs.
+int bobDoUpdateEnable = 1;
 int bobAutoUpdate = 1;
+int bobUpdateEvery = 1;
 int bobUpdateNextWait = 0;
 int cursor_color = 3;
 
@@ -704,7 +706,7 @@ void main_engine()
 						{
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
-								if ((bobDoUpdate)||(bobAutoUpdate))		// if "bob update off" is true, you need to do "bob update"
+								if (( bobDoUpdate & bobDoUpdateEnable )||(bobAutoUpdate))		// if "bob update off" is true, you need to do "bob update"
 								{
 									clearBobsOnScreen(screen);
 									drawBobsOnScreen(screen);

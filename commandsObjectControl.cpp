@@ -46,6 +46,13 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
+extern void __wait_vbl();
+
+extern int bobDoUpdate;
+extern int bobAutoUpdate;
+extern int bobUpdateEvery;
+extern int bobDoUpdateEnable;
+
 int priorityReverse = 0;
 
 extern struct retroEngine *engine ;
@@ -101,6 +108,7 @@ int find_zone_in_any_screen_pixel( int hx, int hy)
 			}
 		}
 	}
+
 	return -1;
 }
 
@@ -603,13 +611,26 @@ char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	NYI(__FUNCTION__);
+	int prev = bobAutoUpdate;
+	bobAutoUpdate = 0;
+	bobDoUpdateEnable = 0;
+	return tokenBuffer;
+}
+
+char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int prev = bobAutoUpdate;
+	bobAutoUpdate = 1;
+	bobDoUpdateEnable = 1;
 	return tokenBuffer;
 }
 
 char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	NYI(__FUNCTION__);
+	printf("bobAutoUpdate %d\n",bobAutoUpdate);
+	bobDoUpdate = 1;
+	__wait_vbl();
 	return tokenBuffer;
 }
 
@@ -750,11 +771,6 @@ char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	return tokenBuffer;
-}
 
 char *_ocUpdateEvery( struct glueCommands *data, int nextToken )
 {
