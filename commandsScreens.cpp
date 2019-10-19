@@ -1323,6 +1323,7 @@ char *_gfxXHard( struct glueCommands *data, int nextToken )
 char *gfxXHard(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _gfxXHard, tokenBuffer );
+	setStackNum(0);
 	return tokenBuffer;
 }
 
@@ -1355,6 +1356,7 @@ char *_gfxYHard( struct glueCommands *data, int nextToken )
 char *gfxYHard(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _gfxYHard, tokenBuffer );
+	setStackNum(0);
 	return tokenBuffer;
 }
 
