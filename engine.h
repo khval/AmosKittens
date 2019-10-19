@@ -23,6 +23,9 @@ extern bool engine_mouse_hidden;
 extern struct retroVideo *video;
 extern struct retroScreen *screens[8] ;
 
+#define hardware_upper_left 128
+#define hardware_upper_top 50
+
 #ifdef __amigaos4__
 extern Process *EngineTask;
 #endif
