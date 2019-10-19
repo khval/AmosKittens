@@ -152,13 +152,13 @@ int find_zone_in_only_screen_pixel( int screen, int x, int y)
 
 char *ocXMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(engine_mouse_x);
+	setStackNum(engine_mouse_x/2+hardware_upper_left);
 	return tokenBuffer;
 }
 
 char *ocYMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(engine_mouse_y);
+	setStackNum(engine_mouse_y/2+hardware_upper_top);
 	return tokenBuffer;
 }
 
