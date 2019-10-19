@@ -1225,7 +1225,8 @@ struct nativeCommand nativeCommands[]=
 	{0x1668,"Set Zone",0,ocSetZone },
 	{0x1680,"Zone",0,ocZone },			// Zone(x,y)
 	{0x168E,"Zone",0,ocZone },			// Zone(screen,x,y)
-	{0x16AA,"HZone",0,ocHZone },
+	{0x169A,"HZone",0,ocHZone },		// Hzone(x,y)
+	{0x16AA,"HZone",0,ocHZone },		// Hzone(screen,x,y)
 	{0x16B6,"Scin(x,y)",0,gfxScin },
 	{0x16D0,"Mouse Screen",0,ocMouseScreen },
 	{0x16E2,"Mouse Zone",0,ocMouseZone },
