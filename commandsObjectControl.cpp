@@ -917,7 +917,7 @@ char *_ocZone( struct glueCommands *data, int nextToken )
 char *ocZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _ocHZone, tokenBuffer );
+	stackCmdParm( _ocZone, tokenBuffer );
 	return tokenBuffer;
 }
 
