@@ -545,6 +545,24 @@ void dump_bobs(int screen_id)
 	Printf("\n");
 }
 
+void dump_zones()
+{
+	int z,x,y;
+	struct zone *zz;
+	struct retroScreen *s;
+	for (z=0;z<zones_allocated;z++)
+	{
+		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		{
+			if (s = screens[zones[z].screen])
+			{
+				zz = &zones[z];
+				printf ("zone %d at %d,%d to %d,%d - on screen %d\n",z, zz->x0,zz->y0,zz->x1,zz->y1,zz -> screen );
+			}
+		}
+	}
+}
+
 
 void dump_screens()
 {

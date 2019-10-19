@@ -48,6 +48,7 @@ void dump_end_of_program();
 void dumpLineAddress();
 void dump_680x0_regs();
 void dump_screens();
+void dump_zones();
 
 #ifdef __amigaos__
 extern struct Window *debug_Window;
