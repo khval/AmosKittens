@@ -443,10 +443,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 		return NULL;
 	}
 
-	printf("-- varNum %d --\n",varNum-1);
-
 	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
-
 	var = &globalVars[varNum-1].var;
 
 	if (var)
@@ -1316,7 +1313,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1DE0, "Hide", 0, ocHide },						// hide mouse, (only dummy).
 	{0x1DEA, "Show On",0,ocShowOn },
 	{0x1DF8, "Show",0,ocShow },
-	{0x1E02,"Change Mouse",0,ocChangeMouse },		// dummy
+	{0x1E02,"Change Mouse",0,ocChangeMouse },
 	{0x1E16,"X Mouse",0,ocXMouse },
 	{0x1E24,"Y Mouse",0,ocYMouse },
 	{0x1E32,"Mouse Key",0,ocMouseKey },
