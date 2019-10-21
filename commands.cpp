@@ -2334,6 +2334,19 @@ char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (onMenuEnabled)
+	{
+		if (getMenuEvent())
+		{
+			char *ret;
+			ret  = execute_on( _selected_.menu +1, onMenuTokenBuffer , tokenBuffer, onMenuToken );
+			if (ret) tokenBuffer = ret - 2;		// +2 will be added on exit.
+		}
+	}
+
+	Delay(1);
+
 	return tokenBuffer;
 }
 
