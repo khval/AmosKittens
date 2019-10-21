@@ -28,27 +28,27 @@ extern struct retroScreen *screens[8] ;
 int XScreen_formula( struct retroScreen *screen, int x )
 {
 	x = x - hardware_upper_left - (screen -> scanline_x/2) - screen -> offset_x;
-	if  (screen -> videomode & retroHires)  x /= 2;
+	if  (screen -> videomode & retroHires)  x *= 2;
 	return x;
 }
 
 int YScreen_formula( struct retroScreen *screen, int y )
 {
 	y = y - hardware_upper_top - (screen -> scanline_y/2) - screen -> offset_y;
-	if  (screen -> videomode & retroInterlaced) y /= 2;
+	if  (screen -> videomode & retroInterlaced) y *= 2;
 	return y;
 }
 
 int XHard_formula( struct retroScreen *screen, int x )
 {
-	if (screen -> videomode & retroHires)  x *= 2;
+	if (screen -> videomode & retroHires)  x /= 2;
 	x = x + (screen -> scanline_x/2) + screen -> offset_x + hardware_upper_left;
 	return x;
 }
 
 int YHard_formula( struct retroScreen *screen, int y )
 {
-	if  (screen -> videomode & retroInterlaced) y *= 2;
+	if  (screen -> videomode & retroInterlaced) y /= 2;
 	y = y + (screen -> scanline_y/2) + screen -> offset_y + hardware_upper_top;
 	return y;
 }
