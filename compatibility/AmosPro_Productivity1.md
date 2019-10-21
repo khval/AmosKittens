@@ -15,5 +15,4 @@ The game works, (but it does not work perfect yet, more work need on sound and s
 **SuperBlockout.AMOS**
 
 Game also use a command on line 350, that has token 004C in extention 1 (music?)
-There is some graphics corruption, command "draw icon" some time creates a DSI error.
-issue with double buffer, and drawing blocks, when stopped moving.
+There has some graphics corruption, some issue with paste bob, double buffering, and update commands.
