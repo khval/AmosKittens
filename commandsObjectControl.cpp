@@ -9,6 +9,8 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
+#include <proto/intuition.h>
+#include <intuition/pointerclass.h>
 #endif
 
 #ifdef __linux__
@@ -418,6 +420,11 @@ void frameToPointer(struct retroFrameHeader *frame)
 
 	if (objectPointer)
 	{
+		SetAttrs( objectPointer, 
+			POINTERA_XOffset, -frame -> XHotSpot * 2,
+			POINTERA_YOffset, -frame -> YHotSpot * 2,
+			TAG_END);
+
 		SetWindowPointer( engine -> window, 
 				WA_Pointer, objectPointer, TAG_END );
 	}
@@ -629,7 +636,9 @@ char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	printf("bobAutoUpdate %d\n",bobAutoUpdate);
-	bobDoUpdate = 1;
+	engine_lock();		// Stop half of the bobs from being drawn.
+	bobUpdateOnce = 1;
+	engine_unlock();
 	__wait_vbl();
 	return tokenBuffer;
 }
