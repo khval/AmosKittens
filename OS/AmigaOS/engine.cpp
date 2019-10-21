@@ -51,6 +51,7 @@ bool engine_stopped = false;
 bool engine_key_repeat = false;
 bool engine_key_down = false;
 bool engine_mouse_hidden = false;
+bool engine_bob_update = true;
 
 extern bool curs_on;
 extern int _keyshift;
@@ -71,6 +72,7 @@ int autoView = 1;
 int bobDoUpdate = 0;			// when we are ready to update bobs.
 int bobDoUpdateEnable = 1;
 int bobAutoUpdate = 1;
+int bobUpdateOnce = 0;
 int bobUpdateEvery = 1;
 int bobUpdateNextWait = 0;
 int cursor_color = 3;
@@ -639,6 +641,7 @@ void swap_buffer(struct retroScreen *screen )
 void main_engine()
 {
 	int bobIsUpdated = 0; 
+	int bobUpdateOnceDone = 0;
 
 	Printf("init engine\n");
 
@@ -706,21 +709,24 @@ void main_engine()
 						{
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
-								if (( bobDoUpdate & bobDoUpdateEnable )||(bobAutoUpdate))		// if "bob update off" is true, you need to do "bob update"
+								Printf("bobDoUpdate: %ld, bobAutoUpdate %ld\n ", bobDoUpdate, bobAutoUpdate );
+								if (bobUpdateOnce | ( bobDoUpdate & bobDoUpdateEnable ) | bobAutoUpdate )		// if "bob update off" is true, you need to do "bob update"
 								{
 									clearBobsOnScreen(screen);
 									drawBobsOnScreen(screen);
 
 									swap_buffer( screen );
+
+									bobUpdateOnceDone = bobUpdateOnce ? 1: 0;
 									bobIsUpdated = 1;
 								}
-								else
+								else if (bobDoUpdateEnable == 1)
 								{
 									swap_buffer( screen );
 								}
 							}
 						}
-						else if (bobDoUpdate)
+						else if (bobDoUpdate & bobDoUpdateEnable)
 						{
 							clearBobsOnScreen(screen);
 							drawBobsOnScreen(screen);
@@ -730,6 +736,12 @@ void main_engine()
 				}	// next
 
 				retroDrawVideo( video );
+
+				if (bobUpdateOnceDone)
+				{
+					bobUpdateOnceDone = 0;
+					bobUpdateOnce = 0;
+				}
 
 				if (bobIsUpdated)
 				{
