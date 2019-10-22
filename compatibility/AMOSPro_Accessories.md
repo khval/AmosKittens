@@ -31,7 +31,7 @@ Works it starts "AMOSPro_Producitivity1:Menu_editor.amos"
 
 **Object_Editor.AMOS**
 
-missing token: 0x1B7A - command "Limit Bob"
+Stops at "Screen Base" command, that is not implemented.
 
 **Resource_Bank_Maker.AMOS**
 
