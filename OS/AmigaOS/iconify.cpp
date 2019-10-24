@@ -91,11 +91,6 @@ void enable_Iconify()
 
 void	disable_Iconify()
 {
-Printf("%s:%ld\n",__FUNCTION__,__LINE__);
-Delay(10);
-
-
-
 	if (dobj)
 	{
 		RemoveAppIcon( appicon );
@@ -104,21 +99,12 @@ Delay(10);
 		dobj = NULL;
 	}
 
-
-Printf("%s:%ld\n",__FUNCTION__,__LINE__);
-Delay(10);
-
-
 	if (iconifyPort)
 	{
 		FreeSysObject ( ASOT_PORT, iconifyPort ); 
 		iconifyPort = NULL;
 		iconify_sig  = 0;
 	}
-
-Printf("%s:%ld\n",__FUNCTION__,__LINE__);
-Delay(10);
-
 
 	open_engine_window(
 		window_save_state.window_left,

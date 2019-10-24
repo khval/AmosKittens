@@ -47,6 +47,8 @@ extern int _set_var_index;		// we need to resore index
 static struct timeval timer_before, timer_after;
 
 extern std::vector<struct label> labels;
+extern std::vector<int> engineCmdQue;
+
 
 extern int last_var;
 extern struct globalVar globalVars[];
@@ -2276,6 +2278,23 @@ char *cmdKillEditor(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer )
 {
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	engine_lock();
+	engineCmdQue.push_back(kitty_to_back);
+	engine_unlock();
+	return tokenBuffer;
+}
+
+char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	engine_lock();
+	engineCmdQue.push_back(kitty_to_front);
+	engine_unlock();
+	return tokenBuffer;
+}
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }

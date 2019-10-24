@@ -61,6 +61,7 @@ extern APTR engine_mx ;
 extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
 std::vector<struct amos_selected> amosSelected;
+std::vector<int> engineCmdQue;
 
 
 int		engine_mouse_key = 0;
@@ -690,10 +691,40 @@ void main_engine()
 
 			if (iconifyPort) handel_iconify();
 
+
+
+			engine_lock();
+
+			while (engineCmdQue.size() > 0)
+			{
+				switch ( engineCmdQue[0] )
+				{
+					case kitty_to_back:
+
+						if ((engine -> window)&&(iconifyPort == NULL))
+						{
+							empty_que( engine -> window -> UserPort );
+							enable_Iconify(); 
+							engine -> window = NULL;
+						}
+						break;
+
+					case kitty_to_front:
+
+						if (iconifyPort) 
+						{
+							disable_Iconify(); 
+							engine -> window = My_Window;
+						}
+						break;
+				}
+
+				engineCmdQue.erase( engineCmdQue.begin() );
+			}
+
 			if (autoView)
 			{
 				retroClearVideo( video, engine_back_color );
-				engine_lock();
 
 				for (n=0; n<8;n++)
 				{
@@ -710,6 +741,7 @@ void main_engine()
 							if ((screen -> autoback!=0) || (screen -> force_swap))
 							{
 								Printf("bobDoUpdate: %ld, bobAutoUpdate %ld\n ", bobDoUpdate, bobAutoUpdate );
+
 								if (bobUpdateOnce | ( bobDoUpdate & bobDoUpdateEnable ) | bobAutoUpdate )		// if "bob update off" is true, you need to do "bob update"
 								{
 									clearBobsOnScreen(screen);
@@ -785,10 +817,9 @@ void main_engine()
 					}
 				}
 #endif		
-				engine_unlock();
-
-
 			}	// end if (autoView)
+
+			engine_unlock();
 
 			if (My_Window)
 			{
