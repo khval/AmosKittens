@@ -5,7 +5,7 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor.AMOS**
 
-(works maybe, takes lot time to start in debug mode)
+(works maybe, takes lot time to start in debug mode, it does not work in AmosPRO some programing error some where.)
 
 **Amal_Editor_Fixed.AMOS**
 
@@ -15,6 +15,7 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 Missing token 0x258C - command "@apml@"
 +Synyax error on line 1677
+if I'm not mistaken this token means part of program is compiled, so can't support that.
 
 **Font8x8_Editor.AMOS**
 
@@ -22,8 +23,7 @@ Works it starts "AMOSPro_Producitivity2:Font8x8_editor.amos"
 
 **IFF_Compactor.AMOS**
 
-It does show menu (it uses the interface lanuage I think),
-but menu is not working,
+Works it starts "AMOSPro_Producitivity2:IFF_Compactor.AMOS"
 
 **Menu_Editor.AMOS**
 
