@@ -67,4 +67,13 @@ see other docs like issue for more info.
 	bit 9 - value 256 - joystick button 5
 	...
 	
-	
+**AMOS to Back**
+
+	Insted of just hiding Amos Kittens, it will iconify Amos kittens on AmigaOS4.x, 
+	in the future you can expect same  behavior on AmigsOS3.x and AROS, MorphOS, 
+	(In the future if Amos Kittens is ported to Windows, 
+	this might result in minimized window to start bar.)
+
+**AMOS to Front**
+
+	Uniconify Amos Kittens, and open the window.
