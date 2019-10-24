@@ -2295,11 +2295,14 @@ char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer )
 	engine_unlock();
 	return tokenBuffer;
 }
+
+char *cmdAmosLock(struct nativeCommand *cmd, char *tokenBuffer )
+{
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;
 }
 
-char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer )
+char *cmdAmosUnlock(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	return tokenBuffer;

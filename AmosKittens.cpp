@@ -1400,6 +1400,8 @@ struct nativeCommand nativeCommands[]=
 	{0x2498,"Bank Swap",0,bankBankSwap},	// AmosPro?
 	{0x24AA,"Amos To Front",0,cmdAmosToFront},
 	{0x24BE,"Amos To Back",0,cmdAmosToBack},
+	{0x24E0,"Amos Lock",0,cmdAmosLock },
+	{0x24F0,"Amos Unlock",0,cmdAmosUnlock },
 	{0x2516,"Ntsc", 0, gfxNtsc },		// only reports false.
 	{0x2520,"Laced",0, gfxLaced },
 	{0x253C,"Command Line$", 0, cmdCommandLineStr },

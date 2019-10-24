@@ -67,6 +67,8 @@ char *cmdKillEditor(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdAmosToBack(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdAmosToFront(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdAmosLock(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdAmosUnlock(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdNot(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdSetBuffers(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdMultiWait(struct nativeCommand *cmd, char *tokenBuffer );
