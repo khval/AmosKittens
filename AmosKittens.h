@@ -17,7 +17,11 @@ typedef void* APTR;
 #define VAR_BUFFERS 1000
 #define MAX_PARENTHESIS_COUNT 1000
 
+#define token_newLine	0x0000
+#define token_index		0x0074
 #define token_semi		0x0064
+#define token_comma	0x005C
+#define token_nextCmd	0x0054
 #define token_add		0xFFC0
 #define token_sub		0xFFCA
 #define token_mul		0xFFE2
@@ -492,7 +496,7 @@ struct kittyLib
 	cmdTmp[cmdStack].flag = cmd_index ;	\
 	cmdTmp[cmdStack].lastVar = last_var;	\
 	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = 0; \
+	cmdTmp[cmdStack].token = token_index ; \
 	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
 	cmdStack++; } \
 
