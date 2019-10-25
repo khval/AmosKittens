@@ -1209,14 +1209,14 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
 
-		if (channel -> status == channel_status::paused) 	// if amal program gets paused, we break loop
+		if (channel -> amalStatus == channel_status::paused) 	// if amal program gets paused, we break loop
 		{
-			channel -> status = channel_status::active;
+			channel -> amalStatus = channel_status::active;
 			call++;
 			break;
 		}
 
-		if (channel -> status == channel_status::wait) 
+		if (channel -> amalStatus == channel_status::wait) 
 		{
 			break;
 		}
@@ -1232,7 +1232,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 			printf("code at %08x\n",channel -> amalProg.call_array );
 
 			AmalPrintf("%s:%s:%d - amal program ended, offset %d\n",__FILE__,__FUNCTION__,__LINE__, (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
-			channel -> status = channel_status::done;
+			channel -> amalStatus = channel_status::done;
 		}
 	}
 	else	// autotest prog

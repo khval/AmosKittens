@@ -65,7 +65,7 @@ void *autotest_end API_AMAL_CALL_ARGS
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> status = channel_status::paused;
+	self -> amalStatus = channel_status::paused;
 	self -> loopCount = 0;
 	return NULL;
 }
@@ -164,7 +164,7 @@ void *amal_call_direct API_AMAL_CALL_ARGS
 	void *(**ret) API_AMAL_CALL_ARGS;
 
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> status = channel_status::direct;
+	self -> amalStatus = channel_status::direct;
 
 	ret = (void *(**) API_AMAL_CALL_ARGS) code[1];
 	if (ret)
@@ -179,7 +179,7 @@ void *amal_call_direct API_AMAL_CALL_ARGS
 void *amal_call_wait API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> status = channel_status::wait;
+	self -> amalStatus = channel_status::wait;
 	return NULL;
 }
 
@@ -205,7 +205,7 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 		if (self -> loopCount>9)
 		{
 			AmalPrintf("self -> status = channel_status::paused\n");
-			self -> status = channel_status::paused;
+			self -> amalStatus = channel_status::paused;
 			self -> loopCount = 0;
 			return ret-1;
 		}
@@ -275,7 +275,7 @@ void *callback_move  (struct kittyChannel *self, struct amalCallBack *cb)
 			self -> objectAPI -> setX( self -> number, self -> move_from_x + dxp );
 			self -> objectAPI -> setY( self -> number, self -> move_from_y + dyp );
 
-			self -> status = channel_status::paused;
+			self -> amalStatus = channel_status::paused;
 
 			// reset stack
 			self -> argStackCount = cb -> argStackCount;
@@ -904,7 +904,7 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 	location = (char *) self -> amalProg.call_array;
 	location += (int) code[1];
 
-	self -> status = channel_status::paused;
+	self -> amalStatus = channel_status::paused;
 
 	return location - sizeof(void *) ;
 }

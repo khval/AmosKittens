@@ -58,7 +58,8 @@ void initChannel( struct kittyChannel *item, int channel )
 		item -> move_count = 0; 
 		item -> move_count_to = 0; 
 
-		item -> status = channel_status::uninitialized;
+		item -> animStatus = channel_status::uninitialized;
+		item -> amalStatus = channel_status::uninitialized;
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )

@@ -316,16 +316,16 @@ void channel_amal( struct kittyChannel *channel )
 		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
 	}
 
-	if (channel -> status == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
+	if (channel -> amalStatus == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
 
-	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
+	if (channel -> amalStatus == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
 	{
 		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
-		channel -> status = channel_status::active;
+		channel -> amalStatus = channel_status::active;
 	}
 
 	// check if program is ready to run, and it has program.
-	if ( ( channel -> status == channel_status::active ) && ( channel -> amalProg.amalProgCounter ) )
+	if ( ( channel -> amalStatus == channel_status::active ) && ( channel -> amalProg.amalProgCounter ) )
 	{
 		AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -421,7 +421,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
 					{
-						(channels -> item(index)) -> status = channel_status::active;
+						(channels -> item(index)) -> amalStatus = channel_status::active;
 						success = true;
 					}
 					engine_unlock();
@@ -433,7 +433,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 
 					if (item = channels -> getChannel(channel))
 					{
-						item -> status = channel_status::active;
+						item -> amalStatus = channel_status::active;
 						success = true;
 					}
 				}
@@ -473,7 +473,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 					for (index = 0; index < channels -> _size(); index++)
 					{
 						item = channels -> item(index);
-						item -> status = channel_status::uninitialized;
+						item -> amalStatus = channel_status::uninitialized;
 						if (item -> amal_script) free(item -> amal_script); 
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
@@ -489,7 +489,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						item -> status = channel_status::uninitialized;
+						item -> amalStatus = channel_status::uninitialized;
 						if (item -> amal_script) free(item -> amal_script); 
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
@@ -663,7 +663,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
 					{
-						(channels -> item(index)) -> status = channel_status::frozen;
+						(channels -> item(index)) -> amalStatus = channel_status::frozen;
 						success = true;
 					}
 					engine_unlock();
@@ -676,7 +676,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						item -> status = channel_status::frozen;
+						item -> amalStatus = channel_status::frozen;
 						success = true;
 					}
 					engine_unlock();
@@ -922,7 +922,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 		case 0:
 			{
 				int n;
-				for (n=0;n<channels -> _size();n++) channels -> item(n) -> status = channel_status::active;
+				for (n=0;n<channels -> _size();n++) channels -> item(n) -> amalStatus = channel_status::active;
 			}
 			break;
 		case 1:
@@ -932,7 +932,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					item -> status = channel_status::active;
+					item -> amalStatus = channel_status::active;
 				}
 			}
 			break;
@@ -974,7 +974,7 @@ char *_amalChanmv( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						if ((item -> status == channel_status::active) && (item -> count < item -> count_to ))
+						if ((item -> amalStatus == channel_status::active) && (item -> count < item -> count_to ))
 						{
 							engine_unlock();
 							setStackNum(~0);

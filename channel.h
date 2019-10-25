@@ -76,7 +76,10 @@ struct kittyChannel
 	int move_count_to;
 
 	struct channelAPI *objectAPI;
-	channel_status::status status;
+
+	channel_status::status animStatus;
+	channel_status::status amalStatus;
+
 	int reg[10];	// local reg 0 to 9 
 	int parenthses;
 	int *argStack;
