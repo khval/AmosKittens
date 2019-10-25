@@ -90,5 +90,7 @@ exit quick, maybe work.
 
 **Xerxes'Revenge.AMOS**
 
-error at line number: 94
-
+DSI error in bob clear.
+bug in FOR NEXT loop.
+("For" is not program stack, can't jump back to start of loop.)
+so need to look if it got flushed, or if it got executed where it should not.
