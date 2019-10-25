@@ -32,6 +32,12 @@ extern Process *EngineTask;
 
 enum
 {
+	kitty_to_back = 1,
+	kitty_to_front
+};
+
+enum
+{
 	kitty_key_up,
 	kitty_key_down
 };
