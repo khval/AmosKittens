@@ -1337,7 +1337,6 @@ struct nativeCommand nativeCommands[]=
 	{0x1FA2,"Amreg",0,amalAmReg },
 	{0x1FB0,"Amreg",0,amalAmReg },
 	{0x1FBC,"Amal On",0,amalAmalOn },
-	{0x1F30,"Amal On",0,amalAmalOn },
 	{0x1FCA,"Amal On",0,amalAmalOn },
 	{0x1FE2,"Amal Off",0,amalAmalOff },
 	{0x1FD2,"Amal Off",0,amalAmalOff },
