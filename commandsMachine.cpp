@@ -138,7 +138,7 @@ char *_machineLoke( struct glueCommands *data, int nextToken )
 	int *adr;
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
@@ -1002,8 +1002,9 @@ proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	if (args==1)
 	{
 		int bankNr = getStackNum(stack);
+
 		bank = findBank(bankNr);
-		if (bank) if (bank -> type == 11) code = bank -> start;
+		if (bank) if ((bank -> type >= 8)&&(bank -> type <= 10)) code = bank -> start;
 	}
 
 	popStack( stack - data->stack );
