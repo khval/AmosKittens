@@ -60,7 +60,6 @@ missing token: 0894 - command: Menu Movable
 
 **RAMOS1_3_Install.AMOS**
 
-"Y Graphic" command not suppoted error
 got out of index error on jmp$() array, with -1 index.
 on line 90, new syntax error on line 176 at Return command
 
