@@ -62,7 +62,7 @@ missing token: 0894 - command: Menu Movable
 
 "Y Graphic" command not suppoted error
 got out of index error on jmp$() array, with -1 index.
-on line 176
+on line 90, new syntax error on line 176 at Return command
 
 **Scrolling_text_demo.AMOS**
 
