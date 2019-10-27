@@ -56,11 +56,14 @@ void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *scre
 
 void clearBob(struct retroSpriteObject *bob)
 {
-	struct retroScreen *screen = screens[bob->screen_id];
-	struct retroSpriteClear *clear;
+	if (bob->screen_id<0) return;
 
-	if (screen)
 	{
+		struct retroScreen *screen = screens[bob->screen_id];
+		struct retroSpriteClear *clear;
+
+		if (screen == NULL) return;
+
 		clear = &bob -> clear[ screen -> double_buffer_draw_frame ];
 
 		if ((clear -> mem)&&(bob->background==0))
