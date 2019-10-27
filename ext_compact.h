@@ -7,9 +7,16 @@
 #endif
 #include "amosKittens.h"
 
+
+#define PicPac_screen 0x12031990
+#define PicPac_image 0x06071963
+
 struct PacPicContext
 {
 	// for when uncompressing or when compressing.
+
+	int scanline_x;
+	int scanline_y;
 
 	int w;
 	int h;

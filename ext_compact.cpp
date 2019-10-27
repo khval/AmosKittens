@@ -204,8 +204,6 @@ void __close_screen( int screen_num )
 {
 	if (screens[screen_num]) 
 	{
-//		videomode = screens[screen_num] -> videomode;
-
 		freeScreenBobs(screen_num);
 		freeAllTextWindows( screens[screen_num] );
 		retroCloseScreen(&screens[screen_num]);
@@ -213,7 +211,6 @@ void __close_screen( int screen_num )
 }
 
 void openUnpackedScreen(int screen_num, 
-//		int bytesPerRow, int height, 
 		struct PacPicContext *context )
 			
 {
@@ -254,7 +251,7 @@ void openUnpackedScreen(int screen_num,
 	{
 		current_screen = screen_num;
 
-		retroApplyScreen( screen, video, 0, 0,	screen -> realWidth,screen->realHeight );
+		retroApplyScreen( screen, video, (context -> scanline_x-128)*2 , (context -> scanline_y -50)*2,	screen -> realWidth,screen->realHeight );
 
 		if (textWindow = newTextWindow( screen, 0 ))
 		{
@@ -305,8 +302,8 @@ bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *conte
 // pac.pic. RLE decompressor
 bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 {
-	//  int o = 20;
 	int o=0;
+	int offset_x = 0,offset_y = 0;
 
 #ifdef debug_spack
 	d_data_pos = 0;
@@ -314,10 +311,15 @@ bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 	d_rrle_pos = 0;
 #endif
 
-	if( get4(o) == 0x12031990 )
+	context -> scanline_x = 128;
+	context -> scanline_y = 50;
+
+	if( get4(o) == PicPac_screen )
 	{
 		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+		context -> scanline_x = get2(o+8);
+		context -> scanline_y = get2(o+10);
 		context -> mode = get2(o+20);
 
 		// fetch palette
@@ -328,7 +330,7 @@ bool convertPacPic( unsigned char *data, struct PacPicContext *context )
 		o+=90;
 	}
 
-	if( get4(o) != 0x06071963 )
+	if( get4(o) != PicPac_image )
 	{
 		printf("could not find picture header!\n");
 		printf("%08x\n",get4(o));
@@ -457,7 +459,7 @@ int get_pac_pic_option( int bank_num, unsigned int block_id, int offset)
 			{
 				switch (this_id)
 				{
-					case 0x12031990:	o+= 90;	break;	// known size of block, move to next.
+					case PicPac_screen:	o+= 90;	break;	// known size of block, move to next.
 					default:	return 0;
 				}
 			}
@@ -539,19 +541,21 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:
+		case 1:	// open to current screen 
 			bank_num = getStackNum(stack);
 			screen_num = current_screen;
 
-			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
-			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
+			x0 = get_pac_pic_option( bank_num, PicPac_image, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, PicPac_image, 6 );
 			break;
 
-		case 2:
+		case 2:	// open new screen
 			bank_num = getStackNum(stack-1);
 			screen_num = getStackNum(stack);
 
-			if (get_pac_pic_option( bank_num, 0x12031990, 0 ) == 0x1203 )
+			printf("unpack % to %d (%d,%d)\n",bank_num,screen_num,x0,y0);
+
+			if (get_pac_pic_option( bank_num, PicPac_screen, 0 ) == 0x1203 )
 			{
 				__close_screen( screen_num );
 			}
@@ -566,8 +570,8 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 		case 3:
 			bank_num = getStackNum(stack-2);
 
-			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
-			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
+			x0 = get_pac_pic_option( bank_num, PicPac_image, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, PicPac_image, 6 );
 
 			stack_get_if_int(stack-1,&x0);
 			stack_get_if_int(stack,&y0);
@@ -578,13 +582,13 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 			bank_num = getStackNum(stack-3);
 			screen_num = getStackNum(stack-2);
 
-			x0 = get_pac_pic_option( bank_num, 0x06071963, 4 ) << 2;
-			y0 = get_pac_pic_option( bank_num, 0x06071963, 6 );
+			x0 = get_pac_pic_option( bank_num, PicPac_image, 4 ) << 2;
+			y0 = get_pac_pic_option( bank_num, PicPac_image, 6 );
 
 			stack_get_if_int(stack-1,&x0);
 			stack_get_if_int(stack,&y0);
 
-			if (get_pac_pic_option( bank_num, 0x12031990, 0 ) == 0x1203 )
+			if (get_pac_pic_option( bank_num, PicPac_screen, 0 ) == 0x1203 )
 			{
 				__close_screen( screen_num );
 			}
@@ -605,6 +609,8 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 	printf( "unpack( %08x, %d  %d, %d, %d )\n" ,  data, bank_num, screen_num, x0, y0 );
 
 	unpack( data, bank_num, screen_num, x0, y0 );
+	getchar();
+
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -891,7 +897,7 @@ bool spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 
 				if (include_screen)
 				{
-					set4(a+o,0x12031990 );
+					set4(a+o,PicPac_screen );
 					set2(a+o+4, screen -> realWidth );
 					set2(a+o+6, screen -> realHeight );
 					set2(a+o+8, (screen -> scanline_x +128) / 2 );
@@ -915,7 +921,7 @@ bool spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 					o+=90;
 				}
 
-				set4(a+o, 0x06071963);
+				set4(a+o, PicPac_image);
 				set2(a+o+4, x0 >> 2 );
 				set2(a+o+6, y0 );
 				set2(a+o+8, context.w);
