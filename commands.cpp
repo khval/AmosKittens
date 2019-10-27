@@ -1294,7 +1294,11 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 					var = &globalVars[ref -> ref -1].var;
 				}
 			}
-			else setError( 22,  tokenBuffer );
+			else
+			{
+				setError( 22,  tokenBuffer );
+				return tokenBuffer;
+			}
 		}
 		
 		if (var)
@@ -1365,11 +1369,11 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 					} else setError(23,tokenBuffer);
 					break;
 			}
-
 		}
 		else
 		{
 			setError(22,tokenBuffer);	
+			return tokenBuffer;
 		}
 	}
 	else	if (cmdTmp[cmdStack-1].cmd == _exit )
