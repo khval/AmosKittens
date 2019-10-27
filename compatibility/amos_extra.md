@@ -90,6 +90,7 @@ exit quick, maybe work.
 **Xerxes'Revenge.AMOS**
 
 DSI error in bob clear.
-bug in FOR NEXT loop.
-("For" is not in program stack, can't jump back to start of the loop.)
-so need to look if it got flushed, or if it got executed where it should not.
+Needs "make mask" command and bob collation etc, 
+support to work correct.
+(and it uses a lot of Amal, so you might run into some issues there as well.)
+Game starts, but quits without error.
