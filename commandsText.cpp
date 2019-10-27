@@ -2157,8 +2157,6 @@ char *_textYGraphic( struct glueCommands *data, int nextToken )
 	int b=0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	printf("Amos Kittens don't not support %s yet, but kittens are brave, and try\n",__FUNCTION__);
-
 	if (args == 1)
 	{
 		gy = getStackNum( stack  )*8;
