@@ -92,5 +92,5 @@ exit quick, maybe work.
 DSI error in bob clear.
 Needs "make mask" command and bob collation etc, 
 support to work correct.
+(and it uses a lot of Amal, so you might run into some issues there as well.)
 Game starts, but quits without error.
-
