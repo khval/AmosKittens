@@ -95,6 +95,11 @@ char *_mathFn( struct glueCommands *data, int nextToken );
 char *_mathFnReturn( struct glueCommands *data, int nextToken );
 char *_machineAREG( struct glueCommands *data, int nextToken );
 char *_machineDREG( struct glueCommands *data, int nextToken );
+char *_gfxLogic( struct glueCommands *data, int nextToken );
+char *_gfxScreenCopy( struct glueCommands *data, int nextToken );
+char *_setVar( struct glueCommands *data, int nextToken );
+char *_set_amreg_fn( struct glueCommands *data, int nextToken );
+char *_set_amreg_channel_fn( struct glueCommands *data, int nextToken );
 
 
 struct stackDebugSymbol
@@ -155,6 +160,11 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_mathFnReturn, "Fn (Return)"},
 	{_machineAREG,"_machineAREG"},
 	{_machineDREG,"_machineDREG"},
+	{_gfxLogic,"_gfxLogic"},
+	{_gfxScreenCopy,"_gfxScreenCopy"},
+	{_setVar,"set var"},
+	{_set_amreg_fn,"_set_amreg_fn" },
+	{_set_amreg_channel_fn,"_set_amreg_channel_fn" },
 	{NULL, NULL}
 };
 
