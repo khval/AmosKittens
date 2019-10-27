@@ -90,4 +90,7 @@ exit quick, maybe work.
 **Xerxes'Revenge.AMOS**
 
 DSI error in bob clear.
+Needs "make mask" command and bob collation etc, 
+support to work correct.
+Game starts, but quits without error.
 
