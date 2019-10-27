@@ -1066,6 +1066,7 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 
 	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
 
+	token_is_fresh = false;
 	tokenMode = mode_logical;
 	if (cmdStack)
 	{
