@@ -1354,7 +1354,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 	{
 		int rainbowNumber = getStackNum( stack-3 );
 		int base = getStackNum( stack-2 );
-		int verticalOffset = getStackNum( stack-1 ) - 38;
+		int verticalOffset = getStackNum( stack-1 ) ;
 		int height = getStackNum( stack );
 
 #if defined(__amigaos4__) 
@@ -1366,7 +1366,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		sleep(1);
 #endif
 
-		retroRainbow( video, rainbowNumber, base, verticalOffset, height);
+		retroRainbow( video, rainbowNumber, base, verticalOffset-50, height);
 	}
 	else setError(22,data->tokenBuffer);
 
