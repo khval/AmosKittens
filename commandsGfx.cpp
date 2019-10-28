@@ -1602,12 +1602,23 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 			c = 0;	// color
 			for (int s = data->stack+1 ; s <= stack ; s++ )
 			{
-				rgb = getStackNum( s );
-				dest_pal[c].r = ((rgb & 0xF00) >> 8) * 0x11;
-				dest_pal[c].g = ((rgb & 0x0F0) >> 4) * 0x11;
-				dest_pal[c].b = ((rgb & 0x00F)) * 0x11;
+				if (kittyStack[s].type == type_none)
+				{
+					dest_pal[c] = screen -> orgPalette[c];
+				}
+				else
+				{
+					rgb = getStackNum( s );
+					dest_pal[c].r = ((rgb & 0xF00) >> 8) * 0x11;
+					dest_pal[c].g = ((rgb & 0x0F0) >> 4) * 0x11;
+					dest_pal[c].b = ((rgb & 0x00F)) * 0x11;
+//					printf("rgb[%d] %03x\n",c,rgb);
+				}
+
 				c ++;
 			}
+
+			for ( ; c< 256;c++)	dest_pal[c] = screen -> orgPalette[c];
 		}
 		else		// fade to black, if no colors after fade.
 		{
@@ -1735,7 +1746,7 @@ char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 	stack++;
-	setStackNum(0);
+	setStackNone();
 	return NULL;
 }
 
