@@ -557,7 +557,7 @@ void dump_bobs(int screen_id)
 
 void dump_zones()
 {
-	int z,x,y;
+	int z;
 	struct zone *zz;
 	struct retroScreen *s;
 	for (z=0;z<zones_allocated;z++)
