@@ -1366,7 +1366,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		sleep(1);
 #endif
 
-		retroRainbow( video, rainbowNumber, base, verticalOffset-50, height);
+		retroRainbow( video, rainbowNumber, base, verticalOffset-51, height);
 	}
 	else setError(22,data->tokenBuffer);
 
