@@ -422,7 +422,9 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					for (index = 0; index < channels -> _size(); index++)
 					{
 						(channels -> item(index)) -> amalStatus = channel_status::active;
-						success = true;
+						Printf("is active\n");
+						engine_unlock();
+						return NULL;
 					}
 					engine_unlock();
 				}
@@ -434,18 +436,20 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus = channel_status::active;
-						success = true;
+						Printf("is active\n");
+						engine_unlock();
+						return NULL;
 					}
 				}
 				break;
 
-		defaut:
+		defaut:	 
+				popStack( stack - data->stack );
 				setError(22,data->tokenBuffer);
+				return NULL;
 	}
 
-	if (success == false) setError(22, data-> tokenBuffer);
-	popStack( stack - data->stack );
-
+	setError(22, data-> tokenBuffer);
 	return NULL;
 }
 
