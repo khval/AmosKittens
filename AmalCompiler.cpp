@@ -910,10 +910,11 @@ struct amalTab *find_amal_command(const char *str , int class_flags )
 			if (strncasecmp(str, tab -> name, l) == 0)
 			{
 				next_c = *(str+l);
-				symbol = find_amal_symbol( str + l );
 
 				if (next_c != ':')	// chack if its a label
 				{
+					symbol = find_amal_symbol( str + l );
+
 					if ((next_c == ' ') || (symbol) || (next_c == 0))
 					{
 						 return tab;
@@ -930,6 +931,32 @@ struct amalTab *find_amal_command(const char *str , int class_flags )
 					{
 						return tab;
 					}
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+struct amalTab *find_amal_command_ends_with_number(const char *str , int class_flags )
+{
+	char next_c;
+	int l;
+	struct amalTab *symbol = NULL;
+
+	for (struct amalTab *tab = amalCmds; tab -> name ; tab++ )
+	{
+		l = strlen(tab->name);
+
+		if ( tab -> Class & class_flags )
+		{
+			if (strncasecmp(str, tab -> name, l) == 0)
+			{
+				next_c = *(str+l);
+
+				if ((next_c >= '0')&&(next_c <='9'))	// chack if its a number
+				{
+					return tab;
 				}
 			}
 		}
@@ -1060,6 +1087,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		else
 		{
 			found = find_amal_command(s, amal::class_cmd_normal);
+			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
 		}
 
 		if (!found) found = find_amal_symbol(s);
