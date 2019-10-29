@@ -215,6 +215,7 @@ void setChannelToken(struct kittyChannel *item,int token, int number)
 		case 0x1B9E: 	item -> objectAPI = &bob_api; break;
 		case 0x0A18:	item -> objectAPI = &screen_display_api; break;
 		case 0x0A36:	item -> objectAPI = &screen_offset_api; break;
+		case 0x0DDC:	item -> objectAPI = &rainbow_api; break;
 	}
 
 	if (item -> objectAPI) 
