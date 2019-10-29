@@ -1043,7 +1043,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	allocAmalBuf( amalProg, 60 );
 #endif
 
-	printf("script: '%s'\n",script);
+	printf("script: '%s'\n",&script -> ptr);
 
 	data.pos = 0;
 	autotest_start_ptr_offset = -1;
