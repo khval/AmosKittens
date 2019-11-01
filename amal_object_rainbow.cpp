@@ -27,7 +27,7 @@ extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
 {
-	return 8;
+	return 4;
 }
 
 static int getImage (int object)
@@ -37,7 +37,7 @@ static int getImage (int object)
 
 static int getX (int object)
 {
-	return 0;
+	return video -> rainbow[object].offset;
 }
 
 static int getY (int object)
@@ -51,13 +51,12 @@ static void setImage (int object,int image)
 
 static void setX (int object,int x)
 {
+	video -> rainbow[object].offset = x;
 }
 
 static void setY (int object,int y)
 {
 	video -> rainbow[object].verticalOffset = y-50;
-
-	Printf("set %ld to Y %ld\n", object, y);
 }
 
 struct channelAPI rainbow_api = 
