@@ -63,6 +63,7 @@ main_objects = commands.cpp \
 			amal_object_rainbow.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
+			amal_object_screen_size.cpp \
 			screen_helper.cpp \
 			os/amigaos/readhunk.cpp \
 			os/amigaos/engine.cpp \

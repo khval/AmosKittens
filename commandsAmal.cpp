@@ -215,6 +215,7 @@ void setChannelToken(struct kittyChannel *item,int token, int number)
 		case 0x1B9E: 	item -> objectAPI = &bob_api; break;
 		case 0x0A18:	item -> objectAPI = &screen_display_api; break;
 		case 0x0A36:	item -> objectAPI = &screen_offset_api; break;
+		case 0x0A4E:	item -> objectAPI = &screen_size_api; break;
 		case 0x0DDC:	item -> objectAPI = &rainbow_api; break;
 	}
 
@@ -280,6 +281,7 @@ char *do_to_channel( struct nativeCommand *cmd, char *tokenbuffer )
 		case 0x1B9E: 	// Channel x To Bob y
 		case 0x0A18:	// Channel x To Display y
 		case 0x0A36:	// Channel x to Screen Offset Y
+		case 0x0A4E:	// Channel x to Screen Size Y
 		case 0x0DDC:  // Channel x to Rainbow y
 
 					stack ++;
