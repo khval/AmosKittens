@@ -411,7 +411,6 @@ char *amalAmal(struct nativeCommand *cmd, char *tokenBuffer)
 char *_amalAmalOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -726,7 +725,12 @@ void channel_do_object( struct kittyChannel *self )
 
 void channel_movex( struct kittyChannel *self )
 {
-	if (self -> count >= self -> count_to )
+	Printf("movex %ld , %ld\n",
+			self -> count , self -> move_count_to);
+
+	if (self -> moveStatus != channel_status::active) return;
+
+	if (self -> count >= self -> move_count_to )
 	{
 		int sign = 1;
 		int num = 0;
@@ -754,6 +758,7 @@ void channel_movex( struct kittyChannel *self )
 
 			if (*c==')') 
 			{
+				self -> count = 0;
 				c++;para --;break;
 			}
 		}
@@ -775,7 +780,10 @@ void channel_movex( struct kittyChannel *self )
 
 void channel_movey( struct kittyChannel *self )
 {
-	if (self -> count >= self -> count_to )
+
+	if (self -> moveStatus != channel_status::active) return;
+
+	if (self -> count >= self -> move_count_to )
 	{
 		int sign = 1;
 		int num = 0;
@@ -803,6 +811,7 @@ void channel_movey( struct kittyChannel *self )
 
 			if (*c==')') 
 			{
+				self -> count = 0;
 				c++;para --;break;
 			}
 		}
@@ -919,29 +928,37 @@ char *amalMoveY(struct nativeCommand *cmd, char *tokenBuffer)
 char *_amalMoveOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// this code don't need to be tread safe, I'm not changing the script, or adding new channels,
 
 	switch (args)
 	{
-		case 0:
+		case 1:
+
+			if (kittyStack[stack].type == type_none)
 			{
 				int n;
-				for (n=0;n<channels -> _size();n++) channels -> item(n) -> amalStatus = channel_status::active;
+				for (n=0;n<channels -> _size();n++)
+				{
+					printf("item %d is active\n",channels -> item(n) -> id);
+					channels -> item(n) -> moveStatus = channel_status::active;
+				}
 			}
-			break;
-		case 1:
+			else
 			{
 				struct kittyChannel *item;
 				int channel = getStackNum( stack  );
 
 				if (item = channels -> getChannel(channel))
 				{
-					item -> amalStatus = channel_status::active;
+					printf("move is active\n");
+					item -> moveStatus = channel_status::active;
 				}
 			}
-			break;
+			return NULL;
+
 		default:
 			setError(22,data->tokenBuffer);;
 			break;
@@ -955,6 +972,74 @@ char *amalMoveOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _amalMoveOn, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
+
+char *_amalMoveOff( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	if (kittyStack[stack].type == type_none )	// arg 1 not set.
+				{
+					int index = 0;
+					struct kittyChannel *item;
+
+					engine_lock();				// most be thread safe!!!
+					for (index = 0; index < channels -> _size(); index++)
+					{
+						item = channels -> item(index);
+						item -> moveStatus = channel_status::uninitialized;
+
+						if (item -> movex_script) free(item -> movex_script); 
+						item -> movex_script = NULL;
+						item -> movex_at = NULL;
+
+						if (item -> movey_script) free(item -> movey_script); 
+						item -> movey_script = NULL;
+						item -> movey_at = NULL;
+					}
+					engine_unlock();
+				}
+				else
+				{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack );
+
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						item -> moveStatus = channel_status::uninitialized;
+
+						if (item -> movex_script) free(item -> movex_script); 
+						item -> movex_script = NULL;
+						item -> movex_at = NULL;
+
+						if (item -> movey_script) free(item -> movey_script); 
+						item -> movey_script = NULL;
+						item -> movey_at = NULL;
+					}
+					engine_unlock();
+				}
+				break;
+
+		default:
+			setError(22,data->tokenBuffer);;
+			break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *amalMoveOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _amalMoveOff, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -1212,4 +1297,55 @@ char *amalAnimFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _amalAnimFreeze, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_amalMoveFreeze( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack  );
+
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						item -> moveStatus = channel_status::frozen;
+					}
+					engine_unlock();
+					return NULL;
+				}
+				break;
+		defaut:
+				popStack( stack - data->stack );
+				setError(22,data->tokenBuffer);
+	}
+	return NULL;
+}
+
+char *amalMoveFreeze(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+	int idx;
+
+	if ((next_token == token_nextCmd) || (next_token == token_newLine ))
+	{
+		struct kittyChannel *item;
+		engine_lock();
+		for (idx = 0; idx < channels -> _size(); idx++)
+		{
+			if (item = channels -> item( idx ))
+				item -> moveStatus = channel_status::frozen;
+		}
+		engine_unlock();
+		return tokenBuffer;
+	}
+
+	stackCmdNormal( _amalMoveFreeze, tokenBuffer );
+	return tokenBuffer;
+}
+
+
 

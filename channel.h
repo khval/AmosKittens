@@ -79,6 +79,7 @@ struct kittyChannel
 
 	channel_status::status animStatus;
 	channel_status::status amalStatus;
+	channel_status::status moveStatus;
 
 	int reg[10];	// local reg 0 to 9 
 	int parenthses;
