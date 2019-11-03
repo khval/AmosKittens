@@ -435,7 +435,6 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus = channel_status::active;
-						Printf("is active\n");
 						engine_unlock();
 						return NULL;
 					}
@@ -522,8 +521,6 @@ void channel_anim( struct kittyChannel *self )
 	struct channelAPI *api = self -> objectAPI;
 
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	Printf("API: %08x, STAUS: %ld\n",api,self->animStatus);
 
 	if (api == NULL) return;
 	if (self->animStatus != channel_status::active) return;
@@ -722,9 +719,6 @@ void channel_do_object( struct kittyChannel *self )
 
 void channel_movex( struct kittyChannel *self )
 {
-	Printf("movex %ld , %ld\n",
-			self -> count , self -> move_count_to);
-
 	if (self -> moveStatus != channel_status::active) return;
 
 	if (self -> count >= self -> move_count_to )
@@ -756,11 +750,12 @@ void channel_movex( struct kittyChannel *self )
 			if (*c==')') 
 			{
 				self -> count = 0;
-				c++;para --;break;
+				c++;para --;
+				break;
 			}
 		}
 
-		if (self -> count != self -> count_to) self -> movex_at = c;
+		if (self -> count != self -> move_count_to) self -> movex_at = c;
 	}
 	else
 	{
@@ -777,7 +772,6 @@ void channel_movex( struct kittyChannel *self )
 
 void channel_movey( struct kittyChannel *self )
 {
-
 	if (self -> moveStatus != channel_status::active) return;
 
 	if (self -> count >= self -> move_count_to )
@@ -792,7 +786,11 @@ void channel_movey( struct kittyChannel *self )
 		{
 			if (*c=='L') c = &self -> movey_script -> ptr;
 			if (*c=='(') para++;
-			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
+			if ((*c>='0')&&(*c<='9'))
+			{
+			 	num = (num*10) + (*c-'0');
+			}
+
 			if (*c=='-') sign = -1;
 			if ((*c==',')||(*c==')'))
 			{
@@ -800,7 +798,7 @@ void channel_movey( struct kittyChannel *self )
 				{
 					case 0: self -> move_sleep_to = num; self -> move_sleep = 0; break;
 					case 1: self -> deltay = sign * num; break;
-					case 2: self -> count_to = num; self -> count = 0; break;
+					case 2: self -> move_count_to = num; self -> count = 0; break;
 				}
 
 				arg ++;num = 0;sign = 1;
@@ -809,11 +807,12 @@ void channel_movey( struct kittyChannel *self )
 			if (*c==')') 
 			{
 				self -> count = 0;
-				c++;para --;break;
+				c++;para --;
+				break;
 			}
 		}
 
-		if (self -> count != self -> count_to) self -> movey_at = c;
+		if (self -> count != self -> move_count_to) self -> movey_at = c;
 	}
 	else
 	{
@@ -928,7 +927,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// this code don't need to be tread safe, I'm not changing the script, or adding new channels,
 
@@ -941,7 +940,6 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 				int n;
 				for (n=0;n<channels -> _size();n++)
 				{
-					printf("item %d is active\n",channels -> item(n) -> id);
 					channels -> item(n) -> moveStatus = channel_status::active;
 				}
 			}
@@ -952,7 +950,6 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					printf("move is active\n");
 					item -> moveStatus = channel_status::active;
 				}
 			}
