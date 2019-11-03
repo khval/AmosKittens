@@ -241,8 +241,6 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 				int token = getStackNum( stack - 1 );
 				int number = getStackNum( stack );
 
-				printf("channel %d, token %04x, number %d\n", channel, token, number);
-
 				engine_lock();	
 				if (item = channels -> getChannel(channel))
 				{
@@ -250,8 +248,6 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 				}
 				else
 				{
-					printf("not found... add new\n");
-
 					if (item = channels -> newChannel( channel ))
 					{
 						setChannelToken(item,token,number);
@@ -261,6 +257,7 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 				engine_unlock();	
 			}
 			break;
+
 		defaut:	setError(22,data->tokenBuffer);
 	}
 
@@ -855,6 +852,7 @@ char *_amalMoveX( struct glueCommands *data, int nextToken )
 						if (item = channels -> newChannel( channel ) )
 						{
 							setChannelMoveX( item, amos_strdup(txt) );
+							setChannelToken(item,0x1A94,channel); // default to sprite token
 						}
 					}
 					engine_unlock();
@@ -903,6 +901,7 @@ char *_amalMoveY( struct glueCommands *data, int nextToken )
 						if (item = channels -> newChannel( channel ) )
 						{
 							setChannelMoveY( item, amos_strdup(txt) );
+							setChannelToken(item,0x1A94,channel); // default to sprite token
 						}
 					}
 					engine_unlock();
