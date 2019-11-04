@@ -93,6 +93,9 @@ char *hsGetSpritePalette(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern int XSprite_formula(int x);
+extern int YSprite_formula(int y);
+
 char *_hsSprite( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -104,8 +107,8 @@ char *_hsSprite( struct glueCommands *data, int nextToken )
 	engine_lock();
 	num = getStackNum( stack - 3 );
 	sprite = &video -> sprites[num];
-	stack_get_if_int( stack - 2 , &sprite->x );
-	stack_get_if_int( stack - 1 , &sprite->y );
+	if (stack_is_number( stack - 2)) sprite->x = XSprite_formula(getStackNum( stack - 2 ));
+	if (stack_is_number( stack - 1)) sprite->y = YSprite_formula(getStackNum( stack - 1 ));
 	sprite->image = getStackNum( stack );
 	engine_unlock();
 

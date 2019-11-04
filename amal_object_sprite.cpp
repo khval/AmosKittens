@@ -21,8 +21,14 @@
 
 #include "AmalCompiler.h"
 #include "channel.h"
+#include "engine.h"
 
 extern struct retroVideo *video;
+
+int XSprite_formula(int x);
+int YSprite_formula(int y);
+int from_XSprite_formula(int x);
+int from_YSprite_formula(int y);
 
 static int getMax ( void )
 {
@@ -36,12 +42,12 @@ static int getImage (int object)
 
 static int getX (int object)
 {
-	return video -> sprites[object].x/2;
+	return from_XSprite_formula(video -> sprites[object].x);
 }
 
 static int getY (int object)
 {
-	return video -> sprites[object].y/2;
+	return from_YSprite_formula(video -> sprites[object].y);
 }
 
 static void setImage (int object,int image)
@@ -51,13 +57,37 @@ static void setImage (int object,int image)
 
 static void setX (int object,int x)
 {
-	video -> sprites[object].x = x*2;
+	video -> sprites[object].x = XSprite_formula(x);
 }
 
 static void setY (int object,int y)
 {
-	video -> sprites[object].y = y*2;
+	video -> sprites[object].y = YSprite_formula(y);
 }
+
+//-----
+
+int XSprite_formula(int x)
+{
+	return (x - hardware_upper_left)*2 ;
+}
+
+int YSprite_formula(int y)
+{
+	return (y - hardware_upper_top)*2 ;
+}
+
+int from_XSprite_formula(int x)
+{
+	return (x/2) + hardware_upper_left ;
+}
+
+int from_YSprite_formula(int y)
+{
+	return (y/2) + hardware_upper_top ;
+}
+
+//----
 
 struct channelAPI sprite_api = 
 {
