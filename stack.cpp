@@ -185,6 +185,18 @@ void stack_get_if_int( int n, int *ret )
 	}
 }
 
+
+bool stack_is_number( int n )
+{
+	switch (kittyStack[n].type)
+	{
+		case type_int:	return true;
+		case type_float: return true;
+	}
+	return false;
+}
+
+
 void setStackNone( void )
 {
 	if (kittyStack[stack].str) 

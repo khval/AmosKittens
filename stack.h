@@ -47,6 +47,7 @@ extern bool dropProgStackToFlag( int flag );
 extern bool dropProgStackAllFlag( int flag );
 
 extern void stack_get_if_int( int n, int *ret );
+extern bool stack_is_number( int n );
 
 #define incStack 	stack++; kittyStack[stack].state = state_none;	kittyStack[stack].type = type_none; 
 
