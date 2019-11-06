@@ -391,12 +391,12 @@ void DrawSprite(
 	struct retroRGB *rgb;
 	struct retroRGB *rgb2;
 	unsigned int color;
+	struct retroFrameHeader *frame;
 
-	if (image > sprite -> number_of_frames) image = sprite -> number_of_frames;
+	if (image >= sprite -> number_of_frames) image = sprite -> number_of_frames-1;
 	if (image < 0) image = 0;
 
-	struct retroFrameHeader *frame = sprite -> frames + image;
-
+	frame = sprite -> frames + image;
 	width = frame -> width ;
 	height = frame -> height ;
 
