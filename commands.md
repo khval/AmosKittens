@@ -26,7 +26,12 @@ see other docs like issue for more info.
 
 	Will always return 256 colors, even if you have opened screens with just 8 colors. this not bug, 
 	it's becouse Amos Kittens can only use chunky mode, and it is 8bit.
-	
+
+**Sprites**
+
+	Just like AmosPro sprites, but unlike AMOS Pro that uses hardware sprites and where there are color restrictions,
+	this sprites are 256 colors, and you do not need to worry about sprites not being displayed.
+
 **Load Iff**
 
 	Will load .png/.jpg any file supported by datatype system on AmigaOS, 
