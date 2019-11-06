@@ -29,8 +29,9 @@ see other docs like issue for more info.
 
 **Sprites**
 
-	Just like AmosPro sprites, but unlike AMOS Pro that uses hardware sprites and where there are color restrictions,
-	this sprites are 256 colors, and you do not need to worry about sprites not being displayed.
+	Just like AmosPro sprites, but unlike AMOS Pro that uses hardware sprites and where there are 
+	color restrictions, this sprites are 256 colors, and so you do not need to worry 
+	about sprites not being displayed.
 
 **Load Iff**
 
