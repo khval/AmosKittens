@@ -344,15 +344,16 @@ char *_gfxScin( struct glueCommands *data, int nextToken )
 		if ((my>-1)&&(my<480))
 		{
 			struct retroScreen *s = NULL;
+			struct retroScanline *scanline = &video -> scanlines[my].scanline[0];
 			int n;
 
-			if ( video -> scanlines[my].data)
+			if ( scanline -> data)
 			{
-				s = video -> scanlines[my].screen;
+				s = scanline -> screen;
 			}
 			else if (my>0)
 			{
-				s = video -> scanlines[my-1].screen;
+				s = scanline -> screen;
 			}
 
 			if (s)

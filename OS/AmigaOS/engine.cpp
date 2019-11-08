@@ -430,7 +430,7 @@ void DrawSprite(
 		destination_row_ptr = destination_row_start;
 		destination_row_ptr2 = destination_row_start + video -> width;
 
-		rgb = video -> scanlines[0].orgPalette;
+		rgb = video -> scanlines[0].scanline[0].orgPalette;
 
 		for ( source_row_ptr = source_row_start;  source_row_ptr < source_row_end ; source_row_ptr++ )
 		{
