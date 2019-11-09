@@ -1449,10 +1449,48 @@ char *gfxDualPriority(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxDualPlayfield( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+				{
+					int screen0 = getStackNum( stack-1 );
+					int screen1 = getStackNum( stack );
+
+					if ((screens[screen0])&&(screens[screen1]))
+					{
+						screens[screen0]->dualScreen = screens[screen1];
+
+						screens[screen1]->flags |= retroscreen_flag_hide;
+						video -> refreshAllScanlines = TRUE;
+						popStack( stack - data->stack );
+						return NULL;
+					}
+
+					setError(22, data->tokenBuffer );
+				}
+				break;
+
+		default:
+				setError(22, data->tokenBuffer );
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
 char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
 {
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setError(1000,tokenBuffer);
+
+	stackCmdNormal( _gfxDualPlayfield, tokenBuffer );
+	setStackNone();
+
 	return tokenBuffer;
 }
 
