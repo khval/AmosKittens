@@ -48,6 +48,8 @@ char *_discLineInputFile( struct glueCommands *data, int nextToken );
 char *amos_to_amiga_pattern(const char *amosPattern);
 void split_path_pattern( struct stringData *str, struct stringData **path, struct stringData **pattern);
 
+int have_drive( struct stringData *name);
+
 char *_discSetDir( struct glueCommands *data, int nextToken )
 {
 	popStack( stack - data -> stack  );
@@ -361,6 +363,9 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	int args = stack - data -> stack +1;
 	struct stringData *_str;
 	BPTR lock = 0;
+	APTR oldRequest;
+	int32 success;
+	struct InfoData info;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -374,18 +379,25 @@ char *_discExist( struct glueCommands *data, int nextToken )
 			return NULL;
 		}
 
+		oldRequest = SetProcWindow((APTR)-1);
 		lock = Lock( &_str -> ptr, SHARED_LOCK );
+		SetProcWindow(oldRequest);
 
 		if (lock)
 		{
 			UnLock( lock );
-			setStackNum( true ); 
+			setStackNum( ~0 ); 
+			return NULL;
 		}
+
+		setStackNum( 0 );
+		return NULL;
 	}
-
-	popStack( stack - data -> stack  );
-
-	setStackNum( lock ? ~0 : 0 );
+	else
+	{
+		popStack( stack - data -> stack  );
+		setError( 22, data -> tokenBuffer );
+	}
 	return NULL;
 }
 
