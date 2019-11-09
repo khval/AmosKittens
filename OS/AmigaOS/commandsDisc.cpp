@@ -811,7 +811,6 @@ char *discDfree(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	struct InfoData data;
 
-
 	int32 success = GetDiskInfoTags( 
 					GDI_LockInput,GetCurrentDir(),
 					GDI_InfoData, &data,
@@ -820,12 +819,6 @@ char *discDfree(struct nativeCommand *cmd, char *tokenBuffer)
 	if (success)
 	{
 		unsigned int freeBlocks;
-
-		dprintf("num blocks %d\n", data.id_NumBlocks);
-		dprintf("used blocks %d\n", data.id_NumBlocksUsed);
-		dprintf("bytes per block %d\n", data.id_BytesPerBlock);
-
-
 		freeBlocks = data.id_NumBlocks - data.id_NumBlocksUsed;
 
 		// this does not support my disk as it has more then 4 GB free :-/
