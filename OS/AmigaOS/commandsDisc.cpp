@@ -2125,8 +2125,8 @@ char *discDrive(struct nativeCommand *disc, char *tokenBuffer)
 char *_discPort( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data -> stack +1;
-	struct stringData *volumeName;
-	int ret = 0;
+//	struct stringData *volumeName;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
