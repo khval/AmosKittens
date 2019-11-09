@@ -1921,13 +1921,13 @@ char *findVolumeName(char *name)
 char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data -> stack +1;
-	struct stringData *ret;
+
 	struct stringData *path;
 	char  *volumeName;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
+//	NYI(__FUNCTION__);
 
 	switch (args)
 	{
@@ -1937,9 +1937,45 @@ char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 
 			if (volumeName)
 			{
-				ret = toAmosString(volumeName, strlen(volumeName));
-				setStackStr(ret);
+				int result = -1;
+				struct InfoData info;
+
+				int32 success;
+				APTR oldRequest;
+
+//				printf("volumeName: %s\n",volumeName);
+
+				oldRequest = SetProcWindow(NULL);
+
+				result = GetDiskInfoTags( 
+						GDI_StringNameInput, volumeName,
+						GDI_InfoData, &info, TAG_END );
+
+				SetProcWindow(oldRequest);
+				
+				if (result)
+				{
+					struct stringData *ret = alloc_amos_string( strlen(volumeName) +30 );
+					if (ret)
+					{
+						uint64_t freeBlocks = (uint64_t) info.id_NumBlocks - (uint64_t) info.id_NumBlocksUsed;
+						uint64_t freeBytes = freeBlocks * (uint64_t) info.id_BytesPerBlock;
+
+						sprintf(&(ret->ptr),"%s%lld",volumeName, freeBytes);
+						ret -> size = strlen( &(ret -> ptr) );
+						setStackStr(ret);
+						return NULL;
+					}
+				}
 			}
+
+			{
+				struct stringData ret;
+				ret.ptr =0;
+				ret.size = 0;
+				setStackStrDup(&ret);
+			}
+
 			break;
 		default:
 			popStack( stack - data -> stack );
