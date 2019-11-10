@@ -7,20 +7,16 @@ only the commands that are different are listed here.
 not implmented commands not listed, dummy commands not listed, 
 see other docs like issue for more info.
 
+**AMOS to Back**
 
-**Wait**
+	Insted of just hiding Amos Kittens, it will iconify Amos kittens on AmigaOS4.x, 
+	in the future you can expect same  behavior on AmigsOS3.x and AROS, MorphOS, 
+	(In the future if Amos Kittens is ported to Windows, 
+	this might result in minimized window to start bar.)
 
-	Wait 1/50 of a second (20ms), just like normal AMOS wait, 
-	but Wait command will also handle "On Menu Proc" events, 
-	two reasons for this, 
-	first its bad idea to process events in interpreter as it slows down all AMOS programs, 
-	second it forces developers to not busy loop there AMOS programs.
+**AMOS to Front**
 
-**Wait VBL**
-	
-	Will wait for vertical blanking, 
-	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
-	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
+	Uniconify Amos Kittens, and open the window.
 
 **Disc Info$**
 
@@ -86,13 +82,17 @@ see other docs like issue for more info.
 	bit 9 - value 256 - joystick button 5
 	...
 	
-**AMOS to Back**
+**Wait**
 
-	Insted of just hiding Amos Kittens, it will iconify Amos kittens on AmigaOS4.x, 
-	in the future you can expect same  behavior on AmigsOS3.x and AROS, MorphOS, 
-	(In the future if Amos Kittens is ported to Windows, 
-	this might result in minimized window to start bar.)
+	Wait 1/50 of a second (20ms), just like normal AMOS wait, 
+	but Wait command will also handle "On Menu Proc" events, 
+	two reasons for this, 
+	first its bad idea to process events in interpreter as it slows down all AMOS programs, 
+	second it forces developers to not busy loop there AMOS programs.
 
-**AMOS to Front**
-
-	Uniconify Amos Kittens, and open the window.
+**Wait VBL**
+	
+	Will wait for vertical blanking, 
+	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
+	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
+	
