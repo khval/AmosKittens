@@ -818,17 +818,16 @@ char *discDfree(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (success)
 	{
-		unsigned int freeBlocks;
-		freeBlocks = data.id_NumBlocks - data.id_NumBlocksUsed;
+
+		uint64_t freeBlocks = (uint64_t) info.id_NumBlocks - (uint64_t) info.id_NumBlocksUsed;
+		uint64_t freeBytes = freeBlocks * (uint64_t) info.id_BytesPerBlock;
 
 		// this does not support my disk as it has more then 4 GB free :-/
 		// ints are 32bit internaly in AMOS kittens, should bump it up to 64bit, internally.
 
-		setStackNum( freeBlocks * data.id_BytesPerBlock ); 
+		if (freeBytes>0x7FFFFFFF) freeBytes = 0x7FFFFFFF;		// limit value to 31bit
 
-		// print the real size here... 
-		printf("free bytes %lld\n", (long long int) freeBlocks * (long long int) data.id_BytesPerBlock );
-
+		setStackNum( (int) freeBytes ); 
 	}
 
 	return tokenBuffer;
