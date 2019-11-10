@@ -14,6 +14,9 @@ see other docs like issue for more info.
 	(In the future if Amos Kittens is ported to Windows, 
 	this might result in minimized window to start bar.)
 
+	You should not use this command to hide opening screen use command "view off", 
+	use command "View On" when your done.
+
 **AMOS to Front**
 
 	Uniconify Amos Kittens, and open the window.
