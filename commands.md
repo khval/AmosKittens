@@ -31,7 +31,7 @@ see other docs like issue for more info.
 
 	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro standard,
 	and is using singed integer as return values. To avoid returning negative numbers when over
-	2GBytes, this command will return 2Gbytes if is more than 2Gbytes free.
+	2GBytes, this command will return 2Gbytes if its more than 2Gbytes free.
 
 	Use command "Disk Info$" command to get correct number of bytes free.
 
