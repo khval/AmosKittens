@@ -22,6 +22,11 @@ see other docs like issue for more info.
 	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
 	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
 
+**Disc Info$**
+
+	This command return string "Volume name:size free",
+	unlike Amos Pro this command does support large hard drives over 2Gbytes.
+
 **Screen Colour**
 
 	Will always return 256 colors, even if you have opened screens with just 8 colors. this not bug, 
