@@ -27,6 +27,14 @@ see other docs like issue for more info.
 	This command return string "Volume name:size free",
 	unlike Amos Pro this command does support large hard drives over 2Gbytes.
 
+**Dfree**
+
+	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro standard,
+	and is using singed integer as return values. To avoid returning negative numbers when over
+	2GBytes, this command will return 2Gbytes if is more than 2Gbytes free.
+
+	Use command "Disk Info$" command to get correct number of bytes free.
+
 **Screen Colour**
 
 	Will always return 256 colors, even if you have opened screens with just 8 colors. this not bug, 
