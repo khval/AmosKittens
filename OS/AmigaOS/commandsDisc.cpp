@@ -809,11 +809,11 @@ char *discParent(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *discDfree(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	struct InfoData data;
+	struct InfoData info;
 
 	int32 success = GetDiskInfoTags( 
 					GDI_LockInput,GetCurrentDir(),
-					GDI_InfoData, &data,
+					GDI_InfoData, &info,
 					TAG_END);
 
 	if (success)
@@ -825,9 +825,14 @@ char *discDfree(struct nativeCommand *cmd, char *tokenBuffer)
 		// this does not support my disk as it has more then 4 GB free :-/
 		// ints are 32bit internaly in AMOS kittens, should bump it up to 64bit, internally.
 
-		if (freeBytes>0x7FFFFFFF) freeBytes = 0x7FFFFFFF;		// limit value to 31bit
-
-		setStackNum( (int) freeBytes ); 
+		if (freeBytes<0x80000000)
+		{
+			setStackNum( (int) freeBytes ); 
+		}
+		else
+		{
+			setStackDecimal( (double) freeBytes );
+		}
 	}
 
 	return tokenBuffer;
