@@ -74,8 +74,9 @@ main_objects = commands.cpp \
 			os/amigaos/spawn.cpp \
 			os/amigaos/iconify.cpp \
 			os/amigaos/ahi_dev.cpp \
+			os/amigaos/animation.cpp \
 			AmosString.cpp \
-			floyd.cpp 
+			floyd.cpp \
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}

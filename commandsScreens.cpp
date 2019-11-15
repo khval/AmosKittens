@@ -977,9 +977,53 @@ void LoadIff( char *name, const int sn )
 		DisposeDTObject((Object*) dto);
 		engine_unlock();
 	}
-
-//	getchar();
 }
+
+void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG &colors )
+{
+	ULONG c;
+
+	if (bformat==PIXF_NONE)
+	{
+		for (c=0;c<colors;c++)		
+		{
+			retroScreenColor(screen,c,cr[c].red,cr[c].green,cr[c].blue);
+		}
+	}
+	else
+	{
+		colors = 256;
+		grayScalePalette( screen, colors );
+		get_most_used_colors( rp, screen->realHeight,  screen->realWidth, screen);
+	}
+}
+
+void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen )
+{
+	int x,y;
+
+	if (bformat==PIXF_NONE)
+	{
+		for (y=0;y<screen->realHeight;y++)
+		{
+			for (x=0;x<screen->realWidth;x++)
+			{
+				retroPixel( screen, screen -> Memory[0], x,y, ReadPixel(rp,x,y));
+			}
+		}
+	}
+	else
+	{
+//		floyd( rp, screen->realWidth,  screen-> realHeight , screen );
+
+		for (y=0;y<screen->realHeight;y++)
+		{
+			argbToGrayScale( rp, y, screen );
+		}
+	}
+}
+
+
 
 char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 {
@@ -1422,23 +1466,49 @@ char *gfxScreenBase(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern void IffAnim( char *name, const int sn );
+
 char *_gfxIffAnim( struct glueCommands *data, int nextToken )
 {
-//	int args = stack - data->stack +1 ;
-//	struct retroScreen *screen;
+	int args = stack - data->stack +1 ;
+
+	struct stringData *name;
+	int screen_num;	
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
-	setError(22, data->tokenBuffer );
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 2:
+			name = getStackString(stack-1);
+			screen_num = getStackNum(stack);
+
+			if (name)	IffAnim(&(name->ptr),screen_num);
+			break;
+		case 3:
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	do_to[parenthesis_count] = do_to_default;
 
 	popStack( stack - data->stack );
 	return NULL;
 }
 
+char *do_arg_to( struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stack++;
+	return NULL;
+}
+
 char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _gfxIffAnim, tokenBuffer );
+	stackCmdNormal( _gfxIffAnim, tokenBuffer );
+	do_to[parenthesis_count] = do_arg_to;
 	return tokenBuffer;
 }
 
