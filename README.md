@@ -26,8 +26,8 @@ If you’re a MorphOS or AROS developer don't let that stop you, but please make
 
 Amos developers:
 ------------------------
-You can start using this thing for small text adventures, quiz games, or something like that. snake games and other simple games.
-Before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
+
+Amos kittens is becoming more and more feature complete, there are few commands that not working, and most extensions have not support. So it bit limited what it can be used for, before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
 
 Please also read the document describing how Amos Kitten commands works.
 https://github.com/khval/AmosKittens/blob/master/commands.md
@@ -35,10 +35,14 @@ https://github.com/khval/AmosKittens/blob/master/commands.md
 To start a game you type:
 AmosKittens [dir]/[filename.amos]
   
-if window flashes on the screen, you might be runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
+If window flashes on the screen, you might be runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for key press if the, program is done.
 
 If AmosKittens return with a token number, it is likely that Amos program your trying is too advanced for Amos kittens.
 See "Issues" and "Current Status:" on GitHub so see what Amos Kittens support and what not.
+
+Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this most advanced version of Amos Pro right now,
+there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
+Amos Kittens was tested whit amos programs whitens in AMOS PRO 2.0.
 
 Debuging Amos Kittens:
 ----------------------
