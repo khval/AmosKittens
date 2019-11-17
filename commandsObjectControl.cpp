@@ -22,6 +22,7 @@
 #include "debug.h"
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "stack.h"
 #include "amosKittens.h"
@@ -47,6 +48,7 @@ extern int autoView;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
+extern std::vector<int> engineCmdQue;
 
 extern void __wait_vbl();
 
@@ -213,9 +215,48 @@ char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int args = stack - data->stack +1 ;
+	//proc_names_
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
+	printf("args: %d\n",args);
+
+	switch (args)
+	{
+		case 1:	if (kittyStack[stack].type == type_none)
+				{
+					engine_lock();	
+					engine -> limit_mouse = false;
+					engineCmdQue.push_back(kitty_limit_mouse);
+					engine_unlock();
+				}
+				else
+				{
+					setError( 22, data -> tokenBuffer );
+				}
+				break;
+		case 4:
+				{
+					int x0 = getStackNum( stack-3 );
+					int y0 = getStackNum( stack-2 );
+					int x1 = getStackNum( stack-1 );
+					int y1 = getStackNum( stack );
+
+					engine -> limit_mouse_x0 = (x0 - 128) * 2;
+					engine -> limit_mouse_y0 = (y0 - 50) * 2;
+					engine -> limit_mouse_x1 = (x1 - 128) * 2;
+					engine -> limit_mouse_y1 = (y1 - 50) * 2;
+					engine -> limit_mouse = true;
+
+					engine_lock();
+					engineCmdQue.push_back(kitty_limit_mouse);
+					engine_unlock();
+				}
+				break;
+		default:
+				setError( 22, data -> tokenBuffer );
+				break;
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -225,6 +266,7 @@ char *ocMouseLimit(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _ocMouseLimit, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 
@@ -295,8 +337,6 @@ char *_ocZoneStr( struct glueCommands *data, int nextToken )
 char *ocZoneStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-
 	stackCmdParm( _ocZoneStr, tokenBuffer );
 	return tokenBuffer;
 }

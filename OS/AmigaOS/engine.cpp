@@ -7,6 +7,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
+#include <intuition/intuition.h>
 #include <intuition/imageclass.h>
 #include <intuition/gadgetclass.h>
 #include <proto/graphics.h>
@@ -639,6 +640,28 @@ void swap_buffer(struct retroScreen *screen )
 }
 
 
+void limit_mouse()
+{
+	if ((engine -> window)&&(iconifyPort == NULL))	
+	{
+		if (engine -> limit_mouse == true)
+		{
+			struct IBox mouseLimit = {
+				engine -> window -> BorderLeft + engine -> limit_mouse_x0,
+				engine -> window -> BorderTop + engine -> limit_mouse_y0,
+				engine -> limit_mouse_x1 - engine -> limit_mouse_x0,
+				engine -> limit_mouse_y1 - engine -> limit_mouse_y0 };
+
+			ActivateWindow( engine -> window );
+			SetWindowAttrs( engine -> window, WA_MouseLimits, &mouseLimit, TAG_END);
+		}
+		else
+		{
+			SetWindowAttrs( engine -> window, 	WA_GrabFocus, 0, TAG_END);
+		}
+	}
+}
+
 void main_engine()
 {
 	int bobIsUpdated = 0; 
@@ -691,8 +714,6 @@ void main_engine()
 
 			if (iconifyPort) handel_iconify();
 
-
-
 			engine_lock();
 
 			while (engineCmdQue.size() > 0)
@@ -715,7 +736,13 @@ void main_engine()
 						{
 							disable_Iconify(); 
 							engine -> window = My_Window;
+							limit_mouse();
 						}
+						break;
+
+					case kitty_limit_mouse:
+
+						limit_mouse();
 						break;
 				}
 

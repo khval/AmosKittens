@@ -33,7 +33,8 @@ extern Process *EngineTask;
 enum
 {
 	kitty_to_back = 1,
-	kitty_to_front
+	kitty_to_front,
+	kitty_limit_mouse
 };
 
 enum
