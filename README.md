@@ -42,7 +42,7 @@ See "Issues" and "Current Status:" on GitHub so see what Amos Kittens support an
 
 Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this most advanced version of Amos Pro right now,
 there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
-Amos Kittens was tested whit amos programs whitens in AMOS PRO 2.0.
+Amos Kittens was tested whit amos programs written in AMOS PRO 2.0.
 
 Debuging Amos Kittens:
 ----------------------
