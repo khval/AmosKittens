@@ -41,8 +41,7 @@ If window flashes on the screen, you might be runing a simple exsample, without 
 If AmosKittens return with a token number, it is likely that Amos program your trying is too advanced for Amos kittens.
 See "Issues" and "Current Status:" on GitHub so see what Amos Kittens support and what not.
 
-Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this most advanced version of Amos Pro right now,
-there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
+Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this is the most advanced version of Amos Pro right now, there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
 Amos Kittens was tested whit amos programs written in AMOS PRO 2.0, so no garanties.
 
 Debuging Amos Kittens:
