@@ -81,6 +81,36 @@ void atomic_get_char( char *buf)
 
 struct keyboard_buffer current_key;
 
+char *scancodeToTxt( unsigned int scancode, int qualifier)
+{
+	ULONG actual;
+	char buffer[20];
+	struct InputEvent event;
+	bzero(&event,sizeof(struct InputEvent));
+
+	event.ie_NextEvent	=	0;
+	event.ie_Class		=	IECLASS_RAWKEY;
+	event.ie_SubClass	=	0;
+
+	if (scancode)
+	{
+		event.ie_Code = scancode;
+		event.ie_Qualifier = qualifier;
+		actual = MapRawKey(&event, buffer, 20, 0);
+
+		if (actual)
+		{
+			char buf[2];
+			buf[0] = buffer[0];
+			buf[1]=0;
+			return strdup(buf);
+		}
+	}
+	return strdup("");
+}
+
+// only for keyboard handling
+
 void handel_key( char *buf )
 {
 	ULONG actual;

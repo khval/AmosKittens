@@ -63,6 +63,8 @@ struct amosMenuItem
 	int levels;
 	int index[3];
 	char *str;
+	char *key;
+	unsigned short scancode;
 	bool active;
 };
 

@@ -10,6 +10,7 @@
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/gadtools.h>
+#include <proto/keymap.h>
 #endif
 
 #include "debug.h"
@@ -129,6 +130,7 @@ char *_menuMenuStr( struct glueCommands *data, int nextToken )
 	{
 		menuItem -> levels = args;
 		menuItem -> str = NULL;
+		menuItem -> key = NULL;
 		menuItem -> active = true;
 
 		for (n=0;n<args;n++)
@@ -264,9 +266,11 @@ struct NewMenu *alloc_amiga_menu( int items )
 				}
 			}
 
+			if (menuitems[n] -> key) flag |= NM_COMMANDSTRING;
+
 			_new_[n].nm_Type = levels[ menuitems[n] -> levels - 1 ];
 			_new_[n].nm_Label = (STRPTR) menuitems[n] -> str;
-    			_new_[n].nm_CommKey = 0;     
+    			_new_[n].nm_CommKey = (STRPTR) menuitems[n] -> key;     
     			_new_[n].nm_Flags = flag;        
     			_new_[n].nm_MutualExclude = 0 ;
     			_new_[n].nm_UserData = (void *) n;
@@ -521,19 +525,83 @@ char *menuMenuY(struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+extern char *scancodeToTxt( unsigned int scancode, int qualifier );
+
+void set_menu_item_key( struct kittyData *stackItem , struct amosMenuItem *menuItem )
+{
+	if (menuItem -> key)	
+	{
+		free(menuItem -> key);
+		menuItem -> key = NULL;
+	}
+
+	switch ( stackItem -> type )
+	{
+		case type_int:
+
+			menuItem -> scancode  = stackItem -> integer.value;
+			menuItem -> key = scancodeToTxt( menuItem -> scancode, 0 );
+			break;
+
+		case type_string:
+
+			menuItem -> key = strdup( &(stackItem -> str -> ptr) );
+			menuItem -> scancode = 0;
+
+			if (menuItem -> key)
+			{
+				int32 actual;
+				char buffer[10];
+
+				actual = MapANSI(menuItem -> key, 1, buffer, 10, NULL );
+				if (actual>0)
+				{
+					menuItem -> scancode = buffer[0];
+				}
+			}
+			break;
+	}
+}
+
+
 char *to_menuMenuKey( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	struct stringData *str;
+	struct amosMenuItem *menuItem = NULL;
+	int i;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	dump_stack();
-	getchar();
 
 	switch (args)
 	{
 		case 2:
+				i = getStackNum(stack-1);
+
+				if (i>-1)
+				{
+					set_menu_item_key( &kittyStack[stack] , menuitems[i] );
+
+					if (amiga_menu)
+					{
+						detach_menu(My_Window);
+						attach_menu(My_Window);
+					}
+				}
 				break;
 		case 3:
+				i = getStackNum(stack-2);
+
+				if (i>-1)
+				{
+					set_menu_item_key( &kittyStack[stack -1] , menuitems[i] );
+
+					if (amiga_menu)
+					{
+						detach_menu(My_Window);
+						attach_menu(My_Window);
+					}
+				}
 				break;
 		default:
 				setError(22,data->tokenBuffer);		// not implemented
@@ -545,9 +613,13 @@ char *to_menuMenuKey( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *menuKey_do_to ( struct nativeCommand *, char *tokenBuffer ) 
+char *menuKey_do_to ( struct nativeCommand *data, char *tokenBuffer ) 
 {
 	stackCmdNormal( to_menuMenuKey, tokenBuffer );
+	stack ++;
+	setStackNone();
+
+	return NULL;
 }
 
 char *_menuMenuKey( struct glueCommands *data, int nextToken )
@@ -556,9 +628,9 @@ char *_menuMenuKey( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	i = findAmosMenuItem(data);
+
 	popStack( stack - data->stack );
 	setStackNum(i);
-	stack ++;
 
 	do_to[parenthesis_count] = menuKey_do_to;
 

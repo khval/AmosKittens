@@ -66,6 +66,8 @@ void clean_up_menus()
 			menuitems[0] = NULL;
 			if (item -> str) free (item -> str);
 			item -> str = NULL;
+			if (item -> key) free (item -> key);
+			item -> key = NULL;
 			free(item);
 		}
 		
