@@ -65,6 +65,7 @@ struct amosMenuItem
 	char *str;
 	char *key;
 	unsigned short scancode;
+	unsigned short qualifier;
 	bool active;
 };
 

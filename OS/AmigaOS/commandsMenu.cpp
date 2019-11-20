@@ -79,7 +79,6 @@ char *_menuChoice( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int i = 0;
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
@@ -527,7 +526,7 @@ char *menuMenuY(struct nativeCommand *cmd, char *tokenBuffer )
 
 extern char *scancodeToTxt( unsigned int scancode, int qualifier );
 
-void set_menu_item_key( struct kittyData *stackItem , struct amosMenuItem *menuItem )
+void set_menu_item_key( struct kittyData *stackItem , ULONG qualifier, struct amosMenuItem *menuItem )
 {
 	if (menuItem -> key)	
 	{
@@ -540,6 +539,7 @@ void set_menu_item_key( struct kittyData *stackItem , struct amosMenuItem *menuI
 		case type_int:
 
 			menuItem -> scancode  = stackItem -> integer.value;
+			menuItem -> qualifier = qualifier;
 			menuItem -> key = scancodeToTxt( menuItem -> scancode, 0 );
 			break;
 
@@ -547,6 +547,7 @@ void set_menu_item_key( struct kittyData *stackItem , struct amosMenuItem *menuI
 
 			menuItem -> key = strdup( &(stackItem -> str -> ptr) );
 			menuItem -> scancode = 0;
+			menuItem -> qualifier = 0;
 
 			if (menuItem -> key)
 			{
@@ -557,6 +558,7 @@ void set_menu_item_key( struct kittyData *stackItem , struct amosMenuItem *menuI
 				if (actual>0)
 				{
 					menuItem -> scancode = buffer[0];
+					menuItem -> qualifier = buffer[1];
 				}
 			}
 			break;
@@ -580,7 +582,7 @@ char *to_menuMenuKey( struct glueCommands *data, int nextToken )
 
 				if (i>-1)
 				{
-					set_menu_item_key( &kittyStack[stack] , menuitems[i] );
+					set_menu_item_key( &kittyStack[stack] , 0, menuitems[i] );
 
 					if (amiga_menu)
 					{
@@ -594,7 +596,7 @@ char *to_menuMenuKey( struct glueCommands *data, int nextToken )
 
 				if (i>-1)
 				{
-					set_menu_item_key( &kittyStack[stack -1] , menuitems[i] );
+					set_menu_item_key( &kittyStack[stack -1] , getStackNum(stack),  menuitems[i] );
 
 					if (amiga_menu)
 					{

@@ -497,6 +497,52 @@ void engine_ShowMouse( ULONG enable )
 	engine_mouse_hidden = !enable;
 }
 
+extern std::vector<struct amosMenuItem *> menuitems;
+
+struct amosMenuItem *find_menu_shortcut_by_rawkey( ULONG code, ULONG qualifier )
+{
+	int i;
+
+	for ( i=0; i< (int) menuitems.size();i++ )
+	{
+		if (menuitems[i])
+		{
+			if ((menuitems[i] -> scancode == code ) &&
+				(menuitems[i] -> qualifier == qualifier ) )
+			{
+				return menuitems[i];
+			}
+		}
+	}
+
+	return NULL;
+}
+
+#define MKEYS (IEQUALIFIER_RALT | IEQUALIFIER_LALT | IEQUALIFIER_RSHIFT | IEQUALIFIER_LSHIFT | IEQUALIFIER_RCOMMAND | IEQUALIFIER_LCOMMAND) 
+
+bool menu_shortcut( ULONG Code ,  ULONG Qualifier)
+{
+	struct amosMenuItem *menuItem ;
+
+	menuItem = find_menu_shortcut_by_rawkey( Code &~IECODE_UP_PREFIX, Qualifier & MKEYS  );
+
+	if (menuItem)
+	{
+		if (Code & IECODE_UP_PREFIX)
+		{
+			engine_lock();
+			selected.menu = menuItem -> index[0]-1;
+			selected.item = menuItem -> index[1]-1;
+			selected.sub = menuItem -> index[2]-1;
+			amosSelected.push_back(selected);
+			engine_unlock();
+		}
+		return true;
+	}
+
+	return false;
+}
+
 void handel_window()
 {
 	ULONG Class;
@@ -567,6 +613,8 @@ void handel_window()
 							break;
 
 					case IDCMP_RAWKEY:
+
+							if (menu_shortcut( Code ,  Qualifier)) break;
 
 							_keyshift = Qualifier;
 							if (Qualifier & IEQUALIFIER_REPEAT) break;		// repeat done by Amos KIttens...

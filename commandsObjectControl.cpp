@@ -347,6 +347,7 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	int rz = find_zone_in_any_screen_hard( engine_mouse_x, engine_mouse_y );
+
 	setStackNum( rz );
 
 	return tokenBuffer;
