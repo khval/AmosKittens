@@ -28,11 +28,11 @@ see other docs like issue for more info.
 
 **Dfree**
 
-	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro standard,
-	and is using singed integer as return values. To avoid returning negative numbers when over
-	2GBytes, this command will return 2Gbytes if its more than 2Gbytes free.
+	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro 
+	standards when value is under 2Gbytes, if the value is above 2Gbytes then this command will 
+	return size above 2Gbytes as double, (Extremely large numbers can get truncated).
 
-	Use command "Disk Info$" command to get correct number of bytes free.
+	Use command "Disk Info$" command to get correct number of bytes free (if drive is extremly large).
 
 **Screen Colour**
 
