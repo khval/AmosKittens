@@ -98,4 +98,18 @@ see other docs like issue for more info.
 	Will wait for vertical blanking, 
 	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
 	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
+		
+**include**
+
+	include "path/file.amos"
+	include "volume:path/file.amos"
+
+	This command is called before .amos program is started, does not take variabels, only text string.	
 	
+	AMOSPRO can have problems finding files, if no direct path is used.
+	AMOS Kittens will however try hard to find the files, if for example
+	Amos kittens is started from command like this:
+	"AmosKittens.exe path/file.amos" then Amos Kittens will try to look for includes in "path/"
+	if however a direct path is set in the include, then Amos kittens should use a direct path.
+
+
