@@ -102,8 +102,10 @@ char *executeDataToken(char *ptr, unsigned short token)
 		if (token == cmd->id ) 
 		{
 #ifdef show_token_numbers_yes
+
+			getLineFromPointer(ptr);
 			printf("DATA READ %08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					getLineFromPointer(ptr), ptr +2,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					lineFromPtr.line , ptr +2,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -194,7 +196,8 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (procStcakFrame[proc_stack_frame].dataPointer == 0x0000) 
 	{
-		printf("setting error in %s at line %d\n",__FUNCTION__, getLineFromPointer( tokenBuffer ));
+		getLineFromPointer( tokenBuffer );
+		printf("setting error in %s at line %d\n",__FUNCTION__, lineFromPtr.line);
 		setError( 25, tokenBuffer);
 	}
 	else

@@ -71,8 +71,9 @@ char *executeOnToken(char *ptr, unsigned short token)
 		if (token == cmd->id ) 
 		{
 #ifdef show_token_numbers_yes
+			getLineFromPointer(ptr);
 			printf("ON READ %08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					getLineFromPointer(ptr), ptr +2,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					lineFromPtr.line, ptr +2,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;

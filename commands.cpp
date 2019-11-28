@@ -165,7 +165,9 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					stackCmdProc( _procedure, data -> tokenBuffer2);  
 
 					cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
-					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
+
+					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
 
 					tokenMode = mode_store;
 					stack_frame_up( idx );
@@ -183,7 +185,9 @@ char *_procAndArgs( struct glueCommands *data, int nextToken )
 					stackCmdProc( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
 
 					cmdTmp[cmdStack-1].stack = oldStack;	// carry stack.
-					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, getLineFromPointer(globalVars[idx].var.tokenBufferPos ) );
+
+					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
 
 					tokenMode = mode_store;
 					stack_frame_up( idx);
@@ -591,7 +595,7 @@ char *setVar(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
+	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
 	token_is_fresh = false;
 
@@ -644,7 +648,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr);
 
 char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	token_is_fresh = true;
 
@@ -697,7 +701,7 @@ char *_else_if( struct glueCommands *data, int nextToken )
 
 char *cmdElseIf(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	proc_names_printf("%s:%d - line %d\n",__FUNCTION__,__LINE__, getLineFromPointer( tokenBuffer ));
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (cmdStack)
 	{
@@ -1169,6 +1173,7 @@ char *do_to_default( struct nativeCommand *, char * )
 char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	if (do_to[parenthesis_count])
 	{
 		char *ret = do_to[parenthesis_count]( cmd, tokenBuffer );	
@@ -1273,6 +1278,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 	char *new_ptr = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 
 	if ( cmdTmp[cmdStack-1].cmd == _for )
 	{
@@ -1429,8 +1435,6 @@ char *cmdProcedure(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	struct procedure *proc = (struct procedure *) tokenBuffer;
-
-	printf("Goto %08x -- line %d\n",proc -> EndOfProc, getLineFromPointer(proc -> EndOfProc ));
 
 	return proc -> EndOfProc - sizeof(struct procedure);
 }
@@ -2423,7 +2427,8 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else
 	{
-		printf("*** warning extensions not yet supported, extention %d, token %04x at line %d ****\n", ext-> ext, ext-> token,getLineFromPointer( tokenBuffer ));
+		getLineFromPointer( tokenBuffer );
+		printf("*** warning extensions not yet supported, extention %d, token %04x at line %d ****\n", ext-> ext, ext-> token, lineFromPtr.line );
 		stackCmdNormal( cmdFlushStack, tokenBuffer );
 	}
 

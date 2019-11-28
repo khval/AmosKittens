@@ -233,7 +233,8 @@ bool show_var ( char *ptr, char *var_name, int proc )
 
 	if (ref)
 	{
-		printf("line %d, int var: [%s]=%d\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.integer.value);
+		getLineFromPointer( ptr );
+		printf("line %d, int var: [%s]=%d\n",lineFromPtr.line, var_name, globalVars[ref-1].var.integer.value);
 		return true;
 	}
 	else
@@ -242,7 +243,8 @@ bool show_var ( char *ptr, char *var_name, int proc )
 
 		if (ref)
 		{
-			printf("line %d, string var: [%s]=%s\n",getLineFromPointer( ptr ), var_name, globalVars[ref-1].var.str);
+			getLineFromPointer( ptr );
+			printf("line %d, string var: [%s]=%s\n",lineFromPtr.line, var_name, globalVars[ref-1].var.str);
 			return true;
 		}
 	}
@@ -274,11 +276,13 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			}
 			else if (strncmp(txt,str_hint,strlen(str_hint))==0)
 			{
-				printf("stack %d at line %d, hint: %s\n",stack, getLineFromPointer( ptr ), txt+strlen(str_hint));
+				getLineFromPointer( ptr );
+				printf("stack %d at line %d, hint: %s\n",stack, lineFromPtr.line, txt+strlen(str_hint));
 			}
 			else if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
-				printf("stack %d at line %d\n",stack, getLineFromPointer( ptr ));
+				getLineFromPointer( ptr );
+				printf("stack %d at line %d\n",stack, lineFromPtr.line);
 			}
 			else if (strncmp(txt,str_dump_prog_stack,strlen(str_dump_stack))==0)
 			{
@@ -288,7 +292,8 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			}
 			else if (strncmp(txt,str_pause,strlen(str_pause))==0)
 			{
-				printf("line %d -- <press enter to continue>\n", getLineFromPointer( ptr ));
+				getLineFromPointer( ptr );
+				printf("line %d -- <press enter to continue>\n", lineFromPtr.line);
 				getchar();
 			}
 			else if (strncmp(txt,str_show_var,strlen(str_show_var))==0)
@@ -302,7 +307,8 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 				{
 					if (show_var( ptr, var_name, 0) == false )
 					{
-						printf("line %d, var: [%s] not found\n", getLineFromPointer( ptr ), var_name);
+						getLineFromPointer( ptr );
+						printf("line %d, var: [%s] not found\n", lineFromPtr.line, var_name);
 					}
 				}
 				getchar();
@@ -403,7 +409,8 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	if (breakpoint)
 	{
-		printf("breakpoint at line %d - <press enter for next line>\n",getLineFromPointer( ptr ) );
+		getLineFromPointer( ptr );
+		printf("breakpoint at line %d - <press enter for next line>\n", lineFromPtr.line );
 		getchar();
 	}
 
@@ -876,21 +883,26 @@ char *executeToken( char *ptr, unsigned short token )
 		{
 
 #ifdef show_token_numbers_yes
+
+			getLineFromPointer(ptr);
+
 			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					getLineFromPointer(ptr), (unsigned int) ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					lineFromPtr.line, (unsigned int) ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
+
 			return ret;
 		}
 	}
 
 	token_not_found = token;
 	setError(23, ptr);
+	getLineFromPointer( ptr);
 	printf("Addr %08x, token not found %04X at line %d\n", 
 				(unsigned int) ptr, 
 				(unsigned int) token_not_found, 
-				getLineFromPointer( ptr));
+				lineFromPtr.line);
 
 	return NULL;
 }
@@ -995,7 +1007,8 @@ char *token_reader( char *start, char *ptr, unsigned short token, int tokenlengt
 
 	if (stack<0)
 	{
-		printf("dog fart, stinky fart at line %d, stack is %d\n",getLineFromPointer(ptr),stack);
+		getLineFromPointer(ptr);
+		printf("dog fart, stinky fart at line %d, stack is %d\n", lineFromPtr.line ,stack);
 		return NULL;
 	}
 

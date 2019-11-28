@@ -37,6 +37,8 @@ extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
 extern int current_screen ;
 
+struct lineFromPtr lineFromPtr;
+
 // _lessOrEqualData
 
 extern int regs[16];
@@ -259,18 +261,25 @@ void dump_var( int n )
 
 				if (globalVars[n].var.procDataPointer == 0)
 				{
+					getLineFromPointer( globalVars[n].var.tokenBufferPos );
+
 					printf("%d -- %d::%s%s[]=%04X (line %d)\n",n,
 						globalVars[n].proc, "Proc ",
 						globalVars[n].varName, 
-						globalVars[n].var.tokenBufferPos, getLineFromPointer( globalVars[n].var.tokenBufferPos ) );
+						globalVars[n].var.tokenBufferPos, lineFromPtr.line );
 				}
 				else
 				{
+					int tokenBufferLine;
+					getLineFromPointer( globalVars[n].var.tokenBufferPos );
+					tokenBufferLine = lineFromPtr.line;
+					getLineFromPointer( globalVars[n].var.procDataPointer );
+
 					printf("%d -- %d::%s%s[]=%04X (line %d)  --- data read pointer %08x (line %d)\n",n,
 						globalVars[n].proc, "Proc ",
 						globalVars[n].varName, 
-						globalVars[n].var.tokenBufferPos, getLineFromPointer( globalVars[n].var.tokenBufferPos ),
-						globalVars[n].var.procDataPointer, getLineFromPointer( globalVars[n].var.procDataPointer ) );
+						globalVars[n].var.tokenBufferPos, tokenBufferLine,
+						globalVars[n].var.procDataPointer, lineFromPtr.line );
 				}
 
 				break;
@@ -373,8 +382,10 @@ void dump_prog_stack()
 
 		name = findDebugSymbolName( cmdTmp[n].cmd );
 
+		getLineFromPointer(cmdTmp[n].tokenBuffer);
+
 		printf("cmdTmp[%d].cmd = %08x (%s) \n", n, cmdTmp[n].cmd, name ? name : "?????" );
-		printf("cmdTmp[%d].tokenBuffer = %08x  - at line: %d \n", n, cmdTmp[n].tokenBuffer, getLineFromPointer(cmdTmp[n].tokenBuffer));
+		printf("cmdTmp[%d].tokenBuffer = %08x  - at line: %d \n", n, cmdTmp[n].tokenBuffer, lineFromPtr.line );
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
 		printf("cmdTmp[%d].token = %04x\n", n, cmdTmp[n].token);
@@ -479,33 +490,45 @@ void dump_end_of_program()
 	dump_banks();
 }
 
-int getLineFromPointer( char *address )
+void getLineFromPointer( char *address )
 {
 	unsigned int n = 0;
+	unsigned int offset = 0;
+
+	offset = address - _file_start_;
 
 	for (n=0;n<linesAddress.size();n++)
 	{
-		if ( (linesAddress[n].start >= address) && (address < linesAddress[n].end) )
+		if ( (linesAddress[n].start >= offset) && (offset < linesAddress[n].end) )
 		{
-			return n-1;
+			lineFromPtr.file =  linesAddress[n].file;
+			lineFromPtr.line =  linesAddress[n].lineNumber;
+			return;
 		}
 	}
 
 	if ( linesAddress.size() )
 	{
-		if ( linesAddress[linesAddress.size()-1].end < address ) return linesAddress.size()-2;
+		if ( linesAddress[linesAddress.size()-1].end < offset ) 
+		{
+			n = linesAddress.size()-1;
+			lineFromPtr.file =  linesAddress[n].file;
+			lineFromPtr.line =  linesAddress[n].lineNumber;
+			return;
+		}
 	}
 
-	return -1;
+	lineFromPtr.file =  -1;
+	lineFromPtr.line =  -1;
 }
 
-void dumpLineAddress()
+void dump_lines()
 {
 	unsigned int n = 0;
 
 	for (n=0;n<linesAddress.size();n++)
 	{
-		printf("Line %08d, start %08x end %08x\n", n-1, linesAddress[n].start , linesAddress[n].end );
+		printf("File %04d Line %04d, token start %d and end %d\n", linesAddress[n].file, linesAddress[n].lineNumber, linesAddress[n].start, linesAddress[n].end );
 	}
 }
 

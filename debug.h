@@ -45,7 +45,7 @@ void dump_stack();
 void dump_labels();
 void dump_banks();
 void dump_end_of_program();
-void dumpLineAddress();
+void dump_lines();
 void dump_680x0_regs();
 void dump_screens();
 void dump_zones();
@@ -56,14 +56,24 @@ extern struct Window *debug_Window;
 
 void open_debug_window();
 void close_debug_window();
+
+struct lineFromPtr
+{
+	unsigned int line;
+	unsigned int file;
+};
  
-int getLineFromPointer( char *address );
+extern struct lineFromPtr lineFromPtr;
+
+void getLineFromPointer( char *address );
 uint32_t mem_crc( char *mem, uint32_t size );
 
 #ifdef show_debug_printf_yes
 #define dprintf printf
+#define dgetLineFromPointer getLineFromPointer
 #else
 #define dprintf(fmt,...)
+#define dgetLineFromPointer(...)
 #endif
 
 #ifdef show_proc_names_yes

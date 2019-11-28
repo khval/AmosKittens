@@ -378,8 +378,12 @@ struct kittyField
 
 struct lineAddr
 {
-	char *start;
-	char *end;
+	unsigned int file;
+	unsigned int lineNumber;
+	unsigned int srcStart;
+	unsigned int srcEnd;
+	unsigned int start;
+	unsigned int end;
 };
 
 struct kittyFile
