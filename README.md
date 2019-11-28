@@ -13,10 +13,9 @@ The API's are whery similar to AmigaOS4.x there for it should be relatively easy
 **Linux**
 I decided to port some of it to Linux, now interpreter did works under Linux x86 32bit at one time, (it did however not have a graphical display on Linux. Unlike the AmigaOS version). The Linux version is used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux. (Currently some files were removed due to being outdated compare to Amiga version of this files.), now after implementing the “include” command, Linux little endian support got officially broken.
 
-
 **Windows**
 Part of the code is sometimes tested in Virtual Studio, some headers does support visual studio compiler.
-However, no attempt at compiling a full version has been tried.
+However, no attempt at compiling a full version has been tried. Now after implementing the “include” command, Windows little endian support got officially broken.
 
 **ATARI**
 I have been investigating, if that be possible due link between STOS and AMOS, from what found doing some research on ATARI ST graphics, is that it has lot less colors, and can't display as many colors in higher resolutions. I have not looked at memory limitations but AMOS Kittens is written in C++ code and bit fatter then 680x0 optimized assembler code, I been investigating Falcon if it might be able to do it, and it be cool to support it, but there is lot less users on that platform.
