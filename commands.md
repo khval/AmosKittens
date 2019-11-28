@@ -28,11 +28,11 @@ see other docs like issue for more info.
 
 **Dfree**
 
-	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro standard,
-	and is using singed integer as return values. To avoid returning negative numbers when over
-	2GBytes, this command will return 2Gbytes if its more than 2Gbytes free.
+	This command returns free bytes on current drive/partition. Amos Kitten follow AMOS pro 
+	standards when value is under 2Gbytes, if the value is above 2Gbytes then this command will 
+	return size above 2Gbytes as double, (Extremely large numbers can get truncated).
 
-	Use command "Disk Info$" command to get correct number of bytes free.
+	Use command "Disk Info$" command to get correct number of bytes free (if drive is extremly large).
 
 **Screen Colour**
 
@@ -98,4 +98,18 @@ see other docs like issue for more info.
 	Will wait for vertical blanking, 
 	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
 	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
+		
+**include**
+
+	include "path/file.amos"
+	include "volume:path/file.amos"
+
+	This command is called before .amos program is started, does not take variabels, only text string.	
 	
+	AMOSPRO can have problems finding files, if no direct path is used.
+	AMOS Kittens will however try hard to find the files, if for example
+	Amos kittens is started from command like this:
+	"AmosKittens.exe path/file.amos" then Amos Kittens will try to look for includes in "path/"
+	if however a direct path is set in the include, then Amos kittens should use a direct path.
+
+
