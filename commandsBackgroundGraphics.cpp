@@ -441,7 +441,6 @@ char *bgPutBlock(struct nativeCommand *cmd, char *tokenBuffer)
 char *_bgDelBlock( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int id;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 

@@ -54,7 +54,6 @@ void dump_zones();
 extern struct Window *debug_Window;
 #endif
 
-
 void open_debug_window();
 void close_debug_window();
  

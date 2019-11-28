@@ -7,7 +7,6 @@
 #include <proto/dos.h>
 #endif
 
-#include "debug.h"
 #include <string>
 #include <iostream>
 #include <stdio.h>
