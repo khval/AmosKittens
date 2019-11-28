@@ -5,10 +5,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <label.h>
+#include <vector>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/dos.h>
+#include <exec/types.h>
 #endif
+
 
 #include "amosKittens.h"
 #include "commands.h"
@@ -18,8 +22,12 @@ extern int findVarPublic( char *name, int type );
 extern int findProc( char *name );
 extern char *dupRef( struct reference *ref );
 
+extern struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 extern struct globalVar globalVars[1000];
 extern int global_var_count;
+extern std::vector<struct label> labels;
+
+const char *types[]={"","#","$",""};
 
 int var_type_is( struct reference *ref, int mask )
 {
@@ -91,4 +99,90 @@ void validate_and_fix_globals()
 	}
 }
 
+int ReferenceByteLength(char *ptr)
+{
+	struct reference *ref = (struct reference *) ptr;
+	unsigned short length = ref -> length;
 
+	length += (length & 1);		// align to 2 bytes
+	return length;
+}
+
+int QuoteByteLength(char *ptr)
+{
+	unsigned short length = *((unsigned short *) ptr);
+	length += (length & 1);		// align to 2 bytes
+	return length;
+}
+
+char *dupRef( struct reference *ref )
+{
+	char *tmp = (char *) malloc( ref->length + 2 );
+	if (tmp)
+	{
+		memcpy(tmp, ((char *) ref) + sizeof(struct reference), ref->length );
+			tmp[ ref->length ] =0;
+			tmp[ ref->length + 1 ] =0;
+		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
+	}
+	return tmp;
+}
+
+struct label *findLabel( char *name, int _proc )
+{
+	unsigned int n;
+	struct label *label;
+
+	for (n=0;n<labels.size();n++)
+	{
+		label = &labels[n];
+
+		if (label -> proc == _proc)
+		{
+			if (strcasecmp( label -> name, name)==0)
+			{
+				return label;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+int findLabelRef( char *name, int _proc )
+{
+	unsigned int n;
+	struct label *label;
+
+	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
+
+	for (n=0;n<labels.size();n++)
+	{
+		label = &labels[n];
+
+		if (label -> proc == _proc)
+		{
+			if (strcasecmp( label -> name, name)==0)
+			{
+				return n+1;
+			}
+		}
+	}
+	return 0;
+}
+
+int findProc( char *name )
+{
+	unsigned int n;
+
+	for (n=0;n<global_var_count;n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+
+		if ( (strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.type & type_proc) )
+		{
+			return n+1;
+		}
+	}
+	return 0;
+}

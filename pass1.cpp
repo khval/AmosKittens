@@ -26,8 +26,6 @@
 #include "label.h"
 #include "amosstring.h"
 
-const char *types[]={"","#","$",""};
-
 extern struct globalVar globalVars[1000];	// 0 is not used.
 extern unsigned int global_var_count;
 extern int globalVarsSize;
@@ -40,8 +38,6 @@ extern std::vector<struct label> labels;
 extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct defFn> defFns;
 char *lastLineAddr;
-
-void addLineAddress( char *_start, char *_end );
 
 int ifCount = 0;
 int endIfCount = 0;
@@ -118,18 +114,6 @@ struct nested *find_nest_loop()
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
-char *dupRef( struct reference *ref )
-{
-	char *tmp = (char *) malloc( ref->length + 2 );
-	if (tmp)
-	{
-		memcpy(tmp, ((char *) ref) + sizeof(struct reference), ref->length );
-			tmp[ ref->length ] =0;
-			tmp[ ref->length + 1 ] =0;
-		sprintf(tmp + strlen(tmp),"%s", types[ ref -> flags & 3 ] );
-	}
-	return tmp;
-}
 
 // find Public variables not defined as global
 
@@ -147,22 +131,6 @@ int findVarPublic( char *name, int type )
 			&& (globalVars[n].var.type == type)
 			&& (globalVars[n].proc == 0)
 			&& (globalVars[n].isGlobal == FALSE))
-		{
-			return n+1;
-		}
-	}
-	return 0;
-}
-
-int findProc( char *name )
-{
-	unsigned int n;
-
-	for (n=0;n<global_var_count;n++)
-	{
-		if (globalVars[n].varName == NULL) return 0;
-
-		if ( (strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.type & type_proc) )
 		{
 			return n+1;
 		}
@@ -224,68 +192,6 @@ int findVar( char *name, bool is_first_token, int type, int _proc )
 	}
 
 	return 0;
-}
-
-
-struct label *findLabel( char *name, int _proc )
-{
-	unsigned int n;
-	struct label *label;
-
-	dprintf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
-
-	for (n=0;n<labels.size();n++)
-	{
-		label = &labels[n];
-
-		if (label -> proc == _proc)
-		{
-			if (strcasecmp( label -> name, name)==0)
-			{
-				return label;
-			}
-		}
-	}
-
-	return NULL;
-}
-
-int findLabelRef( char *name, int _proc )
-{
-	unsigned int n;
-	struct label *label;
-
-	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
-
-	for (n=0;n<labels.size();n++)
-	{
-		label = &labels[n];
-
-		if (label -> proc == _proc)
-		{
-			if (strcasecmp( label -> name, name)==0)
-			{
-				return n+1;
-			}
-		}
-	}
-	return 0;
-}
-
-int QuoteByteLength(char *ptr)
-{
-	unsigned short length = *((unsigned short *) ptr);
-	length += (length & 1);		// align to 2 bytes
-	return length;
-}
-
-int ReferenceByteLength(char *ptr)
-{
-	struct reference *ref = (struct reference *) ptr;
-	unsigned short length = ref -> length;
-
-	length += (length & 1);		// align to 2 bytes
-	return length;
 }
 
 struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type )
@@ -780,9 +686,6 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 
 	return 0;
 }
-
-int getLineFromPointer( char *address );
-
 
 void set_nested_if_condition( char *ptr )
 {
@@ -1295,12 +1198,5 @@ void pass1_reader( char *start, char *file_end )
 	nested_count = 0;
 }
 
-void addLineAddress( char *_start, char *_end )
-{
-	struct lineAddr line;
-	line.start = _start;
-	line.end = _end;
-	linesAddress.push_back( line );
-}
 
 
