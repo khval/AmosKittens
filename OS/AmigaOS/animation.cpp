@@ -98,6 +98,8 @@ bool new_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 
 	new_frame.MethodID = ADTM_LOADNEWFORMATFRAME;
 	new_frame.alf_TimeStamp = TimeStamp;
+	new_frame.alf_Frame = TimeStamp;
+	new_frame.alf_Size = sizeof(struct adtNewFormatFrame); 
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -142,6 +144,7 @@ bool old_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 
 	frame.MethodID = ADTM_LOADFRAME;
 	frame.alf_TimeStamp = TimeStamp;
+	frame.alf_Frame = TimeStamp;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -305,7 +308,7 @@ void IffAnim( char *name, const int sn )
 				progress(n*10,screens[sn]);
 				Delay(20);
 
-				time += 1000;
+				time += 1;
 			}
 		}
 		else
