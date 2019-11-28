@@ -346,9 +346,10 @@ struct kittyData * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 
 			if ((next_token == 0x0000) || (next_token == 0x0054) || (next_token == 0x0084))
 			{
-//ifdef show_pass1_procedure_fixes_yes
+#ifdef show_pass1_procedure_fixes_yes
 				printf("this looks alot like a procedure call\n");
-//endif
+
+#endif
 				pass1CallProcedures.push_back(ref);
 				is_proc_call = true;
 			}
@@ -659,7 +660,6 @@ char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short toke
 			case 0x000C:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0012:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0018:	token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
-			case 0x0386:   token_size = ReferenceByteLength(ptr)+sizeof(struct reference); break;
 			case 0x0026:	token_size = QuoteByteLength(ptr)+2; break;
 			case 0x002E:	token_size = QuoteByteLength(ptr)+2; break;
 			case 0x064A:	token_size = QuoteByteLength(ptr)+2; break;
@@ -816,9 +816,11 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 			{
 				case 0x0000:	eol( ptr );
 							currentLine++;
-							addLineAddress( lastLineAddr, ptr );
 							lastLineAddr = ptr;
 							pass1_token_count = 0;
+							break;
+
+				case 0x0386:	pass1_token_count = 0;
 							break;
 
 				case 0x0006:	pass1var( ptr, (pass1_token_count == 1), false, false );
@@ -1069,7 +1071,11 @@ char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsi
 	}
 #endif 
 
-	if ( ptr  >= file_end ) return NULL;
+	if ( ptr  >= file_end ) 
+	{
+		printf(" ptr is over file end %08x\n", file_end);
+		return NULL;
+	}
 
 	return ptr;
 }
@@ -1089,6 +1095,7 @@ bool findRefAndFixProcCall( struct reference *toFind )
 		{
 			if ( strcasecmp( var->varName, toFindName ) == 0 )
 			{
+				*((unsigned short*) ((char *) toFind-2)) = 0x0012;
 				toFind -> ref = n + 1;
 				free(toFindName);
 				return true;
@@ -1117,7 +1124,6 @@ void pass1_reader( char *start, char *file_end )
 		token = *((short *) ptr);
 		ptr += 2;	// next token.
 	}
-	addLineAddress( lastLineAddr, ptr );
 
 	if (kittyError.code == 0)	// did not exit on error.
 	{
@@ -1154,6 +1160,8 @@ void pass1_reader( char *start, char *file_end )
 		if ( findRefAndFixProcCall(pass1CallProcedures[n])  )
 		{
 //ifdef show_pass1_procedure_fixes_yes
+
+			
 			printf("fixed at: %08x ref is %d\n", pass1CallProcedures[n], pass1CallProcedures[n] -> ref - 1 );
 //endif
 		}

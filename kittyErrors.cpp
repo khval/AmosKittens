@@ -36,7 +36,8 @@ void printError( struct errorAt *thisError, struct error *tab )
 	{
 		if (thisError -> code == e->errorCode)
 		{
-			printf("ERROR: %s\nAt line number: %d\n\n",e->errorText, getLineFromPointer(thisError->pos));
+			getLineFromPointer(thisError->pos);
+			printf("ERROR: %s\nAt line number: %d in file %d\n\n",e->errorText, lineFromPtr.line, lineFromPtr.file );
 			break;
 		}
 	}

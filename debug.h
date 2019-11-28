@@ -19,6 +19,10 @@
 #define enable_engine_debug_output_no
 #define enable_audio_debug_output_no
 
+// --------- debug options include ---------
+
+#define show_include_debug_no
+
 // --------- debug options pass1 ----------- (debug options for pretest)
 
 #define show_pass1_tokens_no

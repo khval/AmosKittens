@@ -119,6 +119,21 @@ enum
 	glue_option_for_float
 };
 
+struct fileContext
+{
+	char *path;
+	char *name;
+	unsigned int file;
+	unsigned int length;
+	unsigned int tokenLength;
+	unsigned char *lineStart;
+	unsigned char *start;
+	unsigned char *ptr;
+	unsigned char *end;
+	unsigned int lineNumber;
+	unsigned int bankSize;
+	unsigned char *bank;
+};
 
 struct kittyForInt
 {
@@ -542,10 +557,10 @@ extern int zones_allocated;
 extern int currentLine;
 extern int parenthesis_count;
 
-extern BOOL equal_symbol;
+extern bool equal_symbol;
 extern struct nativeCommand NativeCommand[];
 extern int findNativeCommand(unsigned short lastToken,unsigned short token);
-extern BOOL findSymbol(unsigned short token);
+extern bool findSymbol(unsigned short token);
 extern int commandCnt;
 
 extern struct kittyData kittyStack[];

@@ -146,6 +146,7 @@ std::vector<struct defFn> defFns;
 std::vector<struct kittyBank> kittyBankList;
 std::vector<struct kittyDevice> deviceList;
 std::vector<struct kittyLib> libsList;
+std::vector<struct fileContext *> files;
 
 int global_var_count = 0;
 int labels_count = 0;
@@ -184,6 +185,9 @@ struct kittyInfo KittyBaseInfo;
 
 extern void make_wave_noice();
 extern void make_wave_bell();
+
+void free_file(struct fileContext *file);
+struct fileContext *newFile( char *name );
 
 bool alloc_video()
 {
@@ -1041,7 +1045,7 @@ char *code_reader( char *start, int tokenlength )
 	interpreter_running = true;
 	ptr = start;
 
-	while ( ptr = token_reader(  start, ptr,  token, tokenlength ) )
+	while ( ptr = token_reader( start, ptr, token, tokenlength ) )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
@@ -1136,10 +1140,8 @@ extern struct retroRGB DefaultPalette[256];
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
-	FILE *fd;
-	int32_t amos_filesize;
+	struct fileContext *file;
 	char amosid[17];
-	char *data;
 	int n;
 
 #ifdef __amigaos__
@@ -1324,61 +1326,29 @@ int main(int args, char **arg)
 
 		if (video) start_engine();
 
-		fd = filename ? fopen(filename,"r") : NULL;
-		if ((fd)&&(video)&&(init_error == false))
+		file = newFile( filename );
+
+		if ((file)&&(video)&&(init_error == false))
 		{
-			fseek(fd, 0, SEEK_END);
-			amos_filesize = ftell(fd);
-			fseek(fd, 0, SEEK_SET);
-
-			fread( amosid, 16, 1, fd );
-			fread( &tokenFileLength, 4, 1, fd );
-
-#ifdef __LITTLE_ENDIAN__
-			tokenlength = __bswap_32(tokenlength);
-#endif
-			data = (char *) malloc(amos_filesize);
-			if (data)
+			if (file -> start)
 			{
-				int _file_code_start_ = ftell(fd);
+				_file_start_ = (char *) file -> start +2;
+				_file_end_ = (char *) file -> end;
 
-				_file_start_ = data;
-				_file_end_ = data + tokenFileLength;
-
-				fread(data,amos_filesize - _file_code_start_ ,1,fd);
-
-#ifdef enable_bank_crc
-				bank_crc = mem_crc( _file_end_ , amos_filesize - tokenlength - _file_code_start_  );
-#endif 
-
-
-#ifdef __LITTLE_ENDIAN__
-				token_littleendian_fixer( data, _file_end_ );
-#endif
 				// snifff the tokens find labels, vars, functions and so on.
-				pass1_reader( data, _file_end_ );
+
+				pass1_reader( (char *) file -> start + 2, _file_end_ );
 
 				if (kittyError.code == 0)
 				{
-#ifdef enable_vars_crc
-					_vars_crc = vars_crc();
-#endif
-
 					runtime = TRUE;
 
-					_file_start_ = data;
-					_file_end_ = data + tokenFileLength;
-
-					// init banks
-
-					_file_bank_size = amos_filesize - tokenFileLength - _file_code_start_;
-
-					init_banks( _file_end_ ,  _file_bank_size );
+					if (file ->bank) init_banks( (char *) file -> bank, file -> bankSize );
 
 					gfxDefault(NULL, NULL);
 
 #ifdef run_program_yes
-					code_reader( data, tokenFileLength );
+					code_reader( (char *) file -> start + 2, file -> tokenLength );
 #endif
 				}
 
@@ -1388,7 +1358,7 @@ int main(int args, char **arg)
 				}
 			}
 
-			fclose(fd);
+			 free_file(file);
 
 //			if (kittyError.newError == true)
 			{
@@ -1397,7 +1367,7 @@ int main(int args, char **arg)
 		}
 		else
 		{
-			if (!fd) printf("AMOS file not open/can't find it\n");
+			if (!file) printf("AMOS file not open/can't find it\n");
 			if (!video) printf("technical problems\n");
 		}
 

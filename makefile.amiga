@@ -77,6 +77,8 @@ main_objects = commands.cpp \
 			os/amigaos/animation.cpp \
 			AmosString.cpp \
 			floyd.cpp \
+			nativeCommands.cpp \
+			include.cpp
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
