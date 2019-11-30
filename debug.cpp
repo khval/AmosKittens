@@ -525,10 +525,25 @@ void getLineFromPointer( char *address )
 void dump_lines()
 {
 	unsigned int n = 0;
+	unsigned int offset =0;
+	unsigned char *ptr;
 
 	for (n=0;n<linesAddress.size();n++)
 	{
-		printf("File %04d Line %04d, token start %d and end %d\n", linesAddress[n].file, linesAddress[n].lineNumber, linesAddress[n].start, linesAddress[n].end );
+		printf("File %04d Line %04d, token start %d, end %d: (from src %d and %d)\n", 
+				linesAddress[n].file, 
+				linesAddress[n].lineNumber, 
+				linesAddress[n].start, 
+				linesAddress[n].end,
+				linesAddress[n].srcStart, 
+				linesAddress[n].srcEnd );
+
+		for (offset = linesAddress[n].start; offset < linesAddress[n].end ; offset+=2 )
+		{
+			ptr = (unsigned char *) _file_start_ + offset;
+			printf("%04x ",*((unsigned short *) ptr));
+		}
+		printf("\n");
 	}
 }
 
