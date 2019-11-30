@@ -34,6 +34,7 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
+extern char *tokenbufferResume;
 
 extern int findVarPublic( char *name, int type );
 extern std::vector<struct label> labels;

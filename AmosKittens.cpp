@@ -1043,7 +1043,8 @@ char *code_reader( char *start, int tokenlength )
 	if (start == NULL) return NULL;
 
 	interpreter_running = true;
-	ptr = start;
+	ptr = start +2;
+	token = *((short *) start);
 
 	while ( ptr = token_reader( start, ptr, token, tokenlength ) )
 	{
@@ -1332,12 +1333,12 @@ int main(int args, char **arg)
 		{
 			if (file -> start)
 			{
-				_file_start_ = (char *) file -> start +2;
+				_file_start_ = (char *) file -> start ;
 				_file_end_ = (char *) file -> end;
 
 				// snifff the tokens find labels, vars, functions and so on.
 
-				pass1_reader( (char *) file -> start + 2, _file_end_ );
+				pass1_reader( (char *) file -> start , _file_end_ );
 
 				if (kittyError.code == 0)
 				{
@@ -1348,7 +1349,7 @@ int main(int args, char **arg)
 					gfxDefault(NULL, NULL);
 
 #ifdef run_program_yes
-					code_reader( (char *) file -> start + 2, file -> tokenLength );
+					code_reader( (char *) file -> start , file -> tokenLength );
 #endif
 				}
 

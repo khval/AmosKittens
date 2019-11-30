@@ -805,7 +805,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 		if (token == cmd->id )
 		{
 			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x - name %s\n",
-						ptr, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token, TokenName(token));
+						ptr-_file_start_, __FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token, TokenName(token));
 
 
 			// ptr points to data of the token. (+2)
@@ -1051,7 +1051,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 		}
 	}
 
-	printf("'%20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+	printf("ERROR    %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token);
 
 	setError(35,ptr);
@@ -1115,7 +1115,9 @@ void pass1_reader( char *start, char *file_end )
 	unsigned int n;
 
 	lastLineAddr = start;
-	ptr = start;
+	token = *((short *) start);
+	ptr = start +2;
+
 	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
