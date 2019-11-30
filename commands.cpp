@@ -1462,7 +1462,7 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 
 	proc = get_proc_num_from_ref(ref->ref);
 
-	if (proc)
+	if (proc)	// setup local vars.. before calling procedure.
 	{
 		clear_local_vars( proc );
 	}
@@ -1619,15 +1619,32 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 
 char *cmdBracket(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	char *(*scmd )( struct glueCommands *data, int nextToken ) = NULL;
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (cmdStack) scmd = cmdTmp[cmdStack-1].cmd ;
-
-	if ( scmd == _procedure )
+	if (*(( unsigned short *) tokenBuffer)==0x008C)		// no args
 	{
-		return read_kitty_args(tokenBuffer, cmdTmp[cmdStack-1].stack, 0x0000 );
+		unsigned int flags;
+
+		while (cmdStack)	// empty prog stack if needed, should not be needed...
+		{
+			flags = cmdTmp[cmdStack-1].flag;
+
+			if  ( flags & (cmd_loop | cmd_never | cmd_onEol | cmd_proc | cmd_normal)) break;
+			cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
+		}
+
+		return tokenBuffer+2;	// skip end bracket 
+	}
+	else
+	{
+		char *(*scmd )( struct glueCommands *data, int nextToken ) = NULL;
+
+		if (cmdStack) scmd = cmdTmp[cmdStack-1].cmd ;
+
+		if ( scmd == _procedure )		// this is at "procedure name[ .... ]"
+		{
+			return read_kitty_args(tokenBuffer, cmdTmp[cmdStack-1].stack, 0x0000 );
+		}
 	}
 
 	return tokenBuffer;
@@ -1651,7 +1668,7 @@ char *cmdBracketEnd(struct nativeCommand *cmd, char *tokenBuffer )
 		cmdTmp[cmdStack-1].tokenBuffer2 = tokenBuffer;
 	}
 
-	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _endProc ) tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+	if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _endProc ) return cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
 
 	return tokenBuffer;
 }
