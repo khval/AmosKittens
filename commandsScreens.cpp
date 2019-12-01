@@ -861,6 +861,56 @@ extern void floydChannel( double *image, int w, int h );
 
 extern void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen);
 
+void dmode( char *name, unsigned int mode )
+{
+	int n = 1;
+
+	while (n<512)
+	{
+		printf("%s %08x - %d\n",name, mode, mode & n );
+		n=n<<1;
+	}
+}
+
+unsigned int modeToRetro( unsigned int modeid )
+{
+	unsigned int mode = 0;
+	unsigned int encoding = modeid & (0x800 | 0x1000 | 0x8000);
+
+	switch (encoding)
+	{
+		case 0x0800:
+				mode |= retroHam6;
+				break;
+
+		case 0x8800:					// this is set in HAM8 file I'm testing.
+				mode |= retroHam8;
+				break;
+		case 0x1000:					// this was set in anim8 file I'm testing.
+				mode |= retroHam6;
+				break;
+	}
+
+	if (modeid & (0x0100 | 0x0008 | 0x0004)) 
+	{
+		mode |= retroInterlaced;
+		printf("Interlaced\n");
+	}
+
+	if (modeid & 0x8000)
+	{
+		mode |= retroHires;
+		printf("hires\n");
+	}
+	else
+	{
+		mode |= retroLowres;
+		printf("lowres\n");
+	}
+
+	return mode;
+}
+
 void LoadIff( char *name, const int sn )
 {
 	struct DataType *dto = NULL;
@@ -890,21 +940,25 @@ void LoadIff( char *name, const int sn )
 
 	bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
-	dprintf("colors %d\n",colors);
-	dprintf("mode id %08x\n",modeid);
-	dprintf("bformat %d\n",bformat);
-	dprintf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
+	printf("colors %d\n",colors);
+	printf("mode id %08x\n",modeid);
+	printf("bformat %d\n",bformat);
+	printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-	switch (modeid)
-	{
-		case 0x800: 
-			mode = retroLowres | retroHam6;
-			break;
+	mode = modeToRetro (modeid);
 
-		default:
+	/*
 			mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
 			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
-	 }
+	*/
+
+
+	dmode( "modeid", modeid );
+
+	dmode( "kitty mode", mode );
+
+	getchar();
+
 
 		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
@@ -979,21 +1033,21 @@ void LoadIff( char *name, const int sn )
 	}
 }
 
-void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG &colors )
+void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG *colors )
 {
 	ULONG c;
 
 	if (bformat==PIXF_NONE)
 	{
-		for (c=0;c<colors;c++)		
+		for (c=0;c<*colors;c++)		
 		{
 			retroScreenColor(screen,c,cr[c].red,cr[c].green,cr[c].blue);
 		}
 	}
 	else
 	{
-		colors = 256;
-		grayScalePalette( screen, colors );
+		*colors = 256;
+		grayScalePalette( screen, *colors );
 		get_most_used_colors( rp, screen->realHeight,  screen->realWidth, screen);
 	}
 }

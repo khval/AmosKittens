@@ -33,7 +33,7 @@ extern int current_screen ;
 
 extern void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen );
 extern bool kitten_screen_close(int screen_num );
-extern void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG &colors );
+extern void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG *colors );
 extern void init_amos_kittens_screen_default_text_window( struct retroScreen *screen, int colors );
 
 void progress(int xx, struct retroScreen *screen )
@@ -90,7 +90,36 @@ bool try_frame(struct DataType *dto,ULONG frame, ULONG bformat, struct RastPort 
 	return TRUE;
 }
 
-bool new_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastPort *rp, struct retroScreen *screen, ULONG  &duration)
+struct animContext
+{
+	struct DataType *dto;
+	ULONG colors;
+ 	ULONG bformat;
+	struct RastPort rp;
+	 struct retroScreen *screen;
+	ULONG  duration;
+	ULONG *rgb_table;
+};
+
+void copy_palette24(struct animContext *context)
+{
+	if (context -> bformat==PIXF_NONE)
+	{
+		ULONG c,idx;
+
+		for (c=0;c<context -> colors;c++)		
+		{
+			idx = c*3;
+
+			retroScreenColor(context -> screen,c,
+				context->rgb_table[idx+0] >> 24,
+				context->rgb_table[idx+1] >> 24,
+				context->rgb_table[idx+2] >> 24);
+		}
+	}
+}
+
+bool new_frame(struct animContext *context,ULONG TimeStamp)
 {
 	struct adtNewFormatFrame new_frame;
 
@@ -101,42 +130,38 @@ bool new_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 	new_frame.alf_Frame = TimeStamp;
 	new_frame.alf_Size = sizeof(struct adtNewFormatFrame); 
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (DoDTMethodA ( (Object*) dto,NULL,NULL, (Msg) &new_frame))
+	if (DoDTMethodA ( (Object*) context -> dto,NULL,NULL, (Msg) &new_frame))
 	{
-		rp -> BitMap = new_frame.alf_BitMap;
-		duration = new_frame.alf_Duration;
+		context -> rp.BitMap = new_frame.alf_BitMap;
+		context -> duration = new_frame.alf_Duration;
 
-		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-		if (rp -> BitMap)
+		if ((new_frame.alf_CMap)&&(context->rgb_table))
 		{
-			printf("time: %-8d duration: %-d\n",TimeStamp,duration);
+			GetRGB32( new_frame.alf_CMap,  0, context -> colors, context->rgb_table );
+			copy_palette24( context );
+		}
+
+		if (context -> rp.BitMap)
+		{
+			printf("time: %-8d duration: %-d\n",TimeStamp,context -> duration);
 
 			// to avoid tering...
 			engine_lock();	
-			convert_bitmap( bformat, rp, screen );
+			convert_bitmap( context -> bformat, &(context -> rp), context -> screen );
 			engine_unlock();
 		}
 
-		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		new_frame.MethodID = ADTM_UNLOADNEWFORMATFRAME;
-		DoDTMethodA ( (Object*) dto,NULL,NULL, (Msg) &new_frame); 
+		DoDTMethodA ( (Object*) context -> dto,NULL,NULL, (Msg) &new_frame); 
 
 		return TRUE;
-	}
-	else
-	{
-		printf("failed\n");
 	}
 
 	return FALSE;
 }
 
 
-bool old_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastPort *rp, struct retroScreen *screen, ULONG  &duration )
+bool old_frame(struct animContext *context,ULONG TimeStamp )
 {
 	struct adtFrame frame;
 
@@ -146,23 +171,22 @@ bool old_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 	frame.alf_TimeStamp = TimeStamp;
 	frame.alf_Frame = TimeStamp;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (DoDTMethodA ( (Object*) dto,NULL, NULL, (Msg) &frame))
+	if (DoDTMethodA ( (Object*) context -> dto,NULL, NULL, (Msg) &frame))
 	{
-		rp -> BitMap = frame.alf_BitMap;
-		duration = frame.alf_Duration;
+		context -> rp.BitMap = frame.alf_BitMap;
+		context -> duration = frame.alf_Duration;
 		
-		printf("TimeStamp: %d\n", frame.alf_TimeStamp);
-		printf("%s:%s:%d - frame %d\n",__FILE__,__FUNCTION__,__LINE__, frame.alf_Frame);
-
-		if (rp -> BitMap)
+		if ((frame.alf_CMap)&&(context->rgb_table))
 		{
-			printf("time: %-8d duration: %-d\n",TimeStamp,duration);
+			GetRGB32( frame.alf_CMap,  0, context -> colors, context->rgb_table );
+			copy_palette24( context );
+		}
 
+		if (context -> rp.BitMap)
+		{
 			// to avoid tering...
 			engine_lock();	
-			convert_bitmap( bformat, rp, screen );
+			convert_bitmap( context -> bformat, &(context -> rp), context -> screen );
 			engine_unlock();
 		}
 		else
@@ -170,10 +194,8 @@ bool old_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 			printf("failed no bitmap\n");
 		}
 
-		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		frame.MethodID = ADTM_UNLOADFRAME;
-		DoDTMethodA ( (Object*) dto,NULL,NULL, (Msg) &frame); 
+		DoDTMethodA ( (Object*) context -> dto,NULL,NULL, (Msg) &frame); 
 
 		return TRUE;
 	}
@@ -185,6 +207,10 @@ bool old_frame(struct DataType *dto,ULONG TimeStamp, ULONG bformat, struct RastP
 	return FALSE;
 }
 
+extern unsigned int modeToRetro( unsigned int mode );
+
+extern void __wait_vbl();
+
 void IffAnim( char *name, const int sn )
 {
 	struct DataType *dto = NULL;
@@ -192,15 +218,13 @@ void IffAnim( char *name, const int sn )
 	struct BitMap *dt_bitmap;
 	struct ColorRegister *cr;
 	ULONG modeid; 
-	ULONG colors;
-	ULONG bformat;
 	ULONG mode;
 	ULONG frames;
 	ULONG fps;
 	struct dtFrameBox dtf;
 	struct FrameInfo fri;
 	ULONG time = 0;
-	ULONG duration = 0;
+	struct animContext context;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -231,7 +255,7 @@ void IffAnim( char *name, const int sn )
 		if (GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	
 					ADTA_KeyFrame, (ULONG) &dt_bitmap, 
 					ADTA_ColorRegisters, &cr,
-					ADTA_NumColors, &colors,
+					ADTA_NumColors, &context.colors,
 					ADTA_ModeID, &modeid,
 					ADTA_Frames, &frames,
 					ADTA_FramesPerSecond, &fps,
@@ -246,27 +270,21 @@ void IffAnim( char *name, const int sn )
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-		bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
+		context.bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
-		printf("colors %d\n",colors);
+
+
+		printf("fps %d\n",fps);
+		printf("colors %d\n",context.colors);
 		printf("mode id %08x\n",modeid);
-		printf("bformat %d\n",bformat);
+		printf("bformat %d\n",context.bformat);
 		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-		switch (modeid)
-		{
-			case 0x800: 
-				mode = retroLowres | retroHam6;
-				break;
+		mode = modeToRetro( modeid );
 
-			default:
-				mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
-				mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
-		 }
+		getchar();
 
 		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
-
-		printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		engine_lock();
 
@@ -275,8 +293,11 @@ void IffAnim( char *name, const int sn )
 		if (screens[sn])
 		{
 			ULONG n;
-			struct RastPort rp;
-			InitRastPort(&rp);
+			InitRastPort(&context.rp);
+
+			context.dto = dto;
+			context.screen = screens[sn];
+			context.rgb_table = (ULONG *) malloc(sizeof(ULONG) * 3 * 256 );
 
 			init_amos_kittens_screen_default_text_window(screens[sn], 256);
 
@@ -286,30 +307,26 @@ void IffAnim( char *name, const int sn )
 			current_screen = sn;
 			engine_unlock();
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-			rp.BitMap = dt_bitmap;
-			if (cr) copy_palette( bformat, cr ,&rp, screens[sn] , colors );
-
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+			context.rp.BitMap = dt_bitmap;
+			if (cr) copy_palette( context.bformat, cr ,&context.rp, screens[sn] , &context.colors );
 
 			time = 0;
 
 			for (n=0; n<frames;n++)
 			{
-//				try_frame( dto, n, bformat, &rp, screens[sn] );
-
-
-				if (new_frame( dto, time, bformat, &rp, screens[sn], duration )== FALSE)
+				if (new_frame( &context, time )== FALSE)
 				{
-					old_frame( dto, time, bformat,  &rp, screens[sn], duration );
+					old_frame( &context, time );
 				}
 
-				progress(n*10,screens[sn]);
-				Delay(20);
+//				progress(n*10,screens[sn]);
+
+				__wait_vbl();
 
 				time += 1;
 			}
+
+			if (context.rgb_table) free(context.rgb_table);
 		}
 		else
 		{
