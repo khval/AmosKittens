@@ -861,13 +861,13 @@ extern void floydChannel( double *image, int w, int h );
 
 extern void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen);
 
-void dmode( char *name, unsigned int mode )
+void dmode( const char *name, uint64_t mode )
 {
-	int n = 1;
+	uint64_t n = 1;
 
-	while (n<512)
+	while (n<= 0x80000000)
 	{
-		printf("%s %08x - %d\n",name, mode, mode & n );
+		if (mode & n) printf("%08llx: %s %08llx\n",n,name, mode );
 		n=n<<1;
 	}
 }
@@ -917,7 +917,7 @@ void LoadIff( char *name, const int sn )
 	struct BitMapHeader *bm_header;
 	struct BitMap *dt_bitmap;
 	struct ColorRegister *cr;
-	ULONG modeid; 
+	ULONG modeid = 0; 
 	ULONG colors;
 	ULONG bformat;
 	ULONG mode;
@@ -945,20 +945,30 @@ void LoadIff( char *name, const int sn )
 	printf("bformat %d\n",bformat);
 	printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-	mode = modeToRetro (modeid);
+	if (modeid != -1)
+	{
+		switch (bformat)
+		{
+			case PIXF_NONE:
+			case PIXF_CLUT:
+				mode = modeToRetro (modeid);
+				break;		
+			default:
+				mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
+				mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+		}
+	}
+	else
+	{
+		mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
+		mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+	}
 
-	/*
-			mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
-			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
-	*/
-
-
+/*
 	dmode( "modeid", modeid );
-
 	dmode( "kitty mode", mode );
-
 	getchar();
-
+*/
 
 		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
@@ -985,7 +995,7 @@ void LoadIff( char *name, const int sn )
 
 			if (cr)
 			{
-				if (bformat==PIXF_NONE)
+				if ((bformat==PIXF_NONE) || (bformat==PIXF_CLUT))
 				{
 					for (c=0;c<colors;c++)		
 					{
@@ -1004,7 +1014,7 @@ void LoadIff( char *name, const int sn )
 
 
 
-			if (bformat==PIXF_NONE)
+			if ((bformat==PIXF_NONE) || (bformat==PIXF_CLUT))
 			{
 				for (y=0;y<screens[sn]->realHeight;y++)
 				{
@@ -1018,13 +1028,10 @@ void LoadIff( char *name, const int sn )
 			{
 //				floyd( &rp, screens[sn]->realWidth,  screens[sn]-> realHeight , screens[sn] );
 
-
 				for (y=0;y<screens[sn]->realHeight;y++)
 				{
 					argbToGrayScale( &rp, y, screens[sn] );
 				}
-
-
 			}
 		}
 
