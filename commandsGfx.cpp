@@ -103,8 +103,7 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 char *_gfxColour( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	bool success = false;
-	int num = 0;
+	short num = 0;
 	unsigned int color;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -112,32 +111,59 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	// get color
-			num = getStackNum( stack );
+			num = (short) getStackNum( stack );
 			popStack( stack - data->stack );
+
+			if (num & 0xFF00)	// mask test don't need to check lower and upper limit.
+			{
+				setError(49,data->tokenBuffer);	// not a vaild color number
+				return NULL;
+			}
 
 			if (screens[current_screen])
 			{
 				struct retroRGB rgb = screens[current_screen]->orgPalette[num];
-				setStackNum( ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17) );
+				setStackNum( ( (rgb.r & 0xF0) << 4) | (rgb.g &0xF0) | (rgb.b >> 4) );
+				return NULL;
 			}
-			break;
+
+			setError(47,data->tokenBuffer);	// screen not open
+			return NULL;
 
 		case 2:	// set color
-			num = getStackNum( stack-1 );
+			num = (short) getStackNum( stack-1 );
 			color = getStackNum( stack );
-			popStack( stack - data->stack );
+			popStack( stack - data->stack );	// we can pop it here so we can exit early.
 
-			if ((num>-1)&&(num<256))
+			if (num & 0xFF00)	// mask test don't need to check lower and upper limit.
 			{
-				if (screens[current_screen])
-				{
-					retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
-					dprintf("Screen %d,Color %d,R %02x G %02x,B %02x\n",current_screen, num, (color &0xF00 >>8) * 17, (color & 0xF0 >> 4) * 17, (color & 0xF)  * 17);
-
-				}
-				success = true;
+				setError(49,data->tokenBuffer);	// not a vaild color number
+				return NULL;
 			}
-			break;
+
+			if (screens[current_screen])
+			{
+				if (color & 0xFF000000)		// has ALPHA so its ARGB
+				{
+					retroScreenColor( screens[current_screen],
+						num, 
+						(color &0xFF0000) >>16, 
+						(color & 0x00FF00) >> 8,
+						(color & 0x0000FF));
+				}
+				else	// has no alpha so it must be old ECS colors.
+				{
+					retroScreenColor( screens[current_screen],
+					 	num, 
+						((color &0xF00) >>8) * 0x11, 
+						((color & 0xF0) >> 4) * 0x11, 
+						(color & 0xF) * 0x11);
+				}
+				return NULL;
+			}
+
+			setError(47,data->tokenBuffer);	// screen not open
+			return NULL;
 
 		defaut:
 			setError(22,data->tokenBuffer);
@@ -838,14 +864,17 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int color,n,num;
+	struct retroScreen *screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 
-	if ((screens[current_screen])&&(args > 0))
+	screen = screens[current_screen];
+
+	if ( (screen) && (args > 0) )
 	{
-		struct retroRGB *Palette = screens[current_screen]->orgPalette;
+		struct retroRGB *Palette = screen -> orgPalette;
 		struct retroRGB rgb;
 
 		for (n=data->stack;n<=stack;n++)
@@ -854,7 +883,15 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 			rgb = Palette[num];
 			color =  ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17);
 			stack_get_if_int( n, &color );
-			retroScreenColor( screens[current_screen], 	num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+
+			if (color & 0xFF000000)	// has Alpha, so its ARGB
+			{
+				retroScreenColor( screen, num, (color & 0xFF0000) >> 16 , (color & 0x00FF00) >> 8, color & 0x0000FF);
+			}
+			else	// not ARGB so its ECS/OCS colors
+			{
+				retroScreenColor( screen, num, ((color &0xF00) >>8) * 17, ((color & 0xF0) >> 4) * 17, (color & 0xF)  * 17);
+			}
 		}
 	}
 
@@ -1357,15 +1394,6 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		int verticalOffset = getStackNum( stack-1 ) ;
 		int height = getStackNum( stack );
 
-#if defined(__amigaos4__) 
-// is this correct, should it not be in engine lock?
-		WaitTOF();
-#endif
-
-#if defined(__linux__)
-		sleep(1);
-#endif
-
 		retroRainbow( video, rainbowNumber, base, verticalOffset-51, height);
 	}
 	else setError(22,data->tokenBuffer);
@@ -1815,10 +1843,17 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 				color = getStackNum(stack);
-				r = (color & 0xF00) >> 8;
-				g = (color & 0x0F0) >> 4;
-				b = color & 0xF;
-				engine_back_color = (r * 0x110000) | (g * 0x001100) | ( b * 0x000011 );
+				if (color & 0xFF000000)		// has ALPHA so its ARGB
+				{
+					engine_back_color = color & 0x00FFFFFF;
+				}
+				else
+				{
+					r = (color & 0xF00) >> 8;
+					g = (color & 0x0F0) >> 4;
+					b = color & 0xF;
+					engine_back_color = (r * 0x110000) | (g * 0x001100) | ( b * 0x000011 );
+				}
 			break;
 		default:
 			setError(22,data->tokenBuffer);
