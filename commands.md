@@ -21,6 +21,52 @@ see other docs like issue for more info.
 
 	Uniconify Amos Kittens, and open the window.
 
+**Colour**
+
+	To set value
+
+	Colour <num>,<value>
+	
+	To get value
+	
+	value = Colour(num)
+	
+	num is colour number.
+	value is RGB value.
+
+	can be used in standard AMOS ECS/OCS style.
+	to set color to white.
+
+	colour 0,$FFF
+
+	or can be used in ARGB format.
+
+	color 0,$FFFFFFFF
+	
+	You can only get value in OCS/ECS format.
+	
+**Colour back**
+
+	Sets the border color, the color outside of the screen.
+	works in OCS/ECS format or ARGB format.
+
+	Colour back $FFF
+
+	or
+
+	Colour back $FFFFFFFF
+
+**Palette**
+
+	Command used to set more then once colour
+	can be used two ways old OCS format, or ARGB format.
+
+	Palette $000,,$FFF
+	Palette $FF000000,,$FFFFFFFF
+
+	Note this two lines does the same thing.
+	sets colour 0 and colour 2, colour 1 is ignored as no value given.
+
 **Disc Info$**
 
 	This command return string "Volume name:size free",
