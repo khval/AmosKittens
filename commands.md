@@ -98,7 +98,8 @@ see other docs like issue for more info.
 		value 16777216 reserved for 24bit ARGB...		
 		(playing with idea of using -6 for HAM6 and -8 for HAM8)
 
-	<mode> is Lowres,hires,laced	
+	<mode> can be Lowres,hires,laced
+	(laced is always promoted to dbpal, dbntsc like modes.)
 
 	ham8 can be set by setting mode to 64, but this can change.
 
