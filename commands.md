@@ -85,6 +85,23 @@ see other docs like issue for more info.
 	Will always return 256 colors, even if you have opened screens with just 8 colors. this not bug, 
 	it's becouse Amos Kittens can only use chunky mode, and it is 8bit.
 
+**Screen Open**
+
+	Screen open <num>,<width>,<height>,<colors>,<mode>
+	
+	<num> is screen number 0 to 7
+	<width> screen width
+	<height> screen height
+	<colors> 
+		value 1-256 is 256 colors.
+		value 4096 is HAM
+		value 16777216 reserved for 24bit ARGB...		
+		(playing with idea of using -6 for HAM6 and -8 for HAM8)
+
+	<mode> is Lowres,hires,laced	
+
+	ham8 can be set by setting mode to 64, but this can change.
+
 **Sprites**
 
 	Just like AmosPro sprites, but unlike AMOS Pro that uses hardware sprites and where there are 
@@ -97,6 +114,7 @@ see other docs like issue for more info.
 	true color images are converted into 8bit grayscale images, or 8bit floyd dittered images.
 	(in the future this command can load in images as truecolor), loading option will be in global variabel.
 	IFF images with HAM6 format also supported.
+	HAM8 images also supported.
 	
 **Save Iff**
 
