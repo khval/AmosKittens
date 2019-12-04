@@ -805,6 +805,7 @@ char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _boHotSpot, tokenBuffer );
 	return tokenBuffer;
 }
+
 char *_boLimitBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -924,14 +925,85 @@ char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+int inBob( int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob )
+{
+	if (otherBob -> image)
+	{
+		struct retroFrameHeader * frame = &sprite -> frames[ otherBob -> image -1 ];
+		int ominX = otherBob -> x - frame -> XHotSpot;
+		int ominY = otherBob -> y - frame -> XHotSpot;
+		int omaxX = ominX + frame -> width;
+		int omaxY = ominY + frame -> height;	
+
+//		printf("%d,%d,%d,%d -- %d,%d,%d,%d\n" , 
+//			minX, minY, maxX,maxY, 
+//			ominX,ominY,omaxX,omaxY );
+
+		if ( maxX < ominX ) return 0;
+		if ( minX > omaxX ) return 0;
+		if ( maxY < ominY ) return 0;
+		if ( maxY > omaxY ) return 0;
+		return ~0;
+	}
+	return 0;
+}
+
+
+int bobCol( unsigned short bob, unsigned short start, unsigned short end )
+{
+	struct retroSpriteObject *thisBob;
+	struct retroSpriteObject *otherBob;
+	struct retroFrameHeader *frame;
+	int minX, maxX, minY, maxY;
+	int n,r;
+
+	thisBob = &bobs[bob];
+
+	if (thisBob -> image == 0) return 0;
+
+	frame = &sprite -> frames[ thisBob -> image-1 ];
+	minX = thisBob -> x - frame -> XHotSpot;
+	minY = thisBob -> y - frame -> XHotSpot;
+	maxX = minX + frame -> width;
+	maxY = minY + frame -> height;
+
+//	retroBox( screens[current_screen], 0, minX,minY,maxX,maxY,1 );
+
+	for (n=start;n<=end;n++)
+	{
+		otherBob = &bobs[n];
+
+		if (otherBob != thisBob)
+		{
+			if (otherBob -> image) // is valid bob
+			{
+				r = inBob( minX,minY,maxX,maxY, otherBob );
+				if (r) return r;
+			}
+		}
+	}
+
+	return 0;
+}
+
 char *_boBobCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int ret = 0;
+	int bob = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	switch (args)
+	{
+		case 1:	bob = getStackNum(stack);
+				setStackNum(bobCol( bob, 0, 63 ));	
+				printf("stack %d\n",getStackNum(stack));	
+				return NULL;
+	}
+
+	printf("Error Error robinson... %d\n",args);
+
 	popStack( stack - data->stack );
-	setStackNum(ret);
+	setStackNum(0);			
 	return NULL;
 }
 
