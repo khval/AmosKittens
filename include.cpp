@@ -271,14 +271,12 @@ void collect_lines( struct fileContext &lastFile, char *filename )		// this func
 		int r;
 		int _file_code_start_ = ftell(fd);
 		file -> end = file -> start + file -> tokenLength;
-
-		r = fread(file -> start, file -> length - _file_code_start_ ,1,fd);
+		r = fread(file -> start, file -> tokenLength ,1,fd);
 
 		if (file -> file == 0)
 		{
 			file -> bankSize = file -> length - file -> tokenLength - _file_code_start_;
-
-			if (file -> bankSize>6) file -> bank = (unsigned char *) malloc( file -> bankSize );			
+			if (file -> bankSize>6) file -> bank = (unsigned char *) malloc( file -> bankSize );
 			if (file -> bank)	fread( file -> bank, file -> bankSize, 1, fd );
 		}
 
