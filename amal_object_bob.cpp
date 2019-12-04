@@ -43,7 +43,6 @@ static int getX (int object)
 static int getY (int object)
 {
 	return bobs[object].y;
-
 }
 
 static void setImage (int object,int image)
@@ -51,7 +50,7 @@ static void setImage (int object,int image)
 	struct retroScreen *s;
 	bobs[object].image = image;
 	s = screens[ bobs[object].screen_id ];
-	if (s) s -> force_swap = TRUE;
+	if (s) s ->event_flags |= rs_bob_moved;
 }
 
 static void setX (int object,int x)
@@ -59,7 +58,7 @@ static void setX (int object,int x)
 	struct retroScreen *s;
 	bobs[object].x = x;
 	s = screens[ bobs[object].screen_id ];
-	if (s) s -> force_swap = TRUE;
+	if (s) s ->event_flags |= rs_bob_moved;
 }
 
 static void setY (int object,int y)
@@ -67,7 +66,7 @@ static void setY (int object,int y)
 	struct retroScreen *s;
 	bobs[object].y = y;
 	s = screens[ bobs[object].screen_id ];
-	if (s) s -> force_swap = TRUE;
+	if (s) s ->event_flags |= rs_bob_moved;
 }
 
 struct channelAPI bob_api = 

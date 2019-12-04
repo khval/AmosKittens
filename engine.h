@@ -20,6 +20,8 @@ extern uint32_t engine_back_color;
 extern bool engine_stopped;
 extern bool engine_mouse_hidden;
 
+extern uint32_t engine_update_flags ;
+
 extern struct retroVideo *video;
 extern struct retroScreen *screens[8] ;
 

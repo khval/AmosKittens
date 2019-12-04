@@ -52,7 +52,8 @@ bool engine_stopped = false;
 bool engine_key_repeat = false;
 bool engine_key_down = false;
 bool engine_mouse_hidden = false;
-bool engine_bob_update = true;
+
+uint32_t engine_update_flags = rs_bob_moved | rs_force_swap;
 
 extern bool curs_on;
 extern int _keyshift;
@@ -809,52 +810,30 @@ void main_engine()
 					{
 						retroFadeScreen_beta(screen);
 
-//						Printf("bobAutoUpdate %ld, bobDoUpdate %ld\n",bobAutoUpdate, bobDoUpdate);
+						Printf("%08lx,%08lx\n",screen -> event_flags , engine_update_flags);
 
-						if (screen -> Memory[1]) 	// has double buffer
+						if (screen -> event_flags & engine_update_flags)
 						{
-							if ((screen -> autoback!=0) || (screen -> force_swap))
+							if (screen -> Memory[1]) 	// has double buffer
 							{
-								Printf("bobDoUpdate: %ld, bobAutoUpdate %ld\n ", bobDoUpdate, bobAutoUpdate );
-
-								if (bobUpdateOnce | ( bobDoUpdate & bobDoUpdateEnable ) | bobAutoUpdate )		// if "bob update off" is true, you need to do "bob update"
+								if (screen -> autoback!=0)
 								{
 									clearBobsOnScreen(screen);
 									drawBobsOnScreen(screen);
-
-									swap_buffer( screen );
-
-									bobUpdateOnceDone = bobUpdateOnce ? 1: 0;
-									bobIsUpdated = 1;
-								}
-								else if (bobDoUpdateEnable == 1)
-								{
 									swap_buffer( screen );
 								}
 							}
+							else
+							{
+								clearBobsOnScreen(screen);
+								drawBobsOnScreen(screen);
+							}
 						}
-						else if (bobDoUpdate & bobDoUpdateEnable)
-						{
-							clearBobsOnScreen(screen);
-							drawBobsOnScreen(screen);
-							bobIsUpdated = 1;
-						}
+						screen -> event_flags = 0;
 					}
 				}	// next
 
 				retroDrawVideo( video );
-
-				if (bobUpdateOnceDone)
-				{
-					bobUpdateOnceDone = 0;
-					bobUpdateOnce = 0;
-				}
-
-				if (bobIsUpdated)
-				{
-					bobIsUpdated = 0;
-					bobDoUpdate = 0;
-				}
 
 #if 1
 				if (channels)

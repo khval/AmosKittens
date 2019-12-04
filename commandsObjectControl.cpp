@@ -52,11 +52,15 @@ extern std::vector<int> engineCmdQue;
 
 extern void __wait_vbl();
 
+extern int bobUpdateEvery;
+
+/*
 extern int bobDoUpdate;
 extern int bobAutoUpdate;
-extern int bobUpdateEvery;
+
 extern int bobDoUpdateEnable;
 extern int bobUpdateOnce;
+*/
 
 int priorityReverse = 0;
 
@@ -659,26 +663,28 @@ char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int prev = bobAutoUpdate;
-	bobAutoUpdate = 0;
-	bobDoUpdateEnable = 0;
+	engine_update_flags = 0;
 	return tokenBuffer;
 }
 
 char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int prev = bobAutoUpdate;
-	bobAutoUpdate = 1;
-	bobDoUpdateEnable = 1;
+
+	engine_update_flags = rs_bob_moved | rs_force_swap;
+
 	return tokenBuffer;
 }
 
 char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("bobAutoUpdate %d\n",bobAutoUpdate);
 	engine_lock();		// Stop half of the bobs from being drawn.
-	bobUpdateOnce = 1;
+
+	if (screens[current_screen])
+	{
+		screens[current_screen] -> event_flags |= rs_force_swap;
+	}
+
 	engine_unlock();
 	__wait_vbl();
 	return tokenBuffer;

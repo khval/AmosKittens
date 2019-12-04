@@ -37,10 +37,12 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 extern int priorityReverse;
+/*
 extern int bobDoUpdate;
 extern int bobAutoUpdate;
 extern int bobDoUpdateEnable;
-extern int bobUpdateNextWait;
+*/
+ // extern int bobUpdateNextWait;
 
 extern int current_screen;
 
@@ -343,6 +345,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int num;
+	int lx,ly,li;
 	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -353,27 +356,32 @@ char *_boBob( struct glueCommands *data, int nextToken )
 			num = getStackNum( stack - 3 );
 			bob = &bobs[num];
 
+			lx =bob->x;
+			ly =bob->y;
+			li = bob -> image;
+
 			stack_get_if_int( stack - 2 , &bob->x );
 			stack_get_if_int( stack - 1 , &bob->y );
 
 			bob->image = getStackNum( stack );
 			bob->screen_id = current_screen;
 
-			bobUpdateNextWait = 1;
+			if (struct retroScreen *screen = screens[bob->screen_id])
+			{
+				if ((lx ^ bob -> x) | (ly ^ bob -> y) | ( li ^ bob -> image)) 		// xor should remove bits not changed, so if this has value its changed.
+				{	
+					if (screen -> Memory[1])			// this has double buffer, so there is buffer to swap.
+					{
+						screen -> event_flags |= rs_bob_moved;		// normaly, screen is swaped if bob is moved.
+					}
+				}
+			}
+
 			break;
 
 		default:
 			setError(22, data->tokenBuffer);
 	 }
-
-	if (struct retroScreen *screen = screens[current_screen])
-	{
-		if (screen -> Memory[1])
-		{
-			dprintf("force swaped\n");
-			screen -> force_swap = TRUE;
-		}
-	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -888,14 +896,14 @@ char *boRev(struct nativeCommand *cmd, char *tokenBuffer)
 char *boBobUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	bobAutoUpdate = 0;
+	engine_update_flags &= ~rs_bob_moved;	// disable update on bob move.
 	return tokenBuffer;
 }
 
 char *boBobUpdateOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	bobAutoUpdate = 1;
+	engine_update_flags |= rs_bob_moved;	// enable update on bob move.
 	return tokenBuffer;
 }
 
@@ -904,7 +912,14 @@ extern void __wait_vbl();
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	bobDoUpdate = 1;
+
+	engine_lock();	
+	if (screens[current_screen])
+	{
+		screens[current_screen] -> event_flags |= rs_force_swap;
+	}
+	engine_unlock();
+
 	__wait_vbl();
 	return tokenBuffer;
 }
