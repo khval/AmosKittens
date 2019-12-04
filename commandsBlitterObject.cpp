@@ -1035,8 +1035,10 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 	engine_lock();	
 	drawBobs();
 	engine_unlock();
+
 	return tokenBuffer;
 }
+
 
 char *_boBobOff( struct glueCommands *data, int nextToken )
 {
@@ -1053,7 +1055,7 @@ char *_boBobOff( struct glueCommands *data, int nextToken )
 		{
 			engine_lock();
 
-			if (bobDoUpdateEnable)	clearBob(&bobs[del]);
+			clearBob(&bobs[del]);
 
 			if (bobs[del].clear[0].mem) sys_free(bobs[del].clear[0].mem);
 			bobs[del].clear[0].mem = NULL;
