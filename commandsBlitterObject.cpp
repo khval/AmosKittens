@@ -1148,3 +1148,80 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _boBobOff, tokenBuffer );
 	return tokenBuffer;
 }
+
+void makeMask( struct retroFrameHeader *frame )
+{
+	struct retroMask *mask;
+	char *row;
+	unsigned short *rowMask;
+	int xpos,ypos;
+
+	if (frame -> mask) FreeVec( frame -> mask );
+	frame -> mask = (struct retroMask *) AllocVecTags( sizeof(struct retroMask), AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
+	if (frame -> mask == NULL) return;
+
+	mask = frame -> mask;
+	mask -> int16PerRow = (frame -> width >> 4) + ((frame -> width  & 15) ? 1 : 0);
+	mask -> height = frame -> height;
+
+	if (mask -> data) FreeVec( mask -> data );
+	mask -> data = (unsigned short *) AllocVecTags( sizeof(uint16_t) * mask -> int16PerRow * mask -> height, AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
+	if (mask -> data == NULL) return;
+
+	for ( ypos = 0; ypos < frame -> height; ypos++ )
+	{
+		row = frame -> data + (frame -> bytesPerRow * ypos);
+		rowMask = mask -> data + (mask -> int16PerRow * ypos );
+
+		for ( xpos = 0;  xpos < frame -> width ; xpos++ )
+		{
+			if (row[xpos]) rowMask[xpos >> 4] |= 0x8000 >> (xpos & 15);
+		}
+	}
+}
+
+
+char *_boMakeMask( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+
+			switch (kittyStack[stack].type)
+			{
+				case type_none:
+					{
+						int n;
+						for (n=0;n<sprite -> number_of_frames;n++)
+						{
+							makeMask( &sprite -> frames[n] );
+						}
+					}
+					break;
+
+				case type_int:
+					makeMask( &sprite -> frames[ kittyStack[stack].integer.value ] );
+					break;
+			}
+
+			break;
+		default:
+			setError(22,data->tokenBuffer);;
+			break;
+	}
+
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *boMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _boMakeMask, tokenBuffer );
+	setStackNone();
+	return tokenBuffer;
+}
+

@@ -875,32 +875,6 @@ char *ocFire(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocMakeMask( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 0:
-		case 1:
-			break;
-		default:
-			setError(22,data->tokenBuffer);;
-			break;
-	}
-
-	popStack( stack - data->stack );
-	return NULL;
-}
-
-char *ocMakeMask(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _ocMakeMask, tokenBuffer );
-	return tokenBuffer;
-}
-
 char *_ocHZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
