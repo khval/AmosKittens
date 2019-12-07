@@ -276,8 +276,12 @@ void collect_lines( struct fileContext &lastFile, char *filename )		// this func
 		if (file -> file == 0)
 		{
 			file -> bankSize = file -> length - file -> tokenLength - _file_code_start_;
-			if (file -> bankSize>6) file -> bank = (unsigned char *) malloc( file -> bankSize );
-			if (file -> bank)	fread( file -> bank, file -> bankSize, 1, fd );
+
+			if (file -> bankSize > 8)
+			{
+				if (file -> bankSize>6) file -> bank = (unsigned char *) malloc( file -> bankSize );
+				if (file -> bank)	fread( file -> bank, file -> bankSize, 1, fd );
+			}
 		}
 
 		file -> ptr = file -> lineStart;
@@ -398,6 +402,7 @@ struct fileContext *newFile( char *name )
 
 		if (files.size()>0)	// grab the bank from the first file.
 		{
+			char *c;
 			newFile -> bank = files[0] -> bank;
 			newFile -> bankSize = files[0] -> bankSize;
 			files[0] -> bank = NULL;
