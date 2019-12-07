@@ -964,12 +964,6 @@ void LoadIff( char *name, const int sn )
 		mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
 	}
 
-/*
-	dmode( "modeid", modeid );
-	dmode( "kitty mode", mode );
-	getchar();
-*/
-
 		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
 		engine_lock();

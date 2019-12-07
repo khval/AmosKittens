@@ -92,7 +92,7 @@ void _sd(unsigned char d)
 	d_data[d_data_pos] = d;
 	d_data_pos++;
 
-	if (d) getchar();
+//	if (d) getchar();
 }
 
 void _srle(unsigned char d)
@@ -101,7 +101,7 @@ void _srle(unsigned char d)
 	d_rle[d_rle_pos] = d;
 	d_rle_pos++;
 
-	if (d) getchar();
+//	if (d) getchar();
 }
 
 void _srrle(unsigned char d)
@@ -110,7 +110,7 @@ void _srrle(unsigned char d)
 	d_rrle[d_rle_pos] = d;
 	d_rrle_pos++;
 
-	if (d) getchar();
+//	if (d) getchar();
 }
 
 void _cd(unsigned char d)
@@ -606,11 +606,9 @@ char *_ext_cmd_unpack( struct glueCommands *data, int nextToken )
 			return NULL;
 	}
 
-	printf( "unpack( %08x, %d  %d, %d, %d )\n" ,  data, bank_num, screen_num, x0, y0 );
+//	printf( "unpack( %08x, %d  %d, %d, %d )\n" ,  data, bank_num, screen_num, x0, y0 );
 
 	unpack( data, bank_num, screen_num, x0, y0 );
-	getchar();
-
 
 	popStack( stack - data->stack );
 	return NULL;
