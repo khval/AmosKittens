@@ -921,7 +921,6 @@ char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	engine_unlock();
 
-	__wait_vbl();
 	return tokenBuffer;
 }
 
