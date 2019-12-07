@@ -924,7 +924,87 @@ char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-int inBob( int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob )
+/*
+void drawShortPlanar ( unsigned short ptr,int x, int y );
+
+void drawMask( struct retroMask *mask, int x, int y )
+{
+	int xx,yy;
+	uint16_t *ptr;
+
+	for (yy=0;yy<mask->height;yy++)
+	{
+		for (xx=0;xx < mask->int16PerRow;xx++)
+		{
+			ptr = mask -> data + (yy*mask->int16PerRow) + xx;
+
+			drawShortPlanar(*ptr,xx*16+x,y);
+		}
+		y++;
+	}
+}
+*/
+
+int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int offInt16, int lshift, int dy )
+{
+	int xx,yy;
+	uint16_t *ptrLeft;
+	uint16_t *ptrRight;
+	uint16_t shiftbits;
+	uint16_t rshift;
+	uint16_t bitMask;
+	int leftYStart, rightYStart;
+	uint16_t leftHeight, rightHeight;
+	uint16_t *rowLeft;
+	uint16_t *rowRight;
+	int maxHeight;
+	bitMask = (1<<lshift)-1;
+	rshift = 15 - lshift;
+	leftYStart = 0;
+	rightYStart = 0;
+	leftHeight = leftMask -> height - rightYStart;
+	rightHeight = rightMask -> height - leftYStart;
+
+	if (dy>0)
+	{
+		leftYStart = dy;
+		rightYStart = -leftYStart;		// subtract offset from right
+
+		rightHeight = rightMask -> height - leftYStart;
+		leftHeight = leftMask -> height - leftYStart;
+	}
+	else
+	{
+		rightYStart = -dy;
+		rightHeight = rightMask -> height - rightYStart;
+	}
+
+	maxHeight = leftHeight < rightHeight ? leftHeight : rightHeight;		// pick the smallest hight to be the max height.
+
+	for (yy=leftYStart;yy<leftYStart+maxHeight;yy++)
+	{
+		shiftbits =0;
+		rowLeft = leftMask -> data + (yy*leftMask->int16PerRow);
+		rowRight =rightMask -> data + ((yy+rightYStart)*rightMask->int16PerRow);
+
+		for (xx=offInt16;xx < leftMask -> int16PerRow;xx++)
+		{
+			ptrLeft = rowLeft + xx;
+			ptrRight = rowRight +xx - offInt16;
+			if (*ptrLeft & ((*ptrRight >> lshift) | shiftbits))	return true;
+
+//			drawShortPlanar(*ptrLeft,xx*16,yy);
+//			drawShortPlanar( *ptrLeft | (*ptrRight >> lshift) | shiftbits ,xx*16,yy);
+
+			shiftbits = (*ptrRight & bitMask) << rshift;
+		}
+	}
+
+	return false;
+}
+
+
+int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob )
 {
 	if (otherBob -> image)
 	{
@@ -942,6 +1022,42 @@ int inBob( int minX,int minY, int maxX, int maxY, struct retroSpriteObject *othe
 		if ( minX > omaxX ) return 0;
 		if ( maxY < ominY ) return 0;
 		if ( maxY > omaxY ) return 0;
+
+		if (minX< ominX)
+		{
+			int dx = ominX - minX;
+			int dy = ominY - minY;
+			int bitx = dx & 15;
+			dx = dx >> 4;
+
+			if (cmpMask( thisMask, frame -> mask, dx, bitx, dy ))
+			{
+				return ~0;
+			}
+			else return 0;
+
+//			drawMask( thisMask, 0, 0 );
+//			drawMask( frame -> mask, dx * 16 + bitx, 0 );
+		}
+		else
+		{
+			int dx = minX - ominX;
+			int dy = minY - ominY;
+
+			int bitx = dx & 15;
+			dx = dx >> 4;
+
+			if (cmpMask(  frame-> mask, frame -> mask, dx, bitx, dy ))
+			{
+				return ~0;
+			}
+			else return 0;
+
+//			drawMask( frame-> mask, 0, 0 );
+//			drawMask( thisMask, dx * 16 +bitx, 0 );
+		}
+
+
 		return ~0;
 	}
 	return 0;
@@ -976,7 +1092,7 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 		{
 			if (otherBob -> image) // is valid bob
 			{
-				r = inBob( minX,minY,maxX,maxY, otherBob );
+				r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
 				if (r) return r;
 			}
 		}
@@ -1148,37 +1264,20 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void makeMask( struct retroFrameHeader *frame )
+void drawShortPlanar ( unsigned short ptr,int x, int y )
 {
-	struct retroMask *mask;
-	char *row;
-	unsigned short *rowMask;
-	int xpos,ypos;
+	int n;
+	struct retroScreen *screen = screens[1];
+	unsigned char *mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
 
-	if (frame -> mask) FreeVec( frame -> mask );
-	frame -> mask = (struct retroMask *) AllocVecTags( sizeof(struct retroMask), AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
-	if (frame -> mask == NULL) return;
-
-	mask = frame -> mask;
-	mask -> int16PerRow = (frame -> width >> 4) + ((frame -> width  & 15) ? 1 : 0);
-	mask -> height = frame -> height;
-
-	if (mask -> data) FreeVec( mask -> data );
-	mask -> data = (unsigned short *) AllocVecTags( sizeof(uint16_t) * mask -> int16PerRow * mask -> height, AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END );
-	if (mask -> data == NULL) return;
-
-	for ( ypos = 0; ypos < frame -> height; ypos++ )
+	n=0x8000;
+	do
 	{
-		row = frame -> data + (frame -> bytesPerRow * ypos);
-		rowMask = mask -> data + (mask -> int16PerRow * ypos );
-
-		for ( xpos = 0;  xpos < frame -> width ; xpos++ )
-		{
-			if (row[xpos]) rowMask[xpos >> 4] |= 0x8000 >> (xpos & 15);
-		}
-	}
+		if (n&ptr) retroPixel( screen, mem, x, y, 1 );
+		x++;
+		n=n>>1;
+	} while (n>0);
 }
-
 
 char *_boMakeMask( struct glueCommands *data, int nextToken )
 {
