@@ -654,6 +654,10 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 		{
 			engine_lock();
 			retroGetSprite(screen,sprite,image-1,x0,y0,x1,y1);
+			sprite -> frames[image-1].alpha  = 1;
+
+			retroMakeMask( &sprite -> frames[ image-1 ] );
+
 			engine_unlock();
 		}
 
@@ -1295,13 +1299,13 @@ char *_boMakeMask( struct glueCommands *data, int nextToken )
 						int n;
 						for (n=0;n<sprite -> number_of_frames;n++)
 						{
-							makeMask( &sprite -> frames[n] );
+							retroMakeMask( &sprite -> frames[n] );
 						}
 					}
 					break;
 
 				case type_int:
-					makeMask( &sprite -> frames[ kittyStack[stack].integer.value ] );
+					retroMakeMask( &sprite -> frames[ kittyStack[stack].integer.value ] );
 					break;
 			}
 
