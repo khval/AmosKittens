@@ -16,6 +16,7 @@
 #define show_error_at_file_no
 #define show_debug_amal_no
 #define show_array_no
+#define enable_limit_mouse_no
 #define enable_engine_debug_output_no
 #define enable_audio_debug_output_no
 
