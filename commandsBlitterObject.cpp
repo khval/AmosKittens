@@ -414,6 +414,7 @@ char *_boNoMask( struct glueCommands *data, int nextToken )
 					if (frame)
 					{
 						frame -> alpha = 0;
+						retroFreeMask( frame );
 						return NULL;
 					}
 				}
@@ -928,27 +929,6 @@ char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-/*
-void drawShortPlanar ( unsigned short ptr,int x, int y );
-
-void drawMask( struct retroMask *mask, int x, int y )
-{
-	int xx,yy;
-	uint16_t *ptr;
-
-	for (yy=0;yy<mask->height;yy++)
-	{
-		for (xx=0;xx < mask->int16PerRow;xx++)
-		{
-			ptr = mask -> data + (yy*mask->int16PerRow) + xx;
-
-			drawShortPlanar(*ptr,xx*16+x,y);
-		}
-		y++;
-	}
-}
-*/
-
 int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int offInt16, int lshift, int dy )
 {
 	int xx,yy;
@@ -997,12 +977,14 @@ int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int offInt
 			ptrRight = rowRight +xx - offInt16;
 			if (*ptrLeft & ((*ptrRight >> lshift) | shiftbits))	return true;
 
-//			drawShortPlanar(*ptrLeft,xx*16,yy);
-//			drawShortPlanar( *ptrLeft | (*ptrRight >> lshift) | shiftbits ,xx*16,yy);
+//			if (*ptrLeft & ((*ptrRight >> lshift) | shiftbits)) ret=true;
+//			retroDrawShortPlanar( screens[1], *ptrLeft | (*ptrRight >> lshift) | shiftbits ,xx*16,yy);
 
 			shiftbits = (*ptrRight & bitMask) << rshift;
 		}
 	}
+
+//	return ret;
 
 	return false;
 }
@@ -1268,20 +1250,6 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void drawShortPlanar ( unsigned short ptr,int x, int y )
-{
-	int n;
-	struct retroScreen *screen = screens[1];
-	unsigned char *mem = screen -> Memory[ screen -> double_buffer_draw_frame ];
-
-	n=0x8000;
-	do
-	{
-		if (n&ptr) retroPixel( screen, mem, x, y, 1 );
-		x++;
-		n=n>>1;
-	} while (n>0);
-}
 
 char *_boMakeMask( struct glueCommands *data, int nextToken )
 {
