@@ -35,6 +35,7 @@ extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
 extern struct retroSpriteObject bobs[64];
+extern struct retroSprite *sprite;
 extern int current_screen ;
 
 struct lineFromPtr lineFromPtr;
@@ -192,6 +193,31 @@ void dump_labels()
 				labels[n].tokenLocation, 
 				labels[n].name, labels[n].proc);
 
+	}
+}
+
+void dump_sprite()
+{
+	int image;
+	struct retroFrameHeader *frame;
+
+	if (sprite)
+	{
+		for (image=0;image<sprite -> number_of_frames;image++)
+		{
+			frame = &sprite -> frames[image];
+
+			printf("sprite %-3d, w %-3d, h %-3d, bpr %-3d, hotspot x %-3d, hotspot y %-3d, data %08x, mask %08x - alpha %d\n", 
+				image+1,
+				frame -> width,
+				frame -> height,
+				frame -> bytesPerRow,
+				frame -> XHotSpot,
+				frame -> YHotSpot,
+				frame -> data,
+				frame -> mask,
+				frame -> alpha );
+		}
 	}
 }
 
