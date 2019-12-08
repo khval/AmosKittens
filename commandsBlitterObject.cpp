@@ -1033,7 +1033,7 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 			int bitx = dx & 15;
 			dx = dx >> 4;
 
-			if (cmpMask(  frame-> mask, frame -> mask, dx, bitx, dy ))
+			if (cmpMask(  frame-> mask, thisMask, dx, bitx, dy ))
 			{
 				return ~0;
 			}
@@ -1097,7 +1097,6 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 	{
 		case 1:	bob = getStackNum(stack);
 				setStackNum(bobCol( bob, 0, 63 ));	
-				printf("stack %d\n",getStackNum(stack));	
 				return NULL;
 	}
 
