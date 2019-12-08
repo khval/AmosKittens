@@ -232,7 +232,12 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 					copy_pal( screens[current_screen] -> rowPalette, screens[screen_num] -> rowPalette );
 					copy_pal( screens[current_screen] -> fadePalette, screens[screen_num] -> fadePalette );
 
-					retroApplyScreen( screens[screen_num], video, 0, 100, screens[screen_num]->displayWidth, screens[screen_num]->displayHeight );
+					retroApplyScreen( screens[screen_num], video, 
+							screens[screen_num]->scanline_x, 
+							screens[screen_num]->scanline_y, 
+							screens[screen_num]->displayWidth, 
+							screens[screen_num]->displayHeight );
+
 					video -> refreshAllScanlines = TRUE;
 				}
 
