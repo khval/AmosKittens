@@ -415,29 +415,33 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 	{
 		case 1:	if (kittyStack[stack].type == type_none )	// arg 1 not set.
 				{
-					int index = 0;
+					struct kittyChannel *item;
+					unsigned int i = 0;
 
 					engine_lock();				// most be thread safe!!!
-					for (index = 0; index < channels -> _size(); index++)
+					for (i = 0; i < channels -> _size(); i++)
 					{
-						(channels -> item(index)) -> amalStatus = channel_status::active;
-						Printf("is active\n");
-						engine_unlock();
-						return NULL;
+						if (item = channels -> item(i))
+						{
+							item  -> amalStatus = channel_status::active;
+						}
 					}
 					engine_unlock();
+					return NULL;
 				}
 				else
 				{
 					struct kittyChannel *item;
 					int channel = getStackNum( stack  );
 
+					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus = channel_status::active;
-						engine_unlock();
-						return NULL;
+
 					}
+					engine_unlock();
+					return NULL;
 				}
 				break;
 
