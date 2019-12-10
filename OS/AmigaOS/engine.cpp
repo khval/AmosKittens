@@ -816,12 +816,9 @@ void main_engine()
 						{
 							if (screen -> Memory[1]) 	// has double buffer
 							{
-								if (screen -> autoback!=0)
-								{
-									clearBobsOnScreen(screen);
-									drawBobsOnScreen(screen);
-									swap_buffer( screen );
-								}
+								clearBobsOnScreen(screen);
+								drawBobsOnScreen(screen);
+								swap_buffer( screen );
 							}
 							else
 							{
