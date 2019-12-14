@@ -41,7 +41,7 @@ extern std::vector<struct label> labels;
 
 
 
-static unsigned int is_token = 0;
+static unsigned int is_token_cmd = 0;
 extern int last_var;
 
 char *executeOnToken(char *ptr, unsigned short token)
@@ -59,7 +59,7 @@ char *executeOnToken(char *ptr, unsigned short token)
 		case token_gosub:	
 		case token_proc:
 					printf("PROC, GOSUB OR GOTO\n");
-					is_token = token;
+					is_token_cmd = token;
 					return ptr;
 		case 0x0000:
 					return NULL;
@@ -93,15 +93,14 @@ static char *collect_data(char *ptr)
 	setStackNum(0);
 	ptr+=2;
 
-	printf("First Token %04x\n",token);
-
-	while ( (ptr = executeOnToken(  ptr,  token )) && (is_token == 0) )
+	while ( (ptr = executeOnToken(  ptr,  token )) && (is_token_cmd == 0) )
 	{
 		token = *((short *) ptr );
 		printf("Next\n");
 		ptr += 2;	// next token.	
 	}
 	flushCmdParaStack( 0x0000 );
+
 	return ptr;
 }
 
@@ -113,7 +112,7 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 	unsigned int flags;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	is_token = 0;
+	is_token_cmd = 0;
 
 	tokenBuffer += 4;	// skip ON data, maybe we don't need it.
 	tokenBuffer = collect_data(tokenBuffer);
@@ -129,9 +128,9 @@ char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 		else break;
 	}
 
-	tokenBuffer = execute_on( getStackNum(stack), tokenBuffer, NULL, is_token );
+	tokenBuffer = execute_on( getStackNum(stack), tokenBuffer, NULL, is_token_cmd );
 
-	return tokenBuffer-4-2;
+	return tokenBuffer-4;	// on function exit +4 is added.
 }
 
 
@@ -153,7 +152,7 @@ struct label *GetLabel( unsigned int is_token, int ref_num )
 	return label;
 }
 
-char *do_ON_command(uint16_t token, int ref_num, char *tokenBuffer )
+char *do_ON_command(uint16_t token_cmd,  uint16_t token_item, int ref_num, char *tokenBuffer )
 {
 	char *ret = NULL;
 
@@ -161,29 +160,28 @@ char *do_ON_command(uint16_t token, int ref_num, char *tokenBuffer )
 	{
 		struct label *label = NULL;
 
-		switch (token)
+		switch (token_cmd)
 		{
 			case token_goto:	
 
 					dprintf("--GOTO--\n");
 
-					label = GetLabel( is_token, ref_num );
+					label = GetLabel( token_item, ref_num );
 					if (label)
 					{
 						dropProgStackAllFlag( cmd_true | cmd_false );	// just kill the if condition, if any.
-						ret = label -> tokenLocation ;
+						ret = label -> tokenLocation -2;
 					}
 					break;
 
 			case token_gosub:	
 
 					dprintf("--GOSUB--\n");
-
-					label = GetLabel( is_token, ref_num );
+					label = GetLabel( token_item, ref_num );
 					if (label)
 					{
 						stackCmdLoop( _gosub_return, tokenBuffer+2 );
-						ret = label -> tokenLocation;
+						ret = label -> tokenLocation -2;
 					}
 					break;
 
@@ -199,7 +197,7 @@ char *do_ON_command(uint16_t token, int ref_num, char *tokenBuffer )
 
 						tokenMode = mode_store;
 						stack_frame_up(idx);
-						ret = globalVars[idx].var.tokenBufferPos;
+						ret = globalVars[idx].var.tokenBufferPos-2;
 					}
 					break;
 		}
@@ -207,7 +205,7 @@ char *do_ON_command(uint16_t token, int ref_num, char *tokenBuffer )
 	return ret;
 }
 
-char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned short token )
+char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned short token_cmd )
 {
 	unsigned short ref_num = 0;
 	unsigned short is_token = 0;
@@ -217,12 +215,13 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (token==token_proc) || (token==token_goto) || (token==token_gosub) ) 
+	if ( (token_cmd==token_proc) || (token_cmd==token_goto) || (token_cmd==token_gosub) ) 
 	{
 
 		for(;;)
 		{	
 			next_token = NEXT_TOKEN(tokenBuffer);
+
 			switch (next_token)
 			{
 				case 0x0006:
@@ -288,7 +287,7 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 							char *name = dupRef( ref ) ;
 							if (name)
 							{
-								printf("name: %s\n",name);
+								dprintf("name: %s\n",name);
 								ref_num = ref->ref = findLabelRef( name, procStcakFrame[proc_stack_frame].id );
 								free(name); 
 							}
@@ -336,11 +335,7 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 		}
 
 exit_on_for_loop:
-
-		printf("ref_num %d\n",ref_num);
-
-		ret = do_ON_command( token,  ref_num, returnTokenBuffer ? returnTokenBuffer :  tokenBuffer );
-
+		ret = do_ON_command( token_cmd, is_token, ref_num, returnTokenBuffer ? returnTokenBuffer :  tokenBuffer );
 	}
 
 	// if this function is used some where else then in normal ON ... PROC. 
