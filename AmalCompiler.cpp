@@ -1082,11 +1082,11 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	{
 //		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");
 
-		if ((let)||(next_arg))
+		if ((let)||(next_arg))	// this is most likely a arg or a calculation
 		{
 			found = find_amal_command(s, amal::class_cmd_arg);
 		}
-		else
+		else	// this is a normal command.
 		{
 			found = find_amal_command(s, amal::class_cmd_normal);
 			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
@@ -1153,18 +1153,18 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, num );
 			data.lastClass = found -> Class;
 		}
-		else if ((*s >= 'A')&&(*s<='Z'))
+		else if ((*s >= 'A')&&(*s<='Z'))	 	// have not found command, maybe its a label
 		{
-			char *t = txt;
+			char *t = txt;	// txt is a temp buffer
 			const char *l = s;
 
-			while ((*l >= 'A')&&(*l<='Z')&&((int) (l-s)<25))
+			while ((*l >= 'A')&&(*l<='Z')&&((int) (l-s)<25))		//Get string, until first symbol or number.
 			{
 				*t++ = *l++;
 			}
 			*t = 0;
 
-			if (*l==':')
+			if (*l==':')	// check if its vaild label.
 			{
 				struct AmalLabelRef label;
 				label.pos = data.pos;
