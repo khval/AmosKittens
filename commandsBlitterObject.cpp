@@ -1000,10 +1000,6 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 		int omaxX = ominX + frame -> width;
 		int omaxY = ominY + frame -> height;	
 
-//		printf("%d,%d,%d,%d -- %d,%d,%d,%d\n" , 
-//			minX, minY, maxX,maxY, 
-//			ominX,ominY,omaxX,omaxY );
-
 		if ( maxX < ominX ) return 0;
 		if ( minX > omaxX ) return 0;
 		if ( maxY < ominY ) return 0;
@@ -1021,9 +1017,6 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 				return ~0;
 			}
 			else return 0;
-
-//			drawMask( thisMask, 0, 0 );
-//			drawMask( frame -> mask, dx * 16 + bitx, 0 );
 		}
 		else
 		{
@@ -1038,11 +1031,7 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 				return ~0;
 			}
 			else return 0;
-
-//			drawMask( frame-> mask, 0, 0 );
-//			drawMask( thisMask, dx * 16 +bitx, 0 );
 		}
-
 
 		return ~0;
 	}
