@@ -23,6 +23,7 @@
 #include <retromode.h>
 #include <retromode_lib.h>
 #define Printf printf
+
 #ifdef test_app
 #define engine_fd stdout
 #else
@@ -38,6 +39,7 @@ extern FILE *engine_fd;
 #include "AmalCommands.h"
 #include "pass1.h"
 #include "AmosKittens.h"
+#include "amosString.h"
 
 bool autotest = false;
 bool let = false;
@@ -1090,6 +1092,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
 		}
 
+		printf("found: %d\n",found);
+
 		if (!found) found = find_amal_symbol(s);
 
 		if (found)
@@ -1179,6 +1183,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 		else
 		{
+			printf("***\n");
+
 			printf("script: %s\n",channel -> amal_script);
 			printf("code bad at: '%s'\n",s);
 			amalProg -> call_array[data.pos] = 0;
@@ -1391,7 +1397,7 @@ void dump_object();
 void test_run(struct kittyChannel  *channel)
 {
 	// init amal Prog Counter.
-	channel -> status = channel_status::active;
+	channel -> amalStatus = channel_status::active;
 	channel -> objectAPI = &test_api;
 
 	if (channel -> amalProg.amalAutotest != NULL)
@@ -1399,15 +1405,15 @@ void test_run(struct kittyChannel  *channel)
 		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
 	}
 
-	if (channel -> status == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
+	if (channel -> amalStatus == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
 
-	if (channel -> status == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
+	if (channel -> amalStatus == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
 	{
 		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
-		channel -> status = channel_status::active;
+		channel -> amalStatus = channel_status::active;
 	}
 
-	while ( ( channel -> status == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
+	while ( ( channel -> amalStatus == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
 	{
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1419,7 +1425,7 @@ void test_run(struct kittyChannel  *channel)
 //		getchar();
 	}
 
-	printf("Amal Status %d\n",channel -> status);
+	printf("Amal Status %d\n",channel -> amalStatus);
 }
 
 void dump_object()
@@ -1446,7 +1452,7 @@ int main(int args, char **arg)
 
 	if (args==2)
 	{
-		channel.amal_script = strdup( (char *) arg[1]);
+		channel.amal_script = toAmosString_char( (char *) arg[1], 0 );
 
 		if (channel.amal_script)
 		{

@@ -19,7 +19,8 @@ objects_dir = objs_amalcompiler/
 main_objects = AmalCommands.cpp \
 			channel.cpp \
 			os/amigaos/stuff.cpp \
-			screen_helper.cpp
+			screen_helper.cpp \
+			AmosString.cpp
 
 main_SRCS = AmalCompiler.cpp
 
