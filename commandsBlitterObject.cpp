@@ -1047,8 +1047,11 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 	int minX, maxX, minY, maxY;
 	int n,r;
 
-	thisBob = &bobs[bob];
+	if (bob & 0xFFC0 ) return 0;		// 0 to 63  (0x3F)
+	if (start & 0xFFC0 ) return 0;		// 0 to 63, 
+	if (end & 0xFFC0 ) return 0;		// 0 to 63, 
 
+	thisBob = &bobs[bob];
 	if (thisBob -> image == 0) return 0;
 
 	frame = &sprite -> frames[ thisBob -> image-1 ];
