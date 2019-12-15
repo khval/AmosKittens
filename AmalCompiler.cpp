@@ -1085,6 +1085,8 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		if ((let)||(next_arg))	// this is most likely a arg or a calculation
 		{
 			found = find_amal_command(s, amal::class_cmd_arg);
+			if (!found)	found = find_amal_command(s, amal::class_cmd_normal);
+			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
 		}
 		else	// this is a normal command.
 		{
