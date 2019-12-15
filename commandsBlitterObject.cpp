@@ -1239,6 +1239,18 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
+void makeMaskForAll()
+{
+	int n;
+
+	if (sprite == NULL) return;
+
+	for (n=0;n<sprite -> number_of_frames;n++)
+	{
+		retroMakeMask( &sprite -> frames[n] );
+	}
+}
+
 char *_boMakeMask( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1251,13 +1263,7 @@ char *_boMakeMask( struct glueCommands *data, int nextToken )
 			switch (kittyStack[stack].type)
 			{
 				case type_none:
-					{
-						int n;
-						for (n=0;n<sprite -> number_of_frames;n++)
-						{
-							retroMakeMask( &sprite -> frames[n] );
-						}
-					}
+					makeMaskForAll();
 					break;
 
 				case type_int:
