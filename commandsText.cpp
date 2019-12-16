@@ -707,15 +707,18 @@ char *_textAt( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		if (kittyStack[stack-1].type == type_int ) 
+		int type0 = kittyStack[stack-1].type;
+		int type1 = kittyStack[stack].type;
+
+		if (( type0 == type_int ) || ( type0 == type_float) )
 		{
-			x = kittyStack[stack-1].integer.value;
+			x = getStackNum( stack-1 );
 			index = 1;
 		}
 
-		if (kittyStack[stack].type == type_int )
+		if (( type1 == type_int ) || ( type1 == type_float) )
 		{
-			y = kittyStack[stack].integer.value;
+			y = getStackNum( stack );
 			index |= 2;
 		}
 	}
@@ -723,33 +726,51 @@ char *_textAt( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 
-	if  (index &1)
-	{
-		struct stringData *str = alloc_amos_string( 3 );
-		char *p = &str -> ptr;
-		*p++ =27;
-		*p++ = 'X';
-		*p++ = (x>-1) ? '0'+x : '0';
-		*p = 0;
-		setStackStr( str );
-	}
 
-
-	if  (index &2)
 	{
-		struct stringData *str = alloc_amos_string( 3 );
-		char *p = &str -> ptr;
-		*p++ =27;
-		*p++ = 'Y';
-		*p++ = (y>-1) ? '0'+y : '0';
-		*p = 0;
-		setStackStr( str );
-	}
+		struct stringData *str;
+		char *p;
 
-	if (index == 0)
-	{
-		struct stringData *str = alloc_amos_string( 0 );
-		setStackStr( str );
+		switch  (index)
+		{
+			case 1:
+				str = alloc_amos_string( 3 );
+				p = &str -> ptr;
+				*p++ =27;
+				*p++ = 'X';
+				*p++ = (x>-1) ? '0'+x : '0';
+				*p = 0;
+				setStackStr( str );
+				break;
+
+			case 2:
+				str = alloc_amos_string( 3 );
+				p = &str -> ptr;
+				*p++ =27;
+				*p++ = 'Y';
+				*p++ = (y>-1) ? '0'+y : '0';
+				*p = 0;
+				setStackStr( str );
+				break;
+
+			case 3:
+				str = alloc_amos_string( 6 );
+				p = &str -> ptr;
+				*p++ =27;
+				*p++ = 'X';
+				*p++ = (x>-1) ? '0'+x : '0';
+				*p++ =27;
+				*p++ = 'Y';
+				*p++ = (y>-1) ? '0'+y : '0';
+				*p = 0;
+				setStackStr( str );
+				break;
+
+			default:
+				str = alloc_amos_string( 0 );
+				setStackStr( str );
+				break;
+		}
 	}
 
 	return NULL;
