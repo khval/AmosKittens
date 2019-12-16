@@ -20,7 +20,8 @@ main_objects = AmalCommands.cpp \
 			channel.cpp \
 			os/amigaos/stuff.cpp \
 			screen_helper.cpp \
-			AmosString.cpp
+			AmosString.cpp \
+			amalCompilerDummy.cpp
 
 main_SRCS = AmalCompiler.cpp
 
