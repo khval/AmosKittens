@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
 
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
@@ -858,22 +859,70 @@ void *amal_call_nextArg API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+
+struct stringData *getRealAnimString(  struct kittyChannel *self, const char *str)
+{
+	const char *c;
+	const char *c2;
+	int reg ;
+	int regv;
+	char numstr[10];
+	std::string tmp;
+
+	for (c=str;*c;c++)
+	{
+		reg = -1;
+
+		if (*c=='R')	// look for regs;
+		{
+			c2=c+1;
+
+			if ((*c2>='0')&&(*c2<='9'))
+			{
+				c++;
+				reg = *c2-'0';
+				regv = self -> reg[ reg ] ;
+			}
+			else 	if ((*c2>='0')&&(*c2<='9'))
+			{
+				reg = (*c2-'A')+10;
+				regv = amreg[ reg ];
+			}
+		}
+
+		if ( reg == -1) 
+			tmp += *c;
+		else
+		{
+			sprintf(numstr,"%d",regv);
+			tmp += numstr;
+		}
+	}
+
+	return toAmosString( tmp.c_str(), tmp.size() );
+}
+
 void *amal_call_anim API_AMAL_CALL_ARGS
 {
 	int le;
-	char *animCode ;
+	struct stringData *animCode ;
+	
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	le = (int) code[1];
-	animCode = (char *) &code[2];
+	animCode = getRealAnimString(self, (char *) &code[2]);
 
 #ifdef test_app
 
-	printf("le %d\n",le);
-	printf("str: %s\n", animCode);
+	if (animCode)
+	{
+		printf("str: %s\n", &(animCode->ptr));
+		free( animCode );
+	}
 
 #else 
-	setChannelAnim( self,toAmosString(  animCode, 2 ) );
+
+	setChannelAnim( self, animCode );
 #endif
 
 	return code+1+le;	// 
