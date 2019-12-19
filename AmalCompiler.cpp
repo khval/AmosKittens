@@ -311,10 +311,13 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 		call_array = &amalProg -> call_array[data -> pos];
 	}
 
+// text arg length, 			(do not confuse with token arg length)
+
+	data -> arg_len = anim_script_len;
+
 // write the script into buffer.
 
 	le = writeAmalStringToBuffer( s, (char *) (&call_array[2]) , anim_script_len );
-	data -> arg_len = le ? le+1 : 0;
 
 	offset = ((le + sizeof(void *)) / sizeof(void *) );
 	*((int *) &call_array[1]) = offset ;
