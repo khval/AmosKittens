@@ -922,7 +922,7 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 
 #else 
 
-	setChannelAnim( self, animCode );
+	setChannelAnim( self, animCode, true );
 #endif
 
 	return code+1+le;	// 

@@ -122,12 +122,19 @@ int ChannelTableClass::_size()
 	return used;
 }
 
-void setChannelAnim( struct kittyChannel *item, struct stringData *str)
+void setChannelAnim( struct kittyChannel *item, struct stringData *str , bool enable )
 {
 	if (item -> anim_script) free(item -> anim_script);
+
 	item -> anim_script = str;
 	item -> anim_at = &str->ptr;
 	item -> anim_loops = 0;
+
+	if (enable)
+	{
+		item -> animStatus = channel_status::active;
+	}
+
 }
 
 void setChannelAmal( struct kittyChannel *item, struct stringData *str)

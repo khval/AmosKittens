@@ -623,7 +623,7 @@ char *_amalAnim( struct glueCommands *data, int nextToken )
 
 				if (item = channels -> getChannel(channel))
 				{
-					setChannelAnim( item, amos_strdup( script ) );
+					setChannelAnim( item, amos_strdup( script ) , false );
 					success = true;
 				}
 			}

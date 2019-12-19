@@ -121,7 +121,7 @@ public:
 };
 
 extern void setChannelAmal( struct kittyChannel *item, struct stringData *str);
-extern void setChannelAnim( struct kittyChannel *item, struct stringData *str);
+extern void setChannelAnim( struct kittyChannel *item, struct stringData *str, bool enable);
 extern void setChannelMoveX( struct kittyChannel *item, struct stringData *str);
 extern void setChannelMoveY( struct kittyChannel *item, struct stringData *str);
 extern void initChannel( struct kittyChannel *item, int channel );
