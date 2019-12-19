@@ -226,7 +226,7 @@ int animScriptLength( const char *str, const char *valid_chars )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("str: %s\n", str);
+	printf("valid_char: %s\n",valid_chars);
 
 	for (c = str ; (*c!=0) && (*c!=';') ; c++)
 	{
@@ -235,6 +235,17 @@ int animScriptLength( const char *str, const char *valid_chars )
 		if (valid == false) break;
 		l ++;
 	}
+
+	printf("exited on '%c' - len %d\n",*c,l);
+
+#ifdef test_app
+	printf("%s\n",str);
+	printf("%s: ",__FUNCTION__);
+	for (c = str; c<(str+l);c++) printf("%c",*c);
+	printf("\n");
+	getchar();
+#endif
+
 
 	return l;
 }
