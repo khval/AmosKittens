@@ -9,7 +9,11 @@
 #define Printf printf
 #endif
 
+#ifdef test_app
+#include "debug_amal_test_app.h"
+#else
 #include "debug.h"
+#endif 
 
 #if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>

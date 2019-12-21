@@ -23,8 +23,13 @@
 #include "amal_object.h"
 #include "amoskittens.h"
 #include "commandsScreens.h"
-#include "debug.h"
 #include "amosstring.h"
+
+#ifdef test_app
+#include "debug_amal_test_app.h"
+#else
+#include "debug.h"
+#endif 
 
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
