@@ -133,10 +133,12 @@ void dumpAmalStack( struct kittyChannel *channel )
 void dumpAmalProgStack( struct kittyChannel *channel )
 {
 	unsigned int s;
-	Printf("Amal Stack\n");
+	Printf("Amal Prog Stack\n");
 	for (s=0;s<=channel -> progStackCount;s++)
 	{
-		AmalPrintf("stack %d: flags %x\n",s, channel -> progStack[s].Flags );
+		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];
+
+		Printf("stack[%ld]: cmd %08lx, arg stack %ld, flags %lx\n",s, CallBack -> cmd, CallBack -> argStackCount, CallBack -> Flags );
 	}
 }
 
