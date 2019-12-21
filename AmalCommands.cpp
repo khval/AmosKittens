@@ -36,6 +36,8 @@ extern int amreg[26];
 extern void dumpAmalRegs();
 extern struct retroScreen *screens[8] ;
 
+extern void dumpAmalProgStack( struct kittyChannel *channel );
+
 void *amalFlushParaCmds( struct kittyChannel *self );
 void *amalFlushAllCmds( struct kittyChannel *self );
 void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
