@@ -1116,8 +1116,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
 		}
 
-		printf("found: %d\n",found);
-
 		if (!found) found = find_amal_symbol(s);
 
 		if (found)
