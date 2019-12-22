@@ -229,10 +229,12 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 	{
 		case 1:	if (kittyStack[stack].type == type_none)
 				{
+#ifdef enable_limit_mouse_yes
 					engine_lock();	
 					engine -> limit_mouse = false;
 					engineCmdQue.push_back(kitty_limit_mouse);
 					engine_unlock();
+#endif
 				}
 				else
 				{
@@ -251,10 +253,11 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 					engine -> limit_mouse_x1 = (x1 - 128) * 2;
 					engine -> limit_mouse_y1 = (y1 - 50) * 2;
 					engine -> limit_mouse = true;
-
+#ifdef enable_limit_mouse_yes
 					engine_lock();
 					engineCmdQue.push_back(kitty_limit_mouse);
 					engine_unlock();
+#endif 
 				}
 				break;
 		default:
