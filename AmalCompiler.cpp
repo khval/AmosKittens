@@ -1242,9 +1242,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	}
 	else channel -> amalProg.amalAutotest =  NULL;
 
-	printf("autotest_start_ptr_offset %d\n",autotest_start_ptr_offset);
-	getchar();
-
 	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProg.amalProgCounter);
 
 	return true;
