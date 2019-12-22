@@ -249,7 +249,6 @@ int animScriptLength( const char *str, const char *valid_chars )
 	printf("%s: ",__FUNCTION__);
 	for (c = str; c<(str+l);c++) printf("%c",*c);
 	printf("\n");
-	getchar();
 #endif
 
 
@@ -1042,35 +1041,33 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (i -> call_array)
-	{
-
+	if (i -> call_array) // has old buffer, we need to copy it.
+	 {
 		if (new_array)
 		{
-			printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 			memcpy( new_array, i -> call_array, i->size );
+			amalFreeBuffer(i->call_array);
+
+			i -> call_array = new_array;
 			i->elements = new_elements;
 			i->size = new_size;
+
+			return;	// success
 		}
 		else
 		{
-			new_elements = 0;
-			new_size = 0;
+			amalFreeBuffer(i->call_array);	// remove old buffer failed.
 		}
-
-		printf(" i -> call_array = %08x\n",(unsigned int) i -> call_array );
-
-		amalFreeBuffer(i->call_array);
-		i -> call_array = new_array;
 	}
-	else
+
+	if (new_array == NULL)	// failed...
 	{
 		new_elements = 0;
 		new_size = 0;
 	}
 
 	i -> elements = new_elements;
+	i -> call_array = new_array;
 	i -> size = new_size;
 }
 
@@ -1434,14 +1431,12 @@ void test_run(struct kittyChannel  *channel)
 
 	while ( ( channel -> amalStatus == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
 	{
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		amal_run_one_cycle(channel,channel -> amalProg.amalProgCounter,true);
 
 		dump_object();
 		printf("amal program counter at %10d\n",(unsigned int) channel -> amalProg.amalProgCounter - (unsigned int) channel -> amalProg.call_array);
-//		dumpAmalRegs( channel );
-//		getchar();
 	}
 
 	printf("Amal Status %d\n",channel -> amalStatus);
