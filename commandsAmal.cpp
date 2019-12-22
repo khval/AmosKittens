@@ -478,12 +478,23 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
 					{
+						printf("Free item[%d]\n",index);
+
 						item = channels -> item(index);
-						item -> amalStatus = channel_status::uninitialized;
-						if (item -> amal_script) free(item -> amal_script); 
-						item -> amal_script = NULL;
-						item -> amal_at = NULL;
-						freeAmalBuf( &item -> amalProg );
+						if (item)
+						{
+							printf("Amal channel id: %d\n", item -> id);
+
+							item -> amalStatus = channel_status::uninitialized;
+							if (item -> amal_script) free(item -> amal_script); 
+							item -> amal_script = NULL;
+							item -> amal_at = NULL;
+							freeAmalBuf( &item -> amalProg );
+						}
+						else
+						{
+							printf("item not found\n");
+						}
 					}
 					engine_unlock();
 				}
