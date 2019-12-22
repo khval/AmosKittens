@@ -666,7 +666,7 @@ char *ocView(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *ocUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	engine_update_flags = 0;
+	engine_update_flags = rs_force_update;
 	return tokenBuffer;
 }
 
@@ -685,7 +685,7 @@ char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 
 	if (screens[current_screen])
 	{
-		screens[current_screen] -> event_flags |= rs_force_swap;
+		screens[current_screen] -> event_flags |= rs_force_update;
 	}
 
 	engine_unlock();
