@@ -441,9 +441,24 @@ void *amal_call_div API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *cb_and (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	if (self -> argStackCount+1 >= 2)
+	{
+		int ret = (self -> argStack [ cb -> argStackCount - 1 ] & self -> argStack [ cb -> argStackCount ]);
+		self -> argStackCount -= 1;
+		self -> argStack[ self -> argStackCount ] = ret;
+	}
+	return NULL;
+}
+
 void *amal_call_and API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
+	self -> argStackCount  ++;
+	pushBackAmalCmd( amal::flag_para, code, self, cb_and ); 
 	return NULL;
 }
 
