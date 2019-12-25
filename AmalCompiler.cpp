@@ -1471,7 +1471,7 @@ int main(int args, char **arg)
 		if (channel.amal_script)
 		{
 			remove_lower_case(channel.amal_script);
-			printf("amal script: %s\n",channel.amal_script);
+			printf("amal script: '%s'\n",&(channel.amal_script -> ptr));
 
 			if (asc_to_amal_tokens( &channel ))
 			{
