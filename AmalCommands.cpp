@@ -308,7 +308,7 @@ void *amal_call_move API_AMAL_CALL_ARGS
 {
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	pushBackAmalCmd( amal::flag_cmd, code, self, cb_move ); 
 	self -> argStack [ self -> argStackCount ] = 0;	// 
 	return NULL;
@@ -381,6 +381,7 @@ void *amal_call_mul API_AMAL_CALL_ARGS
 
 void *cb_div (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	if (self -> argStackCount+1 >= 2)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] / self -> argStack [ cb -> argStackCount ]);
@@ -457,8 +458,7 @@ void *amal_call_less API_AMAL_CALL_ARGS
 
 void *cb_more (struct kittyChannel *self, struct amalCallBack *cb)
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -472,7 +472,8 @@ void *cb_more (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_more API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
 	pushBackAmalCmd( amal::flag_cmd, code, self, cb_more ); 
