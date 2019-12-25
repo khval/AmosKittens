@@ -125,6 +125,7 @@ void *amal_call_j0 API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+#ifndef test_app
 void *amal_call_j1 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
@@ -132,6 +133,7 @@ void *amal_call_j1 API_AMAL_CALL_ARGS
 	amalFlushParaCmds( self );
 	return NULL;
 }
+#endif
 
 void *amal_call_screen_x API_AMAL_CALL_ARGS
 {
