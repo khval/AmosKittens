@@ -1196,11 +1196,9 @@ char *_step( struct glueCommands *data, int nextToken )
 		{
 			case glue_option_for_int:
 					gcmd -> optionsInt.step = (var -> type == type_int) ? var -> integer.value :  (int) var -> decimal.value ;
-					dprintf("step (int %d)\n", gcmd -> optionsInt.step);
 					break;
 			case glue_option_for_float:
 					gcmd -> optionsFloat.step = (var -> type == type_int) ? (double) var -> integer.value : var -> decimal.value ;
-					dprintf("step (float %lf)\n", gcmd -> optionsFloat.step);
 					break;
 		}
 	}
