@@ -309,12 +309,12 @@ void *amal_call_move API_AMAL_CALL_ARGS
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	pushBackAmalCmd( amal::flag_cmd, code, self, callback_move ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, cb_move ); 
 	self -> argStack [ self -> argStackCount ] = 0;	// 
 	return NULL;
 }
 
-static void *add (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_add (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -331,11 +331,11 @@ void *amal_call_add API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_para, code, self, add ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_add ); 
 	return NULL;
 }
 
-static void *sub (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_sub (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	dumpAmalStack( self );
@@ -353,11 +353,11 @@ void *amal_call_sub API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_para, code, self, sub ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_sub ); 
 	return NULL;
 }
 
-static void *mul (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_mul (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	dumpAmalStack( self );
@@ -375,11 +375,11 @@ void *amal_call_mul API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_para, code, self, mul ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_mul ); 
 	return NULL;
 }
 
-static void *div (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_div (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	if (self -> argStackCount+1 >= 2)
 	{
@@ -395,7 +395,7 @@ void *amal_call_div API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_para, code, self, div ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_div ); 
 	return NULL;
 }
 
@@ -405,7 +405,7 @@ void *amal_call_and API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *not_equal (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_not_equal (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -426,11 +426,11 @@ void *amal_call_not_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_para, code, self, not_equal ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_not_equal ); 
 	return NULL;
 }
 
-void *less (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_less (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -451,11 +451,11 @@ void *amal_call_less API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
 	self -> argStack [ self -> argStackCount ] = 0;	
-	pushBackAmalCmd( amal::flag_para, code, self, less ); 
+	pushBackAmalCmd( amal::flag_para, code, self, cb_less ); 
 	return NULL;
 }
 
-void *more (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_more (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -475,11 +475,11 @@ void *amal_call_more API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	self -> argStack [ self -> argStackCount + 1 ] = 0;	// 
 	self -> argStackCount  ++;
-	pushBackAmalCmd( amal::flag_cmd, code, self, more ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, cb_more ); 
 	return NULL;
 }
 
-void *less_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_less_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -500,11 +500,11 @@ void *amal_call_less_or_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
 	self -> argStack [ self -> argStackCount ] = 0;	// 
-	pushBackAmalCmd( amal::flag_cmd, code, self, less_or_equal ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, cb_less_or_equal ); 
 	return NULL;
 }
 
-void *more_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_more_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -525,7 +525,7 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount  ++;
 	self -> argStack [ self -> argStackCount ] = 0;
-	pushBackAmalCmd( amal::flag_cmd, code, self, more_or_equal ); 
+	pushBackAmalCmd( amal::flag_cmd, code, self, cb_more_or_equal ); 
 	return NULL;
 }
 
@@ -567,7 +567,7 @@ void *amal_call_k2 API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *callback_z  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_z  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -579,11 +579,11 @@ void *callback_z  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_z API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	pushBackAmalCmd( amal::flag_para ,code, self, callback_z ); 
+	pushBackAmalCmd( amal::flag_para ,code, self, cb_z ); 
 	return NULL;
 }
 
-void *callback_xh  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_xh  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 	struct retroScreen *screen;
@@ -608,11 +608,11 @@ void *callback_xh  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_xh API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> pushBackFunction = callback_xh;
+	self -> pushBackFunction = cb_xh;
 	return NULL;
 }
 
-void *callback_yh  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_yh  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 	struct retroScreen *screen;
@@ -638,11 +638,11 @@ void *callback_yh  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_yh API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> pushBackFunction = callback_yh;
+	self -> pushBackFunction = cb_yh;
 	return NULL;
 }
 
-void *callback_sx  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_sx  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	struct retroScreen *screen;
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
@@ -667,11 +667,11 @@ void *callback_sx  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_sx API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> pushBackFunction = callback_sx;
+	self -> pushBackFunction = cb_sx;
 	return NULL;
 }
 
-void *callback_sy  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_sy  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	struct retroScreen *screen;
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
@@ -696,13 +696,13 @@ void *callback_sy  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_sy API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> pushBackFunction = callback_sy;
+	self -> pushBackFunction = cb_sy;
 	return NULL;
 }
 
 int bobCol( unsigned short bob, unsigned short start, unsigned short end );
 
-void *callback_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
 	int16_t r = 0;
@@ -727,7 +727,7 @@ void *callback_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_bobCol API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> pushBackFunction = callback_bobCol;
+	self -> pushBackFunction = cb_bobCol;
 	return NULL;
 }
 
@@ -821,7 +821,7 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 }
 
 
-void *callback_parenthses_default  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_parenthses_default  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	dumpAmalStack( self );
@@ -839,7 +839,7 @@ void *amal_call_parenthses_start API_AMAL_CALL_ARGS
 	}
 	else
 	{
-		pushBackAmalCmd( amal::flag_parenthses ,code, self, callback_parenthses_default ); 
+		pushBackAmalCmd( amal::flag_parenthses ,code, self, cb_parenthses_default ); 
 		self -> argStack [ self -> argStackCount ] = 0;	// 
 	}
 
@@ -1078,7 +1078,7 @@ void *amal_call_inc API_AMAL_CALL_ARGS
 {
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	pushBackAmalCmd( amal::flag_para ,code, self, callback_inc ); 
+	pushBackAmalCmd( amal::flag_para ,code, self, cb_inc ); 
 	return NULL;
 }
 
