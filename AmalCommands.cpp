@@ -942,7 +942,7 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 	return code+1+le;	// 
 }
 
-void *while_status  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_while_status  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -965,7 +965,7 @@ void *amal_call_while API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( amal::flag_cmd ,code, self, while_status ); 
+	pushBackAmalCmd( amal::flag_cmd ,code, self, cb_while_status ); 
 	return code +1;
 }
 
@@ -982,7 +982,7 @@ void *amal_call_wend API_AMAL_CALL_ARGS
 	return location - sizeof(void *) ;
 }
 
-void *set_reg (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_set_reg (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int c;
 	char chr[2] = {0,0};
@@ -1026,12 +1026,11 @@ void *amal_call_set API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( amal::flag_cmd ,code, self,  set_reg ); 
-
+	pushBackAmalCmd( amal::flag_cmd ,code, self,  cb_set_reg ); 
 	return NULL;
 }
 
-void *equal_reg (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_equal_reg (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
@@ -1051,12 +1050,12 @@ void *amal_call_equal API_AMAL_CALL_ARGS
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStackCount ++;
 	self -> argStack [ self -> argStackCount ] = 0;	// set default value. 
-	pushBackAmalCmd( amal::flag_para ,code, self, equal_reg ); 
+	pushBackAmalCmd( amal::flag_para ,code, self, cb_equal_reg ); 
 	return NULL;
 }
 
 
-void *callback_inc  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_inc  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	unsigned char c = self -> last_reg;
 	char chr[2] = {c,0};
