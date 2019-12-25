@@ -130,20 +130,44 @@ void dumpAmalStack( struct kittyChannel *channel )
 	}
 }
 
+extern struct amalDebugitem amalDebugList[];
+
+const char *getAmalProgStackName( void *(*fn) (kittyChannel*, amalCallBack*) )
+{
+	struct amalDebugitem *itm;
+
+	for (itm  = amalDebugList; itm -> fn ; itm++ )
+	{
+		if ( itm -> fn == fn )	return itm -> name;		
+	}
+
+	return NULL;
+}
+
 void dumpAmalProgStack( struct kittyChannel *channel )
 {
 	unsigned int s;
+	const char *name;
+
 	Printf("Amal Prog Stack\n");
 	for (s=0;s<=channel -> progStackCount;s++)
 	{
-		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];
+		struct amalCallBack *CallBack = &channel -> progStack[ s ];
 
-		Printf("stack[%ld]: cmd %08lx, arg stack %ld, flags %lx\n",s, CallBack -> cmd, CallBack -> argStackCount, CallBack -> Flags );
+		name = getAmalProgStackName(  CallBack -> cmd  );
+
+		Printf("stack[%ld]: cmd %08lx (%s), arg stack %ld, flags %lx\n",s, CallBack -> cmd, name ? name : "???", CallBack -> argStackCount, CallBack -> Flags );
 	}
 }
 
 void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  )
 {
+#ifdef test_app
+	const char *name;
+	name = getAmalProgStackName( cmd  );
+	printf("push_back %08x (%s)\n", cmd, name ? name : "<NULL>");
+#endif
+
 	if (channel -> progStack)
 	{
 		struct amalCallBack *CallBack = &channel -> progStack[ channel -> progStackCount ];

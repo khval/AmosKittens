@@ -53,6 +53,45 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 #endif
 
 
+
+void *cb_add(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_inc(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_move(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_parenthses_default(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_z(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_div(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_equal_reg(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_less(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_less_or_equal(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_more(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_more_or_equal(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_mul(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_not_equal(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_set_reg(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_sub(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_while_status(struct kittyChannel *self, struct amalCallBack *cb);
+
+struct amalDebugitem amalDebugList[] =
+	{
+		{cb_move, "move"},
+		{cb_add, "add"},
+		{cb_sub, "sub"},
+		{cb_mul, "mul"},
+		{cb_div, "div"},
+		{cb_not_equal, "not_equal"},
+		{cb_less, "less"},
+		{cb_more, "more"},
+		{cb_less_or_equal, "less_or_equal"},
+		{cb_more_or_equal, "more_or_equal"},
+		{cb_z, "z"},
+		{cb_parenthses_default, "parenthses_default"},
+		{cb_while_status, "while_status"},
+		{cb_set_reg, "set_reg"},
+		{cb_equal_reg, "equal_reg"},
+		{cb_inc, "inc"},
+		{NULL,"End Of List"}
+	};
+
 void *autotest_start API_AMAL_CALL_ARGS
 {
 	void **new_code;

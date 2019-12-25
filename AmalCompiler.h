@@ -56,6 +56,14 @@ struct amalTab
 	void *(*call) API_AMAL_CALL_ARGS;
 };
 
+struct amalCallBack;
+
+struct amalDebugitem
+{
+	void* (*fn)(kittyChannel*, amalCallBack*);
+	const char *name;
+};
+
 extern void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern void dumpAmalRegs(struct kittyChannel *channel);
