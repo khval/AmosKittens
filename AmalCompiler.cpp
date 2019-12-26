@@ -798,6 +798,7 @@ struct amalTab amalSymbols[] =
 	{"*",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_mul},			// *
 	{"/",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_div},			// /
 	{"&",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_and},			// &
+	{"!",amal::class_cmd_arg,	stdAmalWriterSymbol,amal_call_xor},				// xor
 	{"<>",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_not_equal},	// <>
 	{"<",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_less},			// <
 	{">",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_more},			// >

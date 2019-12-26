@@ -17,6 +17,8 @@ void *amal_call_sub API_AMAL_CALL_ARGS;
 void *amal_call_mul API_AMAL_CALL_ARGS;
 void *amal_call_div API_AMAL_CALL_ARGS;
 void *amal_call_and API_AMAL_CALL_ARGS;
+void *amal_call_xor API_AMAL_CALL_ARGS;
+void *amal_call_or API_AMAL_CALL_ARGS;
 void *amal_call_not_equal API_AMAL_CALL_ARGS;
 void *amal_call_less API_AMAL_CALL_ARGS;
 void *amal_call_more API_AMAL_CALL_ARGS;
