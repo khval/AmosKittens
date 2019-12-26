@@ -449,8 +449,9 @@ unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *se
 				struct amalWriterData *data,
 				unsigned int num)
 {
+	call_array[0] = amal_flush_prog;
 	let = true;
-	return 0;
+	return 1;
 }
 
 unsigned int stdAmalWriterX ( struct kittyChannel *channel, struct amalTab *self,
@@ -886,6 +887,7 @@ struct amalTab amalCmds[] =
 	{"@while",amal::class_cmd_normal,stdAmalWriter,amal_call_while },
 	{"@set",amal::class_cmd_arg,stdAmalWriter,amal_call_set },
 	{"@reg",amal::class_cmd_arg,stdAmalWriter,amal_call_reg },
+	{"@flush_prog",amal::class_cmd_arg,stdAmalWriter,amal_flush_prog },
 	{NULL, amal::class_cmd_arg,NULL,NULL }
 };
 

@@ -59,4 +59,4 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS;
 void *amal_call_pause API_AMAL_CALL_ARGS;
 void *amal_call_then API_AMAL_CALL_ARGS;
 void *amal_call_else API_AMAL_CALL_ARGS;
-
+void *amal_flush_prog API_AMAL_CALL_ARGS;

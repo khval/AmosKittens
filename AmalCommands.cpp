@@ -1164,3 +1164,9 @@ void *amal_call_else API_AMAL_CALL_ARGS
 	return code + 1;
 }
 
+void *amal_flush_prog API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	amalFlushAllCmds( self );
+	return NULL;
+}
