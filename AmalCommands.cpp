@@ -493,7 +493,7 @@ void *cb_not_equal (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] > self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0;
 	}
 
 	return NULL;
@@ -518,7 +518,7 @@ void *cb_less (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] < self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0 ;;
 	}
 
 	return NULL;
@@ -541,7 +541,7 @@ void *cb_more (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] > self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0 ;;
 	}
 
 	return NULL;
@@ -567,7 +567,7 @@ void *cb_less_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] <= self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0 ;
 	}
 
 	return NULL;
@@ -592,7 +592,7 @@ void *cb_more_or_equal  (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] >= self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0 ;
 	}
 
 	return NULL;
@@ -715,7 +715,7 @@ void *cb_yh  (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_yh API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> pushBackFunction = cb_yh;
 	return NULL;
 }
@@ -744,7 +744,7 @@ void *cb_sx  (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_sx API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> pushBackFunction = cb_sx;
 	return NULL;
 }
@@ -804,7 +804,7 @@ void *cb_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 
 void *amal_call_bobCol API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> pushBackFunction = cb_bobCol;
 	return NULL;
 }
@@ -1117,7 +1117,7 @@ void *cb_equal_reg (struct kittyChannel *self, struct amalCallBack *cb)
 	{
 		int ret = (self -> argStack [ cb -> argStackCount - 1 ] == self -> argStack [ cb -> argStackCount ]);
 		self -> argStackCount -= 1;
-		self -> argStack[ self -> argStackCount ] = ret;
+		self -> argStack[ self -> argStackCount ] = ret ? ~0 : 0 ;
 	}
 	return NULL;
 }
