@@ -473,10 +473,10 @@ unsigned int stdAmalWriterImage ( struct kittyChannel *channel, struct amalTab *
 				unsigned int num)
 {
 	printf("writing %08x to %010d  - Anim image\n",
-			(unsigned int) amal_call_x,
+			(unsigned int) amal_call_image,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
-	call_array[0] = amal_call_x;
+	call_array[0] = amal_call_image;
 	return 1;
 }
 
