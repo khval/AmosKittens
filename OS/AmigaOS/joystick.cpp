@@ -67,31 +67,39 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 
 void init_joysticks()
 {
+	int nn;
 	int n;
 	struct TagItem AIN_Tags[2];
 
 	joystick_msgport = (struct MsgPort *) AllocSysObjectTags(ASOT_PORT, TAG_END );	
 	if (!joystick_msgport) return ;
 
-	for (n=0;n<4;n++)
+	AIN_Tags[0].ti_Tag = AINCC_Port;
+	AIN_Tags[0].ti_Data = (ULONG) joystick_msgport;
+	AIN_Tags[1].ti_Tag = TAG_END;
+
+	for (nn=0;nn<4;nn++)
 	{
+		// joy0 is mouse port on Amiga (2 player games)
+		// joy1 is joystick port (1 player games)
+
+		switch (nn)
+		{
+			case 0: n=1;	break;
+			case 1: n=0;	break;
+			default: n=nn;	break;
+		}
+
 		joysticks[n].id = -1;
-		joysticks[n].num = n;
-		joysticks[n].controller = AIN_CreateContext (1, NULL);
+		joysticks[n].num = nn;
+		joysticks[n].controller = AIN_CreateContext (1, (TagItem*) &AIN_Tags);
 
 		if (joysticks[n].controller)
 		{
 			Printf("looking for joystcik #%ld\n",n);
 
-			AIN_Tags[0].ti_Tag = AINCC_Port;
-			AIN_Tags[0].ti_Data = (ULONG) joystick_msgport;
-			AIN_Tags[1].ti_Tag = TAG_END;
-
-			AIN_Set(joysticks[n].controller,AIN_Tags);
-
 			found_joysticks = 0;
 			AIN_EnumDevices(joysticks[n].controller, (void *) get_joy, (void *) &joysticks[n] );
-
 		}
 		else
 		{
