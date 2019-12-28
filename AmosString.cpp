@@ -162,6 +162,7 @@ struct stringData *toAmosString_char(char *adr, char t)
 			d++;
 			ret -> size++;
 		}
+		*d = 0;
 	}
 	return ret;
 }
@@ -187,6 +188,7 @@ struct stringData *toAmosString_len_or_char(char *adr, int len, char t)
 			d++;
 			ret -> size++;
 		}
+		*d=0;
 	}
 	return ret;
 }
