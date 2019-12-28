@@ -1471,7 +1471,7 @@ void test_run(struct kittyChannel  *channel)
 
 void dump_object()
 {
-	printf("x: %d, y: %d\n", obj_x, obj_y);
+	printf("x: %d, y: %d a: %d\n", obj_x, obj_y, obj_image);
 }
 
 int main(int args, char **arg)
