@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <proto/exec.h>
+#include <proto/dos.h>
 #include <proto/Amigainput.h>
 
 #include "AmosKittens.h"
@@ -34,20 +35,31 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 	BOOL ret = FALSE;
 	int connected = 0;
 
+	Printf("%s\n",__FUNCTION__);
+
 	if (device->Type == AINDT_JOYSTICK) 
 	{
+		Printf("is a joystick\n");
+
 		AIN_Query(joy ->controller, device -> DeviceID,AINQ_CONNECTED,0,&connected,4 );
 		if (connected)
 		{
 			if (found_joysticks==joy->num)
 			{
-				printf("devce Type %i \tID %x \tdevce Name %s \n",device->Type , device -> DeviceID,device -> DeviceName);
+				Printf("Devce Type %ld \tID %lx \tdevce Name %s\n",
+					device -> Type, 
+					device -> DeviceID,
+					device -> DeviceName);
 
 				ret = TRUE;
 				joy -> id = device -> DeviceID;
 			}
 			found_joysticks ++;
 		}
+	}
+	else
+	{
+		Printf("Not a joystick, device type is %ld\n",device->Type);
 	}
 
 	return ret;
@@ -69,7 +81,7 @@ void init_joysticks()
 
 		if (joysticks[n].controller)
 		{
-			printf("looking for joystcik #%d\n",n);
+			Printf("looking for joystcik #%ld\n",n);
 
 			AIN_Tags[0].ti_Tag = AINCC_Port;
 			AIN_Tags[0].ti_Data = (ULONG) joystick_msgport;
@@ -83,7 +95,7 @@ void init_joysticks()
 		}
 		else
 		{
-			printf("sorry failed\n");
+			Printf("Amiga input can't create context\n");
 		}
 	}
 
@@ -92,7 +104,7 @@ void init_joysticks()
 	{
 		if (joysticks[n].id>0)
 		{
-			 printf("joystick #%d Using device ID %x\n",n,joysticks[n].id);
+			 Printf("joystick #%ld Using device ID %lx\n",n,joysticks[n].id);
 		}
 	}
 
