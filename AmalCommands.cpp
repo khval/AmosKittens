@@ -71,6 +71,10 @@ void *cb_set_reg(struct kittyChannel *self, struct amalCallBack *cb);
 void *cb_sub(struct kittyChannel *self, struct amalCallBack *cb);
 void *cb_while_status(struct kittyChannel *self, struct amalCallBack *cb);
 
+void *cb_and(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_xor(struct kittyChannel *self, struct amalCallBack *cb);
+void *cb_or(struct kittyChannel *self, struct amalCallBack *cb);
+
 struct amalDebugitem amalDebugList[] =
 	{
 		{cb_move, "move"},
@@ -81,6 +85,8 @@ struct amalDebugitem amalDebugList[] =
 		{cb_not_equal, "not_equal"},
 		{cb_less, "less"},
 		{cb_more, "more"},
+		{cb_and, "and"},
+		{cb_xor, "xor"},
 		{cb_less_or_equal, "less_or_equal"},
 		{cb_more_or_equal, "more_or_equal"},
 		{cb_z, "z"},
