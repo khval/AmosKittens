@@ -292,7 +292,7 @@ void main_engine();
 bool start_engine()
 {
 #ifdef enable_engine_debug_output_yes
-	BPTR engine_debug_output = Open("CON:660/50/600/480/Kittens engine",MODE_NEWFILE);
+	BPTR engine_debug_output = Open("CON:850/100/600/480/Kittens engine",MODE_NEWFILE);
 #else
 	BPTR engine_debug_output = NULL;
 #endif
