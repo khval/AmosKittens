@@ -111,6 +111,7 @@ unsigned int (*amal_to_writer) ( struct kittyChannel *channel, struct amalTab *s
 				struct amalWriterData *data,
 				unsigned int num) = NULL;
 
+#ifdef show_debug_amal_yes
 void dumpAmalStack( struct kittyChannel *channel )
 {
 	unsigned int s;
@@ -160,6 +161,8 @@ void dumpAmalProgStack( struct kittyChannel *channel )
 		Printf("stack[%ld]: cmd %08lx (%s), arg stack %ld, flags %lx\n",s, CallBack -> cmd, name ? name : "???", CallBack -> argStackCount, CallBack -> Flags );
 	}
 }
+
+#endif
 
 void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  )
 {

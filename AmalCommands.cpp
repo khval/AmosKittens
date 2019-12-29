@@ -52,7 +52,9 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 	#define amal_mouse_y engine_mouse_y
 #endif
 
-
+#ifdef show_debug_amal_no
+#define dumpAmalStack(...)
+#endif
 
 void *cb_add(struct kittyChannel *self, struct amalCallBack *cb);
 void *cb_inc(struct kittyChannel *self, struct amalCallBack *cb);
@@ -115,13 +117,7 @@ void *autotest_end API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *amal_call_pause API_AMAL_CALL_ARGS
-{
-	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> amalStatus = channel_status::paused;
-	self -> loopCount = 0;
-	return NULL;
-}
+
 
 void *amal_call_j0 API_AMAL_CALL_ARGS
 {
@@ -132,6 +128,15 @@ void *amal_call_j0 API_AMAL_CALL_ARGS
 }
 
 #ifndef test_app
+
+void *amal_call_pause API_AMAL_CALL_ARGS
+{
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	self -> amalStatus = channel_status::paused;
+	self -> loopCount = 0;
+	return NULL;
+}
+
 void *amal_call_j1 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
