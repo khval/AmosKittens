@@ -20,6 +20,12 @@ namespace amal
 
 #define API_AMAL_CALL_ARGS ( struct kittyChannel *self, void **code, unsigned int opt )
 
+struct amalNested
+{
+	int cmd;
+	unsigned int offset;
+};
+
 struct amalBuf
 {
 	unsigned int elements;

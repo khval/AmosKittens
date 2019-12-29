@@ -73,8 +73,9 @@ void *amalAllocBuffer( int size )
 
 #define amalFreeBuffer( ptr ) { sys_free( ptr ); ptr = NULL; }
 
+struct amalNested amal_nested_command[ max_nested_commands ];
+
 #ifdef test_app
-	struct nested nested_command[ max_nested_commands ];
 	int nested_count = 0;
 	int parenthesis_count;
 	int amreg[26];
@@ -222,8 +223,8 @@ unsigned int AmalWriterCondition (	struct kittyChannel *channel, struct amalTab 
 	*((int *) &call_array[1]) = 0;
 
 	// modify the nest.
-	nested_command[ nested_count -1 ].cmd = num;
-	nested_command[ nested_count -1 ].ptr = (char *) &call_array[1];
+	amal_nested_command[ nested_count -1 ].cmd = num;
+	amal_nested_command[ nested_count -1 ].offset = (unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array;
 
 	let =false;
 
@@ -397,7 +398,7 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	const char *s;
 	char *d;
 
-	printf("writing %08x to %010d/ %010d - jump\n",
+	printf("writing %08x to %010d/%010d - jump\n",
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array );
@@ -495,11 +496,15 @@ unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *se
 }
 
 
-void fix_condition_branch( unsigned int relative_adr )
+void fix_condition_branch( struct kittyChannel *channel,  unsigned int relative_adr )
 {
-	unsigned int *ptr = (unsigned int *) nested_command[ nested_count-1 ].ptr;
+	unsigned int *ptr;
+	unsigned int offset = amal_nested_command[ nested_count-1 ].offset;
+
+	ptr = (unsigned int *) ((char *) channel -> amalProg.call_array + offset);
 	*ptr = relative_adr;
 }
+
 
 unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab *self,
 				void *(**call_array) ( struct kittyChannel *self, void **code, unsigned int opt ),
@@ -512,12 +517,12 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 
 	// this command doubles as "end if"
 
-	switch (GET_LAST_NEST)
+	switch (GET_LAST_AMAL_NEST)
 	{
 		case nested_if:
 		case nested_then:
 		case nested_else:
-			fix_condition_branch( (unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
+			fix_condition_branch( channel,  (unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 			nested_count --;
 			break;
 	}
@@ -1150,17 +1155,17 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 
 			if ( found -> Class == amal::class_cmd_normal  )
 			{
-				switch (GET_LAST_NEST)
+				switch (GET_LAST_AMAL_NEST)
 				{
 					case nested_if:
-						fix_condition_branch( (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );
+						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );
 						write_cmd.call = amal_call_then;
 						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_then);
 						amal_cmd_equal = NULL;
 						break;
 
 					case nested_then:
-						fix_condition_branch( (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );	// skip over else
+						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );	// skip over else
 						write_cmd.call = amal_call_else;
 
 //						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
