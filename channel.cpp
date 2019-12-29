@@ -60,6 +60,8 @@ void initChannel( struct kittyChannel *item, int channel )
 
 		item -> animStatus = channel_status::uninitialized;
 		item -> amalStatus = channel_status::uninitialized;
+
+		memset( (char *) item -> reg, 0, sizeof(item -> reg) );
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )
