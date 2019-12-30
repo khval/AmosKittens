@@ -551,6 +551,7 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	struct retroScreen *screen = NULL;
+	int hx=0,hy=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -567,12 +568,18 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 					int flags = image & 0xC000;
 					image &= 0x3FFF;
 
+					if ((image) && (sprite))	// PasteBob should not use hotspot, need subtract it.
+					{
+						hx=-sprite -> frames[image-1].XHotSpot;
+						hy=-sprite -> frames[image-1].YHotSpot;
+					}
+
 					switch (screen -> autoback)
 					{
-						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,sprite,x,y,image-1,flags, 0 );
+						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,sprite,x-hx,y-hy,image-1,flags, 0 );
 								break;
 
-						default:	retroPasteSprite(screen,0,sprite,x,y,image-1,flags, 0 );
+						default:	retroPasteSprite(screen,0,sprite,x-hx,y-hy,image-1,flags, 0 );
 								if (screen -> Memory[1]) retroPasteSprite(screen,1,sprite,x,y,image-1,flags, 0 );
 								break;
 					}
