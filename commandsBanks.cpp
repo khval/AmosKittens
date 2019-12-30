@@ -855,9 +855,13 @@ void init_banks( char *data , int size)
 					{
 						engine_lock();
 						freeBank( 1 );
-						if (bank = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
+						if (bank = __ReserveAs( bank_type_sprite, 1, 0,NULL, NULL))							
 						{
-							bank -> object_ptr = (char *) retroLoadSprite( (void *) &fd, (cust_fread_t) hook_mread );
+							if (bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread ))
+							{
+								struct retroSprite *sprite = (struct retroSprite *) bank -> object_ptr;	// local
+								bank -> length = sprite -> number_of_frames;
+							}
 						} 
 						engine_unlock();
 					}
@@ -866,9 +870,13 @@ void init_banks( char *data , int size)
 				case bank_type_icons:
 					{
 						freeBank( 2 );
-						if (bank = __ReserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL ))
+						if (bank = __ReserveAs( bank_type_icons, 2, 0,NULL, NULL ))
 						{
-							bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread );;
+							if (bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread ))
+							{
+								struct retroSprite *sprite = (struct retroSprite *) bank -> object_ptr;	// local
+								bank -> length = sprite -> number_of_frames;
+							}
 						}
 					}
 					break;
@@ -942,9 +950,14 @@ void __load_bank__(struct stringData *name, int bankNr )
 						int _bank = (bankNr != -1) ? bankNr : 1;
 						engine_lock();
 						freeBank( _bank );
+
 						if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
 						{
-							bank -> object_ptr = (char *) retroLoadSprite(fd, (cust_fread_t) cust_fread );
+							if (bank -> object_ptr = (char *) retroLoadSprite(fd, (cust_fread_t) cust_fread ))
+							{
+								struct retroSprite *sprite = (struct retroSprite *) bank -> object_ptr;	// local
+								bank -> length = sprite -> number_of_frames;
+							}
 						} 
 						engine_unlock();
 					}
