@@ -84,11 +84,15 @@ void *getBankObject(int id)
 	return NULL;
 }
 
+extern void makeMaskForAll();
+
 void update_objects()
 {
 	patterns = (struct retroSprite *) getBankObject( - 3 );
 	sprite = (struct retroSprite *) getBankObject( 1 );
 	icons = (struct retroSprite *) getBankObject( 2 );
+
+	makeMaskForAll();
 }
 
 int hook_mread( char *dest, int size, int e, struct retroMemFd *fd )
