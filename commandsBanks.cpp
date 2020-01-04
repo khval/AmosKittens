@@ -752,6 +752,15 @@ int cust_fread (void *ptr, int size,int elements, FILE *fd)
 	else return 0;
 }
 
+int cust_fwrite (void *ptr, int size,int elements, FILE *fd)
+{
+	if (ptr)
+	{
+		return fwrite(ptr,size,elements,fd);
+	}
+	else return 0;
+}
+
 extern void clean_up_banks();
 
 bool bank_is_object( struct kittyBank *bank, void *ptr)
@@ -1038,6 +1047,17 @@ char *bankLoad(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+void __save_sprite_data__(FILE *fd, cust_fread_t cust_fwrite, struct kittyBank *bank)
+{
+	if (bank == NULL) return;
+	sprite = (struct retroSprite *) bank -> object_ptr;
+	if (sprite == NULL)  return;
+
+	retroSaveSprite( fd, sprite, cust_fwrite );
+}
+
+
 void __write_bank__( FILE *fd, int bankid )
 {
 	struct kittyBank *bank = findBank( bankid );
@@ -1056,14 +1076,25 @@ void __write_bank__( FILE *fd, int bankid )
 						fwrite("AmBk",4,1,fd);
 						__save_work_data__(fd,bank);
 						break;
+
+				case type_Sprites:
+
+						fwrite("AmSp",4,1,fd);
+						__save_sprite_data__(fd, (cust_fread_t) cust_fwrite, bank);
+						break;
+
+				case type_Icons:
+
+						fwrite("AmIc",4,1,fd);
+						__save_sprite_data__(fd, (cust_fread_t) cust_fwrite, bank);
+						break;
+
 /*
 				case type_Music:
 				case type_Amal:
 				case type_Samples:
 				case type_Menu:
 				case type_Code:
-				case type_Icons:
-				case type_Sprites:
 						break;
 */
 
