@@ -643,16 +643,23 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 
 	if (screen)
 	{
+		struct kittyBank *bank1;
+
 		if (sprite==NULL)
 		{
-			struct kittyBank *bank1;
 			sprite = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
 
 			bank1 = findBank(1);
 			if (!bank1) 
 			{
-				if (bank1 = __ReserveAs( bank_type_sprite, 1, sizeof(void *),NULL, NULL))							
+				if (bank1 = __ReserveAs( bank_type_sprite, 1,0,NULL, NULL))							
 				{
+					int n;
+
+					// we only copy palette if the bob/sprite is new.
+					struct retroRGB *color = screen->orgPalette;
+					for (n=0;n<256;n++) sprite -> palette[n] = color[n];
+
 					bank1 -> object_ptr = (char *) sprite;
 				} 
 			}
@@ -663,10 +670,17 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 			engine_lock();
 			retroGetSprite(screen,sprite,image-1,x0,y0,x1,y1);
 			sprite -> frames[image-1].alpha  = 1;
-
 			retroMakeMask( &sprite -> frames[ image-1 ] );
-
 			engine_unlock();
+
+			bank1 = findBank(1);
+			if (bank1) 
+			{
+				if (bank1 -> object_ptr == (char *) sprite)							
+				{
+					bank1 -> length = sprite -> number_of_frames;
+				} 
+			}
 		}
 
 	}
