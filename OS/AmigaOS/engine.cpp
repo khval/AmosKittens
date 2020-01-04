@@ -713,9 +713,6 @@ void limit_mouse()
 
 void main_engine()
 {
-	int bobIsUpdated = 0; 
-	int bobUpdateOnceDone = 0;
-
 	Printf("init engine\n");
 
 	if (init_engine())		// libs open her.
