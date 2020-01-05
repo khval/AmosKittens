@@ -164,7 +164,7 @@ see other docs like issue for more info.
 	but same as Wait command will also process Menu selections, make sure you have Wait or Wait VBL in
 	your programs if your using "On Menu Gosub","On Menu Proc" or "On Menu Goto" commands
 		
-**include**
+**Include**
 
 	include "path/file.amos"
 	include "volume:path/file.amos"
@@ -177,4 +177,22 @@ see other docs like issue for more info.
 	"AmosKittens.exe path/file.amos" then Amos Kittens will try to look for includes in "path/"
 	if however a direct path is set in the include, then Amos kittens should use a direct path.
 
+**limit bob**
 
+	Limit Bob 
+	
+	remove limit from all bobs
+	
+	Limit bob n
+	
+	remove limit from bob n, (this one is not supported by Amos Pro)
+	
+	limit bob x,y to x,y
+	
+	set Limit on all bobs, bob should exist before using this command.
+	(On "Amos Kittens" it already does, on "Amos Pro" it does not)
+	
+	Limit bob n,x,y to x,y
+	
+	set Limit on bob "N", bob should exist before using this command.
+	(On "Amos Kittens" it already does, on "Amos Pro" it does not)
