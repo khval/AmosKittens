@@ -835,10 +835,69 @@ char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boLimitBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int n;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	NYI(__FUNCTION__);
+//	NYI(__FUNCTION__);
+
+	switch (args)
+	{
+		case 1:
+
+			if (kittyStack[stack].type == type_none)		// delete all limits from bobs
+			{
+				for (n=0;n<63;n++)
+				{
+					bobs[n].limitXmin = 0;
+					bobs[n].limitYmin = 0;
+					bobs[n].limitXmax = 0;
+					bobs[n].limitYmax = 0;
+				}
+			}
+			else	// delete limit from one bob (not supported by Amos Pro)
+			{
+				n = getStackNum(stack);
+				bobs[n].limitXmin = 0;
+				bobs[n].limitYmin = 0;
+				bobs[n].limitXmax = 0;
+				bobs[n].limitYmax = 0;
+			}
+			break;
+
+		case 4:	// limit bob x0,y0 to x1,y1
+			{
+				int y0 = getStackNum(stack-3);
+				int x0 = getStackNum(stack-2);
+				int x1 = getStackNum(stack-1);
+				int y1 = getStackNum(stack);
+
+				for (n=0;n<63;n++)	// 0-63 is a amos the creator limit, not a amos pro limit.
+				{
+					bobs[n].limitXmin = x0;
+					bobs[n].limitYmin = y0;
+					bobs[n].limitXmax = x1;
+					bobs[n].limitYmax = y1;
+				}
+			}
+			break;
+
+		case 5:	// limit bob <bob>,x0,y0 to x1,y1
+
+			{
+				n = getStackNum(stack-4);
+				int y0 = getStackNum(stack-3);
+				int x0 = getStackNum(stack-2);
+				int x1 = getStackNum(stack-1);
+				int y1 = getStackNum(stack);
+
+				bobs[n].limitXmin = x0;
+				bobs[n].limitYmin = y0;
+				bobs[n].limitXmax = x1;
+				bobs[n].limitYmax = y1;
+			}
+			break;
+	}
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -848,6 +907,7 @@ char *boLimitBob(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _boLimitBob, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
 

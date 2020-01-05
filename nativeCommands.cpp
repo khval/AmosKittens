@@ -498,6 +498,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1B46,"Bob Col",0,boBobCol },
 	{0x1B52,"Col",0,boCol },
 	{0x1B5C,"Limit Bob",0,boLimitBob },
+	{0x1B6C,"Limit Bob",0,boLimitBob },
 	{0x1B7A,"Limit Bob",0,boLimitBob },
 	{0x1B8A,"Set Bob",0,boSetBob },
 	{0x1B9E,"Bob",0,boBob },
