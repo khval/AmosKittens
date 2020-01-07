@@ -37,11 +37,7 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 extern int priorityReverse;
-/*
-extern int bobDoUpdate;
-extern int bobAutoUpdate;
-extern int bobDoUpdateEnable;
-*/
+
  // extern int bobUpdateNextWait;
 
 extern int current_screen;
@@ -277,7 +273,13 @@ void drawBob(struct retroSpriteObject *bob)
 				if (clear -> mem) copyScreenToClear( screen,clear );
 			}
 
-			retroPasteSprite(screen, screen -> double_buffer_draw_frame,  sprite, bob->x, bob->y, image, flags, bob -> plains);
+			retroPasteSpriteObject(
+				screen, 
+				screen -> double_buffer_draw_frame, 
+				bob, 
+				sprite,
+				image, 
+				flags);
 		}
 	}
 }
