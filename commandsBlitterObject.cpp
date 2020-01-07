@@ -370,10 +370,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 			{
 				if ((lx ^ bob -> x) | (ly ^ bob -> y) | ( li ^ bob -> image)) 		// xor should remove bits not changed, so if this has value its changed.
 				{	
-					if (screen -> Memory[1])			// this has double buffer, so there is buffer to swap.
-					{
-						screen -> event_flags |= rs_bob_moved;		// normaly, screen is swaped if bob is moved.
-					}
+					screen -> event_flags |= rs_bob_moved;		// normaly, screen is swaped if bob is moved.
 				}
 			}
 
