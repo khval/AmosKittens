@@ -90,7 +90,10 @@ struct kittyChannel
 	unsigned int progStackCount;
 	unsigned int loopCount; 
 	unsigned int last_reg;
+
 	void *(*pushBackFunction)  (struct kittyChannel *self, struct amalCallBack *cb);
+	unsigned short next_arg;
+	unsigned short let;
 };
 
 

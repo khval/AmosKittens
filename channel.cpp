@@ -62,8 +62,6 @@ void initChannel( struct kittyChannel *item, int channel )
 
 		item -> animStatus = channel_status::uninitialized;
 		item -> amalStatus = channel_status::uninitialized;
-
-		memset( (char *) item -> reg, 0, sizeof(item -> reg) );
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )
@@ -143,6 +141,7 @@ void setChannelAnim( struct kittyChannel *item, struct stringData *str , bool en
 
 void setChannelAmal( struct kittyChannel *item, struct stringData *str)
 {
+	item -> amalStatus = channel_status::uninitialized;
 	if (item -> amal_script) free(item -> amal_script);
 	item -> amal_script = str;
 	item -> amal_at = &str->ptr;

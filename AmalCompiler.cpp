@@ -46,8 +46,7 @@ extern FILE *engine_fd;
 #include "amosString.h"
 
 bool autotest = false;
-bool let = false;
-bool next_arg = false;
+
 
 int nest = 0;
 char last_reg[1000] ;
@@ -205,7 +204,7 @@ unsigned int AmalWriterIf (	struct kittyChannel *channel, struct amalTab *self,
 	addNestAmal( if, &call_array[1] );
 	amal_cmd_equal = amal_call_equal;
 
-	next_arg =true;
+	channel -> next_arg =true;
 
 	return 2;
 }
@@ -229,7 +228,7 @@ unsigned int AmalWriterCondition (	struct kittyChannel *channel, struct amalTab 
 	amal_nested_command[ nested_count -1 ].cmd = num;
 	amal_nested_command[ nested_count -1 ].offset = (unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array;
 
-	let =false;
+	channel -> let =false;
 
 	return 2;
 }
@@ -246,8 +245,8 @@ unsigned int AmalWriterNum (	struct kittyChannel *channel, struct amalTab *self,
 			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array);
 
 	*((int *) &call_array[1]) = num;
-	let = false;
-	next_arg = false;
+	channel -> let = false;
+	channel -> next_arg = false;
 	return 2;
 }
 
@@ -454,7 +453,7 @@ unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *se
 				unsigned int num)
 {
 	call_array[0] = amal_flush_prog;
-	let = true;
+	channel -> let = true;
 	return 1;
 }
 
@@ -532,8 +531,8 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 
 	call_array[0] = self -> call;
 	amal_cmd_equal = NULL;
-	let = false;
-	next_arg = false;
+	channel -> let = false;
+	channel -> next_arg = false;
 	return 1;
 }
 
@@ -547,7 +546,7 @@ unsigned int stdAmalWriterValue ( struct kittyChannel *channel, struct amalTab *
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
 			self->name );
 	call_array[0] = self -> call;
-	next_arg = false;
+	channel -> next_arg = false;
 	return 1;
 }
 
@@ -563,7 +562,7 @@ unsigned int stdAmalWriterWithArg ( struct kittyChannel *channel, struct amalTab
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
 			self->name );
 	call_array[0] = self -> call;
-	next_arg = true;
+	channel -> next_arg = true;
 	return 1;
 }
 unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
@@ -606,7 +605,7 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 		call_array[1] = 0;
 
 		autotest_start_ptr_offset = (unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array;
-		next_arg = false;
+		channel -> next_arg = false;
 		return 2;
 	}
 
@@ -616,7 +615,7 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 			self->name );
 
 	call_array[0] = self -> call;
-	next_arg = true;
+	channel -> next_arg = true;
 	return 1;
 }
 
@@ -648,7 +647,7 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 			self->name );
 
 	call_array[0] = self -> call;
-	next_arg = false;
+	channel -> next_arg = false;
 	autotest = false;
 	return 1;
 }
@@ -666,7 +665,7 @@ unsigned int stdAmalWriterSymbol ( struct kittyChannel *channel, struct amalTab 
 			self->name );
 
 	call_array[0] = self -> call;
-	next_arg = true;
+	channel -> next_arg = true;
 	return 1;
 }
 
@@ -1000,7 +999,6 @@ struct amalTab *find_amal_command_ends_with_number(const char *str , int class_f
 {
 	char next_c;
 	int l;
-	struct amalTab *symbol = NULL;
 
 	for (struct amalTab *tab = amalCmds; tab -> name ; tab++ )
 	{
@@ -1083,7 +1081,7 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 			memcpy( new_array, i -> call_array, i->size );
 			amalFreeBuffer(i->call_array);
 
-			i -> call_array = new_array;
+			i->call_array = new_array;
 			i->elements = new_elements;
 			i->size = new_size;
 
@@ -1117,6 +1115,12 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	struct amalWriterData data;
 
 	nested_count = 0;
+	amal_cmd_equal = NULL;
+	channel -> let = false;
+	channel -> next_arg = false;
+
+	// reset R0-R9 registers, must be reset etch time we compile a new amal script.
+	memset( (char *) channel -> reg, 0, sizeof(channel -> reg) );
 
 #ifdef test_app
 // 1000 to avoid reallocs.
@@ -1134,9 +1138,9 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	s=&script -> ptr;
 	while (*s)
 	{
-//		printf("LET = %s, next arg %s\n", let ? "TRUE" : "FALSE", next_arg ? "TRUE" : "FALSE");
+		Printf("LET = %s, next arg %s\n", channel -> let ? "TRUE" : "FALSE", channel -> next_arg ? "TRUE" : "FALSE");
 
-		if ((let)||(next_arg))	// this is most likely a arg or a calculation
+		if ((channel -> let)||(channel -> next_arg))	// this is most likely a arg or a calculation
 		{
 			found = find_amal_command(s, amal::class_cmd_arg);
 			if (!found)	found = find_amal_command(s, amal::class_cmd_normal);
@@ -1190,8 +1194,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 		}
 		else if ((*s >= '0')&&(*s<='9'))
 		{
-			printf("found number\n");
-
 			unsigned int num = 0;
 			while ((*s >= '0')&&(*s<='9'))
 			{

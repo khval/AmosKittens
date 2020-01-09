@@ -393,8 +393,6 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 
-	getchar();
-
 	return NULL;
 }
 
