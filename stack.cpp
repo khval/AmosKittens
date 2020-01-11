@@ -239,7 +239,7 @@ void setStackDecimal( double decimal )
 void setStackStrDup( struct stringData *str)
 {
 	if (kittyStack[stack].str)	free(kittyStack[stack].str);
-	kittyStack[stack].str = str ? amos_strdup( str ) : NULL;
+	kittyStack[stack].str = str ? amos_strdup( str ) : alloc_amos_string( 0);
 	kittyStack[stack].state = state_none;
 	kittyStack[stack].type = type_string;
 }
