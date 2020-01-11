@@ -640,7 +640,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	token_is_fresh = false;
-
 	last_var = ref -> ref;
 
 	if (next_token == 0x0074)	// ( symbol
@@ -672,14 +671,13 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 					break;
 				case type_proc:
 					stackCmdProc( _procedure, ptr+sizeof(struct reference)+ref->length ) ;
-
 					stack_frame_up(ref->ref); 
 
 					// size of ref is added on exit, then +2 next token
-
 					return var -> tokenBufferPos - sizeof(struct reference) -2;	
 			}
 		}
+
 		flushCmdParaStack(next_token);
 	}
 
