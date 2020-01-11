@@ -246,23 +246,24 @@ void setStackStrDup( struct stringData *str)
 
 void setStackStr( struct stringData *str)
 {
-	if ((str != kittyStack[stack].str)&&(kittyStack[stack].str))
+	struct kittyData *item = &kittyStack[stack];
+
+	if ((str != item -> str)&&(item -> str))
 	{
-		if (kittyStack[stack].str) free(kittyStack[stack].str);	
+		free(item -> str);	
 	}
 
 	if (str)
 	{
-		kittyStack[stack].str = str ;
+		item -> str = str ;
 	}
 	else
 	{
-		printf("setStackStr(): string is a NULL pointer??\n");
-		kittyStack[stack].str = 0 ;
+		item -> str = alloc_amos_string( 0) ;
 	}
 
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_string;
+	item -> state = state_none;
+	item -> type = type_string;
 }
 
 void setStackParenthesis()
