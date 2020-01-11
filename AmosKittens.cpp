@@ -496,7 +496,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 					if (str == NULL) 
 					{
-						setStackStr( toAmosString( "", 0) );
+						setStackStr( alloc_amos_string(0) );
 					}
 					else
 					{
