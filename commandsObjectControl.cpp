@@ -90,11 +90,11 @@ int find_zone_in_any_screen_hard( int hx, int hy)
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
 				zz = &zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
 	}
-	return -1;
+	return 0;
 }
 
 int find_zone_in_any_screen_pixel( int hx, int hy)
@@ -112,12 +112,12 @@ int find_zone_in_any_screen_pixel( int hx, int hy)
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
 				zz = &zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
 	}
 
-	return -1;
+	return 0;
 }
 
 int find_zone_in_only_screen_hard( int screen, int hx, int hy)
@@ -135,11 +135,11 @@ int find_zone_in_only_screen_hard( int screen, int hx, int hy)
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
 				zz = &zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
 	}
-	return -1;
+	return 0;
 }
 
 int find_zone_in_only_screen_pixel( int screen, int x, int y)
@@ -152,10 +152,10 @@ int find_zone_in_only_screen_pixel( int screen, int x, int y)
 		if (zones[z].screen == screen)
 		{
 			zz = &zones[z];
-			if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z;
+			if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 		}
 	}
-	return -1;
+	return 0;
 }
 
 
@@ -527,7 +527,7 @@ char *_ocSetZone( struct glueCommands *data, int nextToken )
 
 	if (args == 5)
 	{
-		int z = getStackNum( stack -4 );
+		int z = getStackNum( stack -4 ) - 1;
 		int x0 = getStackNum( stack -3 );
 		int y0 = getStackNum( stack -2 );
 		int x1 = getStackNum( stack -1 );
@@ -881,8 +881,12 @@ char *ocFire(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocHZone( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int ret = -1;
 	int s=-1,x=-1,y=-1;
+
+	// this function should return 0, if no zone is found.
+
+	int ret = 0
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
