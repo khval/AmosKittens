@@ -481,7 +481,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 				setStackHiddenCondition();
 			}
 
-			switch (var -> type & 3)
+			switch (var -> type & 7)		// array type is 8, so mask is 7 		(while its unlikley you have array of file of proc, none we do not wont confuse this)
 			{
 				case type_int: 
 					setStackNum( (&(var -> int_array -> ptr) + _last_var_index) -> value );
