@@ -811,17 +811,15 @@ void main_engine()
 
 						if (screen -> event_flags & engine_update_flags)
 						{
+							dump_bobs(0);
+							clearBobsOnScreen(screen);
+							drawBobsOnScreen(screen);
+
 							if (screen -> Memory[1]) 	// has double buffer
 							{
-								clearBobsOnScreen(screen);
-								drawBobsOnScreen(screen);
 								swap_buffer( screen );
 							}
-							else
-							{
-								clearBobsOnScreen(screen);
-								drawBobsOnScreen(screen);
-							}
+
 						}
 						screen -> event_flags = 0;
 					}
