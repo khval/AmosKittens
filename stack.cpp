@@ -267,10 +267,16 @@ void setStackStr( struct stringData *str)
 
 void setStackParenthesis()
 {
-	if (kittyStack[stack].str) free(kittyStack[stack].str);
-	kittyStack[stack].str = NULL ;
-	kittyStack[stack].state = state_subData;
-	kittyStack[stack].type = type_none;
+	struct kittyData *item = &kittyStack[stack];
+
+	if (item -> str)
+	{
+		free(item -> str);
+		item -> str = NULL ;
+	}
+
+	item -> state = state_subData;
+	item -> type = type_none;
 }
 
 bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1)
