@@ -22,7 +22,7 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 
-extern struct retroSpriteObject bobs[64];
+extern std::vector<struct retroSpriteObject *> bobs;
 extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
@@ -30,51 +30,58 @@ static int getMax ( void )
 	return 64;
 }
 
-static int getImage (int object)
-{
-	return bobs[object].image;
-}
+extern struct retroSpriteObject *getBob(int id);
 
-static int getX (int object)
-{
-	return bobs[object].x;
-}
+extern struct retroSpriteObject *getBob(unsigned int id);
+extern int getBobImage(unsigned int id);
+extern int getBobX(unsigned int id);
+extern int getBobY(unsigned int id);
 
-static int getY (int object)
-{
-	return bobs[object].y;
-}
-
-static void setImage (int object,int image)
+static void setImage (unsigned int object,int image)
 {
 	struct retroScreen *s;
-	bobs[object].image = image;
-	s = screens[ bobs[object].screen_id ];
-	if (s) s ->event_flags |= rs_bob_moved;
+	struct retroSpriteObject *bob;
+
+	if (bob = getBob( object ))
+	{
+		bob -> image = image;
+		s = screens[ bob -> screen_id ];
+		if (s) s ->event_flags |= rs_bob_moved;
+	}
 }
 
-static void setX (int object,int x)
+static void setX (unsigned int object,int x)
 {
 	struct retroScreen *s;
-	bobs[object].x = x;
-	s = screens[ bobs[object].screen_id ];
-	if (s) s ->event_flags |= rs_bob_moved;
+	struct retroSpriteObject *bob;
+
+	if (bob = getBob( object ))
+	{
+		bob -> x = x;
+		s = screens[ bob -> screen_id ];
+		if (s) s ->event_flags |= rs_bob_moved;
+	}
 }
 
-static void setY (int object,int y)
+static void setY (unsigned int object,int y)
 {
 	struct retroScreen *s;
-	bobs[object].y = y;
-	s = screens[ bobs[object].screen_id ];
-	if (s) s ->event_flags |= rs_bob_moved;
+	struct retroSpriteObject *bob;
+
+	if (bob = getBob( object ))
+	{
+		bob -> y = y;
+		s = screens[ bob -> screen_id ];
+		if (s) s ->event_flags |= rs_bob_moved;
+	}
 }
 
 struct channelAPI bob_api = 
 {
 	getMax,
-	getImage,
-	getX,
-	getY,
+	getBobImage,
+	getBobX,
+	getBobY,
 	setImage,
 	setX,
 	setY

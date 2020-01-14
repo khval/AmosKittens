@@ -35,32 +35,32 @@ static int getMax ( void )
 	return 64;
 }
 
-static int getImage (int object)
+static int getImage (unsigned  int object)
 {
 	return video -> sprites[object].image;
 }
 
-static int getX (int object)
+static int getX (unsigned int object)
 {
 	return from_XSprite_formula(video -> sprites[object].x);
 }
 
-static int getY (int object)
+static int getY (unsigned int object)
 {
 	return from_YSprite_formula(video -> sprites[object].y);
 }
 
-static void setImage (int object,int image)
+static void setImage (unsigned int object,int image)
 {
 	video -> sprites[object].image = image;
 }
 
-static void setX (int object,int x)
+static void setX (unsigned int object,int x)
 {
 	video -> sprites[object].x = XSprite_formula(x);
 }
 
-static void setY (int object,int y)
+static void setY (unsigned int object,int y)
 {
 	video -> sprites[object].y = YSprite_formula(y);
 }

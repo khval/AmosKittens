@@ -885,7 +885,7 @@ char *_ocHZone( struct glueCommands *data, int nextToken )
 
 	// this function should return 0, if no zone is found.
 
-	int ret = 0
+	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 

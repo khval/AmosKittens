@@ -125,7 +125,7 @@ struct retroSprite *icons = NULL;
 struct retroSprite *sprite = NULL;
 struct retroSprite *patterns = NULL;
 
-struct retroSpriteObject bobs[64];
+
 
 //struct proc procStack[1000];	// 0 is not used.
 struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
@@ -147,6 +147,7 @@ std::vector<struct kittyBank> kittyBankList;
 std::vector<struct kittyDevice> deviceList;
 std::vector<struct kittyLib> libsList;
 std::vector<struct fileContext *> files;
+std::vector<struct retroSpriteObject *> bobs;
 
 int global_var_count = 0;
 int labels_count = 0;
@@ -1215,12 +1216,6 @@ int main(int args, char **arg)
 #ifdef __linux__
 	sig_main_vbl = SIGUSR1;
 #endif
-
-	for (n=0;n<64;n++)
-	{
-		bobs[n].screen_id = -1;
-		bobs[n].image = -1;
-	}
 
 	make_float_lookup();
 

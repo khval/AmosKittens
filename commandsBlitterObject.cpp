@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <vector>
+#include <limits.h>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -46,11 +48,50 @@ extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *sprite;
-extern struct retroSpriteObject bobs[64];
+extern std::vector<struct retroSpriteObject *> bobs;
 
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
 void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
 
+int __min_bob__= INT_MAX, __max_bob__ = 0;
+
+struct retroSpriteObject *getBob(unsigned int id)
+{
+	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); ++bob)
+	{
+		printf("bob -> id = %08x\n", (*bob) -> id );
+		if ((*bob) -> id == id) return *bob;
+	}
+	return NULL;
+}
+
+int getBobX(unsigned int id)
+{
+	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); bob++)
+	{
+		if ((*bob) -> id == id) return (*bob) -> x;
+	}
+	return 0;
+}
+
+
+int getBobY(unsigned int id)
+{
+	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); bob++)
+	{
+		if ((*bob) -> id == id) return (*bob) -> y;
+	}
+	return 0;
+}
+
+int getBobImage(unsigned int id)
+{
+	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); bob++)
+	{
+		if ((*bob) -> id == id) return (*bob) -> image;
+	}
+	return 0;
+}
 
 void clearBob(struct retroSpriteObject *bob)
 {
@@ -86,16 +127,16 @@ void clearBobs()
 	switch ( priorityReverse )
 	{
 		case 0:
-			start = 63; end = -1; dir = -1;
+			start = bobs.size()-1; end = -1; dir = -1;
 			break;
 		case 1:
-			start = 0; end = 64; dir = 1;
+			start = 0; end = bobs.size(); dir = 1;
 			break;
 	}
 
 	for (n=start;n!=end;n+=dir)
 	{
-		clearBob(&bobs[n]);
+		clearBob(bobs[n]);
 	}
 }
 
@@ -107,18 +148,18 @@ void clearBobsOnScreen(struct retroScreen *screen)
 	switch ( priorityReverse )
 	{
 		case 0:
-			start = 63; end = -1; dir = -1;
+			start = bobs.size()-1; end = -1; dir = -1;
 			break;
 		case 1:
-			start = 0; end = 64; dir = 1;
+			start = 0; end = bobs.size(); dir = 1;
 			break;
 	}
 
 	for (n=start;n!=end;n+=dir)
 	{
-		if (screens[bobs[n].screen_id] == screen)
+		if (screens[bobs[n] -> screen_id] == screen)
 		{
-			clearBob(&bobs[n]);
+			clearBob(bobs[n]);
 		}
 	}
 }
@@ -127,12 +168,12 @@ void clearBobsOnScreen(struct retroScreen *screen)
 
 void freeScreenBobs( int screen_id )
 {
-	int n;
+	unsigned int n;
 	struct retroSpriteObject *bob;
 
-	for (n=0;n<64;n++)
+	for (n=0;n<bobs.size();n++)
 	{
-		bob = &bobs[n];
+		bob = bobs[n];
 
 		bob -> x = 0;
 		bob -> y = 0;
@@ -287,8 +328,6 @@ void drawBob(struct retroSpriteObject *bob)
 void drawBobs()
 {
 	int n;
-	struct retroSpriteObject *bob;
-
 	int start=0,end=0,dir=0;
 
 	if (!sprite) return;
@@ -297,18 +336,14 @@ void drawBobs()
 	switch ( priorityReverse )
 	{
 		case 0:
-			start = 0; end = 64; dir = 1;
+			start = 0; end = bobs.size(); dir = 1;
 			break;
 		case 1:
-			start = 63; end = -1; dir = -1;
+			start = bobs.size()-1; end = -1; dir = -1;
 			break;
 	}
 
-	for (n=start;n!=end;n+=dir)
-	{
-		bob = &bobs[n];
-		drawBob(bob);
-	}
+	for (n=start;n!=end;n+=dir) drawBob(bobs[n]);
 }
 
 void drawBobsOnScreen(struct retroScreen *screen)
@@ -324,16 +359,16 @@ void drawBobsOnScreen(struct retroScreen *screen)
 	switch ( priorityReverse )
 	{
 		case 0:
-			start = 0; end = 64; dir = 1;
+			start = 0; end = bobs.size(); dir = 1;
 			break;
 		case 1:
-			start = 63; end = -1; dir = -1;
+			start = bobs.size()-1; end = -1; dir = -1;
 			break;
 	}
 
 	for (n=start;n!=end;n+=dir)
 	{
-		bob = &bobs[n];
+		bob = bobs[n];
 
 		if (screens[bob->screen_id] == screen)
 		{
@@ -356,26 +391,58 @@ char *_boBob( struct glueCommands *data, int nextToken )
 	{
 		case 4:
 			num = getStackNum( stack - 3 );
-			bob = &bobs[num];
+			bob = getBob(num);
 
-			lx =bob->x;
-			ly =bob->y;
-			li = bob -> image;
-
-			stack_get_if_int( stack - 2 , &bob->x );
-			stack_get_if_int( stack - 1 , &bob->y );
-
-			bob->image = getStackNum( stack );
-			bob->screen_id = current_screen;
-
-			if (struct retroScreen *screen = screens[bob->screen_id])
+			if (!bob)
 			{
-				if ((lx ^ bob -> x) | (ly ^ bob -> y) | ( li ^ bob -> image)) 		// xor should remove bits not changed, so if this has value its changed.
-				{	
-					screen -> event_flags |= rs_bob_moved;		// normaly, screen is swaped if bob is moved.
+
+				bob = new retroSpriteObject;
+				if (bob)
+				{
+					if ( num < __min_bob__ ) __min_bob__ = num;
+					if ( num > __max_bob__ ) __max_bob__ = num;
+
+					bob -> id = num;
+					bob -> x = 0;
+					bob -> y = 0;
+					bob -> image = 0;
+					bob -> screen_id = -1;
+					bob -> sprite = NULL;
+					bob -> frame = NULL;
+					bob -> clear[0].mem = NULL;
+					bob -> clear[1].mem = NULL;
+					bob -> mask = 0;
+					bob -> limitXmin = 0;
+					bob -> limitYmin = 0;
+					bob -> limitXmax = 0;
+					bob -> limitYmax = 0;
+
+					engine_lock();				
+					bobs.push_back( bob );
+					engine_unlock();
 				}
 			}
 
+			if (bob)
+			{
+				lx =bob -> x;
+				ly =bob -> y;
+				li = bob -> image;
+
+				stack_get_if_int( stack - 2 , &(bob->x) );
+				stack_get_if_int( stack - 1 , &(bob->y) );
+
+				bob->image = getStackNum( stack );
+				bob->screen_id = current_screen;
+
+				if (struct retroScreen *screen = screens[bob->screen_id])
+				{
+					if ((lx ^ bob -> x) | (ly ^ bob -> y) | ( li ^ bob -> image)) 		// xor should remove bits not changed, so if this has value its changed.
+					{	
+						screen -> event_flags |= rs_bob_moved;		// normaly, screen is swaped if bob is moved.
+					}
+				}
+			}
 			break;
 
 		default:
@@ -446,10 +513,14 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 4:	n = getStackNum(stack-3);
-				bob = &bobs[ n & 63 ];
-				bob -> background = getStackNum(stack-2);
-				bob -> plains = getStackNum(stack-1);
-				bob -> mask = getStackNum(stack);
+
+				bob = getBob( n );
+				if (bob)
+				{
+					bob -> background = getStackNum(stack-2);
+					bob -> plains = getStackNum(stack-1);
+					bob -> mask = getStackNum(stack);
+				}
 				break;
 		default:
 				setError(22, data-> tokenBuffer);
@@ -469,19 +540,27 @@ char *boSetBob(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_boXBob( struct glueCommands *data, int nextToken )
 {
+	struct retroSpriteObject *bob;
 	int args = stack - data->stack +1 ;
-	int x = 0;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		int n;
-		n = getStackNum(stack);
-		x= bobs[ n & 63 ].x;
-	} else setError(22,data->tokenBuffer);
+		bob = getBob( getStackNum(stack) );
 
+		if (bob == NULL)
+		{
+			setError(23,data->tokenBuffer);
+			return NULL;
+		}
+
+		setStackNum(bob -> x);
+		return NULL;	// don't need to pop stack.
+	} 
+
+	setError(23,data->tokenBuffer);
 	popStack( stack - data->stack );
-	setStackNum(x);
 	return NULL;
 }
 
@@ -494,20 +573,27 @@ char *boXBob(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_boYBob( struct glueCommands *data, int nextToken )
 {
+	struct retroSpriteObject *bob;
 	int args = stack - data->stack +1 ;
-	int y=0;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		int n;
-		n = getStackNum(stack);
-		y= bobs[ n & 63 ].y;
+		bob = getBob( getStackNum(stack) );
 
-	} else setError(22,data->tokenBuffer);
+		if (bob == NULL)
+		{
+			setError(23,data->tokenBuffer);
+			return NULL;
+		}
 
+		setStackNum(bob -> y);
+		return NULL;	// don't need to pop stack.
+	} 
+
+	setError(23,data->tokenBuffer);
 	popStack( stack - data->stack );
-	setStackNum(y);
 	return NULL;
 }
 
@@ -520,22 +606,27 @@ char *boYBob(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_boIBob( struct glueCommands *data, int nextToken )
 {
+	struct retroSpriteObject *bob;
 	int args = stack - data->stack +1 ;
-	int i=0;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		int n;
-		n = getStackNum(stack);
-		i= bobs[ n & 63 ].image;
+		bob = getBob( getStackNum(stack) );
 
-		if (i<0) setError(23,data->tokenBuffer);
+		if (bob == NULL)
+		{
+			setError(23,data->tokenBuffer);
+			return NULL;
+		}
 
-	} else setError(23,data->tokenBuffer);
+		setStackNum(bob -> image);
+		return NULL;	// don't need to pop stack.
+	} 
 
+	setError(23,data->tokenBuffer);
 	popStack( stack - data->stack );
-	setStackNum(i);
 	return NULL;
 }
 
@@ -701,15 +792,16 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 	int args = stack - data->stack +1 ;
 	int n,image,flags;
 	struct retroScreen *screen;
+	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:	n = getStackNum( stack );
-				image  = bobs[ n & 63 ].image;
+				bob  = getBob( n );
 				flags = image & 0xC000;
-				image &= image & 0x3FFF;
+				image &= bob -> image & 0x3FFF;
 
 				screen = screens[current_screen];
 
@@ -718,11 +810,11 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 					switch (screen -> autoback)
 					{
 						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,sprite,
-									bobs[ n & 63 ].x,bobs[ n & 63 ].y,image -1, flags, bobs[ n & 63].plains);
+									bob -> x,bob -> y,image -1, flags, bob -> plains);
 								break;
 
-						default:	retroPasteSprite(screen,0,sprite,bobs[ n & 63 ].x,bobs[ n & 63 ].y,image -1, flags, bobs[ n & 63].plains);
-								if (screen -> Memory[1]) retroPasteSprite(screen,1,sprite,bobs[ n & 63 ].x,bobs[ n & 63 ].y,image -1, flags, bobs[ n & 63].plains);
+						default:	retroPasteSprite(screen,0,sprite,bob->x,bob->y,image -1, flags, bob->plains);
+								if (screen -> Memory[1]) retroPasteSprite(screen,1,sprite,bob->x,bob->y,image -1, flags, bob->plains);
 								break;
 					}
 				}
@@ -831,10 +923,19 @@ char *boHotSpot(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+void removeBobLimit( struct retroSpriteObject *bob )
+{
+	if (!bob) return;
+	bob -> limitXmin = 0;
+	bob -> limitYmin = 0;
+	bob -> limitXmax = 0;
+	bob -> limitYmax = 0;
+}
+
 char *_boLimitBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int n;
+	unsigned int n;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -846,37 +947,32 @@ char *_boLimitBob( struct glueCommands *data, int nextToken )
 
 			if (kittyStack[stack].type == type_none)		// delete all limits from bobs
 			{
-				for (n=0;n<63;n++)
-				{
-					bobs[n].limitXmin = 0;
-					bobs[n].limitYmin = 0;
-					bobs[n].limitXmax = 0;
-					bobs[n].limitYmax = 0;
-				}
+				for (n=0;n<bobs.size();n++)	removeBobLimit( bobs[n] );
 			}
 			else	// delete limit from one bob (not supported by Amos Pro)
 			{
 				n = getStackNum(stack);
-				bobs[n].limitXmin = 0;
-				bobs[n].limitYmin = 0;
-				bobs[n].limitXmax = 0;
-				bobs[n].limitYmax = 0;
+				removeBobLimit( getBob(n) );
 			}
 			break;
 
 		case 4:	// limit bob x0,y0 to x1,y1
 			{
+				struct retroSpriteObject *bob;
 				int y0 = getStackNum(stack-3);
 				int x0 = getStackNum(stack-2);
 				int x1 = getStackNum(stack-1);
 				int y1 = getStackNum(stack);
 
-				for (n=0;n<63;n++)	// 0-63 is a amos the creator limit, not a amos pro limit.
+				for (n=0;n<bobs.size();n++)	// 0-63 is a amos the creator limit, not a amos pro limit.
 				{
-					bobs[n].limitXmin = x0;
-					bobs[n].limitYmin = y0;
-					bobs[n].limitXmax = x1;
-					bobs[n].limitYmax = y1;
+					if (bob = bobs[n])
+					{
+						bob->limitXmin = x0;
+						bob->limitYmin = y0;
+						bob->limitXmax = x1;
+						bob->limitYmax = y1;
+					}
 				}
 			}
 			break;
@@ -884,16 +980,20 @@ char *_boLimitBob( struct glueCommands *data, int nextToken )
 		case 5:	// limit bob <bob>,x0,y0 to x1,y1
 
 			{
+				struct retroSpriteObject *bob;
 				n = getStackNum(stack-4);
 				int y0 = getStackNum(stack-3);
 				int x0 = getStackNum(stack-2);
 				int x1 = getStackNum(stack-1);
 				int y1 = getStackNum(stack);
 
-				bobs[n].limitXmin = x0;
-				bobs[n].limitYmin = y0;
-				bobs[n].limitXmax = x1;
-				bobs[n].limitYmax = y1;
+				if (bob = getBob(n))
+				{
+					bob->limitXmin = x0;
+					bob->limitYmin = y0;
+					bob->limitXmax = x1;
+					bob->limitYmax = y1;
+				}
 			}
 			break;
 	}
@@ -1131,7 +1231,15 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 	if (start & 0xFFC0 ) return 0;		// 0 to 63, 
 	if (end & 0xFFC0 ) return 0;		// 0 to 63, 
 
-	thisBob = &bobs[bob];
+	thisBob = getBob(bob);
+
+	if ( ! thisBob )
+	{
+		printf("bobCol bob %d not found\n",bob);
+		Delay(30);
+	 	return 0;
+	}
+
 	if (thisBob -> image == 0) return 0;
 
 	frame = &sprite -> frames[ thisBob -> image-1 ];
@@ -1144,7 +1252,7 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 
 	for (n=start;n<=end;n++)
 	{
-		otherBob = &bobs[n];
+		otherBob = getBob(n);
 
 		if (otherBob != thisBob)
 		{
@@ -1168,11 +1276,12 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	bob = getStackNum(stack);
-				setStackNum(bobCol( bob, 0, 63 ));	
+				setStackNum(bobCol( bob, __min_bob__, __max_bob__ ));	
 				return NULL;
-	}
 
-	printf("Error Error robinson... %d\n",args);
+		default:
+				setError(22,data->tokenBuffer);
+	}
 
 	popStack( stack - data->stack );
 	setStackNum(0);			
@@ -1287,25 +1396,23 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boBobOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int del = 0;
+	struct retroSpriteObject *bob;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		del = getStackNum(stack);
-
-		if ((del>-1)&&(del<64))
+		if (bob = getBob(getStackNum(stack)))
 		{
 			engine_lock();
 
-			clearBob(&bobs[del]);
+			clearBob(bob);
+			if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
+			bob->clear[0].mem = NULL;
+			bob->image = -1;
 
-			if (bobs[del].clear[0].mem) sys_free(bobs[del].clear[0].mem);
-			bobs[del].clear[0].mem = NULL;
-
-			bobs[del].image = -1;
 			engine_unlock();
+			return NULL;
 		}
 	}
 	else setError(22, data->tokenBuffer);

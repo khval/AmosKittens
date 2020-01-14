@@ -19,10 +19,11 @@
 #include "commandsLibs.h"
 
 
-extern struct retroScreen *screens[8] ;
-extern struct retroSpriteObject bobs[64];
-extern struct globalVar globalVars[1000];
+extern std::vector<struct retroSpriteObject *> bobs;;
 extern std::vector<struct label> labels;
+
+extern struct retroScreen *screens[8] ;
+extern struct globalVar globalVars[1000];
 extern int global_var_count;
 extern char *dir_first_pattern ;
 extern struct retroSprite *sprite ;
@@ -284,10 +285,20 @@ void clean_up_special()
 
 		dprintf("clean up bobs!!\n");
 
-		for (n=0;n<64;n++)
+		engine_lock();
+
+		printf("bobs %d\n", bobs.size());
+
+		while ( bobs.size() )
 		{
-			retroFreeSpriteObject( &bobs[n],TRUE);		// TRUE = only data
+			printf("bob[0] is %08x\n",bobs[0]);
+			if (bobs[0])
+			{
+				retroFreeSpriteObject( bobs[0],TRUE);		// TRUE = only data
+			}
+			bobs.erase(bobs.begin());
 		}
+		engine_unlock();
 	}
 
 	dprintf("clean up banks!!\n");

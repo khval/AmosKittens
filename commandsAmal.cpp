@@ -42,7 +42,7 @@ extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroSpriteObject sprites[64];
-extern struct retroSpriteObject bobs[64];
+extern std::vector<struct retroSpriteObject *> bobs;
 
 extern void remove_lower_case( struct stringData *txt);
 

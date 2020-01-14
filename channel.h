@@ -34,12 +34,12 @@ namespace channel_status
 struct channelAPI
 {
 	int (*getMax) ( void );
-	int (*getImage) (int object);
-	int (*getX) (int object);
-	int (*getY) (int object);
-	void (*setImage) (int object,int);
-	void (*setX) (int object,int);
-	void (*setY) (int object,int);
+	int (*getImage) (unsigned int object);
+	int (*getX) (unsigned int object);
+	int (*getY) (unsigned int object);
+	void (*setImage) (unsigned int object,int);
+	void (*setX) (unsigned int object,int);
+	void (*setY) (unsigned int object,int);
 };
 
 struct kittyChannel

@@ -30,26 +30,26 @@ static int getMax ( void )
 	return 8;
 }
 
-static int getImage (int object)
+static int getImage (unsigned int object)
 {
 	return 0;
 }
 
-static int getX (int object)
+static int getX (unsigned int object)
 {
 	return screens[object]->displayWidth;
 }
 
-static int getY (int object)
+static int getY (unsigned int object)
 {
 	return screens[object]->displayHeight;
 }
 
-static void setImage (int object,int image)
+static void setImage (unsigned int object,int image)
 {
 }
 
-static void setX (int object,int x)
+static void setX (unsigned int object,int x)
 {
 	screens[object]->displayWidth = x;
 
@@ -62,7 +62,7 @@ static void setX (int object,int x)
 	video -> refreshAllScanlines = TRUE;
 }
 
-static void setY (int object,int y)
+static void setY (unsigned int object,int y)
 {
 	screens[object]->displayHeight = y;
 

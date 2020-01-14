@@ -30,31 +30,31 @@ static int getMax ( void )
 	return 4;
 }
 
-static int getImage (int object)
+static int getImage (unsigned int object)
 {
 	return 0;
 }
 
-static int getX (int object)
+static int getX (unsigned int object)
 {
 	return video -> rainbow[object].offset;
 }
 
-static int getY (int object)
+static int getY (unsigned int object)
 {
 	return video -> rainbow[object].verticalOffset+50;
 }
 
-static void setImage (int object,int image)
+static void setImage (unsigned int object,int image)
 {
 }
 
-static void setX (int object,int x)
+static void setX (unsigned int object,int x)
 {
 	video -> rainbow[object].offset = x;
 }
 
-static void setY (int object,int y)
+static void setY (unsigned int object,int y)
 {
 	video -> rainbow[object].verticalOffset = y-50;
 }
