@@ -53,13 +53,10 @@ extern std::vector<struct retroSpriteObject *> bobs;
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
 void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
 
-int __min_bob__= INT_MAX, __max_bob__ = 0;
-
 struct retroSpriteObject *getBob(unsigned int id)
 {
 	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); ++bob)
 	{
-		printf("bob -> id = %08x\n", (*bob) -> id );
 		if ((*bob) -> id == id) return *bob;
 	}
 	return NULL;
@@ -163,8 +160,6 @@ void clearBobsOnScreen(struct retroScreen *screen)
 		}
 	}
 }
-
-
 
 void freeScreenBobs( int screen_id )
 {
@@ -378,6 +373,35 @@ void drawBobsOnScreen(struct retroScreen *screen)
 }
 
 
+struct retroSpriteObject *__new_bob__(int id)
+{
+	struct retroSpriteObject *bob = new retroSpriteObject;
+
+	if (bob)
+	{
+		bob -> id = id;
+		bob -> x = 0;
+		bob -> y = 0;
+		bob -> image = 0;
+		bob -> screen_id = -1;
+		bob -> sprite = NULL;
+		bob -> frame = NULL;
+		bob -> clear[0].mem = NULL;
+		bob -> clear[1].mem = NULL;
+		bob -> mask = 0;
+		bob -> limitXmin = 0;
+		bob -> limitYmin = 0;
+		bob -> limitXmax = 0;
+		bob -> limitYmax = 0;
+
+		engine_lock();				
+		bobs.push_back( bob );
+		engine_unlock();
+	}
+
+	return bob;
+}
+
 char *_boBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -393,35 +417,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 			num = getStackNum( stack - 3 );
 			bob = getBob(num);
 
-			if (!bob)
-			{
-
-				bob = new retroSpriteObject;
-				if (bob)
-				{
-					if ( num < __min_bob__ ) __min_bob__ = num;
-					if ( num > __max_bob__ ) __max_bob__ = num;
-
-					bob -> id = num;
-					bob -> x = 0;
-					bob -> y = 0;
-					bob -> image = 0;
-					bob -> screen_id = -1;
-					bob -> sprite = NULL;
-					bob -> frame = NULL;
-					bob -> clear[0].mem = NULL;
-					bob -> clear[1].mem = NULL;
-					bob -> mask = 0;
-					bob -> limitXmin = 0;
-					bob -> limitYmin = 0;
-					bob -> limitXmax = 0;
-					bob -> limitYmax = 0;
-
-					engine_lock();				
-					bobs.push_back( bob );
-					engine_unlock();
-				}
-			}
+			if (!bob) bob = __new_bob__(num);
 
 			if (bob)
 			{
@@ -1172,54 +1168,39 @@ int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int offInt
 
 int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob )
 {
-	if (otherBob -> image)
+	struct retroFrameHeader * otherFrame = &sprite -> frames[ otherBob -> image -1 ];
+	int ominX = otherBob -> x - otherFrame -> XHotSpot;
+	int ominY = otherBob -> y - otherFrame -> XHotSpot;
+	int omaxX = ominX + otherFrame -> width;
+	int omaxY = ominY + otherFrame -> height;	
+
+	if ( maxX < ominX ) return 0;
+	if ( minX > omaxX ) return 0;
+	if ( maxY < ominY ) return 0;
+	if ( maxY > omaxY ) return 0;
+
+	if (minX< ominX)
 	{
-		struct retroFrameHeader * frame = &sprite -> frames[ otherBob -> image -1 ];
-		int ominX = otherBob -> x - frame -> XHotSpot;
-		int ominY = otherBob -> y - frame -> XHotSpot;
-		int omaxX = ominX + frame -> width;
-		int omaxY = ominY + frame -> height;	
-
-		if ( maxX < ominX ) return 0;
-		if ( minX > omaxX ) return 0;
-		if ( maxY < ominY ) return 0;
-		if ( maxY > omaxY ) return 0;
-
-		if (minX< ominX)
-		{
-			int dx = ominX - minX;
-			int dy = ominY - minY;
-			int bitx = dx & 15;
-			dx = dx >> 4;
-
-			if (cmpMask( thisMask, frame -> mask, dx, bitx, dy ))
-			{
-				return ~0;
-			}
-			else return 0;
-		}
-		else
-		{
-			int dx = minX - ominX;
-			int dy = minY - ominY;
-
-			int bitx = dx & 15;
-			dx = dx >> 4;
-
-			if (cmpMask(  frame-> mask, thisMask, dx, bitx, dy ))
-			{
-				return ~0;
-			}
-			else return 0;
-		}
-
-		return ~0;
+		int dx = (ominX - minX), dy = (ominY - minY);
+		int bitx = dx & 15;
+		dx = dx >> 4;
+		if (cmpMask( thisMask, otherFrame -> mask, dx, bitx, dy ))	return ~0;
+		return 0;
 	}
+	else
+	{
+		int dx = (minX - ominX), dy = (minY - ominY);
+		int bitx = dx & 15;
+		dx = dx >> 4;
+		if (cmpMask(  otherFrame-> mask, thisMask, dx, bitx, dy ))	return ~0;
+		return 0;
+	}
+
 	return 0;
 }
 
 
-int bobCol( unsigned short bob, unsigned short start, unsigned short end )
+int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 {
 	struct retroSpriteObject *thisBob;
 	struct retroSpriteObject *otherBob;
@@ -1227,15 +1208,57 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 	int minX, maxX, minY, maxY;
 	int n,r;
 
-	if (bob & 0xFFC0 ) return 0;		// 0 to 63  (0x3F)
-	if (start & 0xFFC0 ) return 0;		// 0 to 63, 
-	if (end & 0xFFC0 ) return 0;		// 0 to 63, 
+	thisBob = getBob(bob);
+
+	if ( ! thisBob )
+	{
+		Printf("bobCol bob %ld not found\n",bob);
+		Delay(30);
+	 	return 0;
+	}
+
+	if (thisBob -> image < 1) return 0;	// does not have image.
+
+	Printf("thisBob -> image: %ld\n",thisBob -> image);
+
+	frame = &sprite -> frames[ thisBob -> image-1 ];
+	minX = thisBob -> x - frame -> XHotSpot;
+	minY = thisBob -> y - frame -> XHotSpot;
+	maxX = minX + frame -> width;
+	maxY = minY + frame -> height;
+
+//	retroBox( screens[current_screen], 0, minX,minY,maxX,maxY,1 );
+
+	for ( n=start ; n<=end ; n++ )
+	{
+		otherBob = getBob(n);
+
+		// filter out bad data....
+		if ( ! otherBob) continue;
+		if (otherBob == thisBob) continue;
+		if (otherBob -> image <1) continue;
+
+		// check if bob is inside.
+		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
+		if (r) return r;
+	}
+
+	return 0;
+}
+
+int bobColAll( unsigned short bob )
+{
+	struct retroSpriteObject *thisBob;
+	struct retroSpriteObject *otherBob;
+	struct retroFrameHeader *frame;
+	int minX, maxX, minY, maxY;
+	int n,r;
 
 	thisBob = getBob(bob);
 
 	if ( ! thisBob )
 	{
-		printf("bobCol bob %d not found\n",bob);
+		Printf("bobCol bob %ld not found\n",bob);
 		Delay(30);
 	 	return 0;
 	}
@@ -1250,18 +1273,18 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 
 //	retroBox( screens[current_screen], 0, minX,minY,maxX,maxY,1 );
 
-	for (n=start;n<=end;n++)
+	for (n=0;n<bobs.size();n++)
 	{
 		otherBob = getBob(n);
 
-		if (otherBob != thisBob)
-		{
-			if (otherBob -> image) // is valid bob
-			{
-				r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
-				if (r) return r;
-			}
-		}
+		// filter out bad data....
+		if ( ! otherBob) continue;
+		if (otherBob == thisBob) continue;
+		if (otherBob -> image <1) continue;
+
+		// check if bob is inside.
+		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
+		if (r) return r;
 	}
 
 	return 0;
@@ -1270,15 +1293,15 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 char *_boBobCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int bob = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1:	bob = getStackNum(stack);
-				setStackNum(bobCol( bob, __min_bob__, __max_bob__ ));	
+		case 1:	setStackNum(bobColAll( getStackNum(stack) ));
 				return NULL;
 
+		case 3:	setStackNum(bobColRange( getStackNum(stack-2), getStackNum(stack-1), getStackNum(stack) ));
+				return NULL;
 		default:
 				setError(22,data->tokenBuffer);
 	}

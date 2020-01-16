@@ -789,7 +789,7 @@ void *amal_call_sy API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-int bobCol( unsigned short bob, unsigned short start, unsigned short end );
+int bobColRange( unsigned short bob, unsigned short start, unsigned short end );
 
 void *cb_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 {
@@ -804,7 +804,7 @@ void *cb_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 		uint16_t start = self -> argStack [ self -> argStackCount -1 ];			
 		uint16_t end = self -> argStack [ self -> argStackCount  ];
 
-		r = bobCol( bob, start, end );
+		r = bobColRange( bob, start, end );
 	}
 	
 	// reset stack
