@@ -393,6 +393,7 @@ struct retroSpriteObject *__new_bob__(int id)
 		bob -> limitYmin = 0;
 		bob -> limitXmax = 0;
 		bob -> limitYmax = 0;
+		bob -> background = 0;	// if background color is set, background is not copied.
 
 		engine_lock();				
 		bobs.push_back( bob );
