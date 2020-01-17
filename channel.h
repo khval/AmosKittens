@@ -101,8 +101,8 @@ class ChannelTableClass
 {
 private:
 	struct kittyChannel **tab;
-	int allocated;
-	int used;
+	unsigned int allocated;
+	unsigned int used;
 public:
 	ChannelTableClass()
 	{
@@ -120,6 +120,7 @@ public:
 	struct kittyChannel *newChannel( int channel );
 	struct kittyChannel *getChannel( int channel );
 	struct kittyChannel *item( int index );
+	struct kittyChannel *findChannelByItem(int token, int number);
 	int _size();
 };
 

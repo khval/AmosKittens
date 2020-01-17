@@ -74,8 +74,6 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 	{
 		tab[used] = item;
 		used ++;
-
-		printf("used %d allocated %d\n",used,allocated);
 		return item;
 	}
 	else
@@ -101,8 +99,6 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 			if (item) free( (char *) item );
 			allocated = old_allocated;
 		}
-
-		printf("used %d allocated %d\n",used,allocated);
 	}
 
 	return NULL;
@@ -110,9 +106,24 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 
 struct kittyChannel *ChannelTableClass::getChannel(int id)
 {
-	for (int n=0;n<used;n++) if (tab[n] -> id == id) return tab[n];
+	for (unsigned int n=0;n<used;n++) if (tab[n] -> id == id) return tab[n];
 	return NULL;
 }
+
+
+struct kittyChannel *ChannelTableClass::findChannelByItem(int token, int number)
+{
+	for (unsigned int n  = 0 ; n < used;n++ )
+	{
+		if ( (tab[n] -> token == token) && (tab[n] -> number == number) )
+		{	
+			return tab[n];
+		}
+	}
+
+	return NULL;
+}
+
 
 struct kittyChannel *ChannelTableClass::item(int index)
 {
@@ -136,7 +147,6 @@ void setChannelAnim( struct kittyChannel *item, struct stringData *str , bool en
 	{
 		item -> animStatus = channel_status::active;
 	}
-
 }
 
 void setChannelAmal( struct kittyChannel *item, struct stringData *str)
