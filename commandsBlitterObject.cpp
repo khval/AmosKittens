@@ -1220,15 +1220,11 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 
 	if (thisBob -> image < 1) return 0;	// does not have image.
 
-	Printf("thisBob -> image: %ld\n",thisBob -> image);
-
 	frame = &sprite -> frames[ thisBob -> image-1 ];
 	minX = thisBob -> x - frame -> XHotSpot;
 	minY = thisBob -> y - frame -> XHotSpot;
 	maxX = minX + frame -> width;
 	maxY = minY + frame -> height;
-
-//	retroBox( screens[current_screen], 0, minX,minY,maxX,maxY,1 );
 
 	for ( n=start ; n<=end ; n++ )
 	{
