@@ -34,7 +34,7 @@ extern std::vector<struct wave *> waves;
 extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
-extern struct retroSpriteObject bobs[64];
+extern  std::vector<struct retroSpriteObject *> bobs;
 extern struct retroSprite *sprite;
 extern int current_screen ;
 
@@ -599,20 +599,21 @@ void dump_pal(struct retroScreen *s, int colors)
 
 void dump_bobs(int screen_id)
 {
-	int n;
-	Printf("      ");
+	unsigned int n;
 
-	for (n =0;n<64;n++)
+	Printf_iso("dump_bobs on screen %ld",screen_id);
+
+	for (n =0;n<bobs.size();n++)
 	{
-		if (screen_id == bobs[n].screen_id)
+		if (screen_id == bobs[n] -> screen_id)
 		{
-			if (bobs[n].image != -1)
+			if (bobs[n] -> image != -1)
 			{
 				Printf_iso("[ %ld, %4ld,%4ld,%4ld ] ",
-					n,
-					bobs[n].x,
-					bobs[n].y,
-					bobs[n].image);
+					bobs[n] -> id,
+					bobs[n] -> x,
+					bobs[n] -> y,
+					bobs[n] -> image);
 			}
 		}
 	}
