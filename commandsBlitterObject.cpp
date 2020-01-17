@@ -31,6 +31,9 @@
 #include "engine.h"
 #include "commandsBanks.h"
 
+#include "AmalCompiler.h"
+#include "channel.h"
+
 extern int sig_main_vbl;
 
 extern int last_var;
@@ -49,6 +52,7 @@ extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 extern struct retroSprite *sprite;
 extern std::vector<struct retroSpriteObject *> bobs;
+extern ChannelTableClass *channels;
 
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
 void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
@@ -401,6 +405,29 @@ struct retroSpriteObject *__new_bob__(int id)
 	}
 
 	return bob;
+}
+
+
+void __erase_bob__(struct retroSpriteObject *bob)
+{
+	unsigned int n;
+	int f=-1;
+
+	if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
+	bob->clear[0].mem = NULL;
+	if (bob->clear[1].mem) sys_free(bob->clear[1].mem);
+	bob->clear[1].mem = NULL;
+
+	for (n=0;n<bobs.size();n++)
+	{
+		if (bobs[n] == bob)
+		{
+			delete bob;
+			bobs[n] = NULL;
+			bobs.erase(bobs.begin()+n);
+			return;
+		}
+	}
 }
 
 char *_boBob( struct glueCommands *data, int nextToken )
@@ -1422,15 +1449,23 @@ char *_boBobOff( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		if (bob = getBob(getStackNum(stack)))
+		unsigned int id = getStackNum(stack);
+
+		if (bob = getBob( id ))
 		{
+			struct kittyChannel *item;
+
 			engine_lock();
 
-			clearBob(bob);
-			if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
-			bob->clear[0].mem = NULL;
-			bob->image = -1;
+			// remove all refs to object.
+			while (item = channels -> findChannelByItem( 0x1B9E, id ))
+			{
+				item -> token = 0;
+				item -> number = 0;
+			}
 
+			clearBob(bob);
+			__erase_bob__( bob );
 			engine_unlock();
 			return NULL;
 		}
