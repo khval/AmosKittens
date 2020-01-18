@@ -89,8 +89,7 @@ exit quick, maybe work.
 
 **Xerxes'Revenge.AMOS**
 
-DSI error in bob clear.
-Needs "make mask" command and bob collation etc, 
-support to work correct.
-(and it uses a lot of Amal, so you might run into some issues there as well.)
-Game starts, but quits without error.
+Game starts, it scrolls, 
+I can control the spaceship with gamepad.
+and looks ok, but should here not be enemy’s?
+
