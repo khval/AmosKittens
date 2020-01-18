@@ -1309,10 +1309,11 @@ int bobColAll( unsigned short bob )
 
 	for (n=0;n<bobs.size();n++)
 	{
-		otherBob = getBob(n);
+		otherBob = bobs[n];
 
 		// filter out bad data....
 		if ( ! otherBob) continue;
+
 		if (otherBob -> screen_id != thisBob -> screen_id ) continue;
 		if (otherBob == thisBob) continue;
 		if (otherBob -> image <1) continue;
