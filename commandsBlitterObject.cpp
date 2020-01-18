@@ -1351,6 +1351,7 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 				return NULL;
 
 		case 3:	setStackNum(bobColRange( getStackNum(stack-2), getStackNum(stack-1), getStackNum(stack) ));
+				popStack( stack - data->stack );
 				return NULL;
 		default:
 				setError(22,data->tokenBuffer);
