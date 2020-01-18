@@ -1237,6 +1237,20 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 	return 0;
 }
 
+void bobBox( struct retroSpriteObject *thisBob )
+{
+	struct retroFrameHeader *frame;
+	int minX, maxX, minY, maxY;
+
+	frame = &sprite -> frames[ thisBob -> image-1 ];
+
+	minX = thisBob -> x - frame -> XHotSpot;
+	minY = thisBob -> y - frame -> XHotSpot;
+	maxX = minX + frame -> width;
+	maxY = minY + frame -> height;
+
+	retroBox( screens[thisBob -> screen_id], 0, minX,minY,maxX,maxY,1 );
+}
 
 int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 {
