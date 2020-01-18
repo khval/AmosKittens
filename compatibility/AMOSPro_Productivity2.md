@@ -8,4 +8,6 @@ Works
 
 **Wonderland/wonderland.Amos**
 
-Missing token 1D38 - command "Make Mask"
+Game starts, Can’t control the player.
+screen was opened in hires, I think it should be lowres.
+
