@@ -66,6 +66,16 @@ struct retroSpriteObject *getBob(unsigned int id)
 	return NULL;
 }
 
+struct retroSpriteObject *getBobOnScreen(unsigned int id,int screen)
+{
+	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); ++bob)
+	{
+		if ((*bob) -> screen_id != screen ) continue;
+		if ((*bob) -> id == id) return *bob;
+	}
+	return NULL;
+}
+
 int getBobX(unsigned int id)
 {
 	for (std::vector<struct retroSpriteObject * >::iterator bob=bobs.begin();bob != bobs.end(); bob++)
@@ -1255,7 +1265,7 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 
 	for ( n=start ; n<=end ; n++ )
 	{
-		otherBob = getBob(n);
+		otherBob = getBobOnScreen(n , thisBob -> screen_id );
 
 		// filter out bad data....
 		if ( ! otherBob) continue;
@@ -1303,6 +1313,7 @@ int bobColAll( unsigned short bob )
 
 		// filter out bad data....
 		if ( ! otherBob) continue;
+		if (otherBob -> screen_id != thisBob -> screen_id ) continue;
 		if (otherBob == thisBob) continue;
 		if (otherBob -> image <1) continue;
 
