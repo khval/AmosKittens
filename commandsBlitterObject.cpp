@@ -494,48 +494,6 @@ char *boBob(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_boNoMask( struct glueCommands *data, int nextToken )
-{
-	int args = stack - data->stack +1 ;
-	int image;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 1:
-			image = getStackNum( stack )-1;
-
-			if (sprite)
-			{
-				if (image < sprite -> number_of_frames)
-				{
-					struct retroFrameHeader *frame = &sprite -> frames[image];
-
-					if (frame)
-					{
-						frame -> alpha = 0;
-						retroFreeMask( frame );
-						return NULL;
-					}
-				}
-			}
-
-			setError( 23, data -> tokenBuffer );
-			break;
-		default:
-			popStack( stack - data->stack );
-			setError(22, data -> tokenBuffer);
-	}
-	return NULL;
-}
-
-char *boNoMask(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdNormal( _boNoMask, tokenBuffer );
-	return tokenBuffer;
-}
-
 
 char *_boSetBob( struct glueCommands *data, int nextToken )
 {
@@ -1525,6 +1483,73 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNone();
 	return tokenBuffer;
 }
+
+
+
+void __no_mask__(struct retroFrameHeader *frame)
+{
+	if (frame)
+	{
+		frame -> alpha = 0;
+		retroFreeMask( frame );
+	}
+}
+
+void NoMaskForAll()
+{
+	int n;
+
+	if (sprite == NULL) return;
+
+	for (n=0;n<sprite -> number_of_frames;n++)
+	{
+		__no_mask__( &sprite -> frames[n] );
+	}
+}
+
+char *_boNoMask( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int image;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+
+			switch (kittyStack[stack].type)
+			{
+				case type_none:
+					NoMaskForAll();
+					break;
+
+				case type_int:
+					if (sprite)
+					{
+						image = getStackNum( stack )-1;
+						if (image < sprite -> number_of_frames)
+						{
+							__no_mask__(&sprite -> frames[image]);
+						}
+					}
+					break;
+			}
+
+			break;
+		default:
+			popStack( stack - data->stack );
+			setError(22, data -> tokenBuffer);
+	}
+	return NULL;
+}
+
+char *boNoMask(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdNormal( _boNoMask, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 void makeMaskForAll()
 {
