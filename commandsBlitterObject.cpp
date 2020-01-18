@@ -1467,6 +1467,25 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 }
 
 
+void __remove_bob__(struct retroSpriteObject *bob)
+{
+	struct kittyChannel *item;
+
+	engine_lock();
+
+	// remove all refs to object.
+	while (item = channels -> findChannelByItem( 0x1B9E, bob -> id ))
+	{
+		item -> token = 0;
+		item -> number = 0;
+	}
+
+	clearBob(bob);
+	__erase_bob__( bob );
+	engine_unlock();
+}
+
+
 char *_boBobOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
@@ -1476,25 +1495,21 @@ char *_boBobOff( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		unsigned int id = getStackNum(stack);
-
-		if (bob = getBob( id ))
+		switch (kittyStack[stack].type)
 		{
-			struct kittyChannel *item;
+			case type_none:
 
-			engine_lock();
+					while (bobs.size()>0) __remove_bob__(bobs[0]);
+					return NULL;
 
-			// remove all refs to object.
-			while (item = channels -> findChannelByItem( 0x1B9E, id ))
-			{
-				item -> token = 0;
-				item -> number = 0;
-			}
+			case type_int:
 
-			clearBob(bob);
-			__erase_bob__( bob );
-			engine_unlock();
-			return NULL;
+					if (bob = getBob( getStackNum(stack) ))
+					{
+						__remove_bob__( bob );
+						return NULL;
+					}
+					break;
 		}
 	}
 	else setError(22, data->tokenBuffer);
@@ -1507,9 +1522,9 @@ char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdParm( _boBobOff, tokenBuffer );
+	setStackNone();
 	return tokenBuffer;
 }
-
 
 void makeMaskForAll()
 {
