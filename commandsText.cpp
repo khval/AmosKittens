@@ -1431,21 +1431,26 @@ int numberCount(int n)
 	return cnt;
 }
 
-void write_format( bool sign, char *buf, char *dest )
+void write_format( bool sign, char *buf, struct stringData *dest )
 {
 	char *buf_end = NULL;
 	char *comma_dest = NULL, *comma_buf = NULL;
 	char *psign = NULL;
+	char c;
 	char *d,*s;
+	char *destStart=&(dest -> ptr);
+	char *destEnd = destStart + dest -> size ;
 
-	for (s=dest;*s;s++)
+	for (unsigned int n=0;n < dest -> size;n++)
 	{
-		if ((*s=='+')||(*s=='-')) psign = s;
+		c = destStart[n];
 
-		if ((*s=='.')||(*s==';')) 
+		if ((c=='+')||(c=='-')) psign = destStart + n;
+
+		if ((c=='.')||(c==';')) 
 		{
-			comma_dest = s; 
-			if (*s==';') *s=' ';
+			comma_dest = destStart + n; 
+			if (c==';') c=' ';
 			break;
 		}
 	}
@@ -1458,7 +1463,7 @@ void write_format( bool sign, char *buf, char *dest )
 	if ((comma_buf) && (comma_dest))
 	{
 		s=comma_buf-1;
-		for (d=comma_dest;d>=dest;d--)
+		for (d=comma_dest;d>=destStart;d--)
 		{
 			if (*d=='#')
 			{
@@ -1471,7 +1476,7 @@ void write_format( bool sign, char *buf, char *dest )
 		s=comma_buf+1;
 		buf_end = buf + strlen(buf);
 
-		for (d=comma_dest;*d;d++)
+		for (d=comma_dest;d < destEnd;d++)
 		{
 			if (*d=='#')
 			{
@@ -1479,6 +1484,42 @@ void write_format( bool sign, char *buf, char *dest )
 				{ *d=*s; s++; }
 				else *d='0'; 
 			}
+		}
+	}
+	else
+	{
+		int at;
+
+		if (comma_buf)
+		{
+			at = comma_buf - buf - 1;
+		}
+		else
+			at = strlen(buf) -1;
+
+		d = destEnd;
+		if ((d>destStart) && (*d != '#'))		// first last '#'
+		{
+			do
+			{
+				d--;
+			}
+			while ((d>destStart)&&(*d != '#' ));
+		}
+
+		while ((at>-1) && (*d=='#'))		// we fill in the # backwords.
+		{
+
+			*d = buf[at];
+
+			// get the previous #
+			if (d>destStart)
+			{
+				do { d--; } while ((*d != '#' ) && (d>destStart)) ;
+			}
+			else	break;
+
+			at --;
 		}
 	}
 
@@ -1526,7 +1567,7 @@ char *_textPrintUsing( struct glueCommands *data, int nextToken )
 						char buf[60];
 						double  decimal = getStackDecimal(stack);
 						sprintf(buf,"%lf",decimal);
-						write_format( decimal < 0.0f, buf, &dest -> ptr );
+						write_format( decimal < 0.0f, buf, dest );
 					}
 					break;
 
@@ -1535,13 +1576,16 @@ char *_textPrintUsing( struct glueCommands *data, int nextToken )
 						char buf[60];
 						int num = getStackNum(stack);
 						sprintf(buf,"%d.0",num);
-						write_format( num<0, buf, &dest -> ptr );
+						write_format( num<0, buf, dest  );
 					}
 					break;
+
+			default:
+					printf("kittyStack[stack].type %d\n",kittyStack[stack].type);
 		}
 	}
 	else setError(22,data->tokenBuffer);
-
+	
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
 	if (dest) setStackStr( dest );
