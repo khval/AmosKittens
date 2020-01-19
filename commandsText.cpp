@@ -1521,6 +1521,12 @@ void write_format( bool sign, char *buf, struct stringData *dest )
 
 			at --;
 		}
+
+		while (destStart<=d)		// fill in # with 0
+		{
+			if (*d=='#') *d='0';
+			d--;
+		}
 	}
 
 	if (psign)
