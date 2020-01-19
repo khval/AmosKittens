@@ -54,6 +54,8 @@ extern struct retroSprite *sprite;
 extern std::vector<struct retroSpriteObject *> bobs;
 extern ChannelTableClass *channels;
 
+std::vector<int> collided;
+
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear );
 void copyClearToScreen( struct retroSpriteClear *clear, struct retroScreen *screen );
 
@@ -1210,6 +1212,20 @@ void bobBox( struct retroSpriteObject *thisBob )
 	retroBox( screens[thisBob -> screen_id], 0, minX,minY,maxX,maxY,1 );
 }
 
+void flush_collided()
+{
+	while (collided.size()) collided.erase(collided.begin());
+}
+
+bool has_collided(int id)
+{
+	for (unsigned int n=0;n<collided.size();n++)
+	{
+		if (collided[n] == id) return true;
+	}
+	return false;
+}
+
 int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 {
 	struct retroSpriteObject *thisBob;
@@ -1246,6 +1262,7 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 
 		// check if bob is inside.
 		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
+		if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
 		if (r) return r;
 	}
 
@@ -1292,7 +1309,12 @@ int bobColAll( unsigned short bob )
 
 		// check if bob is inside.
 		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
-		if (r) return r;
+
+		if (r)
+		{
+			if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
+			return r;
+		}
 	}
 
 	return 0;
@@ -1302,6 +1324,8 @@ char *_boBobCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	flush_collided();
 
 	switch (args)
 	{
@@ -1327,13 +1351,28 @@ char *boBobCol(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
 char *_boCol( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
 	int ret = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	popStack( stack - data->stack );
+	switch (args)
+	{
+		case 1:
+
+			ret = has_collided(getStackNum(stack)) ? ~0 : 0;
+
+			break;
+
+		default:
+
+			popStack( stack - data->stack );
+			break;
+	}
+
+
 	setStackNum(ret);
 	return NULL;
 }
