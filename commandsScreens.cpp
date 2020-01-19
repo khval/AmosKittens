@@ -904,7 +904,7 @@ void dmode( const char *name, uint64_t mode )
 	}
 }
 
-unsigned int modeToRetro( unsigned int modeid )
+unsigned int AmigaModeToRetro( unsigned int modeid )
 {
 	unsigned int mode = 0;
 	unsigned int encoding = modeid & (0x800 | 0x1000 | 0x8000);
@@ -983,7 +983,7 @@ void LoadIff( char *name, const int sn )
 		{
 			case PIXF_NONE:
 			case PIXF_CLUT:
-				mode = modeToRetro (modeid);
+				mode = AmigaModeToRetro (modeid);
 				break;		
 			default:
 				mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;

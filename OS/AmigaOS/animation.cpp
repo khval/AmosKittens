@@ -207,7 +207,7 @@ bool old_frame(struct animContext *context,ULONG TimeStamp )
 	return FALSE;
 }
 
-extern unsigned int modeToRetro( unsigned int mode );
+extern unsigned int AmigaModeToRetro( unsigned int mode );
 
 extern void __wait_vbl();
 
@@ -272,17 +272,13 @@ void IffAnim( char *name, const int sn )
 
 		context.bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
-
-
 		printf("fps %d\n",fps);
 		printf("colors %d\n",context.colors);
 		printf("mode id %08x\n",modeid);
 		printf("bformat %d\n",context.bformat);
 		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-		mode = modeToRetro( modeid );
-
-		getchar();
+		mode = AmigaModeToRetro( modeid );
 
 		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
