@@ -943,7 +943,7 @@ unsigned int AmigaModeToRetro( unsigned int modeid )
 	return mode;
 }
 
-void LoadIff( char *name, const int sn )
+void LoadIff( char *name,  int sn )
 {
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
@@ -953,14 +953,14 @@ void LoadIff( char *name, const int sn )
 	ULONG colors;
 	ULONG bformat;
 	ULONG mode;
+	BOOL new_screen = (sn >-1 );
+
+
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if(dto = (struct DataType *) NewDTObject( name, DTA_GroupID, GID_PICTURE, TAG_DONE))
 	{
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 		SetDTAttrs ( (Object*) dto, NULL,NULL,	PDTA_DestMode, (ULONG) PMODE_V43,TAG_DONE);
 		DoDTMethod ( (Object*) dto,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE); 
 		GetDTAttrs ( (Object*) dto,PDTA_BitMapHeader, (ULONG *) &bm_header, 	
@@ -970,37 +970,41 @@ void LoadIff( char *name, const int sn )
 					PDTA_ModeID, &modeid,
 					TAG_DONE);
 
-	bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
+		bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
-	printf("colors %d\n",colors);
-	printf("mode id %08x\n",modeid);
-	printf("bformat %d\n",bformat);
-	printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
+		printf("colors %d\n",colors);
+		printf("mode id %08x\n",modeid);
+		printf("bformat %d\n",bformat);
+		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-	if (modeid != -1)
-	{
-		switch (bformat)
+		if (modeid != (ULONG) ~0)
 		{
-			case PIXF_NONE:
-			case PIXF_CLUT:
-				mode = AmigaModeToRetro (modeid);
-				break;		
-			default:
-				mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
-				mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+			switch (bformat)
+			{
+				case PIXF_NONE:
+				case PIXF_CLUT:
+					mode = AmigaModeToRetro (modeid);
+					break;		
+				default:
+					mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
+					mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+			}
 		}
-	}
-	else
-	{
-		mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
-		mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
-	}
+		else
+		{
+			mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
+			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
+		}
 
-		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
+		if (new_screen) if (screens[sn]) kitten_screen_close( sn );	// this function locks engine ;-)
 
 		engine_lock();
 
-		screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
+		if (new_screen)
+		{
+			screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
+		}
+		else sn = current_screen;
 
 		if (screens[sn])
 		{
@@ -1009,11 +1013,12 @@ void LoadIff( char *name, const int sn )
 			int x,y;
 			InitRastPort(&rp);
 
-			init_amos_kittens_screen_default_text_window(screens[sn], 256);
+			if (new_screen)	init_amos_kittens_screen_default_text_window(screens[sn], 256);
 
 			retroApplyScreen( screens[sn], video, 0, 0, screens[sn] -> realWidth,screens[sn]->realHeight );
 			retroBAR( screens[sn], 0, 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
-			set_default_colors( screens[sn] );
+
+			if (new_screen) set_default_colors( screens[sn] );
 
 			current_screen = sn;
 
@@ -1037,8 +1042,6 @@ void LoadIff( char *name, const int sn )
 					get_most_used_colors( &rp, screens[sn]->realHeight,  screens[sn]->realWidth, screens[sn]);
 				}
 			}
-
-
 
 			if ((bformat==PIXF_NONE) || (bformat==PIXF_CLUT))
 			{
@@ -1122,7 +1125,8 @@ char *_gfxLoadIff( struct glueCommands *data, int nextToken )
 		case 1:	// load iff image to current screen.
 				{
 					struct stringData *name= getStackString( stack );
-					if (name)	LoadIff(&(name->ptr),current_screen);
+
+					if (name)	LoadIff(&(name->ptr),-1);
 				}
 				break;
 		case 2:	// load iff image to new screen.
