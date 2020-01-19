@@ -6,7 +6,6 @@
 
 #include <proto/exec.h>
 #include <proto/dos.h>
-#include <proto/Amigainput.h>
 
 #include "AmosKittens.h"
 #include "joysticks.h"
@@ -161,13 +160,13 @@ void close_joysticks()
 
 unsigned int dir[]={ 0x00, 
 				joy_up, 				// 1
-				joy_up | joy_left, 
-				joy_left, 				// 3
-				joy_down | joy_left, 
-				joy_down, 			// 5
+				joy_up | joy_right, 
+				joy_right, 				// 3
 				joy_down | joy_right, 
-				joy_right, 				// 7
-				joy_right | joy_up
+				joy_down, 			// 5
+				joy_down | joy_left, 
+				joy_left, 				// 7
+				joy_left | joy_up
 				};
 
 void print_bin(unsigned int v)
