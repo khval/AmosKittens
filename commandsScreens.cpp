@@ -40,6 +40,34 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
+#define true_lowres 0x0
+#define true_hires 0x8000
+#define true_laced 0x4
+
+unsigned int amosModeToRetro(unsigned int aMode)
+{
+	unsigned int retMode = 0;
+
+	if (aMode & true_lowres) retMode |= retroLowres;
+	if (aMode & true_hires) retMode |= retroHires;
+	if (aMode & true_laced) retMode |= retroInterlaced;
+
+	return retMode;
+}
+
+unsigned int retroModeToAmosMode(unsigned int rMode)
+{
+	unsigned int retMode = 0;
+
+	if (rMode & retroLowres) retMode |= true_lowres;
+	if (rMode & retroLowres_pixeld) retMode |= true_lowres;
+	if (rMode & retroHires) retMode |= true_hires;
+	if (rMode & retroInterlaced) retMode |= true_laced;
+
+	return retMode;
+}
+
+
 int	physical( retroScreen *screen )
 {
 	return  (screen ->Memory[1]) ? 1-screen -> double_buffer_draw_frame : 0;
@@ -106,17 +134,13 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 			struct retroScreen *screen;
 			current_screen = screen_num;
 
-			// Kitty ignores colors we don't care, allways 256 colors.
-
 			colors = getStackNum( stack-1 );
+			mode = amosModeToRetro(getStackNum( stack ));
 
 			engine_lock();
 			if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 
-			mode = getStackNum( stack );
-			if (mode == 0) mode = retroLowres;
-
-			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),(colors == 4096 ? retroHam6 : 0) | mode);
+			screens[screen_num] = retroOpenScreen(getStackNum( stack-3 ),getStackNum( stack-2 ),mode);
 			if (screen = screens[screen_num])
 			{
 				init_amos_kittens_screen_default_text_window(screen, colors);
@@ -389,14 +413,13 @@ char *gfxScreenOpen(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxLowres(struct nativeCommand *cmd, char *tokenBuffer)
 {
-//	setStackNum(retroLowres); 
-	setStackNum(retroLowres_pixeld);
+	setStackNum( true_lowres );
 	return tokenBuffer;
 }
 
 char *gfxHires(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(retroHires);
+	setStackNum( true_hires );
 	return tokenBuffer;
 }
 
@@ -1486,7 +1509,7 @@ char *_gfxScreenMode( struct glueCommands *data, int nextToken )
 
 		if (screens[screen_num])
 		{
-			ret = screens[screen_num]->videomode;
+			ret = retroModeToAmosMode(screens[screen_num]->videomode);
 			setStackNum(ret);
 			return NULL;
 		}
@@ -1627,7 +1650,7 @@ char *gfxDualPlayfield(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxLaced(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum(retroInterlaced);
+	setStackNum( true_laced );
 	return tokenBuffer;
 }
 
