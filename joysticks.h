@@ -1,4 +1,13 @@
 
+#define joy_up 1
+#define joy_down 2
+#define joy_left 4
+#define joy_right 8
+
+#ifdef __amigaos4__
+#include <proto/Amigainput.h>
+#endif
+
 extern struct MsgPort	*joystick_msgport;
 
 struct joystick

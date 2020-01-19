@@ -31,6 +31,7 @@
 #include "kittyErrors.h"
 #include "engine.h"
 #include "amosstring.h"
+#include "joysticks.h"
 
 #include "commandsData.h"
 

@@ -50,11 +50,6 @@ typedef void* APTR;
 #define token_gosub			0x02B2
 #define token_proc				0x0386
 
-#define joy_up 1
-#define joy_down 2
-#define joy_left 4
-#define joy_right 8
-
 extern unsigned int amiga_joystick_dir[4];
 extern unsigned int amiga_joystick_button[4];
 
