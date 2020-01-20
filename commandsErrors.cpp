@@ -74,9 +74,20 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 				if (name)
 				{
 					struct label *label =  findLabel(name, procStcakFrame[proc_stack_frame].id);
-					on_error_goto_location = label -> tokenLocation;
-					onError = onErrorGoto;
 					free(name);
+
+					if (label)
+					{
+						on_error_goto_location = label -> tokenLocation;
+					}
+					else
+					{
+						printf("label not found, code broken\n");
+						setError(40, tokenBuffer);
+						return NULL;
+					}
+
+					onError = onErrorGoto;
 				}
 				break;
 
