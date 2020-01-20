@@ -1090,12 +1090,16 @@ extern void __wait_vbl();
 
 char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	int n;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	engine_lock();	
-	if (screens[current_screen])
+	engine_lock();
+	for (n=0;n<8;n++)
 	{
-		screens[current_screen] -> event_flags |= rs_force_swap;
+		if (screens[n])
+		{
+			screens[n] -> event_flags |= rs_force_swap;
+		}
 	}
 	engine_unlock();
 
