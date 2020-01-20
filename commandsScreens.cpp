@@ -48,9 +48,20 @@ unsigned int amosModeToRetro(unsigned int aMode)
 {
 	unsigned int retMode = 0;
 
-	if (aMode & true_lowres) retMode |= retroLowres;
-	if (aMode & true_hires) retMode |= retroHires;
-	if (aMode & true_laced) retMode |= retroInterlaced;
+	switch (aMode)
+	{
+		case true_lowres: 
+			retMode = retroLowres; break;
+
+		case true_hires:
+			 retMode = retroHires; break;
+
+		case (true_lowres | true_laced): 
+			retMode = retroLowres | retroInterlaced; break;
+
+		case (true_hires | true_laced): 
+			retMode = retroHires | retroInterlaced; break;
+	 }
 
 	return retMode;
 }
@@ -130,7 +141,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			int mode;
+			int mode = 0;
 			struct retroScreen *screen;
 			current_screen = screen_num;
 
@@ -953,9 +964,10 @@ void LoadIff( char *name,  int sn )
 	ULONG colors;
 	ULONG bformat;
 	ULONG mode;
-	BOOL new_screen = (sn >-1 );
 
+	// new screen if no current screen, or if it asks for new screen.
 
+	BOOL new_screen = (sn >-1 ) || screens[current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
