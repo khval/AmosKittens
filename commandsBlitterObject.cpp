@@ -399,7 +399,7 @@ struct retroSpriteObject *__new_bob__(int id)
 		bob -> x = 0;
 		bob -> y = 0;
 		bob -> image = 0;
-		bob -> screen_id = -1;
+		bob -> screen_id = current_screen;
 		bob -> sprite = NULL;
 		bob -> frame = NULL;
 		bob -> clear[0].mem = NULL;
@@ -469,7 +469,6 @@ char *_boBob( struct glueCommands *data, int nextToken )
 				stack_get_if_int( stack - 1 , &(bob->y) );
 
 				bob->image = getStackNum( stack );
-				bob->screen_id = current_screen;
 
 				if (struct retroScreen *screen = screens[bob->screen_id])
 				{
