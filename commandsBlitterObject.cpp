@@ -1521,7 +1521,7 @@ char *_boBobOff( struct glueCommands *data, int nextToken )
 char *boBobOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _boBobOff, tokenBuffer );
+	stackCmdNormal( _boBobOff, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
 }
