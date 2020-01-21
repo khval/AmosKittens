@@ -8,6 +8,6 @@ Works
 
 **Wonderland/wonderland.Amos**
 
-Game starts, Can’t control the player.
-screen was opened in hires, I think it should be lowres.
+Game starts, screen was opened in hires should be lowres.
+(some thing strange about the image)
 
