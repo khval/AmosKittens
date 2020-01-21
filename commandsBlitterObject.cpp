@@ -423,7 +423,6 @@ struct retroSpriteObject *__new_bob__(int id)
 void __erase_bob__(struct retroSpriteObject *bob)
 {
 	unsigned int n;
-	int f=-1;
 
 	if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
 	bob->clear[0].mem = NULL;
@@ -441,6 +440,23 @@ void __erase_bob__(struct retroSpriteObject *bob)
 		}
 	}
 }
+
+
+void __erase_bobs_on_screen__(int screen_id)
+{
+	unsigned int n;
+	for (n=bobs.size();n>0;)
+	{
+		n--;
+		printf("erase obj index %d\n", n);
+
+		if (bobs[n] -> screen_id == screen_id)
+		{
+			__erase_bob__( bobs[n] );
+		}
+	}
+}
+
 
 char *_boBob( struct glueCommands *data, int nextToken )
 {

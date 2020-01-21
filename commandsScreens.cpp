@@ -40,6 +40,8 @@ extern struct retroRGB DefaultPalette[256];
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );
 extern void freeAllTextWindows(struct retroScreen *screen);
 
+extern void __erase_bobs_on_screen__(int screen_id);
+
 #define true_lowres 0x0
 #define true_hires 0x8000
 #define true_laced 0x4
@@ -186,6 +188,8 @@ bool kitten_screen_close(int screen_num )
 		freeScreenBobs( screen_num );
 		if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 
+		 __erase_bobs_on_screen__(screen_num);
+
 		// find a open screen, and set current screen to that.
 		if (screen_num == current_screen)
 		{
@@ -199,6 +203,7 @@ bool kitten_screen_close(int screen_num )
 				}
 			}
 		}
+
 		engine_unlock();
 		return true;
 	}
