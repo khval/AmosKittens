@@ -720,8 +720,6 @@ char *_ocJUp( struct glueCommands *data, int nextToken )
 	popStack( stack - data->stack );
 	setStackNum( ret );
 
-	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	return NULL;
 }
 
@@ -742,11 +740,10 @@ char *_ocJDown( struct glueCommands *data, int nextToken )
 		int j = getStackNum( stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_down) ? TRUE : FALSE;
 	}
-	else setError(22,data->tokenBuffer);;
+	else setError(22,data->tokenBuffer);
+
 	popStack( stack - data->stack );
 	setStackNum( ret );
-
-	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	return NULL;
 }
 
@@ -767,12 +764,10 @@ char *_ocJLeft( struct glueCommands *data, int nextToken )
 		int j = getStackNum( stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_left) ? TRUE : FALSE;
 	}
-	else setError(22,data->tokenBuffer);;
+	else setError(22,data->tokenBuffer);
+
 	popStack( stack - data->stack );
 	setStackNum( ret );
-
-	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	return NULL;
 }
 
@@ -793,11 +788,10 @@ char *_ocJRight( struct glueCommands *data, int nextToken )
 		int j = getStackNum( stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_right) ? TRUE : FALSE;
 	}
-	else setError(22,data->tokenBuffer);;
+	else setError(22,data->tokenBuffer);
+
 	popStack( stack - data->stack );
 	setStackNum( ret );
-	if (ret) 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	return NULL;
 }
 
