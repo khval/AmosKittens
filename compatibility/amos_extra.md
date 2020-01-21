@@ -89,7 +89,5 @@ exit quick, maybe work.
 
 **Xerxes'Revenge.AMOS**
 
-Game starts, it scrolls, 
-I can control the spaceship with gamepad.
-and looks ok, but should here not be enemy’s?
-
+BUG: no aliens, 
+most likely chanmv() and Chanan() commands not working correct.
