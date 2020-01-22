@@ -694,17 +694,6 @@ char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	NYI(__FUNCTION__);
-	return tokenBuffer;
-}
-
-char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	NYI(__FUNCTION__);
-	return tokenBuffer;
-}
 
 char *_ocJUp( struct glueCommands *data, int nextToken )
 {
@@ -802,26 +791,38 @@ char *ocJRight(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *_ocSynchro( struct glueCommands *data, int nextToken )
+
+char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int args = stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	synchro_on = true;
+	
+	getchar();
+	return tokenBuffer;
+}
 
-	NYI(__FUNCTION__);
+char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args == 1)
-	{
-	}
-	else setError(22,data->tokenBuffer);;
+//	Printf("%ld\n",synchro_on);
+	synchro_on = false;	
+//	Printf("%ld\n",synchro_on);
 
-	popStack( stack - data->stack );
-	return NULL;
+	return tokenBuffer;
 }
 
 char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _ocSynchro, tokenBuffer );
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (!synchro_on)
+	{
+		printf("runing amal from basic, not vbl\n");
+		run_amal_scripts();
+	}
+
+
 	return tokenBuffer;
 }
 

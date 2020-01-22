@@ -53,6 +53,9 @@ bool engine_key_repeat = false;
 bool engine_key_down = false;
 bool engine_mouse_hidden = false;
 
+
+bool synchro_on = true;
+
 uint32_t engine_update_flags = rs_bob_moved | rs_force_swap;
 
 extern bool curs_on;
@@ -711,6 +714,26 @@ void limit_mouse()
 	}
 }
 
+void run_amal_scripts()
+{
+	if (channels)
+	{
+		struct kittyChannel *item;
+		int i;
+
+		for (i=0;i<channels -> _size();i++)
+		{
+			if (item = channels -> item(i))
+			{
+				if (item->amal_script) channel_amal( item );
+				if (item->anim_script) channel_anim( item );
+				if (item->movex_script) channel_movex( item );
+				if (item->movey_script) channel_movey( item );
+			}
+		}
+	}
+}
+
 void main_engine()
 {
 	Printf("init engine\n");
@@ -807,7 +830,7 @@ void main_engine()
 					{
 						retroFadeScreen_beta(screen);
 
-						Printf("%08lx,%08lx\n",screen -> event_flags , engine_update_flags);
+						Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
 
 						if (screen -> event_flags & engine_update_flags)
 						{
@@ -827,24 +850,11 @@ void main_engine()
 
 				retroDrawVideo( video );
 
-#if 1
-				if (channels)
+				if (synchro_on == true) 
 				{
-					struct kittyChannel *item;
-					int i;
-
-					for (i=0;i<channels -> _size();i++)
-					{
-						if (item = channels -> item(i))
-						{
-							if (item->amal_script) channel_amal( item );
-							if (item->anim_script) channel_anim( item );
-							if (item->movex_script) channel_movex( item );
-							if (item->movey_script) channel_movey( item );
-						}
-					}
+					Printf("running amal from VBL %ld\n",synchro_on);
+					run_amal_scripts();
 				}
-#endif
 
 #if 1
 				if ((sprite)&&(video -> sprites))
