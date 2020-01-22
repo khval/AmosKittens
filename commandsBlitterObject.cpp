@@ -430,10 +430,10 @@ void freeScreenBobs(int screen_id)
 	for (n=bobs.size();n>0;)
 	{
 		n--;
-		printf("erase obj index %d\n", n);
-
 		if (bobs[n] -> screen_id == screen_id)
 		{
+			printf("erase obj index %d - id: %d\n", n, bobs[n] -> id);
+
 			__erase_bob__( bobs[n] );
 		}
 	}
