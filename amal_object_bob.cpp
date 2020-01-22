@@ -27,7 +27,9 @@ extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
 {
-	return 64;
+	unsigned int n=0;
+	for (n=0;n<bobs.size();n++) if (bobs[n]->id>n) n=bobs[n]-> id;
+	return (int) n;
 }
 
 extern struct retroSpriteObject *getBob(int id);
