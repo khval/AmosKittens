@@ -185,10 +185,10 @@ bool kitten_screen_close(int screen_num )
 	{
 		engine_lock();
 		freeAllTextWindows( screens[screen_num]  );
-		freeScreenBobs( screen_num );
-		if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 
-		 __erase_bobs_on_screen__(screen_num);
+		freeScreenBobs( screen_num );
+
+		if (screens[screen_num]) retroCloseScreen(&screens[screen_num]);
 
 		// find a open screen, and set current screen to that.
 		if (screen_num == current_screen)

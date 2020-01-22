@@ -177,37 +177,6 @@ void clearBobsOnScreen(struct retroScreen *screen)
 	}
 }
 
-void freeScreenBobs( int screen_id )
-{
-	unsigned int n;
-	struct retroSpriteObject *bob;
-
-	for (n=0;n<bobs.size();n++)
-	{
-		bob = bobs[n];
-
-		bob -> x = 0;
-		bob -> y = 0;
-		bob -> image = 0;
-
-		if (bob->screen_id == screen_id)
-		{
-			freeBobClear( bob );
-		}
-	}
-}
-
-void freeBobClear( struct retroSpriteObject *bob )
-{
-	struct retroSpriteClear *clear = bob -> clear;
-
-	if (clear -> mem)
-	{
-		sys_free(clear -> mem);
-		clear -> mem = NULL;
-	}	
-}
-
 void copyScreenToClear( struct retroScreen *screen, struct retroSpriteClear *clear )
 {
 	bool newX = false;
@@ -420,14 +389,27 @@ struct retroSpriteObject *__new_bob__(int id)
 }
 
 
+void freeBobClear( struct retroSpriteObject *bob )
+{
+	struct retroSpriteClear *clear = bob -> clear;
+
+	if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
+	bob->clear[0].mem = NULL;
+
+	if (bob->clear[1].mem) sys_free(bob->clear[1].mem);
+	bob->clear[1].mem = NULL;
+
+}
+
+
+
 void __erase_bob__(struct retroSpriteObject *bob)
 {
 	unsigned int n;
 
-	if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
-	bob->clear[0].mem = NULL;
-	if (bob->clear[1].mem) sys_free(bob->clear[1].mem);
-	bob->clear[1].mem = NULL;
+	printf( "%s:%d\n",__FUNCTION__,__LINE__);
+
+	freeBobClear( bob );
 
 	for (n=0;n<bobs.size();n++)
 	{
@@ -442,7 +424,7 @@ void __erase_bob__(struct retroSpriteObject *bob)
 }
 
 
-void __erase_bobs_on_screen__(int screen_id)
+void freeScreenBobs(int screen_id)
 {
 	unsigned int n;
 	for (n=bobs.size();n>0;)
