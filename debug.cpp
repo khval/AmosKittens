@@ -597,7 +597,29 @@ void dump_pal(struct retroScreen *s, int colors)
 	Printf("\n");
 }
 
-void dump_bobs(int screen_id)
+void dump_all_bobs()
+{
+	unsigned int n;
+
+	Printf_iso("dump_all_bobs\n");
+
+	for (n =0;n<bobs.size();n++)
+	{
+		if (bobs[n] -> image != -1)
+		{
+			Printf_iso("bob %ld, %4ld,%4ld,%4ld -> screen %ld\n",
+				bobs[n] -> id,
+				bobs[n] -> x,
+				bobs[n] -> y,
+				bobs[n] -> image,
+				bobs[n] -> screen_id );
+		}
+	}
+	Printf("\n");
+}
+
+
+void dump_bobs_on_screen(int screen_id)
 {
 	unsigned int n;
 
@@ -660,7 +682,7 @@ void dump_screens()
 				screens[n]->fade_speed);
 
 //				dump_pal( screens[n] , 8 );						
-				dump_bobs( n );
+				dump_bobs_on_screen( n );
 		}
 	}
 };

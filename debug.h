@@ -55,7 +55,8 @@ void dump_680x0_regs();
 void dump_screens();
 void dump_zones();
 void dump_sprite();
-void dump_bobs(int screen_id);
+void dump_all_bobs();
+void dump_bobs_on_screen(int screen_id);
 
 #ifdef __amigaos__
 extern struct Window *debug_Window;
