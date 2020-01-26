@@ -834,7 +834,7 @@ void main_engine()
 
 						if (screen -> event_flags & engine_update_flags)
 						{
-							dump_bobs(0);
+							dump_bobs_on_screen( n );
 							clearBobsOnScreen(screen);
 							drawBobsOnScreen(screen);
 
