@@ -513,7 +513,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	AmalPrintf("writing %08x to %010d  - ;  (hint next cmd)  \n",
+	AmalPrintf("writing %08x to %010d  - ;   \n",
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
@@ -532,7 +532,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 	call_array[0] = self -> call;
 	amal_cmd_equal = NULL;
 	channel -> let = false;
-	channel -> next_arg = true;
+	channel -> next_arg = false;
 	return 1;
 }
 
@@ -773,6 +773,8 @@ unsigned int stdAmalWriterWend (  struct kittyChannel *channel,struct amalTab *s
 		*((void **) &call_array[5]) = (void **) rel_location;
 		amalloops.pop_back();
 	}
+
+	channel -> next_arg = true;		// Next R0
 
 	return 6;
 }
