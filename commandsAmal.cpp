@@ -1074,7 +1074,7 @@ char *_amalChanmv( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						if ((item -> amalStatus == channel_status::active) && (item -> count < item -> count_to ))
+						if ((item -> amalStatus == channel_status::active) || (item -> moveStatus == channel_status::active))
 						{
 							engine_unlock();
 							setStackNum(~0);
