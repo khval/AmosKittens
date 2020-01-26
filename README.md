@@ -2,7 +2,7 @@
 
 About
 -----
-Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is the goal of this project.
+Amos Kittens tries to be 100% compatible AMOS interpreter, so you download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is the goal of this project. On the Amos command this project try’s stay 99% compatible, a few command wont work as this project use a bit more modern chunky image format instead of the planar graphic format.
 
 **AmigaOS4.x**
 This platform this thing primary developed on, however code is some times tested on other operating systems.
