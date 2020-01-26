@@ -61,3 +61,13 @@ void *amal_call_j1 API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
+{
+	char c;
+	Printf("bobColRange( bob: %ld, start: %ld, end: %ld )\n", bob, start, end );
+
+	printf("input return value (1 is true, 0 is false): \n")	;
+	c = getchar() ;
+
+	return c == '1'  ? ~0 : 0 ;
+}

@@ -1404,32 +1404,32 @@ int getMax ( void )
 	return 1;
 }
 
-int getImage (int object)
+int getImage (unsigned int object)
 {
 	return obj_image;
 }
 
-int getX (int object)
+int getX (unsigned int object)
 {
 	return obj_x;
 }
 
-int getY (int object)
+int getY (unsigned int object)
 {
 	return obj_y;
 }
 
-void setImage (int object,int image)
+void setImage (unsigned int object,int image)
 {
 	obj_image = image;
 }
 
-void setX (int object,int x)
+void setX (unsigned int object,int x)
 {
 	obj_x = x;
 }
 
-void setY (int object,int y)
+void setY (unsigned int object,int y)
 {
 	obj_y = y;
 }
