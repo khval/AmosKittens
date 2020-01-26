@@ -57,6 +57,7 @@ void dump_zones();
 void dump_sprite();
 void dump_all_bobs();
 void dump_bobs_on_screen(int screen_id);
+void dump_channels();
 
 #ifdef __amigaos__
 extern struct Window *debug_Window;

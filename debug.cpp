@@ -23,6 +23,8 @@ extern FILE *engine_fd;
 
 #include "amosKittens.h"
 #include "commands.h"
+#include "AmalCompiler.h"
+#include "channel.h"
 #include "debug.h"
 #include <vector>
 
@@ -31,6 +33,7 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern std::vector<struct kittyBank> kittyBankList;
 extern std::vector<struct wave *> waves;
+extern ChannelTableClass *channels;
 extern int global_var_count;
 
 extern struct retroScreen *screens[8] ;
@@ -660,6 +663,26 @@ void dump_zones()
 	}
 }
 
+void dump_channels()
+{
+	struct kittyChannel *item;
+
+	Printf("\nDump channels\n");
+
+	for ( int n  = 0 ; n < channels -> _size();n++ )
+	{
+		item = channels -> item(n);
+
+		if (item)
+		{	
+			Printf("id: %ld, amalStatus: %ld, animStatus: %ld\n",
+				item -> id,
+				item -> amalStatus,
+				item -> animStatus);
+		}
+	}
+	Delay(2);
+}
 
 void dump_screens()
 {
