@@ -513,7 +513,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	AmalPrintf("writing %08x to %010d  - ;\n",
+	AmalPrintf("writing %08x to %010d  - ;  (hint next cmd)  \n",
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
@@ -532,7 +532,7 @@ unsigned int stdAmalWriterNextCmd ( struct kittyChannel *channel, struct amalTab
 	call_array[0] = self -> call;
 	amal_cmd_equal = NULL;
 	channel -> let = false;
-	channel -> next_arg = false;
+	channel -> next_arg = true;
 	return 1;
 }
 
@@ -699,19 +699,18 @@ unsigned int amal_for_to ( struct kittyChannel *channel, struct amalTab *self,
 		char *current_location = (char *) (&call_array[1]);
 		char *start_location = (char *) channel -> amalProg.call_array;
 
-		call_array[0] = amal_call_next_cmd;
-
-		call_array[1] = amal_call_while;
-		call_array[2] = NULL;
 		amalloops.push_back( (void **) (current_location - start_location) );
 
 		AmalPrintf("start location:    %08x\n",(unsigned int) start_location);
 		AmalPrintf("current location: %08x\n",(unsigned int) current_location);
 
-		call_array[3] = amal_call_reg;
-		*((int *) &call_array[4]) = last_reg[nest];
+		call_array[0] = amal_call_next_cmd;			// ; while 
+		call_array[1] = amal_call_while;
+		call_array[2] = NULL;
+		call_array[3] = amal_call_reg;				// Reg
+		*((int *) &call_array[4]) = last_reg[nest];		// number
+		call_array[5] = amal_call_less_or_equal;		// <=
 
-		call_array[5] = amal_call_less_or_equal;
 		amal_to_writer = NULL;
 		nest++;
 		return 6;
@@ -723,6 +722,7 @@ unsigned int stdAmalWriterFor (  struct kittyChannel *channel, struct amalTab *s
 				unsigned int num)
 {
 	amal_to_writer = amal_for_to;
+	channel -> let = true;
 	return 0;
 }
 
@@ -749,11 +749,11 @@ unsigned int stdAmalWriterWend (  struct kittyChannel *channel,struct amalTab *s
 {
 	nest--;
 
-	call_array[0] = amal_call_inc;
+	call_array[0] = amal_call_inc;		// inc R0
 	call_array[1] = amal_call_reg;
 	*((int *) &call_array[2]) = last_reg[nest];
-	call_array[3] = amal_call_next_cmd;
-	call_array[4] = amal_call_wend;
+	call_array[3] = amal_call_next_cmd;	// ;
+	call_array[4] = amal_call_wend;		// wend
 
 	if (!amalloops.empty())
 	{
@@ -768,7 +768,7 @@ unsigned int stdAmalWriterWend (  struct kittyChannel *channel,struct amalTab *s
 		code = (void **)  (start_location + rel_location);
 		elements = (int) (current_location - ((char*) code)) / sizeof(void *);
 
-		code[1] = (void *) (current_location - start_location) ;
+		code[1] = (void *) (current_location - start_location) ;		// insert skip over address into while..
 
 		*((void **) &call_array[5]) = (void **) rel_location;
 		amalloops.pop_back();
@@ -865,7 +865,7 @@ struct amalTab amalCmds[] =
 	{"RZ",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RZ
 
 	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},			// For (should be null)
-	{"T",amal::class_cmd_arg,stdAmalWriterTo,amal_call_nextArg},		// To
+	{"T",amal::class_cmd_normal,stdAmalWriterTo,amal_call_nextArg},		// To
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},	// Next (should be null)
 	{"PL",amal::class_cmd_normal,stdAmalWriter,NULL},				// Play
 	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
@@ -1138,7 +1138,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 	s=&script -> ptr;
 	while (*s)
 	{
-//		Printf("LET = %s, next arg %s\n", channel -> let ? "TRUE" : "FALSE", channel -> next_arg ? "TRUE" : "FALSE");
+		AmalPrintf("LET = %s, next arg %s\n", channel -> let ? "TRUE" : "FALSE", channel -> next_arg ? "TRUE" : "FALSE");
 
 		if ((channel -> let)||(channel -> next_arg))	// this is most likely a arg or a calculation
 		{
