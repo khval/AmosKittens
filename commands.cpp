@@ -2249,6 +2249,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	unsigned short next_token = *((short *) tokenBuffer);
 	unsigned int ms_before;
 	unsigned int ms_after;
+	unsigned int timer_diff;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -2263,7 +2264,14 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	ms_before = (timer_before.tv_sec * 1000) + (timer_before.tv_usec/1000);
 	ms_after = (timer_after.tv_sec * 1000) + (timer_after.tv_usec/1000);
 
-	setStackNum( ((ms_after - ms_before) / 20) + timer_offset );		// 1/50 sec = every 20 ms
+	timer_diff = (ms_after - ms_before) / 33 ;
+
+	if (timer_diff) timer_before = timer_after ;
+
+	timer_offset += timer_diff;
+	
+
+	setStackNum( timer_offset );		// 1/50 sec = every 20 ms
 	kittyStack[stack].state = state_none;
 	flushCmdParaStack( next_token );
 
