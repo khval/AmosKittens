@@ -89,5 +89,4 @@ exit quick, maybe work.
 
 **Xerxes'Revenge.AMOS**
 
-BUG: no aliens, 
-most likely chanmv() and Chanan() commands not working correct.
+works until space ship crash with alien.
