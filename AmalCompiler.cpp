@@ -713,6 +713,8 @@ unsigned int amal_for_to ( struct kittyChannel *channel, struct amalTab *self,
 
 		amal_to_writer = NULL;
 		nest++;
+
+		channel -> next_arg = true;		// TO R0, TO <value>
 		return 6;
 }
 
