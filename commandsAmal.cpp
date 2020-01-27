@@ -544,7 +544,11 @@ void channel_anim( struct kittyChannel *self )
 		if (self->anim_loops>0)
 		{
 			self->anim_loops--;
-			if (self->anim_loops==0) self->anim_loops==-1;	// done.
+			if (self->anim_loops==0)
+			{
+				self->anim_loops==-1;	// done.
+				self->animStatus = channel_status::done;
+			}
 		}
 
 		if (self->anim_loops==-1)	// infinity.
@@ -1114,7 +1118,7 @@ char *_amalChanan( struct glueCommands *data, int nextToken )
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
 					{
-						if (item -> anim_script) 
+						if (item -> animStatus == channel_status::active ) 
 						{
 							engine_unlock();
 							setStackNum(~0);
