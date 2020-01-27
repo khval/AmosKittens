@@ -175,6 +175,33 @@ void print_bin(unsigned int v)
 	for (n=31;n>=0;n--) printf("%c", (v & (1L<<n)) ? '1' : '0' );
 }
 
+static int lot[]=
+	{
+		1<<0,		//0
+		1<<0,		//1
+		1<<0,		//2
+		1<<0,		//3
+		1<<0,		//4
+		1<<1,		//5	// fire2
+		1<<0,		//6	// fire1
+		1<<2,		//7
+		1<<3,		//8
+		1<<4,		//9
+		1<<5,		//10
+		1<<6,		//11
+		1<<7,		//12
+		1<<8,		//13
+		1<<9,		//14
+		1<<10,		//15
+		1<<11,		//16
+		1<<12,		//17
+		1<<13,		//18
+		1<<14,		//19
+		1<<15,		//20
+		1<<16,		//21
+		1<<17,		//22
+	};
+
 void joy_stick(int joy,void *controller)
 {
 	int j,n;
@@ -194,7 +221,11 @@ void joy_stick(int joy,void *controller)
 
 			case AINET_BUTTON:
 					{
-						unsigned int bit = 1 << (ain_mess -> Index - 4);
+						unsigned int bit = lot[ain_mess -> Index];
+
+
+//						Printf("value %ld index %ld\n",ain_mess -> Value, ain_mess -> Index);
+//						Delay(20);
 
 						if (ain_mess -> Value)
 						{
