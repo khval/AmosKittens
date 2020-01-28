@@ -782,6 +782,11 @@ void channel_movex( struct kittyChannel *self )
 			self -> move_sleep = 0;
 			self -> count++;
 			channel_do_object( self );
+
+			if (self -> count >= self -> move_count_to )
+			{
+				if (*self -> movex_at == 0) self -> moveStatus = channel_status::done;
+			}
 		}
 	}
 }
@@ -839,6 +844,11 @@ void channel_movey( struct kittyChannel *self )
 			self ->move_sleep = 0;
 			self -> count++;
 			channel_do_object( self );
+
+			if (self -> count >= self -> move_count_to )
+			{
+				if (*self -> movex_at == 0) self -> moveStatus = channel_status::done;
+			}
 		}
 	}
 }
@@ -1062,6 +1072,49 @@ char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNum(0);	// should return error pos in string.
 	return tokenBuffer;
 }
+
+//---
+
+char *_amalMovon( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	{
+					struct kittyChannel *item;
+					int channel = getStackNum( stack  );
+
+					engine_lock();				// most be thread safe!!!
+					if (item = channels -> getChannel(channel))
+					{
+						if (item -> moveStatus == channel_status::active)
+						{
+							engine_unlock();
+							setStackNum(~0);
+							return NULL;
+						}
+					}
+					engine_unlock();
+					setStackNum(0);
+					return NULL;
+				}
+				break;
+		defaut:
+				popStack( stack - data->stack );
+				setError(22,data->tokenBuffer);
+	}
+	return NULL;
+}
+
+char *amalMovon(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdParm( _amalMovon, tokenBuffer );
+	return tokenBuffer;
+}
+
+//---
 
 char *_amalChanmv( struct glueCommands *data, int nextToken )
 {

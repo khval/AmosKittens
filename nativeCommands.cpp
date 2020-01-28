@@ -555,6 +555,7 @@ struct nativeCommand nativeCommands[]=
 	{0x1F4A,"Anim Freeze",0,amalAnimFreeze },
 	{0x1F52,"Anim",0,amalAnim },
 	{0x1F60,"Anim",0,amalAnim },
+	{0x1F6C,"Movon",0,amalMovon },
 	{0x1F78,"chanan",0,amalChanan },
 	{0x1F86,"Chanmv",0,amalChanmv },
 	{0x1F94,"Channel",0,amalChannel },
