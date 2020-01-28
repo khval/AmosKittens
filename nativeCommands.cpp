@@ -569,6 +569,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2004,"AmalErr",0,amalAmalErr },
 	{0x2012,"Amal",0,amalAmal },		// Amal n,s$
 	{0x2020,"Amal",0,amalAmal },		// Amal n,s$ to n
+	{0x202C,"Amplay",0,amalAmplay },
 	{0x204A,"Synchro On",0,ocSynchroOn },
 	{0x205A,"Synchro Off",0,ocSynchroOff },
 	{0x206C,"Synchro",0,ocSynchro },

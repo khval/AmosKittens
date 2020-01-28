@@ -1143,6 +1143,66 @@ char *amalChanan(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_amalAmplay( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+
+		case 2:	{
+					struct kittyChannel *item;
+
+					engine_lock();				// most be thread safe!!!
+					for (int n=0;n < channels -> _size();n++)
+					{
+						if (item = channels -> item(n))		// find item at index.
+						{
+							if (stack_is_number(stack-1)) item -> reg[0]=getStackNum(stack-1);
+							if (stack_is_number(stack)) item -> reg[1]=getStackNum(stack);
+						}
+					}
+					engine_unlock();
+
+					popStack( stack - data->stack );
+					return NULL;
+				}
+				break;
+
+		case 4:	{
+					struct kittyChannel *item;
+					int _start = getStackNum( stack-1 );	// start channel id
+					int _end = getStackNum( stack );	// end channel id
+
+					engine_lock();				// most be thread safe!!!
+					for (int n=_start;n <= _end;n++)
+					{
+						if (item = channels -> getChannel(n))
+						{
+							if (stack_is_number(stack-3)) item -> reg[0]=getStackNum(stack-3);
+							if (stack_is_number(stack-2)) item -> reg[1]=getStackNum(stack-2);
+						}
+					}
+					engine_unlock();
+
+					popStack( stack - data->stack );
+					return NULL;
+				}
+				break;
+		defaut:
+				popStack( stack - data->stack );
+				setError(22,data->tokenBuffer);
+	}
+	return NULL;
+}
+
+char *amalAmplay(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _amalAmplay, tokenBuffer );
+	return tokenBuffer;
+}
+
 char *_amalAnimOff( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
