@@ -1073,7 +1073,6 @@ char *_amalChanmv( struct glueCommands *data, int nextToken )
 		case 1:	{
 					struct kittyChannel *item;
 					int channel = getStackNum( stack  );
-					bool moved = false;
 
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
@@ -1113,7 +1112,6 @@ char *_amalChanan( struct glueCommands *data, int nextToken )
 		case 1:	{
 					struct kittyChannel *item;
 					int channel = getStackNum( stack  );
-					bool moved = false;
 
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
@@ -1213,7 +1211,6 @@ char *_amalAnimOff( struct glueCommands *data, int nextToken )
 		case 1:	{
 					struct kittyChannel *item;
 					int channel = getStackNum( stack  );
-					bool moved = false;
 
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
@@ -1281,7 +1278,6 @@ char *_amalAnimOn( struct glueCommands *data, int nextToken )
 		case 1:	{
 					struct kittyChannel *item;
 					int channel = getStackNum( stack  );
-					bool moved = false;
 
 					engine_lock();				// most be thread safe!!!
 					if (item = channels -> getChannel(channel))
