@@ -177,7 +177,7 @@ see other docs like issue for more info.
 	"AmosKittens.exe path/file.amos" then Amos Kittens will try to look for includes in "path/"
 	if however a direct path is set in the include, then Amos kittens should use a direct path.
 
-**limit bob**
+**Limit bob**
 
 	Limit Bob 
 	
@@ -196,3 +196,14 @@ see other docs like issue for more info.
 	
 	set Limit on bob "N", bob should exist before using this command.
 	(On "Amos Kittens" it already does, on "Amos Pro" it does not)
+
+**Amalerr**
+
+	Just like Amalerr in Amos Basic.
+	
+	S$="F R0=0 T 20; P ; N R0; bad code"
+	trap Amal 0,S$
+	print mid$(s$,Amalerr)
+
+	More or less return error in the string, because Amos kittens strips all lower chars, 
+	before trying to execute the scripts, this one can return the wrong position.
