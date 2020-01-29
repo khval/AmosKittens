@@ -37,6 +37,8 @@ extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
 int amreg[26];
 
+extern int amal_error_pos;
+
 extern int last_var;
 extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
@@ -342,6 +344,7 @@ void channel_amal( struct kittyChannel *channel )
 char *_amalAmal( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
+	int _err=0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -362,7 +365,7 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 					{
 						remove_lower_case( nscript );
 						setChannelAmal( item, nscript  );
-						asc_to_amal_tokens( item );
+						_err = asc_to_amal_tokens( item );
 						amal_fix_labels( (void **) item -> amalProg.call_array );
 						amal_clean_up_labels( );
 					}
@@ -378,7 +381,7 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 						{
 							remove_lower_case( nscript );
 							setChannelAmal( item, nscript );
-							asc_to_amal_tokens( item );
+							_err = asc_to_amal_tokens( item );
 							amal_fix_labels( (void **) item -> amalProg.call_array );
 							amal_clean_up_labels( );
 						}
@@ -392,6 +395,8 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 	}
 
 	popStack( stack - data->stack );
+
+	if (_err) setError(_err,data->tokenBuffer);
 
 	return NULL;
 }
@@ -1069,7 +1074,7 @@ char *amalMoveOff(struct nativeCommand *cmd, char *tokenBuffer)
 char *amalAmalErr(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum(0);	// should return error pos in string.
+	setStackNum(amal_error_pos);	
 	return tokenBuffer;
 }
 

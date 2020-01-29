@@ -50,6 +50,7 @@ bool autotest = false;
 
 int nest = 0;
 char last_reg[1000] ;
+int amal_error_pos = 0;
 
 
 struct AmalLabelRef
@@ -1108,7 +1109,7 @@ void reAllocAmalBuf( struct amalBuf *i, int e )
 	i -> size = new_size;
 }
 
-bool asc_to_amal_tokens( struct kittyChannel  *channel )
+int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 {
 	const char *s;
 	struct amalTab *found;
@@ -1133,8 +1134,6 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 #else
 	allocAmalBuf( amalProg, 60 );
 #endif
-
-	printf("script: '%s'\n",&script -> ptr);
 
 	data.pos = 0;
 	autotest_start_ptr_offset = -1;
@@ -1234,21 +1233,24 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 			}
 			else
 			{
-				printf("code bad at: '%s'\n",s);
-				printf("*l was %c\n",*l);
+				AmalPrintf("code bad at: '%s'\n",s);
 
 				amalProg -> call_array[data.pos] = 0;
-				return false;
+				amal_error_pos = (ULONG) (s - &(channel -> amal_script -> ptr));
+				printf("%d\n",amal_error_pos);
+
+				return 107;
 			}
 		}
 		else
 		{
-			printf("***\n");
+			AmalPrintf("script: %s\n",&(channel -> amal_script -> ptr));
+			AmalPrintf("code bad at: '%s'\n",s);
 
-			printf("script: %s\n",channel -> amal_script);
-			printf("code bad at: '%s'\n",s);
 			amalProg -> call_array[data.pos] = 0;
-			return false;
+			amal_error_pos = (ULONG) (s - &(channel -> amal_script -> ptr));
+
+			return 107;
 		}
 
 		if (data.pos > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
@@ -1282,7 +1284,7 @@ bool asc_to_amal_tokens( struct kittyChannel  *channel )
 
 	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProg.amalProgCounter);
 
-	return true;
+	return 0;
 }
 
 void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_CALL_ARGS, bool save )

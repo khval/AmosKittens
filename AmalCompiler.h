@@ -73,7 +73,7 @@ struct amalDebugitem
 extern void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  ) ;
 extern void dumpAmalStack( struct kittyChannel *channel );
 extern void dumpAmalRegs(struct kittyChannel *channel);
-extern bool asc_to_amal_tokens( struct kittyChannel  *channel );
+extern int asc_to_amal_tokens( struct kittyChannel  *channel );
 extern void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_CALL_ARGS, bool save );
 extern bool amal_fix_labels( void **code );
 extern void amal_clean_up_labels();
