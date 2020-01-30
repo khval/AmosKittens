@@ -779,7 +779,8 @@ char *boGetBob(struct nativeCommand *cmd, char *tokenBuffer)
 char *_boPutBob( struct glueCommands *data, int nextToken )
 {
 	int args = stack - data->stack +1 ;
-	int n,image,flags;
+	int n,flags;
+	int image;
 	struct retroScreen *screen;
 	struct retroSpriteObject *bob;
 
@@ -789,8 +790,8 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 	{
 		case 1:	n = getStackNum( stack );
 				bob  = getBob( n );
-				flags = image & 0xC000;
-				image &= bob -> image & 0x3FFF;
+				flags = bob -> image & 0xC000;
+				image = bob -> image & 0x3FFF;
 
 				screen = screens[current_screen];
 
