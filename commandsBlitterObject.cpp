@@ -391,8 +391,6 @@ struct retroSpriteObject *__new_bob__(int id)
 
 void freeBobClear( struct retroSpriteObject *bob )
 {
-	struct retroSpriteClear *clear = bob -> clear;
-
 	if (bob->clear[0].mem) sys_free(bob->clear[0].mem);
 	bob->clear[0].mem = NULL;
 
@@ -1276,7 +1274,8 @@ int bobColAll( unsigned short bob )
 	struct retroSpriteObject *otherBob;
 	struct retroFrameHeader *frame;
 	int minX, maxX, minY, maxY;
-	int n,r;
+	unsigned int n;
+	int r;
 
 	thisBob = getBob(bob);
 
