@@ -1276,15 +1276,16 @@ char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern void clearBobs();
+
 char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	struct retroScreen *screen = screens[current_screen];
 
 	if (screen)
 	{
-		freeScreenBobs( current_screen );
-
 		engine_lock();
+		clearBobs();
 		retroAllocDoubleBuffer( screen );
 		video -> refreshAllScanlines = TRUE;
 		engine_unlock();
