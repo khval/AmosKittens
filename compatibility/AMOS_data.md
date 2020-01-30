@@ -5,7 +5,12 @@ some glitches here and there is expected.
 
 **Castle_Amos.AMOS**
 
-Work, (need to retest)
+The game is playable.
+
+Problems:
+
+* Menu system is too fast.
+* input has issues, spacing between chars is wrong.
 
 **Magic_Forest.AMOS**
 
