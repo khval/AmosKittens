@@ -8,6 +8,8 @@ Works
 
 **Wonderland/wonderland.Amos**
 
-Game starts, screen was opened in hires should be lowres.
+Game is playable
+
+Screen was opened in hires should be lowres.
 (some thing strange about the image)
 
