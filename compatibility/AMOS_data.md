@@ -1,11 +1,15 @@
 **Amosteroids.AMOS**
 
-Game start, but the atroids are not moving.
-some glitches here and there is expected.
+Game is not playable
+
+Problems:
+
+* the starship is not moving, and can't be controlled.
+* Something strange happened when asteroid collide with spaceship.
 
 **Castle_Amos.AMOS**
 
-The game is playable.
+Game is playable.
 
 Problems:
 
@@ -14,8 +18,9 @@ Problems:
 
 **Magic_Forest.AMOS**
 
-There are some problems with AMAL.
-the intro screen used to look ok, but some how got broken.
+Game is not playable
+
+There are some strange issues, problems with AMAL.
 
 **Number_Leap.AMOS**
 
