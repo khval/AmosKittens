@@ -455,6 +455,7 @@ unsigned int stdAmalWriterLet ( struct kittyChannel *channel, struct amalTab *se
 {
 	call_array[0] = amal_flush_prog;
 	channel -> let = true;
+	amal_cmd_equal = NULL;
 	return 1;
 }
 
