@@ -405,10 +405,7 @@ void __erase_bob__(struct retroSpriteObject *bob)
 {
 	unsigned int n;
 
-	printf( "%s:%d\n",__FUNCTION__,__LINE__);
-
 	freeBobClear( bob );
-
 	for (n=0;n<bobs.size();n++)
 	{
 		if (bobs[n] == bob)
@@ -430,8 +427,6 @@ void freeScreenBobs(int screen_id)
 		n--;
 		if (bobs[n] -> screen_id == screen_id)
 		{
-			printf("erase obj index %d - id: %d\n", n, bobs[n] -> id);
-
 			__erase_bob__( bobs[n] );
 		}
 	}
