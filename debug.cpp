@@ -667,6 +667,31 @@ void dump_zones()
 	}
 }
 
+void dump_anim()
+{
+	struct kittyChannel *item;
+
+	Printf("\nDump anim channels\n");
+
+	for ( int n  = 0 ; n < channels -> _size();n++ )
+	{
+		item = channels -> item(n);
+
+		if (item)
+		{	
+			Printf("id: %ld, anim_loops: %ld, anim_sleep %ld, anim_sleep_to: %ld, status %ld\n",
+				item -> id,
+				item -> anim_loops,
+				item -> anim_sleep,
+				item -> anim_sleep_to,
+				item -> animStatus);
+
+			Printf("anim: '%s'\n",&item -> anim_script -> ptr);
+		}
+	}
+}
+
+
 void dump_channels()
 {
 	struct kittyChannel *item;
