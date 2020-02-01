@@ -356,11 +356,15 @@ void dump_var( int n )
 					globalVars[n].varName,
 					globalVars[n].var.count);
 #ifdef show_array_yes
-				for (i=0; i<globalVars[n].var.count; i++)
-				{
-					strptr =(&(globalVars[n].var.str_array -> ptr))[i];
 
-					printf("[%d]=%s ,",i, strptr ? &(strptr -> ptr) : "<NULL>");
+				{
+					struct stringData *strptr;
+					for (i=0; i<globalVars[n].var.count; i++)
+					{
+						strptr =(&(globalVars[n].var.str_array -> ptr))[i];
+
+						printf("[%d]=%s ,",i, strptr ? &(strptr -> ptr) : "<NULL>");
+					}
 				}
 #else
 				printf("...");
