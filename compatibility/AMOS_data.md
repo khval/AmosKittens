@@ -23,9 +23,9 @@ Game is not playable, but you can change direction of your charature
 Problems:
 
 * Game starts fadeing when level is loaded, (can be avoid by hacking fade command)
-* When enemies change direction the animation stops, animations should be looping.
 * the player charature is moving up.
 * Sometimes there is crash in collation detection.
+* Some times game skips to the next level.
 
 **Number_Leap.AMOS**
 
