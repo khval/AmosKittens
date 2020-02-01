@@ -1,11 +1,11 @@
 **Amosteroids.AMOS**
 
-Game is not playable
+Game is almost playable
 
 Problems:
 
-* the starship is not moving, and can't be controlled.
-* Something strange happened when asteroid collide with spaceship.
+* When asteroid should break apart, things get strange.
+* There is graphic glitch when asteroid collide with spaceship.
 
 **Castle_Amos.AMOS**
 
