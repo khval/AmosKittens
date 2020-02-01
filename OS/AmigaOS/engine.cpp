@@ -830,11 +830,11 @@ void main_engine()
 					{
 						retroFadeScreen_beta(screen);
 
-						Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
+//						Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
 
 						if (screen -> event_flags & engine_update_flags)
 						{
-							dump_bobs_on_screen( n );
+							// dump_bobs_on_screen( n );
 							clearBobsOnScreen(screen);
 							drawBobsOnScreen(screen);
 
