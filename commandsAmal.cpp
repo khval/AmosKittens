@@ -554,11 +554,17 @@ void channel_anim( struct kittyChannel *self )
 				self->anim_loops==-1;	// done.
 				self->animStatus = channel_status::done;
 			}
+			else 
+			{
+				self->anim_at = &self -> anim_script -> ptr;
+				while (( *(self->anim_at) != 0 ) && ( *(self->anim_at) != '(' )) self->anim_at++;
+			}
 		}
 
 		if (self->anim_loops==-1)	// infinity.
 		{
 			self->anim_at = &self -> anim_script -> ptr;
+			while (( *(self->anim_at) != 0 ) && ( *(self->anim_at) != '(' )) self->anim_at++;
 		}
 	}
 
@@ -573,7 +579,11 @@ void channel_anim( struct kittyChannel *self )
 		for (c=self->anim_at;*c;c++)
 		{
 			if (*c=='L') c = &(self -> anim_script -> ptr);	//  when using normal anim command, "L" loops back to start.
-			if (*c=='(') para++;
+			if (*c=='(') 
+			{
+				self -> anim_sleep = 0;
+				para++;
+			}
 			if ((*c>='0')&&(*c<='9')) num = (num*10) + (*c-'0');
 			if (*c=='-') sign = -1;
 
@@ -585,6 +595,7 @@ void channel_anim( struct kittyChannel *self )
 						{
 							// 0 is normaly infinity loops, but -1 is better for infinity, 0 now becomes, no more loops.
 							self -> anim_loops = num==0 ? -1 :  num ;
+							num =0;
 						}
 						break;
 
