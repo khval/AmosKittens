@@ -18,9 +18,14 @@ Problems:
 
 **Magic_Forest.AMOS**
 
-Game is not playable
+Game is not playable, but you can change direction of your creature
 
-There are some strange issues, problems with AMAL.
+Problems:
+
+* Game starts fadeing when level is loaded, (can be avoid by hacking fade command)
+* When enemies change direction the animation stops, animations should be looping.
+* the player creature is moving up.
+* Sometimes there is crash in collation detection.
 
 **Number_Leap.AMOS**
 
