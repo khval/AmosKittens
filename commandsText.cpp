@@ -54,6 +54,8 @@ int _tab_size = 3;
 extern struct TextFont *topaz8_font;
 
 bool next_print_line_feed = false;
+
+
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
 struct retroTextWindow *redrawWindowsExceptID(struct retroScreen *screen,int exceptID);
@@ -193,7 +195,7 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 		if (textWindow)
 		{
 			clear_cursor(screen);
-			if (next_print_line_feed) textWindow -> locateY++;
+//			if (next_print_line_feed) textWindow -> locateY++;
 
 			switch (args)
 			{
@@ -218,7 +220,7 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	next_print_line_feed = false;
+//	next_print_line_feed = false;
 
 	popStack( stack - data->stack );
 	return NULL;
@@ -251,11 +253,11 @@ char *_textHome( struct glueCommands *data, int nextToken )
 				clear_cursor(screen);
 				textWindow -> locateX = 0;
 				textWindow -> locateY = 0;
-				next_print_line_feed = false;
+//				next_print_line_feed = false;
 				draw_cursor(screen);
 			}
 		}
-		next_print_line_feed = false;
+//		next_print_line_feed = false;
 		success = true;
 	}
 
@@ -441,8 +443,6 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 			clear_cursor(screen);
 
-			if (next_print_line_feed == true) __print_char_array( screen, "\n",0);
-
 			if ((txt)&&(textWindow))
 			{
 				textWindow -> locateX = (textWindow -> charsPerRow/2) - (strlen_no_esc( txt ) / 2);
@@ -465,8 +465,6 @@ char *_textCentre( struct glueCommands *data, int nextToken )
 
 	popStack( stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
-
-	next_print_line_feed = false;
 
 	return NULL;
 }
@@ -500,14 +498,13 @@ char *textPrint(nativeCommand *cmd, char *ptr)
 {
 	struct retroScreen *screen = screens[current_screen];
 	stackCmdNormal( _print, ptr );
+
 	do_breakdata = _print_break;
 
 	if (screen)
 	{
 		 clear_cursor(screen);
-		if (next_print_line_feed == true) __print_char_array(screen, "\n",0);
 	}
-	next_print_line_feed = true;
 
 	setStackNone();
 
@@ -547,9 +544,7 @@ char *textMemorizeX(struct nativeCommand *cmd, char *tokenBuffer)
 		if (textWindow)
 		{
 			clear_cursor(screen);
-			if (next_print_line_feed) textWindow -> locateY++;
 			memorizeX = textWindow -> locateX;
-			next_print_line_feed = false;
 			draw_cursor(screen);
 		}
 	}
@@ -570,9 +565,7 @@ char *textMemorizeY(struct nativeCommand *cmd, char *tokenBuffer)
 		if (textWindow)
 		{
 			clear_cursor(screen);
-			if (next_print_line_feed) textWindow -> locateY++;
 			memorizeY = textWindow -> locateY;
-			next_print_line_feed = false;
 			draw_cursor(screen);
 		}
 	}
@@ -593,9 +586,7 @@ char *textRememberX(struct nativeCommand *cmd, char *tokenBuffer)
 		if (textWindow)
 		{
 			clear_cursor(screen);
-			if (next_print_line_feed) textWindow -> locateY++;
 			textWindow -> locateX = memorizeX;
-			next_print_line_feed = false;
 			draw_cursor(screen);
 		}
 	}
@@ -615,9 +606,7 @@ char *textRememberY(struct nativeCommand *cmd, char *tokenBuffer)
 		if (textWindow)
 		{
 			clear_cursor(screen);
-			if (next_print_line_feed) textWindow -> locateY++;
 			textWindow -> locateY = memorizeY;
-			next_print_line_feed = false;
 			draw_cursor(screen);
 		}
 	}
@@ -995,7 +984,6 @@ char *_textCMove( struct glueCommands *data, int nextToken )
 
 				textWindow -> locateX = x;
 				textWindow -> locateY = y;
-				next_print_line_feed = false;
 				draw_cursor(screen);
 			}
 		}
@@ -2099,7 +2087,6 @@ char *_textWindMove( struct glueCommands *data, int nextToken )
 			clear_cursor(screens[current_screen]);
 			textWindow -> locateX = 0;
 			textWindow -> locateY = 0;
-			next_print_line_feed = false;
 			draw_cursor(screens[current_screen]);
 		}
 	}
@@ -2170,7 +2157,6 @@ char *_textWindSize( struct glueCommands *data, int nextToken )
 		clear_cursor(screens[current_screen]);
 		textWindow -> locateX = 0;
 		textWindow -> locateY = 0;
-		next_print_line_feed = false;
 		draw_cursor(screens[current_screen]);
 	}
 	else
