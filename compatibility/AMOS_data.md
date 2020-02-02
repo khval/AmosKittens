@@ -14,7 +14,7 @@ Game is playable.
 Problems:
 
 * Menu system is too fast.
-* input has issues, spacing between chars is wrong.
+* Some minor graphic glitches.
 
 **Magic_Forest.AMOS**
 
