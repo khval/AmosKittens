@@ -686,7 +686,7 @@ void dump_anim()
 				item -> anim_sleep_to,
 				item -> animStatus);
 
-			Printf("anim: '%s'\n",&item -> anim_script -> ptr);
+			if (item -> anim_script) Printf("anim: '%s'\n",&(item -> anim_script -> ptr));
 		}
 	}
 }
@@ -704,13 +704,15 @@ void dump_channels()
 
 		if (item)
 		{	
-			Printf("id: %ld, amalStatus: %ld, animStatus: %ld\n",
+			Printf("id: %ld, amal status: %ld amal script %s, anim status: %ld, anim script: %s\n",
 				item -> id,
 				item -> amalStatus,
-				item -> animStatus);
+				item -> amal_script ? "Yes" : "No",
+				item -> animStatus,
+				item -> anim_script ? "Yes" : "No"
+				);
 		}
 	}
-	Delay(2);
 }
 
 void dump_screens()
