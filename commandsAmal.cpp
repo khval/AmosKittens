@@ -528,7 +528,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 
 char *amalAmalOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _amalAmalOff, tokenBuffer );
+	stackCmdNormal( _amalAmalOff, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
 }
