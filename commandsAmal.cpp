@@ -441,7 +441,6 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus = channel_status::active;
-
 					}
 					engine_unlock();
 					return NULL;
@@ -460,7 +459,7 @@ char *_amalAmalOn( struct glueCommands *data, int nextToken )
 
 char *amalAmalOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdParm( _amalAmalOn, tokenBuffer );
+	stackCmdNormal( _amalAmalOn, tokenBuffer );
 	setStackNone();
 	return tokenBuffer;
 }
