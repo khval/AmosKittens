@@ -305,7 +305,7 @@ void drawBob(struct retroSpriteObject *bob)
 	}
 }
 
-void drawBobs()
+void drawBobsExcept( struct retroSpriteObject *exceptBob )
 {
 	int n;
 	int start=0,end=0,dir=0;
@@ -323,10 +323,13 @@ void drawBobs()
 			break;
 	}
 
-	for (n=start;n!=end;n+=dir) drawBob(bobs[n]);
+	for (n=start;n!=end;n+=dir)
+	{
+		if (bobs[n] != exceptBob)  drawBob(bobs[n]);
+	}
 }
 
-void drawBobsOnScreen(struct retroScreen *screen)
+void drawBobsOnScreenExceptBob( struct retroScreen *screen, struct retroSpriteObject *exceptBob )
 {
 	int n;
 	struct retroSpriteObject *bob;
@@ -352,7 +355,7 @@ void drawBobsOnScreen(struct retroScreen *screen)
 
 		if (screens[bob->screen_id] == screen)
 		{
-			drawBob(bob);
+			if (bob != exceptBob) drawBob(bob);
 		}
 	}
 }
@@ -1456,16 +1459,18 @@ char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer)
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();	
-	drawBobs();
+	drawBobsExcept(NULL);
 	engine_unlock();
 
 	return tokenBuffer;
 }
 
+void swap_buffer(struct retroScreen *screen );
 
 void __remove_bob__(struct retroSpriteObject *bob)
 {
 	struct kittyChannel *item;
+	struct retroScreen *screen;
 
 	engine_lock();
 
@@ -1476,10 +1481,20 @@ void __remove_bob__(struct retroSpriteObject *bob)
 		item -> number = 0;
 	}
 
-	clearBob(bob);
-	__erase_bob__( bob );
+	if (screen = screens[ bob -> screen_id ])
+	{
+		clearBobsOnScreen( screen );
+		drawBobsOnScreenExceptBob( screen, bob );
+		swap_buffer( screen );
+		clearBobsOnScreen( screen );
+		__erase_bob__( bob );
+		drawBobsOnScreenExceptBob( screen, NULL );
+
+	}
+
 	engine_unlock();
 }
+
 
 
 char *_boBobOff( struct glueCommands *data, int nextToken )

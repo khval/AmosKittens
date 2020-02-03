@@ -83,10 +83,8 @@ int bobUpdateEvery = 1;
 int bobUpdateNextWait = 0;
 int cursor_color = 3;
 
-void clearBobs();
 void clearBobsOnScreen(retroScreen *screen);
-void drawBobs();
-void drawBobsOnScreen(retroScreen *screen);
+void drawBobsOnScreenExceptBob( struct retroScreen *screen, struct retroSpriteObject *exceptBob );
 
 struct Gadeget *IcoGad = NULL;
 struct Image * IcoImg = NULL;
@@ -681,13 +679,6 @@ void handel_iconify()
 
 void swap_buffer(struct retroScreen *screen )
 {
-/*
-	memcpy( 
-		screen -> Memory[1 - screen -> double_buffer_draw_frame], 
-		screen -> Memory[screen -> double_buffer_draw_frame],
-		screen -> bytesPerRow * screen -> realHeight );
-*/
-
 	screen -> double_buffer_draw_frame = 1 - screen -> double_buffer_draw_frame ;
 }
 
@@ -831,12 +822,14 @@ void main_engine()
 						retroFadeScreen_beta(screen);
 
 //						Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
+//						dump_channels();
+//						dump_anim();
 
 						if (screen -> event_flags & engine_update_flags)
 						{
 							// dump_bobs_on_screen( n );
 							clearBobsOnScreen(screen);
-							drawBobsOnScreen(screen);
+							drawBobsOnScreenExceptBob(screen,NULL);
 
 							if (screen -> Memory[1]) 	// has double buffer
 							{
