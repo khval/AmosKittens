@@ -1268,8 +1268,12 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 
 		// check if bob is inside.
 		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
-		if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
-		if (r) return r;
+	
+		if (r)
+		{
+			if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
+			return r;
+		}
 	}
 
 	return 0;
