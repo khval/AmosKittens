@@ -1,11 +1,6 @@
 **Amosteroids.AMOS**
 
-Game is almost playable
-
-Problems:
-
-* When asteroid should break apart, things get strange.
-* There is graphic glitch when asteroid collide with spaceship.
+Game is playable.
 
 **Castle_Amos.AMOS**
 
