@@ -59,6 +59,7 @@ void dump_all_bobs();
 void dump_bobs_on_screen(int screen_id);
 void dump_channels();
 void dump_anim();
+bool var_has_name( struct kittyData *var, const char *name );
 
 #ifdef __amigaos__
 extern struct Window *debug_Window;

@@ -483,6 +483,26 @@ void dump_stack()
 	}
 }
 
+bool var_has_name( struct kittyData *var, const char *name )
+{
+	int n;
+
+	for (n=0;n<global_var_count;n++)
+	{
+		if (var == &globalVars[n].var)
+		{
+			if (globalVars[n].varName)
+			{
+				if (strcasecmp( globalVars[n].varName, name ) == 0)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void dump_banks()
 {
 	unsigned int n = 0;
