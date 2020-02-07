@@ -149,12 +149,14 @@ void *amal_call_j1 API_AMAL_CALL_ARGS
 void *amal_call_screen_x API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
 }
 
 void *amal_call_screen_y API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
 }
 
@@ -822,19 +824,21 @@ void *amal_call_bobCol API_AMAL_CALL_ARGS
 
 void *amal_call_spriteCol API_AMAL_CALL_ARGS
 {
-		AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	return NULL;
 }
 
 void *amal_call_col API_AMAL_CALL_ARGS
 {
-		AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
 }
 
 void *amal_call_vumeter API_AMAL_CALL_ARGS
 {
-		AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
 }
 
