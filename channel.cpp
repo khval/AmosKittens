@@ -19,6 +19,7 @@
 
 extern void *set_reg (struct kittyChannel *self, struct amalCallBack *cb);
 
+
 void initChannel( struct kittyChannel *item, int channel )
 {
 		item -> id = channel;
@@ -55,8 +56,8 @@ void initChannel( struct kittyChannel *item, int channel )
 		item -> anim_sleep = 0;
 		item -> anim_sleep_to = 0;
 
-		item ->  move_sleep = 0;
-		item ->  move_sleep_to = 0;
+		item -> move_sleep = 0;
+		item -> move_sleep_to = 0;
 		item -> move_count = 0; 
 		item -> move_count_to = 0; 
 
@@ -155,6 +156,12 @@ void setChannelAmal( struct kittyChannel *item, struct stringData *str)
 	if (item -> amal_script) free(item -> amal_script);
 	item -> amal_script = str;
 	item -> amal_at = &str->ptr;
+
+	// reset for AMAL move command.
+	item -> move_sleep = 0;
+	item -> move_sleep_to = 0;
+	item -> move_count = 0; 
+	item -> move_count_to = 0; 
 }
 
 void setChannelMoveX( struct kittyChannel *item, struct stringData *str)
