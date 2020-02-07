@@ -280,12 +280,36 @@ char *_repeat( struct glueCommands *data, int nextToken )
 	return 0;
 }
 
+char *set_tokenBuffer;
+
+const char *traced_vars[]={"JUMP","FALL","Y","DEAD",NULL};
+
+void trace_vars( struct kittyData *var ,const char **array )
+{
+	const char **item;
+
+	for (item = array ; *item ; item++)
+	{
+		if (var_has_name(var,*item))
+		{
+			getLineFromPointer( set_tokenBuffer );
+			printf("line %d,  %s=%d\n",lineFromPtr.line, *item, var -> integer.value);
+			getchar();
+			return;
+		}
+	}
+}
+
+
 BOOL setVarInt( struct kittyData *var )
 {
 	switch (kittyStack[stack].type)
 	{
 		case type_int:
 			var->integer.value = kittyStack[stack].integer.value;
+
+//			trace_vars( var , traced_vars );
+
 			return TRUE;
 
 		case type_float:
@@ -425,6 +449,8 @@ char *_setVar( struct glueCommands *data, int nextToken )
 	var = &globalVars[data -> lastVar-1].var;
 
 	success = FALSE;
+
+	set_tokenBuffer = data -> tokenBuffer;
 
 	switch (var->type)
 	{
