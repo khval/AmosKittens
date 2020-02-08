@@ -13,14 +13,11 @@ Problems:
 
 **Magic_Forest.AMOS**
 
-Game is not playable, but you can change direction of your charature
+Game is not playable.
 
 Problems:
 
-* Game starts fadeing when level is loaded, (can be avoid by hacking fade command)
-* the player charature is moving up.
-* Sometimes there is crash in collation detection.
-* Some times game skips to the next level.
+* Picking the flute and game lucks up.
 
 **Number_Leap.AMOS**
 
