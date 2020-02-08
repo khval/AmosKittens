@@ -56,6 +56,8 @@ char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 	{
 		if ((sprite)&&(screen))
 		{
+			screen -> fade_speed = 0;
+
 			switch (kittyStack[stack].type)
 			{
 				case type_none:
