@@ -1093,7 +1093,7 @@ char *_divData( struct glueCommands *data, int nextToken )
 
 	if (type0 == type_float) 
 	{
-		double d;
+		double d = 0.0f;
 		if (type1 == type_int)
 		{
 			d = (double) item1->integer.value ;

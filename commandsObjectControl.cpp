@@ -791,37 +791,28 @@ char *ocJRight(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
 char *ocSynchroOn(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	synchro_on = true;
-	
-	getchar();
 	return tokenBuffer;
 }
 
 char *ocSynchroOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-//	Printf("%ld\n",synchro_on);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	synchro_on = false;	
-//	Printf("%ld\n",synchro_on);
-
 	return tokenBuffer;
 }
 
 char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (!synchro_on)
 	{
-		printf("runing amal from basic, not vbl\n");
 		run_amal_scripts();
 	}
-
 
 	return tokenBuffer;
 }

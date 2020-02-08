@@ -402,7 +402,6 @@ struct fileContext *newFile( char *name )
 
 		if (files.size()>0)	// grab the bank from the first file.
 		{
-			char *c;
 			newFile -> bank = files[0] -> bank;
 			newFile -> bankSize = files[0] -> bankSize;
 			files[0] -> bank = NULL;

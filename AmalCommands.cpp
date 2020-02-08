@@ -325,8 +325,6 @@ void *cb_move  (struct kittyChannel *self, struct amalCallBack *cb)
 			self -> move_count = 0;
 			self -> move_count_to = self -> argStack [self -> argStackCount ];
 
-			Printf("after read: self -> move_count = %ld, self -> move_count_to = %ld\n",self -> move_count , self -> move_count_to);
-
 			// reset stack
 			self -> argStackCount = cb -> argStackCount;
 			return cb -> code - 1;
