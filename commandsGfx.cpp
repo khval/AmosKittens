@@ -1704,14 +1704,12 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 		if ((screens[current_screen])&&(screens[source_screen]))
 		{
 			int n;
-			struct retroRGB *org_pal;
 			struct retroRGB *source_pal;
 			struct retroRGB *dest_pal;
 
 			screens[current_screen] -> fade_count = 0;
 			screens[current_screen] -> fade_speed = 0;
 
-			org_pal = screens[current_screen] -> orgPalette;
 			source_pal = screens[source_screen] -> orgPalette;
 			dest_pal = screens[current_screen] -> fadePalette;
 
