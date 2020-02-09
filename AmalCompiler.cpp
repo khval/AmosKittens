@@ -1545,10 +1545,14 @@ int main(int args, char **arg)
 
 		if (channel.amal_script)
 		{
+			int err;
+
 			remove_lower_case(channel.amal_script);
 			printf("amal script: '%s'\n",&(channel.amal_script -> ptr));
 
-			if (asc_to_amal_tokens( &channel ))
+			err = asc_to_amal_tokens( &channel );
+
+			if (err == 0)
 			{
 //				dump_object();
 //				dump_amal_labels();
@@ -1557,6 +1561,10 @@ int main(int args, char **arg)
 				{
 					test_run( &channel );
 				}
+			}
+			else
+			{
+				printf("basic error: %d\n",err);
 			}
 
 			free(channel.amal_script);
