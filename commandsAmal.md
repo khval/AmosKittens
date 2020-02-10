@@ -5,7 +5,7 @@ A small document describing how some commands works different under Amos Kittens
 
   Return mouse button 2, if pressed its true, if not pressed its false.
   in Amos Kittens it works as documneted.
-  this command is buggy in AMOSPRO, its inverted.
+  (this command is buggy in AMOSPRO, its inverted, this way this command is listed)
   
 **SX**
 
