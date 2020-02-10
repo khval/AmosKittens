@@ -11,12 +11,12 @@ A small document describing how some commands works different under Amos Kittens
 
   New commmand only in Amos Kittens, not found in Amos Pro.
   Return Screen Width that the bob is on, there is command in the Amos Pro interface lanuage with same name,
-  (it returns the width of the current context)
-  not to be do not confuse this with the XS command.
+  (it returns the width of the current context).
+  Do not confuse this with the XS command.
   
 **SY**
 
   New commmand only in Amos Kittens, not found in Amos Pro.
   Return Screen Height that the bob is on, there is command in the Amos Pro interface lanuage with same name,
-  (it returns the height of the current context)
-  not to be do not confuse this with the YS command.
+  (it returns the height of the current context).
+  Do not confuse this with the YS command.
