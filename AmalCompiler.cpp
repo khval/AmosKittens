@@ -939,8 +939,8 @@ struct amalTab amalCmds[] =
 	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
 	{"XM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_xm},			// XM
 	{"YM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_ym},			// YM
-	{"K1",amal::class_cmd_arg,stdAmalWriter,NULL},					// k1		mouse key 1
-	{"K2",amal::class_cmd_arg,stdAmalWriter,NULL},					// k2		mouse key 2
+	{"K1",amal::class_cmd_arg,stdAmalWriter,amal_call_k1},				// k1		mouse key 1
+	{"K2",amal::class_cmd_arg,stdAmalWriter,amal_call_k2},				// k2		mouse key 2
 	{"J0",amal::class_cmd_arg,stdAmalWriter,amal_call_j0},			// j0		joy0
 	{"J1",amal::class_cmd_arg,stdAmalWriter,amal_call_j1},			// J1		Joy1
 	{"J",amal::class_cmd_normal,stdAmalWriterJump,amal_call_jump},	// Jump

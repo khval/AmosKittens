@@ -48,6 +48,7 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 #else
 	extern int engine_mouse_x;
 	extern int engine_mouse_y;
+	extern int engine_mouse_key;
 	#define amal_mouse_x engine_mouse_x
 	#define amal_mouse_y engine_mouse_y
 #endif
@@ -146,14 +147,14 @@ void *amal_call_j1 API_AMAL_CALL_ARGS
 }
 #endif
 
-void *amal_call_screen_x API_AMAL_CALL_ARGS
+void *amal_call_screen_width API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
 }
 
-void *amal_call_screen_y API_AMAL_CALL_ARGS
+void *amal_call_screen_height API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
@@ -678,21 +679,21 @@ void *amal_call_ym API_AMAL_CALL_ARGS
 void *amal_call_k1 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	self -> argStack [ self -> argStackCount  ] = engine_mouse_key & 1 ? ~0 : 0;
 	return NULL;
 }
 
 void *amal_call_k2 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	self -> argStack [ self -> argStackCount  ] = engine_mouse_key & 2 ? ~0 : 0;
 	return NULL;
 }
 
 void *cb_z  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-
 	self -> argStack [ self -> argStackCount ] = rand() % (self -> argStack [ self -> argStackCount ]+1);
-
 	return NULL;
 }
 
@@ -762,7 +763,7 @@ void *amal_call_yh API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-void *cb_sx  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_xscreen  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	struct retroScreen *screen;
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
@@ -784,14 +785,14 @@ void *cb_sx  (struct kittyChannel *self, struct amalCallBack *cb)
 	return NULL;
 }
 
-void *amal_call_sx API_AMAL_CALL_ARGS
+void *amal_call_xscreen API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> pushBackFunction = cb_sx;
+	self -> pushBackFunction = cb_xscreen;
 	return NULL;
 }
 
-void *cb_sy  (struct kittyChannel *self, struct amalCallBack *cb)
+void *cb_yscreen  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	struct retroScreen *screen;
 	int args = self -> argStackCount - cb -> argStackCount + 1 ;
@@ -813,10 +814,10 @@ void *cb_sy  (struct kittyChannel *self, struct amalCallBack *cb)
 	return NULL;
 }
 
-void *amal_call_sy API_AMAL_CALL_ARGS
+void *amal_call_yscreen API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	self -> pushBackFunction = cb_sy;
+	self -> pushBackFunction = cb_yscreen;
 	return NULL;
 }
 
