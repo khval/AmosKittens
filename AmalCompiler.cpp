@@ -932,34 +932,36 @@ struct amalTab amalCmds[] =
 	{"RY",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RY
 	{"RZ",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// RZ
 
-	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},			// For (should be null)
+	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},				// For (should be null)
 	{"T",amal::class_cmd_normal,stdAmalWriterTo,amal_call_nextArg},		// To
-	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},	// Next (should be null)
+	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},		// Next (should be null)
 	{"PL",amal::class_cmd_normal,stdAmalWriter,NULL},				// Play
 	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
 	{"XM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_xm},			// XM
 	{"YM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_ym},			// YM
 	{"K1",amal::class_cmd_arg,stdAmalWriter,amal_call_k1},				// k1		mouse key 1
 	{"K2",amal::class_cmd_arg,stdAmalWriter,amal_call_k2},				// k2		mouse key 2
-	{"J0",amal::class_cmd_arg,stdAmalWriter,amal_call_j0},			// j0		joy0
-	{"J1",amal::class_cmd_arg,stdAmalWriter,amal_call_j1},			// J1		Joy1
-	{"J",amal::class_cmd_normal,stdAmalWriterJump,amal_call_jump},	// Jump
+	{"J0",amal::class_cmd_arg,stdAmalWriter,amal_call_j0},				// j0		joy0
+	{"J1",amal::class_cmd_arg,stdAmalWriter,amal_call_j1},				// J1		Joy1
+	{"J",amal::class_cmd_normal,stdAmalWriterJump,amal_call_jump},		// Jump
 	{"Z",amal::class_cmd_arg,stdAmalWriter,amal_call_z},				// Z(n)	random number
-	{"XH",amal::class_cmd_arg,stdAmalWriter,amal_call_xh},			// x hardware
-	{"YH",amal::class_cmd_arg,stdAmalWriter,amal_call_yh},			// y hardware
+	{"XH",amal::class_cmd_arg,stdAmalWriter,amal_call_xh},				// x hardware
+	{"YH",amal::class_cmd_arg,stdAmalWriter,amal_call_yh},				// y hardware
 	{"XS",amal::class_cmd_arg,stdAmalWriter,amal_call_xscreen},			// x screen
 	{"YS",amal::class_cmd_arg,stdAmalWriter,amal_call_yscreen},			// y screen
-	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},		// Bob Col(n,s,e)	// only with Synchro
-	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
-	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
+	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},			// Bob Col(n,s,e)	// only with Synchro
+	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},			// Sprite Col(m,s,e)	// only with Synchro
+
 	{"SX",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_width},		// screen width	(same as interface command)
 	{"SY",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_height},		// screen height (same as interface command)
 
 	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
 	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
+	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},					// X
+	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},				// X
 
-	{"Y",amal::class_cmd_arg,stdAmalWriter,amal_call_y},			// Y
-	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},			// Y
+	{"Y",amal::class_cmd_arg,stdAmalWriter,amal_call_y},				// Y
+	{"Y",amal::class_cmd_normal,stdAmalWriter,amal_call_y},				// Y
 
 	{"@while",amal::class_cmd_normal,stdAmalWriter,amal_call_while },
 	{"@set",amal::class_cmd_arg,stdAmalWriter,amal_call_set },
