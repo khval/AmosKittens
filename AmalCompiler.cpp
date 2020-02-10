@@ -935,8 +935,8 @@ struct amalTab amalCmds[] =
 	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},				// For (should be null)
 	{"T",amal::class_cmd_normal,stdAmalWriterTo,amal_call_nextArg},		// To
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},		// Next (should be null)
-	{"PL",amal::class_cmd_normal,stdAmalWriter,NULL},				// Play
-	{"E",amal::class_cmd_normal,stdAmalWriter,NULL},				// End
+	{"PL",amal::class_cmd_normal,stdAmalWriter,amal_call_play},			// Play
+	{"E",amal::class_cmd_normal,stdAmalWriter,amal_call_end},			// End
 	{"XM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_xm},			// XM
 	{"YM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_ym},			// YM
 	{"K1",amal::class_cmd_arg,stdAmalWriter,amal_call_k1},				// k1		mouse key 1
@@ -955,8 +955,9 @@ struct amalTab amalCmds[] =
 	{"SX",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_width},		// screen width	(same as interface command)
 	{"SY",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_height},		// screen height (same as interface command)
 
-	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
-	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
+	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},				// Col
+	{"V",amal::class_cmd_normal,stdAmalWriter,amal_call_vumeter},		// Vumeter
+
 	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},					// X
 	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},				// X
 
