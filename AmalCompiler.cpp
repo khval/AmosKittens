@@ -952,7 +952,7 @@ struct amalTab amalCmds[] =
 	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},		// Bob Col(n,s,e)	// only with Synchro
 	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
 	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
-	{"V",amal::class_cmd_normal,stdAmalWriter,NULL},				// Vumeter
+	{"V",amal::class_cmd_normal,stdAmalWriter,amal_call_vumeter},				// Vumeter
 
 	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
 	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X

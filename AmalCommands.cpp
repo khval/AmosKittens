@@ -860,14 +860,21 @@ void *amal_call_spriteCol API_AMAL_CALL_ARGS
 void *amal_call_col API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
 	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 	return NULL;
+}
+
+
+void *cb_vumeter  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 }
 
 void *amal_call_vumeter API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
+	self -> pushBackFunction = cb_vumeter;
 	return NULL;
 }
 
