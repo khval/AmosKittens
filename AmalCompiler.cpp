@@ -947,12 +947,13 @@ struct amalTab amalCmds[] =
 	{"Z",amal::class_cmd_arg,stdAmalWriter,amal_call_z},				// Z(n)	random number
 	{"XH",amal::class_cmd_arg,stdAmalWriter,amal_call_xh},			// x hardware
 	{"YH",amal::class_cmd_arg,stdAmalWriter,amal_call_yh},			// y hardware
-	{"XS",amal::class_cmd_arg,stdAmalWriter,amal_call_sx},			// screen x
-	{"YS",amal::class_cmd_arg,stdAmalWriter,amal_call_sy},			// screen y
+	{"XS",amal::class_cmd_arg,stdAmalWriter,amal_call_xscreen},			// x screen
+	{"YS",amal::class_cmd_arg,stdAmalWriter,amal_call_yscreen},			// y screen
 	{"BC",amal::class_cmd_arg,stdAmalWriter,amal_call_bobCol},		// Bob Col(n,s,e)	// only with Synchro
 	{"SC",amal::class_cmd_arg,stdAmalWriter,amal_call_spriteCol},		// Sprite Col(m,s,e)	// only with Synchro
 	{"C",amal::class_cmd_arg,stdAmalWriter,amal_call_col},			// Col
-	{"V",amal::class_cmd_normal,stdAmalWriter,amal_call_vumeter},				// Vumeter
+	{"SX",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_width},		// screen width	(same as interface command)
+	{"SY",amal::class_cmd_arg,stdAmalWriter,amal_call_screen_height},		// screen height (same as interface command)
 
 	{"X",amal::class_cmd_arg,stdAmalWriterX,NULL},		// X
 	{"X",amal::class_cmd_normal,stdAmalWriterExit,NULL},		// X
