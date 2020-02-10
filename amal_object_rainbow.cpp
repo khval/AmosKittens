@@ -59,6 +59,11 @@ static void setY (unsigned int object,int y)
 	video -> rainbow[object].verticalOffset = y-50;
 }
 
+static struct retroScreen *getScreen(unsigned int object)
+{
+	return NULL;
+}
+
 struct channelAPI rainbow_api = 
 {
 	getMax,
@@ -67,6 +72,7 @@ struct channelAPI rainbow_api =
 	getY,
 	setImage,
 	setX,
-	setY
+	setY,
+	getScreen
 };
 

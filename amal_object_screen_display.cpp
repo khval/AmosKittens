@@ -75,6 +75,11 @@ static void setY (unsigned int object,int y)
 	video -> refreshAllScanlines = TRUE;
 }
 
+static struct retroScreen *getScreen(unsigned int object)
+{
+	return NULL;
+}
+
 struct channelAPI screen_display_api = 
 {
 	getMax,
@@ -83,6 +88,7 @@ struct channelAPI screen_display_api =
 	getY,
 	setImage,
 	setX,
-	setY
+	setY,
+	getScreen
 };
 

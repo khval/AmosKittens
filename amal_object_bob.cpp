@@ -78,6 +78,17 @@ static void setY (unsigned int object,int y)
 	}
 }
 
+static struct retroScreen *getScreen(unsigned int object)
+{
+	struct retroSpriteObject *bob;
+
+	if (bob = getBob( object ))
+	{
+		return screens[ bob -> screen_id ];
+	}
+	return NULL;
+}
+
 struct channelAPI bob_api = 
 {
 	getMax,
@@ -86,6 +97,7 @@ struct channelAPI bob_api =
 	getBobY,
 	setImage,
 	setX,
-	setY
+	setY,
+	getScreen
 };
 

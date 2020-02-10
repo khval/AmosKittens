@@ -40,6 +40,7 @@ struct channelAPI
 	void (*setImage) (unsigned int object,int);
 	void (*setX) (unsigned int object,int);
 	void (*setY) (unsigned int object,int);
+	struct retroScreen *(*getScreen)( unsigned int object );
 };
 
 struct kittyChannel

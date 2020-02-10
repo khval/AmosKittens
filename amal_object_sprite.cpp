@@ -87,7 +87,10 @@ int from_YSprite_formula(int y)
 	return (y/2) + hardware_upper_top ;
 }
 
-//----
+static struct retroScreen *getScreen(unsigned int object)
+{
+	return NULL;
+}
 
 struct channelAPI sprite_api = 
 {
@@ -97,6 +100,7 @@ struct channelAPI sprite_api =
 	getY,
 	setImage,
 	setX,
-	setY
+	setY,
+	getScreen
 };
 
