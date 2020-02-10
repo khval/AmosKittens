@@ -315,6 +315,7 @@ void channel_amal( struct kittyChannel *channel )
 
 	if (channel -> amalProg.amalAutotest != NULL)
 	{
+		channel -> autotest_loopCount = 0;		// unstuck counter.
 		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
 	}
 

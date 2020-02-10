@@ -256,6 +256,37 @@ void *amal_call_if API_AMAL_CALL_ARGS
 	return code+1;
 }
 
+void *amal_call_jump_autotest API_AMAL_CALL_ARGS
+{
+	void **ret;
+
+	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
+
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	AmalPrintf("self -> loopCount %ld\n", self -> loopCount);
+
+	ret = (void **) code[1];
+	if (ret)
+	{
+		if (self -> autotest_loopCount>100)		// so in autotest we need to make sure we do not get stuck!!!.
+		{
+			AmalPrintf("self -> status = channel_status::paused\n");
+			self -> amalStatus = channel_status::paused;
+			self -> autotest_loopCount = 0;
+			return ret-1;
+		}
+		else
+		{
+			self -> autotest_loopCount++;
+			AmalPrintf("[exit] self -> autotest_loopCount %ld\n", self -> autotest_loopCount);
+			return ret-1;
+		}
+	}
+	else 	AmalPrintf("Amal Jump did not find a ret value\n");
+
+	return code+1;
+}
+
 void *amal_call_jump API_AMAL_CALL_ARGS
 {
 	void **ret;

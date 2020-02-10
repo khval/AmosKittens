@@ -409,13 +409,29 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	int le = 0;
 	const char *s;
 	char *d;
+	bool is_autotest = false;
 
-	AmalPrintf("writing %08x to %010d/%010d - jump\n",
+	if (parenthesis_count) if ( parenthesis[parenthesis_count-1]  == id_autotest ) is_autotest = true;
+
+	if (is_autotest)
+	{
+		AmalPrintf("writing %08x to %010d/%010d - jump\n",
+			(unsigned int) amal_call_jump_autotest,
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array );
+
+		call_array[0] = amal_call_jump_autotest;
+	}
+	else
+	{
+		AmalPrintf("writing %08x to %010d/%010d - jump\n",
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 			(unsigned int) &call_array[1] - (unsigned int) channel -> amalProg.call_array );
 
-	call_array[0] = self -> call;
+		call_array[0] = self -> call;
+	}
+
 	s = data -> at_script + data -> command_len;
 
 	while (*s == ' ')
@@ -605,6 +621,11 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 				struct amalWriterData *data,
 				unsigned int num)
 {
+	AmalPrintf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
+
 	printf("parenthesis[%d] is %d\n", parenthesis_count, parenthesis[parenthesis_count]);
 
 	if (parenthesis[parenthesis_count] == id_autotest)
@@ -612,10 +633,6 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 		parenthesis_count++;
 		parenthesis[parenthesis_count] = id_void;
 
-		AmalPrintf("writing %08x to %010d  - autotest start\n",
-				(unsigned int) self -> call,
-				(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
-				self->name );
 
 		call_array[0] = autotest_start;
 		call_array[1] = 0;
@@ -625,10 +642,8 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 		return 2;
 	}
 
-	AmalPrintf("writing %08x to %010d  - %s\n",
-			(unsigned int) self -> call,
-			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
-			self->name );
+	parenthesis_count++;
+	parenthesis[parenthesis_count] = id_void;
 
 	call_array[0] = self -> call;
 	channel -> next_arg = true;
@@ -641,6 +656,12 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 				struct amalWriterData *data,
 				unsigned int num)
 {
+
+	AmalPrintf("writing %08x to %010d  - %s\n", 
+			(unsigned int) self -> call, 
+			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
+			self->name );
+
 	if (parenthesis_count) parenthesis_count--;
 
 	printf("parenthesis[%d] is %d\n", parenthesis_count, parenthesis[parenthesis_count]);
@@ -678,10 +699,20 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 				return 1;
 			}
 
-		case id_volume:
+		case id_void:
 
+			{
+				AmalPrintf("writing %08x to %010d  - %s\n",
+					(unsigned int) self -> call,
+					(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
+					self->name );
 
-			break;
+				call_array[0] = self -> call;
+				channel -> next_arg = false;
+				parenthesis[parenthesis_count] = id_void;
+				return 1;
+			}
+
 	}
 
 	return 0;
@@ -1493,7 +1524,10 @@ void test_run(struct kittyChannel  *channel)
 
 	if (channel -> amalProg.amalAutotest != NULL)
 	{
+		Printf("-- Execute autotest --\n");
+		channel -> autotest_loopCount = 0;		// unstuck counter.
 		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
+		Printf("-- auto test done --\n");
 	}
 
 	if (channel -> amalStatus == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.

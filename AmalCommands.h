@@ -8,6 +8,7 @@ void *amal_call_direct API_AMAL_CALL_ARGS;
 void *amal_call_wait API_AMAL_CALL_ARGS;
 void *amal_call_if API_AMAL_CALL_ARGS;
 void *amal_call_jump API_AMAL_CALL_ARGS;
+void *amal_call_jump_autotest API_AMAL_CALL_ARGS;
 void *amal_call_exit API_AMAL_CALL_ARGS;
 void *amal_call_let API_AMAL_CALL_ARGS;
 void *amal_call_autotest API_AMAL_CALL_ARGS;
