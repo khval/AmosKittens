@@ -1361,7 +1361,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 
 	for (call = prog ;  *call ; call ++ )
 	{
-		AmalPrintf("offset %d\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array );
+		AmalPrintf("offset %d status %08x\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array, channel -> amalStatus );
 
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret)
@@ -1521,39 +1521,57 @@ struct channelAPI test_api =
 
 void dump_object();
 
+// Se commandsAmal.cpp / channel_amal( ... ) function for the real amal executer.
+
 void test_run(struct kittyChannel  *channel)
 {
 	// init amal Prog Counter.
 	channel -> amalStatus = channel_status::active;
 	channel -> objectAPI = &test_api;
 
-	if (channel -> amalProg.amalAutotest != NULL)
+	while ( ( channel -> amalStatus & channel_status::active ) && ( channel -> amalProg.amalProgCounter ) )
 	{
-		Printf("-- Execute autotest --\n");
-		channel -> autotest_loopCount = 0;		// unstuck counter.
-		amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
-		Printf("-- auto test done --\n");
+		if (channel -> amalProg.amalAutotest != NULL)
+		{
+			Printf("-- Execute autotest --\n");
+			channel -> autotest_loopCount = 0;		// unstuck counter.
+			amal_run_one_cycle(channel,channel -> amalProg.amalAutotest,false);
+			Printf("-- auto test done --\n");
+		}
+
+		if (channel -> amalStatus & channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
+
+		if ( ( channel -> amalStatus & channel_status::active ) && ( channel -> amalProg.amalProgCounter ) )
+		{
+			AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+			// Check that program has not ended.
+			if ( *channel -> amalProg.amalProgCounter )	
+			{
+				amal_run_one_cycle(channel,channel -> amalProg.amalProgCounter,true);
+			}
+			else 
+			{
+				AmalPrintf("%s:%s:%d - channel -> amalProgCounter %d\n",__FILE__,__FUNCTION__,__LINE__, channel -> amalProg.amalProgCounter);
+				break;
+			}
+
+			dump_object();
+			printf("amal program counter at %10d\n",(unsigned int) channel -> amalProg.amalProgCounter - (unsigned int) channel -> amalProg.call_array);		
+
+			if (channel -> amalStatus & channel_status::paused) 
+			{
+				channel -> amalStatus &= ~channel_status::paused;
+
+				printf("Amal Status %d\n",channel -> amalStatus);
+				printf("Paused (1=contune, 0=quit)\n");
+				char c=getchar();
+				if (c=='0') break;
+			}
+		}
 	}
 
-	if (channel -> amalStatus == channel_status::wait) return;		// if amal program is set to wait..., only autotest can activate it.
 
-	if (channel -> amalStatus == channel_status::direct) 	// if amal program gets paused, we reset program to direct.
-	{
-		channel -> amalProg.amalProgCounter = channel -> amalProg.directProgCounter;
-		channel -> amalStatus = channel_status::active;
-	}
-
-	while ( ( channel -> amalStatus == channel_status::active ) && ( *channel -> amalProg.amalProgCounter ) )
-	{
-		AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-		amal_run_one_cycle(channel,channel -> amalProg.amalProgCounter,true);
-
-		dump_object();
-		printf("amal program counter at %10d\n",(unsigned int) channel -> amalProg.amalProgCounter - (unsigned int) channel -> amalProg.call_array);
-	}
-
-	printf("Amal Status %d\n",channel -> amalStatus);
 }
 
 void dump_object()
