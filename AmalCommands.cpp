@@ -324,13 +324,6 @@ void *amal_call_jump API_AMAL_CALL_ARGS
 	return code+1;
 }
 
-void *amal_call_exit API_AMAL_CALL_ARGS
-{
-	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
-	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	return NULL;
-}
-
 void *amal_call_let API_AMAL_CALL_ARGS
 {
 	amalFlushAllCmds( self );	// comes after "IF", we need to flush, no ";" symbol.
