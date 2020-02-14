@@ -20,3 +20,8 @@ A small document describing how some commands works different under Amos Kittens
   Return Screen Height that the bob is on, there is command in the Amos Pro interface lanuage with same name,
   (it returns the height of the current context).
   Do not confuse this with the YS command.
+  
+ **On**
+
+  The command that should reenable main amal program from autotest after a Wait command.
+  works in AmosKittens, (but I think is broken in Amos Pro, failed my testes.)
