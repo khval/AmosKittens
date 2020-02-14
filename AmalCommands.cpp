@@ -78,6 +78,8 @@ void *cb_and(struct kittyChannel *self, struct amalCallBack *cb);
 void *cb_xor(struct kittyChannel *self, struct amalCallBack *cb);
 void *cb_or(struct kittyChannel *self, struct amalCallBack *cb);
 
+extern bool has_collided(int id);
+
 struct amalDebugitem amalDebugList[] =
 	{
 		{cb_move, "move"},
@@ -861,17 +863,29 @@ void *amal_call_spriteCol API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *cb_col  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	int ret = has_collided(self -> argStack [ self -> argStackCount ]) ? ~0 : 0;
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = ret;
+}
+
+
 void *amal_call_col API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
-	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
+	self -> pushBackFunction = cb_col;
 	return NULL;
 }
 
 
 void *cb_vumeter  (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
 }
 
