@@ -1369,15 +1369,16 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 			call = (void* (**)(kittyChannel*, void**, unsigned int)) ret;
 		}
 
-		if (channel -> amalStatus == channel_status::paused) 	// if amal program gets paused, we break loop
+		if (channel -> amalStatus & channel_status::paused) 	// if amal program gets paused, we break loop
 		{
-			channel -> amalStatus = channel_status::active;
+//			channel -> amalStatus &= ~channel_status::paused;
 			call++;
 			break;
 		}
 
-		if (channel -> amalStatus == channel_status::wait) 
+		if (channel -> amalStatus & channel_status::direct) 
 		{
+			channel -> amalStatus &= ~channel_status::direct;
 			break;
 		}
 	}

@@ -20,14 +20,14 @@ namespace channel_status
 {
 	enum status
 	{
-		uninitialized,	// No amal program.
-		initialized,		// Have amal program
-		done,		// Amal program is done.
-		active,		// Amal program is running.
-		paused,		// Same as exit amal prgram at VBL
-		frozen,		// Stops the amal program, until its unfrozen.
-		wait,			// same as frozen, but triggered by wait command.
-		direct		// if direct, then amal program counter is set. status reset.
+		uninitialized	= 0x01,	// No amal program.
+		done		= 0x02,	// Amal program is done.
+		initialized		= 0x04,	// Have amal program
+		active		= 0x08,	// Amal program is running.
+		paused		= 0x10,	// Same as exit amal prgram at VBL
+		frozen		= 0x20,	// Stops the amal program, until its unfrozen.
+		wait			= 0x40,	// only Execute autotest
+		direct		= 0x80	// exit autotest, early, and AMAL start ptr.
 	};
 };
 
@@ -78,9 +78,9 @@ struct kittyChannel
 
 	struct channelAPI *objectAPI;
 
-	channel_status::status animStatus;
-	channel_status::status amalStatus;
-	channel_status::status moveStatus;
+	uint32_t animStatus;
+	uint32_t amalStatus;
+	uint32_t moveStatus;
 
 	int reg[10];	// local reg 0 to 9 
 	int parenthses;

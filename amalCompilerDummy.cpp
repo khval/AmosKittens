@@ -38,7 +38,7 @@ int bobCol( unsigned short bob, unsigned short start, unsigned short end )
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> amalStatus = channel_status::paused;
+	self -> amalStatus |= channel_status::paused;
 	self -> loopCount = 0;
 
 	dump_object();
