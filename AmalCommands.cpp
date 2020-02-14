@@ -885,11 +885,15 @@ void *amal_call_col API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-
 void *cb_vumeter  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
 	Printf("**** NOT YET WORKING %s ****\n",__FUNCTION__);
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = 0;
 }
 
 void *amal_call_vumeter API_AMAL_CALL_ARGS
