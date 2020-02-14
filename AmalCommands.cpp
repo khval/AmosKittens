@@ -857,9 +857,19 @@ void *amal_call_bobCol API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *cb_spriteCol  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
+	// reset stack
+	self -> argStackCount = cb -> argStackCount;
+	self -> argStack [ self -> argStackCount ] = 0;
+}
+
 void *amal_call_spriteCol API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	self -> pushBackFunction = cb_spriteCol;
 	return NULL;
 }
 
