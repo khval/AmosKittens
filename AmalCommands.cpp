@@ -45,6 +45,7 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 #ifdef test_app
 	#define amal_mouse_x 1000
 	#define amal_mouse_y 2000
+	#define engine_mouse_key 3
 #else
 	extern int engine_mouse_x;
 	extern int engine_mouse_y;

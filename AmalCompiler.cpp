@@ -1564,10 +1564,28 @@ void dump_object()
 int main(int args, char **arg)
 {
 	int n;
+	int RA;
+	char *script = NULL;
+
+	switch (args)
+	{
+		case 2:
+				RA = 0;			
+				script = arg[1];
+				break;
+		case 3:
+				sscanf(arg[1],"%d",&RA);
+				script = arg[2];
+				break;
+		default:
+				printf("Bad input\n");
+				return 0;
+	}
+
+
 	struct kittyChannel  channel;
 
 	for (n=0;n<10;n++) channel.reg[n]=0;
-
 	initChannel( &channel, 999 );
 
 	amalBuf *amalProg = &channel.amalProg;
@@ -1578,9 +1596,11 @@ int main(int args, char **arg)
 
 	amiga_joystick_dir[0] = 7;
 
-	if (args==2)
+	amreg[0] = RA;
+
+	if (script)
 	{
-		channel.amal_script = toAmosString_char( (char *) arg[1], 0 );
+		channel.amal_script = toAmosString_char( (char *) script, 0 );
 
 		if (channel.amal_script)
 		{
