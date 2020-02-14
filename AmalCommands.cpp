@@ -719,8 +719,8 @@ void *cb_xh  (struct kittyChannel *self, struct amalCallBack *cb)
 	switch (args)
 	{
 		case 2:
-			s = self -> argStack [ self -> argStackCount  ];			
-			x = self -> argStack [ self -> argStackCount -1  ];
+			s = self -> argStack [ self -> argStackCount -1 ];			
+			x = self -> argStack [ self -> argStackCount  ];
 			if (screen = screens[s]) x = XHard_formula( screen, x );
 			break;
 	}
@@ -745,7 +745,6 @@ void *cb_yh  (struct kittyChannel *self, struct amalCallBack *cb)
 	int s,y = 0;
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
-	dumpAmalStack( self );
 	switch (args)
 	{
 		case 2:
