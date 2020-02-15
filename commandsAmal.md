@@ -21,6 +21,13 @@ A small document describing how some commands works different under Amos Kittens
   (it returns the height of the current context).
   Do not confuse this with the YS command.
   
+ **AUtotest**
+ 
+ Autotest in Amos Kittens is granties to run every time.
+ 
+ (in AmosPro the autotest is not run the first time, 
+ it does not say so in the manual, so its a bug in AmosPro)
+  
  **On**
 
   The command that should reenable main amal program from autotest after a Wait command.
