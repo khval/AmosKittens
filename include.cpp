@@ -222,6 +222,8 @@ void collect_lines( struct fileContext &lastFile, char *filename )		// this func
 	int l;
 	char *c;
 
+	if (filename == NULL) return;
+
 	l = strlen(filename);
 
 	file = new_fileContext( files.size(), 0 );
