@@ -343,13 +343,13 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 			int n = 0;
 			struct retroRGB *opal = screen -> orgPalette;
 			struct retroRGB *rpal = screen -> rowPalette;
-			struct retroRGB *npal = screen -> fadePalette;
+			struct retroRGB *fpal = screen -> fadePalette;
 
 			for (n=0;n<256;n++)
 			{
-				dr = (int) npal->r - (int) opal->r;
-				dg = (int) npal->g - (int) opal->g;
-				db = (int) npal->b - (int) opal->b;
+				dr = (int) fpal->r - (int) opal->r;
+				dg = (int) fpal->g - (int) opal->g;
+				db = (int) fpal->b - (int) opal->b;
 
 				limit_step(dr);
 				limit_step(dg);
@@ -365,7 +365,7 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 
 				opal++;
 				rpal++;
-				npal++;
+				fpal++;
 			}
 
 			screen -> fade_count = 1;
