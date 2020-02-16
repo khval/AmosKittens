@@ -25,6 +25,7 @@ struct joystick
 	int id;
 	int num;
 	int res;
+	int connected;
 };
 
 extern int found_joysticks;

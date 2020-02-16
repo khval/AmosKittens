@@ -763,9 +763,23 @@ void main_engine()
 			{
 				for (n=0;n<4;n++)
 				{
-					if (joysticks[n].id>0)
+					if (joysticks[n].connected)
 					{
 						joy_stick(n,joysticks[n].controller);
+					}
+				}
+			}
+			else
+			{
+				for (n=0;n<4;n++)
+				{
+					if (joysticks[n].id)
+					{
+						AIN_Query(
+							joysticks[n].controller, 
+							joysticks[n].id,
+							AINQ_CONNECTED,0,
+							&joysticks[n].connected,4 );
 					}
 				}
 			}
