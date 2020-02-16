@@ -248,8 +248,6 @@ void clean_up_user_banks()
 
 void clean_up_special()
 {
-	int n;
-
 	dprintf("clean up libs\n");
 
 	clean_up_libs();
@@ -276,7 +274,6 @@ void clean_up_special()
 
 	if (IRetroMode)
 	{
-
 		if (cursor_block)
 		{
 			retroFreeBlock(cursor_block);
