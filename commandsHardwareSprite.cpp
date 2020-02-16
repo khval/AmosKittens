@@ -239,3 +239,44 @@ char *hsSetSpriteBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _hsSetSpriteBuffer, tokenBuffer );
 	return tokenBuffer;
 }
+
+char *_hsSpriteCol( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	int num = 0;
+	int pick = 0;
+	void *ret = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		struct retroSpriteObject *obj;
+
+//		engine_lock();
+
+		num = getStackNum( stack );
+		obj = &video -> sprites[num];
+
+/*
+ 		obj->x 
+ 		obj->y  
+		frame = sprite -> frames[ obj->image ]
+*/
+
+//		engine_unlock();
+	}
+	else setError(22, data->tokenBuffer);
+
+	popStack( stack - data->stack );
+	setStackNum( (int) ret );
+	return NULL;
+}
+
+char *hsSpriteCol(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _hsSpriteCol, tokenBuffer );
+	return tokenBuffer;
+}
+
