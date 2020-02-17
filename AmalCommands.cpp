@@ -42,6 +42,9 @@ void *amalFlushParaCmds( struct kittyChannel *self );
 void *amalFlushAllCmds( struct kittyChannel *self );
 void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 
+extern int bobColRange( unsigned short bob, unsigned short start, unsigned short end );
+extern int spriteColRange( unsigned short bob, unsigned short start, unsigned short end );
+
 #ifdef test_app
 	#define amal_mouse_x 1000
 	#define amal_mouse_y 2000
@@ -819,7 +822,6 @@ void *amal_call_yscreen API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-int bobColRange( unsigned short bob, unsigned short start, unsigned short end );
 
 void *cb_bobCol  (struct kittyChannel *self, struct amalCallBack *cb)
 {
@@ -852,7 +854,19 @@ void *amal_call_bobCol API_AMAL_CALL_ARGS
 
 void *cb_spriteCol  (struct kittyChannel *self, struct amalCallBack *cb)
 {
+	int args = self -> argStackCount - cb -> argStackCount + 1 ;
+	int16_t r = 0;
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
+	dumpAmalStack( self );
+	if (args == 3)
+	{
+		uint16_t bob = self -> argStack [ self -> argStackCount -2 ];	
+		uint16_t start = self -> argStack [ self -> argStackCount -1 ];			
+		uint16_t end = self -> argStack [ self -> argStackCount  ];
+
+		r = spriteColRange( bob, start, end );
+	}
 
 	// reset stack
 	self -> argStackCount = cb -> argStackCount;
