@@ -1210,14 +1210,6 @@ void bobBox( struct retroSpriteObject *thisBob )
 	retroBox( screens[thisBob -> screen_id], 0, minX,minY,maxX,maxY,1 );
 }
 
-void dump_collided()
-{
-	for (unsigned int n=0;n<collided.size();n++)
-	{
-		printf("collided id: %d\n",collided[n]);
-	}
-}
-
 void flush_collided()
 {
 	while (collided.size()) collided.erase(collided.begin());

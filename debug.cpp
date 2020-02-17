@@ -33,6 +33,8 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct label> labels;
 extern std::vector<struct kittyBank> kittyBankList;
 extern std::vector<struct wave *> waves;
+extern std::vector<int> collided;
+
 extern ChannelTableClass *channels;
 extern int global_var_count;
 
@@ -850,4 +852,12 @@ void debug_draw_hline(int x)
 		printf("debug gfx window not open\n");
 	}
 #endif 
+}
+
+void dump_collided()
+{
+	for (unsigned int n=0;n<collided.size();n++)
+	{
+		printf("collided id: %d\n",collided[n]);
+	}
 }
