@@ -270,10 +270,10 @@ struct nativeCommand nativeCommands[]=
 	{0x0BFC,"=X Hard(s,x)",0,gfxXHard },
 	{0x0C06,"=Y Hard",0,gfxYHard },
 	{0x0C14,"=Y Hard(s,y)",0,gfxYHard }, 
-	{0x0C1E,"=XScreen",0,gfxXScreen },
-	{0x0C2E,"=XScreen(n,n)",0,gfxXScreen },	// =XScreen(0,X Mouse)
-	{0x0C38,"=YScreen",0,gfxYScreen },
-	{0x0C48,"=YScreen(n,n)",0,gfxYScreen },	// =YScreen(0,Y Mouse)
+	{0x0C1E,"=X Screen",0,gfxXScreen },
+	{0x0C2E,"=X Screen(n,n)",0,gfxXScreen },	// =XScreen(0,X Mouse)
+	{0x0C38,"=Y Screen",0,gfxYScreen },
+	{0x0C48,"=Y Screen(n,n)",0,gfxYScreen },	// =YScreen(0,Y Mouse)
 	{0x0C52,"=X Text",0,textXText },
 	{0x0C60,"=Y Text",0,textYText },
 	{0x0C6E,"Screen",0,gfxScreen },
