@@ -1173,7 +1173,7 @@ int inBob( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, st
 	if ( maxX < ominX ) return 0;
 	if ( minX > omaxX ) return 0;
 	if ( maxY < ominY ) return 0;
-	if ( maxY > omaxY ) return 0;
+	if ( minY > omaxY ) return 0;
 
 	if (minX< ominX)
 	{
