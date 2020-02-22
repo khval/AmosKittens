@@ -652,9 +652,22 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 	return NULL;
 }
 
+void *cb_play  (struct kittyChannel *self, struct amalCallBack *cb)
+{
+	int id;
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+
+	id = self -> argStack [ self -> argStackCount ];
+	
+	getchar();
+
+	return NULL;
+}
+
 void *amal_call_play API_AMAL_CALL_ARGS
 {
-		AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	pushBackAmalCmd( amal::flag_para ,code, self, cb_play ); 
 	return NULL;
 }
 

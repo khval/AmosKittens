@@ -27,7 +27,8 @@ namespace channel_status
 		paused		= 0x10,	// Same as exit amal prgram at VBL
 		frozen		= 0x20,	// Stops the amal program, until its unfrozen.
 		wait			= 0x40,	// only Execute autotest
-		direct		= 0x80	// exit autotest, early, and AMAL start ptr.
+		direct		= 0x80,	// exit autotest, early, and AMAL start ptr.
+		error			= 0x100	// error (used by play command)
 	};
 };
 
@@ -43,7 +44,30 @@ struct channelAPI
 	struct retroScreen *(*getScreen)( unsigned int object );
 };
 
-struct kittyChannel
+struct amalPlayContext
+{
+	signed char *data;
+	int repeat;
+	int size;
+	signed char value;
+};
+
+class amalBankPlay
+{
+	public:
+		unsigned short *offset_tab;
+		unsigned short *size_tab;
+		char *name_tab;
+		char *move_data;
+		int lx;
+
+		struct amalPlayContext cdx;
+		struct amalPlayContext cdy;
+
+	amalBankPlay(char *start);
+};
+
+
 class kittyChannel
 {
 	public:
