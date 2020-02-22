@@ -51,12 +51,12 @@ extern std::vector<int> collided;
 extern bool has_collided(int id);
 extern void flush_collided();
 
-int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int offInt16, int lshift, int dy );
-
-int inSprite( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob );
+extern int XSprite_formula(int x);
+extern int YSprite_formula(int y);
+extern int from_XSprite_formula(int x);
+extern int from_YSprite_formula(int y);
 
 #define getSprite(num) &(video -> sprites[num])
-
 
 char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 {
@@ -108,9 +108,6 @@ char *hsGetSpritePalette(struct nativeCommand *cmd, char *tokenBuffer)
 	setStackNone();
 	return tokenBuffer;
 }
-
-extern int XSprite_formula(int x);
-extern int YSprite_formula(int y);
 
 char *_hsSprite( struct glueCommands *data, int nextToken )
 {
@@ -295,161 +292,72 @@ char *hsSpriteCol(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-void spriteBox( int x0,int y0,int x1,int y1, int c)
+char *_hsXSprite( struct glueCommands *data, int nextToken )
 {
-//	x0=XScreen_formula( screens[current_screen], x0 );
-//	y0=YScreen_formula( screens[current_screen], y0 );
-//	x1=XScreen_formula( screens[current_screen], x1 );
-//	y1=YScreen_formula( screens[current_screen], y1 );
+	struct retroSpriteObject *object;
+	int args = stack - data->stack +1 ;
 
-	retroBox( screens[current_screen], 0, x0,y0,x1,y1,c );
-}
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-extern void dump_collided();
-
-int spriteColAll( unsigned short Sprite )
-{
-	struct retroSpriteObject *thisSprite;
-	struct retroSpriteObject *otherSprite;
-	struct retroFrameHeader *frame;
-	int minX, maxX, minY, maxY;
-	unsigned int n;
-	int r;
-	int x,y;
-
-	thisSprite = getSprite(Sprite);
-
-	if ( ! thisSprite )
+	if (args==1)
 	{
-		Printf("SpriteCol Sprite %ld not found\n",Sprite);
-		Delay(30);
-	 	return 0;
-	}
+		object = getSprite( getStackNum(stack) );
 
-	if (thisSprite -> image == 0) return 0;
-
-	frame = &sprite -> frames[ thisSprite -> image-1 ];
-
-	x = thisSprite -> x / 2;
-	y = thisSprite -> y / 2;
-
-	minX = x - frame -> XHotSpot;
-	minY = y - frame -> XHotSpot;
-	maxX = minX + frame -> width;
-	maxY = minY + frame -> height;
-
-	for (n=0;n<sprite -> number_of_frames;n++)
-	{
-		otherSprite = getSprite(n);
-
-		// filter out bad data....
-		if ( ! otherSprite) continue;
-		if (otherSprite == thisSprite) continue;
-		if (otherSprite -> image <1) continue;
-
-		// check if Sprite is inside.
-		r = inSprite( frame -> mask, minX,minY,maxX,maxY, otherSprite );
-
-		if (r)
-		{	
-			if (has_collided(otherSprite -> id) == false)
-			{
-				collided.push_back( otherSprite -> id );
-			}
-
-			return r;
-		}
-	}
-
-	return 0;
-}
-
-int spriteColRange( unsigned short Sprite, unsigned short start, unsigned short end )
-{
-	struct retroSpriteObject *thisSprite;
-	struct retroSpriteObject *otherSprite;
-	struct retroFrameHeader *frame;
-	int x,y;
-	int minX, maxX, minY, maxY;
-	int n,r;
-
-	thisSprite = getSprite(Sprite);
-
-	if ( ! thisSprite )
-	{
-		Printf("SpriteCol Sprite %ld not found\n",Sprite);
-		Delay(30);
-	 	return 0;
-	}
-
-	if (thisSprite -> image < 1) return 0;	// does not have image.
-
-	frame = &sprite -> frames[ thisSprite -> image-1 ];
-
-	x=thisSprite -> x/2;
-	y=thisSprite -> y/2;
-
-	minX = x - frame -> XHotSpot;
-	minY = y - frame -> XHotSpot;
-	maxX = minX + frame -> width;
-	maxY = minY + frame -> height;
-
-	for ( n=start ; n<=end ; n++ )
-	{
-		otherSprite = getSprite(n);
-
-		// filter out bad data....
-		if ( ! otherSprite) continue;
-		if (otherSprite == thisSprite) continue;
-		if (otherSprite -> image <1) continue;
-
-		// check if Sprite is inside.
-		r = inSprite( frame -> mask, minX,minY,maxX,maxY, otherSprite );
-	
-		if (r)
+		if (object == NULL)
 		{
-			if (has_collided(otherSprite -> id) == false)	collided.push_back( otherSprite -> id );
-			return r;
+			setError(23,data->tokenBuffer);
+			return NULL;
 		}
-	}
 
-	return 0;
+		setStackNum(from_XSprite_formula(object -> x));
+		return NULL;	// don't need to pop stack.
+	} 
+
+	setError(23,data->tokenBuffer);
+	popStack( stack - data->stack );
+	return NULL;
 }
 
-int inSprite( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob )
+char *hsXSprite(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	int x,y;
-	struct retroFrameHeader * otherFrame = &sprite -> frames[ otherBob -> image -1 ];
-
-	x = otherBob -> x  / 2;
-	y  = otherBob -> y / 2;
-
-	int ominX = x - otherFrame -> XHotSpot;
-	int ominY = y - otherFrame -> XHotSpot;
-	int omaxX = ominX + otherFrame -> width;
-	int omaxY = ominY + otherFrame -> height;	
-
-	if ( maxX < ominX ) return 0;
-	if ( minX > omaxX ) return 0;
-	if ( maxY < ominY ) return 0;
-	if ( minY > omaxY ) return 0;
-
-	if (minX< ominX)
-	{
-		int dx = (ominX - minX), dy = (ominY - minY);
-		int bitx = dx & 15;
-		dx = dx >> 4;
-		if (cmpMask( thisMask, otherFrame -> mask, dx, bitx, dy ))	return ~0;
-		return 0;
-	}
-	else
-	{
-		int dx = (minX - ominX), dy = (minY - ominY);
-		int bitx = dx & 15;
-		dx = dx >> 4;
-		if (cmpMask(  otherFrame-> mask, thisMask, dx, bitx, dy ))	return ~0;
-		return 0;
-	}
-
-	return 0;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _hsXSprite, tokenBuffer );
+	return tokenBuffer;
 }
+
+char *_hsYSprite( struct glueCommands *data, int nextToken )
+{
+	struct retroSpriteObject *object;
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		object = getSprite( getStackNum(stack) );
+
+		if (object == NULL)
+		{
+			setError(23,data->tokenBuffer);
+			return NULL;
+		}
+
+		setStackNum(from_YSprite_formula( object -> y ));
+		return NULL;	// don't need to pop stack.
+	} 
+
+	setError(23,data->tokenBuffer);
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsYSprite(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _hsYSprite, tokenBuffer );
+	return tokenBuffer;
+}
+
+
+
+

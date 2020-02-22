@@ -1224,104 +1224,10 @@ bool has_collided(int id)
 	return false;
 }
 
-int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
-{
-	struct retroSpriteObject *thisBob;
-	struct retroSpriteObject *otherBob;
-	struct retroFrameHeader *frame;
-	int minX, maxX, minY, maxY;
-	int n,r;
-
-	thisBob = getBob(bob);
-
-	if ( ! thisBob )
-	{
-		Printf("bobCol bob %ld not found\n",bob);
-		Delay(30);
-	 	return 0;
-	}
-
-	if (thisBob -> image < 1) return 0;	// does not have image.
-
-	frame = &sprite -> frames[ thisBob -> image-1 ];
-	minX = thisBob -> x - frame -> XHotSpot;
-	minY = thisBob -> y - frame -> XHotSpot;
-	maxX = minX + frame -> width;
-	maxY = minY + frame -> height;
-
-	for ( n=start ; n<=end ; n++ )
-	{
-		otherBob = getBobOnScreen(n , thisBob -> screen_id );
-
-		// filter out bad data....
-		if ( ! otherBob) continue;
-		if (otherBob == thisBob) continue;
-		if (otherBob -> image <1) continue;
-
-		// check if bob is inside.
-		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
-	
-		if (r)
-		{
-			if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
-			return r;
-		}
-	}
-
-	return 0;
-}
-
-int bobColAll( unsigned short bob )
-{
-	struct retroSpriteObject *thisBob;
-	struct retroSpriteObject *otherBob;
-	struct retroFrameHeader *frame;
-	int minX, maxX, minY, maxY;
-	unsigned int n;
-	int r;
-
-	thisBob = getBob(bob);
-
-	if ( ! thisBob )
-	{
-		Printf("bobCol bob %ld not found\n",bob);
-		Delay(30);
-	 	return 0;
-	}
-
-	if (thisBob -> image == 0) return 0;
-
-	frame = &sprite -> frames[ thisBob -> image-1 ];
-	minX = thisBob -> x - frame -> XHotSpot;
-	minY = thisBob -> y - frame -> XHotSpot;
-	maxX = minX + frame -> width;
-	maxY = minY + frame -> height;
-
-//	retroBox( screens[current_screen], 0, minX,minY,maxX,maxY,1 );
-
-	for (n=0;n<bobs.size();n++)
-	{
-		otherBob = bobs[n];
-
-		// filter out bad data....
-		if ( ! otherBob) continue;
-
-		if (otherBob -> screen_id != thisBob -> screen_id ) continue;
-		if (otherBob == thisBob) continue;
-		if (otherBob -> image <1) continue;
-
-		// check if bob is inside.
-		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
-
-		if (r)
-		{
-			if (has_collided(otherBob -> id) == false)	collided.push_back( otherBob -> id );
-			return r;
-		}
-	}
-
-	return 0;
-}
+int bobColRange( unsigned short bob, unsigned short start, unsigned short end );
+int bobColAll( unsigned short bob );
+int bobSpriteColRange( unsigned short bob, unsigned short start, unsigned short end );
+int bobSpriteColAll( unsigned short bob );
 
 char *_boBobCol( struct glueCommands *data, int nextToken )
 {
@@ -1356,6 +1262,42 @@ char *boBobCol(struct nativeCommand *cmd, char *tokenBuffer)
 	stackCmdParm( _boBobCol, tokenBuffer );
 	return tokenBuffer;
 }
+
+
+char *_boBobSpriteCol( struct glueCommands *data, int nextToken )
+{
+	int args = stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	flush_collided();
+
+	switch (args)
+	{
+		case 1:	setStackNum(bobSpriteColAll( getStackNum(stack) ));
+				return NULL;
+
+		case 3:	{
+					int ret = bobSpriteColRange( getStackNum(stack-2), getStackNum(stack-1), getStackNum(stack) );
+					popStack( stack - data->stack );
+					setStackNum(ret);
+				}
+				return NULL;
+		default:
+				setError(22,data->tokenBuffer);
+	}
+
+	popStack( stack - data->stack );
+	setStackNum(0);			
+	return NULL;
+}
+
+char *boBobSpriteCol(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _boBobSpriteCol, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 
 char *_boCol( struct glueCommands *data, int nextToken )
