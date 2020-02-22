@@ -20,56 +20,105 @@
 extern void *set_reg (struct kittyChannel *self, struct amalCallBack *cb);
 
 
-void initChannel( struct kittyChannel *item, int channel )
+kittyChannel::~kittyChannel()
 {
-		item -> id = channel;
-		item -> token = 0;
-		item -> number = 0;
-		item -> amal_script = NULL;
-		item -> amal_at = NULL;
-		item -> anim_script = NULL;
-		item -> anim_at = NULL;
-		item -> movex_script = NULL;
-		item -> movex_at = NULL;
-		item -> movey_script = NULL;
-		item -> movey_at = NULL;
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
-		item -> progStack = NULL;
-		item -> progStackCount = 0;
-		item -> argStack = NULL;
-		item -> argStackCount = 0;
+	if (anim_script) free(anim_script);
+	anim_script = NULL;
 
-		item -> amalProg.amalProgCounter = NULL;
-		item -> amalProg.amalAutotest = NULL;
-		item -> amalProg.directProgCounter = NULL;
-		item -> amalProg.call_array = NULL;
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
-		item -> parenthses = 0;
-		item -> objectAPI = NULL;
-		item -> pushBackFunction = NULL;
+	if (amal_script) free(amal_script);
+	amal_script = NULL;
 
-		item -> count = 0;
-		item -> count_to = 0;
-		item -> deltax = 0;
-		item -> deltay = 0;
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
-		item -> anim_sleep = 0;
-		item -> anim_sleep_to = 0;
+	if (movex_script) free(movex_script);
+	movex_script = NULL;
 
-		item -> move_sleep = 0;
-		item -> move_sleep_to = 0;
-		item -> move_count = 0; 
-		item -> move_count_to = 0; 
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
-		item -> animStatus = channel_status::uninitialized;
-		item -> amalStatus = channel_status::uninitialized;
+	if (movey_script) free(movey_script);
+	movey_script = NULL;
+
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
+
+	if ( amalProg.call_array ) sys_free( amalProg.call_array );
+	amalProg.call_array = NULL;
+
+	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
+}
+
+kittyChannel::kittyChannel( int channel )
+{
+		id = channel;
+		token = 0;
+		number = 0;
+		amal_script = NULL;
+		amal_at = NULL;
+		anim_script = NULL;
+		anim_at = NULL;
+		movex_script = NULL;
+		movex_at = NULL;
+		movey_script = NULL;
+		movey_at = NULL;
+
+		progStack = NULL;
+		progStackCount = 0;
+		argStack = NULL;
+		argStackCount = 0;
+
+		amalProg.amalProgCounter = NULL;
+		amalProg.amalAutotest = NULL;
+		amalProg.directProgCounter = NULL;
+		amalProg.call_array = NULL;
+		amalPlayBank = NULL;
+
+		parenthses = 0;
+		objectAPI = NULL;
+		pushBackFunction = NULL;
+
+		count = 0;
+		count_to = 0;
+		deltax = 0;
+		deltay = 0;
+
+		anim_sleep = 0;
+		anim_sleep_to = 0;
+
+		move_sleep = 0;
+		move_sleep_to = 0;
+		move_count = 0; 
+		move_count_to = 0; 
+
+		animStatus = channel_status::uninitialized;
+		amalStatus = channel_status::uninitialized;
+}
+
+ChannelTableClass::~ChannelTableClass()
+{
+	int n;
+
+	Printf("%s\n",__FUNCTION__);
+
+	if (tab)
+	{
+		for (n=0;n<used;n++)
+		{
+			if (tab[n]) delete tab[n];
+			tab[n] = NULL;
+		}
+		free(tab);
+	}
+	tab = NULL;
+	used = 0;
+	allocated = 0;
 }
 
 struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 {
-	struct kittyChannel *item = (struct kittyChannel *) malloc(sizeof(struct kittyChannel));
-
-	if (item) initChannel( item, channel );
+	struct kittyChannel *item = new kittyChannel( channel );
 
 	if (used < allocated )
 	{
@@ -97,7 +146,7 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		else
 		{
 			// resvert 
-			if (item) free( (char *) item );
+			if (item) delete item ;
 			allocated = old_allocated;
 		}
 	}
@@ -110,7 +159,6 @@ struct kittyChannel *ChannelTableClass::getChannel(int id)
 	for (unsigned int n=0;n<used;n++) if (tab[n] -> id == id) return tab[n];
 	return NULL;
 }
-
 
 struct kittyChannel *ChannelTableClass::findChannelByItem(int token, int number)
 {
@@ -136,7 +184,7 @@ int ChannelTableClass::_size()
 	return used;
 }
 
-void setChannelAnim( struct kittyChannel *item, struct stringData *str , bool enable )
+void setChannelAnim(  kittyChannel *item, struct stringData *str , bool enable )
 {
 	if (item -> anim_script) free(item -> anim_script);
 
@@ -150,7 +198,7 @@ void setChannelAnim( struct kittyChannel *item, struct stringData *str , bool en
 	}
 }
 
-void setChannelAmal( struct kittyChannel *item, struct stringData *str)
+void setChannelAmal(  kittyChannel *item, struct stringData *str)
 {
 	item -> amalStatus = channel_status::uninitialized;
 	if (item -> amal_script) free(item -> amal_script);
@@ -164,7 +212,7 @@ void setChannelAmal( struct kittyChannel *item, struct stringData *str)
 	item -> move_count_to = 0; 
 }
 
-void setChannelMoveX( struct kittyChannel *item, struct stringData *str)
+void setChannelMoveX( kittyChannel *item, struct stringData *str)
 {
 	if (item -> movex_script) free(item -> movex_script);
 	item -> movex_script = str;
@@ -172,7 +220,7 @@ void setChannelMoveX( struct kittyChannel *item, struct stringData *str)
 	item -> deltax = 0;
 }
 
-void setChannelMoveY( struct kittyChannel *item, struct stringData *str)
+void setChannelMoveY(  kittyChannel *item, struct stringData *str)
 {
 	if (item -> movey_script) free(item -> movey_script);
 	item -> movey_script = str;

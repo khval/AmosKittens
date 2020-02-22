@@ -44,7 +44,13 @@ struct channelAPI
 };
 
 struct kittyChannel
+class kittyChannel
 {
+	public:
+
+	kittyChannel( int channel );
+	~kittyChannel();
+
 	unsigned short id;
 	unsigned short token;
 	unsigned short number;
@@ -96,6 +102,8 @@ struct kittyChannel
 	void *(*pushBackFunction)  (struct kittyChannel *self, struct amalCallBack *cb);
 	unsigned short next_arg;
 	unsigned short let;
+
+	struct amalBankPlay *amalPlayBank;
 };
 
 
@@ -113,11 +121,7 @@ public:
 		tab = (struct kittyChannel **) malloc(sizeof(struct kittyChannel *) * allocated );
 	}
 
-	~ChannelTableClass()
-	{
-		if (tab) free(tab);
-		tab = NULL;
-	}
+	~ChannelTableClass();
 
 	struct kittyChannel *newChannel( int channel );
 	struct kittyChannel *getChannel( int channel );
