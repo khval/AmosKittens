@@ -358,6 +358,38 @@ char *hsYSprite(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_hsISprite( struct glueCommands *data, int nextToken )
+{
+	struct retroSpriteObject *object;
+	int args = stack - data->stack +1 ;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args==1)
+	{
+		object = getSprite( getStackNum(stack) );
+
+		if (object == NULL)
+		{
+			setError(23,data->tokenBuffer);
+			return NULL;
+		}
+
+		setStackNum( object -> image );
+		return NULL;	// don't need to pop stack.
+	} 
+
+	setError(23,data->tokenBuffer);
+	popStack( stack - data->stack );
+	return NULL;
+}
+
+char *hsISprite(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _hsISprite, tokenBuffer );
+	return tokenBuffer;
+}
 
 
 
