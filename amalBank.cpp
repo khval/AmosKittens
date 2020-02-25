@@ -87,43 +87,46 @@ void getMove( struct amalBankPlay *amalPlayBank, int id, char *start )
 
 int play( struct kittyChannel *self, int id )
 {
-	struct amalBankPlay *amalPlayBank;
+	// amalPlayBank missing, init...
 
-	amalPlayBank = self -> amalPlayBank;
-
-	if (amalPlayBank == NULL)
+	if (self -> amalPlayBank == NULL)
 	{
 		struct kittyBank *bank = findBank( 4 );
 
 		if (bank)
 		{
 			self -> amalPlayBank = new amalBankPlay( bank -> start );
-			getMove( amalPlayBank, id , bank -> start );
+			getMove( self -> amalPlayBank, id , bank -> start );
 		}
 	}
 
-	if (amalPlayBank == NULL) return channel_status::error;
-
-	if (( amalPlayBank -> lx > 0 || amalPlayBank -> cdx.repeat > 0))
+	// scope ready... 
 	{
-		int number = self -> number;
+		struct amalBankPlay *amalPlayBank = self -> amalPlayBank;
 
-		if (deNext( &amalPlayBank -> cdx )) amalPlayBank -> lx--;
-		deNext( &amalPlayBank -> cdy );
+		if ( amalPlayBank == NULL) return channel_status::error;
 
-		self -> objectAPI -> setX( number, self -> objectAPI -> getX(  number ) + amalPlayBank -> cdx.value );
-		self -> objectAPI -> setY( number, self -> objectAPI -> getY(  number ) + amalPlayBank -> cdy.value );
-		return channel_status::active;
-	}
-	else	// done
-	{
-		delete self -> amalPlayBank;
-		self -> amalPlayBank = NULL;
-		return channel_status::done;
+		if (( amalPlayBank -> lx > 0 || amalPlayBank -> cdx.repeat > 0))
+		{
+			int number = self -> number;
+
+			if (deNext( &amalPlayBank -> cdx )) amalPlayBank -> lx--;
+			deNext( &amalPlayBank -> cdy );
+
+			self -> objectAPI -> setX( number, self -> objectAPI -> getX(  number ) + amalPlayBank -> cdx.value );
+			self -> objectAPI -> setY( number, self -> objectAPI -> getY(  number ) + amalPlayBank -> cdy.value );
+			return channel_status::active;
+		}
+		else	// done
+		{
+			delete self -> amalPlayBank;
+			self -> amalPlayBank = NULL;
+			return channel_status::done;
+		}
 	}
 
 	return channel_status::error;
 }
 
-}
+}	// end of name space
 
