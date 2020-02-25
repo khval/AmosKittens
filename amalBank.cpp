@@ -106,11 +106,13 @@ int play( struct kittyChannel *self, int id )
 
 	if (( amalPlayBank -> lx > 0 || amalPlayBank -> cdx.repeat > 0))
 	{
+		int number = self -> number;
+
 		if (deNext( &amalPlayBank -> cdx )) amalPlayBank -> lx--;
 		deNext( &amalPlayBank -> cdy );
 
-		self -> objectAPI -> setX( self -> number, self -> objectAPI -> getX( self -> number ) + amalPlayBank -> cdx.value );
-		self -> objectAPI -> setY( self -> number, self -> objectAPI -> getY( self -> number ) + amalPlayBank -> cdy.value );
+		self -> objectAPI -> setX( number, self -> objectAPI -> getX(  number ) + amalPlayBank -> cdx.value );
+		self -> objectAPI -> setY( number, self -> objectAPI -> getY(  number ) + amalPlayBank -> cdy.value );
 		return channel_status::active;
 	}
 	else	// done
