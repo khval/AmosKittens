@@ -38,6 +38,7 @@ BOOL deNext( struct amalPlayContext *data )
 		if (value & 0x80)
 		{
 			data -> repeat=(value & 127);
+			data -> value = 0;
 			data -> size+= data -> repeat;
 
 			printf("got repeat\n");
