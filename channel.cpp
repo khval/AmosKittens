@@ -27,27 +27,21 @@ kittyChannel::~kittyChannel()
 	if (anim_script) free(anim_script);
 	anim_script = NULL;
 
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
-
 	if (amal_script) free(amal_script);
 	amal_script = NULL;
-
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
 	if (movex_script) free(movex_script);
 	movex_script = NULL;
 
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
-
 	if (movey_script) free(movey_script);
 	movey_script = NULL;
-
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
 	if ( amalProg.call_array ) sys_free( amalProg.call_array );
 	amalProg.call_array = NULL;
 
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
+	if (amalPlayBank) delete amalPlayBank;
+	amalPlayBank = NULL;
+
 }
 
 kittyChannel::kittyChannel( int channel )
