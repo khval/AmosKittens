@@ -28,7 +28,7 @@ BOOL deNext( struct amalPlayContext *data )
 {
 	if (data -> repeat)
 	{
-		printf("repeat\n");
+//		printf("repeat %d\n", data -> repeat);
 		data -> repeat --;
 		return FALSE;
 	}
@@ -41,12 +41,12 @@ BOOL deNext( struct amalPlayContext *data )
 			data -> value = 0;
 			data -> size+= data -> repeat;
 
-			printf("got repeat\n");
+//			printf("got repeat %d\n",data -> repeat);
 		}
 		else 
 		{
-			printf("got data\n");
 			data -> value = value & 0x40 ? 0x80 | value : value & 0x3F;
+//			printf("got data %d\n", data -> value);
 			data -> size++;
 		}
 
