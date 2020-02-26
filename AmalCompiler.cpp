@@ -894,6 +894,7 @@ struct amalTab amalCmds[] =
 	{"A",amal::class_cmd_arg,stdAmalWriterImage,amal_call_image},		// Anim image
 	{"A",amal::class_cmd_normal,stdAmalWriterScript,amal_call_anim},		// Anim
 	{"M",amal::class_cmd_normal,stdAmalWriterWithArg,amal_call_move},	// Move
+	{"PL",amal::class_cmd_normal,stdAmalWriter,amal_call_play},			// Play
 	{"P",amal::class_cmd_normal,stdAmalWriter,amal_call_pause},			// Pause
 	{"R0",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R0
 	{"R1",amal::class_cmd_arg,stdAmalWriterReg,NULL },	// R1
@@ -935,7 +936,7 @@ struct amalTab amalCmds[] =
 	{"F",amal::class_cmd_normal,stdAmalWriterFor,NULL},				// For (should be null)
 	{"T",amal::class_cmd_normal,stdAmalWriterTo,amal_call_nextArg},		// To
 	{"N",amal::class_cmd_normal,stdAmalWriterWend,amal_call_wend},		// Next (should be null)
-	{"PL",amal::class_cmd_normal,stdAmalWriter,amal_call_play},			// Play
+
 	{"E",amal::class_cmd_normal,stdAmalWriter,amal_call_end},			// End
 	{"XM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_xm},			// XM
 	{"YM",amal::class_cmd_arg,stdAmalWriterValue,amal_call_ym},			// YM
