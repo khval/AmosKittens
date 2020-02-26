@@ -517,7 +517,7 @@ unsigned int stdAmalWriterExit( struct kittyChannel *channel, struct amalTab *se
 				unsigned int num)
 {
 	AmalPrintf("writing %08x to %010d  - exit\n",
-			(unsigned int) amal_call_exit,
+			(unsigned int) NULL,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array );
 
 	call_array[0] = NULL;		// terminate AMAL program in Autotest
