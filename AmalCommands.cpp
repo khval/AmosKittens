@@ -24,6 +24,7 @@
 #include "amoskittens.h"
 #include "commandsScreens.h"
 #include "amosstring.h"
+#include "amalBank.h"
 
 #ifdef test_app
 #include "debug_amal_test_app.h"
@@ -655,11 +656,24 @@ void *amal_call_more_or_equal API_AMAL_CALL_ARGS
 void *cb_play  (struct kittyChannel *self, struct amalCallBack *cb)
 {
 	int id;
+
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
 	id = self -> argStack [ self -> argStackCount ];
-	
-	getchar();
+
+	if (id<1) return NULL;
+
+	switch (amalBank::play( self, id-1 ))
+	{
+		case channel_status::error:
+			break;
+
+		case channel_status::active:
+			return cb -> code - 1;
+
+		case channel_status::done:
+			break;
+	}
 
 	return NULL;
 }
