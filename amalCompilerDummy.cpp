@@ -72,10 +72,30 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 	return c == '1'  ? ~0 : 0 ;
 }
 
+int spriteColRange( unsigned short bob, unsigned short start, unsigned short end )
+{
+	char c;
+	Printf("bobColRange( bob: %ld, start: %ld, end: %ld )\n", bob, start, end );
+
+	printf("input return value (1 is true, 0 is false): \n")	;
+	c = getchar() ;
+
+	return c == '1'  ? ~0 : 0 ;
+}
+
+
 bool has_collided(int id)
 {
 	char c;
 	printf("input if bob %d has collided, (1 is true, 0 is false)\n");
 	c= getchar();
 	return c == '1'  ? ~0 : 0 ;
+}
+
+struct kittyBank fakeBank;
+
+struct kittyBank *findBank(int)
+{
+	fakeBank.start = NULL;
+	return &fakeBank;
 }

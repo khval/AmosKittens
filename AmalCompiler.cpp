@@ -1602,10 +1602,9 @@ int main(int args, char **arg)
 	}
 
 
-	struct kittyChannel  channel;
+	struct kittyChannel  channel( 999 );
 
 	for (n=0;n<10;n++) channel.reg[n]=0;
-	initChannel( &channel, 999 );
 
 	amalBuf *amalProg = &channel.amalProg;
 
@@ -1645,7 +1644,6 @@ int main(int args, char **arg)
 				printf("basic error: %d\n",err);
 			}
 
-			free(channel.amal_script);
 			dumpAmalRegs( &channel );
 			amal_clean_up_labels( );
 		}

@@ -21,7 +21,8 @@ main_objects = AmalCommands.cpp \
 			os/amigaos/stuff.cpp \
 			screen_helper.cpp \
 			AmosString.cpp \
-			amalCompilerDummy.cpp
+			amalCompilerDummy.cpp \
+			amalBank.cpp
 
 main_SRCS = AmalCompiler.cpp
 

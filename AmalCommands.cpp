@@ -242,7 +242,6 @@ void *amal_call_direct API_AMAL_CALL_ARGS	// jumps out of autotest.
 	void *(**ret) API_AMAL_CALL_ARGS;
 
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	getchar();
 
 	ret = (void *(**) API_AMAL_CALL_ARGS) code[1];
 	if (ret) return ret-1;
