@@ -672,6 +672,7 @@ void *cb_play  (struct kittyChannel *self, struct amalCallBack *cb)
 			break;
 
 		case channel_status::active:
+			self -> amalStatus |= channel_status::paused;
 			return cb -> code - 1;
 
 		case channel_status::done:
