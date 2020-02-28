@@ -96,6 +96,5 @@ struct kittyBank fakeBank;
 
 struct kittyBank *findBank(int)
 {
-	fakeBank.start = NULL;
 	return &fakeBank;
 }

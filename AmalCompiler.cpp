@@ -1585,31 +1585,122 @@ void dump_object()
 	printf("x: %d, y: %d a: %d\n", obj_x, obj_y, obj_image);
 }
 
-int main(int args, char **arg)
-{
-	int n;
-	int RA;
-	char *script = NULL;
-
-	switch (args)
+const char *arg_names[] = 
 	{
-		case 2:
-				RA = 0;			
-				script = arg[1];
+		"-reg0",
+		"-regA",
+		"-script",
+		"-bin",
+		NULL
+	};
+
+enum
+{
+	arg_reg0 ,
+	arg_regA,
+	arg_script,
+	arg_bin
+};
+
+int _main(int args, const char **arg);
+//char *binFile = NULL;
+
+extern struct kittyBank fakeBank;
+
+void readBIn( const char *binfile )
+{
+	FILE *fd;
+
+	fd = fopen(binfile,"r");
+	if (fd)
+	{
+		fseek(fd,0,SEEK_END);
+		fakeBank.length = ftell(fd);
+		fseek(fd,0,SEEK_SET);
+
+		if (fakeBank.start)
+		{
+			free(	fakeBank.start );
+			fakeBank.start = NULL;
+		}
+
+		fakeBank.start = (char *) malloc(fakeBank.length);
+
+		if (fakeBank.start)
+		{
+			fread( fakeBank.start, fakeBank.length, 1, fd );
+		}
+
+		fclose(fd);
+	}
+}
+
+int main(int args, const char **arg)
+{
+	int ret;
+
+	fakeBank.start = NULL;
+
+	ret =  _main(args,arg);
+
+	if (fakeBank.start)
+	{
+		free(	fakeBank.start );
+		fakeBank.start = NULL;
+	}
+
+	return ret;
+}
+
+int _main(int args, const char **arg)
+{
+	int n,nn,reg0,regA;
+	int arg_type = arg_script;
+	int RA;
+	bool arg_type_found = false;
+
+	struct kittyChannel  channel( 999 );
+	const char *script = NULL;
+
+	reg0=0;
+	regA=0;
+
+	for (n=1;n<args;n++)
+	{
+		arg_type_found = false;
+
+		for (nn = 0; arg_names[nn]; nn++)
+		{
+			if (strcasecmp(arg[n],arg_names[nn])==0)
+			{
+				arg_type = nn;
+				arg_type_found = true;
 				break;
-		case 3:
-				sscanf(arg[1],"%d",&RA);
-				script = arg[2];
-				break;
-		default:
-				printf("Bad input\n");
-				return 0;
+			}
+		}
+
+		if (arg_type_found == false)
+		{
+			printf("%s\n",arg_names[arg_type]);
+			printf("%s\n",arg[n]);
+
+			switch (arg_type)
+			{
+				case arg_script:	script = arg[n]; break;
+				case arg_bin:		readBIn( arg[n] ); break;
+				case arg_reg0:		sscanf(arg[n],"%d",&channel.reg[reg0]); reg0++; break;
+				case arg_regA:		sscanf(arg[n],"%d",&channel.reg[regA]); regA++; break;			
+			}
+		}
 	}
 
 
-	struct kittyChannel  channel( 999 );
+	if (script == NULL)
+	{
+		printf("Bad input\n");
+		return 0;
+	}
 
-	for (n=0;n<10;n++) channel.reg[n]=0;
 
 	amalBuf *amalProg = &channel.amalProg;
 
@@ -1618,8 +1709,6 @@ int main(int args, char **arg)
 	amalProg->elements = 0;
 
 	amiga_joystick_dir[0] = 7;
-
-	amreg[0] = RA;
 
 	if (script)
 	{
