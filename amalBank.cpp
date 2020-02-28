@@ -95,6 +95,8 @@ int play( struct kittyChannel *self, int id )
 
 		if (bank)
 		{
+			if (bank -> start == NULL) return channel_status::error;
+
 			self -> amalPlayBank = new amalBankPlay( bank -> start );
 			getMove( self -> amalPlayBank, id , bank -> start );
 		}
@@ -115,6 +117,7 @@ int play( struct kittyChannel *self, int id )
 
 			self -> objectAPI -> setX( number, self -> objectAPI -> getX(  number ) + amalPlayBank -> cdx.value );
 			self -> objectAPI -> setY( number, self -> objectAPI -> getY(  number ) + amalPlayBank -> cdy.value );
+
 			return channel_status::active;
 		}
 		else	// done
