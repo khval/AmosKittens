@@ -606,8 +606,18 @@ unsigned int stdAmalWriter ( struct kittyChannel *channel, struct amalTab *self,
 			(unsigned int) self -> call,
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array,
 			self->name );
-	call_array[0] = self -> call;
-	return 1;
+
+	if ((data  -> lastClass == amal::class_cmd_arg) && ( amal_call_next_cmd != self -> call ))
+	{
+		call_array[0] = amal_call_next_cmd;
+		call_array[1] = self -> call;
+		return 2;
+	}
+	else
+	{
+		call_array[0] = self -> call;
+		return 1;
+	}
 }
 
 int autotest_start_ptr_offset;
