@@ -53,7 +53,7 @@ extern int spriteColRange( unsigned short bob, unsigned short start, unsigned sh
 #ifdef test_app
 	#define amal_mouse_x 1000
 	#define amal_mouse_y 2000
-	#define engine_mouse_key 3
+	#define engine_mouse_key 0
 #else
 	extern int engine_mouse_x;
 	extern int engine_mouse_y;
