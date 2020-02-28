@@ -37,7 +37,11 @@ extern int amreg[26];
 extern void dumpAmalRegs();
 extern struct retroScreen *screens[8] ;
 
+
+#if defined(show_debug_amal_yes) || defined(test_app)
+#warning hello
 extern void dumpAmalProgStack( struct kittyChannel *channel );
+#endif
 
 void *amalFlushParaCmds( struct kittyChannel *self );
 void *amalFlushAllCmds( struct kittyChannel *self );
@@ -999,7 +1003,13 @@ void *amalFlushAllCmds( struct kittyChannel *self )
 		self -> progStackCount --;
 		cb = &self -> progStack[ self -> progStackCount ];
 		ret =cb -> cmd( self, cb );
-		if (ret) return ret;
+		if (ret) 
+		{
+#if defined(show_debug_amal_yes) || defined(test_app)
+			dumpAmalProgStack( self );
+#endif
+			return ret;
+		}
 	}
 	return NULL;
 }
@@ -1009,8 +1019,11 @@ void *amal_call_next_cmd API_AMAL_CALL_ARGS
 	void *ret;
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 
-	ret = amalFlushAllCmds( self );
+#ifdef show_debug_amal_yes
+	dumpAmalProgStack( self );
+#endif
 
+	ret = amalFlushAllCmds( self );
 	return ret ? ret : NULL;
 }
 
