@@ -79,9 +79,9 @@ main_objects = commands.cpp \
 			floyd.cpp \
 			nativeCommands.cpp \
 			include.cpp \
-			bobcol.cpp \
-			spritecol.cpp \
-			bobspritecol.cpp \
+			bobCol.cpp \
+			spriteCol.cpp \
+			bobSpriteCol.cpp \
 			amalBank.cpp
 
 
