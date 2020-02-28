@@ -6,7 +6,7 @@
 #include <string.h>
 #include "vs_missing_string_functions.h"
 #define strdup _strdup
-#define Printf printf
+//#define Printf printf
 #endif
 
 #ifdef test_app
@@ -167,7 +167,12 @@ void dumpAmalProgStack( struct kittyChannel *channel )
 
 		name = getAmalProgStackName(  CallBack -> cmd  );
 
-		Printf("stack[%ld]: cmd %08lx (%s), arg stack %ld, flags %lx\n",s, CallBack -> cmd, name ? name : "???", CallBack -> argStackCount, CallBack -> Flags );
+		Printf_iso("stack[%d]: cmd %08x (%s), arg stack %d, flags %x\n",
+			s, 
+			CallBack -> cmd, 
+			name ? name : "???", 
+			CallBack -> argStackCount, 
+			CallBack -> Flags );
 	}
 }
 
