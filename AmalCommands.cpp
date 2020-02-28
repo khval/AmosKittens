@@ -177,12 +177,14 @@ void *amal_call_screen_height API_AMAL_CALL_ARGS
 
 void *amal_set_num API_AMAL_CALL_ARGS
 {
+	void *ret;
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount ] = (int) code[1];
 
 	AmalPrintf("num %d\n",(int) code[1] );
 
-	amalFlushParaCmds( self );
+	ret = amalFlushParaCmds( self );
+	if (ret) return ret;
 
 	return code+1;
 }
