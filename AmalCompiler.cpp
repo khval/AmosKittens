@@ -868,21 +868,21 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 struct amalTab amalSymbols[] =
 {
 	{";",amal::class_cmd_normal,stdAmalWriterNextCmd,amal_call_next_cmd },
-	{"(",amal::class_cmd_arg,stdAmalWriterParenthsesStart,amal_call_parenthses_start },
-	{")",amal::class_cmd_arg,stdAmalWriterParenthsesEnd,amal_call_parenthses_end },
-	{",",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_nextArg },
-	{"--",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_add},			// +
-	{"+-",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_sub},			// -
-	{"+",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_add},			// +
-	{"-",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_sub},			// -
-	{"*",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_mul},			// *
-	{"/",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_div},			// /
-	{"&",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_and},			// &
-	{"!",amal::class_cmd_arg,	stdAmalWriterSymbol,amal_call_xor},				// xor
-	{"<>",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_not_equal},	// <>
-	{"<",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_less},			// <
-	{">",amal::class_cmd_arg,stdAmalWriterSymbol,amal_call_more},			// >
-	{"=",amal::class_cmd_arg,stdAmalWriterEqual,amal_call_set},		// =
+	{"(",amal::class_cmd_operator,stdAmalWriterParenthsesStart,amal_call_parenthses_start },
+	{")",amal::class_cmd_operator,stdAmalWriterParenthsesEnd,amal_call_parenthses_end },
+	{",",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_nextArg },
+	{"--",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_add},			// +
+	{"+-",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_sub},			// -
+	{"+",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_add},			// +
+	{"-",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_sub},			// -
+	{"*",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_mul},			// *
+	{"/",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_div},			// /
+	{"&",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_and},			// &
+	{"!",amal::class_cmd_operator,	stdAmalWriterSymbol,amal_call_xor},				// xor
+	{"<>",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_not_equal},	// <>
+	{"<",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_less},			// <
+	{">",amal::class_cmd_operator,stdAmalWriterSymbol,amal_call_more},			// >
+	{"=",amal::class_cmd_operator,stdAmalWriterEqual,amal_call_set},		// =
 	{NULL, amal::class_cmd_arg,NULL,NULL }
 };
 
@@ -1054,7 +1054,7 @@ struct amalTab *find_amal_command(const char *str , int class_flags )
 					{
 						 return tab;
 					}
-					else if (find_amal_command(str+l, (int) amal::class_cmd_arg | (int) amal::class_cmd_normal))
+					else if (find_amal_command(str+l, (int) amal::class_cmd_all_args | (int) amal::class_cmd_normal))
 					{
 						return tab;
 					}
@@ -1218,7 +1218,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 
 		if ((channel -> let)||(channel -> next_arg))	// this is most likely a arg or a calculation
 		{
-			found = find_amal_command(s, amal::class_cmd_arg);
+			found = find_amal_command(s, amal::class_cmd_all_args);
 			if (!found)	found = find_amal_command(s, amal::class_cmd_normal);
 			if (!found) found = find_amal_command_ends_with_number(s, amal::class_cmd_normal);
 		}

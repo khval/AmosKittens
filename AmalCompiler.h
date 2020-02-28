@@ -14,7 +14,9 @@ namespace amal
 	enum Class
 	{
 		class_cmd_arg = 1,
-		class_cmd_normal = 2
+		class_cmd_operator = 2,
+		class_cmd_all_args = 3,
+		class_cmd_normal = 4
 	};
 };
 
