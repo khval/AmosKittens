@@ -110,8 +110,11 @@ char *_amalSetAmReg( struct glueCommands *data, int nextToken )
 
 		case 2:
 			{
-				_set_amreg_num = getStackNum( stack-1 );
-				_set_amreg_channel = getStackNum( stack );
+				// Amos Pro manual: Amreg(channel,reg)
+				// Amos The Creator manual:  Amreg(reg,channel)
+
+				_set_amreg_channel = getStackNum( stack-1 );
+				_set_amreg_num = getStackNum( stack );
 				if (_set_amreg_num<10)		// unsigned don't need to check, more then.
 				{
 					_do_set = _set_amreg_channel_fn;
@@ -157,8 +160,11 @@ char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 			{
 				struct kittyChannel *item;
 
-				num = getStackNum( stack-1 );
-				channel = getStackNum( stack );
+				channel = getStackNum( stack-1 );
+				num = getStackNum( stack );
+
+				// Amos Pro manual: Amreg(channel,reg)
+				// Amos The Creator manual:  Amreg(reg,channel)
 
 				if (num<10)		// unsigned don't need to check, more then.
 				{
