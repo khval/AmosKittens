@@ -112,7 +112,6 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	{
 		case 1:	// get color
 			num = (short) getStackNum( stack );
-			popStack( stack - data->stack );
 
 			if (num & 0xFF00)	// mask test don't need to check lower and upper limit.
 			{
