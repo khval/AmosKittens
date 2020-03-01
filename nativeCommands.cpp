@@ -484,7 +484,9 @@ struct nativeCommand nativeCommands[]=
 	{0x1986,"Set Sprite Buffers",0,hsSetSpriteBuffer },
 	{0x199E,"Sprite Off",0,hsSpriteOff },		// Sprite Off
 	{0x19B0,"Sprite Off",0,hsSpriteOff },		// Sprite Off n
+//	{0x1A10,"Spritebob col",0,hcSpriteBobCol },
 	{0x1A32,"Sprite Col",0,hsSpriteCol },
+	{0x1A44,"Sprite Col",0,hsSpriteCol },
 	{0x1A72,"Sprite Base",0,hsSpriteBase },
 	{0x1A84,"Icon Base",0,bgIconBase },
 	{0x1A94,"Sprite",0,hsSprite },
