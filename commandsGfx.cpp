@@ -173,6 +173,24 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	unsigned short next_token = *((unsigned short *) tokenBuffer);
+
+	switch (next_token)
+	{
+		case token_parenthesis_start:
+			stackCmdParm( _gfxColour, tokenBuffer );
+			break;
+
+		default:
+			stackCmdNormal( _gfxColour, tokenBuffer );
+			break;
+	}
+
+	return tokenBuffer;
+}
+
 extern struct amos_selected _selected_;
 extern int getMenuEvent();		// is atomic
 extern bool onMenuEnabled;
@@ -225,11 +243,7 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *gfxColour(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _gfxColour, tokenBuffer );
-	return tokenBuffer;
-}
+
 
 void __bar( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y1 )
 {
