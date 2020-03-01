@@ -687,7 +687,7 @@ void *cb_play  (struct kittyChannel *self, struct amalCallBack *cb)
 void *amal_call_play API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	pushBackAmalCmd( amal::flag_para ,code, self, cb_play ); 
+	pushBackAmalCmd( amal::flag_cmd ,code, self, cb_play ); 
 	return NULL;
 }
 
