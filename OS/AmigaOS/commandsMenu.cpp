@@ -11,6 +11,7 @@
 #include <proto/intuition.h>
 #include <proto/gadtools.h>
 #include <proto/keymap.h>
+#include <proto/retroMode.h>
 #endif
 
 #include "debug.h"

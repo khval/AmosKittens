@@ -4,20 +4,19 @@
 #include <string.h>
 #include <stdint.h>
 #include <vector>
-#include "commandsLibs.h"
-#include "kittyErrors.h"
-#include "debug.h"
-#include "stack.h"
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/retroMode.h>
 #include <exec/emulation.h>
 #include <proto/dos.h>
 extern unsigned int regs[16];
 #endif
 
-
-
+#include "commandsLibs.h"
+#include "kittyErrors.h"
+#include "debug.h"
+#include "stack.h"
 #include "amosKittens.h"
 
 extern std::vector<struct kittyLib> libsList;

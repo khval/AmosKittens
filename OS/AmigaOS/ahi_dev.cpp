@@ -28,7 +28,7 @@ typedef uint32_t LONG;
 #include "debug.h"
 #endif
 
-#include "../../AmosKittens.h"
+#include <AmosKittens.h>
 
 
 int current_audio_channel = 0;

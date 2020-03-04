@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
+#include <proto/retroMode.h>
 #include <string.h>
 
 #include "commandsBanks.h"

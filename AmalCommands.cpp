@@ -10,6 +10,7 @@
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 #endif
 
 #ifdef __linux__

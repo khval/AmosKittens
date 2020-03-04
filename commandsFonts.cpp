@@ -13,6 +13,7 @@
 #include <proto/dos.h>
 #include <proto/diskfont.h>
 #include <proto/graphics.h>
+#include <proto/retroMode.h>
 #include "amosString.h"
 
 extern struct RastPort font_render_rp;

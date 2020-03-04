@@ -10,6 +10,7 @@
 #include <proto/asl.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 #endif
 
 #ifdef __linux__

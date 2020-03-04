@@ -18,6 +18,7 @@
 #if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>
 #include <proto/exec.h>
+#include <proto/retroMode.h>
 #include <string.h>
 #endif
 

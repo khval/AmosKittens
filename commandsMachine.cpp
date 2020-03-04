@@ -8,6 +8,7 @@
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/retroMode.h>
 #include <exec/emulation.h>
 #include <proto/dos.h>
 #include "readhunk.h"

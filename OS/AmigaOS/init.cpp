@@ -15,6 +15,7 @@
 #include <proto/wb.h>
 #include <proto/intuition.h>
 #include <intuition/pointerclass.h>
+#include <proto/retroMode.h>
 #include "ahi_dev.h"
 
 #include "joysticks.h"

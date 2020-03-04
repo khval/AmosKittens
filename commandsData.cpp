@@ -7,6 +7,7 @@
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
+#include <proto/retroMode.h>
 #endif
 
 #include <string>

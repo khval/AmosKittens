@@ -6,6 +6,7 @@
 
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 
 #include "AmosKittens.h"
 #include "joysticks.h"

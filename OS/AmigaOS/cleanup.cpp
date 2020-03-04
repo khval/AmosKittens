@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 #include "stack.h"
 #include "amosKittens.h"
 #include <vector>

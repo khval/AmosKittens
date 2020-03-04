@@ -13,6 +13,7 @@
 #if defined(__amigaos__) || defined(__aros__) || defined(__morphos__) 
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 #endif
 
 #ifdef __linux__

@@ -8,6 +8,7 @@
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
 #endif
 
 #include "amosKittens.h"

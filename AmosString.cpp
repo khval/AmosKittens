@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+
+#ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retroMode.h>
+#endif
 
 #include "amoskittens.h"
 #include "amosString.h"
