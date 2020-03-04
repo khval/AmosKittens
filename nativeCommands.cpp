@@ -36,6 +36,7 @@ extern char *asl();
 #include "commandsgui.h"
 #include "commandsDevice.h"
 #include "commandsLibs.h"
+#include "commandsEditor.h"
 
 char *cmdNewLine(nativeCommand *cmd, char *ptr);
 char *cmdVar(nativeCommand *cmd, char *ptr);
@@ -655,12 +656,12 @@ struct nativeCommand nativeCommands[]=
 //	{0x262A,"Frame Length",0,gfxFrameLength},	//	Frame Length(n)
 //	{0x263E,"Frame Length",0,gfxFrameLength},	//	Frame Length(n,n)
 //	{0x2664,"Wait Frame",0,gfxWaitFrame},		//	Wait Frame n
-//	{0x2676,"Call Editor", 0, cmdCallEditor },
-//	{0x268A,"Call Editor", 0, cmdCallEditor },
-//	{0x2694,"Call Editor", 0, cmdCallEditor },
-//	{0x26A0,"Ask Editor", 0, cmdAskEditor  },
-//	{0x26B2,"Ask Editor", 0, cmdAskEditor  },
-//	{0x26BC,"Ask Editor", 0, cmdAskEditor  },
+	{0x2676,"Call Editor", 0, cmdCallEditor },
+	{0x268A,"Call Editor", 0, cmdCallEditor },
+	{0x2694,"Call Editor", 0, cmdCallEditor },
+	{0x26A0,"Ask Editor", 0, cmdAskEditor  },
+	{0x26B2,"Ask Editor", 0, cmdAskEditor  },
+	{0x26BC,"Ask Editor", 0, cmdAskEditor  },
 	{0x26C8,"Erase Temp",0,bankEraseTemp },
 	{0x26D8,"Erase All", 0, bankEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)

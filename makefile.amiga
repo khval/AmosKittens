@@ -40,6 +40,7 @@ main_objects = commands.cpp \
 			commandsScreens.cpp \
 			commandsGfx.cpp \
 			commandsgui.cpp \
+			commandsEditor.cpp \
 			os/amigaos/commandsDisc.cpp \
 			os/amigaos/commandsMenu.cpp \
 			os/amigaos/commandsGfxText.cpp \
