@@ -25,10 +25,11 @@ extern int		getStackNum( int n );
 extern double	getStackDecimal( int n );
 extern struct stringData *getStackString( int n );
 
+#if __amoskittens__
+
 extern bool stackStrAddValue(struct kittyData *item0, struct kittyData *item1);
 extern bool stackStrAddDecimal(struct kittyData *item0, struct kittyData *item1);
 extern bool stackStrAddStr(struct kittyData *item0,	struct kittyData *item1);
-
 extern bool stackMoreStr(struct kittyData *item0,	struct kittyData *item1);
 extern bool stackLessStr(struct kittyData *item0,	struct kittyData *item1);
 extern bool stackMoreOrEqualStr(struct kittyData *item0,struct kittyData *item1);
@@ -37,17 +38,19 @@ extern bool stackEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackNotEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1);
+extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken ) );
+extern bool dropProgStackToFlag( int flag );
+extern bool dropProgStackAllFlag( int flag );
+extern bool stack_is_number( int n );
+
+#endif
 
 extern void popStack(int n);
 extern void correct_for_hidden_sub_data();
 
 extern char *flushCmdParaStack( int nextToken );
-extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken ) );
-extern bool dropProgStackToFlag( int flag );
-extern bool dropProgStackAllFlag( int flag );
 
 extern void stack_get_if_int( int n, int *ret );
-extern bool stack_is_number( int n );
 
 #define incStack 	stack++; kittyStack[stack].state = state_none;	kittyStack[stack].type = type_none; 
 

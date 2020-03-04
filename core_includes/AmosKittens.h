@@ -199,22 +199,12 @@ struct extension_lib
 	uint32_t crc;
 };
 
-struct dataBase
+struct stringData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
 	uint16_t type;
-#ifdef _MSC_VER
-#pragma pack(pop)
-#endif
-} PACKED;
-
-struct stringData : dataBase
-{
-#ifdef _MSC_VER
-#pragma pack(push, 1)
-#endif
 	uint16_t size;
 	char ptr;
 #ifdef _MSC_VER
@@ -222,33 +212,36 @@ struct stringData : dataBase
 #endif
 } PACKED;
 
-struct desimalData :  dataBase
+struct desimalData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
+	uint16_t type;
 	double value;
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif
 } PACKED;
 
-struct valueData : dataBase
+struct valueData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
+	uint16_t type;
 	int value;
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif
 } PACKED;
 
-struct stringArrayData : dataBase
+struct stringArrayData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
+	uint16_t type;
 	uint16_t size;
 	struct stringData *ptr;
 #ifdef _MSC_VER
@@ -256,11 +249,12 @@ struct stringArrayData : dataBase
 #endif
 } PACKED;
 
-struct desimalArrayData : dataBase
+struct desimalArrayData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
+	uint16_t type;
 	uint16_t size;
 	struct desimalData ptr;
 #ifdef _MSC_VER
@@ -268,11 +262,12 @@ struct desimalArrayData : dataBase
 #endif
 } PACKED;
 
-struct valueArrayData : dataBase
+struct valueArrayData 
 {
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
+	uint16_t type;
 	uint16_t size;
 	struct valueData ptr;
 #ifdef _MSC_VER
@@ -570,9 +565,15 @@ extern int procStackCount;
 
 //extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
 
+#ifdef __amoskittens__
 extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
 extern char *jump_mode_gosub (struct reference *ref, char *ptr);
+extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
+extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
+#endif
 
 extern struct stringData *var_param_str;
 extern int var_param_num;
@@ -589,15 +590,26 @@ extern APTR contextDir;
 
 extern struct kittyFile kittyFiles[10];
 
-extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
-extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
-
-extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
-extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
-
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern bool token_is_fresh;
 extern struct glueCommands input_cmd_context;
+
+struct KittyInstant
+{
+	int last_var;
+	struct globalVar *globalVars;
+	unsigned short last_token;
+	int tokenMode;
+	int tokenlength;
+	struct retroScreen *screens[8] ;
+	struct retroVideo *video;
+	struct retroRGB DefaultPalette[256];
+	int current_screen;
+	struct retroSprite *sprite ;
+	struct retroSprite *icons ;
+	int stack ;
+	struct kittyData kittyStack[100];
+};
 
 #endif
 

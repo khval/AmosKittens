@@ -1,0 +1,4 @@
+
+IF NOT EXISTS sdk:Include/amosKittens
+makelink FROM sdk:Include/amosKittens TO `cd`/core_includes SOFT
+ENDIF

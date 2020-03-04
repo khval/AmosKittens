@@ -14,7 +14,7 @@ warnings = -Wuninitialized -Wsign-compare -Wunused-variable
 
 COPT = -D__USE_INLINE__ -D__amoskittens__
 
-inc = -I./ -I../../
+inc = -I./ -I../../ -Isdk:include/amoskittens
 
 objects_dir = objs_amoskittens/
 
@@ -92,16 +92,21 @@ main_SRCS = AmosKittens.cpp
 objects = $(main_objects:.cpp=.o)
 programs= $(main_SRCS:.cpp=.exe)
 
-all:	 config.h $(objects_in_dir) $(programs) 
+sdk_dir=/sdk/Include/amosKittens
+
+all:	$(sdk_dir)	 config.h $(objects_in_dir) $(programs) 
 
 debug:
 	echo $(objects_in_dir)
+
+$(sdk_dir):
+	execute install_core_headers
 
 $(objects_dir)%.o:	%.cpp debug.h 
 	g++ $(warnings) -c -O2  $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
 AmosKittens.exe:	config.h	AmosKittens.cpp	 $(objects_in_dir)
-	g++ $(warnings) -O2 $(COPT) $(@:.exe=.cpp) $(objects_in_dir) -o $@
+	g++ $(warnings) -O2 $(COPT) $(inc) $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
 	g++ $(warnings) -O2 $(COPT) $(@:.exe=.cpp) $(objects_in_dir) -o $@
@@ -114,7 +119,9 @@ config.h: $(config_tools:.tool.cpp=.tool.exe)
 	config_tools/check_cpu.tool.exe >> config.h
 
 clean:
+	execute uninstall_core_headers
 	@delete $(programs) $(config_tools:.tool.cpp=.tool.exe) $(objects_in_dir) config.h
+
 
 .PHONY: revision 
 revision:
