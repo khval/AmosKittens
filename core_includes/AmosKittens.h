@@ -100,12 +100,21 @@ enum
 	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
 };
 
+struct KittyInstance;
+
+#ifdef __amoskittens__
+#define KITTENS_CMD_ARGS (struct nativeCommand *cmd, char *tokenBuffer)
+#else
+#define KITTENS_CMD_ARGS (struct KittyInstance *instance , struct nativeCommand *cmd, char *tokenBuffer)
+#endif
+
+
 struct nativeCommand
 {
 	int id;
 	const char *name;
 	int size;
-	char *(*fn) (struct nativeCommand *cmd, char *tokenBuffer);
+	char *(*fn) KITTENS_CMD_ARGS;
 };
 
 enum 
@@ -452,93 +461,114 @@ struct kittyLib
 	struct Library *base;
 };
 
+#ifdef __amoskittens__
+#define __cmdStack instance.cmdStack
+#define __stack instance.stack
+#define instance_stack instance.stack
+#define instance_cmdStack instance.cmdStack
+#define this_instance_one
+#define this_instance_first
+#define opt_instance_one
+#define opt_instance_first
+#else
+#warning this is for Extention
+#define __cmdStack instance->cmdStack
+#define __stack instance->stack
+#define instance_stack instance->stack
+#define instance_cmdStack instance->cmdStack
+#define this_instance_one struct KittyInstance *instance
+#define this_instance_first struct KittyInstance *instance,
+#define opt_instance_one instance
+#define opt_instance_first instance,
+#endif
+
 #define stackIfSuccess()					\
-	cmdTmp[cmdStack].cmd = _ifSuccess;		\
-	cmdTmp[cmdStack].tokenBuffer = NULL;	\
-	cmdTmp[cmdStack].flag = cmd_never | cmd_true;	\
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = _ifSuccess;		\
+	cmdTmp[__cmdStack].tokenBuffer = NULL;	\
+	cmdTmp[__cmdStack].flag = cmd_never | cmd_true;	\
+	__cmdStack++; \
 
 #define stackIfNotSuccess()					\
-	cmdTmp[cmdStack].cmd = _ifNotSuccess;		\
-	cmdTmp[cmdStack].tokenBuffer = NULL;	\
-	cmdTmp[cmdStack].flag = cmd_never | cmd_false;	\
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = _ifNotSuccess;		\
+	cmdTmp[__cmdStack].tokenBuffer = NULL;	\
+	cmdTmp[__cmdStack].flag = cmd_never | cmd_false;	\
+	__cmdStack++; \
 
 #define stackCmdNormal( fn, buf )				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = 0; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	cmdTmp[__cmdStack].token = 0; \
+	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	__cmdStack++; \
 	token_is_fresh = false; 
 
 #define stackCmdLoop( fn, buf )				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_loop;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_loop;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	__cmdStack++; \
 
 #define stackCmdProc( fn, buf )				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_proc;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_proc;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	__cmdStack++; \
 
 #define stackCmdFlags( fn, buf, flags )				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = flags;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = flags;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	__cmdStack++; \
 
 #define stackCmdIndex( fn, buf )	{			\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_index ;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = token_index ; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; } \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_index ;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	cmdTmp[__cmdStack].token = token_index ; \
+	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	__cmdStack++; } \
 
 #define stackCmdParm( fn, buf )				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = 0; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	cmdTmp[__cmdStack].token = 0; \
+	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	__cmdStack++; \
 	token_is_fresh = false; 
 
 #define stackCmdMathOperator(fn,_buffer,_token)				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = _buffer;	\
-	cmdTmp[cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol; \
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = _token; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = _buffer;	\
+	cmdTmp[__cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol; \
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	cmdTmp[__cmdStack].token = _token; \
+	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	__cmdStack++; \
 
 #define stackCmdOnBreakOrNewCmd(fn,buf,_token)				\
-	cmdTmp[cmdStack].cmd = fn;		\
-	cmdTmp[cmdStack].tokenBuffer = buf;	\
-	cmdTmp[cmdStack].flag = cmd_para | cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
-	cmdTmp[cmdStack].lastVar = last_var;	\
-	cmdTmp[cmdStack].stack = stack; \
-	cmdTmp[cmdStack].token = _token; \
-	cmdTmp[cmdStack].parenthesis_count =parenthesis_count; \
-	cmdStack++; \
+	cmdTmp[__cmdStack].cmd = fn;		\
+	cmdTmp[__cmdStack].tokenBuffer = buf;	\
+	cmdTmp[__cmdStack].flag = cmd_para | cmd_onBreak | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
+	cmdTmp[__cmdStack].lastVar = last_var;	\
+	cmdTmp[__cmdStack].stack = __stack; \
+	cmdTmp[__cmdStack].token = _token; \
+	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	__cmdStack++; \
 
 
 extern struct zone *zones;
@@ -558,22 +588,9 @@ extern struct glueCommands cmdTmp[];
 extern struct proc procStack[];
 
 extern struct extension_lib	kitty_extensions[32];
-
-extern int stack;
-extern int cmdStack;
 extern int procStackCount;
 
 //extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
-
-#ifdef __amoskittens__
-extern char *(*jump_mode) (struct reference *ref, char *ptr);
-extern char *jump_mode_goto (struct reference *ref, char *ptr);
-extern char *jump_mode_gosub (struct reference *ref, char *ptr);
-extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
-extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
-extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
-extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
-#endif
 
 extern struct stringData *var_param_str;
 extern int var_param_num;
@@ -594,7 +611,7 @@ extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern bool token_is_fresh;
 extern struct glueCommands input_cmd_context;
 
-struct KittyInstant
+struct KittyInstance
 {
 	int last_var;
 	struct globalVar *globalVars;
@@ -605,11 +622,23 @@ struct KittyInstant
 	struct retroVideo *video;
 	struct retroRGB DefaultPalette[256];
 	int current_screen;
-	struct retroSprite *sprite ;
+	struct retroSprite *sprites ;
 	struct retroSprite *icons ;
 	int stack ;
+	int cmdStack ;
 	struct kittyData kittyStack[100];
 };
+
+#ifdef __amoskittens__
+extern char *(*jump_mode) (struct reference *ref, char *ptr);
+extern char *jump_mode_goto (struct reference *ref, char *ptr);
+extern char *jump_mode_gosub (struct reference *ref, char *ptr);
+extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
+extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
+extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
+extern struct KittyInstance instance;
+#endif
 
 #endif
 
