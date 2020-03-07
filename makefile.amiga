@@ -57,6 +57,7 @@ main_objects = commands.cpp \
 			pass1.cpp \
 			kittyErrors.cpp \
 			stack.cpp \
+			stackMath.cpp \
 			var_helper.cpp \
 			channel.cpp \
 			amal_object_bob.cpp \
