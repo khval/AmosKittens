@@ -9,6 +9,7 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#include <amoskittens.h>
 #endif
 
 #ifdef __linux__
@@ -23,7 +24,6 @@
 #include "channel.h"
 
 extern struct retroVideo *video;
-extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
 {
@@ -37,12 +37,12 @@ static int getImage (unsigned int object)
 
 static int getX (unsigned int object)
 {
-	return screens[object]->offset_x;
+	return instance.screens[object]->offset_x;
 }
 
 static int getY (unsigned int object)
 {
-	return screens[object]->offset_y;
+	return instance.screens[object]->offset_y;
 }
 
 static void setImage (unsigned int object,int image)
@@ -51,17 +51,17 @@ static void setImage (unsigned int object,int image)
 
 static void setX (unsigned int object,int x)
 {
-	screens[object]->offset_x = x;
+	instance.screens[object]->offset_x = x;
+ 	instance.screens[object] -> refreshScanlines = TRUE;
 
- 	screens[object] -> refreshScanlines = TRUE;
 	video -> refreshSomeScanlines = TRUE;
 }
 
 static void setY (unsigned int object,int y)
 {
-	screens[object]->offset_y = y;
+	instance.screens[object]->offset_y = y;
+ 	instance.screens[object] -> refreshScanlines = TRUE;
 
- 	screens[object] -> refreshScanlines = TRUE;
 	video -> refreshSomeScanlines = TRUE;
 }
 

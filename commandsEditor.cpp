@@ -33,7 +33,7 @@ extern int last_var;
 
 char *_cmdCallEditor( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args = __stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -42,7 +42,7 @@ char *_cmdCallEditor( struct glueCommands *data, int nextToken )
 		case 1:	
 				break;
 		defaut:
-				popStack( stack - data->stack );
+				popStack(__stack - data->stack );
 				setError(22,data->tokenBuffer);
 	}
 	return NULL;
@@ -56,7 +56,7 @@ char *cmdCallEditor(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_cmdAskEditor( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args = __stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -65,7 +65,7 @@ char *_cmdAskEditor( struct glueCommands *data, int nextToken )
 		case 1:	
 				break;
 		defaut:
-				popStack( stack - data->stack );
+				popStack(__stack - data->stack );
 				setError(22,data->tokenBuffer);
 	}
 	return NULL;

@@ -38,10 +38,7 @@ extern std::vector<int> collided;
 extern ChannelTableClass *channels;
 extern int global_var_count;
 
-extern struct retroScreen *screens[8] ;
 extern  std::vector<struct retroSpriteObject *> bobs;
-extern struct retroSprite *sprite;
-extern int current_screen ;
 
 struct lineFromPtr lineFromPtr;
 
@@ -208,11 +205,11 @@ void dump_sprite()
 	int image;
 	struct retroFrameHeader *frame;
 
-	if (sprite)
+	if (instance.sprites)
 	{
-		for (image=0;image<sprite -> number_of_frames;image++)
+		for (image=0;image<instance.sprites -> number_of_frames;image++)
 		{
-			frame = &sprite -> frames[image];
+			frame = &instance.sprites -> frames[image];
 
 			printf("sprite %-3d, w %-3d, h %-3d, bpr %-3d, hotspot x %-3d, hotspot y %-3d, data %08x, mask %08x - alpha %d\n", 
 				image+1,
@@ -414,7 +411,7 @@ void dump_prog_stack()
 
 	printf("\nDump prog stack:\n\n");
 
-	for (n=0; n<cmdStack;n++)
+	for (n=0; n<instance.cmdStack;n++)
 	{
 
 		name = findDebugSymbolName( cmdTmp[n].cmd );
@@ -436,7 +433,7 @@ void dump_stack()
 
 	printf("\nDump stack:\n\n");
 
-	for (n=0; n<=stack;n++)
+	for (n=0; n<=instance.stack;n++)
 	{
 		printf("stack[%d]=",n);
 
@@ -682,7 +679,7 @@ void dump_zones()
 	{
 		if ((zones[z].screen>-1) && (zones[z].screen<8))
 		{
-			if (s = screens[zones[z].screen])
+			if (s = instance.screens[zones[z].screen])
 			{
 				zz = &zones[z];
 				printf ("zone %d at %d,%d to %d,%d - on screen %d\n",z, zz->x0,zz->y0,zz->x1,zz->y1,zz -> screen );
@@ -742,22 +739,23 @@ void dump_channels()
 void dump_screens()
 {
 	int n;
+	struct retroScreen *screen;
 
 	Printf("Screens:\n");
 	for (n=0;n<8;n++)
 	{
-		if (screens[n])
+		if (screen = instance.screens[n])
 		{
 			Printf_iso("screen %3d, dw %3d, dh %3d, rw %3d, rh %3d, display %4d,%4d, offset %4d,%4d, db %s, frame %d, autoback %d, fade_speed %d\n", 
 				n,
-				screens[n]->displayWidth, screens[n]->displayHeight,
-				screens[n]->realWidth,screens[n]->realHeight,
-				screens[n]->scanline_x/2+128,screens[n]->scanline_y/2+50,
-				screens[n]->offset_x,screens[n]->offset_y,
-				screens[n]->Memory[1] ? "Yes" : "No ",
-				screens[n]->double_buffer_draw_frame,
-				screens[n]->autoback,
-				screens[n]->fade_speed);
+				screen->displayWidth, screen->displayHeight,
+				screen->realWidth,screen->realHeight,
+				screen->scanline_x/2+128,screen->scanline_y/2+50,
+				screen->offset_x,screen->offset_y,
+				screen->Memory[1] ? "Yes" : "No ",
+				screen->double_buffer_draw_frame,
+				screen->autoback,
+				screen->fade_speed);
 
 //				dump_pal( screens[n] , 8 );						
 				dump_bobs_on_screen( n );

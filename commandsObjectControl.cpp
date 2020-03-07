@@ -43,12 +43,9 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern int current_screen;
 extern int autoView;
 
-extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
-extern struct retroRGB DefaultPalette[256];
 extern std::vector<int> engineCmdQue;
 
 extern void __wait_vbl();
@@ -86,7 +83,7 @@ int find_zone_in_any_screen_hard( int hx, int hy)
 	{
 		if ((zones[z].screen>-1) && (zones[z].screen<8))
 		{
-			if (s = screens[zones[z].screen])
+			if (s = instance.screens[zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
@@ -108,7 +105,7 @@ int find_zone_in_any_screen_pixel( int hx, int hy)
 	{
 		if ((zones[z].screen>-1) && (zones[z].screen<8))
 		{
-			if (s = screens[zones[z].screen])
+			if (s = instance.screens[zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
@@ -131,7 +128,7 @@ int find_zone_in_only_screen_hard( int screen, int hx, int hy)
 	{
 		if (zones[z].screen == screen)
 		{
-			if (s = screens[zones[z].screen])
+			if (s = instance.screens[zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
@@ -184,7 +181,7 @@ char *ocMouseKey(struct nativeCommand *cmd, char *tokenBuffer)
 
 	setStackNum(engine_mouse_key);
 
-	kittyStack[stack].state = state_none;
+	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return tokenBuffer;
@@ -220,7 +217,7 @@ char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	//proc_names_
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -228,7 +225,7 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	if (kittyStack[stack].type == type_none)
+		case 1:	if (kittyStack[__stack].type == type_none)
 				{
 #ifdef enable_limit_mouse_yes
 					engine_lock();	
@@ -244,10 +241,10 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 				break;
 		case 4:
 				{
-					int x0 = getStackNum( stack-3 );
-					int y0 = getStackNum( stack-2 );
-					int x1 = getStackNum( stack-1 );
-					int y1 = getStackNum( stack );
+					int x0 = getStackNum(__stack-3 );
+					int y0 = getStackNum(__stack-2 );
+					int x1 = getStackNum(__stack-1 );
+					int y1 = getStackNum(__stack );
 
 					engine -> limit_mouse_x0 = (x0 - 128) * 2;
 					engine -> limit_mouse_y0 = (y0 - 50) * 2;
@@ -266,7 +263,7 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 				break;
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -280,7 +277,7 @@ char *ocMouseLimit(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocReserveZone( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (zones) free(zones);
@@ -288,7 +285,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		int newzones = getStackNum( stack );
+		int newzones = getStackNum(__stack );
 
 		if (newzones)
 		{
@@ -298,7 +295,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -311,15 +308,15 @@ char *ocReserveZone(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocZoneStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	struct stringData *newstr = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		struct stringData *txt = getStackString( stack-1 );
-		int zone = getStackNum( stack );
+		struct stringData *txt = getStackString(__stack-1 );
+		int zone = getStackNum(__stack );
 
 		if ((txt)&&(zone>-1)&&(zone<zones_allocated))
 		{
@@ -336,7 +333,7 @@ char *_ocZoneStr( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	if (newstr) setStackStr( newstr );
 
 	return NULL;
@@ -451,9 +448,9 @@ void frameToPointer(struct retroFrameHeader *frame)
 			{
 				c+=15;
 				argb = 0xFF000000;
-				argb |= DefaultPalette[c].r	* 0x0010000;
-				argb |= DefaultPalette[c].g	* 0x0000100;
-				argb |= DefaultPalette[c].b	* 0x0000001;
+				argb |= instance.DefaultPalette[c].r	* 0x0010000;
+				argb |= instance.DefaultPalette[c].g	* 0x0000100;
+				argb |= instance.DefaultPalette[c].b	* 0x0000001;
 			}
 
 			xx = x * 2;
@@ -485,7 +482,7 @@ void frameToPointer(struct retroFrameHeader *frame)
 
 char *_ocChangeMouse( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	struct retroFrameHeader *frame = NULL;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -493,12 +490,12 @@ char *_ocChangeMouse( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	{
-					int image = getStackNum( stack ) -1;
+					int image = getStackNum(__stack ) -1;
 					if (image>-1) frame = patterns ? patterns -> frames + image : NULL;
 				}
 				break;
 
-		default:	popStack( stack - data->stack );
+		default:	popStack(__stack - data->stack );
 				setError(22, data -> tokenBuffer );
 				break;
 	}
@@ -523,20 +520,20 @@ char *ocChangeMouse(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocSetZone( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 5)
 	{
-		int z = getStackNum( stack -4 ) - 1;
-		int x0 = getStackNum( stack -3 );
-		int y0 = getStackNum( stack -2 );
-		int x1 = getStackNum( stack -1 );
-		int y1 = getStackNum( stack );
+		int z = getStackNum(__stack -4 ) - 1;
+		int x0 = getStackNum(__stack -3 );
+		int y0 = getStackNum(__stack -2 );
+		int x1 = getStackNum(__stack -1 );
+		int y1 = getStackNum(__stack );
 
 		if ((zones)&&(z>-1)&&(z<zones_allocated))
 		{
-			zones[z].screen = current_screen;
+			zones[z].screen = instance.current_screen;
 			zones[z].x0 = x0;
 			zones[z].y0 = y0;
 			zones[z].x1 = x1;
@@ -545,7 +542,7 @@ char *_ocSetZone( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -558,12 +555,12 @@ char *ocSetZone(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocResetZone( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		switch (kittyStack[stack].type)
+		switch (kittyStack[__stack].type)
 		{
 			case type_none:
 					setError(23,data->tokenBuffer);
@@ -571,7 +568,7 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 
 			case type_int:
 					{
-						int z = kittyStack[stack].integer.value;
+						int z = kittyStack[__stack].integer.value;
 
 						if ((zones)&&(z>-1)&&(z<zones_allocated))
 						{
@@ -582,13 +579,13 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 							zones[z].y1 = 0;
 						}
 					}
-					popStack( stack - data->stack );
+					popStack(__stack - data->stack );
 					return NULL;
 		}
 	}
 
 	setError(22,data->tokenBuffer);
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -684,9 +681,9 @@ char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	engine_lock();		// Stop half of the bobs from being drawn.
 
-	if (screens[current_screen])
+	if (instance.screens[instance.current_screen])
 	{
-		screens[current_screen] -> event_flags |= rs_force_update;
+		instance.screens[instance.current_screen] -> event_flags |= rs_force_update;
 	}
 
 	engine_unlock();
@@ -697,16 +694,16 @@ char *ocUpdate(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocJUp( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = FALSE;
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_up) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);;
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 
 	return NULL;
@@ -721,17 +718,17 @@ char *ocJUp(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocJDown( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = FALSE;
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_down) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -745,17 +742,17 @@ char *ocJDown(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocJLeft( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = FALSE;
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_left) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -769,17 +766,17 @@ char *ocJLeft(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocJRight( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = FALSE;
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = (amiga_joystick_dir[j] & joy_right) ? TRUE : FALSE;
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -820,16 +817,16 @@ char *ocSynchro(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocUpdateEvery( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		bobUpdateEvery = getStackNum(stack);
+		bobUpdateEvery = getStackNum(__stack);
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -842,18 +839,18 @@ char *ocUpdateEvery(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocFire( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = amiga_joystick_button[j];
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -867,7 +864,7 @@ char *ocFire(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocHZone( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int s=-1,x=-1,y=-1;
 
 	// this function should return 0, if no zone is found.
@@ -879,21 +876,21 @@ char *_ocHZone( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-				x = getStackNum( stack-1 );
-				y = getStackNum( stack );
+				x = getStackNum(__stack-1 );
+				y = getStackNum(__stack );
 				ret = find_zone_in_any_screen_hard( x,y );
 				break;
 		case 3:
-				s = getStackNum( stack-2 );
-				x = getStackNum( stack-1 );	
-				y = getStackNum( stack );
+				s = getStackNum(__stack-2 );
+				x = getStackNum(__stack-1 );	
+				y = getStackNum(__stack );
 				ret = find_zone_in_only_screen_hard( s, x,y );
 				break;
 		default:
 				setError(22, data-> tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -907,7 +904,7 @@ char *ocHZone(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocZone( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = -1;
 	int s=-1,x=-1,y=-1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -915,14 +912,14 @@ char *_ocZone( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-				x = getStackNum( stack-1 );
-				y = getStackNum( stack );
-				ret = find_zone_in_only_screen_pixel( current_screen, x,y );
+				x = getStackNum(__stack-1 );
+				y = getStackNum(__stack );
+				ret = find_zone_in_only_screen_pixel( instance.current_screen, x,y );
 				break;
 		case 3:
-				s = getStackNum( stack-2 );
-				x = getStackNum( stack-1 );
-				y = getStackNum( stack );
+				s = getStackNum(__stack-2 );
+				x = getStackNum(__stack-1 );
+				y = getStackNum(__stack );
 				ret = find_zone_in_only_screen_pixel( s,x,y );
 				break;
 
@@ -932,7 +929,7 @@ char *_ocZone( struct glueCommands *data, int nextToken )
 
 	printf("Zone(%d,%d,%d) is %d\n",s,x,y,ret);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -946,18 +943,18 @@ char *ocZone(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_ocJoy( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		int j = getStackNum( stack );
+		int j = getStackNum(__stack );
 		if ((j>-1)&&(j<4)) ret = amiga_joystick_dir[j] | (amiga_joystick_button[j] << 4);
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -972,17 +969,17 @@ char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer)
 /*
 char *_ocIconMakeMask( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		int n = getStackNum( stack );
+		int n = getStackNum(__stack );
 	}
 	else setError(22,data->tokenBuffer);;
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 	return NULL;
 }
@@ -1003,7 +1000,7 @@ char *ocMouseScreen(struct nativeCommand *cmd, char *tokenBuffer)
 
 	for (int s=0;s<8;s++)
 	{
-		if (screen = screens[s])
+		if (screen = instance.screens[s])
 		{
 			x = XScreen_formula( screen, engine_mouse_x );
 			y = YScreen_formula( screen, engine_mouse_y );

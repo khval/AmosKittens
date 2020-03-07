@@ -35,16 +35,13 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
-extern struct retroSprite *sprite;
 
 extern struct RastPort font_render_rp;
 
 extern bool next_print_line_feed;
 extern retroSprite *patterns;
-
 extern int bobDoUpdate ;
 extern int bobUpdateNextWait ;
 
@@ -56,7 +53,6 @@ int currentPattern = 0;
 
 int sliderBPen,	sliderBPaper, sliderBOutline, sliderBStyle, sliderSPen, sliderSPaper, sliderSOutline, sliderSStyle;
 
-extern int current_screen;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
 
@@ -74,7 +70,7 @@ struct defScroll defScrolls[16];
 
 char *_gfxFlash( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	bool success = false;
 	int ret = 0;
 
@@ -82,19 +78,19 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		int color = getStackNum( stack-1 );
-		struct stringData *str = getStackString( stack );
+		int color = getStackNum(__stack-1 );
+		struct stringData *str = getStackString(__stack );
 
-		if (screens[current_screen])
+		if (instance.screens[instance.current_screen])
 		{
-			if (str) retroFlash( screens[current_screen], color, &(str->ptr) );
+			if (str) retroFlash( instance.screens[instance.current_screen], color, &(str->ptr) );
 		}
 		success = true;
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum(ret);
 	return NULL;
 }
@@ -102,7 +98,7 @@ char *_gfxFlash( struct glueCommands *data, int nextToken )
 
 char *_gfxColour( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	short num = 0;
 	unsigned int color;
 
@@ -111,7 +107,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	// get color
-			num = (short) getStackNum( stack );
+			num = (short) getStackNum(__stack );
 
 			if (num & 0xFF00)	// mask test don't need to check lower and upper limit.
 			{
@@ -119,9 +115,9 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 				return NULL;
 			}
 
-			if (screens[current_screen])
+			if (instance.screens[instance.current_screen])
 			{
-				struct retroRGB rgb = screens[current_screen]->orgPalette[num];
+				struct retroRGB rgb = instance.screens[instance.current_screen]->orgPalette[num];
 				setStackNum( ( (rgb.r & 0xF0) << 4) | (rgb.g &0xF0) | (rgb.b >> 4) );
 				return NULL;
 			}
@@ -130,9 +126,9 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 			return NULL;
 
 		case 2:	// set color
-			num = (short) getStackNum( stack-1 );
-			color = getStackNum( stack );
-			popStack( stack - data->stack );	// we can pop it here so we can exit early.
+			num = (short) getStackNum(__stack-1 );
+			color = getStackNum(__stack );
+			popStack(__stack - data->stack );	// we can pop it here so we can exit early.
 
 			if (num & 0xFF00)	// mask test don't need to check lower and upper limit.
 			{
@@ -140,11 +136,11 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 				return NULL;
 			}
 
-			if (screens[current_screen])
+			if (instance.screens[instance.current_screen])
 			{
 				if (color & 0xFF000000)		// has ALPHA so its ARGB
 				{
-					retroScreenColor( screens[current_screen],
+					retroScreenColor( instance.screens[instance.current_screen],
 						num, 
 						(color &0xFF0000) >>16, 
 						(color & 0x00FF00) >> 8,
@@ -152,7 +148,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 				}
 				else	// has no alpha so it must be old ECS colors.
 				{
-					retroScreenColor( screens[current_screen],
+					retroScreenColor( instance.screens[instance.current_screen],
 					 	num, 
 						((color &0xF00) >>8) * 0x11, 
 						((color & 0xF0) >> 4) * 0x11, 
@@ -166,7 +162,7 @@ char *_gfxColour( struct glueCommands *data, int nextToken )
 
 		defaut:
 			setError(22,data->tokenBuffer);
-			popStack( stack - data->stack );
+			popStack(__stack - data->stack );
 	}
 
 	return NULL;
@@ -257,19 +253,19 @@ void __bar( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y
 
 char *_gfxBar( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
-		struct retroScreen *screen = screens[current_screen];
+		struct retroScreen *screen = instance.screens[instance.current_screen];
 
-		stack_get_if_int( stack-3, &x0 );
-		stack_get_if_int( stack-2, &y0 );
-		xgr = x1 = getStackNum( stack-1 );
-		ygr = y1 = getStackNum( stack );
+		stack_get_if_int(__stack-3, &x0 );
+		stack_get_if_int(__stack-2, &y0 );
+		xgr = x1 = getStackNum(__stack-1 );
+		ygr = y1 = getStackNum(__stack );
 
 		if (screen)
 		{
@@ -285,15 +281,15 @@ char *_gfxBar( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxCls( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int color = 0;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 	struct retroTextWindow *textWindow = NULL;
 	int x0=0,y0=0,x1=0,y1=0;
 
@@ -314,13 +310,13 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-				if (kittyStack[stack].type == type_none)
+				if (kittyStack[__stack].type == type_none)
 				{
 					color = screen -> paper;
 				}
 				else
 				{
-					 color = getStackNum( stack );
+					 color = getStackNum(__stack );
 				}
 
 				x1 = screen->realWidth;
@@ -328,17 +324,17 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 				break;
 
 		case 5:
-				color = getStackNum( stack -4 );
-				x0 = getStackNum( stack -3 );
-				y0 = getStackNum( stack -2 );
-				x1 = getStackNum( stack -1 )-1;
-				y1 = getStackNum( stack )-1;
+				color = getStackNum(__stack -4 );
+				x0 = getStackNum(__stack -3 );
+				y0 = getStackNum(__stack -2 );
+				x1 = getStackNum(__stack -1 )-1;
+				y1 = getStackNum(__stack )-1;
 
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	switch (screen -> autoback)
 	{
@@ -355,25 +351,25 @@ char *_gfxCls( struct glueCommands *data, int nextToken )
 
 char *_gfxDraw( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1=0,y1=0;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 2:
-			xgr = x1 = getStackNum( stack-1 );
-			ygr = y1 = getStackNum( stack );
+			xgr = x1 = getStackNum(__stack-1 );
+			ygr = y1 = getStackNum(__stack );
 
 			break;
 
 		case 4:
-			stack_get_if_int( stack-3, &x0 );
-			stack_get_if_int( stack-2, &y0 );
-			xgr = x1 = getStackNum( stack-1 );
-			ygr = y1 = getStackNum( stack );
+			stack_get_if_int(__stack-3, &x0 );
+			stack_get_if_int(__stack-2, &y0 );
+			xgr = x1 = getStackNum(__stack-1 );
+			ygr = y1 = getStackNum(__stack );
 
 			if (screen) retroLine( screen, screen -> double_buffer_draw_frame,x0,y0,x1,y1,screen -> ink0 );
 			break;
@@ -382,7 +378,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	switch (screen ->autoback)
 	{
@@ -405,10 +401,10 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 
 char *_gfxPolygon( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int array[100*2];
 	int lx,ly;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -446,15 +442,15 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 	}
 	else	setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxPolyline( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	bool success = false;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -501,8 +497,8 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 		else if (args == 3)
 		{
 			int x,y;
-			x = getStackNum( stack-1 );
-			y = getStackNum( stack );
+			x = getStackNum(__stack-1 );
+			y = getStackNum(__stack );
 
 			switch (screen -> autoback)
 			{
@@ -519,23 +515,23 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 	
 	if (success == false) setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxCircle( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0=xgr,y0=ygr,r;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==3)
 	{
-		stack_get_if_int( stack-2, &x0 );
-		stack_get_if_int( stack-1, &y0 );
-		r = getStackNum( stack );
+		stack_get_if_int(__stack-2, &x0 );
+		stack_get_if_int(__stack-1, &y0 );
+		r = getStackNum(__stack );
 
 		if (screen) 
 		{
@@ -552,24 +548,24 @@ char *_gfxCircle( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxEllipse( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0=xgr,y0=ygr,r0,r1;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
-		stack_get_if_int( stack-3, &x0 );
-		stack_get_if_int( stack-2, &y0 );
-		r0 = getStackNum( stack-1 );
-		r1 = getStackNum( stack );
+		stack_get_if_int(__stack-3, &x0 );
+		stack_get_if_int(__stack-2, &y0 );
+		r0 = getStackNum(__stack-1 );
+		r1 = getStackNum(__stack );
 
 		if (screen) 
 		{
@@ -586,25 +582,25 @@ char *_gfxEllipse( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxBox( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0 = xgr ,y0 = ygr,x1,y1;
 	int t;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
-		stack_get_if_int( stack-3, &x0 );
-		stack_get_if_int( stack-2, &y0 );
-		xgr = x1 = getStackNum( stack-1 );
-		ygr = y1 = getStackNum( stack );
+		stack_get_if_int(__stack-3, &x0 );
+		stack_get_if_int(__stack-2, &y0 );
+		xgr = x1 = getStackNum(__stack-1 );
+		ygr = y1 = getStackNum(__stack );
 
 		if (x1<x0) { t = x0; x0 = x1; x1 = t; }
 		if (y1<y0) { t = y0; y0 = y1; y1 = t; }
@@ -626,50 +622,50 @@ char *_gfxBox( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *gfxBox(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxBox, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxBar(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxBar, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxDraw(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxDraw, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxCircle(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxCircle, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxEllipse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxEllipse, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *_gfxInk( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
-	struct retroScreen *screen = screens[current_screen];
+	int args =__stack - data->stack +1 ;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -678,16 +674,16 @@ char *_gfxInk( struct glueCommands *data, int nextToken )
 		switch (args)
 		{
 			case 1:
-				screen -> ink0 = getStackNum( stack );
+				screen -> ink0 = getStackNum(__stack );
 				break;
 			case 2:
-				stack_get_if_int( stack-1, (int *) &screen -> ink0 );
-				stack_get_if_int( stack, (int *) &screen -> ink1 );
+				stack_get_if_int(__stack-1, (int *) &screen -> ink0 );
+				stack_get_if_int(__stack, (int *) &screen -> ink1 );
 				break;
 			case 3:
-				stack_get_if_int( stack-2, (int *) &screen -> ink0 );
-				stack_get_if_int( stack-1, (int *) &screen -> ink1 );
-				stack_get_if_int( stack, (int *) &screen -> ink2 );
+				stack_get_if_int(__stack-2, (int *) &screen -> ink0 );
+				stack_get_if_int(__stack-1, (int *) &screen -> ink1 );
+				stack_get_if_int(__stack, (int *) &screen -> ink2 );
 				break;
 			default: 
 				setError(22,data->tokenBuffer);
@@ -695,7 +691,7 @@ char *_gfxInk( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -704,7 +700,7 @@ char *gfxInk(struct nativeCommand *cmd, char *tokenBuffer)
 	// make sure there is nothing on the stack.
 	// this command takes nothing as a arg.
 
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxInk, tokenBuffer );
 
 	return tokenBuffer;
@@ -719,16 +715,16 @@ char *gfxFlash(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (screens[current_screen])
+	if (instance.screens[instance.current_screen])
 	{
-		struct retroFlashTable **ptr = screens[current_screen]->allocatedFlashs;
-		struct retroFlashTable **ptr_end = screens[current_screen]->allocatedFlashs_end;
+		struct retroFlashTable **ptr = instance.screens[instance.current_screen]->allocatedFlashs;
+		struct retroFlashTable **ptr_end = instance.screens[instance.current_screen]->allocatedFlashs_end;
 
 		engine_lock();
 
 		for ( ; ptr<ptr_end;ptr++)
 		{
-			if (*ptr) retroDeleteFlash( screens[current_screen], (*ptr) -> color );
+			if (*ptr) retroDeleteFlash( instance.screens[instance.current_screen], (*ptr) -> color );
 		}
 
 		engine_unlock();
@@ -739,64 +735,64 @@ char *gfxFlashOff(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxPlot( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
-	struct retroScreen *screen = screens[current_screen];
+	int args =__stack - data->stack +1 ;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 2:
-			stack_get_if_int( stack-1, &xgr );
-			stack_get_if_int( stack, &ygr );
+			stack_get_if_int(__stack-1, &xgr );
+			stack_get_if_int(__stack, &ygr );
 			if (screen) retroPixel( screen, screen -> Memory[ screen -> double_buffer_draw_frame ], xgr,ygr,screen -> ink0 );
 			break;
 		case 3:
-			stack_get_if_int( stack-2, &xgr );
-			stack_get_if_int( stack-1, &ygr );
-			if (screen) retroPixel( screen, screen -> Memory[ screen -> double_buffer_draw_frame ], xgr,ygr,getStackNum( stack ) );
+			stack_get_if_int(__stack-2, &xgr );
+			stack_get_if_int(__stack-1, &ygr );
+			if (screen) retroPixel( screen, screen -> Memory[ screen -> double_buffer_draw_frame ], xgr,ygr,getStackNum(__stack ) );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxPaint( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x0 = xgr, y0 = ygr,c;
-	struct retroScreen *screen = screens[current_screen];
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 2:
-			stack_get_if_int( stack-1, &x0 );
-			stack_get_if_int( stack, &y0 );
+			stack_get_if_int(__stack-1, &x0 );
+			stack_get_if_int(__stack, &y0 );
 			if (screen) retroFill( screen, screen -> double_buffer_draw_frame, x0,y0,screen -> ink0 );
 			break;
 		case 3:
-			stack_get_if_int( stack-2, &x0 );
-			stack_get_if_int( stack-1, &y0 );
-			c = getStackNum( stack );
+			stack_get_if_int(__stack-2, &x0 );
+			stack_get_if_int(__stack-1, &y0 );
+			c = getStackNum(__stack );
 			if (screen) retroFill( screen, screen -> double_buffer_draw_frame, x0,y0,c );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 
 char *_gfxPoint( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = -1;
 	int x0 = xgr, y0 = ygr;
 
@@ -805,13 +801,13 @@ char *_gfxPoint( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			stack_get_if_int( stack-1, &x0 );
-			stack_get_if_int( stack, &y0 );
-			popStack( stack - data->stack );
-			if (screens[current_screen]) ret = retroPoint(screens[current_screen], x0, y0) ;
+			stack_get_if_int(__stack-1, &x0 );
+			stack_get_if_int(__stack, &y0 );
+			popStack(__stack - data->stack );
+			if (instance.screens[instance.current_screen]) ret = retroPoint(instance.screens[instance.current_screen], x0, y0) ;
 			break;
 		default:
-			popStack( stack - data->stack );
+			popStack(__stack - data->stack );
 			setError(22,data->tokenBuffer);
 	}
 
@@ -824,40 +820,40 @@ char *_gfxPoint( struct glueCommands *data, int nextToken )
 
 char *_gfxGrLocate( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 2:
-			xgr = getStackNum( stack -1 );
-			ygr = getStackNum( stack );
+			xgr = getStackNum(__stack -1 );
+			ygr = getStackNum(__stack );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxGetColour( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int c;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (args)
 	{
 		case 1:
-			c = getStackNum( stack );
+			c = getStackNum(__stack );
 
 			if ((c>-1)&&(c<256))
 			{
-				if (screens[current_screen])	// check if screen is open.
+				if (instance.screens[instance.current_screen])	// check if screen is open.
 				{
-					struct retroRGB rgb = screens[current_screen]->orgPalette[c];
+					struct retroRGB rgb = instance.screens[instance.current_screen]->orgPalette[c];
 
 					setStackNum( ( (rgb.r / 17) << 8) + ( (rgb.g / 17) << 4) + (rgb.b / 17) );
 				}
@@ -868,14 +864,14 @@ char *_gfxGetColour( struct glueCommands *data, int nextToken )
 		default:
 			setError(22,data->tokenBuffer);
 	}
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxPalette( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int color,n,num;
 	struct retroScreen *screen;
 
@@ -883,14 +879,14 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 
 	engine_lock();
 
-	screen = screens[current_screen];
+	screen = instance.screens[instance.current_screen];
 
 	if ( (screen) && (args > 0) )
 	{
 		struct retroRGB *Palette = screen -> orgPalette;
 		struct retroRGB rgb;
 
-		for (n=data->stack;n<=stack;n++)
+		for (n=data->stack;n<=__stack;n++)
 		{
 			num = n-data->stack;
 			rgb = Palette[num];
@@ -911,35 +907,35 @@ char *_gfxPalette( struct glueCommands *data, int nextToken )
 	engine_unlock();
 
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int n;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	engine_lock();
 
-	if ((current_screen>-1)&&(current_screen<8))
+	if ((instance.current_screen>-1)&&(instance.current_screen<8))
 	{
-		if ((screens[current_screen])&&(args == 1))
+		if ((instance.screens[instance.current_screen])&&(args == 1))
 		{
-			int screen_num = getStackNum( stack );
+			int screen_num = getStackNum(__stack );
 
 			if ((screen_num>-1)&&(screen_num<8))
 			{
-				if (screens[screen_num])
+				if (instance.screens[screen_num])
 				{
-					struct retroRGB *Palette = screens[screen_num]->orgPalette;
+					struct retroRGB *Palette = instance.screens[screen_num]->orgPalette;
 
 					for (n=0;n<256;n++)
 					{
-						retroScreenColor( screens[current_screen], n,Palette[n].r,Palette[n].g,Palette[n].b);
+						retroScreenColor( instance.screens[instance.current_screen], n,Palette[n].r,Palette[n].g,Palette[n].b);
 					}
 				}
 			}
@@ -948,7 +944,7 @@ char *_gfxGetPalette( struct glueCommands *data, int nextToken )
 
 	engine_unlock();
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
@@ -960,7 +956,7 @@ char *_gfxDefaultPalette( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	for (n=data->stack;n<=stack;n++)
+	for (n=data->stack;n<=__stack;n++)
 	{
 		num = n-data->stack;
 
@@ -976,14 +972,14 @@ char *_gfxDefaultPalette( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -991,22 +987,22 @@ char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 	{
 		case 7:
 			{
-				int n = getStackNum( stack -6 ) -1;
+				int n = getStackNum(__stack -6 ) -1;
 
 				if ((n>-1)&&(n<16))
 				{
-					defScrolls[n].x0 = getStackNum( stack -5 );
-					defScrolls[n].y0 = getStackNum( stack -4 );
-					defScrolls[n].x1 = getStackNum( stack -3 );
-					defScrolls[n].y1 = getStackNum( stack -2 );
-					defScrolls[n].dx = getStackNum( stack -1 );
-					defScrolls[n].dy = getStackNum( stack );
+					defScrolls[n].x0 = getStackNum(__stack -5 );
+					defScrolls[n].y0 = getStackNum(__stack -4 );
+					defScrolls[n].x1 = getStackNum(__stack -3 );
+					defScrolls[n].y1 = getStackNum(__stack -2 );
+					defScrolls[n].dx = getStackNum(__stack -1 );
+					defScrolls[n].dy = getStackNum(__stack );
 					success = true;
 				}
 			}
 			break;
 	}
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	if (success == false) setError(22,data->tokenBuffer);
 
@@ -1064,18 +1060,18 @@ void _scroll( struct retroScreen *screen, int buf, int x0,int y0, int x1, int y1
 
 char *_gfxScroll( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	switch (args)
 	{
 		case 1:
 			{
-				int n = getStackNum( stack  ) -1;
+				int n = getStackNum(__stack  ) -1;
 
 				if ((n>-1)&&(n<16))
 				{
-					struct retroScreen *screen = screens[current_screen];
+					struct retroScreen *screen = instance.screens[instance.current_screen];
 					int x0 = defScrolls[n].x0 ;
 					int y0 = defScrolls[n].y0 ;
 					int x1 = defScrolls[n].x1 ;
@@ -1088,10 +1084,10 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 
 						// limit to screen first
 						if (x0<0) x0=0;
-						if (x1>screens[current_screen] -> realWidth-1) x1 = screens[current_screen] -> realWidth -1;
+						if (x1>instance.screens[instance.current_screen] -> realWidth-1) x1 = instance.screens[instance.current_screen] -> realWidth -1;
 
 						if (y0<0) y0=0;
-						if (y1>screens[current_screen] -> realHeight-1) y1 = screens[current_screen] -> realHeight -1;
+						if (y1>instance.screens[instance.current_screen] -> realHeight-1) y1 = instance.screens[instance.current_screen] -> realHeight -1;
 
 						// limit to x0,y0,x1,y1
 
@@ -1122,7 +1118,7 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 		default:
 			setError(22,data->tokenBuffer);
 	}
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
@@ -1130,14 +1126,14 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxPlot, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxPaint(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxPaint, tokenBuffer );
 	return tokenBuffer;
 }
@@ -1194,7 +1190,7 @@ char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxCls(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxCls, tokenBuffer );
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].type = type_none;
 	return tokenBuffer;
 }
 
@@ -1235,23 +1231,23 @@ struct _never_used_shift_
 
 char *_gfxShiftUp( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 4:
 			{
-				if (screens[current_screen])
+				if (instance.screens[instance.current_screen])
 				{
 					engine_lock();
-					retroCycleOff(screens[current_screen] );
+					retroCycleOff(instance.screens[instance.current_screen] );
 					retroCycleColorsUp( 
-						screens[current_screen],
-						 getStackNum( stack -3 ),
-						 getStackNum( stack -2 ),
-						 getStackNum( stack -1 ),
-						 getStackNum( stack ));
+						instance.screens[instance.current_screen],
+						 getStackNum(__stack -3 ),
+						 getStackNum(__stack -2 ),
+						 getStackNum(__stack -1 ),
+						 getStackNum(__stack ));
 
 					engine_unlock();
 				}
@@ -1262,29 +1258,29 @@ char *_gfxShiftUp( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxShiftDown( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 4:
-				if (screens[current_screen])
+				if (instance.screens[instance.current_screen])
 				{
 					engine_lock();
 
-					retroCycleOff(screens[current_screen] );
+					retroCycleOff(instance.screens[instance.current_screen] );
 					retroCycleColorsDown( 
-						screens[current_screen],
-						 getStackNum( stack -3 ),
-						 getStackNum( stack -2 ),
-						 getStackNum( stack -1 ),
-						 getStackNum( stack ));
+						instance.screens[instance.current_screen],
+						 getStackNum(__stack -3 ),
+						 getStackNum(__stack -2 ),
+						 getStackNum(__stack -1 ),
+						 getStackNum(__stack ));
 
 					engine_unlock();
 				}
@@ -1293,7 +1289,7 @@ char *_gfxShiftDown( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1312,10 +1308,10 @@ char *gfxShiftDown(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *gfxShiftOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (screens[current_screen])
+	if (instance.screens[instance.current_screen])
 	{
 		engine_lock();
-		retroCycleOff(screens[current_screen] );
+		retroCycleOff(instance.screens[instance.current_screen] );
 		engine_unlock();
 	}
 
@@ -1352,7 +1348,7 @@ void channelRainbowOCS( unsigned char *rgb, int channel, int lines, int step, in
 
 char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1360,12 +1356,12 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 	if (args==6)
 	{
-		int n = getStackNum( stack-5 );
-		int colour = getStackNum( stack-4 );
-		int length = getStackNum( stack-3 );
-		struct stringData *r = getStackString( stack-2 );
-		struct stringData *g = getStackString( stack-1 );
-		struct stringData *b = getStackString( stack );
+		int n = getStackNum(__stack-5 );
+		int colour = getStackNum(__stack-4 );
+		int length = getStackNum(__stack-3 );
+		struct stringData *r = getStackString(__stack-2 );
+		struct stringData *g = getStackString(__stack-1 );
+		struct stringData *b = getStackString(__stack );
 		unsigned char *rgb;
 
 		engine_lock();
@@ -1389,29 +1385,29 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 #endif
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxRainbow( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==4)
 	{
-		int rainbowNumber = getStackNum( stack-3 );
-		int base = getStackNum( stack-2 );
-		int verticalOffset = getStackNum( stack-1 ) ;
-		int height = getStackNum( stack );
+		int rainbowNumber = getStackNum(__stack-3 );
+		int base = getStackNum(__stack-2 );
+		int verticalOffset = getStackNum(__stack-1 ) ;
+		int height = getStackNum(__stack );
 
 		retroRainbow( video, rainbowNumber, base, verticalOffset-51, height);
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
@@ -1431,7 +1427,7 @@ char *_set_rain( struct glueCommands *data, int nextToken )
 	{
 		if ((rgb = rainbow -> table) && ( _set_rainbow_index>-1 ) && (_set_rainbow_index < rainbow -> tableSize))
 		{
-			_rgb_= getStackNum( stack );
+			_rgb_= getStackNum(__stack );
 			rgb[_set_rainbow_index].r =	((_rgb_ & 0xF00) >> 8) * 0x11 ;
 			rgb[_set_rainbow_index].g =	((_rgb_ & 0x0F0) >> 4) * 0x11 ;
 			rgb[_set_rainbow_index].b =	(_rgb_ & 0x00F) * 0x11 ;
@@ -1446,50 +1442,50 @@ char *_set_rain( struct glueCommands *data, int nextToken )
 
 char *_gfxRain( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==2)
 	{
-		_set_rainbow = getStackNum( stack-1 );
-		_set_rainbow_index = getStackNum( stack );
+		_set_rainbow = getStackNum(__stack-1 );
+		_set_rainbow_index = getStackNum(__stack );
 		_do_set = _set_rain;
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *_gfxZoom( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 10:
 			{
-				int from_screen = getStackNum( stack-9 );
-				int x0 = getStackNum( stack-8 );
-				int y0 = getStackNum( stack-7 );
-				int x1 = getStackNum( stack-6 );
-				int y1 = getStackNum( stack-5 );
+				int from_screen = getStackNum(__stack-9 );
+				int x0 = getStackNum(__stack-8 );
+				int y0 = getStackNum(__stack-7 );
+				int x1 = getStackNum(__stack-6 );
+				int y1 = getStackNum(__stack-5 );
 
-				int to_screen = getStackNum( stack-4 );
-				int x2 = getStackNum( stack-3 );
-				int y2 = getStackNum( stack-2 );
-				int x3 = getStackNum( stack-1 );
-				int y3 = getStackNum( stack );
+				int to_screen = getStackNum(__stack-4 );
+				int x2 = getStackNum(__stack-3 );
+				int y2 = getStackNum(__stack-2 );
+				int x3 = getStackNum(__stack-1 );
+				int y3 = getStackNum(__stack );
 
 				if (((from_screen>=0)&&(from_screen<8))&&((to_screen>=0)&&(to_screen<8)))	// is in range.
 				{
-					if ((screens[from_screen])&&(screens[to_screen]))	// is open
+					if ((instance.screens[from_screen])&&(instance.screens[to_screen]))	// is open
 					{
 						engine_lock();
-						retroZoom(screens[from_screen],  x0,  y0, x1,  y1, screens[to_screen],  x2,  y2,  x3,  y3);
+						retroZoom(instance.screens[from_screen],  x0,  y0, x1,  y1, instance.screens[to_screen],  x2,  y2,  x3,  y3);
 						engine_unlock();
 					}
 				}
@@ -1500,14 +1496,14 @@ char *_gfxZoom( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 
 char *_gfxAppear( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int from_screen;
 	int to_screen;
 	int step = 0;
@@ -1520,18 +1516,18 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	{
 		case 3:
 			{
-				from_screen = getStackNum( stack-2 );
-				to_screen = getStackNum( stack-1 );
-				step = getStackNum( stack );
+				from_screen = getStackNum(__stack-2 );
+				to_screen = getStackNum(__stack-1 );
+				step = getStackNum(__stack );
 				pixels = 0;
 			}
 			break;
 		case 4:
 			{
-				from_screen = getStackNum( stack-3 );
-				to_screen = getStackNum( stack-2 );
-				step = getStackNum( stack-1 );
-				pixels = getStackNum( stack );
+				from_screen = getStackNum(__stack-3 );
+				to_screen = getStackNum(__stack-2 );
+				step = getStackNum(__stack-1 );
+				pixels = getStackNum(__stack );
 			}
 			break;
 
@@ -1542,8 +1538,8 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 	if ((args_ok)&&(step>0))
 	{
 		retroScreen *fscreen,*tscreen;
-		fscreen = screens[from_screen];
-		tscreen = screens[to_screen];
+		fscreen = instance.screens[from_screen];
+		tscreen = instance.screens[to_screen];
 
 		if ((fscreen)&&(tscreen))
 		{
@@ -1581,7 +1577,7 @@ char *_gfxAppear( struct glueCommands *data, int nextToken )
 		setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1605,7 +1601,7 @@ char *gfxZoom(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxFade( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	struct retroScreen *screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1615,11 +1611,11 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 	if (kittyStack[data->stack].type == type_none)
 	{
 		setError(22, data -> tokenBuffer);
-		popStack( stack - data->stack );
+		popStack(__stack - data->stack );
 		return NULL;
 	}
 
-	if ( screen = screens[current_screen] )
+	if ( screen = instance.screens[instance.current_screen] )
 	{
 		int fade_speed;
 		struct retroRGB *dest_pal;
@@ -1636,12 +1632,12 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 			if ((fade_speed == 0)&&(args>255))
 			{
 				setError(22, data -> tokenBuffer);
-				popStack( stack - data->stack );
+				popStack(__stack - data->stack );
 				return NULL;
 			}
 
 			c = 0;	// color
-			for (int s = data->stack+1 ; s <= stack ; s++ )
+			for (int s = data->stack+1 ; s <= __stack ; s++ )
 			{
 				if (kittyStack[s].type == type_none)
 				{
@@ -1663,9 +1659,9 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 		}
 		else		// fade to black, if no colors after fade.
 		{
-			if (kittyStack[ stack ].type == type_int)
+			if (kittyStack[__stack ].type == type_int)
 			{
-				fade_speed = kittyStack[stack].integer.value;
+				fade_speed = kittyStack[__stack].integer.value;
 			}
 			else fade_speed = 1;
 
@@ -1682,13 +1678,13 @@ char *_gfxFade( struct glueCommands *data, int nextToken )
 		screen -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int fade_speed = 0;
 	int mask = 0xFFFFFFFF;	// 8 bit set, all colors in use.
 	int source_screen = 0;
@@ -1698,33 +1694,33 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-				fade_speed = getStackNum( stack -1);
-				source_screen = getStackNum( stack );
+				fade_speed = getStackNum(__stack -1);
+				source_screen = getStackNum(__stack );
 				break;
 		case 3:
-				fade_speed = getStackNum( stack -1);
-				source_screen = getStackNum( stack );
-				mask = getStackNum( stack );
+				fade_speed = getStackNum(__stack -1);
+				source_screen = getStackNum(__stack );
+				mask = getStackNum(__stack );
 				break;
 		default:
 				setError(22,data->tokenBuffer);
-				popStack( stack - data->stack );
+				popStack(__stack - data->stack );
 				return NULL;
 	}
 
 	if ((source_screen>=0)&&(source_screen<8))
 	{
-		if ((screens[current_screen])&&(screens[source_screen]))
+		if ((instance.screens[instance.current_screen])&&(instance.screens[source_screen]))
 		{
 			int n;
 			struct retroRGB *source_pal;
 			struct retroRGB *dest_pal;
 
-			screens[current_screen] -> fade_count = 0;
-			screens[current_screen] -> fade_speed = 0;
+			instance.screens[instance.current_screen] -> fade_count = 0;
+			instance.screens[instance.current_screen] -> fade_speed = 0;
 
-			source_pal = screens[source_screen] -> orgPalette;
-			dest_pal = screens[current_screen] -> fadePalette;
+			source_pal = instance.screens[source_screen] -> orgPalette;
+			dest_pal = instance.screens[instance.current_screen] -> fadePalette;
 
 			n = 0;
 			while ( n<256)
@@ -1736,24 +1732,24 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 				n++;
 			}
 
-			screens[current_screen] -> fade_speed = fade_speed;
-			screens[current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
+			instance.screens[instance.current_screen] -> fade_speed = fade_speed;
+			instance.screens[instance.current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
 		}
 
-		popStack( stack - data->stack );
+		popStack(__stack - data->stack );
 		return NULL;
 	}
 
 	if (source_screen<0)
 	{
-		if ((screens[current_screen])&&(sprite))
+		if ((instance.screens[instance.current_screen])&&(instance.sprites))
 		{
 			int n;
 			struct retroRGB *source_pal;
 			struct retroRGB *dest_pal;
 
-			dest_pal = screens[current_screen] -> fadePalette;
-			source_pal = sprite -> palette;
+			dest_pal = instance.screens[instance.current_screen] -> fadePalette;
+			source_pal = instance.sprites -> palette;
 
 			n = 0;
 			while ( n<256)
@@ -1765,26 +1761,26 @@ char *_gfxFadeTo( struct glueCommands *data, int nextToken )
 				n++;
 			}	
 
-			screens[current_screen] -> fade_speed = fade_speed;
-			screens[current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
+			instance.screens[instance.current_screen] -> fade_speed = fade_speed;
+			instance.screens[instance.current_screen] -> fade_count = fade_speed;		// next vbl is auto fade 1. (no delay)
 		}
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 
 	return NULL;
 }
 
 char *do_to_fade( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	if (cmdStack)
+	if (instance.cmdStack)
 	{
-		if (cmdTmp[cmdStack-1].cmd == _gfxFade)
+		if (cmdTmp[instance.cmdStack-1].cmd == _gfxFade)
 		{
-			cmdTmp[cmdStack-1].cmd = _gfxFadeTo;
+			cmdTmp[instance.cmdStack-1].cmd = _gfxFadeTo;
 		}
 	}
-	stack++;
+	__stack++;
 	setStackNone();
 	return NULL;
 }
@@ -1818,20 +1814,20 @@ char *gfxNtsc(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxAutoback( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		if (screens[current_screen])
+		if (instance.screens[instance.current_screen])
 		{
-			screens[current_screen]->autoback = getStackNum( stack );
+			instance.screens[instance.current_screen]->autoback = getStackNum(__stack );
 		}
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1845,7 +1841,7 @@ char *gfxAutoback(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxColourBack( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	uint32_t color;
 	uint16_t r,g,b;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1853,7 +1849,7 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-				color = getStackNum(stack);
+				color = getStackNum(__stack);
 				if (color & 0xFF000000)		// has ALPHA so its ARGB
 				{
 					engine_back_color = color & 0x00FFFFFF;
@@ -1870,7 +1866,7 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1883,20 +1879,20 @@ char *gfxColourBack(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
-			paintMode = getStackNum( stack );
+			paintMode = getStackNum(__stack );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1910,7 +1906,7 @@ char *gfxSetPaint(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxSetTempras( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1922,7 +1918,7 @@ char *_gfxSetTempras( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1935,8 +1931,8 @@ char *gfxSetTempras(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxClip( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
-	struct retroScreen *screen = screens[current_screen];
+	int args =__stack - data->stack +1 ;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1945,10 +1941,10 @@ char *_gfxClip( struct glueCommands *data, int nextToken )
 		case 4:
 			if (screen)
 			{
-				screen -> clip_x0 = getStackNum( stack -3);
-				screen -> clip_y0 = getStackNum( stack -2 );
-				screen -> clip_x1 = getStackNum( stack -1);
-				screen -> clip_y1 = getStackNum( stack );
+				screen -> clip_x0 = getStackNum(__stack -3);
+				screen -> clip_y0 = getStackNum(__stack -2 );
+				screen -> clip_x1 = getStackNum(__stack -1);
+				screen -> clip_y1 = getStackNum(__stack );
 
 				if (screen -> clip_x0<0) screen -> clip_x0 = 0;
 				if (screen -> clip_y0<0) screen -> clip_y0 = 0;
@@ -1960,7 +1956,7 @@ char *_gfxClip( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1973,19 +1969,19 @@ char *gfxClip(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
-			currentPattern = getStackNum(stack);
+			currentPattern = getStackNum(__stack);
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -1998,7 +1994,7 @@ char *gfxSetPattern(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxSetLine( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -2009,7 +2005,7 @@ char *_gfxSetLine( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -2022,7 +2018,7 @@ char *gfxSetLine(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxRainbowDel( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -2033,7 +2029,7 @@ char *_gfxRainbowDel( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -2046,7 +2042,7 @@ char *gfxRainbowDel(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxScrollOff( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
@@ -2057,7 +2053,7 @@ char *_gfxScrollOff( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -2070,7 +2066,7 @@ char *gfxScrollOff(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxPhysic( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -2078,20 +2074,20 @@ char *_gfxPhysic( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1: 
-				if (kittyStack[stack].type == type_none)
+				if (kittyStack[__stack].type == type_none)
 				{
-					ret = current_screen | 0xC0000000;
+					ret = instance.current_screen | 0xC0000000;
 				}
 				else 
 				{
-					ret = getStackNum( stack ) | 0xC0000000;
+					ret = getStackNum(__stack ) | 0xC0000000;
 				}
 			break;
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 
 	return NULL;
@@ -2108,13 +2104,13 @@ char *gfxPhysic(struct nativeCommand *cmd, char *tokenBuffer)
 		return tokenBuffer;
 	}
 
-	setStackNum( current_screen | 0xC0000000 );
+	setStackNum( instance.current_screen | 0xC0000000 );
 	return tokenBuffer;
 }
 
 char *_gfxLogic( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -2122,13 +2118,13 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-				if (kittyStack[stack].type == type_none)
+				if (kittyStack[__stack].type == type_none)
 				{
-					ret = current_screen | 0x80000000;
+					ret = instance.current_screen | 0x80000000;
 				}
 				else 
 				{
-					ret = getStackNum( stack ) | 0x80000000;
+					ret = getStackNum(__stack ) | 0x80000000;
 				}
 			break;
 
@@ -2136,7 +2132,7 @@ char *_gfxLogic( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackNum( ret );
 
 	return NULL;
@@ -2154,7 +2150,7 @@ char *gfxLogic(struct nativeCommand *cmd, char *tokenBuffer)
 		return tokenBuffer;
 	}
 
-	setStackNum( current_screen | 0x80000000 );
+	setStackNum( instance.current_screen | 0x80000000 );
 	return tokenBuffer;
 }
 
@@ -2175,7 +2171,7 @@ void dotBAR( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int 
 
 char *_gfxHslider( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
 	struct retroScreen *screen;
 
@@ -2183,15 +2179,15 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 
 	if (args==7)
 	{
-		x1 = getStackNum( stack-6 );
-		y1 = getStackNum( stack-5 );
-		x2 = getStackNum( stack-4 );
-		y2 = getStackNum( stack-3 );
-		total = getStackNum( stack-2 );
-		pos = getStackNum( stack-1 );
-		size = getStackNum( stack );
+		x1 = getStackNum(__stack-6 );
+		y1 = getStackNum(__stack-5 );
+		x2 = getStackNum(__stack-4 );
+		y2 = getStackNum(__stack-3 );
+		total = getStackNum(__stack-2 );
+		pos = getStackNum(__stack-1 );
+		size = getStackNum(__stack );
 
-		if (screen = screens[current_screen])
+		if (screen = instance.screens[instance.current_screen])
 		{
 			int xpos1,xpos2;
 
@@ -2223,7 +2219,7 @@ char *_gfxHslider( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -2235,7 +2231,7 @@ char *gfxHslider(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfsVslider( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int x1 ,y1,x2,y2,total,pos,size;
 	struct retroScreen *screen;
 
@@ -2243,15 +2239,15 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 
 	if (args==7)
 	{
-		x1 = getStackNum( stack-6 );
-		y1 = getStackNum( stack-5 );
-		x2 = getStackNum( stack-4 );
-		y2 = getStackNum( stack-3 );
-		total = getStackNum( stack-2 );
-		pos = getStackNum( stack-1 );
-		size = getStackNum( stack );
+		x1 = getStackNum(__stack-6 );
+		y1 = getStackNum(__stack-5 );
+		x2 = getStackNum(__stack-4 );
+		y2 = getStackNum(__stack-3 );
+		total = getStackNum(__stack-2 );
+		pos = getStackNum(__stack-1 );
+		size = getStackNum(__stack );
 
-		if ( screen = screens[current_screen])
+		if ( screen = instance.screens[instance.current_screen])
 		{
 			int ypos1,ypos2;
 
@@ -2267,7 +2263,7 @@ char *_gfsVslider( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -2279,23 +2275,23 @@ char *gfsVslider(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_gfxSetSlider( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==8)
 	{
-		sliderBPen = getStackNum( stack-7 );
-		sliderBPaper = getStackNum( stack-6 );
-		sliderBOutline = getStackNum( stack-5 );
-		sliderBStyle = getStackNum( stack-4 );
-		sliderSPen = getStackNum( stack-3 );
-		sliderSPaper = getStackNum( stack-2 );
-		sliderSOutline = getStackNum( stack-1 );
-		sliderSStyle = getStackNum( stack );
+		sliderBPen = getStackNum(__stack-7 );
+		sliderBPaper = getStackNum(__stack-6 );
+		sliderBOutline = getStackNum(__stack-5 );
+		sliderBStyle = getStackNum(__stack-4 );
+		sliderSPen = getStackNum(__stack-3 );
+		sliderSPaper = getStackNum(__stack-2 );
+		sliderSOutline = getStackNum(__stack-1 );
+		sliderSStyle = getStackNum(__stack );
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 

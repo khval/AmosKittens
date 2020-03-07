@@ -36,7 +36,6 @@
 extern void pushBackAmalCmd( amal::Flags flags, struct kittyChannel *channel, void *cmd ) ;
 extern int amreg[26];
 extern void dumpAmalRegs();
-extern struct retroScreen *screens[8] ;
 
 
 #if defined(show_debug_amal_yes) || defined(test_app)
@@ -752,7 +751,7 @@ void *cb_xh  (struct kittyChannel *self, struct amalCallBack *cb)
 		case 2:
 			s = self -> argStack [ self -> argStackCount -1 ];			
 			x = self -> argStack [ self -> argStackCount  ];
-			if (screen = screens[s]) x = XHard_formula( screen, x );
+			if (screen = instance.screens[s]) x = XHard_formula( screen, x );
 			break;
 	}
 
@@ -781,7 +780,7 @@ void *cb_yh  (struct kittyChannel *self, struct amalCallBack *cb)
 		case 2:
 			s = self -> argStack [ self -> argStackCount -1 ];			
 			y = self -> argStack [ self -> argStackCount ];
-			if (screen = screens[s]) y = YHard_formula( screen, y );
+			if (screen = instance.screens[s]) y = YHard_formula( screen, y );
 			break;
 	}
 
@@ -810,7 +809,7 @@ void *cb_xscreen  (struct kittyChannel *self, struct amalCallBack *cb)
 		case 2:
 			s = self -> argStack [ self -> argStackCount -1 ];			
 			x = self -> argStack [ self -> argStackCount  ];
-			if (screen = screens[s]) x = XScreen_formula( screen, x );
+			if (screen = instance.screens[s]) x = XScreen_formula( screen, x );
 			break;
 	}
 
@@ -839,7 +838,7 @@ void *cb_yscreen  (struct kittyChannel *self, struct amalCallBack *cb)
 		case 2:
 			s = self -> argStack [ self -> argStackCount -1 ];			
 			y = self -> argStack [ self -> argStackCount  ];
-			if (screen = screens[s]) y = YScreen_formula( screen, y );
+			if (screen = instance.screens[s]) y = YScreen_formula( screen, y );
 			break;
 	}
 

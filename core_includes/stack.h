@@ -17,8 +17,8 @@ extern unsigned short getLastProgStackToken();
 #define getLastProgStackToken() ((cmdStack) ? cmdTmp[cmdStack-1].token : 0 )
 
 #define setStackHiddenCondition()			\
-			kittyStack[stack].str = NULL;		\
-			kittyStack[stack].state = state_hidden_subData;	\
+			kittyStack[__stack].str = NULL;		\
+			kittyStack[__stack].state = state_hidden_subData;	\
 			stack++;
 
 extern int		getStackNum( int n );
@@ -52,5 +52,5 @@ extern char *flushCmdParaStack( int nextToken );
 
 extern void stack_get_if_int( int n, int *ret );
 
-#define incStack 	stack++; kittyStack[stack].state = state_none;	kittyStack[stack].type = type_none; 
+#define incStack 	stack++; kittyStack[__stack].state = state_none;	kittyStack[__stack].type = type_none; 
 

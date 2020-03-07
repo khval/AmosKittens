@@ -43,7 +43,7 @@ extern struct retroSprite *icons ;
 char *_ext_cmd_range( struct glueCommands *data, int nextToken )
 {
 	int ret = 0,_min,_max;
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	printf("args: %d\n",args);
@@ -53,9 +53,9 @@ char *_ext_cmd_range( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 3:
-			ret = getStackNum( stack-2 );
-			_min = getStackNum( stack-1 );
-			_max = getStackNum( stack );
+			ret = getStackNum(__stack-2 );
+			_min = getStackNum(__stack-1 );
+			_max = getStackNum(__stack );
 	
 			if (ret<_min) ret=_min;
 			if (ret>_max) ret=_max;
@@ -64,7 +64,7 @@ char *_ext_cmd_range( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	setStackNum(ret);
 
 	return  NULL ;

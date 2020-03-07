@@ -42,7 +42,6 @@ enum
 };
 
 extern struct Menu *amiga_menu;
-extern struct retroSprite *sprite;
 
 struct Process *EngineTask = NULL;
 extern UWORD *EmptyPointer;
@@ -333,6 +332,15 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 
 	if (screen -> fade_speed)
 	{
+		for (int n=0;n<8;n++)
+		{
+			if (instance.screens[n] == screen)
+			{
+				Printf("fade screen %ld\n",n);
+				break;
+			}
+		}
+
 		if (screen -> fade_count < screen -> fade_speed)
 		{
 			screen -> fade_count++;
@@ -350,6 +358,8 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 				dr = (int) fpal->r - (int) opal->r;
 				dg = (int) fpal->g - (int) opal->g;
 				db = (int) fpal->b - (int) opal->b;
+
+//				if (n<32) Printf("%-3ld: %04lx,%04lx,%0l4x\n",n,fpal->r,fpal->g,fpal->b);
 
 				limit_step(dr);
 				limit_step(dg);
@@ -396,7 +406,7 @@ void DrawSprite(
 	unsigned int color;
 	struct retroFrameHeader *frame;
 
-	if (image >= sprite -> number_of_frames) image = sprite -> number_of_frames-1;
+	if (image >= sprite -> number_of_frames) image = instance.sprites -> number_of_frames-1;
 	if (image < 0) image = 0;
 
 	frame = sprite -> frames + image;
@@ -716,7 +726,21 @@ void run_amal_scripts()
 		{
 			if (item = channels -> item(i))
 			{
-				if (item->amal_script) channel_amal( item );
+				if (item->amal_script)
+				{
+
+#ifdef show_debug_amal_yes
+
+Printf("debug AMAL channel %ld object nr %ld\n",item -> id, item -> number);
+
+if (item -> amalStatus & channel_status::active)
+{
+	Printf("script start>>\n%s\n<<script end\n",&(item->amal_script->ptr));
+}
+#endif
+					 channel_amal( item );
+				}
+
 				if (item->anim_script) channel_anim( item );
 				if (item->movex_script) channel_movex( item );
 				if (item->movey_script) channel_movey( item );
@@ -829,7 +853,7 @@ void main_engine()
 
 				for (n=0; n<8;n++)
 				{
-					screen = screens[n];
+					screen = instance.screens[n];
 
 					if (screen)
 					{
@@ -864,18 +888,18 @@ void main_engine()
 				}
 
 #if 1
-				if ((sprite)&&(video -> sprites))
+				if ((instance.sprites)&&(video -> sprites))
 				{
 					struct retroSpriteObject *item;
 
 					for (n=0;n<64;n++)
 					{
 						item = &video -> sprites[n];
-						item -> sprite = sprite;
+						item -> sprite = instance.sprites;
 
 						if (item -> image>0)
 						{
-							DrawSprite( sprite, item, item -> image -1, 0 );
+							DrawSprite( instance.sprites, item, item -> image -1, 0 );
 						}
 					}
 				}

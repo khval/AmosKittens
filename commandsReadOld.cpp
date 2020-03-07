@@ -60,9 +60,9 @@ void read_from_data()
 					case 0x0026:	// string
 							_len = *((unsigned short *) (data_read_pointers[proc_stack_frame] + 2));
 							_len = _len + (_len & 1);
-							if (kittyStack[stack].str) free(kittyStack[stack].str);
-							kittyStack[stack].str = strndup( data_read_pointers[proc_stack_frame] + 4, _len );
-							kittyStack[stack].len = strlen( kittyStack[stack].str );
+							if (kittyStack[__stack].str) free(kittyStack[__stack].str);
+							kittyStack[__stack].str = strndup( data_read_pointers[proc_stack_frame] + 4, _len );
+							kittyStack[__stack].len = strlen( kittyStack[__stack].str );
 							data_read_pointers[proc_stack_frame] +=4 + _len;
 							break;
 
@@ -108,13 +108,13 @@ void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmd == NULL)
 	{
-		args = stack - cmdTmp[cmdStack].stack + 1;
+		args =__stack - cmdTmp[cmdStack].stack + 1;
 	}
 	else
 	{
 		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _cmdRead)
 		{
-			args = stack - cmdTmp[cmdStack-1].stack + 1;
+			args =__stack - cmdTmp[cmdStack-1].stack + 1;
 		}
 	}
 	
@@ -132,9 +132,9 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	_read_arg( NULL, NULL );
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	do_input[parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 

@@ -9,6 +9,7 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#include <amoskittens.h>
 #endif
 
 #ifdef __linux__
@@ -23,7 +24,6 @@
 #include "channel.h"
 
 extern std::vector<struct retroSpriteObject *> bobs;
-extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
 {
@@ -47,7 +47,7 @@ static void setImage (unsigned int object,int image)
 	if (bob = getBob( object ))
 	{
 		bob -> image = image;
-		s = screens[ bob -> screen_id ];
+		s = instance.screens[ bob -> screen_id ];
 		if (s) s ->event_flags |= rs_bob_moved;
 	}
 }
@@ -60,7 +60,7 @@ static void setX (unsigned int object,int x)
 	if (bob = getBob( object ))
 	{
 		bob -> x = x;
-		s = screens[ bob -> screen_id ];
+		s = instance.screens[ bob -> screen_id ];
 		if (s) s ->event_flags |= rs_bob_moved;
 	}
 }
@@ -73,7 +73,7 @@ static void setY (unsigned int object,int y)
 	if (bob = getBob( object ))
 	{
 		bob -> y = y;
-		s = screens[ bob -> screen_id ];
+		s = instance.screens[ bob -> screen_id ];
 		if (s) s ->event_flags |= rs_bob_moved;
 	}
 }
@@ -84,7 +84,7 @@ static struct retroScreen *getScreen(unsigned int object)
 
 	if (bob = getBob( object ))
 	{
-		return screens[ bob -> screen_id ];
+		return instance.screens[ bob -> screen_id ];
 	}
 	return NULL;
 }

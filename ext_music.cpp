@@ -212,7 +212,7 @@ void setEnval(struct wave *wave, int phase, int duration, int volume)
 char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 {
 	int voices,sample;
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	struct kittyBank *bank;
 	uint32_t	*offset;
 	struct sampleHeader *sam;
@@ -222,20 +222,20 @@ char *_ext_cmd_sam_play( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			sample = getStackNum( stack )-1;
+			sample = getStackNum(__stack )-1;
 			voices = 0xF;
 			break;
 		case 2:	// Sam Play 	voices, sample
-			voices = getStackNum( stack-1 );		
-			sample = getStackNum( stack )-1;
+			voices = getStackNum(__stack-1 );		
+			sample = getStackNum(__stack )-1;
 			break;
 		default:
 			setError(22,data->tokenBuffer);
-			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 			return  NULL ;
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 
 	bank = findBank( sample_bank );
 	if (bank)
@@ -265,16 +265,16 @@ char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 {
 	int ret = 0,voice,length, frequency;
 	uint8_t *start;
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 4:
-			voice = getStackNum( stack-2 );
-			start = (uint8_t *) getStackNum( stack-2 );
-			length = getStackNum( stack-1 );
-			frequency = getStackNum( stack );
+			voice = getStackNum(__stack-2 );
+			start = (uint8_t *) getStackNum(__stack-2 );
+			length = getStackNum(__stack-1 );
+			frequency = getStackNum(__stack );
 	
 			printf("play sound form start: %08x, length %d, frequency %d\n",start,length,frequency);
 
@@ -285,7 +285,7 @@ char *_ext_cmd_sam_raw( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	setStackNum(ret);
 
 	return  NULL ;
@@ -300,20 +300,20 @@ char *ext_cmd_sam_raw(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_ext_cmd_sam_bank( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
-			sample_bank = getStackNum( stack );
+			sample_bank = getStackNum(__stack );
 			break;
 
 		default:
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -351,7 +351,7 @@ void copy_sample_to_playback_voices(struct sampleHeader *sam, int voices)
 char *_ext_cmd_sample( struct glueCommands *data, int nextToken )
 {
 	int sample,voices;
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	struct kittyBank *bank;
 	struct sampleHeader *sam;
 	uint32_t	*offset;
@@ -361,8 +361,8 @@ char *_ext_cmd_sample( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			sample = getStackNum( stack-1 );
-			voices = getStackNum( stack );
+			sample = getStackNum(__stack-1 );
+			voices = getStackNum(__stack );
 
 			printf("%d,%d\n",sample, voices);
 
@@ -385,7 +385,7 @@ char *_ext_cmd_sample( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 
 	return  NULL ;
 }
@@ -435,7 +435,7 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 
 	struct wave *localwave;
 
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 
@@ -446,8 +446,8 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			pitch = getStackNum( stack-1 );
-			delay = getStackNum( stack );
+			pitch = getStackNum(__stack-1 );
+			delay = getStackNum(__stack );
 
 			octav = (pitch-1) / 12;
 			note = (pitch-1) % 12;
@@ -517,7 +517,7 @@ char *_ext_cmd_play( struct glueCommands *data, int nextToken )
 	close_debug_window();
 #endif
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 
 	return  NULL ;
 }
@@ -681,7 +681,7 @@ bool apply_wave(int waveId, int voices)
 
 char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int waveId,voices;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -691,8 +691,8 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			waveId = getStackNum( stack-1  );
-			voices = getStackNum( stack );
+			waveId = getStackNum(__stack-1  );
+			voices = getStackNum(__stack );
 
 			if ( apply_wave( waveId,  voices)  == false)
 			{
@@ -701,12 +701,12 @@ char *_ext_cmd_wave( struct glueCommands *data, int nextToken )
 			break;
 		default:
 			setError(22,data->tokenBuffer);
-			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 			return  NULL ;
 			break;
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 
 	return  NULL ;
 }
@@ -721,7 +721,7 @@ char *ext_cmd_wave(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	unsigned int waveId;
 	struct stringData *waveStr;
 	struct wave *newWave;
@@ -731,8 +731,8 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:
-			waveId = getStackNum( stack-1  );
-			waveStr = getStackString( stack );
+			waveId = getStackNum(__stack-1  );
+			waveStr = getStackString(__stack );
 
 			if (waveStr)
 			{
@@ -756,12 +756,12 @@ char *_ext_cmd_set_wave( struct glueCommands *data, int nextToken )
 			break;
 		default:
 			setError(22,data->tokenBuffer);
-			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 			return  NULL ;
 			break;
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -774,7 +774,7 @@ char *ext_cmd_set_wave(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int waveId,phase, duration, volume;
 	struct wave *wave;
 
@@ -783,22 +783,22 @@ char *_ext_cmd_set_envel( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 4:
-			waveId = getStackNum( stack -3  );
-			phase = getStackNum( stack -2 );
-			duration = getStackNum( stack -1 );
-			volume = getStackNum( stack );
+			waveId = getStackNum(__stack -3  );
+			phase = getStackNum(__stack -2 );
+			duration = getStackNum(__stack -1 );
+			volume = getStackNum(__stack );
 
 			wave = getWave(waveId);
 			setEnval( wave, phase, duration, volume );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
-			popStack( stack - cmdTmp[cmdStack-1].stack  );
+			popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 			return  NULL ;
 			break;
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -812,7 +812,7 @@ char *ext_cmd_set_envel(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_del_wave( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int waveId;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -820,7 +820,7 @@ char *_ext_cmd_del_wave( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			waveId = getStackNum( stack  );
+			waveId = getStackNum(__stack  );
 			if (delWave(waveId)==false)
 			{
 				setError(22,data->tokenBuffer);
@@ -831,7 +831,7 @@ char *_ext_cmd_del_wave( struct glueCommands *data, int nextToken )
 	}
 
 	setError(22,data->tokenBuffer);
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -844,20 +844,20 @@ char *ext_cmd_del_wave(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_volume( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
 		case 1:
-			volume = (LONG) (( uint32_t) (0x10000 * getStackNum( stack )) / 63);
+			volume = (LONG) (( uint32_t) (0x10000 * getStackNum(__stack )) / 63);
 			return  NULL ;
 			break;
 	}
 
 	setError(22,data->tokenBuffer);
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -890,7 +890,7 @@ char *ext_cmd_sam_loop_off(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_sam_stop( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int voices;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -898,14 +898,14 @@ char *_ext_cmd_sam_stop( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			voices = getStackNum( stack );
+			voices = getStackNum(__stack );
 			audio_device_flush(voices);
 			return NULL;
 			break;
 	}
 
 	setError(22,data->tokenBuffer);
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -919,7 +919,7 @@ char *ext_cmd_sam_stop(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_sam_ssave( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int channel,start,end;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -927,9 +927,9 @@ char *_ext_cmd_sam_ssave( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 3:
-			channel = getStackNum( stack-2 );
-			start = getStackNum( stack-1 );
-			end = getStackNum( stack );
+			channel = getStackNum(__stack-2 );
+			start = getStackNum(__stack-1 );
+			end = getStackNum(__stack );
 
 			write_file_start_end( channel, (char *) start, (char *) end );
 
@@ -940,7 +940,7 @@ char *_ext_cmd_sam_ssave( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 
@@ -953,7 +953,7 @@ char *ext_cmd_ssave(nativeCommand *cmd, char *tokenBuffer)
 
 char *_ext_cmd_sam_sload( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1;
+	int args =__stack - data->stack +1;
 	int voices;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -961,14 +961,14 @@ char *_ext_cmd_sam_sload( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			voices = getStackNum( stack );
+			voices = getStackNum(__stack );
 			audio_device_flush(voices);
 			return NULL;
 			break;
 	}
 
 	setError(22,data->tokenBuffer);
-	popStack( stack - cmdTmp[cmdStack-1].stack  );
+	popStack(__stack - cmdTmp[instance.cmdStack-1].stack  );
 	return  NULL ;
 }
 

@@ -27,9 +27,7 @@
 #include <math.h>
 
 extern int last_var;
-extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;
-extern int current_screen ;
 
 extern void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen );
 extern bool kitten_screen_close(int screen_num );
@@ -280,31 +278,31 @@ void IffAnim( char *name, const int sn )
 	
 		mode = AmigaModeToRetro( modeid );
 
-		if (screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
+		if (instance.screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
 
 		engine_lock();
 
-		screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
+		instance.screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
 
-		if (screens[sn])
+		if (instance.screens[sn])
 		{
 			ULONG n;
 			InitRastPort(&context.rp);
 
 			context.dto = dto;
-			context.screen = screens[sn];
+			context.screen = instance.screens[sn];
 			context.rgb_table = (ULONG *) malloc(sizeof(ULONG) * 3 * 256 );
 
-			init_amos_kittens_screen_default_text_window(screens[sn], 256);
+			init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
 
-			retroApplyScreen( screens[sn], video, 0, 0, screens[sn] -> realWidth,screens[sn]->realHeight );
-			retroBAR( screens[sn], 0, 0,0, screens[sn] -> realWidth,screens[sn]->realHeight, screens[sn] -> paper );
-			set_default_colors( screens[sn] );
-			current_screen = sn;
+			retroApplyScreen( instance.screens[sn], video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
+			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
+			set_default_colors( instance.screens[sn] );
+			instance.current_screen = sn;
 			engine_unlock();
 
 			context.rp.BitMap = dt_bitmap;
-			if (cr) copy_palette( context.bformat, cr ,&context.rp, screens[sn] , &context.colors );
+			if (cr) copy_palette( context.bformat, cr ,&context.rp, instance.screens[sn] , &context.colors );
 
 			time = 0;
 
@@ -315,7 +313,7 @@ void IffAnim( char *name, const int sn )
 					old_frame( &context, time );
 				}
 
-//				progress(n*10,screens[sn]);
+//				progress(n*10,instance.screens[sn]);
 
 				__wait_vbl();
 

@@ -26,7 +26,6 @@ extern uint32_t engine_update_flags ;
 extern bool synchro_on;
 
 extern struct retroVideo *video;
-extern struct retroScreen *screens[8] ;
 
 #define hardware_upper_left 128
 #define hardware_upper_top 50

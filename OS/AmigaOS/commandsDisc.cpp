@@ -53,7 +53,7 @@ int have_drive( struct stringData *name);
 
 char *_discSetDir( struct glueCommands *data, int nextToken )
 {
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -70,7 +70,7 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 	{
 		fd =  kittyFiles[ num ].fd;
 
-		for (n=data->stack+1;n<=stack;n++)
+		for (n=data->stack+1;n<=__stack;n++)
 		{
 			switch (kittyStack[n].type)
 			{
@@ -85,13 +85,13 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 					break;
 			}
 
-			if (n<=stack) fprintf(fd,"    ");
+			if (n<=__stack) fprintf(fd,"    ");
 		}
 
 		fprintf(fd, "\n");
 
 	}
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -99,13 +99,13 @@ char *_open_file_( struct glueCommands *data, const char *access )
 {
 	struct stringData *_str;
 	int num;
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		num = getStackNum( stack -1 ) -1;
+		num = getStackNum(__stack -1 ) -1;
 
 		if ((num>-1)&&(num<10))
 		{
@@ -121,14 +121,14 @@ char *_open_file_( struct glueCommands *data, const char *access )
 				kittyFiles[ num ].fields = NULL;
 			}
 
-			_str = getStackString( stack );
+			_str = getStackString(__stack );
 			if (_str) kittyFiles[ num ].fd = fopen( &_str->ptr, access );
 
 			if (kittyFiles[ num ].fd  == NULL) setError(81,data->tokenBuffer);
 		}
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -154,14 +154,14 @@ char *_discOpenRandom( struct glueCommands *data, int nextToken )
 
 char *_discClose( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	int num;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 1)
 	{
-		num = getStackNum( stack ) -1;
+		num = getStackNum(__stack ) -1;
 
 		if ((num>-1)&&(num<10))
 		{
@@ -176,13 +176,13 @@ char *_discClose( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
 char *_discKill( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	struct stringData *_str;
 	int32 success = false;
 
@@ -190,7 +190,7 @@ char *_discKill( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		_str = getStackString( stack );
+		_str = getStackString(__stack );
 		if (_str) success = Delete( &_str -> ptr );
 
 		if (success == false)
@@ -200,21 +200,21 @@ char *_discKill( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data->tokenBuffer);
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
 char *_discRename( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	int32 success = false;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		struct stringData *oldName = getStackString( stack - 1 );
-		struct stringData *newName = getStackString( stack );
+		struct stringData *oldName = getStackString(__stack - 1 );
+		struct stringData *newName = getStackString(__stack );
 		if ((oldName)&&(newName))	success = Rename(  &oldName->ptr, &newName->ptr );
 	}
 
@@ -223,13 +223,13 @@ char *_discRename( struct glueCommands *data, int nextToken )
 		setError(81,data->tokenBuffer);
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
 char *_discFselStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	struct FileRequester	 *filereq;
 	struct stringData *ret = NULL;
 	char *amigaPattern = NULL;
@@ -252,7 +252,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 		switch (args)
 		{
 			case 1:
-					str = getStackString( stack );
+					str = getStackString(__stack );
 
 					split_path_pattern( str, &path, &pattern );
 					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
@@ -266,13 +266,13 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					break;
 
 			case 3:
-					str = getStackString( stack -2 );
+					str = getStackString(__stack -2 );
 
 					split_path_pattern( str, &path, &pattern );
 					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
-					_default_ = getStackString( stack -1 );
-					_title_ = getStackString( stack );
+					_default_ = getStackString(__stack -1 );
+					_title_ = getStackString(__stack );
 
 					success = AslRequestTags( (void *) filereq, 
 						ASLFR_DrawersOnly, FALSE,	
@@ -285,14 +285,14 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					break;
 
 			case 4:
-					str = getStackString( stack -3 );
+					str = getStackString(__stack -3 );
 
 					split_path_pattern( str, &path, &pattern );
 					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
-					_default_ = getStackString( stack -2 );
-					_title_ = getStackString( stack-1 );
-					_title2_ = getStackString( stack );
+					_default_ = getStackString(__stack -2 );
+					_title_ = getStackString(__stack-1 );
+					_title2_ = getStackString(__stack );
 
 					_title_temp_ = alloc_amos_string( _title_ -> size + 1 + _title2_ -> size  );
 
@@ -343,7 +343,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 		 FreeAslRequest( filereq );
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 
 	if (amigaPattern) free(amigaPattern);
 
@@ -361,18 +361,16 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 
 char *_discExist( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	struct stringData *_str;
 	BPTR lock = 0;
 	APTR oldRequest;
-	int32 success;
-	struct InfoData info;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args==1)
 	{
-		_str = getStackString( stack );
+		_str = getStackString(__stack );
 
 		if (_str -> size == 0) 
 		{
@@ -396,7 +394,7 @@ char *_discExist( struct glueCommands *data, int nextToken )
 	}
 	else
 	{
-		popStack( stack - data -> stack  );
+		popStack(__stack - data -> stack  );
 		setError( 22, data -> tokenBuffer );
 	}
 	return NULL;
@@ -630,7 +628,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	str = getStackString( stack );
+	str = getStackString(__stack );
 
 	if (str == NULL) return NULL;
 
@@ -708,7 +706,7 @@ char *_discDir( struct glueCommands *data, int nextToken )
 	
 	ReleaseDirContext(context);             /* NULL safe */
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 
 	return  NULL ;
 }
@@ -722,7 +720,7 @@ char *discDir(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discDirStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	BPTR lock;
 	BPTR oldLock;
 	struct stringData *_str;
@@ -731,7 +729,7 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		_str = getStackString( stack );
+		_str = getStackString(__stack );
 
 		if (_str)
 		{
@@ -745,14 +743,14 @@ char *_discDirStr( struct glueCommands *data, int nextToken )
 	}
 	else setError(22,data -> tokenBuffer);
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
 
 char *_set_dir_str( struct glueCommands *data, int nextToken )
 {
-	struct stringData *_new_path = getStackString( stack );
+	struct stringData *_new_path = getStackString(__stack );
 
 	if (_new_path) { chdir( &_new_path->ptr); }
 
@@ -865,7 +863,7 @@ char *discExist(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack + 1;
+	int args =__stack - data -> stack + 1;
 	struct stringData *str = NULL;
 	struct stringData *_pattern = NULL;
 	stringData *outStr = NULL;
@@ -875,7 +873,7 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			str  = getStackString( stack );
+			str  = getStackString(__stack );
 			if (str == NULL) 
 			{
 				setError(22, data-> tokenBuffer);
@@ -883,7 +881,7 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 			}
 			break;
 		default:
-			popStack( stack - data -> stack  );
+			popStack(__stack - data -> stack  );
 			setError(22, data-> tokenBuffer);
 			return NULL;
 	}
@@ -1015,7 +1013,7 @@ char *_discDevFirstStr( struct glueCommands *data, int nextToken )
 	dev_index = 0;
 	init_dev_first();
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 
 	if (devList.size())
 	{
@@ -1120,9 +1118,9 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else	// if file_input is called from ","
 	{
-		if (cmdStack > 0)
+		if (__cmdStack > 0)
 		{
-			if (cmdTmp[cmdStack-1].cmd == _discInputIn) valid = true;
+			if (cmdTmp[__cmdStack-1].cmd == _discInputIn) valid = true;
 		}
 	}
 
@@ -1264,9 +1262,9 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else	// if file_input is called from ","
 	{
-		if (cmdStack > 0)
+		if (__cmdStack > 0)
 		{
-			if (cmdTmp[cmdStack-1].cmd == _discLineInputFile) valid = true;
+			if (cmdTmp[__cmdStack-1].cmd == _discLineInputFile) valid = true;
 		}
 	}
 
@@ -1318,7 +1316,7 @@ char *_discInputIn( struct glueCommands *data, int nextToken )
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
 	do_input[parenthesis_count] = do_std_next_arg;
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 
 	return NULL;
 }
@@ -1328,7 +1326,7 @@ char *discInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
 		input_cmd_context.cmd = _discInputIn;
-		input_cmd_context.stack = stack;
+		input_cmd_context.stack = __stack;
 		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
 		input_cmd_context.tokenBuffer = tokenBuffer;
 		stackCmdNormal( _discInputIn, tokenBuffer );
@@ -1355,7 +1353,7 @@ char *_discLineInputFile( struct glueCommands *data, int nextToken )
 	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
 	do_input[parenthesis_count] = do_std_next_arg;
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 
 	return NULL;
 }
@@ -1367,7 +1365,7 @@ char *discLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
 		input_cmd_context.cmd = _discLineInputFile;
-		input_cmd_context.stack = stack;
+		input_cmd_context.stack = __stack;
 		input_cmd_context.lastVar = *((int *) (tokenBuffer + 2));
 		input_cmd_context.tokenBuffer = tokenBuffer;
 
@@ -1389,7 +1387,7 @@ char *discLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discInputStrFile( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack;
+	int args =__stack - data -> stack;
 	int channel = 0;
 	int len = 0;
 	struct stringData *newstr;
@@ -1399,8 +1397,8 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		channel = getStackNum(stack - 1 );
-		len = getStackNum(stack );
+		channel = getStackNum(__stack - 1 );
+		len = getStackNum(__stack );
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1408,13 +1406,13 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 
 			if (fd)
 			{
-				popStack( stack - data -> stack  );
+				popStack(__stack - data -> stack  );
 				
 				newstr = (struct stringData *) malloc( sizeof(struct stringData) + len +1);
 
 				if (newstr)	 if (fgets( &newstr -> ptr, len ,fd ))
 				{
-					popStack( stack - data -> stack  );
+					popStack(__stack - data -> stack  );
 					setStackStr(newstr);
 					return NULL;
 				}
@@ -1432,7 +1430,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1441,13 +1439,13 @@ char *_discSetInput( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	dump_stack();
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
 char *_discLof( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack + 1;
+	int args =__stack - data -> stack + 1;
 	int channel = 0;
 	FILE *fd;
 	int pos,len = 0;
@@ -1456,7 +1454,7 @@ char *_discLof( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		channel = getStackNum(stack);
+		channel = getStackNum(__stack);
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1474,7 +1472,7 @@ char *_discLof( struct glueCommands *data, int nextToken )
 		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	setStackNum( len );
 
 	return NULL;
@@ -1482,7 +1480,7 @@ char *_discLof( struct glueCommands *data, int nextToken )
 
 char *_discPof( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack + 1;
+	int args =__stack - data -> stack + 1;
 	int channel = 0;
 	FILE *fd;
 	int ret =0;
@@ -1491,7 +1489,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		channel = getStackNum(stack);
+		channel = getStackNum(__stack);
 
 		if (( channel >0)&&( channel <11))
 		{
@@ -1506,7 +1504,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	setStackNum( ret );
 
 	dump_stack();
@@ -1516,7 +1514,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 
 char *_discEof( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;	
+	int args =__stack - data -> stack +1;	
 	int channel = 0;
 	FILE *fd;
 
@@ -1524,7 +1522,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		channel = getStackNum(stack);
+		channel = getStackNum(__stack);
 
 		dprintf("channel: %d\n",channel);
 
@@ -1534,7 +1532,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 
 			if (fd)
 			{
-				popStack( stack - data -> stack  );
+				popStack(__stack - data -> stack  );
 				setStackNum( feof( fd ));
 				return NULL;
 			}
@@ -1543,7 +1541,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1585,7 +1583,7 @@ char *discEof(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discGet( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	int channel = 0;
 	int n, index;
 	struct kittyField *fields = NULL;
@@ -1596,8 +1594,8 @@ char *_discGet( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		channel = getStackNum( stack -1 ) ;
-		index = getStackNum( stack ) ;
+		channel = getStackNum(__stack -1 ) ;
+		index = getStackNum(__stack ) ;
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
@@ -1626,7 +1624,7 @@ char *_discGet( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1655,7 +1653,7 @@ bool write_file_start_end( int channel, char *start, char *end )
 
 char *_discPut( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	int channel = 0;
 	int n, index;
 	struct kittyField *fields = NULL;
@@ -1668,8 +1666,8 @@ char *_discPut( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		channel = getStackNum( stack -1 ) ;
-		index = getStackNum( stack ) ;
+		channel = getStackNum(__stack -1 ) ;
+		index = getStackNum(__stack ) ;
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
@@ -1696,7 +1694,7 @@ char *_discPut( struct glueCommands *data, int nextToken )
 		}
 	}
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1797,12 +1795,12 @@ char *discPut(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discMakedir( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	BPTR lock = 0;
 
 	if (args==1)
 	{
-		struct stringData *_str = getStackString( stack );
+		struct stringData *_str = getStackString(__stack );
 
 		lock = CreateDir( &_str->ptr );
 		if (lock) 
@@ -1813,7 +1811,7 @@ char *_discMakedir( struct glueCommands *data, int nextToken )
 	}
 	else setError( 22, data -> tokenBuffer );
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1826,13 +1824,13 @@ char *discMakedir(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discAssign( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	bool success = false;
 
 	if (args==2)
 	{
-		struct stringData *_volume = getStackString( stack-1 );
-		struct stringData *_path = getStackString( stack );
+		struct stringData *_volume = getStackString(__stack-1 );
+		struct stringData *_path = getStackString(__stack );
 
 		if ((_volume)&&(_path))
 		{
@@ -1845,7 +1843,7 @@ char *_discAssign( struct glueCommands *data, int nextToken )
 
 	if (success == false )setError( 22, data -> tokenBuffer );
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1858,12 +1856,12 @@ char *discAssign(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discReadText( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	NYI(__FUNCTION__);
 
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	return NULL;
 }
 
@@ -1925,7 +1923,7 @@ char *findVolumeName(char *name)
 
 char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 
 	struct stringData *path;
 	char  *volumeName;
@@ -1937,7 +1935,7 @@ char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			path = getStackString( stack );
+			path = getStackString(__stack );
 			volumeName = path ? findVolumeName( &path -> ptr ) : NULL;
 
 			if (volumeName)
@@ -1983,7 +1981,7 @@ char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 
 			break;
 		default:
-			popStack( stack - data -> stack );
+			popStack(__stack - data -> stack );
 			setError(23,data-> tokenBuffer);
 			break;
 	}
@@ -2003,7 +2001,7 @@ extern char *_file_end_;
 
 char *_discRun( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	struct stringData *filename;
 	char *newCmd = NULL;
 	BPTR l = 0;
@@ -2015,7 +2013,7 @@ char *_discRun( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			filename = getStackString( stack );
+			filename = getStackString(__stack );
 
 			l = Lock("PROGDIR:",SHARED_LOCK);
 
@@ -2047,7 +2045,7 @@ char *_discRun( struct glueCommands *data, int nextToken )
 			break;
 
 		default:
-			popStack( stack - data -> stack );
+			popStack(__stack - data -> stack );
 			setError(23,data-> tokenBuffer);
 			break;
 	}
@@ -2095,7 +2093,7 @@ int have_drive( struct stringData *name)
 
 char *_discDrive( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 	struct stringData *volumeName;
 	int ret = 0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -2103,7 +2101,7 @@ char *_discDrive( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			volumeName = getStackString( stack );
+			volumeName = getStackString(__stack );
 			if (volumeName)
 			{
 				ret = have_drive( volumeName );
@@ -2112,7 +2110,7 @@ char *_discDrive( struct glueCommands *data, int nextToken )
 
 			break;
 		default:
-			popStack( stack - data -> stack );
+			popStack(__stack - data -> stack );
 			setError(23,data-> tokenBuffer);
 			break;
 	}
@@ -2129,7 +2127,7 @@ char *discDrive(struct nativeCommand *disc, char *tokenBuffer)
 
 char *_discPort( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data -> stack +1;
+	int args =__stack - data -> stack +1;
 //	struct stringData *volumeName;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -2140,7 +2138,7 @@ char *_discPort( struct glueCommands *data, int nextToken )
 			setStackNum(-1);	// always true (fix me if I'm wrong)
 			break;
 		default:
-			popStack( stack - data -> stack );
+			popStack(__stack - data -> stack );
 			setError(23,data-> tokenBuffer);
 			break;
 	}

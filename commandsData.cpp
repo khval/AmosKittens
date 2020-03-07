@@ -4,10 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/retroMode.h>
+#include <amosKittens.h>
 #endif
 
 #include <string>
@@ -16,7 +18,7 @@
 
 #include "debug.h"
 #include "stack.h"
-#include "amosKittens.h"
+
 #include "commands.h"
 #include "commandsData.h"
 #include "kittyErrors.h"
@@ -124,14 +126,14 @@ char *_equalData( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	item0 = kittyStack + stack-1;
-	item1 = kittyStack + stack;
+	item0 = kittyStack + __stack-1;
+	item1 = kittyStack + __stack;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -140,7 +142,7 @@ char *_equalData( struct glueCommands *data, int nextToken )
 
 	if (type0 == type_float) 
 	{
-		stack --;
+		__stack --;
 		
 		if (type1 == type_int)
 		{
@@ -155,7 +157,7 @@ char *_equalData( struct glueCommands *data, int nextToken )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
+		__stack --;
 
 		if (type1 == type_int)
 		{
@@ -196,14 +198,14 @@ char *_lessData( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	item0 = kittyStack + stack-1;
-	item1 = kittyStack + stack;
+	item0 = kittyStack + __stack-1;
+	item1 = kittyStack + __stack;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -212,7 +214,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 
 	if (type0 == type_float) 
 	{
-		stack --;
+		__stack --;
 		
 		if (type1 == type_int)
 		{
@@ -228,7 +230,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
+		__stack --;
 
 		if (type1 == type_int)
 		{
@@ -262,7 +264,7 @@ char *_lessData( struct glueCommands *data, int nextToken )
 
 char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
@@ -271,18 +273,18 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
-		printf("stack - data -> stack + 1 is %d\n",stack - data -> stack + 1);
+		printf("stack - data -> stack + 1 is %d\n",__stack - data -> stack + 1);
 
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -337,23 +339,23 @@ char *_lessOrEqualData( struct glueCommands *data, int nextToken )
 
 char *_moreData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -407,21 +409,21 @@ char *_moreData( struct glueCommands *data, int nextToken )
 
 char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	item0 = kittyStack + stack - 1;
-	item1 = kittyStack + stack;
+	item0 = kittyStack + __stack - 1;
+	item1 = kittyStack + __stack;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -430,7 +432,7 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 
 	if (type0 == type_float) 
 	{
-		stack --;
+		__stack --;
 
 		if (type1 == type_int)
 		{
@@ -445,7 +447,7 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 	}
 	else if (type0 == type_int) 
 	{
-		stack --;
+		__stack --;
 
 		if (type1 == type_int)
 		{
@@ -479,23 +481,23 @@ char *_moreOrEqualData( struct glueCommands *data, int nextToken )
 
 char *_orData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -552,16 +554,16 @@ char *_andData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -611,23 +613,23 @@ char *_andData( struct glueCommands *data, int nextToken )
 
 char *_xorData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -676,23 +678,23 @@ char *_xorData( struct glueCommands *data, int nextToken )
 
 char *_addData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -753,7 +755,7 @@ char *_addData( struct glueCommands *data, int nextToken )
 
 char *_addDataToText( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	int args;
 	struct kittyData *item0;
@@ -762,17 +764,17 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	bool success = FALSE;
 	struct stringData *buffer = (struct stringData *) alloca( sizeof(struct stringData) + 100);
 
-	args = stack - data -> stack + 1;
+	args = __stack - data -> stack + 1;
 
 	if (args<2)
 	{
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -797,7 +799,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 		case type_int:		success = stackStrAddValue( item0, item1 ); break;
 		case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
 		case type_string:	success = stackStrAddStr( item0, item1 ); break;
-		case type_none:	success = true; stack++; break;	// nothing to add, will be added some where else.
+		case type_none:	success = true; __stack++; break;	// nothing to add, will be added some where else.
 	}
 	
 	if (success )
@@ -816,7 +818,7 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 {
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct stringData *string;
 	struct stringData *remove;
@@ -853,23 +855,23 @@ bool _subStr( struct kittyData *item0, struct kittyData *item1 )
 
 char *_subData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -919,7 +921,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 				if ( type1 == type_string ) 
 				{
 					success = _subStr( item0 , item1 ); 
-					stack++;
+					__stack++;
 					popStack( 1 );
 				}
 				break;
@@ -929,7 +931,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		dprintf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		dprintf("%d != %d\n",kittyStack[__stack].type,kittyStack[__stack+1].type);
 		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
@@ -939,23 +941,23 @@ char *_subData( struct glueCommands *data, int nextToken )
 
 char *_modData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -995,7 +997,7 @@ char *_modData( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		proc_names_printf("%d != %d\n",kittyStack[__stack].type,kittyStack[__stack+1].type);
 		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
@@ -1005,23 +1007,23 @@ char *_modData( struct glueCommands *data, int nextToken )
 
 char *_mulData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -1061,7 +1063,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		proc_names_printf("%d != %d\n",kittyStack[__stack].type,kittyStack[__stack+1].type);
 		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
@@ -1071,23 +1073,23 @@ char *_mulData( struct glueCommands *data, int nextToken )
 
 char *_divData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	int error = 0;
 
-	if (stack==0) 
+	if (instance.stack==0) 
 	{
 		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -1145,23 +1147,23 @@ char *_divData( struct glueCommands *data, int nextToken )
 
 char *_powerData( struct glueCommands *data, int nextToken )
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	struct kittyData *item0;
 	struct kittyData *item1;
 	int type0, type1;
 	bool success = FALSE;
 
-	if (stack==0) 
+	if (instance.stack==0) 
 	{
 		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
 		return NULL;
 	}
 
-	stack --;
+	__stack --;
 
-	item0 = kittyStack + stack;
-	item1 = kittyStack + stack+1;
+	item0 = kittyStack + __stack;
+	item1 = kittyStack + __stack+1;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
@@ -1198,7 +1200,7 @@ char *_powerData( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		proc_names_printf("%d != %d\n",kittyStack[stack].type,kittyStack[stack+1].type);
+		proc_names_printf("%d != %d\n",kittyStack[__stack].type,kittyStack[__stack+1].type);
 		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
@@ -1207,7 +1209,7 @@ char *_powerData( struct glueCommands *data, int nextToken )
 
 char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _addData, tokenBuffer, token_add );
 	incStack;
 	return tokenBuffer;
@@ -1215,7 +1217,7 @@ char *addData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator(_subData,tokenBuffer, token_sub );
 	incStack;
 	return tokenBuffer;
@@ -1223,7 +1225,7 @@ char *subData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *modData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _modData, tokenBuffer, token_mod );
 	incStack;
 	return tokenBuffer;
@@ -1231,7 +1233,7 @@ char *modData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _mulData, tokenBuffer, token_mul );
 	incStack;
 	return tokenBuffer;
@@ -1239,7 +1241,7 @@ char *mulData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _divData, tokenBuffer, token_div );
 	incStack;
 	return tokenBuffer;
@@ -1247,7 +1249,7 @@ char *divData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _powerData, tokenBuffer, token_power );
 	incStack;
 	return tokenBuffer;
@@ -1255,7 +1257,7 @@ char *powerData(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *orData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	proc_names_printf("%20s:%08d stack is %d cmd stack is %d state %d\n",__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _orData, tokenBuffer, token_or );
 	incStack;
 	return tokenBuffer;
@@ -1318,21 +1320,21 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((stack - data -> stack + 1)!=2)
+	if ((instance.stack - data -> stack + 1)!=2)
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 
-	item0 = kittyStack + stack-1;
-	item1 = kittyStack + stack;
+	item0 = kittyStack + __stack-1;
+	item1 = kittyStack + __stack;
 
 	type0 = item0 -> type & 7;
 	type1 = item1 -> type & 7;
 
 	if (type0 == type_float) 
 	{
-		stack --;	
+		__stack --;	
 
 		if (type1 == type_int)
 		{
@@ -1347,7 +1349,7 @@ char *_not_equal( struct glueCommands *data, int nextToken )
 	}
 	else if (type0 == type_int) 
 	{
-		stack--;
+		__stack--;
 
 		if (type1 == type_int)
 		{

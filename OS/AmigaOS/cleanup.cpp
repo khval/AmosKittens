@@ -162,7 +162,7 @@ void clean_up_stack()
 {
 	int n;
 
-	for (n=0; n<=stack;n++)
+	for (n=0; n<=__stack;n++)
 	{
 		switch( kittyStack[n].type )
 		{		
@@ -173,7 +173,7 @@ void clean_up_stack()
 				break;
 		}
 	}
-	stack = 0;
+	__stack = 0;
 }
 
 void clean_up_files()

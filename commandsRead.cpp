@@ -106,7 +106,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 
 			getLineFromPointer(ptr);
 			printf("DATA READ %08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					lineFromPtr.line , ptr +2,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					lineFromPtr.line , ptr +2,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[__stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -153,13 +153,13 @@ void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (cmd == NULL)
 	{
-		args = stack - cmdTmp[cmdStack].stack + 1;
+		args =__stack - cmdTmp[instance.cmdStack].stack + 1;
 	}
 	else
 	{
-		if (cmdStack) if (cmdTmp[cmdStack-1].cmd == _cmdRead)
+		if (instance.cmdStack) if (cmdTmp[instance.cmdStack-1].cmd == _cmdRead)
 		{
-			args = stack - cmdTmp[cmdStack-1].stack + 1;
+			args =__stack - cmdTmp[instance.cmdStack-1].stack + 1;
 		}
 	}
 	
@@ -184,7 +184,7 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_read_arg( NULL, NULL );
-	popStack( stack - data -> stack  );
+	popStack(__stack - data -> stack  );
 	do_input[parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 

@@ -164,13 +164,13 @@ char *fontsGetAllFonts(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_fontsSetFont( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	switch (args)
 	{
-		case 1: ret = getStackNum( stack ) ;
+		case 1: ret = getStackNum(__stack ) ;
 
 			if ((ret>=0)&&(ret<=(int) fonts.size()))
 			{
@@ -190,7 +190,7 @@ char *_fontsSetFont( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -204,7 +204,7 @@ char *fontsSetFont(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 {
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	unsigned int index;
 	string font;
 
@@ -212,11 +212,11 @@ char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	index = (unsigned int) getStackNum(stack);
+		case 1:	index = (unsigned int) getStackNum(__stack);
 
 				if ((index>0) && (index <= fonts.size()))
 				{
-					popStack( stack - data->stack );
+					popStack(__stack - data->stack );
 					setStackStr( 
 						toAmosString( 
 							fonts[ index-1 ].amosString.c_str(), 
@@ -228,7 +228,7 @@ char *_fontsFontsStr( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	setStackStrDup(toAmosString("",0));
 	return NULL;
 }

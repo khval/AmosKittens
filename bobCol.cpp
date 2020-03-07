@@ -12,6 +12,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
+#include <AmosKittens.h>
 #endif
 
 #ifdef __linux__
@@ -20,8 +21,6 @@
 #include <retromode_lib.h>
 #endif
 
-
-extern struct retroSprite *sprite;
 extern std::vector<int> collided;
 extern std::vector<struct retroSpriteObject *> bobs;
 
@@ -50,7 +49,7 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 
 	if (thisBob -> image < 1) return 0;	// does not have image.
 
-	frame = &sprite -> frames[ thisBob -> image-1 ];
+	frame = &instance.sprites -> frames[ thisBob -> image-1 ];
 	minX = thisBob -> x - frame -> XHotSpot;
 	minY = thisBob -> y - frame -> XHotSpot;
 	maxX = minX + frame -> width;
@@ -98,7 +97,7 @@ int bobColAll( unsigned short bob )
 
 	if (thisBob -> image == 0) return 0;
 
-	frame = &sprite -> frames[ thisBob -> image-1 ];
+	frame = &instance.sprites -> frames[ thisBob -> image-1 ];
 	minX = thisBob -> x - frame -> XHotSpot;
 	minY = thisBob -> y - frame -> XHotSpot;
 	maxX = minX + frame -> width;

@@ -15,6 +15,7 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#include <amosKittens.h>
 
 extern char *asl();
 #endif
@@ -36,7 +37,6 @@ extern char *asl();
 #endif
 
 #include "stack.h"
-#include "amosKittens.h"
 #include "commands.h"
 #include "commandsData.h"
 #include "commandsErrors.h"
@@ -87,10 +87,8 @@ char *_file_end_ = NULL;
 uint32_t _file_bank_size = 0;
 
 struct retroVideo *video = NULL;
-struct retroScreen *screens[8] ;
 
 int parenthesis_count = 0;
-int cmdStack = 0;
 int procStackCount = 0;
 int last_var = 0;
 uint32_t tokenFileLength;
@@ -121,16 +119,20 @@ extern char *_errTrap( struct glueCommands *data, int nextToken );
 
 int tokenMode = mode_standard;
 
-struct retroSprite *icons = NULL;
-struct retroSprite *sprite = NULL;
+struct KittyInstance instance;
+
+struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
+struct kittyFile kittyFiles[10];
+
+void init_instent(struct KittyInstance *instance )
+{
+	instance -> icons = NULL;
+	instance -> sprites = NULL;
+	instance -> globalVars = globalVars;
+}
+
 struct retroSprite *patterns = NULL;
 
-
-
-//struct proc procStack[1000];	// 0 is not used.
-struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
-
-struct kittyFile kittyFiles[10];
 struct zone *zones = NULL;
 int zones_allocated = 0;
 
@@ -223,7 +225,7 @@ void free_video()
 
 		for (n=0; n<8;n++)
 		{
-			if (screens[n]) retroCloseScreen(&screens[n]);
+			if (instance.screens[n]) retroCloseScreen(&instance.screens[n]);
 		}
 
 		retroFreeVideo(video);
@@ -282,12 +284,12 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 			else if (strncmp(txt,str_hint,strlen(str_hint))==0)
 			{
 				getLineFromPointer( ptr );
-				printf("stack %d at line %d, hint: %s\n",stack, lineFromPtr.line, txt+strlen(str_hint));
+				printf("stack %d at line %d, hint: %s\n",__stack, lineFromPtr.line, txt+strlen(str_hint));
 			}
 			else if (strncmp(txt,str_dump_stack,strlen(str_dump_stack))==0)
 			{
 				getLineFromPointer( ptr );
-				printf("stack %d at line %d\n",stack, lineFromPtr.line);
+				printf("stack %d at line %d\n",__stack, lineFromPtr.line);
 			}
 			else if (strncmp(txt,str_dump_prog_stack,strlen(str_dump_stack))==0)
 			{
@@ -363,17 +365,17 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 
 	// we should empty stack, until first/normal command is not a parm command.
 
-	while (cmdStack)
+	while (instance.cmdStack)
 	{
-		flags = cmdTmp[cmdStack-1].flag;
+		flags = cmdTmp[instance.cmdStack-1].flag;
 
 		if  ( ! (flags & cmd_onNextCmd) ) break;		// needs to be include tags, (if commands be excuted on endOfLine or Next command)
-		ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack], 0);
+		ret = cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack], 0);
 
-		if (cmdTmp[cmdStack].flag & cmd_normal)
+		if (cmdTmp[instance.cmdStack].flag & cmd_normal)
 		{
-			if (!cmdStack) break;
-			if (cmdTmp[cmdStack-1].cmd != _errTrap ) break;
+			if (!instance.cmdStack) break;
+			if (cmdTmp[instance.cmdStack-1].cmd != _errTrap ) break;
 		}
 		if (ret) break;
 	}
@@ -393,19 +395,19 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 
 	tokenBufferResume = ptr;
 
-	if (cmdStack)
+	if (instance.cmdStack)
 	{
 		char *ret = NULL;
 		unsigned int flag;
 		do 
 		{
-			flag = cmdTmp[cmdStack-1].flag;
+			flag = cmdTmp[instance.cmdStack-1].flag;
 			if  ( flag & ( cmd_proc | cmd_loop | cmd_never ) ) break;
 
-			ret = cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+			ret = cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack],0);
 			if (ret) return ret -4;		// when exit +2 token +2 data
 
-		} while (cmdStack);
+		} while (instance.cmdStack);
 	}
 
 	do_to[parenthesis_count] = do_to_default;
@@ -449,7 +451,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 	{
 		if ( (var -> type & type_array)  == 0)
 		{
-			popStack(stack - self -> stack);
+			popStack(__stack - self -> stack);
 			setError(27, self -> tokenBuffer);		// var is not a array
 			return 0;
 		}
@@ -465,14 +467,14 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 		_last_var_index = 0; 
 		mul  = 1;
-		for (n = self -> stack;n<=stack; n++ )
+		for (n = self -> stack;n<=__stack; n++ )
 		{
 			_last_var_index += (mul * kittyStack[n].integer.value);
 			mul *= var -> sizeTab[n- self -> stack];
 		}
 
 		var -> index = _last_var_index;
-		popStack(stack - self -> stack);
+		popStack(__stack - self -> stack);
 
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
@@ -541,7 +543,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	if (varNum == 0) return NULL;
 
 	var = &globalVars[varNum-1].var;
-	var -> cells = stack - cmd -> stack +1;
+	var -> cells =__stack - cmd -> stack +1;
 
 	if (var -> sizeTab) free( var -> sizeTab);
 
@@ -594,16 +596,16 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
  
 
-	popStack(stack - cmd -> stack);
+	popStack(__stack - cmd -> stack);
 
-	printf("cmd stack loc %d, satck is %d\n",cmd -> stack, stack);
+	printf("cmd stack loc %d, satck is %d\n",cmd -> stack, __stack);
 
 	return NULL;
 }
 
 void do_std_next_arg(nativeCommand *cmd, char *ptr)
 {
-	stack++;
+	__stack++;
 	setStackNone();
 }
 
@@ -612,7 +614,7 @@ void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
 	if (parenthesis_count == 0)
 	{
-		if (cmdStack) if (stack) if (cmdTmp[cmdStack-1].flag == cmd_index ) cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0);
+		if (instance.cmdStack) if (__stack) if (cmdTmp[instance.cmdStack-1].flag == cmd_index ) cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack],0);
 	}
 }
 
@@ -703,7 +705,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	}
 
 	setStackStr( toAmosString( ptr + 2, length ) );
-	kittyStack[stack].state = state_none;
+	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( (int) next_token );
 
 	return ptr + length2;
@@ -723,8 +725,12 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 		setStackHiddenCondition();
 	}
 
+#if defined(show_proc_names_yes) || defined(show_token_numbers_yes)
+	printf("number %d\n",  *((int *) ptr) );
+#endif
+
 	setStackNum( *((int *) ptr) );
-	kittyStack[stack].state = state_none;
+	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return ptr;
@@ -826,7 +832,7 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 
 	setStackDecimal( f );
 
-	kittyStack[stack].state = state_none;
+	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return ptr;
@@ -890,7 +896,7 @@ char *executeToken( char *ptr, unsigned short token )
 			getLineFromPointer(ptr);
 
 			printf("%08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					lineFromPtr.line, (unsigned int) ptr,__FUNCTION__,__LINE__, stack, cmdStack, kittyStack[stack].state, token , TokenName(token));	
+					lineFromPtr.line, (unsigned int) ptr,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[__stack].state, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;
@@ -1008,10 +1014,10 @@ char *token_reader( char *start, char *ptr, unsigned short token, int tokenlengt
 {
 	ptr = executeToken( ptr, token );
 
-	if (stack<0)
+	if (__stack<0)
 	{
 		getLineFromPointer(ptr);
-		printf("dog fart, stinky fart at line %d, stack is %d\n", lineFromPtr.line ,stack);
+		printf("dog fart, stinky fart at line %d, stack is %d\n", lineFromPtr.line,__stack);
 		return NULL;
 	}
 
@@ -1144,6 +1150,8 @@ int main(int args, char **arg)
 	char amosid[17];
 	int n;
 
+	init_instent( &instance );
+
 #ifdef __amigaos__
 	struct Task *me;
 	APTR oldException;
@@ -1170,7 +1178,6 @@ int main(int args, char **arg)
 	}
 
 #endif
-
 
 	if (init())
 	{
@@ -1202,8 +1209,6 @@ int main(int args, char **arg)
 
 #endif
 
-	stack = 0;
-	cmdStack = 0;
 	onError = onErrorBreak;
 
 	memset(globalVars,0,sizeof(struct globalVar) * VAR_BUFFERS);

@@ -16,27 +16,26 @@
 #include "debug.h"
 #include "amosstring.h"
 
-int stack = 0;
 struct kittyData kittyStack[100];
 
 bool correct_order( int last_token, int next_token );
 
 bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken) )
 {
-	while (cmdStack > 0)
+	while (instance.cmdStack > 0)
 	{
-		if (cmdTmp[cmdStack-1].cmd == fn) return true;
-		cmdStack--;
+		if (cmdTmp[instance.cmdStack-1].cmd == fn) return true;
+		instance.cmdStack--;
 	}
 	return false;
 }
 
 bool dropProgStackToFlag( int flag )
 {
-	while (cmdStack > 0)
+	while (instance.cmdStack > 0)
 	{
-		if (cmdTmp[cmdStack-1].flag & flag) return true;
-		cmdStack--;
+		if (cmdTmp[instance.cmdStack-1].flag & flag) return true;
+		instance.cmdStack--;
 	}
 	return false;
 }
@@ -44,11 +43,11 @@ bool dropProgStackToFlag( int flag )
 bool dropProgStackAllFlag( int flag )
 {
 	bool deleted = false;
-	while (cmdStack > 0)
+	while (instance.cmdStack > 0)
 	{
-		if (cmdTmp[cmdStack-1].flag & flag) 
+		if (cmdTmp[instance.cmdStack-1].flag & flag) 
 		{
-			cmdStack--;
+			instance.cmdStack--;
 			deleted = true;
 		}
 		else return deleted;
@@ -62,14 +61,14 @@ void remove_parenthesis(int black_at_stack )
 	if ( kittyStack[black_at_stack].state == state_subData ) 
 	{
 		int i;
-		for (i=black_at_stack+1; i<=stack; i++)
+		for (i=black_at_stack+1; i<=instance.stack; i++)
 		{
 			kittyStack[i-1] = kittyStack[i];
 		}
 
-		if (black_at_stack <stack) kittyStack[stack].str = NULL;
+		if (black_at_stack <instance.stack) kittyStack[__stack].str = NULL;
 
-		stack --;
+		instance.stack --;
 	}
 }
 
@@ -78,10 +77,10 @@ void _unLockPara()
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (cmdStack)
+	if (instance.cmdStack)
 	{
 		struct glueCommands *cmd;
-		cmd = &cmdTmp[cmdStack-1];
+		cmd = &cmdTmp[instance.cmdStack-1];
 
 		if (cmd -> flag == cmd_para)
 		{
@@ -94,7 +93,7 @@ void _unLockPara()
 bool isArgsClean( struct glueCommands *cmd )
 {
 	int s;
-	for (s= cmd -> stack; s<stack;s++)
+	for (s= cmd -> stack; s<instance.stack;s++)
 	{
 		if (kittyStack[s].state != state_none) return FALSE;
 	}
@@ -109,16 +108,16 @@ char *flushCmdParaStack( int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (cmdStack)
+	if (instance.cmdStack)
 	{
-		 while ( (cmdStack>0) && (cmdTmp[cmdStack-1].flag & cmd_para)) 
+		 while ( (instance.cmdStack>0) && (cmdTmp[instance.cmdStack-1].flag & cmd_para)) 
 		{
-			cmd = &cmdTmp[cmdStack-1];
+			cmd = &cmdTmp[instance.cmdStack-1];
 
 			if ( isArgsClean( cmd ) ) 
 			{
 				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
-				cmdStack--;
+				instance.cmdStack--;
 
 				if ( correct_order( getLastProgStackToken() ,  nextToken ) == false )
 				{
@@ -135,15 +134,15 @@ char *flushCmdParaStack( int nextToken )
 
 void popStack(int n)
 {
-	while ((n>0)&&(stack>0))
+	while ((n>0)&&(instance.stack>0))
 	{
-		if (kittyStack[stack].str)
+		if (kittyStack[__stack].str)
 		{
-			dprintf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[stack].str);
-			free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-			kittyStack[stack].str = NULL;
+			dprintf("%s::FREE stack(%d)  %08x\n",__FUNCTION__,stack,kittyStack[__stack].str);
+			free(kittyStack[__stack].str);	// we should always set ptr to NULL, if not its not freed.
+			kittyStack[__stack].str = NULL;
 		}
-		stack --;
+		instance.stack --;
 		n--;
 	}
 }
@@ -200,54 +199,54 @@ bool stack_is_number( int n )
 
 void setStackNone( void )
 {
-	if (kittyStack[stack].str) 
+	if (kittyStack[__stack].str) 
 	{
-		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-		kittyStack[stack].str = NULL;
+		free(kittyStack[__stack].str);	// we should always set ptr to NULL, if not its not freed.
+		kittyStack[__stack].str = NULL;
 	}
 
-	kittyStack[stack].integer.value = 0;
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_none;
+	kittyStack[__stack].integer.value = 0;
+	kittyStack[__stack].state = state_none;
+	kittyStack[__stack].type = type_none;
 }
 
 void setStackNum( int num )
 {
-	if (kittyStack[stack].str) 
+	if (kittyStack[__stack].str) 
 	{
-		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-		kittyStack[stack].str = NULL;
+		free(kittyStack[__stack].str);	// we should always set ptr to NULL, if not its not freed.
+		kittyStack[__stack].str = NULL;
 	}
 
-	kittyStack[stack].integer.value = num;
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_int;
+	kittyStack[__stack].integer.value = num;
+	kittyStack[__stack].state = state_none;
+	kittyStack[__stack].type = type_int;
 }
 
 void setStackDecimal( double decimal )
 {
-	if (kittyStack[stack].str)
+	if (kittyStack[__stack].str)
 	{
-		free(kittyStack[stack].str);	// we should always set ptr to NULL, if not its not freed.
-		kittyStack[stack].str = NULL;
+		free(kittyStack[__stack].str);	// we should always set ptr to NULL, if not its not freed.
+		kittyStack[__stack].str = NULL;
 	}
 
-	kittyStack[stack].decimal.value = decimal;
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_float;
+	kittyStack[__stack].decimal.value = decimal;
+	kittyStack[__stack].state = state_none;
+	kittyStack[__stack].type = type_float;
 }
 
 void setStackStrDup( struct stringData *str)
 {
-	if (kittyStack[stack].str)	free(kittyStack[stack].str);
-	kittyStack[stack].str = str ? amos_strdup( str ) : alloc_amos_string( 0);
-	kittyStack[stack].state = state_none;
-	kittyStack[stack].type = type_string;
+	if (kittyStack[__stack].str)	free(kittyStack[__stack].str);
+	kittyStack[__stack].str = str ? amos_strdup( str ) : alloc_amos_string( 0);
+	kittyStack[__stack].state = state_none;
+	kittyStack[__stack].type = type_string;
 }
 
 void setStackStr( struct stringData *str)
 {
-	struct kittyData *item = &kittyStack[stack];
+	struct kittyData *item = &kittyStack[__stack];
 
 	if ((str != item -> str)&&(item -> str))
 	{
@@ -269,7 +268,7 @@ void setStackStr( struct stringData *str)
 
 void setStackParenthesis()
 {
-	struct kittyData *item = &kittyStack[stack];
+	struct kittyData *item = &kittyStack[__stack];
 
 	if (item -> str)
 	{
@@ -548,15 +547,15 @@ void correct_for_hidden_sub_data()
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (stack > 0)
+	if (instance.stack > 0)
 	{
-		while (kittyStack[stack-1].state == state_hidden_subData)
+		while (kittyStack[__stack-1].state == state_hidden_subData)
 		{
 			dprintf("removed hidden ')' \n");
 
-			kittyStack[stack-1] = kittyStack[stack];
-			kittyStack[stack].str = NULL;
-			stack --;
+			kittyStack[__stack-1] = kittyStack[__stack];
+			kittyStack[__stack].str = NULL;
+			instance.stack --;
 		}
 	}
 }

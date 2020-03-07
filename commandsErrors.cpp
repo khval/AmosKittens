@@ -150,10 +150,10 @@ char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 
 			if (dropProgStackToProc( _procedure ))
 			{
-				if (cmdTmp[cmdStack-1].cmd == _procedure ) 
+				if (cmdTmp[instance.cmdStack-1].cmd == _procedure ) 
 				{
-					printf(" maybe need flush some stack here? %d - %d --\n", cmdTmp[cmdStack-1].stack, stack );
-					tokenBuffer=cmdTmp[--cmdStack].cmd(&cmdTmp[cmdStack],0) - 2;		// +2 will be added on exit.
+					printf(" maybe need flush some stack here? %d - %d --\n", cmdTmp[instance.cmdStack-1].stack,__stack );
+					tokenBuffer=cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack],0) - 2;		// +2 will be added on exit.
 				}
 			}
 			if ( resume_location ) tokenBuffer = resume_location -2;		// +2 will be added on exit.
@@ -198,14 +198,14 @@ char *onErrorProc(char *ptr)
 char *_errError( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 
 	if (args == 1)
 	{
-		setError( getStackNum(stack), data -> tokenBuffer );
+		setError( getStackNum(__stack), data -> tokenBuffer );
 	}
 
-	popStack( stack - data->stack );
+	popStack(__stack - data->stack );
 	return NULL;
 }
 
@@ -322,7 +322,7 @@ char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 char *_errErrStr( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = stack - data->stack +1 ;
+	int args =__stack - data->stack +1 ;
 	struct stringData *err_str = NULL;
 	int err = 0;
 
@@ -330,10 +330,10 @@ char *_errErrStr( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1: 	err = getStackNum(stack);
+		case 1: 	err = getStackNum(__stack);
 				break;
 		default:
-				popStack( stack - data->stack );
+				popStack(__stack - data->stack );
 				setError(22,data->tokenBuffer);
 				return NULL;
 	}
