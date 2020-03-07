@@ -20,9 +20,9 @@
 #include "os/linux/stuff.h"
 #endif
 
+#include <amosKittens.h>
+#include <stack.h>
 #include "debug.h"
-#include "stack.h"
-#include "amosKittens.h"
 #include "commandsEditor.h"
 #include "var_helper.h"
 #include "kittyErrors.h"

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -14,12 +16,9 @@
 #include <proto/retroMode.h>
 #endif
 
+#include <amosKittens.h>
+#include <stack.h>
 #include "debug.h"
-#include <string>
-#include <vector>
-
-#include "stack.h"
-#include "amosKittens.h"
 #include "commands.h"
 #include "commandsMenu.h"
 #include "var_helper.h"

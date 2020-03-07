@@ -25,9 +25,9 @@
 #include <retromode_lib.h>
 #endif
 
+#include <amosKittens.h>
+#include <stack.h>
 #include "debug.h"
-#include "stack.h"
-#include "amosKittens.h"
 #include "commands.h"
 #include "commandsData.h"
 #include "kittyErrors.h"

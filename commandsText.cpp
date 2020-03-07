@@ -24,8 +24,9 @@ extern struct RastPort font_render_rp;
 #include <iostream>
 #include <math.h>
 
-#include "stack.h"
-#include "amosKittens.h"
+#include <amosKittens.h>
+#include <stack.h>
+
 #include "commandsData.h"
 #include "commandsText.h"
 #include "commandsScreens.h"

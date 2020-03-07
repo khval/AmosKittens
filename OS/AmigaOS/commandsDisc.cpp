@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <vector>
+#include <string>
+#include <iostream>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -18,12 +21,8 @@
 #include "os/linux/stuff.h"
 #endif
 
-#include <vector>
-#include <string>
-#include <iostream>
-
-#include "stack.h"
-#include "amosKittens.h"
+#include <amosKittens.h>
+#include <stack.h>
 #include "commandsDisc.h"
 #include "commands.h"
 #include "debug.h"

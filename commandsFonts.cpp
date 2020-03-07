@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <string>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -23,14 +27,10 @@ extern struct RastPort font_render_rp;
 #include "os/linux/stuff.h"
 #endif
 
-#include "debug.h"
-#include <string>
-#include <iostream>
-#include <vector>
-#include <string>
+#include <amosKittens.h>
+#include <stack.h>
 
-#include "stack.h"
-#include "amosKittens.h"
+#include "debug.h"
 #include "commandsFonts.h"
 #include "kittyErrors.h"
 #include "engine.h"

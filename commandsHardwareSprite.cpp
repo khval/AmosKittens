@@ -23,8 +23,8 @@
 #include <string>
 #include <iostream>
 
-#include "stack.h"
-#include "amosKittens.h"
+#include <amosKittens.h>
+#include <stack.h>
 #include "commandsGfx.h"
 #include "kittyErrors.h"
 #include "engine.h"

@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <iostream>
+#include <vector>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -16,13 +19,10 @@
 #include <unistd.h>
 #endif
 
-#include "debug.h"
-#include <string>
-#include <iostream>
-#include <vector>
+#include <amosKittens.h>
+#include <stack.h>
 
-#include "stack.h"
-#include "amosKittens.h"
+#include "debug.h"
 #include "commands.h"
 #include "commandsErrors.h"
 #include "kittyErrors.h"

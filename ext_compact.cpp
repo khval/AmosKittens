@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <iostream>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -18,12 +20,9 @@
 #include <retromode_lib.h>
 #endif
 
+#include <amosKittens.h>
+#include <stack.h>
 #include "debug.h"
-#include <string>
-#include <iostream>
-
-#include "stack.h"
-#include "amosKittens.h"
 #include "commands.h"
 #include "commandsBanks.h"
 #include "commandsBlitterObject.h"

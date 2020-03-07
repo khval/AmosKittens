@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/retroMode.h>
+#include <amosKittens.h>
 #endif
 
 #ifdef __linux__
-#include <stdint.h>
 #include <limits.h>
 #endif
 

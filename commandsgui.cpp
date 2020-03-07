@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <vector>
+#include <iostream>
 
 #include "config.h"
 
@@ -18,12 +21,9 @@
 #include <unistd.h>
 #endif
 
+#include <amosKittens.h>
+#include <stack.h>
 #include "debug.h"
-#include <string>
-#include <vector>
-#include <iostream>
-#include "stack.h"
-#include "amosKittens.h"
 #include "commands.h"
 #include "commandsbanks.h"
 #include "kittyErrors.h"

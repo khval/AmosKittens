@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <vector>
+
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/retroMode.h>
-#include "stack.h"
-#include "amosKittens.h"
-#include <vector>
+
+#include <amosKittens.h>
+#include <stack.h>
+
 #include <proto/retroMode.h>
 #include "amoskittens.h"
 #include "commandsbanks.h"

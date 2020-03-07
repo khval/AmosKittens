@@ -3,16 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
+#include <string>
+#include <iostream>
+#include <vector>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/retroMode.h>
+#include <amosKittens.h>
 #endif
-
-#include <string>
-#include <iostream>
-#include <math.h>
-#include <vector>
 
 #include "debug.h"
 #include "stack.h"

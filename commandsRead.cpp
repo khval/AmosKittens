@@ -14,8 +14,9 @@
 #include "os/linux/stuff.h"
 #endif
 
-#include "stack.h"
-#include "amosKittens.h"
+#include <amosKittens.h>
+#include <stack.h>
+
 #include "commands.h"
 #include "engine.h"
 #include "debug.h"

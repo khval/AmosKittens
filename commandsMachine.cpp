@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
+#include <iostream>
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
@@ -21,12 +23,10 @@
 #include "os/linux/stuff.h"
 #endif
 
-#include "debug.h"
-#include <string>
-#include <iostream>
+#include <amosKittens.h>
+#include <stack.h>
 
-#include "stack.h"
-#include "amosKittens.h"
+#include "debug.h"
 #include "commands.h"
 #include "commandsMachine.h"
 #include "commandsBanks.h"
