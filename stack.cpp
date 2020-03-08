@@ -136,16 +136,25 @@ char *flushCmdParaStack( this_instance_first int nextToken )
 
 void popStack( this_instance_first int n)
 {
-	while ((n>0)&&(instance_stack>0))
+	struct kittyData *s,*i,*e;
+	int _s;
+
+	_s = instance_stack-n ;
+	if (_s<0) _s=0;
+
+	s = &kittyStack[_s];
+	e = &kittyStack[instance_stack];
+
+	for (i=e; i>=s ; i-- )
 	{
-		if (kittyStack[instance_stack].str)
+		if (i -> str)
 		{
-			free(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
-			kittyStack[instance_stack].str = NULL;
+			freeString(i->str);
+			i->str=NULL;
 		}
-		instance_stack --;
-		n--;
 	}
+
+	instance_stack = _s;
 }
 
 struct stringData *getStackString( this_instance_first int n )
