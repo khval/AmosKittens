@@ -15,12 +15,18 @@
 #include "amosstring.h"
 #include "debug.h"
 
+
+#define allocNewString(len,newstr) \
+	newstr = (struct stringData *) sys_public_alloc( sizeof(struct stringData) + len ); \
+
+
 struct stringData *alloc_amos_string( int size )
 {
-	struct stringData *newstr = (struct stringData *) malloc( sizeof(struct stringData) + size ); 
+	struct stringData *newstr; 
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	allocNewString(size,newstr);
 	if (newstr)
 	{
 		newstr -> size = size;
@@ -31,10 +37,11 @@ struct stringData *alloc_amos_string( int size )
 
 struct stringData *amos_strdup( struct stringData *var )
 {
+	struct stringData *newstr;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	struct stringData *newstr = (struct stringData *) malloc( sizeof(struct stringData) + var -> size ); 
-
+	allocNewString(var->size,newstr);
 	if (newstr)
 	{
 		newstr -> size = var -> size;
@@ -57,8 +64,7 @@ struct stringData *amos_strndup( struct stringData *var, int len )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
-
+	allocNewString(len,newstr);
 	if (newstr)
 	{
 		newstr -> size = len;
@@ -78,11 +84,10 @@ struct stringData *amos_mid( struct stringData *string, int start, int len )
 	if ( (string->size - start) <len) len = (string->size - start);
 	if (len<0) len =0;
 
-	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
-	newstr -> size = len;
-
-	if (len>0)
+	allocNewString(len,newstr);
+	if (newstr)
 	{
+		newstr -> size = len;
 		memcpy(&(newstr->ptr),&(string->ptr)+start,len);
 		(&newstr->ptr)[len]=0;	
 	}
@@ -93,10 +98,10 @@ struct stringData *amos_right( struct stringData *var, int len )
 {
 	struct stringData *newstr;
 	if (var->size<len) len = var->size;
-	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
+	allocNewString(len,newstr);
 	if (newstr)
 	{
 		newstr -> size = len;
@@ -137,7 +142,7 @@ struct stringData *toAmosString( const char *txt,int len)
 
 	if (_l<len) len = _l;
 
-	newstr = (struct stringData *) malloc( sizeof(struct stringData) + len ); 
+	allocNewString(len,newstr);
 	if (newstr)
 	{
 		newstr -> size = len;
@@ -155,7 +160,7 @@ struct stringData *toAmosString_char(char *adr, char t)
 
 	for (c=adr;*c!=t;c++) size++;
 
-	ret = (struct stringData *) malloc( sizeof(struct stringData) + size );
+	allocNewString(size,ret);
 	if (ret)
 	{
 		char *d = &ret -> ptr;
@@ -180,7 +185,7 @@ struct stringData *toAmosString_len_or_char(char *adr, int len, char t)
 
 	for (c=adr;(*c!=t)&&(size<len);c++) size++;
 
-	ret = (struct stringData *) malloc( sizeof(struct stringData) + size );
+	allocNewString(size,ret);
 	if (ret)
 	{
 		char *d = &ret -> ptr;

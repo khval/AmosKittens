@@ -121,7 +121,7 @@ char *_menuMenuStr( struct glueCommands *data, int nextToken )
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	menuItem = (struct amosMenuItem *) malloc( sizeof(struct amosMenuItem) );
+	menuItem = allocStruct(amosMenuItem,1);
 
 	_set_menu_item = 0;
 

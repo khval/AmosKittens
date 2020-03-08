@@ -435,7 +435,7 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 		}
 		else
 		{
-			mem =  (char *) malloc( bank-> length + bank_header );
+			mem =  (char *) sys_priv_alloc( bank-> length + bank_header );
 			bank->start = mem ? mem+bank_header : NULL;
 			if (mem) memset( mem , 0, bank->length + bank_header );
 		}
@@ -686,7 +686,7 @@ void __load_work_data__(FILE *fd,int bank)
 
 		if (item.length >0 )
 		{
-			mem = (char *) malloc( item.length+bank_header);
+			mem = (char *) sys_priv_alloc( item.length+bank_header);
 
 			if (mem)
 			{
@@ -726,7 +726,7 @@ void __load_work_data_mem__(struct retroMemFd &fd)
 
 		if (item.length >0 )
 		{
-			mem = (char *) malloc( item.length+bank_header);
+			mem = (char *) sys_priv_alloc( item.length+bank_header);
 
 			if (mem)
 			{
@@ -784,13 +784,14 @@ void __write_ambs__( FILE *fd, uint16_t banks)
 void init_banks( char *data , int size)
 {
 	struct retroMemFd fd;
-	char id[5];
+	char id[6];
 	unsigned short banks = -1;
 	int n;
 	int type = -1;
 	struct kittyBank *bank = NULL;
-
 	id[4]=0;	// null terminate id string.
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (data)
 	{
@@ -1012,7 +1013,7 @@ void __load_bank__(char *_name, int bankNr )
 	if (name)
 	{
 		__load_bank__(name, bankNr);
-		free(name);
+		freeString(name);
 	}
 }
 
@@ -1406,7 +1407,7 @@ char *_bankBankShrink( struct glueCommands *data, int nextToken )
 				bank = findBank( banknr );
 				if (bank)
 				{
-					char *_new = (char *) malloc( bank_header+size );
+					char *_new = (char *) sys_priv_alloc( bank_header+size );
 
 					if (_new)
 					{

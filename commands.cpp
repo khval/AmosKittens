@@ -346,7 +346,7 @@ BOOL setVarString( struct kittyData *var, kittyData *s )
 		case type_string:
 			if (s -> str)
 			{
-				if (var->str) free(var->str);
+				if (var->str) freeString(var->str);
 				var->str = amos_strdup(s -> str);
 			}
 			else
@@ -421,7 +421,7 @@ BOOL setVarStringArray( struct kittyData *var, char *tokenBuffer )
 				{
 					struct stringData **str_item = &(var->str_array -> ptr) + var -> index;
 
-					if (*str_item) free(*str_item);
+					if (*str_item) freeString(*str_item);
 					*str_item = amos_strdup(kittyStack[instance.stack].str);	
 
 				}
@@ -498,7 +498,7 @@ char *_setVarReverse( struct glueCommands *data, int nextToken )
 
 	// if variable is string it will have stored its data on the stack.
 
-	if (kittyStack[instance.stack].str) free(kittyStack[instance.stack].str);
+	if (kittyStack[instance.stack].str) freeString(kittyStack[instance.stack].str);
 	kittyStack[instance.stack].str = NULL;
 	instance.stack --;
 
@@ -1510,7 +1510,7 @@ void _set_return_param( struct nativeCommand *cmd, char *tokenBuffer )
 			var_param_decimal = kittyStack[instance.stack].decimal.value;
 			break;
 		case type_string:
-			if (var_param_str) free(var_param_str);
+			if (var_param_str) freeString(var_param_str);
 			var_param_str = amos_strdup(kittyStack[instance.stack].str);
 			break;
 	}

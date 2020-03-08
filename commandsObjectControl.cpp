@@ -290,7 +290,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 
 		if (newzones)
 		{
-			zones = (struct zone *) malloc( sizeof(struct zone) * (newzones+1) );
+			zones = allocStruct(zone,(newzones+1));
 			zones_allocated = (newzones+1);
 		}
 	}

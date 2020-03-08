@@ -228,9 +228,9 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 {
 	int x,y;
 	uint32_t argb;
-	double *R = (double*) malloc( sizeof(double) * w* h ); 
-	double *G = (double*) malloc( sizeof(double) * w* h ); 
-	double *B = (double*) malloc( sizeof(double) * w* h ); 
+	double *R = allocType(double,w*h); 
+	double *G = allocType(double,w*h); 
+	double *B = allocType(double,w*h); 
 	int c,i;
 	double r,g,b;
 	unsigned char *memory = screen -> Memory[screen -> double_buffer_draw_frame]; 

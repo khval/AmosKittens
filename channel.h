@@ -142,7 +142,7 @@ public:
 	{
 		used = 0;
 		allocated = 10;
-		tab = (struct kittyChannel **) malloc(sizeof(struct kittyChannel *) * allocated );
+		tab = allocStruct(kittyChannel *,allocated);
 	}
 
 	~ChannelTableClass();

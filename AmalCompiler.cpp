@@ -1348,12 +1348,12 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 
 	// setup default stack of 500.
 
-	channel -> argStack = (int *) malloc( sizeof(int) * 500 );
+	channel -> argStack = allocType(int,500);
 	channel -> argStackCount = 0;
 
 	// setup callback buffer.
 
-	channel -> progStack = (struct amalCallBack *) malloc(sizeof(struct amalCallBack *)*500);
+	channel -> progStack = allocStruct(amalCallBack,500);
 	channel -> progStackCount = 0;
 
 	channel -> amalProg.amalProgCounter = channel -> amalProg.call_array;

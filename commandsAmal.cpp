@@ -492,7 +492,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 							printf("Amal channel id: %d\n", item -> id);
 
 							item -> amalStatus = channel_status::uninitialized;
-							if (item -> amal_script) free(item -> amal_script); 
+							if (item -> amal_script) freeString(item -> amal_script); 
 							item -> amal_script = NULL;
 							item -> amal_at = NULL;
 							freeAmalBuf( &item -> amalProg );
@@ -513,7 +513,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus = channel_status::uninitialized;
-						if (item -> amal_script) free(item -> amal_script); 
+						if (item -> amal_script) freeString(item -> amal_script); 
 						item -> amal_script = NULL;
 						item -> amal_at = NULL;
 						freeAmalBuf( &item -> amalProg );

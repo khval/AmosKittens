@@ -545,9 +545,9 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 	var = &globalVars[varNum-1].var;
 	var -> cells =__stack - cmd -> stack +1;
 
-	if (var -> sizeTab) free( var -> sizeTab);
+	if (var -> sizeTab) freeStruct( var -> sizeTab);
 
-	var -> sizeTab = (int *) malloc( sizeof(int) * var -> cells );
+	var -> sizeTab = allocType(int,var -> cells);
 
 	if (var -> sizeTab)
 	{
@@ -564,7 +564,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 				size = var -> count * sizeof(valueData);
 
-				var -> int_array = (struct valueArrayData *) malloc( sizeof(struct valueArrayData) + size ) ;
+				var -> int_array = allocArrayData(value,size) ;
 				var -> int_array -> type = type_int | type_array;
 				var -> int_array -> size = var -> count;
 				memset( &var -> int_array -> ptr, 0, size );
@@ -574,7 +574,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 				size = var -> count * sizeof(desimalData);
 
-				var -> float_array = (struct desimalArrayData *) malloc( sizeof(struct desimalArrayData) + size ) ;
+				var -> float_array = allocArrayData(desimal,size) ; 
 				var -> float_array -> type = type_float | type_array;
 				var -> float_array -> size = var -> count;
 				memset( &var -> float_array -> ptr, 0, size );
@@ -584,7 +584,7 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 				size = var -> count * sizeof(struct stringData *);
 
-				var -> str_array = (struct stringArrayData *) malloc( sizeof(struct stringArrayData) + size ) ;
+				var -> str_array = allocArrayData(string,size) ; 
 				var -> str_array -> type = type_string | type_array;
 				var -> str_array -> size = var -> count;
 				memset( &var -> str_array -> ptr, 0, size );
@@ -593,8 +593,6 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 			default: setError(22, cmd -> tokenBuffer);
 		}
 	}
-
- 
 
 	popStack(__stack - cmd -> stack);
 
@@ -1314,8 +1312,8 @@ int main(int args, char **arg)
 		apply_wave(1, 15);
 
 
-		do_input = (void (**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
-		do_to = (char *(**)(nativeCommand*, char*)) malloc( sizeof(void *) * MAX_PARENTHESIS_COUNT );
+		do_input = (void (**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
+		do_to = (char *(**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
 
 		for (n=0;n<MAX_PARENTHESIS_COUNT;n++) 
 		{
@@ -1375,13 +1373,13 @@ int main(int args, char **arg)
 
 		if (do_input)
 		{
-			free( (void *) do_input );
+			freeStruct( do_input );
 			do_input = NULL;
 		}
 
 		if (do_to)
 		{
-			free( (void *) do_to );
+			freeStruct( (void *) do_to );
 			do_to = NULL;
 		}
 	}

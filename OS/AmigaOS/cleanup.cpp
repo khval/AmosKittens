@@ -73,7 +73,7 @@ void clean_up_menus()
 			item -> str = NULL;
 			if (item -> key) free (item -> key);
 			item -> key = NULL;
-			free(item);
+			freeStruct(item);
 		}
 		
 		menuitems.erase( menuitems.begin() );
@@ -103,7 +103,7 @@ void clear_local_vars( int proc )
 					break;
 
 				case type_string:
-					if (var->str) free(var->str);
+					if (var->str) freeString(var->str);
 					var->str = NULL;
 					break;
 
@@ -111,8 +111,8 @@ void clear_local_vars( int proc )
 				case type_float | type_array:
 				case type_string | type_array:
 
-					if (var -> sizeTab) free( var -> sizeTab);
-	 				if (var->str) free (var->str);
+					if (var -> sizeTab) freeStruct( var -> sizeTab);
+	 				if (var->str) freeString (var->str);
 					var -> sizeTab = NULL;
 					var->str = NULL;
 					break;
@@ -140,7 +140,10 @@ void clean_up_vars()
 		switch (var -> type)
 		{
 			case type_string:
- 				if (var->str) free (var->str);
+
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+ 				if (var->str) freeString (var->str);
 				break;
 
 			case type_int | type_array:
@@ -148,8 +151,8 @@ void clean_up_vars()
 			case type_string | type_array:
 
 				// free
-				if (var -> sizeTab) free( var -> sizeTab);
- 				if (var->str) free (var->str);
+				if (var -> sizeTab) freeStruct( var -> sizeTab);
+ 				if (var->str) sys_free(var->str);
 				break;
 		}
 

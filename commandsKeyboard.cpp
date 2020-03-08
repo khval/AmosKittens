@@ -321,7 +321,7 @@ char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
 
 	} while ( str->size == 0 );
 
-	free(str);
+	freeString(str);
 
 	return tokenBuffer;
 }

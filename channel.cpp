@@ -25,16 +25,16 @@ kittyChannel::~kittyChannel()
 {
 	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
 
-	if (anim_script) free(anim_script);
+	if (anim_script) freeString(anim_script);
 	anim_script = NULL;
 
-	if (amal_script) free(amal_script);
+	if (amal_script) freeString(amal_script);
 	amal_script = NULL;
 
-	if (movex_script) free(movex_script);
+	if (movex_script) freeString(movex_script);
 	movex_script = NULL;
 
-	if (movey_script) free(movey_script);
+	if (movey_script) freeString(movey_script);
 	movey_script = NULL;
 
 	if ( amalProg.call_array ) sys_free( amalProg.call_array );
@@ -104,7 +104,7 @@ ChannelTableClass::~ChannelTableClass()
 			if (tab[n]) delete tab[n];
 			tab[n] = NULL;
 		}
-		free(tab);
+		freeStruct(tab);
 	}
 	tab = NULL;
 	used = 0;
@@ -126,12 +126,12 @@ struct kittyChannel * ChannelTableClass::newChannel(  int channel )
 		struct kittyChannel **tmp;
 		int old_allocated = allocated;
 		allocated += 20;
-		tmp = (struct kittyChannel **) malloc(sizeof(struct kittyChannel *) * allocated );
+		tmp = allocStruct(kittyChannel *,allocated );
 
 		if (tmp)
 		{
 			memcpy(tmp,tab,sizeof(struct kittyChannel *) * old_allocated );
-			free(tab);
+			freeStruct(tab);
 
 			tab = tmp;
 			tab[used] = item;
@@ -181,7 +181,7 @@ int ChannelTableClass::_size()
 
 void setChannelAnim(  kittyChannel *item, struct stringData *str , bool enable )
 {
-	if (item -> anim_script) free(item -> anim_script);
+	if (item -> anim_script) freeString(item -> anim_script);
 
 	item -> anim_script = str;
 	item -> anim_at = &str->ptr;
@@ -196,7 +196,7 @@ void setChannelAnim(  kittyChannel *item, struct stringData *str , bool enable )
 void setChannelAmal(  kittyChannel *item, struct stringData *str)
 {
 	item -> amalStatus = channel_status::uninitialized;
-	if (item -> amal_script) free(item -> amal_script);
+	if (item -> amal_script) freeString(item -> amal_script);
 	item -> amal_script = str;
 	item -> amal_at = &str->ptr;
 
@@ -209,7 +209,7 @@ void setChannelAmal(  kittyChannel *item, struct stringData *str)
 
 void setChannelMoveX( kittyChannel *item, struct stringData *str)
 {
-	if (item -> movex_script) free(item -> movex_script);
+	if (item -> movex_script) freeString(item -> movex_script);
 	item -> movex_script = str;
 	item -> movex_at = &str->ptr;
 	item -> deltax = 0;
@@ -217,7 +217,7 @@ void setChannelMoveX( kittyChannel *item, struct stringData *str)
 
 void setChannelMoveY(  kittyChannel *item, struct stringData *str)
 {
-	if (item -> movey_script) free(item -> movey_script);
+	if (item -> movey_script) freeString(item -> movey_script);
 	item -> movey_script = str;
 	item -> movey_at = &str->ptr;
 	item -> deltay = 0;

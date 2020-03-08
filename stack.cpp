@@ -17,6 +17,9 @@
 
 #ifdef __amoskittens__
 struct kittyData kittyStack[100];
+#else
+#define cmdTmp instance->cmdTmp
+#define kittyStack instance->kittyStack
 #endif
 
 bool correct_order( this_instance_first int last_token, int next_token );
@@ -83,13 +86,13 @@ void _unLockPara( this_instance_one )
 
 		if (cmd -> flag == cmd_para)
 		{
-			remove_parenthesis(cmd -> stack );
+			remove_parenthesis( opt_instance_first cmd -> stack );
 		}
 	}
 }
 
 
-bool isArgsClean( struct glueCommands *cmd )
+bool isArgsClean( this_instance_first struct glueCommands *cmd )
 {
 	int s;
 	for (s= cmd -> stack; s<instance_stack;s++)
@@ -111,7 +114,7 @@ char *flushCmdParaStack( this_instance_first int nextToken )
 		{
 			cmd = &cmdTmp[instance_cmdStack-1];
 
-			if ( isArgsClean( cmd ) ) 
+			if ( isArgsClean( opt_instance_first cmd ) ) 
 			{
 				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
 				instance_cmdStack--;
@@ -199,7 +202,7 @@ void setStackNone( this_instance_one )
 {
 	if (kittyStack[instance_stack].str) 
 	{
-		free(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
+		freeString(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[instance_stack].str = NULL;
 	}
 
@@ -212,7 +215,7 @@ void setStackNum( this_instance_first int num )
 {
 	if (kittyStack[instance_stack].str) 
 	{
-		free(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
+		freeString(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[instance_stack].str = NULL;
 	}
 
@@ -225,7 +228,7 @@ void setStackDecimal( this_instance_first double decimal )
 {
 	if (kittyStack[instance_stack].str)
 	{
-		free(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
+		freeString(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
 		kittyStack[instance_stack].str = NULL;
 	}
 
@@ -236,7 +239,7 @@ void setStackDecimal( this_instance_first double decimal )
 
 void setStackStrDup( this_instance_first struct stringData *str)
 {
-	if (kittyStack[instance_stack].str)	free(kittyStack[instance_stack].str);
+	if (kittyStack[instance_stack].str)	freeString(kittyStack[instance_stack].str);
 	kittyStack[instance_stack].str = str ? amos_strdup( str ) : alloc_amos_string( 0);
 	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_string;
@@ -248,7 +251,7 @@ void setStackStr( this_instance_first struct stringData *str)
 
 	if ((str != item -> str)&&(item -> str))
 	{
-		free(item -> str);	
+		freeString(item -> str);	
 	}
 
 	if (str)
@@ -270,7 +273,7 @@ void setStackParenthesis( this_instance_one )
 
 	if (item -> str)
 	{
-		free(item -> str);
+		freeString(item -> str);
 		item -> str = NULL ;
 	}
 
