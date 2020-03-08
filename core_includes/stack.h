@@ -1,5 +1,5 @@
 
-extern void	remove_parenthesis(  this_instance_first int black_at_stack );
+extern void	remove_parenthesis( this_instance_first int black_at_stack );
 extern void	unLockPara( this_instance_one );
 
 extern void	setStackParenthesis( this_instance_one );
@@ -45,7 +45,7 @@ extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1
 extern void popStack( this_instance_first int n );
 extern void correct_for_hidden_sub_data( this_instance_one );
 
-extern char *flushCmdParaStack( int nextToken );
+extern char *flushCmdParaStack( this_instance_first int nextToken );
 
 extern void stack_get_if_int( this_instance_first int n, int *ret );
 

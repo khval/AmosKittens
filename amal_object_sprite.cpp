@@ -9,6 +9,7 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#include <AmosKittens.h>
 #endif
 
 #ifdef __linux__

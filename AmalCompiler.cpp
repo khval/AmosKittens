@@ -1,6 +1,8 @@
 
-#include "stdafx.h"
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
 
 #ifdef _MSC_VER
 #include <string.h>
@@ -36,14 +38,12 @@ extern FILE *engine_fd;
 #endif
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
+#include "AmosKittens.h"
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
 #include "pass1.h"
-#include "AmosKittens.h"
+
 #include "amosString.h"
 
 enum

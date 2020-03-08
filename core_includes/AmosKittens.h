@@ -13,6 +13,29 @@ typedef void* APTR;
 #endif
 #define __amoskittens_h__
 
+#ifdef __linux__
+#define allocStruct(name,items) (struct type *) malloc( sizeof(struct type) * items )
+#define allocArrayData(type,size) (struct type ## ArrayData *) malloc( sizeof(struct type ## ArrayData) + size )
+#define freeStruct(adr) free( adr )
+#define sys_free FreeVec
+#define freeString(adr) sys_free(adr)
+#endif
+
+#if defined(__amigaos4__)
+#define allocStruct(name,items) (struct name*) AllocVecTags( sizeof(struct name) * items , AVT_Type, MEMF_SHARED, TAG_END )
+#define allocType(name,items) (name *) AllocVecTags( sizeof(name) * items , AVT_Type, MEMF_SHARED, TAG_END )
+#define allocArrayData(type,size) (struct type ## ArrayData *) AllocVecTags( sizeof(struct type ## ArrayData) + size , AVT_Type, MEMF_SHARED, TAG_END )
+#define freeStruct(adr) FreeVec( adr )
+#define sys_public_alloc(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, TAG_END )
+#define sys_public_alloc_clear(size) AllocVecTags( size, AVT_Type, MEMF_SHARED, AVT_ClearWithValue, 0, TAG_END )
+#define sys_priv_alloc(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, TAG_END )
+#define sys_priv_alloc_clear(size) AllocVecTags( size, AVT_Type, MEMF_PRIVATE, AVT_ClearWithValue, 0, TAG_END )
+#define sys_memavail_gfxmem()
+#define sys_memavail_sysmem() AvailMem(MEMF_ANY)
+#define sys_free FreeVec
+#define freeString(ptr) FreeVec(ptr)
+#endif
+
 #define PROC_STACK_SIZE 1000
 #define VAR_BUFFERS 1000
 #define MAX_PARENTHESIS_COUNT 1000
@@ -471,7 +494,6 @@ struct kittyLib
 #define opt_instance_one
 #define opt_instance_first
 #else
-#warning this is for Extention
 #define __cmdStack instance->cmdStack
 #define __stack instance->stack
 #define instance_stack instance->stack
@@ -626,7 +648,8 @@ struct KittyInstance
 	struct retroSprite *icons ;
 	int stack ;
 	int cmdStack ;
-	struct kittyData kittyStack[100];
+	struct kittyData *kittyStack;
+	struct glueCommands *cmdTmp;
 };
 
 #ifdef __amoskittens__

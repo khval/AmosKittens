@@ -18,11 +18,11 @@
 #define Printf printf
 #endif
 
+#include <amoskittens.h>
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
 #include "amal_object.h"
-#include "amoskittens.h"
 #include "commandsScreens.h"
 #include "amosstring.h"
 #include "amalBank.h"
