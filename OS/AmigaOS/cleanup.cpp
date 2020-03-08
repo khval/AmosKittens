@@ -329,7 +329,7 @@ void clean_up_special()
 
 	if (zones)
 	{
-		free(zones);
+		freeStruct(zones);
 		zones = NULL;
 	}
 
