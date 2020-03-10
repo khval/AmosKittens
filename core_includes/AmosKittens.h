@@ -174,6 +174,8 @@ struct kittyForDouble
 	double have_to;
 };
 
+struct KittyInstance;
+
 struct glueCommands
 {
 	char *(*cmd) ( struct glueCommands *data, int nextToken );	// can return token location
@@ -200,6 +202,7 @@ struct glueCommands
 
 	int stack;
 	int parenthesis_count;
+	struct KittyInstance *instance;
 };
 
 struct proc 
@@ -633,6 +636,15 @@ extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern bool token_is_fresh;
 extern struct glueCommands input_cmd_context;
 
+struct errorAt
+{
+	int code;
+	int trapCode;
+	char *posResume;
+	char *pos;
+	bool newError;
+};
+
 struct KittyInstance
 {
 	int last_var;
@@ -650,6 +662,8 @@ struct KittyInstance
 	int cmdStack ;
 	struct kittyData *kittyStack;
 	struct glueCommands *cmdTmp;
+	struct errorAt kittyError;
+	char *tokenBufferResume;
 };
 
 #ifdef __amoskittens__

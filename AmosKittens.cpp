@@ -93,7 +93,6 @@ int procStackCount = 0;
 int last_var = 0;
 uint32_t tokenFileLength;
 
-char *tokenBufferResume =NULL;
 
 bool startup = false;
 
@@ -129,6 +128,14 @@ void init_instent(struct KittyInstance *instance )
 	instance -> icons = NULL;
 	instance -> sprites = NULL;
 	instance -> globalVars = globalVars;
+	instance -> cmdTmp = cmdTmp;
+//	instance -> tokenBufferResume = NULL;
+
+	instance -> kittyError.code = 0;
+	instance -> kittyError.trapCode = 0;
+	instance -> kittyError.newError = false;
+	instance -> kittyError.pos = NULL;
+	instance -> kittyError.posResume = NULL;
 }
 
 struct retroSprite *patterns = NULL;
@@ -361,7 +368,7 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 	char *ret = NULL;
 	unsigned int flags;
 
-	tokenBufferResume = ptr;
+	instance.tokenBufferResume = ptr;
 
 	// we should empty stack, until first/normal command is not a parm command.
 
@@ -393,7 +400,7 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__ );
 
-	tokenBufferResume = ptr;
+	instance.tokenBufferResume = ptr;
 
 	if (instance.cmdStack)
 	{
