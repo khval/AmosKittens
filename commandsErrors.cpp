@@ -184,13 +184,13 @@ char *onErrorIgnore(char *ptr)
 
 char *onErrorGoto(char *ptr)
 {
-	kittyError.newError = false;
+	instance.kittyError.newError = false;
 	return on_error_goto_location -2;
 }
 
 char *onErrorProc(char *ptr)
 {
-	kittyError.newError = false;
+	instance.kittyError.newError = false;
 	stackCmdLoop( _procedure, ptr);
 	return on_error_proc_location -2;
 }
@@ -238,9 +238,9 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 		{
 			proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-			kittyError.code = 0;
-			kittyError.pos = 0;  
-			kittyError.newError = false;
+			instance.kittyError.code = 0;
+			instance.kittyError.pos = 0;  
+			instance.kittyError.newError = false;
 			return ret -2;
 		}
 
@@ -251,16 +251,16 @@ char *errResume(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-		if (kittyError.posResume)
+		if (instance.kittyError.posResume)
 		{
-			tokenBuffer = kittyError.posResume - 2;		// -2 for location of the error, -2 for resume command.
+			tokenBuffer = instance.kittyError.posResume - 2;		// -2 for location of the error, -2 for resume command.
 
 			proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-			kittyError.code = 0;
-			kittyError.pos = 0;  
-			kittyError.posResume = 0;
-			kittyError.newError = false;
+			instance.kittyError.code = 0;
+			instance.kittyError.pos = 0;  
+			instance.kittyError.posResume = 0;
+			instance.kittyError.newError = false;
 			return tokenBuffer;
 		}
 		else 
@@ -283,11 +283,11 @@ char *_errTrap( struct glueCommands *data, int nextToken )
 		onError = onErrorTemp;
 		onErrorTemp = NULL;
 
-		if (kittyError.code)
+		if (instance.kittyError.code)
 		{
-			kittyError.trapCode = kittyError.code;
-			kittyError.code = 0;
-			kittyError.newError = false;
+			instance.kittyError.trapCode = instance.kittyError.code;
+			instance.kittyError.code = 0;
+			instance.kittyError.newError = false;
 		}
 	}
 
@@ -300,7 +300,7 @@ char *errTrap(nativeCommand *err, char *tokenBuffer)
 	onErrorTemp = onError;
 	onError = onErrorIgnore;
 	stackCmdFlags( _errTrap, tokenBuffer, cmd_onNextCmd | cmd_onEol );
-	kittyError.trapCode = 0;
+	instance.kittyError.trapCode = 0;
 	return tokenBuffer;
 }
 
@@ -308,14 +308,14 @@ char *errTrap(nativeCommand *err, char *tokenBuffer)
 char *errErrn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum( kittyError.code );
+	setStackNum( instance.kittyError.code );
 	return tokenBuffer;
 }
 
 char *errErrTrap(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	setStackNum( kittyError.trapCode );
+	setStackNum( instance.kittyError.trapCode );
 	return tokenBuffer;
 }
 

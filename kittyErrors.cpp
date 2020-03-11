@@ -16,15 +16,19 @@
 #include "kittyErrors.h"
 #include "debug.h"
 
-struct errorAt kittyError = { 0, 0 };
-
 extern struct error errorsTestTime[];
 
-// return error code.
+void setError( int _code, char * _pos ) 
+{
+	instance.kittyError.code = _code; 
+	instance.kittyError.pos = _pos; 
+	instance.kittyError.posResume=instance.tokenBufferResume;  
+	instance.kittyError.newError = true;
+}
 
 char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum( kittyError.code );
+	setStackNum( instance.kittyError.code );
 	return tokenBuffer;
 }
 

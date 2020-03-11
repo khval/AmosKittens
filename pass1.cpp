@@ -521,7 +521,7 @@ char *pass1_shared( char *ptr )
 
 	token = *((unsigned short *) ptr);
 
-	while ( (token != 0x0000) && (token != 0x0054) && ( kittyError.code == 0) )
+	while ( (token != 0x0000) && (token != 0x0054) && ( instance.kittyError.code == 0) )
 	{
 		switch (token)
 		{
@@ -585,7 +585,7 @@ char *pass1_global( char *ptr )
 
 	token = *((unsigned short *) ptr);
 
-	while ( (token != 0x0000) && (token != 0x0054) && ( kittyError.code == 0) )
+	while ( (token != 0x0000) && (token != 0x0054) && ( instance.kittyError.code == 0) )
 	{
 		switch (token)
 		{
@@ -1119,7 +1119,7 @@ void pass1_reader( char *start, char *file_end )
 	token = *((short *) start);
 	ptr = start +2;
 
-	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( kittyError.code == 0))
+	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( instance.kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
 
@@ -1128,7 +1128,7 @@ void pass1_reader( char *start, char *file_end )
 		ptr += 2;	// next token.
 	}
 
-	if (kittyError.code == 0)	// did not exit on error.
+	if (instance.kittyError.code == 0)	// did not exit on error.
 	{
 		while (nested_count)
 		{

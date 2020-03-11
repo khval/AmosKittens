@@ -36,6 +36,8 @@ extern char *asl();
 #include "os/littleendian/littleendian.h"
 #endif
 
+extern void setError( int _code, char * _pos ) ;
+
 #include "stack.h"
 #include "commands.h"
 #include "commandsData.h"
@@ -1060,7 +1062,7 @@ char *code_reader( char *start, int tokenlength )
 	{
 		// this basic for now, need to handel "on error " commands as well.
 
-		if (kittyError.newError)
+		if (instance.kittyError.newError)
 		{
 			ptr = onError( ptr );
 			if (ptr == NULL) break;
@@ -1343,7 +1345,7 @@ int main(int args, char **arg)
 
 				pass1_reader( (char *) file -> start , _file_end_ );
 
-				if (kittyError.code == 0)
+				if (instance.kittyError.code == 0)
 				{
 					runtime = TRUE;
 
@@ -1356,9 +1358,9 @@ int main(int args, char **arg)
 #endif
 				}
 
-				if (kittyError.newError)
+				if (instance.kittyError.newError)
 				{
-					printError( &kittyError, runtime ? errorsRunTime : errorsTestTime );
+					printError( &instance.kittyError, runtime ? errorsRunTime : errorsTestTime );
 				}
 			}
 
