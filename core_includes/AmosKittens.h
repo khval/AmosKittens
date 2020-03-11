@@ -645,6 +645,21 @@ struct errorAt
 	bool newError;
 };
 
+
+struct kittyApi
+{
+	void (*freeScreenBobs) (int);
+	void *(*newTextWindow) ( struct retroScreen *, int );
+	void (*freeAllTextWindows) ( struct retroScreen * );
+	void (*engine_lock) (void);
+	void (*engine_unlock)( void );
+	struct kittyBank *(*findBank) (int);
+	struct kittyBank *(*reserveAs) ( int, int ,int, const char *, char * );
+	void (*freeBank) (int);
+	void (*setError) (int,char *);
+};
+
+
 struct KittyInstance
 {
 	int last_var;
@@ -664,6 +679,7 @@ struct KittyInstance
 	struct glueCommands *cmdTmp;
 	struct errorAt kittyError;
 	char *tokenBufferResume;
+	struct kittyApi api;
 };
 
 #ifdef __amoskittens__

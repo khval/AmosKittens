@@ -125,6 +125,15 @@ struct KittyInstance instance;
 struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
 struct kittyFile kittyFiles[10];
 
+extern void freeScreenBobs (int);
+extern void *newTextWindow ( struct retroScreen *, int );
+extern void freeAllTextWindows ( struct retroScreen * );
+//	void engine_lock (void);
+//	void engine_unlock( void );
+//	void *findBank (int);
+//	void freeBank (int);
+extern struct kittyBank *reserveAs ( int, int ,int, const char *, char * );
+
 void init_instent(struct KittyInstance *instance )
 {
 	instance -> icons = NULL;
@@ -138,6 +147,16 @@ void init_instent(struct KittyInstance *instance )
 	instance -> kittyError.newError = false;
 	instance -> kittyError.pos = NULL;
 	instance -> kittyError.posResume = NULL;
+
+	instance -> api.freeScreenBobs =freeScreenBobs;
+	instance -> api.newTextWindow =newTextWindow;
+	instance -> api.freeAllTextWindows =freeAllTextWindows;
+	instance -> api.engine_lock =engine_lock;
+	instance -> api.engine_unlock =engine_unlock;
+	instance -> api.findBank =findBank;
+	instance -> api.freeBank =freeBank;
+	instance -> api.reserveAs =reserveAs;
+	instance -> api.setError =setError;
 }
 
 struct retroSprite *patterns = NULL;
