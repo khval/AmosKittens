@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -11,18 +10,36 @@
 #include <proto/retroMode.h>
 #endif
 
+#ifdef __no_stdlib__
+#define memcpy(d,s,n) __memcpy((char *)d, (char *)s,n)
+#endif
+
 #include <amosKittens.h>
 #include <amosstring.h>
 #include <stack.h>
 
 #ifdef __amoskittens__
 struct kittyData kittyStack[100];
+bool correct_order( this_instance_first int last_token, int next_token );
 #else
 #define cmdTmp instance->cmdTmp
 #define kittyStack instance->kittyStack
 #endif
 
-bool correct_order( this_instance_first int last_token, int next_token );
+
+
+void memcpy4(int32_t *d,int32_t *s,int l)
+{
+	int32_t *e;
+	l/=4;
+	e=s+l;
+	while (d<e)
+	{
+		*s=*d; s++; d++;
+	}
+}
+
+#define memcpy4(d,s,l) memcpy4((int32_t *)d,(int32_t *)s,l)
 
 bool dropProgStackToProc( this_instance_first char *(*fn) (struct glueCommands *data, int nextToken) )
 {
@@ -59,24 +76,6 @@ bool dropProgStackAllFlag( this_instance_first int flag )
 	return false;
 }
 
-
-void remove_parenthesis( this_instance_first int black_at_stack )
-{
-	if ( kittyStack[black_at_stack].state == state_subData ) 
-	{
-		int i;
-		for (i=black_at_stack+1; i<=instance_stack; i++)
-		{
-			kittyStack[i-1] = kittyStack[i];
-		}
-
-		if (black_at_stack <instance_stack) kittyStack[instance_stack].str = NULL;
-
-		instance_stack --;
-	}
-}
-
-
 void _unLockPara( this_instance_one )
 {
 	if (instance_cmdStack)
@@ -103,6 +102,7 @@ bool isArgsClean( this_instance_first struct glueCommands *cmd )
 }
 
 
+#ifdef __amoskittens__
 char *flushCmdParaStack( this_instance_first int nextToken )
 {
 	struct glueCommands *cmd;
@@ -133,6 +133,7 @@ char *flushCmdParaStack( this_instance_first int nextToken )
 
 	return ret;
 }
+#endif
 
 void popStack( this_instance_first int n)
 {
@@ -155,6 +156,43 @@ void popStack( this_instance_first int n)
 	}
 
 	instance_stack = _s;
+}
+
+void remove_parenthesis( this_instance_first int black_at_stack )
+{
+	if ( kittyStack[black_at_stack].state == state_subData ) 
+	{
+		struct kittyData *d = &kittyStack[black_at_stack];
+		struct kittyData *s = &kittyStack[black_at_stack+1];
+		struct kittyData *e = &kittyStack[instance_stack];
+
+		for (; s<=e; s++)
+		{
+			memcpy4(d,s,sizeof(struct kittyData));
+			d++;
+		}
+
+		if (black_at_stack <instance_stack) kittyStack[instance_stack].str = NULL;
+
+		instance_stack --;
+	}
+}
+
+void correct_for_hidden_sub_data( this_instance_one )
+{
+	if (instance_stack > 0)
+	{
+		struct kittyData *d = &kittyStack[instance_stack-1];
+		struct kittyData *s = &kittyStack[instance_stack];
+
+		while (d -> state == state_hidden_subData)
+		{
+			memcpy4(d,s,sizeof(struct kittyData));
+			s -> str = NULL;
+			d--; s--;
+			instance_stack --;
+		}
+	}
 }
 
 struct stringData *getStackString( this_instance_first int n )
@@ -291,15 +329,4 @@ void setStackParenthesis( this_instance_one )
 }
 
 
-void correct_for_hidden_sub_data( this_instance_one )
-{
-	if (instance_stack > 0)
-	{
-		while (kittyStack[instance_stack-1].state == state_hidden_subData)
-		{
-			kittyStack[instance_stack-1] = kittyStack[instance_stack];
-			kittyStack[instance_stack].str = NULL;
-			instance_stack --;
-		}
-	}
-}
+
