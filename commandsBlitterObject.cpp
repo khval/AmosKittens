@@ -724,7 +724,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 			bank1 = findBank(1);
 			if (!bank1) 
 			{
-				if (bank1 = __ReserveAs( bank_type_sprite, 1,0,NULL, NULL))							
+				if (bank1 = reserveAs( bank_type_sprite, 1,0,NULL, NULL))							
 				{
 					int n;
 

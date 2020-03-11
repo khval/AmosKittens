@@ -873,7 +873,7 @@ bool spack(struct retroScreen *screen, int bank_num, int x0, int y0, int x1, int
 
 			_size = 90 + 24 + context.data_used + context.rledata_used + context.points_used;
 
-			if (bank = __ReserveAs( 9, bank_num, _size , "Pac.Pic.", NULL ))
+			if (bank = reserveAs( 9, bank_num, _size , "Pac.Pic.", NULL ))
 			{
 
 				unsigned char *a = (unsigned char *) bank -> start;

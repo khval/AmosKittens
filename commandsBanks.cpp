@@ -419,7 +419,7 @@ char *_bankBsave( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem )
+struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name, char *mem )
 {
 	struct kittyBank *bank;
 
@@ -475,56 +475,56 @@ struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *nam
 }
 
 
-char *_bankReserveAsWork( struct glueCommands *data, int nextToken )
+char *__bankReserveAsWork( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = __stack - data->stack +1 ;
 
 	if (args==2)
 	{
-		__ReserveAs( 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		reserveAs( 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
 	}
 
 	popStack(__stack - data->stack );
 	return NULL;
 }
 
-char *_bankReserveAsChipWork( struct glueCommands *data, int nextToken )
+char *__bankReserveAsChipWork( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = __stack - data->stack +1 ;
 
 	if (args==2)
 	{
-		__ReserveAs( 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		reserveAs( 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
 	}
 
 	popStack(__stack - data->stack );
 	return NULL;
 }
 
-char *_bankReserveAsData( struct glueCommands *data, int nextToken )
+char *__bankReserveAsData( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = __stack - data->stack +1 ;
 
 	if (args==2)
 	{
-		__ReserveAs( 8 | 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		reserveAs( 8 | 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
 	}
 
 	popStack(__stack - data->stack );
 	return NULL;
 }
 
-char *_bankReserveAsChipData( struct glueCommands *data, int nextToken )
+char *__bankReserveAsChipData( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = __stack - data->stack +1 ;
 
 	if (args==2)
 	{
-		__ReserveAs( 8 | 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		reserveAs( 8 | 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
 	}
 
 	popStack(__stack - data->stack );
@@ -533,25 +533,25 @@ char *_bankReserveAsChipData( struct glueCommands *data, int nextToken )
 
 char *bankReserveAsWork(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _bankReserveAsWork, tokenBuffer );
+	stackCmdNormal( __bankReserveAsWork, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *bankReserveAsChipWork(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _bankReserveAsChipWork, tokenBuffer );
+	stackCmdNormal( __bankReserveAsChipWork, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *bankReserveAsData(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _bankReserveAsData, tokenBuffer );
+	stackCmdNormal( __bankReserveAsData, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *bankReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
 {
-	stackCmdNormal( _bankReserveAsChipData, tokenBuffer );
+	stackCmdNormal( __bankReserveAsChipData, tokenBuffer );
 	return tokenBuffer;
 }
 
@@ -695,12 +695,12 @@ void __load_work_data__(FILE *fd,int bank)
 
 				if (bank != -1)
 				{
-					if (__ReserveAs( item.type, bank, item.length,item.name, mem ) == false) free(mem);
+					if (reserveAs( item.type, bank, item.length,item.name, mem ) == false) free(mem);
 				}
 				else
 				{
 					if ( strncasecmp( item.name , "Samples",7) == 0) item.bank=5;
-					if (__ReserveAs( item.type, item.bank, item.length,item.name, mem ) == false) free(mem);
+					if (reserveAs( item.type, item.bank, item.length,item.name, mem ) == false) free(mem);
 				}
 			}
 		}
@@ -733,7 +733,7 @@ void __load_work_data_mem__(struct retroMemFd &fd)
 				memset( mem, 0, item.length+bank_header );
 				mread( mem+bank_header , item.length, 1, fd );
 
-				if (__ReserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
+				if (reserveAs( item.type, item.bank, item.length,NULL, mem ) == false) free(mem);
 			}
 		}
 	}
@@ -863,7 +863,7 @@ void init_banks( char *data , int size)
 					{
 						engine_lock();
 						freeBank( 1 );
-						if (bank = __ReserveAs( bank_type_sprite, 1, 0,NULL, NULL))							
+						if (bank = reserveAs( bank_type_sprite, 1, 0,NULL, NULL))							
 						{
 							if (bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread ))
 							{
@@ -878,7 +878,7 @@ void init_banks( char *data , int size)
 				case bank_type_icons:
 					{
 						freeBank( 2 );
-						if (bank = __ReserveAs( bank_type_icons, 2, 0,NULL, NULL ))
+						if (bank = reserveAs( bank_type_icons, 2, 0,NULL, NULL ))
 						{
 							if (bank -> object_ptr = (char *) retroLoadSprite( &fd, (cust_fread_t) hook_mread ))
 							{
@@ -959,7 +959,7 @@ void __load_bank__(struct stringData *name, int bankNr )
 						engine_lock();
 						freeBank( _bank );
 
-						if (bank = __ReserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
+						if (bank = reserveAs( bank_type_sprite, _bank, sizeof(void *),NULL, NULL  ))	
 						{
 							if (bank -> object_ptr = (char *) retroLoadSprite(fd, (cust_fread_t) cust_fread ))
 							{
@@ -978,7 +978,7 @@ void __load_bank__(struct stringData *name, int bankNr )
 						instance.icons = retroLoadSprite(fd, (cust_fread_t) cust_fread );
 
 						// 99 Bottles of beer. 
-						if (bank = __ReserveAs( bank_type_icons, _bank, sizeof(void *),NULL, NULL ))
+						if (bank = reserveAs( bank_type_icons, _bank, sizeof(void *),NULL, NULL ))
 						{
 							bank -> object_ptr = (char *) instance.icons;
 						}

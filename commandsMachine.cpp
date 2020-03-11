@@ -952,7 +952,7 @@ char *_machinePload( struct glueCommands *data, int nextToken )
 
 		freeBank(bankNr);
 
-		bank = __ReserveAs( 11, bankNr, code_size, "Code", NULL );
+		bank = reserveAs( 11, bankNr, code_size, "Code", NULL );
 
 		if ((bank)&&(keep_code))
 		{

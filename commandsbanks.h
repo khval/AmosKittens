@@ -55,7 +55,7 @@ extern int current_resource_bank ;
 
 void freeBank( int banknr );
 struct kittyBank *findBank( int bankNr );
-struct kittyBank *__ReserveAs( int type, int bankNr, int length, const char *name, char *mem );
+struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name, char *mem );
 
 extern char *bankReserveAsWork(nativeCommand *cmd, char *ptr);
 extern char *bankReserveAsChipWork(nativeCommand *cmd, char *ptr);

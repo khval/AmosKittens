@@ -125,7 +125,7 @@ char *_bgGetIcon( struct glueCommands *data, int nextToken )
 
 						if (!bank1) 
 						{
-							if (bank1 = __ReserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL))							
+							if (bank1 = reserveAs( bank_type_icons, 2, sizeof(void *),NULL, NULL))							
 							{
 								bank1 -> object_ptr = (char *) instance.icons;
 							} 
