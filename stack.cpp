@@ -33,10 +33,7 @@ void memcpy4(int32_t *d,int32_t *s,int l)
 	int32_t *e;
 	l/=4;
 	e=s+l;
-	while (d<e)
-	{
-		*s=*d; s++; d++;
-	}
+	while (s<e) *d++=*s++;
 }
 
 #define memcpy4(d,s,l) memcpy4((int32_t *)d,(int32_t *)s,l)
