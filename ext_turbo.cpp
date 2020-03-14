@@ -73,7 +73,7 @@ char *_ext_cmd_range( struct glueCommands *data, int nextToken )
 char *ext_cmd_range(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	do_to[parenthesis_count] = do_to_default;
+	do_to[instance.parenthesis_count] = do_to_default;
 	stackCmdParm( _ext_cmd_range, tokenBuffer );
 	return tokenBuffer;
 }

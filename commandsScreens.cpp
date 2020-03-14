@@ -487,7 +487,7 @@ char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (getLastProgStackToken() == token_trap ) || (token_is_fresh) )
+	if ( (getLastProgStackToken() == token_trap ) || (instance.token_is_fresh) )
 	{
 		stackCmdNormal( _gfxScreen, tokenBuffer );
 	}
@@ -1605,7 +1605,7 @@ char *_gfxIffAnim( struct glueCommands *data, int nextToken )
 			setError(22,data->tokenBuffer);
 	}
 
-	do_to[parenthesis_count] = do_to_default;
+	do_to[instance.parenthesis_count] = do_to_default;
 
 	popStack(__stack - data->stack );
 	return NULL;
@@ -1620,7 +1620,7 @@ char *do_arg_to( struct nativeCommand *cmd, char *tokenBuffer)
 char *gfxIffAnim(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxIffAnim, tokenBuffer );
-	do_to[parenthesis_count] = do_arg_to;
+	do_to[instance.parenthesis_count] = do_arg_to;
 	return tokenBuffer;
 }
 

@@ -463,7 +463,7 @@ char *_Input( struct glueCommands *data,int nextToken )
 	int args =__stack - data -> stack +1;
 	_input_arg( NULL, NULL );
 	popStack(__stack - data -> stack  );
-	do_input[parenthesis_count] = do_std_next_arg;
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 	return NULL;
 }
@@ -473,7 +473,7 @@ char *_LineInput( struct glueCommands *data,int nextToken )
 	int args =__stack - data -> stack +1;
 	_inputLine_arg( NULL, NULL );
 	popStack(__stack - data -> stack  );
-	do_input[parenthesis_count] = do_std_next_arg;
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 	return NULL;
 }
@@ -699,7 +699,7 @@ char *cmdInput(nativeCommand *cmd, char *tokenBuffer)
 	if (next_print_line_feed == true) __print_char_array( screen, "\n",0);
 	next_print_line_feed = true;
 
-	do_input[parenthesis_count] = _input_arg;
+	do_input[instance.parenthesis_count] = _input_arg;
 	do_breakdata = breakdata_inc_stack;
 	stackCmdNormal( _Input, tokenBuffer );
 
@@ -713,7 +713,7 @@ char *cmdInputStrN(struct nativeCommand *cmd, char *tokenBuffer)
 	input_count = 0;
 	input_str = "";
 
-	do_input[parenthesis_count] = _input_arg;
+	do_input[instance.parenthesis_count] = _input_arg;
 	do_breakdata = breakdata_inc_stack;
 	stackCmdNormal( _InputStrN, tokenBuffer );
 
@@ -732,7 +732,7 @@ char *cmdLineInput(nativeCommand *cmd, char *tokenBuffer)
 	input_count = 0;
 	input_str = "";
 
-	do_input[parenthesis_count] = _inputLine_arg;
+	do_input[instance.parenthesis_count] = _inputLine_arg;
 	do_breakdata = breakdata_inc_stack;
 	stackCmdNormal( _LineInput, tokenBuffer );
 

@@ -634,7 +634,7 @@ char *_menuMenuKey( struct glueCommands *data, int nextToken )
 	popStack(__stack - data->stack );
 	setStackNum(i);
 
-	do_to[parenthesis_count] = menuKey_do_to;
+	do_to[instance.parenthesis_count] = menuKey_do_to;
 
 	return NULL;
 }

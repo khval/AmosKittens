@@ -526,9 +526,9 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = 0; \
-	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
 	__cmdStack++; \
-	token_is_fresh = false; 
+	instance.token_is_fresh = false; 
 
 #define stackCmdLoop( fn, buf )				\
 	cmdTmp[__cmdStack].cmd = fn;		\
@@ -561,7 +561,7 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = token_index ; \
-	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
 	__cmdStack++; } \
 
 #define stackCmdParm( fn, buf )				\
@@ -571,9 +571,9 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = 0; \
-	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
 	__cmdStack++; \
-	token_is_fresh = false; 
+	instance.token_is_fresh = false; 
 
 #define stackCmdMathOperator(fn,_buffer,_token)				\
 	cmdTmp[__cmdStack].cmd = fn;		\
@@ -582,7 +582,7 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = _token; \
-	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
 	__cmdStack++; \
 
 #define stackCmdOnBreakOrNewCmd(fn,buf,_token)				\
@@ -592,7 +592,7 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = _token; \
-	cmdTmp[__cmdStack].parenthesis_count =parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
 	__cmdStack++; \
 
 
@@ -600,7 +600,6 @@ extern struct zone *zones;
 extern int zones_allocated;
 
 extern int currentLine;
-extern int parenthesis_count;
 
 extern bool equal_symbol;
 extern struct nativeCommand NativeCommand[];
@@ -608,19 +607,13 @@ extern int findNativeCommand(unsigned short lastToken,unsigned short token);
 extern bool findSymbol(unsigned short token);
 extern int commandCnt;
 
-extern struct kittyData kittyStack[];
-extern struct glueCommands cmdTmp[];
 extern struct proc procStack[];
 
 extern struct extension_lib	kitty_extensions[32];
 extern int procStackCount;
-
-//extern unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
-
 extern struct stringData *var_param_str;
 extern int var_param_num;
 extern double var_param_decimal;
-
 extern int proc_stack_frame;
 
 extern struct stackFrame procStcakFrame[PROC_STACK_SIZE];
@@ -633,7 +626,7 @@ extern APTR contextDir;
 extern struct kittyFile kittyFiles[10];
 
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
-extern bool token_is_fresh;
+
 extern struct glueCommands input_cmd_context;
 
 struct errorAt
@@ -659,7 +652,6 @@ struct kittyApi
 	void (*setError) (int,char *);
 };
 
-
 struct KittyInstance
 {
 	int last_var;
@@ -680,6 +672,8 @@ struct KittyInstance
 	struct errorAt kittyError;
 	char *tokenBufferResume;
 	struct kittyApi api;
+	bool token_is_fresh;
+	int parenthesis_count;
 };
 
 #ifdef __amoskittens__
@@ -691,6 +685,8 @@ extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
 extern struct KittyInstance instance;
+extern struct kittyData kittyStack[];
+extern struct glueCommands cmdTmp[];
 #endif
 
 #endif

@@ -417,7 +417,7 @@ unsigned int stdAmalWriterJump (	struct kittyChannel *channel, struct amalTab *s
 	char *d;
 	bool is_autotest = false;
 
-	if (parenthesis_count) if ( parenthesis[parenthesis_count-1]  == id_autotest ) is_autotest = true;
+	if (instance.parenthesis_count) if ( parenthesis[instance.parenthesis_count-1]  == id_autotest ) is_autotest = true;
 
 	if (is_autotest)
 	{
@@ -628,7 +628,7 @@ unsigned int AmalAutotest ( struct kittyChannel *channel, struct amalTab *self,
 				struct amalWriterData *data,
 				unsigned int num)
 {
-	parenthesis[parenthesis_count]  = id_autotest ;
+	parenthesis[instance.parenthesis_count]  = id_autotest ;
 	return 0;
 }
 
@@ -642,12 +642,12 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
 			self->name );
 
-	printf("parenthesis[%d] is %d\n", parenthesis_count, parenthesis[parenthesis_count]);
+	printf("parenthesis[%d] is %d\n", instance.parenthesis_count, parenthesis[instance.parenthesis_count]);
 
-	if (parenthesis[parenthesis_count] == id_autotest)
+	if (parenthesis[instance.parenthesis_count] == id_autotest)
 	{
-		parenthesis_count++;
-		parenthesis[parenthesis_count] = id_void;
+		instance.parenthesis_count++;
+		parenthesis[instance.parenthesis_count] = id_void;
 
 
 		call_array[0] = autotest_start;
@@ -658,8 +658,8 @@ unsigned int  stdAmalWriterParenthsesStart( struct kittyChannel *channel, struct
 		return 2;
 	}
 
-	parenthesis_count++;
-	parenthesis[parenthesis_count] = id_void;
+	instance.parenthesis_count++;
+	parenthesis[instance.parenthesis_count] = id_void;
 
 	call_array[0] = self -> call;
 	channel -> next_arg = true;
@@ -678,11 +678,11 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 			(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, 
 			self->name );
 
-	if (parenthesis_count) parenthesis_count--;
+	if (instance.parenthesis_count) instance.parenthesis_count--;
 
-	printf("parenthesis[%d] is %d\n", parenthesis_count, parenthesis[parenthesis_count]);
+//	printf("parenthesis[%d] is %d\n", instance.parenthesis_count, parenthesis[instance.parenthesis_count]);
 
-	switch ( parenthesis[parenthesis_count] )
+	switch ( parenthesis[instance.parenthesis_count] )
 	{
 		case id_autotest:
 
@@ -698,7 +698,7 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 
 					call_array[0] = 0;	// end of autotest ;-)
 
-					parenthesis[parenthesis_count] = id_void;
+					parenthesis[instance.parenthesis_count] = id_void;
 
 				return 1;
 			}
@@ -711,7 +711,7 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 
 				call_array[0] = self -> call;
 				channel -> next_arg = false;
-				parenthesis[parenthesis_count] = id_void;
+				parenthesis[instance.parenthesis_count] = id_void;
 				return 1;
 			}
 
@@ -725,7 +725,7 @@ unsigned int stdAmalWriterParenthsesEnd ( struct kittyChannel *channel, struct a
 
 				call_array[0] = self -> call;
 				channel -> next_arg = false;
-				parenthesis[parenthesis_count] = id_void;
+				parenthesis[instance.parenthesis_count] = id_void;
 				return 1;
 			}
 

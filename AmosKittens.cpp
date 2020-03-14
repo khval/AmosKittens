@@ -90,7 +90,6 @@ uint32_t _file_bank_size = 0;
 
 struct retroVideo *video = NULL;
 
-int parenthesis_count = 0;
 int procStackCount = 0;
 int last_var = 0;
 uint32_t tokenFileLength;
@@ -140,7 +139,9 @@ void init_instent(struct KittyInstance *instance )
 	instance -> sprites = NULL;
 	instance -> globalVars = globalVars;
 	instance -> cmdTmp = cmdTmp;
-//	instance -> tokenBufferResume = NULL;
+	instance -> tokenBufferResume = NULL;
+	instance -> token_is_fresh = true;
+	instance -> parenthesis_count = 0;
 
 	instance -> kittyError.code = 0;
 	instance -> kittyError.trapCode = 0;
@@ -190,7 +191,6 @@ extern char *nextToken_pass1( char *ptr, unsigned short token );
 extern struct nativeCommand nativeCommands[];
 
 bool breakpoint = false;
-bool token_is_fresh = true;
 
 const char *str_dump_stack = "dump stack";
 const char *str_dump_prog_stack = "dump prog stack";
@@ -408,9 +408,9 @@ char *nextCmd(nativeCommand *cmd, char *ptr)
 		if (ret) break;
 	}
 
-	do_to[parenthesis_count] = do_to_default;
+	do_to[instance.parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
-	token_is_fresh = true;
+	instance.token_is_fresh = true;
 
 	if (ret) return ret -2;		// when exit +2 token 
 
@@ -438,9 +438,9 @@ char *cmdNewLine(nativeCommand *cmd, char *ptr)
 		} while (instance.cmdStack);
 	}
 
-	do_to[parenthesis_count] = do_to_default;
+	do_to[instance.parenthesis_count] = do_to_default;
 	tokenMode = mode_standard;
-	token_is_fresh = true;
+	instance.token_is_fresh = true;
 
 	if (breakpoint)
 	{
@@ -552,7 +552,7 @@ char *_alloc_mode_off( glueCommands *self, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	do_input[parenthesis_count] = do_std_next_arg;
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 	do_var_index = _get_var_index;
 
 	return NULL;
@@ -638,7 +638,7 @@ void do_std_next_arg(nativeCommand *cmd, char *ptr)
 
 void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 {
-	if (parenthesis_count == 0)
+	if (instance.parenthesis_count == 0)
 	{
 		if (instance.cmdStack) if (__stack) if (cmdTmp[instance.cmdStack-1].flag == cmd_index ) cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack],0);
 	}
@@ -646,7 +646,7 @@ void do_dim_next_arg(nativeCommand *cmd, char *ptr)
 
 char *cmdDim(nativeCommand *cmd, char *ptr)
 {
-	do_input[parenthesis_count] = do_dim_next_arg;
+	do_input[instance.parenthesis_count] = do_dim_next_arg;
 	do_var_index = do_var_index_alloc;
 
 	stackCmdNormal( _alloc_mode_off, ptr );
@@ -668,7 +668,7 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	token_is_fresh = false;
+	instance.token_is_fresh = false;
 	last_var = ref -> ref;
 
 	if (next_token == 0x0074)	// ( symbol

@@ -67,9 +67,9 @@ char *executeDataToken(char *ptr, unsigned short token)
 						procStcakFrame[proc_stack_frame].dataPointer = ptr;	// set data_read_poiner
 						
 						// end of line => comma, exit we have read something I hope.
-						if (do_input[parenthesis_count] == _exit_read_data) 
+						if (do_input[instance.parenthesis_count] == _exit_read_data) 
 						{
-							do_input[parenthesis_count] = _read_arg;
+							do_input[instance.parenthesis_count] = _read_arg;
 							return NULL;
 						}
 					}
@@ -84,9 +84,9 @@ char *executeDataToken(char *ptr, unsigned short token)
 					// printf("** EXIT ON COMMA **\n");
 
 					// comma, exit we have read something I hope.
-					if (do_input[parenthesis_count] == _exit_read_data) 
+					if (do_input[instance.parenthesis_count] == _exit_read_data) 
 					{
-						do_input[parenthesis_count] = _read_arg;
+						do_input[instance.parenthesis_count] = _read_arg;
 						return NULL;
 					}
 					break;
@@ -169,7 +169,7 @@ void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 		int local_var_index = globalVars[last_var -1].var.index;
 		int local_last_var = last_var;
 
-		do_input[parenthesis_count] = _exit_read_data;
+		do_input[instance.parenthesis_count] = _exit_read_data;
 		collect_data();	
 
 		_set_var_index = local_var_index;
@@ -186,7 +186,7 @@ char *_cmdRead( struct glueCommands *data, int nextToken )
 
 	_read_arg( NULL, NULL );
 	popStack(__stack - data -> stack  );
-	do_input[parenthesis_count] = do_std_next_arg;
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 	do_breakdata = NULL;
 
 	return NULL;
@@ -204,7 +204,7 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 	}
 	else
 	{
-		do_input[parenthesis_count] = _read_arg;
+		do_input[instance.parenthesis_count] = _read_arg;
 		do_breakdata = NULL;
 		stackCmdNormal( _cmdRead, tokenBuffer );
 	}

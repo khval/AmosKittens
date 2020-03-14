@@ -763,12 +763,12 @@ char *discDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( (instance.token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_dir_str;
 	}
-	else if ( (token_is_fresh) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
+	else if ( (instance.token_is_fresh) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
 	{
 		printf("%s:%d\n",__FUNCTION__,__LINE__);
 		stackCmdNormal( _discDirStr, tokenBuffer );
@@ -1312,8 +1312,8 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_discInputIn( struct glueCommands *data, int nextToken )
 {
-	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
-	do_input[parenthesis_count] = do_std_next_arg;
+	if (do_input[instance.parenthesis_count]) do_input[instance.parenthesis_count]( NULL, NULL );
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 
 	popStack(__stack - data -> stack  );
 
@@ -1330,7 +1330,7 @@ char *discInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 		input_cmd_context.tokenBuffer = tokenBuffer;
 		stackCmdNormal( _discInputIn, tokenBuffer );
 
-		do_input[parenthesis_count] = file_input;
+		do_input[instance.parenthesis_count] = file_input;
 
 		tokenBuffer += 6;
 
@@ -1349,8 +1349,8 @@ char *_discLineInputFile( struct glueCommands *data, int nextToken )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (do_input[parenthesis_count]) do_input[parenthesis_count]( NULL, NULL );
-	do_input[parenthesis_count] = do_std_next_arg;
+	if (do_input[instance.parenthesis_count]) do_input[instance.parenthesis_count]( NULL, NULL );
+	do_input[instance.parenthesis_count] = do_std_next_arg;
 
 	popStack(__stack - data -> stack  );
 
@@ -1370,7 +1370,7 @@ char *discLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 
 		stackCmdNormal( _discLineInputFile, tokenBuffer );
 
-		do_input[parenthesis_count] = file_line_input;
+		do_input[instance.parenthesis_count] = file_line_input;
 
 		tokenBuffer += 6;
 

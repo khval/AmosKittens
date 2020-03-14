@@ -509,13 +509,12 @@ char *_setVarReverse( struct glueCommands *data, int nextToken )
 //--------------------------------------------------------
 
 int parenthesis[MAX_PARENTHESIS_COUNT];
-extern int parenthesis_count ;
 
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack(0);
 	
-	if (do_input[parenthesis_count]) do_input[parenthesis_count]( cmd, tokenBuffer );	// read from keyboad or disk.
+	if (do_input[instance.parenthesis_count]) do_input[instance.parenthesis_count]( cmd, tokenBuffer );	// read from keyboad or disk.
 	return tokenBuffer;
 }
 
@@ -524,8 +523,8 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[instance.stack].state);
 
-	parenthesis[parenthesis_count] =instance.stack;
-	parenthesis_count++;
+	parenthesis[instance.parenthesis_count] =instance.stack;
+	instance.parenthesis_count++;
 
 	setStackParenthesis();
 	instance.stack++;
@@ -548,18 +547,18 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	ret = flushCmdParaStack(0);
 	if (ret) return ret;
 
-	if (parenthesis_count)
+	if (instance.parenthesis_count)
 	{
-		remove_parenthesis( parenthesis[parenthesis_count -1] );
-		parenthesis[parenthesis_count -1] = 255;
-		do_input[parenthesis_count] = do_std_next_arg;
-		parenthesis_count--;
+		remove_parenthesis( parenthesis[instance.parenthesis_count -1] );
+		parenthesis[instance.parenthesis_count -1] = 255;
+		do_input[instance.parenthesis_count] = do_std_next_arg;
+		instance.parenthesis_count--;
 
 		if (instance.cmdStack) 
 		{
 			struct glueCommands *sub = &cmdTmp[instance.cmdStack-1];
 
-			if ((sub->parenthesis_count == parenthesis_count ) && (sub -> flag == cmd_index )) 	// only if we at the right place !!!
+			if ((sub->parenthesis_count == instance.parenthesis_count ) && (sub -> flag == cmd_index )) 	// only if we at the right place !!!
 			{
 				sub -> cmd( sub, nextToken);
 				instance.cmdStack --;
@@ -620,7 +619,7 @@ char *cmdIf(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d \n",__FUNCTION__,__LINE__);
 
-	token_is_fresh = false;
+	instance.token_is_fresh = false;
 
 	setStackNum(0);	// stack reset.
 	stackCmdNormal(_if, tokenBuffer);
@@ -637,7 +636,7 @@ char *cmdThen(struct nativeCommand *cmd, char *tokenBuffer)
 	
 	// empty the stack for what ever is inside the IF.
 
-	token_is_fresh = true;
+	instance.token_is_fresh = true;
 
 	while (instance.cmdStack)
 	{
@@ -673,7 +672,7 @@ char *cmdElse(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	token_is_fresh = true;
+	instance.token_is_fresh = true;
 
 	char *retTokenBuffer = nextCmd(NULL, tokenBuffer);
 	if (retTokenBuffer != tokenBuffer) tokenBuffer = retTokenBuffer + 2;	// nextCmd() should expect +2 token
@@ -1093,7 +1092,7 @@ char *cmdUntil(struct nativeCommand *cmd, char *tokenBuffer)
 
 	// we are changin the stack from loop to normal, so when get to end of line or next command, it be executed after the logical tests.
 
-	token_is_fresh = false;
+	instance.token_is_fresh = false;
 	tokenMode = mode_logical;
 	if (instance.cmdStack)
 	{
@@ -1160,7 +1159,7 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 
-	do_to[parenthesis_count] = do_for_to;
+	do_to[instance.parenthesis_count] = do_for_to;
 
 	return tokenBuffer;
 }
@@ -1197,9 +1196,9 @@ char *cmdTo(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (do_to[parenthesis_count])
+	if (do_to[instance.parenthesis_count])
 	{
-		char *ret = do_to[parenthesis_count]( cmd, tokenBuffer );	
+		char *ret = do_to[instance.parenthesis_count]( cmd, tokenBuffer );	
 		if (ret) tokenBuffer = ret;
 	}
 
@@ -1521,7 +1520,7 @@ char *_endProc( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_set_return_param( NULL, NULL );
-	do_input[parenthesis_count] = do_std_next_arg;	// restore normal operations.
+	do_input[instance.parenthesis_count] = do_std_next_arg;	// restore normal operations.
 	__stack_frame_down();
 
 	return  data -> tokenBuffer ;
@@ -1540,7 +1539,7 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 				if (NEXT_TOKEN(tokenBuffer) == 0x0084 )	//  End Proc[ return value ]
 				{
 					cmdTmp[instance.cmdStack-1].cmd = _endProc;
-					do_input[parenthesis_count] = _set_return_param;
+					do_input[instance.parenthesis_count] = _set_return_param;
 				}
 				else 	// End Proc
 				{
@@ -1574,7 +1573,7 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	args = instance.stack - read_stack +1;
-	token_is_fresh = false;
+	instance.token_is_fresh = false;
 
 	// the idea, stack to be read is stored first,
 
@@ -2276,7 +2275,7 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if ( (token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
+	if ( (instance.token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
 		_do_set = _set_timer;

@@ -200,7 +200,7 @@ char *_amalGetAmReg( struct glueCommands *data, int nextToken )
 
 char *amalAmReg(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (token_is_fresh)	// token_is_fresh, if do not start with variable
+	if (instance.token_is_fresh)	// token_is_fresh, if do not start with variable
 	{
 		stackCmdParm( _amalSetAmReg, tokenBuffer );
 	}
@@ -240,7 +240,7 @@ char *_amalChannel( struct glueCommands *data, int nextToken )
 	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	do_to[parenthesis_count] = do_to_default;
+	do_to[instance.parenthesis_count] = do_to_default;
 	switch (args)
 	{
 		case 3:
@@ -309,7 +309,7 @@ char *amalChannel(struct nativeCommand *cmd, char *tokenBuffer)
 {
 //       Channel(A+3) To Bob A+3 
 
-	do_to[parenthesis_count] = do_to_channel;
+	do_to[instance.parenthesis_count] = do_to_channel;
 
 	stackCmdNormal( _amalChannel, tokenBuffer );
 	setStackNone();

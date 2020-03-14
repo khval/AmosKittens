@@ -790,7 +790,7 @@ char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdParm( _machineAREG, tokenBuffer );
 
-	if (token_is_fresh) 
+	if (instance.token_is_fresh) 
 	{
 		tokenMode = mode_store;
 		_do_set = _set_reg;
@@ -801,7 +801,7 @@ char *machineAREG(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *machineDREG(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	if (token_is_fresh)
+	if (instance.token_is_fresh)
 	{
 		tokenMode = mode_store;
 		_do_set = _set_reg;

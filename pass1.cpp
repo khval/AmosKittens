@@ -453,7 +453,7 @@ void pass1label(char *ptr)
 
 		// only add new labels if last token is 0.
 
-		if (last_tokens[parenthesis_count]  == 0)
+		if (last_tokens[instance.parenthesis_count]  == 0)
 		{
 			found_ref = findLabelRef(tmpName, (pass1_inside_proc ? procCount : 0));
 
@@ -1112,18 +1112,18 @@ void pass1_reader( char *start, char *file_end )
 {
 	char *ptr;
 	int token = 0;
-	last_tokens[parenthesis_count] = 0;
+	last_tokens[instance.parenthesis_count] = 0;
 	unsigned int n;
 
 	lastLineAddr = start;
 	token = *((short *) start);
 	ptr = start +2;
 
-	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[parenthesis_count], token, file_end ) ) && ( instance.kittyError.code == 0))
+	while (( ptr = token_reader_pass1(  start, ptr,  last_tokens[instance.parenthesis_count], token, file_end ) ) && ( instance.kittyError.code == 0))
 	{
 		if (ptr == NULL) break;
 
-		last_tokens[parenthesis_count] = token;
+		last_tokens[instance.parenthesis_count] = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.
 	}
