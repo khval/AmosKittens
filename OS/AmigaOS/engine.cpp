@@ -720,7 +720,7 @@ void run_amal_scripts()
 	if (channels)
 	{
 		struct kittyChannel *item;
-		int i;
+		unsigned int i;
 
 		for (i=0;i<channels -> _size();i++)
 		{

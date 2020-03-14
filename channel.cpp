@@ -174,7 +174,7 @@ struct kittyChannel *ChannelTableClass::item(int index)
 	return tab[index];
 }
 
-int ChannelTableClass::_size()
+unsigned int ChannelTableClass::_size()
 {
 	return used;
 }
