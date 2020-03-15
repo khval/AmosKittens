@@ -1130,7 +1130,7 @@ char *filename = NULL;
 
 #define DLINE printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-bool ext_crc()
+bool check_ext_crc()
 {
 	int n;
 
@@ -1276,15 +1276,17 @@ int main(int args, char **arg)
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
 		// alloc tabels for 2 fake extentions
-		kitty_extensions[1].lookup = (char *) malloc( 0xFFFF );	// music.lib
-		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );	// compat.lib
-		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
+//		kitty_extensions[1].lookup = (char *) malloc( 0xFFFF );	// music.lib
+
+//		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );	// compat.lib
+
+//		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
 
 		// init default values for fake extentions
 		for (n=0;n<32;n++) if (kitty_extensions[n].lookup) memset(kitty_extensions[n].lookup,0,0xFFFF);
 
 		// function table init.
-
+/*
 		if (kitty_extensions[1].lookup)
 		{	
 			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
@@ -1312,7 +1314,9 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[1].lookup + 0x0256)) = (void *) ext_cmd_sam_stop;
 			*((void **) (kitty_extensions[1].lookup + 0x0324)) = (void *) ext_cmd_ssave;
 		}
+*/
 
+/*
 		if (kitty_extensions[2].lookup)
 		{	
 			*((void **) (kitty_extensions[2].lookup + 0x0006)) = (void *) ext_cmd_pack;
@@ -1323,12 +1327,14 @@ int main(int args, char **arg)
 			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
 			*((void **) (kitty_extensions[2].lookup + 0x0060)) = (void *) ext_cmd_unpack;
 		}
+*/
 
+/*
 		if (kitty_extensions[12].lookup)
 		{
 			*((void **) (kitty_extensions[12].lookup + 0x0A08)) = (void *) ext_cmd_range;
 		}
-
+*/
 		for(n=0;n<32;n++)
 		{
 			if (kitty_extensions[n].lookup)
@@ -1336,6 +1342,7 @@ int main(int args, char **arg)
 				 kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
 			}
 		}
+
 
 		make_wave_noice();
 		make_wave_bell();
