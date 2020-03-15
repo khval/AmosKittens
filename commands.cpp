@@ -2455,7 +2455,7 @@ char *cmdFlushStack ( struct glueCommands *data, int nextToken )
 char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	struct extension *ext = (struct extension *) tokenBuffer;
-	char *(*ext_cmd)( struct nativeCommand *cmd, char *tokenBuffer ) = NULL;
+	char *(*ext_cmd) EXT_CMD_ARGS = NULL;
 	struct extension_lib *_this = NULL;
 
 	_this = &kitty_extensions[ ext-> ext ];
@@ -2463,13 +2463,13 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if (_this -> lookup)
 		{
-			ext_cmd = (char* (*)(nativeCommand*, char*)) *((void **) (kitty_extensions[ext-> ext].lookup + ext -> token));
+			ext_cmd = (char* (*) EXT_CMD_ARGS) *((void **) (kitty_extensions[ext-> ext].lookup + ext -> token));
 		}
 	}
 
 	if (ext_cmd)
 	{
-		return ext_cmd(cmd, tokenBuffer);
+		return ext_cmd( &instance, cmd, tokenBuffer);
 	}
 	else
 	{

@@ -1316,6 +1316,8 @@ int main(int args, char **arg)
 		}
 */
 
+		open_extension( "AMOSPRO_compact.lib", 2 );
+
 /*
 		if (kitty_extensions[2].lookup)
 		{	

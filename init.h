@@ -15,4 +15,5 @@ extern struct AslIFace 		 *IAsl ;
 
 extern BOOL init();
 extern void closedown();
+void open_extension( const char *name, int id);
 

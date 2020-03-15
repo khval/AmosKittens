@@ -16,6 +16,7 @@
 #include <proto/intuition.h>
 #include <intuition/pointerclass.h>
 #include <proto/retroMode.h>
+#include <proto/kittyCompact.h>
 #include "ahi_dev.h"
 
 #include "joysticks.h"
@@ -34,12 +35,8 @@ struct AmosExtensionIFace	*IAmosExtension = NULL;
 struct Library				*DataTypesBase = NULL;
 struct DataTypesIFace		*IDataTypes = NULL;
 
-extern struct Library		 	*DOSBase;
-extern struct DOSIFace		*IDOS;
-
-extern struct Library			*RetroModeBase;
-extern struct RetroModeIFace	*IRetroMode;
-
+extern struct Library		 	*DOSBase ;
+extern struct DOSIFace		*IDOS ;
 
 struct Library 			*AHIBase = NULL;
 struct AHIIFace			*IAHI = NULL;
@@ -83,6 +80,8 @@ struct LayersIFace		*ILayers = NULL;
 APTR engine_mx = 0;
 APTR channel_mx[4] = { 0,0,0,0 };
 
+void remove_words(char *name,const char **list);
+
 UWORD *EmptyPointer = NULL;
 
 #ifdef __amigaos3__
@@ -94,12 +93,21 @@ uint32 *ImagePointer = NULL;
 Object *objectPointer = NULL;
 #endif
 
+const char *prefixList[] = 
+{
+	"_",
+	"AMOSPro",
+	".lib",
+	NULL
+};
+
 struct BitMap *pointerBitmap = NULL;
 
 BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct Library **base, struct Interface **interface)
 {
 	*interface = NULL;
 	*base = OpenLibrary( name , ver);
+
 	if (*base)
 	{
 		 *interface = GetInterface( *base,  iname , iver, TAG_END );
@@ -111,6 +119,62 @@ BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct L
 	}
 	return (*interface) ? TRUE : FALSE;
 }
+
+const char *newprefix = "kitty";
+const char *newsuffix  = ".library";
+
+#ifdef makeLookupTable
+#undef makeLookupTable
+#endif
+
+#ifdef test
+#undef test
+#endif
+
+
+void open_extension( const char *name, int id )
+{
+	int l;
+	char					*newName;
+	char					*ext = strdup(name);
+	struct Library			*extBase = NULL;
+	struct kittyCompactIFace	*Iext = NULL;
+
+	if (ext == NULL) goto cleanup;
+	remove_words( ext, prefixList );
+
+	l = strlen(newprefix) + strlen( ext ) + strlen( newsuffix) + 1;
+	newName = (char *) malloc(l);
+	if (newName == NULL) goto cleanup;
+
+	sprintf(newName,"%s%s%s",newprefix,ext,newsuffix);
+	printf("%s\n",newName);
+
+	if ( open_lib( newName, 53L , "main", 1, &extBase, (struct Interface **) &Iext  ) )
+	{
+		printf("lib open ok\n");
+
+		kitty_extensions[ id ].base = extBase;
+		kitty_extensions[ id ].interface = (struct Interface *) Iext;
+		kitty_extensions[ id ].lookup = (char *) Iext -> makeLookupTable();
+
+		printf("kitty_extensions[ %d ].lookup = %08x\n", id, kitty_extensions[ id ].lookup);
+
+		printf("test: %08x\n", Iext -> test());
+
+		return;
+	}
+
+	printf("iext %08x, extBase %08x\n",Iext,extBase);
+
+	if (Iext) DropInterface((struct Interface*) Iext); Iext = 0;
+	if (extBase) CloseLibrary(extBase); extBase = 0;
+
+cleanup:
+	if (newName) free(newName);
+	if (ext) free(ext);
+}
+
 
 BOOL init()
 {
@@ -227,7 +291,7 @@ void closedown()
 		if (kitty_extensions[i].base) CloseLibrary(kitty_extensions[i].base);
 		kitty_extensions[i].base = NULL;
 
-		if (kitty_extensions[i].lookup) free(kitty_extensions[i].lookup);
+		if (kitty_extensions[i].lookup) sys_free(kitty_extensions[i].lookup);
 		kitty_extensions[i].lookup = NULL;
 	}
 
@@ -308,3 +372,43 @@ void closedown()
 	}
 }
 
+void remove_words(char *name,const char **list)
+{
+	const char **i;
+	char *src;
+	char *dest = name;
+	bool found;
+	int sym;
+
+	for (src = name;*src;src++)
+	{
+
+		found = false;
+
+		for (i=list;*i;i++)
+		{
+			if (strncasecmp( src, *i , strlen(*i) ) == 0 )
+			{
+				src += strlen(*i);
+				src--;
+				found = true;
+				continue;
+			}
+		}
+
+		if (found) continue;
+
+		sym = *src;
+
+		if ((sym>='A')&&(sym<='Z')) sym=sym-'A'+'a';
+
+		*dest = sym;
+		dest++;
+	}
+	*dest = 0;
+
+	if (strcmp(name,"") == 0)
+	{
+		sprintf(name,"cmd");
+	}
+}

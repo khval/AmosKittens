@@ -127,6 +127,7 @@ struct KittyInstance;
 
 #ifdef __amoskittens__
 #define KITTENS_CMD_ARGS (struct nativeCommand *cmd, char *tokenBuffer)
+#define EXT_CMD_ARGS (struct KittyInstance *instance , struct nativeCommand *cmd, char *tokenBuffer)
 #else
 #define KITTENS_CMD_ARGS (struct KittyInstance *instance , struct nativeCommand *cmd, char *tokenBuffer)
 #endif
@@ -492,19 +493,27 @@ struct kittyLib
 #define __stack instance.stack
 #define instance_stack instance.stack
 #define instance_cmdStack instance.cmdStack
+#define instance_parenthesis_count instance.parenthesis_count
+#define instance_token_is_fresh instance.token_is_fresh
 #define this_instance_one
 #define this_instance_first
 #define opt_instance_one
 #define opt_instance_first
+#define instance_
+#define instance_cmdstack_opts
 #else
 #define __cmdStack instance->cmdStack
 #define __stack instance->stack
 #define instance_stack instance->stack
 #define instance_cmdStack instance->cmdStack
+#define instance_parenthesis_count instance->parenthesis_count
+#define instance_token_is_fresh instance->token_is_fresh
 #define this_instance_one struct KittyInstance *instance
 #define this_instance_first struct KittyInstance *instance,
 #define opt_instance_one instance
 #define opt_instance_first instance,
+#define instance_cmdstack_opts \
+		cmdTmp[__cmdStack].instance = instance;
 #endif
 
 #define stackIfSuccess()					\
@@ -520,15 +529,16 @@ struct kittyLib
 	__cmdStack++; \
 
 #define stackCmdNormal( fn, buf )				\
+	instance_cmdstack_opts ; \
 	cmdTmp[__cmdStack].cmd = fn;		\
 	cmdTmp[__cmdStack].tokenBuffer = buf;	\
 	cmdTmp[__cmdStack].flag = cmd_normal | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = 0; \
-	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; \
-	instance.token_is_fresh = false; 
+	instance_token_is_fresh = false; 
 
 #define stackCmdLoop( fn, buf )				\
 	cmdTmp[__cmdStack].cmd = fn;		\
@@ -561,19 +571,20 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = token_index ; \
-	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; } \
 
 #define stackCmdParm( fn, buf )				\
+	instance_cmdstack_opts ; \
 	cmdTmp[__cmdStack].cmd = fn;		\
 	cmdTmp[__cmdStack].tokenBuffer = buf;	\
 	cmdTmp[__cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = 0; \
-	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; \
-	instance.token_is_fresh = false; 
+	instance_token_is_fresh = false; 
 
 #define stackCmdMathOperator(fn,_buffer,_token)				\
 	cmdTmp[__cmdStack].cmd = fn;		\
@@ -582,7 +593,7 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = _token; \
-	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; \
 
 #define stackCmdOnBreakOrNewCmd(fn,buf,_token)				\
@@ -592,7 +603,7 @@ struct kittyLib
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = _token; \
-	cmdTmp[__cmdStack].parenthesis_count =instance.parenthesis_count; \
+	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; \
 
 
