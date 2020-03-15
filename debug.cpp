@@ -423,6 +423,7 @@ void dump_prog_stack()
 		printf("cmdTmp[%d].flag = %08x\n", n, cmdTmp[n].flag);
 		printf("cmdTmp[%d].lastVar = %d\n", n, cmdTmp[n].lastVar);
 		printf("cmdTmp[%d].token = %04x\n", n, cmdTmp[n].token);
+		printf("cmdTmp[%d].parenthesis_count = %d\n", n, cmdTmp[n].parenthesis_count);
 		printf("cmdTmp[%d].stack = %d\n\n", n, cmdTmp[n].stack);
 	}
 }
