@@ -1138,7 +1138,7 @@ bool ext_crc()
 	{
 		if (kitty_extensions[n].lookup)
 		{
-			kitty_extensions[n].crc != mem_crc( kitty_extensions[12].lookup, 0xFFFF );
+			kitty_extensions[n].crc != mem_crc( kitty_extensions[n].lookup, 0xFFFF );
 			return false;
 		}
 	}
@@ -1331,7 +1331,10 @@ int main(int args, char **arg)
 
 		for(n=0;n<32;n++)
 		{
-			if (kitty_extensions[n].lookup) kitty_extensions[n].crc = mem_crc( kitty_extensions[12].lookup, 0xFFFF ) ;
+			if (kitty_extensions[n].lookup)
+			{
+				 kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
+			}
 		}
 
 		make_wave_noice();
