@@ -35,7 +35,6 @@ extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
-extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
 extern void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
@@ -246,7 +245,7 @@ void openUnpackedScreen(int screen_num,
 	{
 		instance.current_screen = screen_num;
 
-		retroApplyScreen( screen, video, (context -> scanline_x-128)*2 , (context -> scanline_y -50)*2,	screen -> realWidth,screen->realHeight );
+		retroApplyScreen( screen, instance.video, (context -> scanline_x-128)*2 , (context -> scanline_y -50)*2,	screen -> realWidth,screen->realHeight );
 
 		if (textWindow = newTextWindow( screen, 0 ))
 		{
@@ -288,7 +287,7 @@ void openUnpackedScreen(int screen_num,
 
 	}
 
-	video -> refreshAllScanlines = TRUE;
+	instance.video -> refreshAllScanlines = TRUE;
 	engine_unlock();
 }
 

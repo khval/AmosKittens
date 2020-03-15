@@ -550,6 +550,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	if (instance.parenthesis_count)
 	{
 		remove_parenthesis( parenthesis[instance.parenthesis_count -1] );
+
 		parenthesis[instance.parenthesis_count -1] = 255;
 		do_input[instance.parenthesis_count] = do_std_next_arg;
 		instance.parenthesis_count--;

@@ -35,7 +35,6 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
 extern struct RastPort font_render_rp;
@@ -1366,12 +1365,12 @@ char *_gfxSetRainbow( struct glueCommands *data, int nextToken )
 
 		engine_lock();
 
-		if (video -> rainbow[n].table) sys_free(video -> rainbow[n].table);
-		video -> rainbow[n].color = colour;
-		video -> rainbow[n].tableSize = length;
-		video -> rainbow[n].table = (struct retroRGB *) sys_public_alloc_clear(sizeof(struct retroRGB)  * video -> rainbow[n].tableSize );
+		if (instance.video -> rainbow[n].table) sys_free(instance.video -> rainbow[n].table);
+		instance.video -> rainbow[n].color = colour;
+		instance.video -> rainbow[n].tableSize = length;
+		instance.video -> rainbow[n].table = (struct retroRGB *) sys_public_alloc_clear(sizeof(struct retroRGB)  * instance.video -> rainbow[n].tableSize );
 
-		if (rgb = (unsigned char *) video -> rainbow[n].table)
+		if (rgb = (unsigned char *) instance.video -> rainbow[n].table)
 		{
 			 int lines, step, count;
 			if (r)	if (sscanf( &r -> ptr ,"(%d,%d,%d)", &lines, &step, &count ) == 3)	channelRainbowOCS( rgb, offsetof(struct retroRGB,r),  lines, step, count, length );
@@ -1403,7 +1402,7 @@ char *_gfxRainbow( struct glueCommands *data, int nextToken )
 		int verticalOffset = getStackNum(__stack-1 ) ;
 		int height = getStackNum(__stack );
 
-		retroRainbow( video, rainbowNumber, base, verticalOffset-51, height);
+		retroRainbow( instance.video, rainbowNumber, base, verticalOffset-51, height);
 	}
 	else setError(22,data->tokenBuffer);
 
@@ -1423,7 +1422,7 @@ char *_set_rain( struct glueCommands *data, int nextToken )
 
 	if (_set_rainbow<0) return NULL;
 
-	if (rainbow = &video -> rainbow[_set_rainbow])
+	if (rainbow = &instance.video -> rainbow[_set_rainbow])
 	{
 		if ((rgb = rainbow -> table) && ( _set_rainbow_index>-1 ) && (_set_rainbow_index < rainbow -> tableSize))
 		{

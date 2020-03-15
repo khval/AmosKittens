@@ -33,7 +33,6 @@
 
 extern int last_var;
 extern struct globalVar globalVars[];
-extern struct retroVideo *video;
 extern std::vector<struct kittyBank> kittyBankList;
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
@@ -647,7 +646,7 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 						screen -> paper = 2;
 						retroBAR( screen,  0, 0,0, screen -> realWidth,screen->realHeight, screen -> paper );
 
-						retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+						retroApplyScreen( screen, instance.video, 0, 0, screen -> realWidth,screen->realHeight );
 
 						instance.current_screen = screen_num;
 					}

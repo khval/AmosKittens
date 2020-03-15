@@ -27,7 +27,6 @@
 #include <math.h>
 
 extern int last_var;
-extern struct retroVideo *video;
 
 extern void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen );
 extern bool kitten_screen_close(int screen_num );
@@ -295,7 +294,7 @@ void IffAnim( char *name, const int sn )
 
 			init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
 
-			retroApplyScreen( instance.screens[sn], video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
+			retroApplyScreen( instance.screens[sn], instance.video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
 			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
 			set_default_colors( instance.screens[sn] );
 			instance.current_screen = sn;

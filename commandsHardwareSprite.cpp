@@ -40,7 +40,6 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
 
 extern std::vector<int> collided;
@@ -52,7 +51,7 @@ extern int YSprite_formula(int y);
 extern int from_XSprite_formula(int x);
 extern int from_YSprite_formula(int y);
 
-#define getSprite(num) &(video -> sprites[num])
+#define getSprite(num) &(instance.video -> sprites[num])
 
 char *_hsGetSpritePalette( struct glueCommands *data, int nextToken )
 {
@@ -115,7 +114,7 @@ char *_hsSprite( struct glueCommands *data, int nextToken )
 
 	engine_lock();
 	num = getStackNum(__stack - 3 );
-	sprite = &video -> sprites[num];
+	sprite = &instance.video -> sprites[num];
 
 	sprite -> id = num;
 
@@ -171,14 +170,14 @@ char *_hsSpriteOff( struct glueCommands *data, int nextToken )
 		engine_lock();
 		if (s -> type == type_int)
 		{
-			video -> sprites[ s -> integer.value ].image = -1;	// not deleted, just gone.
+			instance.video -> sprites[ s -> integer.value ].image = -1;	// not deleted, just gone.
 		}
 		else
 		{
 			int n;
 			for (n=0;n<64;n++)
 			{
-				video -> sprites[n].image = -1;
+				instance.video -> sprites[n].image = -1;
 			}
 		}
 		engine_unlock();

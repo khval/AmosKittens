@@ -23,7 +23,6 @@
 
 #include "engine.h"
 
-extern struct retroVideo *video;
 extern std::vector<int> collided;
 extern std::vector<struct retroSpriteObject *> bobs;
 
@@ -38,7 +37,7 @@ extern int cmpMask( struct retroMask *leftMask, struct retroMask *rightMask, int
 int inSprite( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob );
 
 
-#define getSprite(num) &(video -> sprites[num])
+#define getSprite(num) &(instance.video -> sprites[num])
 
 void spriteBox( int x0,int y0,int x1,int y1, int c)
 {

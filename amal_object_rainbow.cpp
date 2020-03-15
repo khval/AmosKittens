@@ -23,7 +23,6 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 
-extern struct retroVideo *video;
 extern struct retroScreen *screens[8] ;
 
 static int getMax ( void )
@@ -38,12 +37,12 @@ static int getImage (unsigned int object)
 
 static int getX (unsigned int object)
 {
-	return video -> rainbow[object].offset;
+	return instance.video -> rainbow[object].offset;
 }
 
 static int getY (unsigned int object)
 {
-	return video -> rainbow[object].verticalOffset+50;
+	return instance.video -> rainbow[object].verticalOffset+50;
 }
 
 static void setImage (unsigned int object,int image)
@@ -52,12 +51,12 @@ static void setImage (unsigned int object,int image)
 
 static void setX (unsigned int object,int x)
 {
-	video -> rainbow[object].offset = x;
+	instance.video -> rainbow[object].offset = x;
 }
 
 static void setY (unsigned int object,int y)
 {
-	video -> rainbow[object].verticalOffset = y-50;
+	instance.video -> rainbow[object].verticalOffset = y-50;
 }
 
 static struct retroScreen *getScreen(unsigned int object)

@@ -23,8 +23,6 @@
 #include "AmalCompiler.h"
 #include "channel.h"
 
-extern struct retroVideo *video;
-
 static int getMax ( void )
 {
 	return 8;
@@ -54,7 +52,7 @@ static void setX (unsigned int object,int x)
 	instance.screens[object]->offset_x = x;
  	instance.screens[object] -> refreshScanlines = TRUE;
 
-	video -> refreshSomeScanlines = TRUE;
+	instance.video -> refreshSomeScanlines = TRUE;
 }
 
 static void setY (unsigned int object,int y)
@@ -62,7 +60,7 @@ static void setY (unsigned int object,int y)
 	instance.screens[object]->offset_y = y;
  	instance.screens[object] -> refreshScanlines = TRUE;
 
-	video -> refreshSomeScanlines = TRUE;
+	instance.video -> refreshSomeScanlines = TRUE;
 }
 
 static struct retroScreen *getScreen(unsigned int object)

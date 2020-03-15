@@ -249,7 +249,7 @@ bool init_engine()
 		 SetFont( &font_render_rp, gfx_font );
 	}
 
-	engine =  retroAllocEngine( My_Window, video );
+	engine =  retroAllocEngine( My_Window, instance.video );
 
 	if ( ! engine) return FALSE;
 
@@ -418,7 +418,7 @@ void DrawSprite(
 
 	if (y>0)
 	{
-		if (y+height> (int) (video->height/2)) height = (video->height/2) - y;
+		if (y+height> (int) (instance.video->height/2)) height = (instance.video->height/2) - y;
 	}
 	else
 	{
@@ -427,23 +427,23 @@ void DrawSprite(
 
 	if (x>0)
 	{
-		if (x+width> (int) (video->width/2)) width =(video->width/2) - x;
+		if (x+width> (int) (instance.video->width/2)) width =(instance.video->width/2) - x;
 	}
 	else
 	{
 		source_x0 = -x; x = 0; width -= source_x0;
 	}
 
-	destination_row_start = video -> Memory + (video -> width * (y*2)) + (x*2);
+	destination_row_start = instance.video -> Memory + (instance.video -> width * (y*2)) + (x*2);
 	source_row_start = (unsigned char *) frame -> data + (source_y0 * frame -> bytesPerRow ) + source_x0;
 	source_row_end = source_row_start + width;
 
 	for ( ypos = 0; ypos < height; ypos++ )
 	{
 		destination_row_ptr = destination_row_start;
-		destination_row_ptr2 = destination_row_start + video -> width;
+		destination_row_ptr2 = destination_row_start + instance.video -> width;
 
-		rgb = video -> scanlines[0].scanline[0].orgPalette;
+		rgb = instance.video -> scanlines[0].scanline[0].orgPalette;
 
 		for ( source_row_ptr = source_row_start;  source_row_ptr < source_row_end ; source_row_ptr++ )
 		{
@@ -464,7 +464,7 @@ void DrawSprite(
 			destination_row_ptr+=2;
 		}
 
-		destination_row_start += (video -> width*2);
+		destination_row_start += (instance.video -> width*2);
 		source_row_start += frame -> bytesPerRow;
 		source_row_end += frame -> bytesPerRow;
 	}
@@ -767,7 +767,7 @@ void main_engine()
 		Signal( &main_task->pr_Task, SIGF_CHILD );
 
 		Printf("clear video\n");
-		retroClearVideo(video, engine_back_color);
+		retroClearVideo(instance.video, engine_back_color);
 
 		Printf("init joysticks..\n");
 		init_joysticks();
@@ -849,7 +849,7 @@ void main_engine()
 
 			if (autoView)
 			{
-				retroClearVideo( video, engine_back_color );
+				retroClearVideo( instance.video, engine_back_color );
 
 				for (n=0; n<8;n++)
 				{
@@ -879,7 +879,7 @@ void main_engine()
 					}
 				}	// next
 
-				retroDrawVideo( video );
+				retroDrawVideo( instance.video );
 
 				if (synchro_on == true) 
 				{
@@ -888,13 +888,13 @@ void main_engine()
 				}
 
 #if 1
-				if ((instance.sprites)&&(video -> sprites))
+				if ((instance.sprites)&&(instance.video -> sprites))
 				{
 					struct retroSpriteObject *item;
 
 					for (n=0;n<64;n++)
 					{
-						item = &video -> sprites[n];
+						item = &instance.video -> sprites[n];
 						item -> sprite = instance.sprites;
 
 						if (item -> image>0)
@@ -910,9 +910,9 @@ void main_engine()
 
 			if (My_Window)
 			{
-				AfterEffectScanline( video );
+				AfterEffectScanline( instance.video );
 //				AfterEffectAdjustRGB( video , 8, 0 , 4);
-				retroDmaVideo( video, engine );
+				retroDmaVideo( instance.video, engine );
 
 				WaitTOF();
 				if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
@@ -921,8 +921,8 @@ void main_engine()
 						BLITA_Source, engine->rp.BitMap,
 						BLITA_SrcX, 0,
 						BLITA_SrcY, 0,
-						BLITA_Width,  video -> width, 
-						BLITA_Height, video -> height,
+						BLITA_Width,  instance.video -> width, 
+						BLITA_Height, instance.video -> height,
 						BLITA_DestType,  BLITT_RASTPORT,
 						BLITA_Dest, My_Window->RPort,
 						BLITA_DestX, My_Window->BorderLeft,

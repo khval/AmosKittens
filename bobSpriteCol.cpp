@@ -23,7 +23,6 @@
 #include "commandsScreens.h"
 
 extern std::vector<int> collided;
-extern struct retroVideo *video;
 extern std::vector<struct retroSpriteObject *> bobs;
 
 extern struct retroSpriteObject *getBob(unsigned int id);
@@ -37,7 +36,7 @@ extern int from_XSprite_formula(int x);
 extern int from_YSprite_formula(int y);
 
 extern int inSprite( struct retroMask *thisMask, int minX,int minY, int maxX, int maxY, struct retroSpriteObject *otherBob );
-#define getSprite(num) &(video -> sprites[num])
+#define getSprite(num) &(instance.video -> sprites[num])
 
 int bobSpriteColAll( unsigned short bob )
 {

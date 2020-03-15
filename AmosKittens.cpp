@@ -88,8 +88,6 @@ char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands a
 char *_file_end_ = NULL;
 uint32_t _file_bank_size = 0;
 
-struct retroVideo *video = NULL;
-
 int procStackCount = 0;
 int last_var = 0;
 uint32_t tokenFileLength;
@@ -135,6 +133,7 @@ extern struct kittyBank *reserveAs ( int, int ,int, const char *, char * );
 
 void init_instent(struct KittyInstance *instance )
 {
+	instance -> video = NULL;
 	instance -> icons = NULL;
 	instance -> sprites = NULL;
 	instance -> globalVars = globalVars;
@@ -142,6 +141,7 @@ void init_instent(struct KittyInstance *instance )
 	instance -> tokenBufferResume = NULL;
 	instance -> token_is_fresh = true;
 	instance -> parenthesis_count = 0;
+	instance -> kittyStack = kittyStack;
 
 	instance -> kittyError.code = 0;
 	instance -> kittyError.trapCode = 0;
@@ -224,30 +224,30 @@ bool alloc_video()
 {
 
 #ifdef __amigaos4__
-	video = retroAllocVideo( 640,480 );
+	instance.video = retroAllocVideo( 640,480 );
 #endif
 
 #ifdef __linux__
 	video = retroAllocVideo();
 #endif
 
-	if (video)
+	if (instance.video)
 	{
-		KittyBaseVideoInfo.videoWidth = video -> width;
-		KittyBaseVideoInfo.videoHeight = video -> height;
+		KittyBaseVideoInfo.videoWidth = instance.video -> width;
+		KittyBaseVideoInfo.videoHeight = instance.video -> height;
 		KittyBaseVideoInfo.display_x = 128;
 		KittyBaseVideoInfo.display_y = 50;
 	}
 
 	KittyBaseInfo.video = &KittyBaseVideoInfo;
 	
-	retroAllocSpriteObjects(video,64);
+	retroAllocSpriteObjects(instance.video,64);
 	return true;
 }
 
 void free_video()
 {
-	if (video)
+	if (instance.video)
 	{
 		uint32_t n;
 
@@ -256,7 +256,7 @@ void free_video()
 			if (instance.screens[n]) retroCloseScreen(&instance.screens[n]);
 		}
 
-		retroFreeVideo(video);
+		retroFreeVideo(instance.video);
 	}
 }
 
@@ -1349,11 +1349,11 @@ int main(int args, char **arg)
 			if (do_to) do_to[n] = do_to_default;
 		}
 
-		if (video) start_engine();
+		if (instance.video) start_engine();
 
 		file = newFile( filename );
 
-		if ((file)&&(video)&&(init_error == false))
+		if ((file)&&(instance.video)&&(init_error == false))
 		{
 			if (file -> start)
 			{
@@ -1393,7 +1393,7 @@ int main(int args, char **arg)
 		else
 		{
 			if (!file) printf("AMOS file not open/can't find it\n");
-			if (!video) printf("technical problems\n");
+			if (!instance.video) printf("technical problems\n");
 		}
 
 		running = false;

@@ -33,7 +33,6 @@
 #include <math.h>
 
 extern int last_var;
-extern struct retroVideo *video;
 
 extern struct retroRGB DefaultPalette[256];
 
@@ -163,7 +162,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 				init_amos_kittens_screen_default_text_window(screen, colors);
 				init_amos_kittens_screen_default_colors(screen);
 				draw_cursor(screen);
-				retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+				retroApplyScreen( screen, instance.video, 0, 0, screen -> realWidth,screen->realHeight );
 			}
 			engine_unlock();
 
@@ -276,13 +275,13 @@ char *_gfxScreenClone( struct glueCommands *data, int nextToken )
 					copy_pal( instance.screens[instance.current_screen] -> rowPalette, instance.screens[screen_num] -> rowPalette );
 					copy_pal( instance.screens[instance.current_screen] -> fadePalette, instance.screens[screen_num] -> fadePalette );
 
-					retroApplyScreen( instance.screens[screen_num], video, 
+					retroApplyScreen( instance.screens[screen_num], instance.video, 
 							instance.screens[screen_num]->scanline_x, 
 							instance.screens[screen_num]->scanline_y, 
 							instance.screens[screen_num]->displayWidth, 
 							instance.screens[screen_num]->displayHeight );
 
-					video -> refreshAllScanlines = TRUE;
+					instance.video -> refreshAllScanlines = TRUE;
 				}
 
 				engine_unlock();
@@ -324,7 +323,7 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 				if (kittyStack[__stack-1].type ==  type_int) screen -> displayWidth = getStackNum(__stack-1 );
 				if (kittyStack[__stack].type ==  type_int) screen -> displayHeight = getStackNum(__stack );
 
-				retroApplyScreen( screen, video, 
+				retroApplyScreen( screen, instance.video, 
 					screen -> scanline_x,
 					screen -> scanline_y,
 					screen -> displayWidth,
@@ -335,7 +334,7 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 				setError(47,data->tokenBuffer);	// Screen not open.
 			}
 
-			video -> refreshAllScanlines = TRUE;
+			instance.video -> refreshAllScanlines = TRUE;
 			engine_unlock();
 			success = true;
 		}
@@ -364,7 +363,7 @@ char *_gfxScreenOffset( struct glueCommands *data, int nextToken )
 			if (kittyStack[__stack-1].type ==  type_int) instance.screens[screen_num] -> offset_x = getStackNum(__stack-1 );
 			if (kittyStack[__stack].type ==  type_int) instance.screens[screen_num] -> offset_y = getStackNum(__stack );
  			instance.screens[screen_num] -> refreshScanlines = TRUE;
-			video -> refreshSomeScanlines = TRUE;
+			instance.video -> refreshSomeScanlines = TRUE;
 			success = true;
 		}
 	}
@@ -393,7 +392,7 @@ char *_gfxScin( struct glueCommands *data, int nextToken )
 		if ((my>-1)&&(my<480))
 		{
 			struct retroScreen *s = NULL;
-			struct retroScanline *scanline = &video -> scanlines[my].scanline[0];
+			struct retroScanline *scanline = &instance.video -> scanlines[my].scanline[0];
 			int n;
 
 			if ( scanline -> data)
@@ -628,7 +627,7 @@ char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			retroScreenToFront(instance.screens[screen_num]);
-			video -> refreshAllScanlines = TRUE;
+			instance.video -> refreshAllScanlines = TRUE;
 			success = true;
 		}
 	}
@@ -659,7 +658,7 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 		if ((screen_num>-1)&&(screen_num<8))
 		{
 			retroScreenToBack(instance.screens[screen_num]);
-			video -> refreshAllScanlines = TRUE;
+			instance.video -> refreshAllScanlines = TRUE;
 			success = true;
 		}
 	}
@@ -712,7 +711,7 @@ char *_gfxScreenShow( struct glueCommands *data, int nextToken )
 			if (instance.screens[screen_num])
 			{
 				instance.screens[screen_num]->flags &= ~retroscreen_flag_hide;
-				video -> refreshAllScanlines = TRUE;
+				instance.video -> refreshAllScanlines = TRUE;
 				success = true;
 			}
 		}
@@ -741,7 +740,7 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 			if (instance.screens[screen_num])
 			{
 				instance.screens[screen_num]->flags |= retroscreen_flag_hide;
-				video -> refreshAllScanlines = TRUE;
+				instance.video -> refreshAllScanlines = TRUE;
 				success = true;
 			}
 		}
@@ -1032,7 +1031,7 @@ void LoadIff( char *name,  int sn )
 
 			if (new_screen)	init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
 
-			retroApplyScreen( instance.screens[sn], video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
+			retroApplyScreen( instance.screens[sn], instance.video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
 			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
 
 			if (new_screen) set_default_colors( instance.screens[sn] );
@@ -1290,7 +1289,7 @@ char *gfxDoubleBuffer(struct nativeCommand *cmd, char *tokenBuffer)
 		engine_lock();
 		clearBobs();
 		retroAllocDoubleBuffer( screen );
-		video -> refreshAllScanlines = TRUE;
+		instance.video -> refreshAllScanlines = TRUE;
 		engine_unlock();
 	}
 
@@ -1380,7 +1379,7 @@ char *gfxDefault(struct nativeCommand *cmd, char *tokenBuffer)
 		init_amos_kittens_screen_default_colors(screen);
 		draw_cursor(screen);
 	}
-	retroApplyScreen( screen, video, 0, 0, screen -> realWidth,screen->realHeight );
+	retroApplyScreen( screen, instance.video, 0, 0, screen -> realWidth,screen->realHeight );
 
 	engine_unlock();
 
@@ -1648,7 +1647,7 @@ char *_gfxDualPlayfield( struct glueCommands *data, int nextToken )
 						instance.screens[screen0]->dualScreen = instance.screens[screen1];
 
 						instance.screens[screen1]->flags |= retroscreen_flag_hide;
-						video -> refreshAllScanlines = TRUE;
+						instance.video -> refreshAllScanlines = TRUE;
 						popStack(__stack - data->stack );
 						return NULL;
 					}
