@@ -160,8 +160,6 @@ void open_extension( const char *name, int id )
 
 		printf("kitty_extensions[ %d ].lookup = %08x\n", id, kitty_extensions[ id ].lookup);
 
-		printf("test: %08x\n", Iext -> test());
-
 		return;
 	}
 

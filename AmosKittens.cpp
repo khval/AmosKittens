@@ -57,8 +57,6 @@ extern void setError( int _code, char * _pos ) ;
 #include "label.h"
 #include "amosstring.h"
 
-#include "ext_compact.h"
-#include "ext_turbo.h"
 #include "ext_music.h"
 
 bool running = true;
@@ -1138,6 +1136,7 @@ bool check_ext_crc()
 	{
 		if (kitty_extensions[n].lookup)
 		{
+			printf("create crc for extension %d\n",n);
 			kitty_extensions[n].crc != mem_crc( kitty_extensions[n].lookup, 0xFFFF );
 			return false;
 		}
@@ -1278,10 +1277,6 @@ int main(int args, char **arg)
 		// alloc tabels for 2 fake extentions
 //		kitty_extensions[1].lookup = (char *) malloc( 0xFFFF );	// music.lib
 
-//		kitty_extensions[2].lookup = (char *) malloc( 0xFFFF );	// compat.lib
-
-//		kitty_extensions[12].lookup = (char *) malloc( 0xFFFF );	// turbo extention.
-
 		// init default values for fake extentions
 		for (n=0;n<32;n++) if (kitty_extensions[n].lookup) memset(kitty_extensions[n].lookup,0,0xFFFF);
 
@@ -1317,30 +1312,13 @@ int main(int args, char **arg)
 */
 
 		open_extension( "AMOSPRO_compact.lib", 2 );
+		open_extension( "AMOSPRO_turbo.lib", 12 );
 
-/*
-		if (kitty_extensions[2].lookup)
-		{	
-			*((void **) (kitty_extensions[2].lookup + 0x0006)) = (void *) ext_cmd_pack;
-			*((void **) (kitty_extensions[2].lookup + 0x0014)) = (void *) ext_cmd_pack;
-			*((void **) (kitty_extensions[2].lookup + 0x0026)) = (void *) ext_cmd_spack;
-			*((void **) (kitty_extensions[2].lookup + 0x0036)) = (void *) ext_cmd_spack;
-			*((void **) (kitty_extensions[2].lookup + 0x0048)) = (void *) ext_cmd_unpack;
-			*((void **) (kitty_extensions[2].lookup + 0x0056)) = (void *) ext_cmd_unpack;
-			*((void **) (kitty_extensions[2].lookup + 0x0060)) = (void *) ext_cmd_unpack;
-		}
-*/
-
-/*
-		if (kitty_extensions[12].lookup)
-		{
-			*((void **) (kitty_extensions[12].lookup + 0x0A08)) = (void *) ext_cmd_range;
-		}
-*/
 		for(n=0;n<32;n++)
 		{
 			if (kitty_extensions[n].lookup)
 			{
+				printf("make crc for extension %d - %08x\n",n,kitty_extensions[n].lookup );
 				 kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
 			}
 		}
