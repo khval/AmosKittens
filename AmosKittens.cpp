@@ -1313,6 +1313,7 @@ int main(int args, char **arg)
 
 		open_extension( "AMOSPRO_compact.lib", 2 );
 		open_extension( "AMOSPRO_turbo.lib", 12 );
+		open_extension( "AMOSPRO_Craft.lib", 18 );
 
 		for(n=0;n<32;n++)
 		{
