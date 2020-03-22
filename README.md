@@ -18,7 +18,7 @@ Part of the code is sometimes tested in Virtual Studio, some headers does suppor
 However, no attempt at compiling a full version has been tried. Now after implementing the “include” command, Windows little endian support got officially broken.
 
 **ATARI**
-I have been investigating, if that be possible due link between STOS and AMOS, from what found doing some research on ATARI ST graphics, is that it has lot less colors, and can't display as many colors in higher resolutions. I have not looked at memory limitations but AMOS Kittens is written in C++ code and bit fatter then 680x0 optimized assembler code, I been investigating Falcon if it might be able to do it, and it be cool to support it, but there is lot less users on that platform.
+I have been investigating, if that be possible due link between STOS and AMOS, from what found doing some research on ATARI ST graphics, is that it has lot less colors, and can't display as many colors in higher resolutions. I have not looked at memory limitations but AMOS Kittens is written in C++ code and bit fatter then 680x0 optimized assembler code, I been investigating ATARI Falcon and ATARI TT, this might be able to do it, and it be cool to support it, but there is lot less users on this platforms.
 
 Developer's contributors to Amos kittens
 ----------------------------------------
