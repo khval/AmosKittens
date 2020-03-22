@@ -141,8 +141,6 @@ void clean_up_vars()
 		{
 			case type_string:
 
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
  				if (var->str) freeString (var->str);
 				break;
 
@@ -166,20 +164,9 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 void clean_up_stack()
 {
-	int n;
-
-	for (n=0; n<=__stack;n++)
-	{
-		switch( kittyStack[n].type )
-		{		
-			case type_string:
-				if (kittyStack[n].str) free (kittyStack[n].str);
-				kittyStack[n].str = NULL;
-				kittyStack[n].type = 0;			
-				break;
-		}
-	}
-	__stack = 0;
+	popStack( instance_stack );
+	printf("after clean up stack is: %d\n", instance_stack);
+	setStackNone();
 }
 
 void clean_up_files()
