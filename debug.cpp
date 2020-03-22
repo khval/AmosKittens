@@ -76,11 +76,11 @@ char *_machinePeek(struct glueCommands *data, int nextToken);
 char *_machineDeek( struct glueCommands *data, int nextToken);
 char *_machineLeek( struct glueCommands *data, int nextToken);
 char *_bankStart(struct glueCommands *data, int nextToken);
-char *_chr(struct glueCommands *data, int nextToken);
+char *_cmdChrStr(struct glueCommands *data, int nextToken);
+char *_cmdMidStr(struct glueCommands *data, int nextToken);
+char *_cmdLeftStr(struct glueCommands *data, int nextToken);
+char *_cmdRightStr(struct glueCommands *data, int nextToken);
 char *_gfxPoint(struct glueCommands *data, int nextToken);
-char *_mid(struct glueCommands *data, int nextToken);
-char *_left(struct glueCommands *data, int nextToken);
-char *_right(struct glueCommands *data, int nextToken);
 char *_cmdStr(struct glueCommands *data, int nextToken);
 char *_while(struct glueCommands *data, int nextToken);
 char *_repeat(struct glueCommands *data, int nextToken);
@@ -135,11 +135,11 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_machineDeek,"Deek" },
 	{_machineLeek,"Leek" },
 	{_bankStart,"Start" },
-	{_chr,"Chr$" },
+	{_cmdChrStr,"Chr$" },
 	{_gfxPoint,"Point" },
-	{_mid,"Mid" },
-	{_left,"Left" },
-	{_right,"Right" },
+	{_cmdMidStr,"Mid" },
+	{_cmdLeftStr,"Left" },
+	{_cmdRightStr,"Right" },
 	{_cmdStr,"Str$" },
 	{_ifSuccess,"if Success" },
 	{_ifNotSuccess,"if Not Success"},

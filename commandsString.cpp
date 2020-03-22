@@ -49,119 +49,10 @@ string names like xxx is new and can saved on stack, with out being copied.
 *********/
 
 
-char *_left( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack + 1;
-	struct stringData *str;
-	struct stringData *tmp = NULL;
-	int _len;
-
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
-
-	if (args == 2)
-	{
-		str = getStackString(__stack - 1 );
-		_len = getStackNum(__stack );
-		tmp = amos_strndup(str, _len );
-	}	
-
-	popStack(__stack - data->stack);
-	if (tmp) setStackStr(tmp);
-
-	return NULL;
-}
 
 
-char *_mid( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack +1;
-	struct stringData *str;
-	struct stringData *tmp = NULL;
-	int _slen=0;
-	int _start=0, _len = 0;
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	switch (args)
-	{
-		case 2:
-			str = getStackString(__stack - 1 );
-			_start = getStackNum(__stack ) ;	
-
-			if (_start == 0 ) _start = 1;	// 0 is allowed, even if string starts at 1.
-			if (_start>0)
-			{
-				_start--;
-				_slen = str -> size;
-				if (_start>_slen-1) 
-				{
-					tmp = toAmosString("",0);
-				}
-				else
-				{
-					if (_start<0) _start=0;
-					tmp = amos_right(str , str -> size - _start );
-				}
-			}
-			break;
-
-		case 3:
-			str = getStackString(__stack - 2 );
-			_start = getStackNum(__stack -1 ) -1 ;
-			_len = getStackNum(__stack );
-
-			if (_start>-1)
-			{
-				if (_start>str -> size) 
-				{
-					tmp = toAmosString("",0);
-				}
-				else
-				{
-					if ( (_start+_len) > str->size) _len = str->size- _start;
-					tmp = amos_mid(str, _start, _len );
-				}
-			}	
-			break;
-
-		default:
-			setError(22,data->tokenBuffer);
-	}
-
-	if ((_start<0)||(_len<0)) 
-	{
-		setError(23,data->tokenBuffer);
-	}
-	popStack(__stack - data->stack);
-
-	if (tmp) setStackStr(tmp);
-	return NULL;
-}
-
-char *_right( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack +1 ;
-	struct stringData *str;
-	struct stringData *tmp = NULL;
-	int _len;
-
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
-
-	if (args == 2)
-	{
-		str = getStackString(__stack - 1 );
-		_len = getStackNum(__stack  );
-		if (_len>str->size) _len = str ->size;
-
-		tmp = amos_right(str , _len );
-	}	
-
-	popStack(__stack - data->stack);
-
-	if (tmp) setStackStr(tmp);
-
-	return NULL;
-}
 
 char *_instr( struct glueCommands *data, int nextToken )
 {
@@ -248,157 +139,8 @@ char *_cmdStr( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_hex( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack +1 ;
-	int num,chars;
-	char fmt[10];
-	struct stringData *_str = alloc_amos_string( 50 );
 
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	switch (args)
-	{
-		case 1:
-				num = getStackNum(__stack );
-				sprintf(&_str->ptr,"$%X",num);
-				break;
-		case 2:
-				num = getStackNum(__stack-1 );
-				chars = getStackNum(__stack );	
-				sprintf(fmt,"$%%0%dX",chars);
-				sprintf(&_str->ptr,fmt,num);
-				break;
-	}
-
-	popStack(__stack - data->stack);
-
-	_str -> size = strlen( &_str->ptr );
-	setStackStr(_str);
-
-	return NULL;
-}
-
-char *_bin( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack + 1;
-	unsigned int num= 0,len =0,n;
-	struct stringData *str;
-	char *p;
-
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
-
-	switch (args)
-	{
-		case 1:	num = getStackNum(__stack  );
-				break;
-		case 2:	num = getStackNum(__stack -1 );
-				len = getStackNum(__stack );
-				break;
-		default: 
-				setError(22,data->tokenBuffer);
-	}
-	popStack(__stack - data->stack);
-
-	if (args == 1)
-	{
-		len = 0;
-		for (n= num ; n!=0 ; n >>= 1 ) len++;
-		len = len ? len : len + 1;	// always one number in bin number.
-	}
-
-	str = alloc_amos_string(len+1);	 //  '%' 
-
-	if (str)
-	{
-		p = &(str -> ptr);
-
-		*p++='%';
-
-		for (n=len;n>0;n--)
-		{
-			*p++= (num & (1<<(n-1))) ? '1' : '0';
-		}
-		*p = 0;
-	}
-
-	str -> size = strlen( &str->ptr );
-	setStackStr(str);
-
-	return NULL;
-}
-
-char *_flip( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack +1 ;
-	int l,i;
-	struct stringData *_str;
-	char *str,t;
-
-	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
-
-	if (args == 1)
-	{
-		_str = getStackString(__stack  );
-
-		if (_str)
-		{
-			l = _str -> size;
-			str = &_str -> ptr;
-
-			for (i=0;i<l/2;i++)
-			{
-			 	t = str[i] ;
-				str[i] = str[l-1-i];
-				str[l-1-i] = t;
-			}
-		}
-	}
-	else
-	{
-		popStack(__stack - data->stack);
-		setError(22, data -> tokenBuffer);
-	}
-
-	return NULL;
-}
-
-char *_string( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack +1 ;
-	int i,_len;
-	struct stringData *str = NULL;
-	struct stringData *_str;
-	char *dest;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	switch (args)
-	{
-		case 2:
-			_str = getStackString(__stack - 1 );
-			_len = getStackNum(__stack  );
-
-			str = alloc_amos_string(_len);
-			
-			dest = &str -> ptr;
-
-			for (i=0;i<_len;i++)
-			{
-				dest[i]= (_str ? _str -> ptr : 0) ;
-			}
-			dest[i]= 0;
-
-			break;
-		default:
-			setError(22,data->tokenBuffer);
-	}
-
-	popStack(__stack - data->stack);
-	if (str) setStackStr(str);
-
-	return NULL;
-}
 
 char *_asc( struct glueCommands *data, int nextToken )
 {
@@ -546,32 +288,6 @@ char *_val( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_chr( struct glueCommands *data, int nextToken )
-{
-	int args = __stack - data->stack + 1;
-	struct stringData *_str = alloc_amos_string( 1 );
-	char *p;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (args == 1)
-	{
-		if (_str)
-		{
-			p = &(_str -> ptr);
-			*p++ = args == 1 ? (char) getStackNum(__stack ) : 0;
-			*p = 0;
-		}
-		setStackStr(_str);
-		return NULL;
-	}
-
-	setError(22,data -> tokenBuffer);
-	popStack(__stack - data->stack);
-	setStackStr(_str);
-
-	return NULL;
-}
 
 char *_len( struct glueCommands *data, int nextToken )
 {
@@ -601,7 +317,278 @@ char *_len( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_space( struct glueCommands *data, int nextToken )
+
+char *_cmdLeftStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack + 1;
+	struct stringData *str;
+	struct stringData *tmp = NULL;
+	int _len;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	if (args == 2)
+	{
+		str = getStackString(__stack - 1 );
+		_len = getStackNum(__stack );
+		tmp = amos_strndup(str, _len );
+	}	
+
+	popStack(__stack - data->stack);
+	if (tmp) setStackStr(tmp);
+
+	return NULL;
+}
+
+char *cmdLeftStr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _cmdLeftStr, ptr );
+	return ptr;
+}
+
+char *_cmdMidStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack +1;
+	struct stringData *str;
+	struct stringData *tmp = NULL;
+	int _slen=0;
+	int _start=0, _len = 0;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	switch (args)
+	{
+		case 2:
+			str = getStackString(__stack - 1 );
+			_start = getStackNum(__stack ) ;	
+
+			if (_start == 0 ) _start = 1;	// 0 is allowed, even if string starts at 1.
+			if (_start>0)
+			{
+				_start--;
+				_slen = str -> size;
+				if (_start>_slen-1) 
+				{
+					tmp = toAmosString("",0);
+				}
+				else
+				{
+					if (_start<0) _start=0;
+					tmp = amos_right(str , str -> size - _start );
+				}
+			}
+			break;
+
+		case 3:
+			str = getStackString(__stack - 2 );
+			_start = getStackNum(__stack -1 ) -1 ;
+			_len = getStackNum(__stack );
+
+			if (_start>-1)
+			{
+				if (_start>str -> size) 
+				{
+					tmp = toAmosString("",0);
+				}
+				else
+				{
+					if ( (_start+_len) > str->size) _len = str->size- _start;
+					tmp = amos_mid(str, _start, _len );
+				}
+			}	
+			break;
+
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	if ((_start<0)||(_len<0)) 
+	{
+		setError(23,data->tokenBuffer);
+	}
+	popStack(__stack - data->stack);
+
+	if (tmp) setStackStr(tmp);
+	return NULL;
+}
+
+char *cmdMidStr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _cmdMidStr, ptr );
+	return ptr;
+}
+
+char *_cmdRightStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack +1 ;
+	struct stringData *str;
+	struct stringData *tmp = NULL;
+	int _len;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	if (args == 2)
+	{
+		str = getStackString(__stack - 1 );
+		_len = getStackNum(__stack  );
+		if (_len>str->size) _len = str ->size;
+
+		tmp = amos_right(str , _len );
+	}	
+
+	popStack(__stack - data->stack);
+
+	if (tmp) setStackStr(tmp);
+
+	return NULL;
+}
+
+char *cmdRightStr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _cmdRightStr, ptr );
+	return ptr;
+}
+
+char *_cmdHexStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack +1 ;
+	int num,chars;
+	char fmt[10];
+	struct stringData *_str = alloc_amos_string( 50 );
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	switch (args)
+	{
+		case 1:
+				num = getStackNum(__stack );
+				sprintf(&_str->ptr,"$%X",num);
+				break;
+		case 2:
+				num = getStackNum(__stack-1 );
+				chars = getStackNum(__stack );	
+				sprintf(fmt,"$%%0%dX",chars);
+				sprintf(&_str->ptr,fmt,num);
+				break;
+	}
+
+	popStack(__stack - data->stack);
+
+	_str -> size = strlen( &_str->ptr );
+	setStackStr(_str);
+
+	return NULL;
+}
+
+char *cmdHexStr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _cmdHexStr, ptr );
+	return ptr;
+}
+
+char *_cmdBinStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack + 1;
+	unsigned int num= 0,len =0,n;
+	struct stringData *str;
+	char *p;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	switch (args)
+	{
+		case 1:	num = getStackNum(__stack  );
+				break;
+		case 2:	num = getStackNum(__stack -1 );
+				len = getStackNum(__stack );
+				break;
+		default: 
+				setError(22,data->tokenBuffer);
+	}
+	popStack(__stack - data->stack);
+
+	if (args == 1)
+	{
+		len = 0;
+		for (n= num ; n!=0 ; n >>= 1 ) len++;
+		len = len ? len : len + 1;	// always one number in bin number.
+	}
+
+	str = alloc_amos_string(len+1);	 //  '%' 
+
+	if (str)
+	{
+		p = &(str -> ptr);
+
+		*p++='%';
+
+		for (n=len;n>0;n--)
+		{
+			*p++= (num & (1<<(n-1))) ? '1' : '0';
+		}
+		*p = 0;
+	}
+
+	str -> size = strlen( &str->ptr );
+	setStackStr(str);
+
+	return NULL;
+}
+
+char *cmdBinStr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _cmdBinStr, ptr );
+	return ptr;
+}
+
+char *cmdInstr(nativeCommand *cmd, char *ptr)
+{
+	stackCmdParm( _instr, ptr );
+	return ptr;
+}
+
+char *_cmdFlipStr( struct glueCommands *data, int nextToken )
+{
+	int args = __stack - data->stack +1 ;
+	int l,i;
+	struct stringData *_str;
+	char *str,t;
+
+	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
+
+	if (args == 1)
+	{
+		_str = getStackString(__stack  );
+
+		if (_str)
+		{
+			l = _str -> size;
+			str = &_str -> ptr;
+
+			for (i=0;i<l/2;i++)
+			{
+			 	t = str[i] ;
+				str[i] = str[l-1-i];
+				str[l-1-i] = t;
+			}
+		}
+	}
+	else
+	{
+		popStack(__stack - data->stack);
+		setError(22, data -> tokenBuffer);
+	}
+
+	return NULL;
+}
+
+char *cmdFlipStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _cmdFlipStr, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *_cmdSpaceStr( struct glueCommands *data, int nextToken )
 {
 	int i,_len;
 	struct stringData *str;
@@ -623,7 +610,15 @@ char *_space( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_upper( struct glueCommands *data, int nextToken )
+
+char *cmdSpaceStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _cmdSpaceStr, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+
+char *_cmdUpperStr( struct glueCommands *data, int nextToken )
 {
 	struct stringData *str;
 	char *s;
@@ -642,7 +637,13 @@ char *_upper( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_lower( struct glueCommands *data, int nextToken )
+char *cmdUpperStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _cmdUpperStr, tokenBuffer );	// we need to store the step counter.
+	return tokenBuffer;
+}
+
+char *_cmdLowerStr( struct glueCommands *data, int nextToken )
 {
 //	int args = __stack - data->stack + 1 ;
 	struct stringData *str;
@@ -662,75 +663,86 @@ char *_lower( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *cmdLeft(nativeCommand *cmd, char *ptr)
+char *cmdLowerStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdParm( _left, ptr );
-	return ptr;
-}
-
-char *cmdMid(nativeCommand *cmd, char *ptr)
-{
-	stackCmdParm( _mid, ptr );
-	return ptr;
-}
-
-char *cmdRight(nativeCommand *cmd, char *ptr)
-{
-	stackCmdParm( _right, ptr );
-	return ptr;
-}
-
-char *cmdHex(nativeCommand *cmd, char *ptr)
-{
-	stackCmdParm( _hex, ptr );
-	return ptr;
-}
-
-char *cmdBin(nativeCommand *cmd, char *ptr)
-{
-	stackCmdParm( _bin, ptr );
-	return ptr;
-}
-
-extern char *cmdInstr(nativeCommand *cmd, char *ptr)
-{
-	stackCmdParm( _instr, ptr );
-	return ptr;
-}
-
-char *cmdFlip(struct nativeCommand *cmd, char *tokenBuffer )
-{
-	stackCmdParm( _flip, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _cmdLowerStr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
-char *cmdSpace(struct nativeCommand *cmd, char *tokenBuffer )
+char *_cmdStringStr( struct glueCommands *data, int nextToken )
 {
-	stackCmdParm( _space, tokenBuffer );	// we need to store the step counter.
+	int args = __stack - data->stack +1 ;
+	int i,_len;
+	struct stringData *str = NULL;
+	struct stringData *_str;
+	char *dest;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 2:
+			_str = getStackString(__stack - 1 );
+			_len = getStackNum(__stack  );
+
+			str = alloc_amos_string(_len);
+			
+			dest = &str -> ptr;
+
+			for (i=0;i<_len;i++)
+			{
+				dest[i]= (_str ? _str -> ptr : 0) ;
+			}
+			dest[i]= 0;
+
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+	}
+
+	popStack(__stack - data->stack);
+	if (str) setStackStr(str);
+
+	return NULL;
+}
+
+
+char *cmdStringStr(struct nativeCommand *cmd, char *tokenBuffer )
+{
+	stackCmdParm( _cmdStringStr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
-char *cmdUpper(struct nativeCommand *cmd, char *tokenBuffer )
+char *_cmdChrStr( struct glueCommands *data, int nextToken )
 {
-	stackCmdParm( _upper, tokenBuffer );	// we need to store the step counter.
-	return tokenBuffer;
+	int args = __stack - data->stack + 1;
+	struct stringData *_str = alloc_amos_string( 1 );
+	char *p;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (args == 1)
+	{
+		if (_str)
+		{
+			p = &(_str -> ptr);
+			*p++ = args == 1 ? (char) getStackNum(__stack ) : 0;
+			*p = 0;
+		}
+		setStackStr(_str);
+		return NULL;
+	}
+
+	setError(22,data -> tokenBuffer);
+	popStack(__stack - data->stack);
+	setStackStr(_str);
+
+	return NULL;
 }
 
-char *cmdLower(struct nativeCommand *cmd, char *tokenBuffer )
+char *cmdChrStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdParm( _lower, tokenBuffer );	// we need to store the step counter.
-	return tokenBuffer;
-}
-
-char *cmdString(struct nativeCommand *cmd, char *tokenBuffer )
-{
-	stackCmdParm( _string, tokenBuffer );	// we need to store the step counter.
-	return tokenBuffer;
-}
-
-char *cmdChr(struct nativeCommand *cmd, char *tokenBuffer )
-{
-	stackCmdParm( _chr, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _cmdChrStr, tokenBuffer );	// we need to store the step counter.
 	return tokenBuffer;
 }
 
