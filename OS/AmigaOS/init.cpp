@@ -21,6 +21,7 @@
 
 #include "joysticks.h"
 #include "amoskittens.h"
+#include "debug.h"
 
 struct TextFont *topaz8_font = NULL;
 struct TextFont *gfx_font = NULL;
@@ -123,12 +124,16 @@ BOOL open_lib( const char *name, int ver , const char *iname, int iver, struct L
 const char *newprefix = "kitty";
 const char *newsuffix  = ".library";
 
+#ifdef __amigaos4__
+
 #ifdef makeLookupTable
 #undef makeLookupTable
 #endif
 
-#ifdef test
-#undef test
+#ifdef makeContext
+#undef makeContext
+#endif
+
 #endif
 
 
@@ -158,7 +163,10 @@ void open_extension( const char *name, int id )
 		kitty_extensions[ id ].interface = (struct Interface *) Iext;
 		kitty_extensions[ id ].lookup = (char *) Iext -> makeLookupTable();
 
+		instance.extensions_context[ id ] = (char *) Iext -> makeContext();
+
 		printf("kitty_extensions[ %d ].lookup = %08x\n", id, kitty_extensions[ id ].lookup);
+		printf("instance.extensions_context[ %d ] = %08x\n", id, instance.extensions_context[ id ]);
 
 		return;
 	}
@@ -276,27 +284,46 @@ BOOL init()
 	return TRUE;
 }
 
+
+#undef FreeLookupTable
+#undef FreeContext
+
 void closedown()
 {
 	int i;
 
+	cleanup_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (i=0;i<32;i++)
 	{
-#ifdef amigaos4
-		if (kitty_extensions[i].interface) DropInterface(kitty_extensions[i].interface);
-		kitty_extensions[i].interface = NULL;
-#endif
+		cleanup_printf("kitty_extensions %d\n",i);
+
+		if (kitty_extensions[i].interface) 
+		{
+			struct kittyCompactIFace *iext = (struct kittyCompactIFace *)  kitty_extensions[i].interface;
+
+			if (instance.extensions_context[i]) iext -> FreeContext(instance.extensions_context[i]);
+			instance.extensions_context[i] = NULL;
+
+			if (kitty_extensions[i].lookup) iext -> FreeLookupTable(kitty_extensions[i].lookup);
+			kitty_extensions[i].lookup = NULL;
+
+			DropInterface(kitty_extensions[i].interface);
+			kitty_extensions[i].interface = NULL;
+		}
+
 		if (kitty_extensions[i].base) CloseLibrary(kitty_extensions[i].base);
 		kitty_extensions[i].base = NULL;
 
-		if (kitty_extensions[i].lookup) sys_free(kitty_extensions[i].lookup);
-		kitty_extensions[i].lookup = NULL;
 	}
+
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (topaz8_font) CloseFont(topaz8_font); topaz8_font= NULL;
 
 	if (_locale) CloseLocale(_locale); _locale = NULL;
 
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( EmptyPointer ) 
 	{
@@ -304,11 +331,15 @@ void closedown()
 		EmptyPointer = NULL;
 	}
 
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if ( ImagePointer ) 
 	{
 		FreeVec( ImagePointer );
 		ImagePointer = NULL;
 	}
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 #ifdef __amigaos4__
 	if ( objectPointer )
@@ -317,6 +348,8 @@ void closedown()
 		objectPointer = NULL;
 	}
 #endif
+
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (IIcon) DropInterface((struct Interface*) IIcon); IIcon = 0;
 	if (IconBase) CloseLibrary(IconBase); IconBase = 0;

@@ -10,6 +10,7 @@
 #define show_proc_names_no
 #define show_token_numbers_no
 #define show_debug_printf_no
+#define show_cleanup_debug_no
 
 //--------- other options ------------
 
@@ -85,6 +86,12 @@ uint32_t mem_crc( char *mem, uint32_t size );
 #else
 #define dprintf(fmt,...)
 #define dgetLineFromPointer(...)
+#endif
+
+#ifdef show_cleanup_debug_yes
+#define cleanup_printf printf
+#else
+#define cleanup_printf(fmt,...)
 #endif
 
 #ifdef show_proc_names_yes

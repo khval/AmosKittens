@@ -685,6 +685,8 @@ struct KittyInstance
 	struct kittyApi api;
 	bool token_is_fresh;
 	int parenthesis_count;
+	void *extensions_context[32];
+	int current_extension;
 };
 
 #ifdef __amoskittens__

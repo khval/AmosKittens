@@ -156,6 +156,9 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.freeBank =freeBank;
 	instance -> api.reserveAs =reserveAs;
 	instance -> api.setError =setError;
+
+
+	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 }
 
 struct retroSprite *patterns = NULL;
