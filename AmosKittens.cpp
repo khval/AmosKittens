@@ -1272,48 +1272,10 @@ int main(int args, char **arg)
 		__load_bank__( (char *) "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
 		__load_bank__( (char *) "progdir:kittySystem/mouse.abk",-3);
 
-		// set up a fake extention lookup
-
 		// set default values.
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
-		// alloc tabels for 2 fake extentions
-//		kitty_extensions[1].lookup = (char *) malloc( 0xFFFF );	// music.lib
-
-		// init default values for fake extentions
-		for (n=0;n<32;n++) if (kitty_extensions[n].lookup) memset(kitty_extensions[n].lookup,0,0xFFFF);
-
-		// function table init.
-/*
-		if (kitty_extensions[1].lookup)
-		{	
-			*((void **) (kitty_extensions[1].lookup + 0x0074)) = (void *) ext_cmd_boom;
-			*((void **) (kitty_extensions[1].lookup + 0x008A)) = (void *) ext_cmd_sam_bank;
-			*((void **) (kitty_extensions[1].lookup + 0x007E)) = (void *) ext_cmd_shoot;	
-
-			*((void **) (kitty_extensions[1].lookup + 0x009A)) = (void *) ext_cmd_sam_loop_on;
-			*((void **) (kitty_extensions[1].lookup + 0x00B4)) = (void *) ext_cmd_sam_loop_off;
-
-			*((void **) (kitty_extensions[1].lookup + 0x00DE)) = (void *) ext_cmd_sam_play;
-			*((void **) (kitty_extensions[1].lookup + 0x00EE)) = (void *) ext_cmd_sam_play;
-			*((void **) (kitty_extensions[1].lookup + 0x00CE)) = (void *) ext_cmd_sample;
-			*((void **) (kitty_extensions[1].lookup + 0x0118)) = (void *) ext_cmd_bell;
-			*((void **) (kitty_extensions[1].lookup + 0x0170)) = (void *) ext_cmd_del_wave;
-			*((void **) (kitty_extensions[1].lookup + 0x0180)) = (void *) ext_cmd_set_envel;
-			*((void **) (kitty_extensions[1].lookup + 0x01A4)) = (void *) ext_cmd_volume;
-			*((void **) (kitty_extensions[1].lookup + 0x0104)) = (void *) ext_cmd_sam_raw;
-			*((void **) (kitty_extensions[1].lookup + 0x0144)) = (void *) ext_cmd_play;
-			*((void **) (kitty_extensions[1].lookup + 0x015E)) = (void *) ext_cmd_set_wave;
-			*((void **) (kitty_extensions[1].lookup + 0x01BC)) = (void *) ext_cmd_wave;
-
-			*((void **) (kitty_extensions[1].lookup + 0x01CA)) = (void *) ext_cmd_led_on;
-			*((void **) (kitty_extensions[1].lookup + 0x01D6)) = (void *) ext_cmd_led_off;
-
-			*((void **) (kitty_extensions[1].lookup + 0x0256)) = (void *) ext_cmd_sam_stop;
-			*((void **) (kitty_extensions[1].lookup + 0x0324)) = (void *) ext_cmd_ssave;
-		}
-*/
-
+		open_extension( "AMOSPRO_music.lib", 1 );
 		open_extension( "AMOSPRO_compact.lib", 2 );
 		open_extension( "AMOSPRO_turbo.lib", 12 );
 		open_extension( "AMOSPRO_Craft.lib", 18 );
@@ -1327,12 +1289,10 @@ int main(int args, char **arg)
 			}
 		}
 
-
 		make_wave_noice();
 		make_wave_bell();
 
 		apply_wave(1, 15);
-
 
 		do_input = (void (**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
 		do_to = (char *(**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);

@@ -387,11 +387,15 @@ void closedown()
 	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
 	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
 
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	if (engine_mx) 
 	{
 		FreeSysObject(ASOT_MUTEX, engine_mx); 
 		engine_mx = NULL;
 	}
+
+	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	for (i=0;i<4;i++)
 	{
