@@ -215,8 +215,6 @@ int findVar( char *name, bool  is_first_token, int type, int _proc );
 struct kittyVideoInfo KittyBaseVideoInfo;
 struct kittyInfo KittyBaseInfo;
 
-extern void make_wave_noice();
-extern void make_wave_bell();
 
 void free_file(struct fileContext *file);
 struct fileContext *newFile( char *name );
@@ -1289,10 +1287,7 @@ int main(int args, char **arg)
 			}
 		}
 
-		make_wave_noice();
-		make_wave_bell();
-
-		apply_wave(1, 15);
+//		apply_wave(1, 15);
 
 		do_input = (void (**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
 		do_to = (char *(**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);

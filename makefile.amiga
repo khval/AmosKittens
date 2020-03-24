@@ -50,9 +50,6 @@ main_objects = commands.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			interfacelanguage.cpp \
-			ext_compact.cpp \
-			ext_turbo.cpp \
-			ext_music.cpp \
 			debug.cpp \
 			pass1.cpp \
 			kittyErrors.cpp \

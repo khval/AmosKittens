@@ -105,40 +105,6 @@ void make_wave_noice()
 #define harmonic(h,n,m) h * ((double) n) * 2.0f * M_PI / ((double) m) ;
 
 
-void make_wave_bell()
-{
-	int n;
-	double r1,r3,r5;
-	int bytes = 256;
-	struct wave *newWave = allocWave( 1, bytes );
-	char *data;
-
-	r1 = 0x0f;
-	r3 = M_PI ;
-	r5 = 0.0f;
-
-	if (newWave)
-	{
-		data = ( char *) &(newWave -> sample.ptr);
-
-		for (n=0;n<bytes;n++)
-		{
-
-//			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) ) /2.0 * 127.0)  ;
-//			data[n] =  (signed char) ( (sin( r1 ) + sin( r3 ) + sin( r5)) /3.0 * 127.0)  ;
-			r1=harmonic(1,n,bytes);
-//			r3=harmonic(3,n,bytes) + M_PI;
-//			r5=harmonic(5,n,bytes);
-
-			data[n] =  (signed char) ( sin( r1 ) * 127.0)  +127;
-		}
-
-		newWave -> sample.bytes = bytes;
-		newWave -> sample.frequency = bytes;
-
-		waves.push_back(newWave);
-	}
-}
 
 struct sampleHeader *allocSample( int size )
 {

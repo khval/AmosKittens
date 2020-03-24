@@ -235,6 +235,8 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 	pos = header -> img_offset + 2 + block_nr*4;
 	pos = getLong( bank1->start, pos );
 
+#if 0
+
 	if (pos)
 	{
 		struct PacPicContext context;
@@ -254,6 +256,8 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 			}
 		}
 	}
+
+#endif
 
 	return false;
 }
