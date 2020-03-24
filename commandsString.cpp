@@ -639,13 +639,12 @@ char *_cmdUpperStr( struct glueCommands *data, int nextToken )
 
 char *cmdUpperStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdParm( _cmdUpperStr, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _cmdUpperStr, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *_cmdLowerStr( struct glueCommands *data, int nextToken )
 {
-//	int args = __stack - data->stack + 1 ;
 	struct stringData *str;
 	char *s;
 
@@ -665,7 +664,7 @@ char *_cmdLowerStr( struct glueCommands *data, int nextToken )
 
 char *cmdLowerStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdParm( _cmdLowerStr, tokenBuffer );	// we need to store the step counter.
+	stackCmdParm( _cmdLowerStr, tokenBuffer );
 	return tokenBuffer;
 }
 
