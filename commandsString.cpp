@@ -620,19 +620,24 @@ char *cmdSpaceStr(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdUpperStr( struct glueCommands *data, int nextToken )
 {
+	int args = __stack - data->stack +1;
 	struct stringData *str;
 	char *s;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	str = getStackString(__stack );
+	if (args != 1)
+	{
+		popStack(__stack - data->stack);
+		setError(22 , data -> tokenBuffer);
+		return NULL;
+	}
 
+	str = getStackString(__stack );
 	if (str)
 	{
 		for (s=&str -> ptr;*s;s++) if ((*s>='a')&&(*s<='z')) *s+=('A'-'a');
 	}
-
-	popStack(__stack - data->stack);
 
 	return NULL;
 }
@@ -645,19 +650,24 @@ char *cmdUpperStr(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdLowerStr( struct glueCommands *data, int nextToken )
 {
+	int args = __stack - data->stack +1;
 	struct stringData *str;
 	char *s;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	str = getStackString(__stack );
+	if (args != 1)
+	{
+		popStack(__stack - data->stack);
+		setError(22 , data -> tokenBuffer);
+		return NULL;
+	}
 
+	str = getStackString(__stack );
 	if (str)
 	{
 		for (s=&str ->ptr;*s;s++) if ((*s>='A')&&(*s<='Z')) *s-=('A'-'a');
 	}
-
-	popStack(__stack - data->stack);
 
 	return NULL;
 }
