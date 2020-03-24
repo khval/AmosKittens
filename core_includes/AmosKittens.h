@@ -661,6 +661,7 @@ struct kittyApi
 	struct kittyBank *(*reserveAs) ( int, int ,int, const char *, char * );
 	void (*freeBank) (int);
 	void (*setError) (int,char *);
+	void (*dumpStack) (void);
 };
 
 struct KittyInstance
