@@ -397,125 +397,7 @@ char *_gfxDraw( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_gfxPolygon( struct glueCommands *data, int nextToken )
-{
-	int args =__stack - data->stack +1 ;
-	int array[100*2];
-	int lx,ly;
-	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if ( (args>=4) && ((args&1) == 0) && (screen) )
-	{
-		int n;
-		int _stack = data -> stack;
-		int coordinates = args >> 1;
-
-		for (n=0;n<args;n++)
-		{
-			array[n] = getStackNum( _stack++ );
-		}
-		array[n] = array[0]; n++;
-		array[n] = array[1]; n++;
-
-
-		retroPolyGonArray( screen, screen -> double_buffer_draw_frame,screen -> ink0, (args+2) * sizeof(int), array );
-
-		if (paintMode)
-		{
-			lx = array[ 0 ];
-			ly = array[ 1 ];
-			for (n=1;n<coordinates;n++)
-			{
-				xgr = array[ n*2 ];
-				ygr = array[ n*2+1];
-				retroLine( screen, screen -> double_buffer_draw_frame, lx,ly,xgr,ygr,screen -> ink2 );
-				lx = xgr;
-				ly=ygr;
-			}
-
-			retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
-		}
-	}
-	else	setError(22,data->tokenBuffer);
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
-
-char *_gfxPolyline( struct glueCommands *data, int nextToken )
-{
-	int args =__stack - data->stack +1 ;
-	bool success = false;
-	struct retroScreen *screen = instance.screens[instance.current_screen];
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (screen)
-	{
-		if ( (args>2) && ((args&1) == 0))
-		{
-			int coordinates = args >> 1;
-			int lx,ly,_stack,n;
-
-			_stack = data -> stack;
-
-			lx = getStackNum( _stack++ );
-			ly = getStackNum( _stack++ );
-
-			switch (screen -> autoback)
-			{
-				case 0:
-						for (n=1;n<coordinates;n++)
-						{
-							xgr = getStackNum( _stack++ );
-							ygr = getStackNum( _stack++ );
-							retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,xgr,ygr,screen -> ink0 );
-							lx = xgr;
-							ly=ygr;
-						}
-						break;
-				default:
-						for (n=1;n<coordinates;n++)
-						{
-							xgr = getStackNum( _stack++ );
-							ygr = getStackNum( _stack++ );
-							retroLine( screen, 0 ,lx,ly,xgr,ygr,screen -> ink0 );
-							if (screen -> Memory[1])	retroLine( screen, 1 ,lx,ly,xgr,ygr,screen -> ink0 );
-							lx = xgr;
-							ly=ygr;
-						}
-						break;
-			}
-
-
-			success = true;
-		}
-		else if (args == 3)
-		{
-			int x,y;
-			x = getStackNum(__stack-1 );
-			y = getStackNum(__stack );
-
-			switch (screen -> autoback)
-			{
-				case 0:	retroLine( screen, screen -> double_buffer_draw_frame,xgr,ygr,x,y,screen -> ink0 );
-						break;
-				default:
-						retroLine( screen, 0,xgr,ygr,x,y,screen -> ink0 );
-						if (screen -> Memory[1])	retroLine( screen, 1,xgr,ygr,x,y,screen -> ink0 );
-			}
-			xgr=x;ygr=y;
-			success = true;
-		}
-	}
-	
-	if (success == false) setError(22,data->tokenBuffer);
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
 
 char *_gfxCircle( struct glueCommands *data, int nextToken )
 {
@@ -1167,20 +1049,168 @@ char *gfxGetColour(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_gfxPolyline( struct glueCommands *data, int nextToken )
+{
+	int args =__stack - data->stack +1 ;
+	bool success = false;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (screen)
+	{
+		if ( (args>2) && ((args&1) == 0))
+		{
+			int coordinates = args >> 1;
+			int lx,ly,_stack,n;
+
+			printf("this\n");
+
+			_stack = data -> stack;
+
+			lx = getStackNum( _stack++ );
+			ly = getStackNum( _stack++ );
+
+			switch (screen -> autoback)
+			{
+				case 0:
+						for (n=1;n<coordinates;n++)
+						{
+							xgr = getStackNum( _stack++ );
+							ygr = getStackNum( _stack++ );
+							retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,xgr,ygr,screen -> ink0 );
+							lx = xgr;
+							ly=ygr;
+						}
+						break;
+				default:
+						for (n=1;n<coordinates;n++)
+						{
+							xgr = getStackNum( _stack++ );
+							ygr = getStackNum( _stack++ );
+							retroLine( screen, 0 ,lx,ly,xgr,ygr,screen -> ink0 );
+							if (screen -> Memory[1])	retroLine( screen, 1 ,lx,ly,xgr,ygr,screen -> ink0 );
+							lx = xgr;
+							ly=ygr;
+						}
+						break;
+			}
+
+
+			success = true;
+		}
+		else if (args == 3)
+		{
+			int x,y;
+			x = getStackNum(__stack-1 );
+			y = getStackNum(__stack );
+
+
+			printf("that..\n");
+
+			switch (screen -> autoback)
+			{
+				case 0:	retroLine( screen, screen -> double_buffer_draw_frame,xgr,ygr,x,y,screen -> ink0 );
+						break;
+				default:
+						retroLine( screen, 0,xgr,ygr,x,y,screen -> ink0 );
+						if (screen -> Memory[1])	retroLine( screen, 1,xgr,ygr,x,y,screen -> ink0 );
+			}
+			xgr=x;ygr=y;
+			success = true;
+		}
+	}
+	
+	if (success == false) setError(22,data->tokenBuffer);
+
+	popStack(__stack - data->stack );
+	return NULL;
+}
+
+
 char *gfxPolyline(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _gfxPolyline, tokenBuffer );
 	return tokenBuffer;
 }
 
 char *gfxPalette(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _gfxPalette, tokenBuffer );
 	return tokenBuffer;
 }
 
+char *_gfxPolygon( struct glueCommands *data, int nextToken )
+{
+	int args =__stack - data->stack +1 ;
+	int array[100*2];
+	int lx,ly;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if ((screen == NULL) || (args<4) || (args & 1))
+	{
+		setError(22,data->tokenBuffer);
+		popStack(__stack - data->stack );
+		return NULL;
+	}
+
+	if (args==4)
+	{
+		int lx,ly,x,y;
+
+		lx = getStackNum( __stack-3 );
+		ly = getStackNum( __stack-2 );
+		x = getStackNum( __stack-1 );
+		y = getStackNum( __stack );
+
+		retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,x,y,screen -> ink0 );
+
+		popStack(__stack - data->stack );
+		return NULL;
+	}
+
+	{
+		int n;
+		int _stack = data -> stack;
+		int coordinates = args >> 1;
+
+		for (n=0;n<args;n++)
+		{
+			array[n] = getStackNum( _stack++ );
+		}
+		array[n] = array[0]; n++;
+		array[n] = array[1]; n++;
+
+		retroPolyGonArray( screen, screen -> double_buffer_draw_frame,screen -> ink0, (args+2) * sizeof(int), array );
+
+		if (paintMode)
+		{
+			lx = array[ 0 ];
+			ly = array[ 1 ];
+			for (n=1;n<coordinates;n++)
+			{
+				xgr = array[ n*2 ];
+				ygr = array[ n*2+1];
+				retroLine( screen, screen -> double_buffer_draw_frame, lx,ly,xgr,ygr,screen -> ink2 );
+				lx = xgr;
+				ly=ygr;
+			}
+
+			retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
+		}
+	}
+
+	popStack(__stack - data->stack );
+	return NULL;
+}
+
 char *gfxPolygon(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdNormal( _gfxPolygon, tokenBuffer );
 	return tokenBuffer;
 }
