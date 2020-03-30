@@ -25,7 +25,6 @@
 #include "kittyErrors.h"
 #include "engine.h"
 
-extern int last_var;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 
 unsigned int _set_menu_item = 0;

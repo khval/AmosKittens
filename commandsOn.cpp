@@ -37,13 +37,9 @@ extern char *dupRef( struct reference *ref );
 extern void stack_frame_up(int varIndex);
 extern int tokenMode;
 
-
 extern std::vector<struct label> labels;
 
-
-
 static unsigned int is_token_cmd = 0;
-extern int last_var;
 
 char *executeOnToken(char *ptr, unsigned short token)
 {

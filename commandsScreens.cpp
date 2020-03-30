@@ -32,8 +32,6 @@
 #include "engine.h"
 #include <math.h>
 
-extern int last_var;
-
 extern struct retroRGB DefaultPalette[256];
 
 extern struct retroTextWindow *newTextWindow( struct retroScreen *screen, int id );

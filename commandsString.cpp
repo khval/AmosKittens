@@ -27,7 +27,6 @@
 #include "kittyErrors.h"
 #include "amosString.h"
 
-extern int last_var;
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
@@ -47,10 +46,6 @@ string names like _xxx is read only (const char), and need to copied.
 string names like xxx is new and can saved on stack, with out being copied.
 
 *********/
-
-
-
-
 
 
 
@@ -1000,7 +995,6 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 
 		tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
 	}
-
 
 	stackCmdParm( _cmdStr, tokenBuffer );	// we need to store the step counter.
 

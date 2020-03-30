@@ -29,8 +29,6 @@
 #include "engine.h"
 #include "amosString.h"
 
-extern int last_var;
-
 char *_cmdCallEditor( struct glueCommands *data, int nextToken )
 {
 	int args = __stack - data->stack +1 ;

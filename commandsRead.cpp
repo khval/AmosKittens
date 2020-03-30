@@ -22,7 +22,6 @@
 #include "debug.h"
 #include "kittyErrors.h"
 
-extern int last_var;
 extern struct globalVar globalVars[];
 extern int _last_var_index;		// we need to know what index was to keep it.
 extern int _set_var_index;		// we need to resore index 

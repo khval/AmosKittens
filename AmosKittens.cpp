@@ -87,9 +87,7 @@ char *_file_end_ = NULL;
 uint32_t _file_bank_size = 0;
 
 int procStackCount = 0;
-int last_var = 0;
 uint32_t tokenFileLength;
-
 
 bool startup = false;
 

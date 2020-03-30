@@ -26,8 +26,6 @@
 #include "engine.h"
 #include <math.h>
 
-extern int last_var;
-
 extern void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen );
 extern bool kitten_screen_close(int screen_num );
 extern void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG *colors );

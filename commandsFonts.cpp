@@ -35,8 +35,6 @@ extern struct RastPort font_render_rp;
 #include "kittyErrors.h"
 #include "engine.h"
 
-extern int last_var;
-
 extern struct TextFont *open_font( char const *filename, int size );
 extern struct TextFont *gfx_font ;
 

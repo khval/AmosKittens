@@ -21,7 +21,6 @@ extern unsigned int regs[16];
 
 extern std::vector<struct kittyLib> libsList;
 
-
 struct kittyLib *kFindLib( int id )
 {
 	unsigned int n;
@@ -56,9 +55,6 @@ void kFreeLib( int id )
 		libsList.erase(libsList.begin()+index);
 	}
 }
-
-
-extern int last_var;
 
 char *_libLibOpen( struct glueCommands *data, int nextToken )
 {

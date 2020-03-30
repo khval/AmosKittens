@@ -36,7 +36,6 @@
 
 extern std::vector<struct keyboard_buffer> keyboardBuffer;
 
-extern int last_var;
 extern ULONG *codeset_page;
 extern struct globalVar globalVars[];
 int _scancode;

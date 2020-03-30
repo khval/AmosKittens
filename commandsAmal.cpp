@@ -40,7 +40,6 @@ int amreg[26];
 
 extern int amal_error_pos;
 
-extern int last_var;
 extern ChannelTableClass *channels;
 extern struct retroScreen *screens[8] ;
 extern struct retroVideo *video;

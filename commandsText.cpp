@@ -35,7 +35,6 @@ extern struct RastPort font_render_rp;
 #include "bitmap_font.h"
 #include "amosString.h"
 
-extern int last_var;
 extern struct retroVideo *video;
 extern int cursor_color;
 

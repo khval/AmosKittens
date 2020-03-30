@@ -31,8 +31,6 @@
 #include "kittyErrors.h"
 #include "amosString.h"
 
-extern int last_var;
-
 extern std::vector<struct kittyDevice> deviceList;
 
 struct kittyDevice *kFindDevice( int id )

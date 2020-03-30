@@ -34,7 +34,6 @@ int YScreen_formula( struct retroScreen *screen, int y );
 
 extern int sig_main_vbl;
 
-extern int last_var;
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;

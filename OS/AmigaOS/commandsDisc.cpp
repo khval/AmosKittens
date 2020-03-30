@@ -29,7 +29,6 @@
 #include "kittyErrors.h"
 #include "amosString.h"
 
-extern int last_var;
 extern struct globalVar globalVars[];
 extern int tokenMode;
 

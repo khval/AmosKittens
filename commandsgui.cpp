@@ -31,7 +31,6 @@
 
 #include "interfacelanguage.h"
 
-extern int last_var;
 extern struct globalVar globalVars[];
 extern std::vector<struct kittyBank> kittyBankList;
 
