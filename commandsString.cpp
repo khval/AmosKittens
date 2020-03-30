@@ -27,7 +27,6 @@
 #include "kittyErrors.h"
 #include "amosString.h"
 
-extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int current_screen;
@@ -969,26 +968,25 @@ void	sort_string_array( struct kittyData *var )
 char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	unsigned short next_token = *((short *) (tokenBuffer));
+
 	struct reference *ref = (struct reference *) (tokenBuffer + 2);
 
 	if (next_token == 0x0006)
 	{
-		int idx = ref -> ref -1;
+		struct kittyData *var = getVar( ref -> ref);
 
-		printf("yes we have a var idx %d\n",idx);
-
-		if (globalVars[idx].var.type & type_array)	// is array
+		if (var -> type & type_array)	// is array
 		{
-			switch (globalVars[idx].var.type & 7)
+			switch (var -> type & 7)
 			{
 				case type_int:
-					sort_int_array(&globalVars[idx].var);
+					sort_int_array(var);
 					break;
 				case type_float:
-					sort_float_array(&globalVars[idx].var);
+					sort_float_array(var);
 					break;
 				case type_string:
-					sort_string_array(&globalVars[idx].var);	
+					sort_string_array(var);	
 					break;
 			}
 		}		
@@ -1006,7 +1004,6 @@ char *cmdSort(struct nativeCommand *cmd, char *tokenBuffer )
 char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	struct reference *ref = NULL;
-	int idx1,idx2;
 	struct kittyData *array_var = NULL;
 	struct kittyData *var = NULL;
 
@@ -1018,8 +1015,7 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// array
 	
 	ref = (struct reference *) (tokenBuffer + 2);
-	idx1 = ref -> ref -1;
-	array_var = &globalVars[idx1].var;
+	array_var = getVar( ref -> ref) ;
 	tokenBuffer += sizeof( struct reference) + ref -> length + 2;
 
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0074) badSyntax();	// (
@@ -1040,8 +1036,8 @@ char *cmdMatch(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN( tokenBuffer ) != 0x0006) badSyntax();	// var
 
 	ref = (struct reference *) (tokenBuffer + 2);
-	idx2 = ref -> ref -1;
-	var = &globalVars[idx2].var;
+
+	var = getVar( ref -> ref );
 	tokenBuffer += 2 + sizeof( struct reference) + ref -> length;
 
 	if (NEXT_TOKEN( tokenBuffer ) != 0x007C) badSyntax();	// )

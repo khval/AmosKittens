@@ -28,7 +28,7 @@ extern std::vector<struct label> labels;
 
 extern struct retroScreen *screens[8] ;
 extern struct globalVar globalVars[1000];
-extern int global_var_count;
+extern int var_count[2];
 extern char *dir_first_pattern ;
 extern struct retroSprite *sprite ;
 extern struct retroSprite *icons ;
@@ -80,56 +80,79 @@ void clean_up_menus()
 }
 
 
-void clear_local_vars( int proc )
+
+void free_local_var(struct kittyData *var)
 {
-	int n;
-	struct kittyData *var;
-
-	for (n=0;n<global_var_count;n++)
+	switch (var->type)
 	{
-		if (globalVars[n].proc == proc)
-		{
-			var = &globalVars[n].var;
+		case type_int:
+			var -> integer.value = 0;
+			break;
 
-			switch (var->type)
-			{
-				case type_int:
-					var -> integer.value = 0;
-					break;
+		case type_float:
+			var -> decimal.value = 0;
+			break;
 
-				case type_float:
-					var -> decimal.value = 0;
-					break;
+		case type_string:
+			if (var->str) freeString(var->str);
+			var->str = NULL;
+			break;
 
-				case type_string:
-					if (var->str) freeString(var->str);
-					var->str = NULL;
-					break;
+		case type_int | type_array:
+		case type_float | type_array:
+		case type_string | type_array:
 
-				case type_int | type_array:
-				case type_float | type_array:
-				case type_string | type_array:
-
-					if (var -> sizeTab) freeStruct( var -> sizeTab);
-	 				if (var->str) freeString (var->str);
-					var -> sizeTab = NULL;
-					var->str = NULL;
-					break;
-
-			}
-		}
+			if (var -> sizeTab) freeStruct( var -> sizeTab);
+	 		if (var->str) freeString (var->str);
+			var -> sizeTab = NULL;
+			var->str = NULL;
+			break;
 	}
 }
+
+void setup_local_var(struct kittyData *var)
+{
+	switch (var->type)
+	{
+		case type_int:
+			var -> integer.value = 0;
+			break;
+
+		case type_float:
+			var -> decimal.value = 0;
+			break;
+
+		case type_string:
+			if (var->str) freeString(var->str);
+			var->str = NULL;
+			break;
+
+		case type_int | type_array:
+		case type_float | type_array:
+		case type_string | type_array:
+
+			if (var -> sizeTab) freeStruct( var -> sizeTab);
+	 		if (var->str) freeString (var->str);
+			var -> sizeTab = NULL;
+			var->str = NULL;
+			break;
+	}
+}
+
+
+#warning wont clean up local vars
 
 void clean_up_vars()
 {
 	struct kittyData *var;
 	int n;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName) 
 		{
+			//printf("globalVars[%d].varName='%s'\n",n,globalVars[n].varName);
+
 			free(globalVars[n].varName);
 			globalVars[n].varName = NULL;
 		}
@@ -158,7 +181,7 @@ void clean_up_vars()
 		var->str = NULL;
 	}
 
-	global_var_count = 0;
+	var_count[0] = 0;
 }
 
 void clean_up_stack()

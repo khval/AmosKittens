@@ -335,7 +335,6 @@ struct kittyData
 	union
 	{
 		int *sizeTab;
-		char *procDataPointer;
 	};
 
 	struct valueData integer;
@@ -383,16 +382,23 @@ struct globalVar
 {
 	struct kittyData var;
 	char *varName;
+	union
+	{
+		int localIndex;
+		int localIndexSize;
+	};
 	int proc;	// so vars can be attached to proc.
 	int pass1_shared_to;	// pass1 should only use this, as it will change.
 	bool isGlobal;
+	char *procDataPointer;
 };
 
 struct stackFrame
 {
 	int id;
-//	struct kittyData *var;
 	char *dataPointer;
+	struct kittyData *localVarData;
+	struct kittyData *localVarDataNext;
 };
 
 struct defFn
@@ -701,6 +707,7 @@ extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
 extern struct KittyInstance instance;
 extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
+#define last_var instance.last_var
 #endif
 
 #endif

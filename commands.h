@@ -133,5 +133,5 @@ extern char *on_every_gosub_location;
 extern char *on_every_proc_location;
 extern struct timeval every_before, every_after;
 extern void stack_frame_up(int varIndex);
-
+extern struct kittyData *getVar(uint16_t ref);
 

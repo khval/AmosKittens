@@ -38,6 +38,8 @@ char *on_every_gosub_location = NULL;
 char *on_every_proc_location = NULL;
 struct timeval every_before, every_after;
 
+extern unsigned int var_count[2];
+
 extern char *_file_pos_ ;
 
 int timer_offset = 0;
@@ -50,7 +52,7 @@ static struct timeval timer_before, timer_after;
 extern std::vector<struct label> labels;
 extern std::vector<int> engineCmdQue;
 
-extern int last_var;
+extern struct kittyData *getVar(uint16_t ref);
 
 extern struct globalVar globalVars[];
 extern int tokenMode;
@@ -59,6 +61,8 @@ extern int bobDoUpdate ;
 extern int bobUpdateNextWait ;
 extern int findVarPublic( char *name, int type );
 extern int ReferenceByteLength(char *ptr);
+
+extern struct stackFrame *currentFrame;
 
 using namespace std;
 
@@ -115,87 +119,119 @@ char *_procedure( struct glueCommands *data, int nextToken )
 	return  data -> tokenBuffer ;
 }
 
+void free_local_var(struct kittyData *var);
+void setup_local_var(struct kittyData *var);
+
+void setup_local_vars()
+{
+	unsigned int n;
+	struct globalVar *var;
+	struct kittyData *lvar;
+
+	for (n=0;n<var_count[0];n++)
+	{
+		var = globalVars +n;
+
+		if (var -> proc == currentFrame -> id)
+		{
+			lvar = currentFrame -> localVarData + var -> localIndex;
+			bzero( lvar , sizeof(struct kittyData) );
+			lvar -> type = var -> var.type;
+		}
+	}
+}
+
+void free_local_vars()
+{
+	struct kittyData *var;
+
+	for ( var =currentFrame -> localVarData; var < currentFrame -> localVarDataNext; var++)
+	{
+		free_local_var(var);
+	}
+}
+
+void dump_local_vars()
+{
+	struct kittyData *var;
+
+	for ( var =currentFrame -> localVarData; var < currentFrame -> localVarDataNext; var++)
+	{
+		unsigned int localIndex = (unsigned int) (var - currentFrame -> localVarData);
+		
+		switch (var -> type)
+		{
+			case type_int:
+				printf("%d:%d:%s %s=%d\n",
+					currentFrame -> id, 
+					localIndex,
+					"Local",
+					"unkown",
+					var -> integer.value );
+				break;
+
+			case type_float:
+				printf("%d:%d:%s %s=%0.2lf\n",
+					currentFrame -> id, 
+					localIndex,
+					"Local",
+					"unkown",
+ 					var -> decimal.value );
+				break;
+
+			case type_string:
+				printf("%d:%d:%s %s=%c%s%c\n",
+					currentFrame -> id, 
+					localIndex,
+					"Local",
+					"unkown",
+					 34, var->str ? &(var -> str -> ptr) : "NULL", 34 );
+				break;
+		}
+	}
+}
+
 void stack_frame_up(int varIndex)
 {
-	struct kittyData *var = &globalVars[ varIndex ].var;
+	struct globalVar *proc = globalVars + varIndex;
+	struct stackFrame *lastFrame;
+
+	printf("stack frame up on name %s\n",proc -> varName );
+	printf("size %d\n",proc -> localIndexSize);
+
+	lastFrame = procStcakFrame +proc_stack_frame;
 
 	proc_stack_frame++;		// move stack frame up.
-	procStcakFrame[proc_stack_frame].id = globalVars[ varIndex ].proc;
 
-	if ( var -> procDataPointer )
+	// setup new stack frame;
+
+	currentFrame = procStcakFrame +proc_stack_frame;
+	currentFrame -> id = proc -> proc;
+
+	if ( proc -> procDataPointer )
 	{
-		procStcakFrame[proc_stack_frame].dataPointer  = var -> procDataPointer;
+		currentFrame -> dataPointer  = proc -> procDataPointer;
 	}
-	else procStcakFrame[proc_stack_frame].dataPointer = procStcakFrame[proc_stack_frame-1].dataPointer;
+	else currentFrame -> dataPointer = lastFrame -> dataPointer;
+
+	currentFrame -> localVarData = lastFrame -> localVarDataNext ; 
+	currentFrame -> localVarDataNext = lastFrame -> localVarDataNext + proc -> localIndexSize; 
+
+	setup_local_vars();
 }
 
 void __stack_frame_down()	// so this where we should take care of local vars and so on.
 {
-	proc_stack_frame--;		
+	dump_local_vars();
+	free_local_vars();
+	proc_stack_frame--;	
+	currentFrame = procStcakFrame +proc_stack_frame;
 }
 
 char *stack_frame_down()		// should only be used in end_proc, (pop proc calles end_proc)
 {
 	__stack_frame_down();
 	return cmdTmp[--instance.cmdStack].cmd(&cmdTmp[instance.cmdStack],0);
-}
-
-char *_procAndArgs( struct glueCommands *data, int nextToken )
-{
-	int oldStack;
-	struct reference *ref = (struct reference *) (data->tokenBuffer);
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (ref -> ref)
-	{
-		int idx = ref->ref-1;
-
-		if (data -> tokenBuffer2)	// has arguments.
-		{
-			switch (globalVars[idx].var.type & 7)
-			{
-				case type_proc:
-
-					oldStack = data -> stack;
-
-					stackCmdProc( _procedure, data -> tokenBuffer2);  
-
-					cmdTmp[instance.cmdStack-1].stack = oldStack;	// carry stack.
-
-					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
-					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
-
-					tokenMode = mode_store;
-					stack_frame_up( idx );
-					return globalVars[idx].var.tokenBufferPos  ;
-			}
-		}
-		else 	// no arguments
-		{
-			switch (globalVars[idx].var.type & 7)
-			{
-				case type_proc:
-
-					oldStack = data -> stack;
-
-					stackCmdProc( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
-
-					cmdTmp[instance.cmdStack-1].stack = oldStack;	// carry stack.
-
-					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
-					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
-
-					tokenMode = mode_store;
-					stack_frame_up( idx);
-					return globalVars[idx].var.tokenBufferPos  ;
-			}
-		}
-	}
-
-	setError(22,data -> tokenBuffer);
-
-	return  NULL ;
 }
 
 
@@ -438,12 +474,12 @@ char *(*_do_set) ( struct glueCommands *data, int nextToken ) = _setVar;
 
 char *_setVar( struct glueCommands *data, int nextToken )
 {
-	BOOL success;
+	BOOL success = FALSE;
 	struct kittyData *var;
 
-	proc_names_printf("%s:%d -- set var %d\n",__FUNCTION__,__LINE__, data -> lastVar-1);
+	proc_names_printf("%s:%d -- set %s var %d\n",__FUNCTION__,__LINE__, (data -> lastVar & 0x8000 ? "local" : ""),  (data -> lastVar & 0x7FFF) - 1);
 
-	var = &globalVars[data -> lastVar-1].var;
+	var = getVar(data -> lastVar);
 
 	success = FALSE;
 
@@ -475,7 +511,7 @@ char *_setVar( struct glueCommands *data, int nextToken )
 	{
 		if ( kittyStack[instance.stack].type !=  (var -> type & 7))
 		{
-			proc_names_printf("kittyStack[%d].type= %d, (globalVars[%d].var.type & 7)=%d\n",
+			proc_names_printf("kittyStack[%d].type= %d, (globalVars[%08x].var.type & 7)=%d\n",
 				instance.stack, 
 				kittyStack[instance.stack].type, 
 				data -> lastVar, 
@@ -532,8 +568,6 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
-
-extern int last_var;
 
 char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 {
@@ -1139,7 +1173,7 @@ char *cmdFor(struct nativeCommand *cmd, char *tokenBuffer )
 	if (NEXT_TOKEN( (tokenBuffer+2) ) == 0x0006 )	// Next var
 	{
 		struct reference *ref = (struct reference *) (tokenBuffer + 4);
-		var = &globalVars[ref -> ref -1].var;
+		var = getVar(ref -> ref);
 
 		stackCmdNormal( _for, tokenBuffer );
 
@@ -1308,7 +1342,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 		if (NEXT_TOKEN(ptr) == 0x0006 )	// Next var
 		{
 			struct reference *ref = (struct reference *) (ptr + 2);
-			var = &globalVars[ref -> ref -1].var;
+			var = getVar(ref -> ref);
 		}
 		else 	// For var=
 		{
@@ -1319,7 +1353,7 @@ char *cmdNext(struct nativeCommand *cmd, char *tokenBuffer )
 				if (NEXT_TOKEN(ptr) == 0x0006 )	// next is variable
 				{
 					struct reference *ref = (struct reference *) (ptr + 2);
-					var = &globalVars[ref -> ref -1].var;
+					var = getVar(ref -> ref);
 				}
 			}
 			else
@@ -1469,9 +1503,66 @@ int get_proc_num_from_ref(int ref)
 	return 0;
 }
 
+char *_procAndArgs( struct glueCommands *data, int nextToken )
+{
+	int oldStack;
+	struct reference *ref = (struct reference *) (data->tokenBuffer);
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (ref -> ref)
+	{
+		int idx = ref->ref-1;
+
+		if (data -> tokenBuffer2)	// has arguments.
+		{
+			switch (globalVars[idx].var.type & 7)
+			{
+				case type_proc:
+
+					oldStack = data -> stack;
+
+					stackCmdProc( _procedure, data -> tokenBuffer2);  
+
+					cmdTmp[instance.cmdStack-1].stack = oldStack;	// carry stack.
+
+					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
+
+					tokenMode = mode_store;
+					stack_frame_up( idx );
+					return globalVars[idx].var.tokenBufferPos  ;
+			}
+		}
+		else 	// no arguments
+		{
+			switch (globalVars[idx].var.type & 7)
+			{
+				case type_proc:
+
+					oldStack = data -> stack;
+
+					stackCmdProc( _procedure, data->tokenBuffer+sizeof(struct reference)+ref->length ) ;
+
+					cmdTmp[instance.cmdStack-1].stack = oldStack;	// carry stack.
+
+					dgetLineFromPointer(globalVars[idx].var.tokenBufferPos );
+					dprintf("Goto %08x -- line %d\n", globalVars[idx].var.tokenBufferPos, lineFromPtr.line );
+
+					tokenMode = mode_store;
+					stack_frame_up( idx);
+					return globalVars[idx].var.tokenBufferPos  ;
+			}
+		}
+	}
+
+	setError(22,data -> tokenBuffer);
+
+	return  NULL ;
+}
+
 char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 {
-	int proc;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	struct reference *ref = (struct reference *) (tokenBuffer);
 
@@ -1480,13 +1571,6 @@ char *cmdProcAndArgs(struct nativeCommand *cmd, char *tokenBuffer )
 	tokenMode = mode_logical;					// parmiters should be handled logicaly, not as store.
 
 	tokenBuffer += ref -> length ;
-
-	proc = get_proc_num_from_ref(ref->ref);
-
-	if (proc)	// setup local vars.. before calling procedure.
-	{
-		clear_local_vars( proc );
-	}
 
 	return tokenBuffer;
 }
@@ -1570,6 +1654,7 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	int args = 0;
 	int read_args = 1;
 	unsigned short token;
+	unsigned int old_stack = read_stack;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1584,13 +1669,16 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	{
 		if (token == end_token)
 		{
-			// save stack
-//			int tmp_stack = stack;
+			// use stack offset
 			instance.stack = read_stack;
 
 			// set var
 			data.lastVar = last_var;
 			_setVar( &data,0 );
+
+			// restore stack
+			instance.stack = old_stack;
+
 			break;
 		}
 
@@ -1620,21 +1708,18 @@ char *read_kitty_args(char *tokenBuffer, int read_stack, unsigned short end_toke
 	if (read_args==args)
 	{
 		// save stack
-		int tmp_stack = instance.stack;
 		instance.stack = read_stack;
 
 		// set var
 		data.lastVar = last_var;
 		_setVar( &data,0 );
 
-		// restore stack
-		instance.stack = tmp_stack;
-
 		read_args ++;
 		read_stack ++;
 	}
 
-	popStack( instance.stack - read_stack );
+	popStack( instance.stack - old_stack );
+
 	return ptr;
 }
 
@@ -1796,8 +1881,8 @@ char *local_cmdGlobal( char *tokenBuffer )
 
 					if ((mainVar_ref)&&(localVar_ref))
 					{
-						mainVar = &globalVars[mainVar_ref-1].var;
-						localVar = &globalVars[localVar_ref-1].var;
+						mainVar = getVar(mainVar_ref);
+						localVar = getVar(localVar_ref);
 
 						if ((mainVar)&&(localVar))
 						{

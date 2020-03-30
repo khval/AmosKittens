@@ -24,7 +24,6 @@
 
 extern std::vector<struct defFn> defFns;
 
-extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
@@ -51,7 +50,7 @@ char *_mathInc( struct glueCommands *data, int nextToken )
 	if (NEXT_TOKEN( ptr ) == 0x0006)
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
-		var = &globalVars[ref->ref-1].var;
+		var = getVar(ref->ref);
 	}
 
 	if (var)
@@ -85,7 +84,7 @@ char *_mathDec( struct glueCommands *data, int nextToken )
 	if (NEXT_TOKEN( ptr ) == 0x0006)
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
-		var = &globalVars[ref->ref-1].var;
+		var = getVar(ref->ref);
 	}
 
 	if (var)
@@ -122,7 +121,7 @@ char *_mathAdd( struct glueCommands *data, int nextToken )
 	if (NEXT_TOKEN( ptr ) == 0x0006)
 	{
 		struct reference *ref = (struct reference *) (ptr + 2);
-		var = &globalVars[ref->ref-1].var;
+		var = getVar(ref->ref);
 	}
 
 	if (var)

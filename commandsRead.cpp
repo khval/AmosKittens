@@ -165,7 +165,7 @@ void _read_arg( struct nativeCommand *cmd, char *tokenBuffer )
 	
 	if (last_var)
 	{
-		int local_var_index = globalVars[last_var -1].var.index;
+		int local_var_index = getVar(last_var) -> index;
 		int local_last_var = last_var;
 
 		do_input[instance.parenthesis_count] = _exit_read_data;

@@ -35,7 +35,7 @@ extern std::vector<struct kittyBank> kittyBankList;
 extern std::vector<int> collided;
 
 extern ChannelTableClass *channels;
-extern int global_var_count;
+extern int var_count[2];
 
 extern  std::vector<struct retroSpriteObject *> bobs;
 
@@ -244,7 +244,7 @@ unsigned int vars_crc()
 	int n;
 	unsigned int crc = 0;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName == NULL) return 0;
 		crc ^= str_crc( globalVars[n].varName );
@@ -256,7 +256,10 @@ unsigned int mem_crc( char *mem, uint32_t size )
 {
 	uint32_t n;
 	unsigned int crc = 0;
-	for (n=0;n<size;n++) crc ^= mem[n] << (n % 24);
+	for (n=0;n<size;n++) 
+	{
+		crc ^= mem[n] << (n % 24);
+	}
 	return crc;
 }
 
@@ -269,31 +272,36 @@ void dump_var( int n )
 		switch (globalVars[n].var.type)
 		{
 			case type_int:
-				printf("%d -- %d::%s%s=%d\n",n,
+				printf("%d -- %d:%d:%s%s=%d\n",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.integer.value );
 				break;
 			case type_float:
-				printf("%d -- %d::%s%s=%0.2lf\n",n,
+				printf("%d -- %d:%d:%s%s=%0.2lf\n",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, globalVars[n].var.decimal.value );
 				break;
 			case type_string:
-				printf("%d -- %d::%s%s=%c%s%c\n",n,
+				printf("%d -- %d:%d:%s%s=%c%s%c\n",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName, 34, globalVars[n].var.str ? &(globalVars[n].var.str -> ptr) : "NULL", 34 );
 				break;
 			case type_proc:
 
-				if (globalVars[n].var.procDataPointer == 0)
+				if (globalVars[n].procDataPointer == 0)
 				{
 					getLineFromPointer( globalVars[n].var.tokenBufferPos );
 
-					printf("%d -- %d::%s%s[]=%04X (line %d)\n",n,
-						globalVars[n].proc, "Proc ",
+					printf("%d -- %d:%d:%s%s[]=%04X (line %d)\n",n,
+						globalVars[n].proc, 
+						globalVars[n].localIndexSize, 
+						"Proc ",					
 						globalVars[n].varName, 
 						globalVars[n].var.tokenBufferPos, lineFromPtr.line );
 				}
@@ -302,20 +310,21 @@ void dump_var( int n )
 					int tokenBufferLine;
 					getLineFromPointer( globalVars[n].var.tokenBufferPos );
 					tokenBufferLine = lineFromPtr.line;
-					getLineFromPointer( globalVars[n].var.procDataPointer );
+					getLineFromPointer( globalVars[n].procDataPointer );
 
 					printf("%d -- %d::%s%s[]=%04X (line %d)  --- data read pointer %08x (line %d)\n",n,
 						globalVars[n].proc, "Proc ",
 						globalVars[n].varName, 
 						globalVars[n].var.tokenBufferPos, tokenBufferLine,
-						globalVars[n].var.procDataPointer, lineFromPtr.line );
+						globalVars[n].procDataPointer, lineFromPtr.line );
 				}
 
 				break;
 			case type_int | type_array:
 
-				printf("%d -- %d::%s%s(%d)=",n,
+				printf("%d -- %d:%d:%s%s(%d)=",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
@@ -332,8 +341,9 @@ void dump_var( int n )
 				break;
 			case type_float | type_array:
 
-				printf("%d -- %d::%s%s(%d)=",n,
+				printf("%d -- %d:%d:%s%s(%d)=",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
@@ -350,8 +360,9 @@ void dump_var( int n )
 				break;
 			case type_string | type_array:
 
-				printf("%d -- %d::%s%s(%d)=",n,
+				printf("%d -- %d:%d:%s%s(%d)=",n,
 					globalVars[n].proc, 
+					globalVars[n].localIndex,
 					globalVars[n].isGlobal ? "Global " : "",
 					globalVars[n].varName,
 					globalVars[n].var.count);
@@ -380,7 +391,7 @@ void dump_local( int proc )
 {
 	int n;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName == NULL) return;
 
@@ -396,7 +407,7 @@ void dump_global()
 {
 	int n;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName == NULL) return;
 		dump_var( n );
@@ -412,7 +423,6 @@ void dump_prog_stack()
 
 	for (n=0; n<instance.cmdStack;n++)
 	{
-
 		name = findDebugSymbolName( cmdTmp[n].cmd );
 
 		getLineFromPointer(cmdTmp[n].tokenBuffer);
@@ -488,7 +498,7 @@ bool var_has_name( struct kittyData *var, const char *name )
 {
 	int n;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (var == &globalVars[n].var)
 		{

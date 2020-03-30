@@ -477,7 +477,7 @@ char *_amalAmalOff( struct glueCommands *data, int nextToken )
 	{
 		case 1:	if (kittyStack[__stack].type == type_none )	// arg 1 not set.
 				{
-					int index = 0;
+					unsigned int index = 0;
 					struct kittyChannel *item;
 
 					engine_lock();				// most be thread safe!!!
@@ -692,7 +692,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 	{
 		case 1:	 if (kittyStack[__stack].type == type_none )	// arg 1 not set.
 				{
-					int index = 0;
+					unsigned int index = 0;
 
 					engine_lock();				// most be thread safe!!!
 					for (index = 0; index < channels -> _size(); index++)
@@ -982,7 +982,7 @@ char *_amalMoveOn( struct glueCommands *data, int nextToken )
 
 			if (kittyStack[__stack].type == type_none)
 			{
-				int n;
+				unsigned int n;
 				for (n=0;n<channels -> _size();n++)
 				{
 					channels -> item(n) -> moveStatus = channel_status::active;
@@ -1027,7 +1027,7 @@ char *_amalMoveOff( struct glueCommands *data, int nextToken )
 	{
 		case 1:	if (kittyStack[__stack].type == type_none )	// arg 1 not set.
 				{
-					int index = 0;
+					unsigned int index = 0;
 					struct kittyChannel *item;
 
 					engine_lock();				// most be thread safe!!!
@@ -1221,10 +1221,11 @@ char *_amalAmplay( struct glueCommands *data, int nextToken )
 	{
 
 		case 2:	{
+					unsigned int n;
 					struct kittyChannel *item;
 
 					engine_lock();				// most be thread safe!!!
-					for (int n=0;n < channels -> _size();n++)
+					for ( n=0;n < channels -> _size();n++)
 					{
 						if (item = channels -> item(n))		// find item at index.
 						{
@@ -1310,7 +1311,7 @@ char *_amalAnimOff( struct glueCommands *data, int nextToken )
 char *amalAnimOff(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	int idx;
+	unsigned int idx;
 
 	if ((next_token == token_nextCmd) || (next_token == token_newLine ))
 	{
@@ -1370,7 +1371,7 @@ char *_amalAnimOn( struct glueCommands *data, int nextToken )
 char *amalAnimOn(struct nativeCommand *cmd, char *tokenBuffer)		// this dummy don't do anything.
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	int idx;
+	unsigned int idx;
 
 	if ((next_token == token_nextCmd) || (next_token == token_newLine ))
 	{
@@ -1419,7 +1420,7 @@ char *_amalAnimFreeze( struct glueCommands *data, int nextToken )
 char *amalAnimFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	int idx;
+	unsigned int idx;
 
 	if ((next_token == token_nextCmd) || (next_token == token_newLine ))
 	{
@@ -1468,7 +1469,7 @@ char *_amalMoveFreeze( struct glueCommands *data, int nextToken )
 char *amalMoveFreeze(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	unsigned short next_token = *((unsigned short *) tokenBuffer);
-	int idx;
+	unsigned int idx;
 
 	if ((next_token == token_nextCmd) || (next_token == token_newLine ))
 	{

@@ -96,10 +96,12 @@ unsigned int amiga_joystick_button[4];
 
 struct extension_lib	kitty_extensions[32];
 unsigned int regs[16];
+extern unsigned int var_count[2];
 
 unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
 
 struct stackFrame procStcakFrame[PROC_STACK_SIZE];
+struct stackFrame *currentFrame = NULL;
 
 char *_get_var_index( glueCommands *self, int nextToken);
 
@@ -116,6 +118,7 @@ int tokenMode = mode_standard;
 struct KittyInstance instance;
 
 struct globalVar globalVars[VAR_BUFFERS];	// 0 is not used.
+struct kittyData stackFrameData[VAR_BUFFERS];	// 0 is not used.
 struct kittyFile kittyFiles[10];
 
 extern void freeScreenBobs (int);
@@ -179,8 +182,8 @@ std::vector<struct kittyDevice> deviceList;
 std::vector<struct kittyLib> libsList;
 std::vector<struct fileContext *> files;
 std::vector<struct retroSpriteObject *> bobs;
+std::vector<struct  globalVar *> procedures;
 
-int global_var_count = 0;
 int labels_count = 0;
 
 struct glueCommands cmdTmp[100];	
@@ -471,7 +474,7 @@ char *_get_var_index( glueCommands *self , int nextToken )
 	}
 
 	last_var = varNum;		// this is used when a array is set. array[var]=0, it restores last_var to array, not var
-	var = &globalVars[varNum-1].var;
+	var = getVar(varNum);
 
 	if (var)
 	{
@@ -560,15 +563,14 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 {
 	int size = 0;
 	int n;
-	int varNum;
 	struct kittyData *var;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	varNum = cmd -> lastVar;	
-	if (varNum == 0) return NULL;
+	var = getVar(cmd -> lastVar);
 
-	var = &globalVars[varNum-1].var;
+	if (var == NULL) return NULL;
+
 	var -> cells =__stack - cmd -> stack +1;
 
 	if (var -> sizeTab) freeStruct( var -> sizeTab);
@@ -658,6 +660,15 @@ char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
 	return ptr + ref -> length ;
 }
 
+struct kittyData *getVar(uint16_t ref)
+{
+	if (ref & 0x8000)
+	{
+		return currentFrame -> localVarData + ((ref & 0x7FFF) -1);
+	}
+
+	return &globalVars[ref-1].var;
+}
 
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
@@ -675,15 +686,19 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	}
 	else
 	{
+		struct kittyData *var;
+
 		if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 		{
 			dprintf(" hidden ( condition.\n");
 			setStackHiddenCondition();
 		}
 
-		if (ref -> ref)
+		if (var = getVar( ref -> ref ))
 		{
-			struct kittyData *var = &globalVars[ref->ref-1].var;
+//			printf("ref %04x\n",ref -> ref);
+//			printf("got Var (%04x)\n",var);
+//			printf("type: %d\n",var -> type);
 
 			switch (var -> type & 7)
 			{
@@ -1168,6 +1183,15 @@ ULONG exceptCode ( struct ExecBase *SysBase, ULONG signals, ULONG exceptData)
 
 extern struct retroRGB DefaultPalette[256];
 
+void get_procedures()
+{
+	unsigned int n;
+	for (n=0;n<var_count[0];n++)
+	{
+		if (globalVars[n].var.type == type_proc)	procedures.push_back( globalVars +n );
+	}
+}
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1176,6 +1200,9 @@ int main(int args, char **arg)
 	int n;
 
 	init_instent( &instance );
+
+	procStcakFrame[0].localVarData = stackFrameData;	// this just temp... need to manage size, lett it grow..
+	procStcakFrame[0].localVarDataNext = stackFrameData;
 
 #ifdef __amigaos__
 	struct Task *me;
@@ -1272,7 +1299,8 @@ int main(int args, char **arg)
 		// set default values.
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
-		open_extension( "AMOSPRO_music.lib", 1 );
+		// init default values for fake extentions
+//		open_extension( "AMOSPRO_music.lib", 1 );
 		open_extension( "AMOSPRO_compact.lib", 2 );
 		open_extension( "AMOSPRO_turbo.lib", 12 );
 		open_extension( "AMOSPRO_Craft.lib", 18 );
@@ -1285,8 +1313,6 @@ int main(int args, char **arg)
 				 kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
 			}
 		}
-
-//		apply_wave(1, 15);
 
 		do_input = (void (**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
 		do_to = (char *(**)(nativeCommand*, char*)) allocType(void *,MAX_PARENTHESIS_COUNT);
@@ -1315,11 +1341,9 @@ int main(int args, char **arg)
 				if (instance.kittyError.code == 0)
 				{
 					runtime = TRUE;
-
 					if (file ->bank) init_banks( (char *) file -> bank, file -> bankSize );
 
 					gfxDefault(NULL, NULL);
-
 #ifdef run_program_yes
 					code_reader( (char *) file -> start , file -> tokenLength );
 #endif

@@ -25,8 +25,9 @@ extern char *dupRef( struct reference *ref );
 
 extern struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 extern struct globalVar globalVars[1000];
-extern int global_var_count;
+extern int var_count[2];
 extern std::vector<struct label> labels;
+extern std::vector<struct  globalVar *> procedures;
 
 const char *types[]={"","#","$",""};
 
@@ -63,13 +64,13 @@ int var_find_proc_ref(struct reference *ref)
 
 int findProcAndFix( struct globalVar *toFind )
 {
-	int n;
+	unsigned int n;
 	struct globalVar *var;
 	if (toFind -> varName == NULL) return -1;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<procedures.size();n++)
 	{
-		var = &globalVars[n];
+		var = procedures[n];
 
 		if ( (var->varName != NULL) && (var->var.type == type_proc) )
 		{
@@ -82,11 +83,31 @@ int findProcAndFix( struct globalVar *toFind )
 	}
 }
 
+int findProc( char *name )
+{
+	unsigned int n;
+	struct globalVar *var;
+
+	for (n=0;n<procedures.size();n++)
+	{
+		var = procedures[n];
+
+		if (var -> varName == NULL) return 0;
+
+		if ( strcasecmp( var -> varName, name)==0) 
+		{
+			return (unsigned int) (var - globalVars) +1;
+		}
+	}
+	return 0;
+}
+
+
 void validate_and_fix_globals()
 {
 	int n;
 
-	for (n=0;n<global_var_count;n++)
+	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName == NULL) return;
 
@@ -172,18 +193,3 @@ int findLabelRef( char *name, int _proc )
 	return 0;
 }
 
-int findProc( char *name )
-{
-	unsigned int n;
-
-	for (n=0;n<global_var_count;n++)
-	{
-		if (globalVars[n].varName == NULL) return 0;
-
-		if ( (strcasecmp( globalVars[n].varName, name)==0) && (globalVars[n].var.type & type_proc) )
-		{
-			return n+1;
-		}
-	}
-	return 0;
-}
