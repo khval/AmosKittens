@@ -57,7 +57,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "label.h"
 #include "amosstring.h"
 
-#include "ext_music.h"
+//include "ext_music.h"
 
 bool running = true;
 bool interpreter_running = false;
