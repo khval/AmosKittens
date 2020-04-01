@@ -125,17 +125,12 @@ const char *newprefix = "kitty";
 const char *newsuffix  = ".library";
 
 #ifdef __amigaos4__
-
-#ifdef makeLookupTable
+// can't use inline for extensions
 #undef makeLookupTable
-#endif
-
-#ifdef makeContext
 #undef makeContext
+#undef FreeLookupTable
+#undef FreeContext
 #endif
-
-#endif
-
 
 void open_extension( const char *name, int id )
 {
@@ -284,9 +279,6 @@ BOOL init()
 	return TRUE;
 }
 
-
-#undef FreeLookupTable
-#undef FreeContext
 
 void closedown()
 {
