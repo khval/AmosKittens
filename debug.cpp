@@ -105,6 +105,7 @@ char *_setVar( struct glueCommands *data, int nextToken );
 char *_set_amreg_fn( struct glueCommands *data, int nextToken );
 char *_set_amreg_channel_fn( struct glueCommands *data, int nextToken );
 char *_gfxColour( struct glueCommands *data, int nextToken );
+char *_textPrint( struct glueCommands *data, int nextToken );
 
 
 struct stackDebugSymbol
@@ -122,7 +123,7 @@ struct stackDebugSymbol stackDebugSymbols[] =
 	{_mulData,"_mulData"},
 	{_orData,"_orData"},
 	{_andData,"_andData"},
-	{_print,"_print"},
+	{_textPrint,"_textPrint"},
 	{_setVar, "_setVar"},
 	{_for,"_for" },
 	{_do,"_do" },

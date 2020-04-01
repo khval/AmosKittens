@@ -380,62 +380,6 @@ void __print_double( struct retroScreen *screen, double d )
 	__print_text(screen, str,0);
 }
 
-char *_print( struct glueCommands *data, int nextToken )
-{
-	struct retroScreen *screen = instance.screens[instance.current_screen];
-	int n;
-
-	next_print_line_feed = true;
-
-	flushCmdParaStack( nextToken );
-	if (screen)
-	{
-		int type;
-		struct retroTextWindow *textWindow = screen -> currentTextWindow;
-
-		for (n=data->stack;n<=__stack;n++)
-		{
-			type = kittyStack[n].type;
-
-			if (n>data->stack)
-			{
-				if (type != type_none)
-				{
-					if ( n < __stack ) textWindow -> locateX += textWindow -> locateX % _tab_size ? _tab_size - textWindow -> locateX % _tab_size : 0;
-				}
-			}
-			switch (type)
-			{
-				case type_int:
-					__print_num( screen, kittyStack[n].integer.value);
-					break;
-				case type_float:
-					__print_double( screen, kittyStack[n].decimal.value);
-					break;
-				case type_string:
-					if (kittyStack[n].str) __print_text( screen, kittyStack[n].str,0);
-					break;
-				case type_none:
-					if (n>data->stack) next_print_line_feed = false;
-					break;
-			}
-		}
-
-		if (next_print_line_feed)	// this is a hack, need to scroll screen if locateY is outside of window.
-		{
-			textWindow -> locateX = 0;
-			textWindow -> locateY += 1;
-		}
-
-		draw_cursor(screen);
-
-	}
-
-	popStack(__stack - data->stack );
-	do_breakdata = NULL;	// done doing that.
-
-	return NULL;
-}
 
 
 char *_textCentre( struct glueCommands *data, int nextToken )
@@ -508,10 +452,68 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
  	kittyStack[__stack].type = type_none;
 }
 
+char *_textPrint( struct glueCommands *data, int nextToken )
+{
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+	int n;
+
+	next_print_line_feed = true;
+
+	flushCmdParaStack( nextToken );
+	if (screen)
+	{
+		int type;
+		struct retroTextWindow *textWindow = screen -> currentTextWindow;
+
+		for (n=data->stack;n<=__stack;n++)
+		{
+			type = kittyStack[n].type;
+
+			if (n>data->stack)
+			{
+				if (type != type_none)
+				{
+					if ( n < __stack ) textWindow -> locateX += textWindow -> locateX % _tab_size ? _tab_size - textWindow -> locateX % _tab_size : 0;
+				}
+			}
+			switch (type)
+			{
+				case type_int:
+					__print_num( screen, kittyStack[n].integer.value);
+					break;
+				case type_float:
+					__print_double( screen, kittyStack[n].decimal.value);
+					break;
+				case type_string:
+					if (kittyStack[n].str) __print_text( screen, kittyStack[n].str,0);
+					break;
+				case type_none:
+					if (n>data->stack) next_print_line_feed = false;
+					break;
+			}
+		}
+
+		if (next_print_line_feed)
+		{
+			textWindow -> locateX = 0;
+			textWindow -> locateY += 1;
+			limit_textwindow_location(screen );
+		}
+
+		draw_cursor(screen);
+
+	}
+
+	popStack(__stack - data->stack );
+	do_breakdata = NULL;	// done doing that.
+
+	return NULL;
+}
+
 char *textPrint(nativeCommand *cmd, char *ptr)
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	stackCmdNormal( _print, ptr );
+	stackCmdNormal( _textPrint, ptr );
 
 	do_breakdata = _print_break;
 

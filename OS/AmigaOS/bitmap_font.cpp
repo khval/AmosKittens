@@ -708,7 +708,7 @@ int what_esc_code(const char *txt)
 }
 
 
-void limit_location(struct retroScreen *screen )
+void limit_textwindow_location(struct retroScreen *screen )
 {
  	int x;
 	int y;
@@ -798,7 +798,7 @@ void draw_tab(struct retroScreen *screen)
 			textWindow -> locateY , 20, screen -> pen, screen -> paper, false, 0, 0);
 
 		textWindow -> locateX ++;
-		limit_location(screen);
+		limit_textwindow_location(screen);
 		n++;
 	}
 }
@@ -912,7 +912,7 @@ void _my_print_text(struct retroScreen *screen, char *text, int maxchars, bool u
 					textWindow -> locateX ++;
 		}
 
-		limit_location( screen );
+		limit_textwindow_location( screen );
 	}
 }
 
