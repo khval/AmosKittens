@@ -2554,6 +2554,7 @@ char *cmdExtension( struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (ext_cmd)
 	{
+		instance.current_extension = ext-> ext;
 		return ext_cmd( &instance, cmd, tokenBuffer);
 	}
 	else
