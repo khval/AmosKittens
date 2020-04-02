@@ -1413,11 +1413,6 @@ char *textCRightStr(nativeCommand *cmd, char *ptr)
 	return ptr;
 }
 
-void _print_using_break( struct nativeCommand *cmd, char *tokenBuffer )
-{
-	__stack++;
-	setStackNone();
-}
 
 int stringSymbCount(struct stringData *str, char c)
 {
@@ -1540,62 +1535,69 @@ void write_format( bool sign, char *buf, struct stringData *dest )
 	}
 }
 
-char *_textPrintUsing( struct glueCommands *data, int nextToken )
+char *_textUsing( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data->stack +1 ;
 	struct stringData *dest = NULL;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args==2)
+	printf("args:%d\n",args);
+
+	switch (args)
 	{
-		struct stringData *fmt = getStackString(__stack-1);
-		dest = amos_strdup(fmt);
-		char *d;
-		int numPos = 1;
-		int _div = 0;
+		case 2:
+			{
+				struct stringData *fmt = getStackString( data -> stack );
+				dest = amos_strdup(fmt);
+				char *d;
+				int numPos = 1;
+				int _div = 0;
 
-		switch(kittyStack[__stack].type)
-		{
-			case type_string:
-					{
-						int fmtCount = stringSymbCount(fmt,'~');
-						struct stringData *str = getStackString(__stack);
-						char *s = &str -> ptr;
-
-						for (d=&dest->ptr;*d;d++)
-						{
-							switch (*d)
+				switch(kittyStack[__stack].type)
+				{
+					case type_string:
 							{
-								case '~':	if (*s) { *d = *s; s++; }	break;
+								int fmtCount = stringSymbCount(fmt,'~');
+								struct stringData *str = getStackString(__stack);
+								char *s = &str -> ptr;
+
+								for (d=&dest->ptr;*d;d++)
+								{
+									switch (*d)
+									{
+										case '~':	if (*s) { *d = *s; s++; }	break;
+									}
+								}
 							}
-						}
-					}
-					break;
+							break;
 
-			case type_float:
-					{
-						char buf[60];
-						double  decimal = getStackDecimal(__stack);
-						sprintf(buf,"%lf",decimal);
-						write_format( decimal < 0.0f, buf, dest );
-					}
-					break;
+					case type_float:
+							{
+								char buf[60];
+								double  decimal = getStackDecimal(__stack);
+								sprintf(buf,"%lf",decimal);
+								write_format( decimal < 0.0f, buf, dest );
+							}
+							break;
 
-			case type_int:
-					{
-						char buf[60];
-						int num = getStackNum(__stack);
-						sprintf(buf,"%d.0",num);
-						write_format( num<0, buf, dest  );
-					}
-					break;
+					case type_int:
+							{
+								char buf[60];
+								int num = getStackNum(__stack);
+								sprintf(buf,"%d.0",num);
+								write_format( num<0, buf, dest  );
+							}
+							break;
 
-			default:
-					printf("kittyStack[__stack].type %d\n",kittyStack[__stack].type);
-		}
+					default:
+							printf("kittyStack[__stack].type %d\n",kittyStack[__stack].type);
+				}
+			}
+			break;
+		default:
+			setError(22, data -> tokenBuffer);
 	}
-	else setError(22,data->tokenBuffer);
-	
+
 	popStack(__stack - data->stack );
 	do_breakdata = NULL;	// done doing that.
 	if (dest) setStackStr( dest );
@@ -1603,10 +1605,34 @@ char *_textPrintUsing( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *textPrintUsing(nativeCommand *cmd, char *ptr)
+void _textUsing_done( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	stackCmdNormal( _textPrintUsing, ptr );
-	do_breakdata = _print_using_break;
+	// we have 2 args to complete what we need to
+
+	flushCmdParaStack( 0x0000 );	// flush parameter operations.
+	if (cmdTmp[instance_cmdStack-1].cmd == _textUsing)
+	{
+		cmdTmp[instance_cmdStack-1].flag = cmd_para;
+	}
+	flushCmdParaStack( 0x0000 );	// flush using operations.
+
+	__stack++;
+	setStackNone();
+	do_breakdata = _print_break;
+}
+
+void _textUsing_break( struct nativeCommand *cmd, char *tokenBuffer )
+{
+	__stack++;
+	setStackNone();
+	do_breakdata = _textUsing_done;
+}
+
+char *textUsing(nativeCommand *cmd, char *ptr)
+{
+	// will be executed before next cmd, and EOL, but need to count args using break token.
+	stackCmdFlags( _textUsing, ptr, cmd_onNextCmd | cmd_onEol );
+	do_breakdata = _textUsing_break;
 	setStackNone();
 
 	return ptr;
