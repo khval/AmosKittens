@@ -655,6 +655,10 @@ struct errorAt
 	bool newError;
 };
 
+enum
+{
+	e_cmdTo_default = 1
+};
 
 struct kittyApi
 {
@@ -668,6 +672,7 @@ struct kittyApi
 	void (*freeBank) (int);
 	void (*setError) (int,char *);
 	void (*dumpStack) (void);
+	void (*setCmdTo) (int option);
 };
 
 struct KittyInstance

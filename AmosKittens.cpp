@@ -130,6 +130,16 @@ extern void freeAllTextWindows ( struct retroScreen * );
 //	void freeBank (int);
 extern struct kittyBank *reserveAs ( int, int ,int, const char *, char * );
 
+void setCmdTo( int option )
+{
+	switch (option)
+	{
+		case e_cmdTo_default:
+			do_to[instance.parenthesis_count] = do_to_default;
+			break;
+	}
+}
+
 void init_instent(struct KittyInstance *instance )
 {
 	instance -> video = NULL;
@@ -158,9 +168,10 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.reserveAs =reserveAs;
 	instance -> api.setError =setError;
 	instance -> api.dumpStack = dump_stack;
-
+	instance -> api.setCmdTo = setCmdTo;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
+
 }
 
 struct retroSprite *patterns = NULL;
