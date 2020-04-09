@@ -51,13 +51,10 @@ extern int bobColRange( unsigned short bob, unsigned short start, unsigned short
 extern int spriteColRange( unsigned short bob, unsigned short start, unsigned short end );
 
 #ifdef test_app
-	#define amal_mouse_x 1000
-	#define amal_mouse_y 2000
-	#define engine_mouse_key 0
+	#define instance.amal_mouse_x 1000
+	#define instance.amal_mouse_y 2000
+	#define instance.engine_mouse_key 0
 #else
-	extern int engine_mouse_x;
-	extern int engine_mouse_y;
-	extern int engine_mouse_key;
 	#define amal_mouse_x engine_mouse_x
 	#define amal_mouse_y engine_mouse_y
 #endif
@@ -700,28 +697,28 @@ void *amal_call_end API_AMAL_CALL_ARGS
 void *amal_call_xm API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = amal_mouse_x;
+	self -> argStack [ self -> argStackCount  ] = instance.amal_mouse_x;
 	return NULL;
 }
 
 void *amal_call_ym API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = amal_mouse_y;	
+	self -> argStack [ self -> argStackCount  ] = instance.amal_mouse_y;	
 	return NULL;
 }
 
 void *amal_call_k1 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = engine_mouse_key & 1 ? ~0 : 0;
+	self -> argStack [ self -> argStackCount  ] = instance.engine_mouse_key & 1 ? ~0 : 0;
 	return NULL;
 }
 
 void *amal_call_k2 API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = engine_mouse_key & 2 ? ~0 : 0;
+	self -> argStack [ self -> argStackCount  ] = instance.engine_mouse_key & 2 ? ~0 : 0;
 	return NULL;
 }
 

@@ -699,6 +699,9 @@ struct KittyInstance
 	int parenthesis_count;
 	void *extensions_context[32];
 	int current_extension;
+	int engine_mouse_key ;
+	int engine_mouse_x ;
+	int engine_mouse_y ;
 };
 
 #ifdef __amoskittens__

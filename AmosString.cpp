@@ -146,7 +146,6 @@ struct stringData *toAmosString( const char *txt,int len)
 	int _l = 0;
 	
 	ptr = txt; while ((*ptr)&&(_l<len)) _l++;
-
 	if (_l<len) len = _l;
 
 	allocNewString(len,newstr);

@@ -158,6 +158,10 @@ void init_instent(struct KittyInstance *instance )
 	instance -> kittyError.pos = NULL;
 	instance -> kittyError.posResume = NULL;
 
+	instance -> engine_mouse_key = 0;
+	instance -> engine_mouse_x = 0;
+	instance -> engine_mouse_y = 0;
+
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;
 	instance -> api.freeAllTextWindows =freeAllTextWindows;

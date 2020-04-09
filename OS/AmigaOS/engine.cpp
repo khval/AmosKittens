@@ -67,10 +67,6 @@ std::vector<struct keyboard_buffer> keyboardBuffer;
 std::vector<struct amos_selected> amosSelected;
 std::vector<int> engineCmdQue;
 
-
-int		engine_mouse_key = 0;
-int		engine_mouse_x = 0;
-int		engine_mouse_y = 0;
 uint32_t	engine_back_color = 0x000000;
 
 int autoView = 1;
@@ -588,18 +584,17 @@ void handel_window()
 
 							switch (Code)
 							{
-								case SELECTDOWN:	engine_mouse_key |= 1; break;
-								case SELECTUP:	engine_mouse_key &= ~1; break;
-								case MENUDOWN:	engine_mouse_key |= 2; break;
-								case MENUUP:		engine_mouse_key &= ~2; break;
+								case SELECTDOWN:	instance.engine_mouse_key |= 1; break;
+								case SELECTUP:	instance.engine_mouse_key &= ~1; break;
+								case MENUDOWN:	instance.engine_mouse_key |= 2; break;
+								case MENUUP:		instance.engine_mouse_key &= ~2; break;
 							}
 							break;
 
 					case IDCMP_MOUSEMOVE:
 
-							engine_mouse_x = mouse_x - engine -> window -> BorderLeft;
-							engine_mouse_y = mouse_y - engine -> window -> BorderTop;
-							
+							instance.engine_mouse_x = mouse_x - engine -> window -> BorderLeft;
+							instance.engine_mouse_y = mouse_y - engine -> window -> BorderTop;
 							break;
 
 					case IDCMP_MENUPICK:
