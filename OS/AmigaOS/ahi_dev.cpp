@@ -200,7 +200,7 @@ void audio_engine (void)
 {
 	static struct AHIRequest *io;
 	static struct audioIO *tempRequest;
-	struct AHIIFace	*IAHI ;		// instence.
+	struct AHIIFace	*IAHI = NULL;		// instence.
 	struct contextChannel *context;
 	struct Process *thisProcess;
 	int this_channel = -1;
@@ -539,41 +539,6 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 }
 
 uint32_t color =0;
-
-void debug_draw_line(int x0,int y0, int x1, int y1)
-{
-	int x,y;
-	int dx = x1-x0;
-	int dy = y1-y0;
-	struct RastPort *rp = debug_Window -> RPort;
-
-	if (abs(dx)>abs(dy))
-	{
-		int d = dx<0 ? -1 : 1;
-
-		for (x=0;x!=dx;x+=d)
-		{
-			y = dy * x / dx;
-			WritePixelColor( rp, x0+x, y0+y , color); 
-		}
-	}
-	else
-	{
-		int d = dy<0 ? -1 : 1;
-
-		if (d==0)
-		{
-			WritePixelColor( rp, x0, y0 , color); 
-			return;
-		}
-
-		for (y=0;y!=dy;y+=d)
-		{
-			x = dx * y / dy;
-			WritePixelColor( rp, x0+x, y0+y , color); 
-		}
-	}
-}
 
 struct phase 
 {
