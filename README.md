@@ -13,6 +13,8 @@ The API's are whery similar to AmigaOS4.x there for it should be relatively easy
 **Linux**
 I decided to port some of it to Linux, now interpreter did works under Linux x86 32bit at one time, (it did however not have a graphical display on Linux. Unlike the AmigaOS version). The Linux version is used to find hard to find bugs, and help find and remove stupid mistakes in the code, due to the superior memory protection in Linux. (Currently some files were removed due to being outdated compare to Amiga version of this files.), now after implementing the “include” command, Linux little endian support got officially broken.
 
+https://github.com/khval/AmosKittens/issues/34
+
 **Windows**
 Part of the code is sometimes tested in Virtual Studio, some headers does support visual studio compiler.
 However, no attempt at compiling a full version has been tried. Now after implementing the “include” command, Windows little endian support got officially broken.
