@@ -125,6 +125,8 @@ struct kittyFile kittyFiles[10];
 extern void freeScreenBobs (int);
 extern void *newTextWindow ( struct retroScreen *, int );
 extern void freeAllTextWindows ( struct retroScreen * );
+extern void kittyText(struct retroScreen *screen, int x, int y,struct stringData *txt);
+
 //	void engine_lock (void);
 //	void engine_unlock( void );
 //	void *findBank (int);
@@ -163,17 +165,24 @@ void init_instent(struct KittyInstance *instance )
 	instance -> engine_mouse_x = 0;
 	instance -> engine_mouse_y = 0;
 
+	instance -> xgr = 0;
+	instance -> ygr = 0;
+	instance -> GrWritingMode = 0;
+	instance -> paintMode = 0;
+	instance -> current_pattern = 0;
+
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;
 	instance -> api.freeAllTextWindows =freeAllTextWindows;
-	instance -> api.engine_lock =engine_lock;
-	instance -> api.engine_unlock =engine_unlock;
+	instance -> api.engineLock =engine_lock;
+	instance -> api.engineUnlock =engine_unlock;
 	instance -> api.findBank =findBank;
 	instance -> api.freeBank =freeBank;
 	instance -> api.reserveAs =reserveAs;
 	instance -> api.setError =setError;
 	instance -> api.dumpStack = dump_stack;
 	instance -> api.setCmdTo = setCmdTo;
+	instance -> api.kittyText = kittyText;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 

@@ -28,7 +28,6 @@
 #include "engine.h"
 
 extern int sig_main_vbl;
-
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
 extern int tokenMode;
@@ -43,11 +42,8 @@ extern retroSprite *patterns;
 extern int bobDoUpdate ;
 extern int bobUpdateNextWait ;
 
-int xgr = 0,  ygr = 0;
-
-int GrWritingMode = 0;
-int paintMode = 0;
-int currentPattern = 0;
+#define xgr instance.xgr
+#define ygr instance.ygr
 
 int sliderBPen,	sliderBPaper, sliderBOutline, sliderBStyle, sliderSPen, sliderSPaper, sliderSOutline, sliderSStyle;
 
@@ -240,13 +236,13 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 
 void __bar( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y1 )
 {
-	if ((currentPattern)&&(patterns))
+	if ((instance.current_pattern)&&(patterns))
 	{
-		retroBarPattern( screen, buffer, x0,y0,x1,y1,patterns, currentPattern>0 ? currentPattern+3 : -currentPattern, screen -> ink0, screen -> ink1 );
+		retroBarPattern( screen, buffer, x0,y0,x1,y1,patterns, instance.current_pattern>0 ? instance.current_pattern+3 : -instance.current_pattern, screen -> ink0, screen -> ink1 );
 	}
 	else retroBAR( screen, buffer, x0,y0,x1,y1,screen -> ink0 );
 
-	if (paintMode) retroBox( screen, buffer, x0,y0,x1,y1,screen -> ink2);
+	if (instance.paintMode) retroBox( screen, buffer, x0,y0,x1,y1,screen -> ink2);
 }
 
 char *_gfxBar( struct glueCommands *data, int nextToken )
@@ -1187,7 +1183,7 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 
 		retroPolyGonArray( screen, screen -> double_buffer_draw_frame,screen -> ink0, (args+2) * sizeof(int), array );
 
-		if (paintMode)
+		if (instance.paintMode)
 		{
 			lx = array[ 0 ];
 			ly = array[ 1 ];
@@ -1914,7 +1910,7 @@ char *_gfxSetPaint( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			paintMode = getStackNum(__stack );
+			instance.paintMode = getStackNum(__stack );
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -2003,7 +1999,7 @@ char *_gfxSetPattern( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			currentPattern = getStackNum(__stack);
+			instance.current_pattern = getStackNum(__stack);
 			break;
 		default:
 			setError(22,data->tokenBuffer);

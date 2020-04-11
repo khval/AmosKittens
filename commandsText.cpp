@@ -45,14 +45,11 @@ bool inverse = false;
 
 int writing_w1,writing_w2;
 
-extern int GrWritingMode;
-
 int _tab_size = 3;
 
 extern struct TextFont *topaz8_font;
 
 bool next_print_line_feed = false;
-
 
 void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
 struct retroTextWindow *findTextWindow(struct retroScreen *screen,int id);
@@ -1550,14 +1547,11 @@ char *_textUsing( struct glueCommands *data, int nextToken )
 				struct stringData *fmt = getStackString( data -> stack );
 				dest = amos_strdup(fmt);
 				char *d;
-				int numPos = 1;
-				int _div = 0;
 
 				switch(kittyStack[__stack].type)
 				{
 					case type_string:
 							{
-								int fmtCount = stringSymbCount(fmt,'~');
 								struct stringData *str = getStackString(__stack);
 								char *s = &str -> ptr;
 
@@ -2567,7 +2561,7 @@ char *_textGrWriting( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			GrWritingMode = getStackNum(__stack);
+			instance.GrWritingMode = getStackNum(__stack);
 			break;
 		default:
 			setError(22,data->tokenBuffer);
@@ -2582,6 +2576,50 @@ char *textGrWriting(struct nativeCommand *cmd, char *tokenBuffer)
 	// some thing to do with drawing, not sure.
 	stackCmdNormal( _textGrWriting, tokenBuffer );
 	return tokenBuffer;
+}
+
+
+void kittyText(struct retroScreen *screen, int x, int y,struct stringData *txt)
+{
+	engine_lock();
+	if (engine_ready())
+	{
+		switch (instance.GrWritingMode)
+		{
+			case 0:	// 
+				os_text_no_outline(screen, x, y, txt, screen -> ink0 );
+				break;
+
+			case 1:	//
+				os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
+				break;
+
+			case 2:	//
+				os_text_no_outline(screen, x, y, txt, screen -> ink0 );
+				break;
+
+			case 3:	//
+				os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
+				break;
+
+			case 4:	//
+				os_text_no_outline(screen, x, y, txt, screen -> ink1 );
+				break;
+
+			case 5:	//
+				os_text(screen, x,y,txt, screen -> ink1, screen -> ink0 );
+				break;
+
+			case 6:	//
+				os_text_no_outline(screen, x, y, txt, screen -> ink1 );
+				break;
+
+			case 7:	//
+				os_text(screen, x,y,txt, screen -> ink1, screen -> ink0);
+				break;
+		}
+	}
+	engine_unlock();
 }
 
 char *_textText( struct glueCommands *data, int nextToken )
@@ -2599,49 +2637,7 @@ char *_textText( struct glueCommands *data, int nextToken )
 				int y = getStackNum(__stack-1 );
 				struct stringData *txt = getStackString(__stack );
 
-				if ((txt)&&(screen))
-				{
-					engine_lock();
-					if (engine_ready())
-					{
-
-						switch (GrWritingMode)
-						{
-							case 0:	// 
-									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
-									break;
-
-							case 1:	//
-									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
-									break;
-
-							case 2:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink0 );
-									break;
-
-							case 3:	//
-									os_text(screen, x,y,txt, screen -> ink0, screen -> ink1 );
-									break;
-
-							case 4:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
-									break;
-
-							case 5:	//
-									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0 );
-									break;
-
-							case 6:	//
-									os_text_no_outline(screen, x, y, txt, screen -> ink1 );
-									break;
-
-							case 7:	//
-									os_text(screen, x,y,txt, screen -> ink1, screen -> ink0);
-									break;
-						}
-					}
-					engine_unlock();
-				}
+				if ((txt)&&(screen))	kittyText( screen, x, y, txt );
 			}
 			break;
 		default:
