@@ -17,7 +17,7 @@
 #include <intuition/pointerclass.h>
 #include <proto/retroMode.h>
 #include <proto/kittyCompact.h>
-#include "ahi_dev.h"
+#include "kittyAudio.h"
 
 #include "joysticks.h"
 #include "amoskittens.h"

@@ -28,12 +28,11 @@ struct audioChunk
 extern void channel_lock(int n);
 extern void channel_unlock(int n);
 
-extern bool audio_start();
-extern void audio_close();
-extern void audio_lock();
-extern void audio_unlock();
-extern void audio_device_flush(int voices);
-
-extern bool play(uint8_t * data,int len, int channel, int frequency);
-extern bool play_wave(struct wave *wave,int len, int channel);
+extern bool audioStart();
+extern void audioClose();
+extern void audioLock();
+extern void audioUnlock();
+extern void audioDeviceFlush(int voices);
+extern bool audioPlay(uint8_t * data,int len, int channel, int frequency);
+extern bool audioPlayWave(struct wave *wave,int len, int channel);
 

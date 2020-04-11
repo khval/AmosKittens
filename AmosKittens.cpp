@@ -56,6 +56,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "spawn.h"
 #include "label.h"
 #include "amosstring.h"
+#include "kittyaudio.h"
 
 //include "ext_music.h"
 
