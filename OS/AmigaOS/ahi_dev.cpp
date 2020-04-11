@@ -21,7 +21,8 @@ typedef uint32_t LONG;
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
-#include "ahi_dev.h"
+
+#include "kittyaudio.h"
 
 #ifdef __amoskittens__
 #include "spawn.h"
@@ -30,15 +31,9 @@ typedef uint32_t LONG;
 
 #include <AmosKittens.h>
 
-
 int current_audio_channel = 0;
-
 extern bool running;
-
-
 bool audio_3k3_lowpass = true;
-
-
 bool sample_loop = false;
 
 struct audioIO
@@ -460,10 +455,10 @@ end_audioTask:
 				break;
 	}
 
-	audio_lock();
+	audioLock();
 	cleanup_task( context, IAHI );
 	Signal( (struct Task *) main_task, SIGF_CHILD );
-	audio_unlock();
+	audioUnlock();
 }
 
 bool init_channel(int channel)
@@ -493,7 +488,7 @@ bool init_channel(int channel)
 }
 
 
-bool audio_start()
+bool audioStart()
 {
 	init_channel(0);
 	init_channel(1);
@@ -657,7 +652,7 @@ void makeChunk_wave(struct wave *wave, struct phase *phaseContext, int offset, i
 	}
 }
 
-bool play_wave(struct wave *wave, int len, int channels)
+bool audioPlayWave(struct wave *wave, int len, int channels)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
@@ -687,9 +682,9 @@ bool play_wave(struct wave *wave, int len, int channels)
 		}
 
 #ifdef __amoskittens__
-		audio_lock();
+		audioLock();
 		for ( c=0;c<4; c++)	if (phaseContexts[c].chunk) audioBuffer[c].push_back( phaseContexts[c].chunk );
-		audio_unlock();
+		audioUnlock();
 #endif
 		offset += AHI_CHUNKSIZE;
 	}
@@ -712,9 +707,9 @@ bool play_wave(struct wave *wave, int len, int channels)
 		}
 
 #ifdef __amoskittens__
-		audio_lock();
+		audioLock();
 		for ( c=0;c<4; c++)	if (phaseContexts[c].chunk) audioBuffer[c].push_back( phaseContexts[c].chunk );
-		audio_unlock();
+		audioUnlock();
 #endif
 	}
 
@@ -759,18 +754,18 @@ void abort_channel( int c )
 	}
 }
 
-void audio_device_flush(int voices)
+void audioDeviceFlush(int voices)
 {
 	int c;
 
-	audio_lock();
+	audioLock();
 	for ( c=0;c<4; c++)	if (voices & (1<<c) ) audio_channel_flush( c );
-	audio_unlock();
+	audioUnlock();
 
 	for ( c=0;c<4; c++)	if (voices & (1<<c) ) abort_channel( c );
 }
 
-bool play(uint8_t * data,int len, int channel, int frequency)
+bool audioPlay(uint8_t * data,int len, int channel, int frequency)
 {
 	int blocks = len / AHI_CHUNKSIZE;
 	int lastLen = len % AHI_CHUNKSIZE;
@@ -840,7 +835,7 @@ void channel_unlock(int n)
 	MutexRelease(channel_mx[n]);
 }
 
-void audio_lock()
+void audioLock()
 {
 	channel_lock(0);
 	channel_lock(1);
@@ -848,7 +843,7 @@ void audio_lock()
 	channel_lock(3);
 }
 
-void audio_unlock()
+void audioUnlock()
 {
 	channel_unlock(0);
 	channel_unlock(1);

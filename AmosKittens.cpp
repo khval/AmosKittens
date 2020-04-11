@@ -184,6 +184,12 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.setCmdTo = setCmdTo;
 	instance -> api.kittyText = kittyText;
 
+	instance -> api.audioLock = audioLock;
+	instance -> api.audioUnlock = audioUnlock;
+	instance -> api.audioDeviceFlush = audioDeviceFlush;
+	instance -> api.audioPlay = audioPlay;
+	instance -> api.audioPlayWave = audioPlayWave;
+
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 
 }

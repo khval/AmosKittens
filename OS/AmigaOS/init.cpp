@@ -274,7 +274,7 @@ BOOL init()
 
 	if ( ! EmptyPointer ) return FALSE;
 
-	audio_start();
+	audioStart();
 
 	return TRUE;
 }
