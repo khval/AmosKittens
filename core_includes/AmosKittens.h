@@ -660,20 +660,59 @@ enum
 	e_cmdTo_default = 1
 };
 
+// --------------------------------------------------------------------------------------------
+//          Api provides a programmable interface into amos kittens 
+//       the API allows extensions to access routines from the outside
+// --------------------------------------------------------------------------------------------
+
 struct kittyApi
 {
+//	-- runtime --
+
+	void (*setCmdTo) (int option);
+
+//	-- error --
+
+	void (*setError) (int,char *);
+
+//	-- engine --
+
+	void (*engineLock) (void);
+	void (*engineUnlock) (void);
+
+//	-- debug --
+
+	void (*dumpStack) (void);
+
+//	-- screen --
+
 	void (*freeScreenBobs) (int);
-	void *(*newTextWindow) ( struct retroScreen *, int );
-	void (*freeAllTextWindows) ( struct retroScreen * );
-	void (*engine_lock) (void);
-	void (*engine_unlock)( void );
+
+//	-- banks --
+
 	struct kittyBank *(*findBank) (int);
 	struct kittyBank *(*reserveAs) ( int, int ,int, const char *, char * );
 	void (*freeBank) (int);
-	void (*setError) (int,char *);
-	void (*dumpStack) (void);
-	void (*setCmdTo) (int option);
+
+//	--  text --
+
+	void (*kittyText) (struct retroScreen *screen, int x, int y,struct stringData *txt);
+	void *(*newTextWindow) ( struct retroScreen *, int );
+	void (*freeAllTextWindows) ( struct retroScreen * );
+
+//	-- audio --
+
+	void (*audioLock) ();
+	void (*audioUnlock) ();
+	bool (*audioPlayWave) (struct wave *wave, int len, int channels);
+	bool (*audioPlay) (uint8_t * data,int len, int channel, int frequency);
+	void (*audioDeviceFlush) (int voices);
 };
+
+// --------------------------------------------------------------------------------------------
+//               Instance provides a shared data into amos kittens 
+//     the Instance allows extensions to access data from the outside
+// --------------------------------------------------------------------------------------------
 
 struct KittyInstance
 {
@@ -682,26 +721,33 @@ struct KittyInstance
 	unsigned short last_token;
 	int tokenMode;
 	int tokenlength;
+	void *extensions_context[32];
 	struct retroScreen *screens[8] ;
 	struct retroVideo *video;
 	struct retroRGB DefaultPalette[256];
-	int current_screen;
 	struct retroSprite *sprites ;
 	struct retroSprite *icons ;
-	int stack ;
-	int cmdStack ;
 	struct kittyData *kittyStack;
 	struct glueCommands *cmdTmp;
 	struct errorAt kittyError;
+	int current_screen;
+	int current_extension;
+	int current_pattern;
+	int stack ;
+	int cmdStack ;
 	char *tokenBufferResume;
-	struct kittyApi api;
 	bool token_is_fresh;
 	int parenthesis_count;
-	void *extensions_context[32];
-	int current_extension;
 	int engine_mouse_key ;
 	int engine_mouse_x ;
 	int engine_mouse_y ;
+	int xgr;
+	int ygr;
+	int GrWritingMode;
+	int paintMode;
+	struct kittyApi api;
+	bool audio_3k3_lowpass;
+	LONG volume;
 };
 
 #ifdef __amoskittens__
