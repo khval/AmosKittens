@@ -346,20 +346,20 @@ void audio_engine (void)
 		}    
 		else if ( audioBuffer[context -> channel].front() )
 		{
-			if (sample_loop == false)
+			if (context -> AHIio-> chunk)		// if we are done playing some sound...
 			{
-				if (context -> AHIio-> chunk)
+				if (context -> sampleLoop == false)
 				{
 					Printf("Free data..\n");
 					free( context -> AHIio-> chunk );	// free old data.
 					context -> AHIio-> chunk = NULL;
 				}
+				else
+				{
+					Printf("sample loop push data back..\n");
+					audioBuffer[context -> channel].push_back( context -> AHIio-> chunk);
+				}
 			}
-			else
-			{
-				Printf("sample loop push data back..\n");
-				audioBuffer[context -> channel].push_back( context -> AHIio-> chunk);
-			}			
 
 			if (io = context -> AHIio -> io)
 			{
