@@ -707,6 +707,7 @@ struct kittyApi
 	bool (*audioPlayWave) (struct wave *wave, int len, int channels);
 	bool (*audioPlay) (uint8_t * data,int len, int channel, int frequency);
 	void (*audioDeviceFlush) (int voices);
+	void (*audioSetSampleLoop) ( ULONG voices );
 };
 
 // --------------------------------------------------------------------------------------------

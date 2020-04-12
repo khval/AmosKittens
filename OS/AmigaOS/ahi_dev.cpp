@@ -51,8 +51,9 @@ enum
 };
 
 struct contextChannel {
-	int device ;
-	int channel ;
+	int device;
+	int channel;
+	bool sampleLoop;
 	bool audio_abort;
 	bool audio_status;
  	struct MsgPort *AHIMsgPort;     // The msg port we will use for the ahi.device
@@ -65,6 +66,16 @@ struct contextChannel {
 
 
 struct contextChannel contexts[4];
+
+void audioSetSampleLoop( ULONG voices )
+{
+	ULONG c;
+	for (c=0;c<4;c++)
+	{
+		contexts[c].sampleLoop = (voices & (1L<<c)) ? true : false;
+		printf("channel %d, loop is %s\n",c, contexts[c].sampleLoop ? "on" : "off");
+	}
+}
 
 struct audioIO *new_audio( struct AHIRequest *io)
 {

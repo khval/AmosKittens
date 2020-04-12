@@ -191,6 +191,7 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.audioDeviceFlush = audioDeviceFlush;
 	instance -> api.audioPlay = audioPlay;
 	instance -> api.audioPlayWave = audioPlayWave;
+	instance -> api.audioSetSampleLoop = audioSetSampleLoop;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 
