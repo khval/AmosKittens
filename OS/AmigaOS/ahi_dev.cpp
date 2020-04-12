@@ -67,12 +67,12 @@ struct contextChannel {
 
 struct contextChannel contexts[4];
 
-void audioSetSampleLoop( ULONG voices )
+void audioSetSampleLoop( ULONG voices, bool value )
 {
 	ULONG c;
 	for (c=0;c<4;c++)
 	{
-		contexts[c].sampleLoop = (voices & (1L<<c)) ? true : false;
+		if (voices & (1L<<c)) contexts[c].sampleLoop = value;
 		printf("channel %d, loop is %s\n",c, contexts[c].sampleLoop ? "on" : "off");
 	}
 }
