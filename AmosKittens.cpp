@@ -171,6 +171,8 @@ void init_instent(struct KittyInstance *instance )
 	instance -> paintMode = 0;
 	instance -> current_pattern = 0;
 
+	instance -> volume=0x10000;
+
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;
 	instance -> api.freeAllTextWindows =freeAllTextWindows;

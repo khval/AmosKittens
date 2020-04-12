@@ -33,8 +33,6 @@ typedef uint32_t LONG;
 
 int current_audio_channel = 0;
 extern bool running;
-bool audio_3k3_lowpass = true;
-bool sample_loop = false;
 
 struct audioIO
 {
@@ -83,8 +81,6 @@ std::vector<struct audioChunk *> audioBuffer[4];
 
 #define AHI_CHUNKSIZE 1024
 #define AHI_DEFAULTUNIT 0
-
-LONG volume=0x10000;
 
 static struct Process *main_task = NULL;
 static struct Process *audioTask[4] = { NULL, NULL, NULL, NULL };
