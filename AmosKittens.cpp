@@ -1334,7 +1334,7 @@ int main(int args, char **arg)
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
 		// init default values for fake extentions
-//		open_extension( "AMOSPRO_music.lib", 1 );
+		open_extension( "AMOSPRO_music.lib", 1 );
 		open_extension( "AMOSPRO_compact.lib", 2 );
 		open_extension( "AMOSPRO_turbo.lib", 12 );
 		open_extension( "AMOSPRO_Craft.lib", 18 );
