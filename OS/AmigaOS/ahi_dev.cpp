@@ -32,6 +32,7 @@ typedef uint32_t LONG;
 #include <AmosKittens.h>
 
 int current_audio_channel = 0;
+
 extern bool running;
 
 struct audioIO
@@ -352,13 +353,14 @@ void audio_engine (void)
 			if (io = context -> AHIio -> io)
 			{
 				context -> AHIio-> chunk = audioBuffer[context -> channel].front();
+
 				audioBuffer[context -> channel].erase( audioBuffer[context -> channel].begin());
+
 				channel_unlock(context -> channel);
 
 				if (context -> AHIio-> chunk)
 				{
 					struct audioChunk *chunk = context -> AHIio-> chunk;
-
 
 					io->ahir_Std.io_Message.mn_Node.ln_Pri = 0;
 					io->ahir_Std.io_Command	= CMD_WRITE;
@@ -366,12 +368,12 @@ void audio_engine (void)
 					io->ahir_Std.io_Data		=  &(chunk -> ptr); 
 					io->ahir_Std.io_Length	= (ULONG) chunk -> size; 
 					io->ahir_Frequency		= (ULONG) chunk -> bytesPerSecond;
-					io->ahir_Volume		= volume; 
+					io->ahir_Volume		=  instance.volume; 
 					io->ahir_Position		= (ULONG) chunk -> position;
 					io->ahir_Type			= AHIST_M8S;		// mono 8 bit signed
 					io->ahir_Link			= context -> link ? context -> link -> io : NULL;
 
-					if (audio_3k3_lowpass)
+					if (instance.audio_3k3_lowpass)
 					{
 						char *ptr = (char *)  io->ahir_Std.io_Data;
 						char *e_ptr = ptr + io->ahir_Std.io_Length;
