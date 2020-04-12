@@ -81,6 +81,8 @@ struct audioIO *new_audio( struct AHIRequest *io)
 
 std::vector<struct audioChunk *> audioBuffer[4];
 
+#define AHI_CHUNKSIZE 1024
+#define AHI_DEFAULTUNIT 0
 
 LONG volume=0x10000;
 
