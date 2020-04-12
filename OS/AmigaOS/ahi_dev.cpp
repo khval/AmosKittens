@@ -520,19 +520,7 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 			case 3: 		(*chunk) -> position = 0x00000;	break;
 		}
 
-		// AHI uses mono 8bit signed, amos uses mono 8bit unsigned, we need to convert,
-
-		s8bit = (int8_t *) &(chunk[0] -> ptr);
-		u8bit = (data + offset);
-		u8bit_e = u8bit + chunk[0] -> size;
-
-		for ( ; u8bit < u8bit_e ; u8bit++ )
-		{
-			*s8bit  = (int8_t) ((int) *u8bit -128);
-			s8bit++;
-		}
-
-//		memcpy( &(chunk[0] -> ptr), (void *) (data + offset),  chunk[0] -> size );
+		memcpy( &(chunk[0] -> ptr), (void *) (data + offset),  chunk[0] -> size );
 	}
 }
 
