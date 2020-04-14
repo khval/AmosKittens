@@ -750,7 +750,7 @@ void dump_anim()
 
 	Printf("\nDump anim channels\n");
 
-	for ( int n  = 0 ; n < channels -> _size();n++ )
+	for ( unsigned int n  = 0 ; n < channels -> _size();n++ )
 	{
 		item = channels -> item(n);
 
@@ -775,7 +775,7 @@ void dump_channels()
 
 	Printf("\nDump channels\n");
 
-	for ( int n  = 0 ; n < channels -> _size();n++ )
+	for (unsigned int n  = 0 ; n < channels -> _size();n++ )
 	{
 		item = channels -> item(n);
 
