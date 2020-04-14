@@ -2130,7 +2130,7 @@ void pop_context( struct cmdcontext *context, int pop )
 					{
 						printf("--pop frees(%08x)\n",p.str);
 
-						free (p.str);
+						sys_free (p.str);
 						p.str = NULL;
 					}
 					break;
