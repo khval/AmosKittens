@@ -311,9 +311,10 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 
 		}
 
-		if (path) free(path);
-		if (pattern) free(pattern);
+		if (path) sys_free(path);
+		if (pattern) sys_free(pattern);
 		if (amigaPattern) free(amigaPattern);
+
 		path = NULL;
 		pattern = NULL;
 		amigaPattern = NULL;
