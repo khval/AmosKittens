@@ -266,75 +266,107 @@ unsigned int mem_crc( char *mem, uint32_t size )
 	return crc;
 }
 
+extern struct stackFrame *find_stackframe(int proc);
+void dump_var_ptr(int n, struct globalVar *varInfo, struct kittyData *var );
+void dump_var_ptr_undefined(int n, struct globalVar *varInfo );
 
-void dump_var( int n )
+void dump_var( int n)
+{
+	struct kittyData *var = NULL;
+
+	if (globalVars[n].var.type == type_proc)
+	{
+		var = &globalVars[n].var;
+	}
+	else if (globalVars[n].proc == 0)
+	{
+		var = &globalVars[n].var;
+	}
+	else
+	{
+		struct stackFrame *stackFrame = find_stackframe(globalVars[n].proc);
+		if (stackFrame)	var = stackFrame -> localVarData + globalVars[n].localIndex;
+	}
+
+	if (var)
+	{
+		dump_var_ptr( n, globalVars + n , var );
+	}
+	else
+	{
+		dump_var_ptr_undefined( n, globalVars + n );
+	}
+}
+
+
+void dump_var_ptr( int n, struct globalVar *varInfo, struct kittyData *var )
 {
 #ifdef show_array_yes
 	int i;
 #endif
-		switch (globalVars[n].var.type)
+		switch (var -> type)
 		{
 			case type_int:
 				printf("%d -- %d:%d:%s%s=%d\n",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, globalVars[n].var.integer.value );
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName, var -> integer.value );
 				break;
 			case type_float:
 				printf("%d -- %d:%d:%s%s=%0.2lf\n",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, globalVars[n].var.decimal.value );
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName, var -> decimal.value );
 				break;
 			case type_string:
 				printf("%d -- %d:%d:%s%s=%c%s%c\n",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName, 34, globalVars[n].var.str ? &(globalVars[n].var.str -> ptr) : "NULL", 34 );
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName, 34, var -> str ? &(var -> str -> ptr) : "NULL", 34 );
 				break;
 			case type_proc:
 
-				if (globalVars[n].procDataPointer == 0)
+				if (varInfo ->  procDataPointer == 0)
 				{
-					getLineFromPointer( globalVars[n].var.tokenBufferPos );
+					getLineFromPointer( var -> tokenBufferPos );
 
 					printf("%d -- %d:%d:%s%s[]=%04X (line %d)\n",n,
-						globalVars[n].proc, 
-						globalVars[n].localIndexSize, 
+						varInfo ->  proc, 
+						varInfo ->  localIndexSize, 
 						"Proc ",					
-						globalVars[n].varName, 
-						globalVars[n].var.tokenBufferPos, lineFromPtr.line );
+						varInfo ->  varName, 
+						var -> tokenBufferPos, lineFromPtr.line );
 				}
 				else
 				{
 					int tokenBufferLine;
-					getLineFromPointer( globalVars[n].var.tokenBufferPos );
+					getLineFromPointer( var -> tokenBufferPos );
 					tokenBufferLine = lineFromPtr.line;
-					getLineFromPointer( globalVars[n].procDataPointer );
+					getLineFromPointer( varInfo ->  procDataPointer );
 
 					printf("%d -- %d::%s%s[]=%04X (line %d)  --- data read pointer %08x (line %d)\n",n,
-						globalVars[n].proc, "Proc ",
-						globalVars[n].varName, 
-						globalVars[n].var.tokenBufferPos, tokenBufferLine,
-						globalVars[n].procDataPointer, lineFromPtr.line );
+						varInfo ->  proc, "Proc ",
+						varInfo ->  varName, 
+						var -> tokenBufferPos, tokenBufferLine,
+						varInfo ->  procDataPointer, lineFromPtr.line );
 				}
 
 				break;
 			case type_int | type_array:
 
 				printf("%d -- %d:%d:%s%s(%d)=",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName,
-					globalVars[n].var.count);
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName,
+					var -> count);
 #ifdef show_array_yes
-				for (i=0; i<globalVars[n].var.count; i++)
+				for (i=0; i<var -> count; i++)
 				{
-					printf("[%d]=%d ,",i, (&(globalVars[n].var.int_array -> ptr) +i) -> value );
+					printf("[%d]=%d ,",i, (&(var -> int_array -> ptr) +i) -> value );
 				}
 #else
 				printf("...");
@@ -345,15 +377,15 @@ void dump_var( int n )
 			case type_float | type_array:
 
 				printf("%d -- %d:%d:%s%s(%d)=",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName,
-					globalVars[n].var.count);
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName,
+					var -> count);
 #ifdef show_array_yes
-				for (i=0; i<globalVars[n].var.count; i++)
+				for (i=0; i<var -> count; i++)
 				{
-					printf("[%d]=%0.2f ,",i, (&(globalVars[n].var.float_array -> ptr)+i) -> value );
+					printf("[%d]=%0.2f ,",i, (&(var -> float_array -> ptr)+i) -> value );
 				}
 #else
 				printf("...");
@@ -364,18 +396,18 @@ void dump_var( int n )
 			case type_string | type_array:
 
 				printf("%d -- %d:%d:%s%s(%d)=",n,
-					globalVars[n].proc, 
-					globalVars[n].localIndex,
-					globalVars[n].isGlobal ? "Global " : "",
-					globalVars[n].varName,
-					globalVars[n].var.count);
+					varInfo ->  proc, 
+					varInfo ->  localIndex,
+					varInfo ->  isGlobal ? "Global " : "",
+					varInfo ->  varName,
+					var -> count);
 #ifdef show_array_yes
 
 				{
 					struct stringData *strptr;
-					for (i=0; i<globalVars[n].var.count; i++)
+					for (i=0; i<var -> count; i++)
 					{
-						strptr =(&(globalVars[n].var.str_array -> ptr))[i];
+						strptr =(&(var -> str_array -> ptr))[i];
 
 						printf("[%d]=%s ,",i, strptr ? &(strptr -> ptr) : "<NULL>");
 					}
@@ -389,6 +421,17 @@ void dump_var( int n )
 				break;
 		}
 }
+
+void dump_var_ptr_undefined(int n,struct globalVar *varInfo )
+{
+	printf("%d -- %d:%d:%s%s=<undefined>\n",n,
+			varInfo ->  proc, 
+			varInfo ->  localIndex,
+			varInfo ->  isGlobal ? "Global " : "",
+			varInfo ->  varName );
+}
+
+
 
 void dump_local( int proc )
 {

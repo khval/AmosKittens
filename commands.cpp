@@ -191,6 +191,19 @@ void dump_local_vars()
 	}
 }
 
+struct stackFrame *find_stackframe(int proc)
+{
+	int n;
+	for (n=proc_stack_frame;n>0;n--)
+	{
+		if (procStcakFrame[n].id == proc)
+		{
+			return procStcakFrame + n;
+		}
+	}
+	return NULL;
+}
+
 void stack_frame_up(int varIndex)
 {
 	struct globalVar *proc = globalVars + varIndex;
