@@ -31,33 +31,40 @@ If you’re a MorphOS or AROS developer don't let that stop you, but please make
 Amos developers:
 ------------------------
 
-Amos kittens is becoming more and more feature complete, there are few commands that is not working, and most extensions have no support. So its a bit limited what it can be used for, before posting bug reports please read Notes, some features are not yet implemented, or maybe a bit broken or even incompatible. 
+Kittens is becoming more and more feature complete, there are few commands that is not working,
 
-Please also read the document describing how Amos Kitten commands works.
-(Some of commands have enhancements over the original commands.)
+Please also read the document describing how Kitten commands works.
+Some of commands have enhancements over the original AmosPro commands, but they should be backwards compatible.
+
 https://github.com/khval/AmosKittens/blob/master/commands.md
+
+Kittens does not support the old extension format, but I have recreated some of old extensions in order for your AMOS programs to work, please note that some of the extensions are not fully implemented, download and check the status page on this projects here.
+
+https://github.com/khval/kittyCraft.library
+https://github.com/khval/kittyMusic.library
+https://github.com/khval/kittyTurbo.library
+https://github.com/khval/kittycompact.library
 
 To start a game or program you type:
 AmosKittens [dir]/[filename.amos]
   
 If window flashes on the screen, you might be runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for a key press if the program is done.
 
-If AmosKittens return with a token number, it is likely that Amos program your trying is too advanced for Amos kittens.
-See "Issues" and "Current Status:" on GitHub so see what Amos Kittens support and what not.
+If AmosKittens return with a token number, It might be using a command this not supported, or not implemented, check the source code of Amos program your running. Then check “Not yet supported” as bottom of this page. And check "Issues" and "current Status:" on GitHub so see what Amos Kittens support and what not.
 
 Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this is the most advanced version of Amos Pro right now, there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
 Amos Kittens was tested whit amos programs written in AMOS PRO 2.0, so no garanties.
+
+Amos Pro should not be bundled with this package, I do not own it, I have no copyrights to the originals Amos Pro binary’s or AmosPro source code and the software license of Amos Pro is disputed, plus who owns it also not clear. you do so on your own risk.
 
 Debuging Amos Kittens:
 ----------------------
 To enable debugging edit debug.h file here you find some switches , you can enable or disable, once the file is changed all files will be rebuilt automatic no need to type "make clean"
 
-Amos kittens might stop at any time.. it is possible that getchar(), command is halting the program. This most likely due to a command your using has not yet fully implemented, and program is being paused, so I can see what is going on.
+Amos kittens might stop at any time.. it is possible that getchar(), command is halting the program. This most likely due to a command your using is not yet fully implemented, and program is being paused, so I can see what is going on.
 
 Current status:
 ---------------
-
-Amos The Creator Manual:
 
 Implemented:
 
@@ -95,7 +102,7 @@ AmosPro support:
 
 Note: 
 -----
-Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just side effect. (I like to keep this because it the way modern programing languages works.)
+Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just a side effect. (I like to keep this because it the way modern programing languages works.)
 
 Note about machine Code (or Amos lowlevel commands)
 ------------------------------------
@@ -109,13 +116,9 @@ On X86 Linux you might run into endieness issues if your using VarPtr(var), to p
 
 Not yet supported:
 ------------------
-Recursive procedure calls is not supported: due to the way the local variables are implmented for now, locals was implmented quick and dirty.. (in the global list), This part of the code will need to be rewritten to support stack frames, (like normal programing languages does). 
-
 Some kown commands that was skiped or is currently NOP (no operation)
 
 https://github.com/khval/AmosKittens/issues/26
-
-Most of the new stuff in Amos Pro.
 
 Orginal Amos Kittens source code can be found here:
 --------------------------------------
