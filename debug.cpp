@@ -443,9 +443,12 @@ void dump_local( int proc )
 	{
 		if (globalVars[n].varName == NULL) return;
 
-		if (globalVars[n].proc == proc)
+		if (globalVars[n].var.type != type_proc )
 		{
-			dump_var( n );
+			if (globalVars[n].proc == proc)
+			{
+				dump_var( n );
+			}
 		}
 	}
 }
@@ -455,11 +458,31 @@ void dump_global()
 {
 	int n;
 
+	// dump global vars
+
 	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].varName == NULL) return;
-		dump_var( n );
+
+		if (globalVars[n].proc == 0)  
+		{
+			dump_var( n );
+		}
 	}
+
+	// proc
+
+	for (n=0;n<var_count[0];n++)
+	{
+		if (globalVars[n].varName == NULL) return;
+
+		if (globalVars[n].var.type == type_proc)  
+		{
+			dump_var( n );
+			dump_local( globalVars[n].proc );
+		}
+	}
+
 }
 
 void dump_prog_stack()
