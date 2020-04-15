@@ -292,10 +292,12 @@ void dump_var( int n)
 	{
 		dump_var_ptr( n, globalVars + n , var );
 	}
+#ifdef show_dump_vars_undefined_yes
 	else
 	{
 		dump_var_ptr_undefined( n, globalVars + n );
 	}
+#endif
 }
 
 
