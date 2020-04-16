@@ -104,7 +104,7 @@ AmosPro support:
 
 Note: 
 -----
-Unlike AMOS Pro, Amos Kittens probably have something on stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just a side effect. (I like to keep this because it the way modern programing languages works.)
+Unlike AMOS Pro, Amos Kittens probably have something on the stack after the procedure returns, so you most likely can use it as it was a "function".. but that is just a side effect. (I like to keep this because it the way modern programing languages works.)
 
 Note about machine Code (or Amos lowlevel commands)
 ------------------------------------
@@ -137,6 +137,6 @@ And finally, I do not have any right to orginal trademarks, like the graphics / 
 There is no such thing as abandonware in copyright laws, just because its not on sale does man you have right to distribute commercial software. what suggest is linking to official sites that have right download software from, or a provide links to sites where you can buy it.
 
 Amos Kittens is only legal because the patents if any have expired, they are limited to 20 years.
-"Amos" is a common name like Stave or Fredrik, so should not a issue to use.
+"Amos" is a common name like Stave or Fredrik, so should not be a issue to use.
 
 Amos kittens was started after XAMOS author Stephen Harvey-Brooks (Mequa) of JAMOS/XAMOS passed away in 2015, he was responsible for different AMOS like interpreters. XAMOS was another attempt to revive the AMOS Basic language. As no one was carry the flag at time.
