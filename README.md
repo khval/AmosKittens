@@ -41,9 +41,13 @@ https://github.com/khval/AmosKittens/blob/master/commands.md
 Kittens does not support the old extension format, but I have recreated some of old extensions in order for your AMOS programs to work, please note that some of the extensions are not fully implemented, download and check the status page on this projects here.
 
 https://github.com/khval/kittyCraft.library
+
 https://github.com/khval/kittyMusic.library
+
 https://github.com/khval/kittyTurbo.library
+
 https://github.com/khval/kittycompact.library
+
 
 To start a game or program you type:
 AmosKittens [dir]/[filename.amos]
@@ -54,8 +58,6 @@ If AmosKittens return with a token number, It might be using a command this not 
 
 Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this is the most advanced version of Amos Pro right now, there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
 Amos Kittens was tested whit amos programs written in AMOS PRO 2.0, so no garanties.
-
-Amos Pro should not be bundled with this package, I do not own it, I have no copyrights to the originals Amos Pro binary’s or AmosPro source code and the software license of Amos Pro is disputed, plus who owns it also not clear. you do so on your own risk.
 
 Debuging Amos Kittens:
 ----------------------
@@ -123,3 +125,18 @@ https://github.com/khval/AmosKittens/issues/26
 Orginal Amos Kittens source code can be found here:
 --------------------------------------
 https://github.com/khval/AmosKittens
+
+Legal:
+------
+Amos Pro should not be bundled with this package, I do not own it, I have no copyrights to the originals Amos Pro binary’s or AmosPro source code and the software license of Amos Pro is disputed, plus who owns it also not clear to me. So if you do so its on your own risk.
+
+What we know is that Amos Pro was published by Europress they had the copyright, but the source code was released as BSD style license by clickteam, I believe it was also under MIT license for a while, François Lionet later wonted to change License to GPL style license, on Facebook groups, we do not need the source, and we should not use it, for this project. 
+
+And finally, I do not have any right to orginal trademarks, like the graphics / logos / designs, I do not own the “Amos The Creator”, "Amos 3D“, "Easy Amos”, “Amos Professional”, or any of these names, so please do not bundle trademarked graphics / designs with this package. I’m not responsible for breach of copyright or trademark. If trademarks are being protected or not is also unclear as this point.
+
+There is no such thing as abandonware in copyright laws, just because its not on sale does man you have right to distribute commercial software. what suggest is linking to official sites that have right download software from, or a provide links to sites where you can buy it.
+
+Amos Kittens is only legal because the patents if any have expired, they are limited to 20 years.
+"Amos" is a common name like Stave or Fredrik, so should not a issue to use.
+
+Amos kittens was started after XAMOS author Stephen Harvey-Brooks (Mequa) of JAMOS/XAMOS passed away in 2015, he was responsible for different AMOS like interpreters. XAMOS was another attempt to revive the AMOS Basic language. As no one was carry the flag at time.
