@@ -152,5 +152,5 @@ Redesigned all GUI elements, it removed all design elements from Amos Pro,
 it does not include any of the interface normally required by Amos Pro.
 and all text normally in the resource is removed, should not be needed in Amos Kittens.
 
-(Some of programs written in Amos Basic, can have colors hard coded, 
+(Some of programs written in Amos Basic Language, can have colors hard coded, 
 and therefor can ignore the colors in the default resource.)
