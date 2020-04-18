@@ -1327,7 +1327,7 @@ int main(int args, char **arg)
 			KittyBaseInfo.rgb[n] = (DefaultPalette[n].r << 4 & 0xF00) | (DefaultPalette[n].g & 0xF0) | (DefaultPalette[n].b >> 4);
 		}
 
-		__load_bank__( (char *) "AmosPro_System:APSystem/AMOSPro_Default_Resource.Abk",-2);
+		__load_bank__( (char *) "progdir:kittySystem/kittens_default_resource.Abk",-2);
 		__load_bank__( (char *) "progdir:kittySystem/mouse.abk",-3);
 
 		// set default values.
