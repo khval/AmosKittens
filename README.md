@@ -152,9 +152,9 @@ Assets / resources included:
 
 * A new default resource for Amos Kittens.
 
-Redesigned all GUI elements, it removed all design elements from Amos Pro, 
-it does not include any of the interface normally required by Amos Pro.
-and all text normally in the resource is removed, should not be needed in Amos Kittens.
+Redesigned all GUI elements, removed all design elements from Amos Pro, Size of graphics elements cannot be changed, interface language scripts, do not scale, position and widths / heights are defined by pixels, also minimum with of button is 16 pixels.
 
-(Some of programs written in Amos Basic Language, can have colors hard coded, 
+the default resource for amos kittens does not include any of the interface scripts normally required by Amos Pro. And all text normally in the resource is removed, this should not be needed in Amos Kittens.
+
+(Some of the programs written in Amos Basic Language, can have colors hard coded, 
 and therefor can ignore the colors in the default resource.)
