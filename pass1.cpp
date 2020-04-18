@@ -826,9 +826,16 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	{
 		if (token == cmd->id )
 		{
-			pass1_printf("%08x %20s:%08d stack is %d cmd stack is %d flag %d token %04x - name %s\n",
-						ptr-_file_start_, __FUNCTION__,__LINE__, instance_cmdStack, instance_cmdStack, kittyStack[__stack].state, token, TokenName(token));
+#ifdef show_pass1_tokens_yes
 
+			getLineFromPointer(ptr);
+			printf("Line %08d offset %08x token %04x - name %s\n",
+						lineFromPtr.line,
+						ptr-_file_start_,
+						token, 
+						TokenName(token));
+
+#endif
 
 			// ptr points to data of the token. (+2)
 
