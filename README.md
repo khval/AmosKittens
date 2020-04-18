@@ -140,3 +140,17 @@ Amos Kittens is only legal because the patents if any have expired, they are lim
 "Amos" is a common name like Stave or Fredrik, so should not be a issue to use.
 
 Amos kittens was started after XAMOS author Stephen Harvey-Brooks (Mequa) of JAMOS/XAMOS passed away in 2015, he was responsible for different AMOS like interpreters. XAMOS was another attempt to revive the AMOS Basic language. As no one was carry the flag at time.
+
+Assets / resources included:
+------------------------------------
+
+* A new redesigned mouse pointer it also contains new patterns, in 256 colors.
+
+* A new default resource for Amos Kittens.
+
+Redesigned all GUI elements, it removed all design elements from Amos Pro, 
+it does not include any of the interface normally required by Amos Pro.
+and all text normally in the resource is removed, should not be needed in Amos Kittens.
+
+(Some of programs written in Amos Basic, can have colors hard coded, 
+and therefor can ignore the colors in the default resource.)
