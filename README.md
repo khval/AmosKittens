@@ -134,7 +134,7 @@ What we know is that Amos Pro was published by Europress they had the copyright,
 
 There is no such thing as abandonware in copyright laws, just because its not on sale does man you have right to distribute commercial software. what suggest is linking to official sites that have right download software from, or a provide links to sites where you can buy it. 
 
-(But there some thing called public domain, only some forgot to include copyright notice, or copyright is over 70 years, end up in public domain. Or if the license is public domain license.)
+(But there some thing called public domain, only if someone forgot to include copyright notice, or copyright is over 70 years old, can it end up in public domain. Or if the license is public domain license. US law.)
 
 And finally, I do not have any right to orginal trademarks, like the graphics / logos / designs, I do not own the “Amos The Creator”, "Amos 3D“, "Easy Amos”, “Amos Professional”, or any of these names, so please do not bundle trademarked graphics / designs with this package. I’m not responsible for breach of copyright or trademark. If trademarks are being protected or not is also unclear as this point.
 
