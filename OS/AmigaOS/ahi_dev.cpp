@@ -515,10 +515,6 @@ void makeChunk(uint8_t * data,int offset, int size, int totsize, int channel, in
 
 	if (chunk)
 	{
-		int8_t *s8bit;
-		uint8_t *u8bit;
-		uint8_t *u8bit_e;
-
 		chunk[0] -> size = size;
 		chunk[0] -> bytesPerSecond = bytesPerSecond;
 
