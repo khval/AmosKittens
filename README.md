@@ -141,6 +141,8 @@ Amos Kittens is only legal because the patents if any have expired, they are lim
 
 Amos kittens was started after XAMOS author Stephen Harvey-Brooks (Mequa) of JAMOS/XAMOS passed away in 2015, he was responsible for different AMOS like interpreters. XAMOS was another attempt to revive the AMOS Basic language. As no one was carry the flag at time.
 
+Amos Kittens is a direct decedent of the Amos2Ascii project started in 2017, it also depends on earlier work of retroMode.library started in October 2017.
+
 Assets / resources included:
 ------------------------------------
 
