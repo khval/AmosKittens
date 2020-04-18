@@ -9,7 +9,7 @@ struct error
 extern struct error errorsTestTime[];
 extern struct error errorsRunTime[];
 
-#ifdef __amoskittens__
+#if defined(__amoskittens__) || defined(__amoskittens_interface_test__)
 extern void setError( int _code, char * _pos ) ;
 #endif
 

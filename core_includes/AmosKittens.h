@@ -751,7 +751,7 @@ struct KittyInstance
 	LONG volume;
 };
 
-#ifdef __amoskittens__
+#if defined(__amoskittens__)
 extern char *(*jump_mode) (struct reference *ref, char *ptr);
 extern char *jump_mode_goto (struct reference *ref, char *ptr);
 extern char *jump_mode_gosub (struct reference *ref, char *ptr);
@@ -759,10 +759,13 @@ extern void (**do_input) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern char *(**do_to) ( struct nativeCommand *cmd, char *tokenBuffer );
 extern char *do_to_default( struct nativeCommand *cmd, char *tokenbuffer );
 extern void do_std_next_arg(nativeCommand *cmd, char *ptr);
-extern struct KittyInstance instance;
 extern struct kittyData kittyStack[];
 extern struct glueCommands cmdTmp[];
 #define last_var instance.last_var
+#endif
+
+#if defined(__amoskittens__) || defined(__amoskittens_interface_test__)
+extern struct KittyInstance instance;
 #endif
 
 #endif

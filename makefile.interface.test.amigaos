@@ -12,14 +12,18 @@ VERSION = 1
 
 warnings = -Wuninitialized
 
-opt=-Dtest_app
+opt=-D__amoskittens_interface_test__
+
+inc = -I./ -I../../ -Isdk:include/amoskittens
 
 objects_dir = objs_interface/
 
 main_objects = os/amigaos/stuff.cpp \
+			interfacelanguage.cpp \
+			AmosString.cpp \
 			screen_helper.cpp
 
-main_SRCS = interfaceTest.cpp
+main_SRCS = tests/interfaceTest.cpp
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
 objects = $(main_objects:%.cpp=%.o)
@@ -32,10 +36,10 @@ show:
 	@echo $(objects_in_dir)
 
 ${objects_dir}%.o:		%.cpp	debug.h 
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ ${opt} $(@:${objects_dir}%.o=%.cpp) -o $@
+	g++ $(warnings) -c -O2 $(inc) ${opt} -D__USE_INLINE__  $(@:${objects_dir}%.o=%.cpp) -o $@
 
-interfaceTest.exe:  interfaceTest.cpp ${objects_in_dir} AmalCompiler.h
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
+tests/interfaceTest.exe:  tests/interfaceTest.cpp ${objects_in_dir} AmalCompiler.h
+	g++ $(warnings) -O2 $(inc) -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
 
 clean:
 	delete $(programs) ${objects_in_dir}
