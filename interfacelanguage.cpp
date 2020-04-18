@@ -15,6 +15,7 @@
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <proto/retroMode.h>
+#include <proto/kittyCompact.h>
 #include <string.h>
 extern struct RastPort font_render_rp;
 #endif
@@ -70,9 +71,11 @@ extern uint8_t getByte( char *adr, int &pos );
 extern uint16_t getWord( char *adr, int &pos );
 extern uint32_t getLong( char *adr, int &pos );
 
+/*
 extern bool convertPacPic( unsigned char *data, struct PacPicContext *context );
 extern bool convertPacPicData( unsigned char *data, int o , struct PacPicContext *context );
 extern void plotUnpackedContext( struct PacPicContext *context, struct retroScreen *screen, int x0, int y0 );
+*/
 
 extern int os_text_height(struct stringData *txt);
 extern int os_text_base(struct stringData *txt);
@@ -234,8 +237,6 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 	pos = header -> img_offset + 2 + block_nr*4;
 	pos = getLong( bank1->start, pos );
 
-#if 0
-
 	if (pos)
 	{
 		struct PacPicContext context;
@@ -255,8 +256,6 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 			}
 		}
 	}
-
-#endif
 
 	return false;
 }

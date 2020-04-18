@@ -78,6 +78,9 @@ struct GraphicsIFace		*IGraphics = NULL;
 struct Library			*LayersBase = NULL;
 struct LayersIFace		*ILayers = NULL;
 
+struct Library			*kittyCompactBase = NULL;
+struct kittyCompactIFace	*IkittyCompact = NULL;
+
 APTR engine_mx = 0;
 APTR channel_mx[4] = { 0,0,0,0 };
 
@@ -135,7 +138,7 @@ const char *newsuffix  = ".library";
 void open_extension( const char *name, int id )
 {
 	int l;
-	char					*newName;
+	char					*newName = NULL;
 	char					*ext = strdup(name);
 	struct Library			*extBase = NULL;
 	struct kittyCompactIFace	*Iext = NULL;
@@ -203,6 +206,7 @@ BOOL init()
 	if ( ! open_lib( "layers.library", 54L , "main", 1, &LayersBase, (struct Interface **) &ILayers  ) ) return FALSE;
 	if ( ! open_lib( "workbench.library", 53 , "main", 1, &WorkbenchBase, (struct Interface **) &IWorkbench ) ) return FALSE;
 	if ( ! open_lib( "icon.library", 53, "main", 1, &IconBase, (struct Interface **) &IIcon) ) return FALSE;
+	if ( ! open_lib( "kittycompact.library", 53, "main", 1, &kittyCompactBase, (struct Interface **) &IkittyCompact) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -378,6 +382,9 @@ void closedown()
 
 	if (GraphicsBase) CloseLibrary(GraphicsBase); GraphicsBase = 0;
 	if (IGraphics) DropInterface((struct Interface*) IGraphics); IGraphics = 0;
+
+	if (kittyCompactBase) CloseLibrary(kittyCompactBase); kittyCompactBase = 0;
+	if (IkittyCompact) DropInterface((struct Interface*) IkittyCompact); IkittyCompact = 0;
 
 	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
