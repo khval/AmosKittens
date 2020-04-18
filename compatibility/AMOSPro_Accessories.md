@@ -9,7 +9,7 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor_Fixed.AMOS**
 
-(works maybe, takes lot time to start in debug mode)
+Not working, Somehow Amos kittens failed to load the Amos program code fully, under investigation.
 
 **Disc_Manager.AMOS**
 
