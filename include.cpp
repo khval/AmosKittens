@@ -127,6 +127,7 @@ unsigned char *nextToken_include( struct fileContext &file, unsigned short token
 				case 0x0012:	file.ptr += ReferenceByteLength( (char *) file.ptr+2);	break;
 				case 0x0018:	file.ptr += ReferenceByteLength( (char *) file.ptr+2);	break;
 				case 0x0026:	file.ptr += QuoteByteLength( (char *) file.ptr+2);		break;	// skip strings.
+				case 0x002E:	file.ptr += QuoteByteLength( (char *) file.ptr+2);		break;	// skip strings.				
 				case 0x064A:	file.ptr += QuoteByteLength( (char *) file.ptr+2);		break;	// skip strings.					
 				case 0x0652:	file.ptr += QuoteByteLength( (char *) file.ptr+2);		break;	// skip strings.
 				case 0x25B2:
@@ -146,6 +147,7 @@ unsigned char *nextToken_include( struct fileContext &file, unsigned short token
 	if (file.ptr<file.end)
 	{
 		printf("token %04x not found, in file %s at line number %d)\n", token, file.name, file.lineNumber );
+		printf("the last found token was: %04x\n",lastToken);
 		token_not_found = token;
 		return NULL;
 	}
