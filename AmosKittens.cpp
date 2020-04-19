@@ -99,7 +99,7 @@ struct extension_lib	kitty_extensions[32];
 unsigned int regs[16];
 extern unsigned int var_count[2];
 
-unsigned short token_not_found = 0xFFFF;	// so we know its not a token, token 0 exists.
+unsigned short token_not_found = 0x0000;
 
 struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 struct stackFrame *currentFrame = NULL;
@@ -1354,7 +1354,7 @@ int main(int args, char **arg)
 
 		file = newFile( filename );
 
-		if ((file)&&(instance.video)&&(init_error == false))
+		if (( ! token_not_found )&&(file)&&(instance.video)&&(init_error == false))
 		{
 			if (file -> start)
 			{

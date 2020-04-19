@@ -31,6 +31,7 @@
 #include "var_helper.h"
 #include "pass1.h"
 
+extern unsigned short token_not_found;
 
 // this should read tokens, and convert every token that needs some help.
 
@@ -145,6 +146,7 @@ unsigned char *nextToken_include( struct fileContext &file, unsigned short token
 	if (file.ptr<file.end)
 	{
 		printf("token %04x not found, in file %s at line number %d)\n", token, file.name, file.lineNumber );
+		token_not_found = token;
 		return NULL;
 	}
 
