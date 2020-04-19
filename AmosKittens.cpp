@@ -911,13 +911,6 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	return ptr;
 }
 
-char *includeNOP(nativeCommand *cmd,char *ptr)
-{
-	setError(22,ptr);
-	return ptr;
-}
-
-
 const char *noName = "<not found>";
 
 const char *TokenName( unsigned short token )

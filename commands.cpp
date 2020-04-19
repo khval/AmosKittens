@@ -2679,4 +2679,10 @@ char *cmdPrgUnder( struct nativeCommand *cmd, char *tokenBuffer )
 	return tokenBuffer;
 }
 
+char *includeNOP(nativeCommand *cmd,char *ptr)
+{
+	setError(22,ptr);
+	return ptr;
+}
+
 
