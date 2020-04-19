@@ -9,7 +9,7 @@ Error: undefined procedure --> Normaly there is a missing token (mssing command)
 
 **Amal_Editor_Fixed.AMOS**
 
-Not working, Somehow Amos kittens failed to load the Amos program code fully, under investigation.
+It does load, but does not render correct, after running the program, AmigaOS starts crashing…
 
 **Disc_Manager.AMOS**
 
