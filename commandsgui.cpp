@@ -28,6 +28,7 @@
 #include "commandsbanks.h"
 #include "kittyErrors.h"
 #include "engine.h"
+#include "amosString.h"
 
 #include "interfacelanguage.h"
 
@@ -403,6 +404,69 @@ char *guiDialogClose(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+struct stringData *dialog_open_arg_script(struct kittyData *arg)
+{
+	switch(arg -> type)
+	{
+		case type_string:
+				return arg -> str;
+
+		case type_int:
+				{
+					struct resourcebank_header *header; 
+					struct kittyBank *bank;
+					int idx = arg -> integer.value-1;
+					int hunk,pos,num_of_scripts,script_size,offset_data;
+
+					bank = findBank(current_resource_bank);
+					if (bank == NULL) return NULL;
+
+					header = (resourcebank_header*) bank->start;
+					if (header -> script_offset == 0) return NULL;
+
+					hunk = header -> script_offset ;
+					if ((hunk)&&(idx>=0))		// if index is correct and we have data
+					{
+				   		pos=hunk; 
+						num_of_scripts = getWord( bank->start, pos );
+
+						if (idx < num_of_scripts)
+						{
+							pos += idx * 4;		// move to offset.
+							offset_data = getLong( bank->start, pos );
+
+							if (offset_data)
+							{
+								printf("hunk is at offset: %08x\n",  hunk );
+								printf("Name should be at offset: %08x\n",  hunk + offset_data - 20 );
+								printf("Size should be at offset: %08x\n", hunk + offset_data );
+
+								pos = hunk + offset_data;
+								script_size = getWord( bank->start, pos );
+
+								printf("script name:\n[%.20s]\n", bank->start + hunk + offset_data - 20 );
+								printf("script:\n");
+								printf("%.*s\n", script_size, bank->start + pos );
+								getchar();
+								return toAmosString( (const char *) bank->start + pos , script_size );
+							}
+						}
+					}
+
+					// {num og scripts}.l
+					// {offsets from hunk to after name, offset is zero if no script}
+					// {
+					//	{name}.20
+					//	{size}.w
+					//	{script}.size
+					//	{\0}.b
+					// }									
+				}
+				break;
+	}
+	return NULL;
+}
+
 char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -417,18 +481,18 @@ char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 2:	id = getStackNum(__stack-1);
-				script = getStackString(__stack);			// this can also be a number
+				script = dialog_open_arg_script( kittyStack + __stack);
 				break;
 
 		case 3:
 				id = getStackNum(__stack-2);
-				script = getStackString(__stack-1);		// this can also be a number
+				script = dialog_open_arg_script( kittyStack+__stack -1);
 				varSize = getStackNum(__stack);
 				break;
 
 		case 4:
 				id = getStackNum(__stack-3);
-				script = getStackString(__stack-2);		// this can also be a number 
+				script = dialog_open_arg_script( kittyStack+__stack -2);
 				varSize = getStackNum(__stack-1);
 				bufferSize = getStackNum(__stack);
 				break;
