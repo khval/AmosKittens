@@ -32,7 +32,7 @@ Stops at "Screen Base" command, that is not implemented.
 
 **Resource_Bank_Maker.AMOS**
 
-Failes to open a dialog window, I tried to debug this one before.
+Interface script error, need to debug the script.
 
 **Sample_Bank_Maker.AMOS**
 
