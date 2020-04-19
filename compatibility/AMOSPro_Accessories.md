@@ -39,4 +39,4 @@ Failes to open a dialog window, I tried to debug this one before.
 
 **Sample_Bank_Maker.AMOS**
 
-Syntax error on line 1102
+ Call command gives "Syntax error" on Line 1102
