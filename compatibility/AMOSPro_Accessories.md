@@ -39,4 +39,5 @@ Failes to open a dialog window, I tried to debug this one before.
 
 **Sample_Bank_Maker.AMOS**
 
- Call command gives "Syntax error" on Line 1102
+ Crashes as soon as you try to load a sample, maybe something wrong on the stack.
+ The Amos program does use some 680x0 routines, I have no idea if they are compatible, or not.
