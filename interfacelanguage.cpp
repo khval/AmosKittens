@@ -2163,6 +2163,28 @@ void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
 	else ierror(1);
 }
 
+void icmd_NotEqual( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
+		{
+			ret = arg1.num != arg2.num ? ~0 : 0 ;
+		}
+
+		pop_context( context, 2);
+		push_context_num( context, ret );
+	}
+	else ierror(1);
+}
+
+
 void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -2668,6 +2690,7 @@ struct cmdinterface commands[]=
 	{"-",i_parm,NULL,icmd_Minus},
 	{"*",i_parm,NULL,icmd_Mul},
 	{"/",i_parm,NULL,icmd_Div},
+	{"\\",i_parm,NULL,icmd_NotEqual},
 
 	{NULL,i_normal,NULL,NULL}
 };
@@ -3112,7 +3135,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 				{
 					if (context -> stackp >0)
 					{
-						printf("there is stuff on the stack, there shoud be none.\n");
+						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
 					}
