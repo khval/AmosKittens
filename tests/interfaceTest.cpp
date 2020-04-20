@@ -1,7 +1,4 @@
 
-
-#include "stdafx.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,37 +6,36 @@
 #include <math.h>
 #include <signal.h>
 
-#include "config.h"
-
 #ifdef __amigaos4__
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#endif
+
+#include "config.h"
+#include "amosString.h"
 #include <amosKittens.h>
-
-extern char *asl();
-#endif
-
-#ifdef __linux__
-#include <sys/time.h>
-#include <unistd.h>
-#include <stdint.h>
-#include <signal.h>
-#include "os/linux/stuff.h"
-#include <retromode.h>
-#include <retromode_lib.h>
-#include <byteswap.h>
-#endif
+#include "interfacelanguage.h"
 
 struct KittyInstance instance;
-
 int breakpoint;
+
+struct Library 			*RetroModeBase = NULL;
+struct RetroModeIFace 	*IRetroMode = NULL;
+
+struct Library			*kittyCompactBase = NULL;
+struct kittyCompactIFace	*IkittyCompact = NULL;
+
+extern void draw_HyperText(struct zone_hypertext *zh);
+
+struct TextFont *topaz8_font = NULL;
 
 int main(int args, char **arg)
 {
 	int n;
-	char *script_mem;
+	struct cmdcontext context;
+
 	const char *script =    "IF     0VA 1=;" 
    "[" 
    "SIze   1VATW160+ SW MI,40;" 
@@ -71,18 +67,17 @@ int main(int args, char **arg)
    "]" 
    "EXit;" ;
 
-	script_mem = strdup(script);
+	context.script = toAmosString_char( (char *) script,strlen(script));
 
-	if (script_mem)
+	if (context.script)
 	{
-
-		printf("%s\n",script_mem);
+		printf("%s\n",&context.script ->ptr);
 		
 		printf("\n\n");
 
-		read_script(script_mem);
+		execute_interface_script( &context, 0);
 
-		free(script_mem);
+		sys_free(context.script);
 	}
 
 	return 0;
@@ -108,4 +103,29 @@ int engine_wait_key;
 
 void *findBank(int id)
 {}
+
+uint8_t getByte( char *adr, int &pos )
+{
+	uint8_t ret = *((uint8_t *) (adr + pos));
+	pos+=1;
+	return ret;
+}
+
+uint16_t getWord( char *adr, int &pos )
+{
+	short ret = *((uint16_t *) (adr + pos));
+	pos+=2;
+	return ret;
+}
+
+uint32_t getLong( char *adr, int &pos )
+{
+	short ret = *((uint32_t *) (adr + pos));
+	pos+=4;
+	return ret;
+}
+
+void getResourceStr(int)
+{
+}
 
