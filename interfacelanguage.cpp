@@ -3182,6 +3182,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 				{
 					if (context -> stackp >0)
 					{
+						printf("can't execute command '%s'\n",icmd -> name);
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
@@ -3311,7 +3312,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 				{
 					if (context -> stackp >0)
 					{
-						printf("there is stuff on the stack, there shoud be none.\n");
+						printf("can't execute command '%s'\n",icmd -> name);
+						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
 					}
