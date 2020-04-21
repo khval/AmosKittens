@@ -3097,8 +3097,8 @@ void test_interface_script( struct cmdcontext *context)
 		}
 
 		context -> at += context -> l;
-		dump_context_stack( context );
 	}
+	pop_context( context, context -> stackp );
 	context -> tested = true;
 }
 
