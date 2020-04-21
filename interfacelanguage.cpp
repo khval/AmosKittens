@@ -3070,6 +3070,8 @@ void test_interface_script( struct cmdcontext *context)
 			{
 				struct cmdinterface *icmd = &commands[cmd];
 
+				printf("%s:%s\n",__FUNCTION__,icmd -> name);
+
 				if (icmd -> type == i_normal) pop_context( context, context -> stackp );
 
 				if (icmd -> pass)
@@ -3266,7 +3268,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	{
 		while (*context -> at==' ') context -> at++;
 
-		printf("%s\n", context -> at);
+//		printf("%s\n", context -> at);
 
 		if (breakpoint)
 		{
@@ -3304,11 +3306,15 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 			{
 				struct cmdinterface *icmd = &commands[cmd];
 
+				printf("%s:%s\n",__FUNCTION__,icmd -> name);
+
 				if (icmd -> type == i_normal)
 				{
 					if (context -> stackp >0)
 					{
 						printf("can't execute command '%s'\n",icmd -> name);
+						printf("at location %d\n", (unsigned int) ((context -> at) - (&context -> script -> ptr)) );
+
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
