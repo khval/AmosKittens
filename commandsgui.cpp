@@ -283,7 +283,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					script = getStackString(__stack);
 					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 					execute_interface_script( &context, -1 );
-					cleanup_inerface_context( &context );
+					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -299,7 +299,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					if (var2s) isetvarstr( &context,1,var2s);
 
 					execute_interface_script( &context, -1 );
-					cleanup_inerface_context( &context );
+					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -317,7 +317,7 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					if (var2s) isetvarstr( &context,1,var2s);
 
 					execute_interface_script( &context, -1 );
-					cleanup_inerface_context( &context );
+					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -387,7 +387,7 @@ char *_guiDialogClose( struct glueCommands *data, int nextToken )
 				retroPutBlock( screen , screen -> double_buffer_draw_frame, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y, 0xFF );
 			}
 
-			cleanup_inerface_context( context );
+			cleanup_interface_context( context );
 			erase_interface_context( context );
 		}
 	}

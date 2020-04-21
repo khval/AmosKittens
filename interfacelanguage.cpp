@@ -2935,7 +2935,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 
 }
 
-void cleanup_inerface_context( struct cmdcontext *context )
+void cleanup_interface_context( struct cmdcontext *context )
 {
 	context -> at = NULL;
 
