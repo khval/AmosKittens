@@ -1,5 +1,4 @@
 
-#include "stdafx.h"
 #include <stdint.h>
 
 #ifdef _MSC_VER
@@ -354,9 +353,6 @@ void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
 }
-
-// ---
-
 
 
 static int get_dialog_x(struct cmdcontext *context)
