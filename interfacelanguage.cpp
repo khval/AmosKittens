@@ -2184,6 +2184,48 @@ void icmd_NotEqual( struct cmdcontext *context, struct cmdinterface *self )
 	else ierror(1);
 }
 
+void icmd_More( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
+		{
+			ret = arg1.num > arg2.num ? ~0 : 0 ;
+		}
+
+		pop_context( context, 2);
+		push_context_num( context, ret );
+	}
+	else ierror(1);
+}
+
+void icmd_Less( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
+		{
+			ret = arg1.num < arg2.num ? ~0 : 0 ;
+		}
+
+		pop_context( context, 2);
+		push_context_num( context, ret );
+	}
+	else ierror(1);
+}
+
 
 void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -2606,6 +2648,9 @@ struct cmdinterface symbols[]=
 {
 
 	{"=",i_parm,NULL,icmd_Equal },
+	{"\\",i_parm,NULL,icmd_NotEqual},
+	{">",i_parm,NULL,icmd_More },
+	{"<",i_parm,NULL,icmd_Less },
 	{";",i_normal,icmd_NextCmd,icmd_NextCmd},
 	{"[",i_normal,NULL,icmd_block_start},
 	{"]",i_normal,NULL,icmd_block_end},
@@ -2691,6 +2736,8 @@ struct cmdinterface commands[]=
 	{"*",i_parm,NULL,icmd_Mul},
 	{"/",i_parm,NULL,icmd_Div},
 	{"\\",i_parm,NULL,icmd_NotEqual},
+	{">",i_parm,NULL,icmd_More },
+	{"<",i_parm,NULL,icmd_Less },
 
 	{NULL,i_normal,NULL,NULL}
 };
