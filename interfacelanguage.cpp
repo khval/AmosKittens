@@ -2965,7 +2965,7 @@ void cleanup_interface_context( struct cmdcontext *context )
 
 	if (context -> script)
 	{
-		free(	context -> script );
+		sys_free( context -> script );
 		context -> script = NULL;
 	}
 
