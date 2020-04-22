@@ -3162,6 +3162,11 @@ void test_interface_script( struct cmdcontext *context)
 		context -> at += context -> l;
 	}
 	pop_context( context, context -> stackp );
+
+
+	if (*context -> at == 0) 		printf("test exited becouse its at \\0 char symbol\n");
+	if (context -> error != false)	printf("test exited becouse of error\n");
+
 	context -> tested = true;
 }
 
