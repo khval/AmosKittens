@@ -2813,12 +2813,12 @@ static void remove_lower_case(char *txt)
 		if (is_text == false)
 		{
 			// remove noice.
-			while (((*c>='a')&&(*c<='z'))||(*c=='#'))	{ c++;  }
+			while (((*c>='a')&&(*c<='z'))||(*c=='#')||(*c=='\n'))	{ c++;  }
 
 			if (d!=txt)
 			{
 				char ld = *(d-1);
-				if (	((ld==' ')||(ld==',')||(ld==';'))	&&	(*c==' ')	)	space_repeat = true;
+				if ( ((ld==' ')||(ld==',')||(ld==';'))&&(*c==' ') )	space_repeat = true;
 			}
 		}
 
