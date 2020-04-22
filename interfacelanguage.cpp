@@ -3121,7 +3121,13 @@ void test_interface_script( struct cmdcontext *context)
 				{
 					push_context_num( context, num );
 				}
-				else 	break;
+				else 
+				{
+					printf("its not a command, its not a string, its not a number wtf\n");
+					printf("Look at \"%.20s\"\n",context -> at);
+					context -> error = true;
+					break;
+				}
 			}
 			else 	
 			{
@@ -3227,7 +3233,11 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 				{
 					push_context_num( context, num );
 				}
-				else 	break;
+				else 	
+				{
+					context -> error = true;
+					break;
+				}
 			}
 			else 	
 			{
@@ -3241,6 +3251,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
+						context -> error = true;
 					}
 				}
 
