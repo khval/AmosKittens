@@ -644,6 +644,22 @@ void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 10;
 }
 
+void _icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	pop_context( context, 6);
+	context -> cmd_done = NULL;
+}
+
+
+void icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_ct;
+	context -> args = 6;
+}
+
+
 //-----
 
 
@@ -2672,6 +2688,7 @@ struct cmdinterface commands[]=
 	{"BX",i_parm,NULL,icmd_BaseX},
 	{"BY",i_parm,NULL,icmd_BaseY},
 	{"CX",i_parm,NULL,icmd_cx},
+	{"CT",i_normal,NULL,icmd_ct},
 	{"ED",i_normal,NULL,NULL},
 	{"EX",i_normal,NULL,icmd_Exit},
 	{"GB",i_normal,NULL,icmd_GraphicBox},
