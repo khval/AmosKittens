@@ -263,6 +263,7 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char *at;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	at = context->at;
 
 	if (context -> stackp > 0)
@@ -285,7 +286,6 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_If;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
-
 }
 
 void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
@@ -641,7 +641,6 @@ void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_HyperText;
-	context -> lstackp = context -> stackp;
 	context -> args = 10;
 }
 
@@ -3314,7 +3313,6 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 					{
 						printf("can't execute command '%s'\n",icmd -> name);
 						printf("at location %d\n", (unsigned int) ((context -> at) - (&context -> script -> ptr)) );
-
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
