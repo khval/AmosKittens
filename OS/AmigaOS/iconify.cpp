@@ -108,7 +108,7 @@ void	disable_Iconify()
 
 	open_engine_window(
 		window_save_state.window_left,
-		window_save_state.window_left,
+		window_save_state.window_top,
 		window_save_state.window_width,
 		window_save_state.window_height);
 }
