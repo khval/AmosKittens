@@ -120,7 +120,7 @@ config.h: $(config_tools:.tool.cpp=.tool.exe)
 clean:
 	execute uninstall_core_headers
 	@delete $(programs) $(config_tools:.tool.cpp=.tool.exe) $(objects_in_dir) config.h
-
+	@delete ((~(amoskittens#?))#?(#?.info))
 
 .PHONY: revision 
 revision:
