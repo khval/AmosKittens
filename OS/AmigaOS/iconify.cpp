@@ -21,26 +21,13 @@
 #include <workbench/startup.h>
 #include <proto/asl.h>
 
-extern bool open_engine_window( int window_left, int window_top, int window_width, int window_height );
-extern void close_engine_window( );
-
-extern struct Window *My_Window;
+#include "common_screen.h"
 
 struct MsgPort *iconifyPort = NULL;
 struct DiskObject *dobj = NULL;
 struct AppIcon *appicon;
 ULONG iconify_sig;
 
-struct windowclass
-{
-	struct Window *win;
-	ULONG window_left;
-	ULONG window_top;
-	ULONG window_width;
-	ULONG window_height;
-};
-
-struct windowclass window_save_state;
 
 void save_window_attr(windowclass *self)
 {
