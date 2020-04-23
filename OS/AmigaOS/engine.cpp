@@ -27,6 +27,8 @@
 #include "spawn.h"
 #include "init.h"
 
+#include "common_screen.h"
+
 #include <proto/asl.h>
 
 extern int sig_main_vbl;
@@ -34,16 +36,12 @@ extern bool running;			//
 extern bool interpreter_running;	// interprenter is really running.
 extern int keyState[256];
 extern char *F1_keys[20];
-
-enum
-{
-	GID_ICONIFY = 1,
-	GID_PREFS
-};
-
 extern struct Menu *amiga_menu;
 
+extern void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs);
+
 struct Process *EngineTask = NULL;
+static struct Screen *fullscreen_screen = NULL;
 extern UWORD *EmptyPointer;
 
 bool engine_wait_key = false;
@@ -51,7 +49,6 @@ bool engine_stopped = false;
 bool engine_key_repeat = false;
 bool engine_key_down = false;
 bool engine_mouse_hidden = false;
-
 
 bool synchro_on = true;
 
@@ -61,6 +58,8 @@ extern bool curs_on;
 extern int _keyshift;
 
 extern APTR engine_mx ;
+struct windowclass window_save_state;
+struct windowclass window_normal_saved;
 
 extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
@@ -81,8 +80,17 @@ int cursor_color = 3;
 void clearBobsOnScreen(retroScreen *screen);
 void drawBobsOnScreenExceptBob( struct retroScreen *screen, struct retroSpriteObject *exceptBob );
 
-struct Gadeget *IcoGad = NULL;
-struct Image * IcoImg = NULL;
+extern void draw_comp_bitmap(struct BitMap *the_bitmap,struct BitMap *the_bitmap_dest, int width,int height, int wx,int wy,int ww, int wh);
+
+struct kIcon
+{
+	struct Gadeget *gadget ;
+	struct Image *image ;
+};
+
+struct kIcon iconifyIcon = { NULL, NULL };
+struct kIcon zoomIcon = { NULL, NULL };
+
 
 extern void channel_amal( struct kittyChannel *self );
 extern void channel_anim( struct kittyChannel *self );
@@ -157,39 +165,67 @@ struct Gadeget *add_window_button(struct Image *img, ULONG id)
 	return retGad;
 }
 
+void open_icon(struct DrawInfo *dri, ULONG imageID, ULONG gadgetID, struct kIcon *icon )
+{
+	icon -> image = (struct Image *) NewObject(NULL, "sysiclass", SYSIA_DrawInfo, dri, SYSIA_Which, imageID, TAG_END );
+	if (icon -> image)
+	{
+		icon -> gadget = add_window_button( icon -> image, gadgetID);
+	}
+}
+
+void dispose_icon(struct Window *win, struct kIcon *icon)
+{
+	if (icon -> gadget)
+	{
+		RemoveGadget( win, (struct Gadget *) icon -> gadget );
+		icon -> gadget = NULL;
+	}
+
+	if (icon -> image)
+	{
+		DisposeObject( (Object *) icon -> image );
+		icon -> image = NULL;
+	}
+}
+
 
 bool open_engine_window( int window_left, int window_top, int window_width, int window_height )
 {
 	My_Window = OpenWindowTags( NULL,
-				WA_Left,			window_left,
-				WA_Top,			window_top,
-				WA_InnerWidth,	window_width,
+				WA_PubScreen,       (ULONG) fullscreen_screen,
+				WA_Left,			fullscreen_screen ? 0 : window_left,
+				WA_Top,			fullscreen_screen ? 0 : window_top,
+				WA_InnerWidth,		window_width,
 				WA_InnerHeight,	window_height,
+
+				WA_MinWidth, 	instance.video -> width, 
+				WA_MinHeight,   instance.video -> height,
+				WA_MaxWidth,      ~0,
+				WA_MaxHeight,       ~0,  
+
 				WA_SimpleRefresh,	TRUE,
-				WA_CloseGadget,	TRUE,
-				WA_DepthGadget,	TRUE,
-				WA_DragBar,		TRUE,
-				WA_Borderless,	FALSE,
-				WA_SizeGadget,	TRUE,
-				WA_SizeBBottom,	TRUE,
+				WA_CloseGadget,	fullscreen_screen ? FALSE : TRUE,
+				WA_DepthGadget,	fullscreen_screen ? FALSE : TRUE,
+				WA_DragBar,		fullscreen_screen ? FALSE : TRUE,
+				WA_Borderless,	fullscreen_screen ? TRUE : FALSE,
+				WA_SizeGadget,	fullscreen_screen ? FALSE : TRUE,
+				WA_SizeBBottom,	fullscreen_screen ? FALSE : TRUE,
 				WA_NewLookMenus,	TRUE,
-				WA_Title, "Amos Kittens",
-				WA_Activate,        TRUE,
-				WA_Flags, WFLG_RMBTRAP| WFLG_REPORTMOUSE,
-				WA_IDCMP,           IDCMP_COMMON,
+				WA_Title,			fullscreen_screen ? NULL : "Amos Kittens",
+				WA_Activate,		TRUE,
+				WA_Flags,			WFLG_RMBTRAP| WFLG_REPORTMOUSE,
+				WA_IDCMP,		IDCMP_COMMON,
 			TAG_DONE);
 
-	if (My_Window)
+	if ((My_Window) && ( fullscreen_screen == NULL ))
 	{
 		struct DrawInfo *dri = GetScreenDrawInfo(My_Window -> WScreen);
 
 		if (dri)
 		{
-			IcoImg = (struct Image *) NewObject(NULL, "sysiclass", SYSIA_DrawInfo, dri, SYSIA_Which, ICONIFYIMAGE, TAG_END );
-			if (IcoImg)
-			{
-				IcoGad = add_window_button(IcoImg, GID_ICONIFY);
-			}
+			open_icon( dri, GUPIMAGE, GID_FULLSCREEN, &zoomIcon );
+			open_icon( dri, ICONIFYIMAGE, GID_ICONIFY, &iconifyIcon );
 		}
 	}
 
@@ -200,18 +236,8 @@ void close_engine_window( )
 {
 	if (My_Window)
 	{
-		if (IcoGad)
-		{
-			RemoveGadget( My_Window, (struct Gadget *) IcoGad );
-			IcoGad = NULL;
-		}
-
-		if (IcoImg)
-		{
-			DisposeObject( (Object *) IcoImg );
-			IcoImg = NULL;
-		}
-
+		dispose_icon( My_Window, &zoomIcon);
+		dispose_icon( My_Window, &iconifyIcon);
 		ClearPointer( My_Window );
 		CloseWindow( My_Window );
 		My_Window = NULL;
@@ -551,6 +577,82 @@ bool menu_shortcut( ULONG Code ,  ULONG Qualifier)
 	return false;
 }
 
+
+void open_fullscreen(ULONG ModeID)
+{
+	fullscreen_screen = OpenScreenTags ( NULL,
+			SA_DisplayID,  ModeID,
+			SA_Type, PUBLICSCREEN,
+			SA_PubName, "kittens Screen",
+			SA_Title, "Kittens Screen",
+			SA_ShowTitle, FALSE,
+			SA_Quiet, 	TRUE,
+			SA_LikeWorkbench, TRUE,
+		TAG_DONE);
+}
+
+void enable_fullscreen()
+{
+	double window_aspect;
+	ULONG ModeID = 0x0;
+	int max_w,max_h;
+
+	max_w = 0;
+	max_h = 0;
+
+	engine_lock();
+
+	window_save_state.win = My_Window;
+	save_window_attr(&window_save_state);
+
+	window_normal_saved.win = My_Window;
+	save_window_attr(&window_normal_saved);
+
+	close_engine_window();
+
+	window_aspect = (double) window_save_state.window_width / (double) window_save_state.window_height;
+
+	struct Screen *screen = LockPubScreen(NULL);
+	if (screen)
+	{
+		if (ModeID == 0x0) ModeID = GetVPModeID(&screen->ViewPort);
+		window_save_state.window_height = screen -> Height;
+		window_save_state.window_width = window_aspect * (double) window_save_state.window_height;
+		UnlockPubScreen(NULL,screen);
+	}
+
+	open_fullscreen(ModeID);
+
+	open_engine_window(
+		window_save_state.window_left,
+		window_save_state.window_top,
+		window_save_state.window_width,
+		window_save_state.window_height);
+
+	engine -> window = My_Window;
+	engine_unlock();
+}
+
+void disable_fullscreen()
+{
+	engine_lock();
+	close_engine_window();
+
+	CloseScreen( fullscreen_screen);
+	fullscreen_screen = NULL;
+
+	open_engine_window(
+		window_normal_saved.window_left,
+		window_normal_saved.window_top,
+		window_normal_saved.window_width,
+		window_normal_saved.window_height);
+
+	engine -> window = My_Window;
+	engine_unlock();
+}
+
+
+
 void handel_window()
 {
 	ULONG Class;
@@ -575,9 +677,20 @@ void handel_window()
 							break;
 
 					case IDCMP_GADGETUP:
-							empty_que( engine -> window -> UserPort );
-							enable_Iconify(); 
-							engine -> window = NULL;
+
+							switch (GadgetID)
+							{
+								case GID_ICONIFY:
+
+									empty_que( engine -> window -> UserPort );
+									enable_Iconify(); 
+									engine -> window = NULL;
+									break;
+
+								case GID_FULLSCREEN:
+									enable_fullscreen(); 
+									break;
+							}
 							return;
 
 					case IDCMP_MOUSEBUTTONS:
@@ -593,8 +706,28 @@ void handel_window()
 
 					case IDCMP_MOUSEMOVE:
 
-							instance.engine_mouse_x = mouse_x - engine -> window -> BorderLeft;
-							instance.engine_mouse_y = mouse_y - engine -> window -> BorderTop;
+							{
+								int ww;
+								int wh;
+
+								if (fullscreen_screen)
+								{
+									ww = My_Window->Width ;
+									wh = My_Window->Height ;
+									instance.engine_mouse_x = mouse_x * instance.video -> width / ww;
+									instance.engine_mouse_y = mouse_y * instance.video -> height / wh;
+								}
+								else
+								{
+									ww = My_Window->Width - My_Window->BorderLeft - My_Window->BorderRight;
+									wh = My_Window->Height - My_Window->BorderTop - My_Window->BorderBottom;
+									mouse_x -= engine -> window -> BorderLeft;
+									mouse_y -= engine -> window -> BorderTop;
+									instance.engine_mouse_x = mouse_x * instance.video -> width / ww;
+									instance.engine_mouse_y = mouse_y * instance.video -> height / wh;
+								}
+							}
+
 							break;
 
 					case IDCMP_MENUPICK:
@@ -621,13 +754,29 @@ void handel_window()
 
 					case IDCMP_RAWKEY:
 
+							ccode = Code & ~IECODE_UP_PREFIX;
+
+							if (Code & IECODE_UP_PREFIX)
+							{
+								if (ccode == RAWKEY_F12)
+								{
+									if (fullscreen_screen) 
+									{
+										disable_fullscreen();
+									}
+									else
+									{
+										enable_fullscreen();
+									}
+									break;
+								}
+							}
+
 							if (menu_shortcut( Code ,  Qualifier)) break;
 
 							_keyshift = Qualifier;
 							if (Qualifier & IEQUALIFIER_REPEAT) break;		// repeat done by Amos KIttens...
 							 
-							ccode = Code & ~IECODE_UP_PREFIX;
-
 							{
 								int emu_code = Code &~ IECODE_UP_PREFIX;
 								if (emu_code==75) emu_code = 95;
@@ -635,7 +784,6 @@ void handel_window()
 							}
 
 							engine_wait_key = false;
-
 
 							if ((ccode >= RAWKEY_F1) && (ccode <= RAWKEY_F10))
 							{
@@ -912,7 +1060,9 @@ void main_engine()
 				WaitTOF();
 				if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 
-				BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
+				if (false)
+				{
+					BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, engine->rp.BitMap,
 						BLITA_SrcX, 0,
 						BLITA_SrcY, 0,
@@ -923,6 +1073,12 @@ void main_engine()
 						BLITA_DestX, My_Window->BorderLeft,
 						BLITA_DestY, My_Window->BorderTop,
 						TAG_END);
+				}
+				else
+				{
+					BackFill_Func( My_Window -> RPort, NULL );
+				}
+
 			}
 			else
 			{
@@ -943,8 +1099,10 @@ void main_engine()
 	close_engine();
 	engine_unlock();
 
-
 	if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
+
+	if (fullscreen_screen) CloseScreen(fullscreen_screen);
+	fullscreen_screen = NULL;
 
 	engine_stopped = true;
 }

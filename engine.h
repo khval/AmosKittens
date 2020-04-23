@@ -31,6 +31,13 @@ extern Process *EngineTask;
 
 enum
 {
+	GID_ICONIFY = 1,
+	GID_FULLSCREEN,
+	GID_PREFS
+};
+
+enum
+{
 	kitty_to_back = 1,
 	kitty_to_front,
 	kitty_limit_mouse

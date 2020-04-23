@@ -74,6 +74,7 @@ main_objects = commands.cpp \
 			os/amigaos/iconify.cpp \
 			os/amigaos/ahi_dev.cpp \
 			os/amigaos/animation.cpp \
+			os/amigaos/comp.cpp \
 			AmosString.cpp \
 			floyd.cpp \
 			nativeCommands.cpp \
