@@ -1120,17 +1120,18 @@ char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsi
 bool findRefAndFixProcCall( struct reference *toFind )
 {
 	unsigned int n;
-	struct globalVar *var;
+	struct globalVar *varInfo;
 	char *toFindName = dupRef( toFind );
 	if (toFindName == NULL) return false;
 
 	for (n=0;n<var_count[0];n++)
 	{
-		var = &globalVars[n];
+		varInfo = &globalVars[n];
 
-		if ( (var->varName != NULL) && (var->var.type == type_proc) )
+		if ( (varInfo->varName != NULL) && (varInfo->var.type == type_proc) )
 		{
-			if ( strcasecmp( var->varName, toFindName ) == 0 )
+			printf("%s\n", varInfo->varName);
+			if ( strcasecmp( varInfo->varName, toFindName ) == 0 )
 			{
 				*((unsigned short*) ((char *) toFind-2)) = 0x0012;
 				toFind -> ref = n + 1;
