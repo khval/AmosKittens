@@ -204,7 +204,15 @@ struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type 
 		var_count[0] ++;
 
 		ref -> ref = var_count[procStackCount ? 1: 0];
-		ref -> flags = type;
+
+		if (type == type_proc)
+		{
+			ref -> flags = (ref->flags&3) | type;
+		}
+		else
+		{
+			ref -> flags = type;
+		}
 
 		_new = &globalVars[var_count[0]-1];
 		_new -> varName = *tmp;	// tmp is alloced and used here.
