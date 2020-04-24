@@ -37,10 +37,16 @@ void save_window_attr(windowclass *self)
 	GetWindowAttr( self -> win,  WA_InnerHeight, &self -> window_height, sizeof(int *));
 }
 
+extern  struct Screen *fullscreen_screen;
+
+static ULONG had_ModeID;
+static bool had_fullscreen = false;
 
 void enable_Iconify()
 {
 	int n;
+
+	had_fullscreen = fullscreen_screen ? true : false;
 
 	const char *files[]={
 		"progdir:AmosKittens.exe",
@@ -71,12 +77,19 @@ void enable_Iconify()
 				window_save_state.win = My_Window;
 				save_window_attr(&window_save_state);
 				close_engine_window();
+
+				if (fullscreen_screen) 
+				{
+					had_ModeID = GetVPModeID(&fullscreen_screen->ViewPort);
+					CloseScreen( fullscreen_screen);
+				}
+				fullscreen_screen = NULL;
 			}
 		}
 	}
 }
 
-void	disable_Iconify()
+void dispose_Iconify()
 {
 	if (dobj)
 	{
@@ -92,12 +105,23 @@ void	disable_Iconify()
 		iconifyPort = NULL;
 		iconify_sig  = 0;
 	}
+}
+
+void	disable_Iconify()
+{
+	dispose_Iconify();
+
+	if ((had_fullscreen)&&(fullscreen_screen == NULL))	// open screen if its not open.
+	{
+		open_fullscreen(had_ModeID);
+	}
 
 	open_engine_window(
 		window_save_state.window_left,
 		window_save_state.window_top,
 		window_save_state.window_width,
 		window_save_state.window_height);
+
 }
 
 

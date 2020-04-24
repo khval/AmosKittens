@@ -41,7 +41,7 @@ extern struct Menu *amiga_menu;
 extern void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs);
 
 struct Process *EngineTask = NULL;
-static struct Screen *fullscreen_screen = NULL;
+struct Screen *fullscreen_screen = NULL;
 extern UWORD *EmptyPointer;
 
 bool engine_wait_key = false;
@@ -49,6 +49,7 @@ bool engine_stopped = false;
 bool engine_key_repeat = false;
 bool engine_key_down = false;
 bool engine_mouse_hidden = false;
+bool engine_pal_mode= true;
 
 bool synchro_on = true;
 
@@ -192,9 +193,14 @@ void dispose_icon(struct Window *win, struct kIcon *icon)
 
 bool open_engine_window( int window_left, int window_top, int window_width, int window_height )
 {
+	if (fullscreen_screen)
+	{
+		window_left = 	(fullscreen_screen -> Width/2) - (window_width/2);
+	}
+
 	My_Window = OpenWindowTags( NULL,
 				WA_PubScreen,       (ULONG) fullscreen_screen,
-				WA_Left,			fullscreen_screen ? 0 : window_left,
+				WA_Left,			window_left,
 				WA_Top,			fullscreen_screen ? 0 : window_top,
 				WA_InnerWidth,		window_width,
 				WA_InnerHeight,	window_height,
@@ -494,7 +500,7 @@ void DrawSprite(
 
 extern void enable_Iconify();
 extern void disable_Iconify();
-
+extern void dispose_Iconify();
 
 	UWORD Code;
 	ULONG GadgetID;
@@ -651,7 +657,26 @@ void disable_fullscreen()
 	engine_unlock();
 }
 
+void handel_engine_keys(ULONG ccode)
+{
+	switch (ccode)
+	{
+		case RAWKEY_F11:
+			engine_pal_mode = engine_pal_mode ? false : true;
+			break;					
 
+		case RAWKEY_F12:
+			if (fullscreen_screen) 
+			{
+				disable_fullscreen();
+			}
+			else
+			{
+				enable_fullscreen();
+			}
+			break;				
+	}	
+}
 
 void handel_window()
 {
@@ -709,13 +734,16 @@ void handel_window()
 							{
 								int ww;
 								int wh;
+								int ih;
+
+								ih = engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6;
 
 								if (fullscreen_screen)
 								{
 									ww = My_Window->Width ;
 									wh = My_Window->Height ;
 									instance.engine_mouse_x = mouse_x * instance.video -> width / ww;
-									instance.engine_mouse_y = mouse_y * instance.video -> height / wh;
+									instance.engine_mouse_y = mouse_y * ih / wh;
 								}
 								else
 								{
@@ -724,7 +752,7 @@ void handel_window()
 									mouse_x -= engine -> window -> BorderLeft;
 									mouse_y -= engine -> window -> BorderTop;
 									instance.engine_mouse_x = mouse_x * instance.video -> width / ww;
-									instance.engine_mouse_y = mouse_y * instance.video -> height / wh;
+									instance.engine_mouse_y = mouse_y * ih / wh;
 								}
 							}
 
@@ -755,22 +783,25 @@ void handel_window()
 					case IDCMP_RAWKEY:
 
 							ccode = Code & ~IECODE_UP_PREFIX;
-
-							if (Code & IECODE_UP_PREFIX)
 							{
-								if (ccode == RAWKEY_F12)
+								ULONG engine_key = 0;
+
+								switch (ccode)
 								{
-									if (fullscreen_screen) 
-									{
-										disable_fullscreen();
-									}
-									else
-									{
-										enable_fullscreen();
-									}
-									break;
+									case RAWKEY_F11:		
+									case RAWKEY_F12:
+										engine_key = ccode;
+										break;
+								}							
+
+								if (engine_key) 
+								{
+									if (Code & IECODE_UP_PREFIX) handel_engine_keys(ccode);
+									break;	// exit case..
 								}
 							}
+
+							engine_wait_key = false;
 
 							if (menu_shortcut( Code ,  Qualifier)) break;
 
@@ -782,8 +813,6 @@ void handel_window()
 								if (emu_code==75) emu_code = 95;
 								keyState[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
 							}
-
-							engine_wait_key = false;
 
 							if ((ccode >= RAWKEY_F1) && (ccode <= RAWKEY_F10))
 							{
@@ -804,7 +833,6 @@ void handel_window()
 							{
 								atomic_add_key( kitty_key_down, ccode, Qualifier, 0 );
 							}
-
 							break;
 				}
 			}
@@ -1100,6 +1128,8 @@ void main_engine()
 	engine_unlock();
 
 	if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );	// signal in case we got stuck in a waitVBL.
+
+	if (iconifyPort)  dispose_Iconify();
 
 	if (fullscreen_screen) CloseScreen(fullscreen_screen);
 	fullscreen_screen = NULL;

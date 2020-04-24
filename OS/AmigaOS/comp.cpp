@@ -18,6 +18,8 @@
 extern struct Window *My_Window;
 extern struct retroEngine *engine ;
 
+extern bool engine_pal_mode;
+
 struct XYSTW_Vertex3D { 
 	float x, y; 
 	float s, t, w; 
@@ -84,7 +86,7 @@ void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs)
 	{
 		draw_comp_bitmap(engine->rp.BitMap, bitmap, 
 						instance.video -> width, 
-						instance.video -> height,
+						engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6 ,
 						0,0,ww,wh);
 
 		BltBitMapRastPort(bitmap, 0, 0, My_Window -> RPort,
