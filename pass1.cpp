@@ -1130,7 +1130,6 @@ bool findRefAndFixProcCall( struct reference *toFind )
 
 		if ( (varInfo->varName != NULL) && (varInfo->var.type == type_proc) )
 		{
-			printf("%s\n", varInfo->varName);
 			if ( strcasecmp( varInfo->varName, toFindName ) == 0 )
 			{
 				*((unsigned short*) ((char *) toFind-2)) = 0x0012;
