@@ -92,7 +92,7 @@ extern bool breakpoint ;
 
 void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at);
 
-#define ierror( nr ) context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+#define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
 
 void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self );
 
