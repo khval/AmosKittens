@@ -2472,6 +2472,30 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
+void icmd_MA( struct cmdcontext *context, struct cmdinterface *self )	// Max
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);	
+
+	if (context -> stackp>=2)
+	{
+		int ret = 0;
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_int ) && ( arg2.type == type_int ))
+		{
+			ret =  (arg1.num > arg2.num) ? arg1.num : arg2.num ;
+		}
+
+		pop_context( context, 2);
+		push_context_num( context, ret );
+
+			dump_context_stack( context );
+
+	}
+	else ierror(1);
+}
+
 void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -2745,6 +2769,7 @@ struct cmdinterface commands[]=
 	{"LI",i_normal,NULL,icmd_Imagehline },
 	{"VL",i_normal,NULL,icmd_imagevline },
 	{"KY",i_normal,NULL,icmd_KeyShortCut},
+	{"MA",i_parm,NULL,icmd_MA },
 	{"MI",i_parm,NULL,icmd_Min},
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
 	{"PR",i_normal,NULL,icmd_Print},
