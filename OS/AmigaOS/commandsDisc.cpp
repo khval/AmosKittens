@@ -330,7 +330,8 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 					c = filereq -> fr_Drawer[l-1];
 					size = strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) + (((c == '/') || (c==':')) ? 0 : 1);
 
-					if (ret = (struct stringData *) malloc( sizeof(struct stringData) + size ))
+					allocNewString(size,ret);
+					if (ret)
 					{
 						sprintf( &ret -> ptr, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
 						ret -> size = size;
