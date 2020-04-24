@@ -3389,13 +3389,14 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 						printf("at location %d\n", (unsigned int) ((context -> at) - (&context -> script -> ptr)) );
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
-						getchar();
+ 						ierror(1);
 					}
 				}
 
 				if (icmd -> cmd)
 				{
 					icmd -> cmd( context, icmd );
+					printf("%s:context -> error %d\n", __FUNCTION__, context -> error );
 				}
 				else
 				{
