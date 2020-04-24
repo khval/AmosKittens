@@ -14,9 +14,6 @@
 #include "amosString.h"
 #include "amosstring.h"
 
-#define allocNewString(len,newstr) \
-	newstr = (struct stringData *) sys_public_alloc( sizeof(struct stringData) + len ); \
-
 
 int cust_memcmp(char *s1,char *s2, int n)
 {
