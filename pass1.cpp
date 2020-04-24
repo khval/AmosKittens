@@ -1207,7 +1207,8 @@ void pass1_reader( char *start, char *file_end )
 		}
 		else
 		{
-			setError( 25, (char *) pass1CallProcedures[n] );
+			printf("ref -> ref %04x\n",pass1CallProcedures[n] -> ref);
+			setError( 20, (char *) pass1CallProcedures[n] );
 			break;
 		}
 	}
