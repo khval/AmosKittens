@@ -250,7 +250,7 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 			if (context.raw)
 			{
 				plotUnpackedContext( &context, screen , x0, y0 );
-				free( context.raw);
+				sys_free( context.raw);
 				return true;	
 			}
 		}
