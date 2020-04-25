@@ -19,6 +19,7 @@
 #endif
 
 #include <amoskittens.h>
+#include "engine.h"
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
@@ -697,14 +698,14 @@ void *amal_call_end API_AMAL_CALL_ARGS
 void *amal_call_xm API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = instance.amal_mouse_x;
+	self -> argStack [ self -> argStackCount  ] = hw_mouse_x;
 	return NULL;
 }
 
 void *amal_call_ym API_AMAL_CALL_ARGS
 {
 	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
-	self -> argStack [ self -> argStackCount  ] = instance.amal_mouse_y;	
+	self -> argStack [ self -> argStackCount  ] = hw_mouse_y;	
 	return NULL;
 }
 

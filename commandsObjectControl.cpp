@@ -156,18 +156,15 @@ int find_zone_in_only_screen_pixel( int screen, int x, int y)
 	return 0;
 }
 
-#define native_mouse_x instance.engine_mouse_x/2+hardware_upper_left
-#define native_mouse_y instance.engine_mouse_y/2+hardware_upper_top
-
 char *ocXMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(native_mouse_x);
+	setStackNum(hw_mouse_x);
 	return tokenBuffer;
 }
 
 char *ocYMouse(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	setStackNum(native_mouse_y);
+	setStackNum(hw_mouse_y);
 	return tokenBuffer;
 }
 
@@ -353,7 +350,7 @@ char *ocMouseZone(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	int rz = find_zone_in_any_screen_hard( native_mouse_x, native_mouse_y );
+	int rz = find_zone_in_any_screen_hard( hw_mouse_x, hw_mouse_y );
 
 	setStackNum( rz );
 
@@ -1004,8 +1001,8 @@ char *ocMouseScreen(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		if (screen = instance.screens[s])
 		{
-			x = XScreen_formula( screen, native_mouse_x );
-			y = YScreen_formula( screen, native_mouse_y );
+			x = XScreen_formula( screen, hw_mouse_x );
+			y = YScreen_formula( screen, hw_mouse_y );
 
 printf("screen %d Mouse %d,%d\n",s, x,y);
 

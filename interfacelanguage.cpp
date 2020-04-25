@@ -1261,7 +1261,7 @@ void mouse_event_hslider(struct cmdcontext *context, int mx, int my, int zid, st
 
 			while (instance.engine_mouse_key)
 			{
-				mx = XScreen_formula( screen, instance.engine_mouse_x );
+				mx = XScreen_formula( screen, hw_mouse_x );
 
 				x = mx - zl->x0 - dx;
 				if (x<0) x=0;
@@ -1275,7 +1275,7 @@ void mouse_event_hslider(struct cmdcontext *context, int mx, int my, int zid, st
 
 				printf("mx  %d, mouse x  %d, x %d, dx %d, t0 %d tpos %d\n",
 						mx,
-						instance.engine_mouse_x, 
+						hw_mouse_x, 
 						x, 
 						dx,
 						t0, tpos );
@@ -1343,7 +1343,7 @@ void mouse_event_vslider(struct cmdcontext *context, int mx, int my, int zid, st
 
 			while (instance.engine_mouse_key)
 			{
-				my = YScreen_formula( screen, instance.engine_mouse_y );
+				my = YScreen_formula( screen, hw_mouse_y );
 
 				y = my - zl->y0 - dy;
 				if (y<0) y=0;
@@ -1671,8 +1671,8 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 
 						if (screen)
 						{
-							int mx = XScreen_formula( screen, instance.engine_mouse_x );
-							int my = YScreen_formula( screen, instance.engine_mouse_y );
+							int mx = XScreen_formula( screen, hw_mouse_x );
+							int my = YScreen_formula( screen, hw_mouse_y );
 
 							for (n=0;n<20;n++)
 							{

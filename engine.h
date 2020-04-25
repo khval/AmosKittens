@@ -75,3 +75,5 @@ struct amosMenuItem
 	bool active;
 };
 
+#define hw_mouse_x instance.engine_mouse_x/2+hardware_upper_left
+#define hw_mouse_y instance.engine_mouse_y/2+hardware_upper_top
