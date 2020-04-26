@@ -2081,7 +2081,7 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 
 			printf("unpack %d,%d,%d + (%d )\n", arg1.num, arg2.num, arg3.num, context -> image_offset);
 
-			bank1 = findBank(16);
+			bank1 = findBank(instance.current_resource_bank);
 	
 			if (bank1)
 			{
