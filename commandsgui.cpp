@@ -747,19 +747,29 @@ char *_guiRdialog( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int _channel_,_button_,_object_;
-	int ret = 0;
+
+	struct cmdcontext *context = NULL;
+	struct zone_base *zb = NULL;
 
 	switch (args)
 	{
 		case 2:	_channel_ = getStackNum(__stack-1);
 				_button_ = getStackNum(__stack);
-				setError(23,data->tokenBuffer);
+
+				if (context = find_interface_context(_channel_))
+				{
+					zb = (struct zone_base *) context -> zones[_button_].custom;
+				}
 				break;
 
 		case 3:	_channel_ = getStackNum(__stack-2);
 				_button_ = getStackNum(__stack-1);
 				_object_ = getStackNum(__stack);
-				setError(23,data->tokenBuffer);
+
+				if (context = find_interface_context(_channel_))
+				{
+					zb = (struct zone_base *) context -> zones[_button_].custom;
+				}
 				break;
 
 		default:
@@ -767,7 +777,7 @@ char *_guiRdialog( struct glueCommands *data, int nextToken )
 	}
 
 	popStack(__stack - data->stack );
-	setStackNum( ret );
+	setStackNum( zb ? zb -> value : 0 );
 	return NULL;
 }
 
