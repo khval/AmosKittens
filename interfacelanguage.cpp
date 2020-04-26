@@ -1387,6 +1387,94 @@ void block_slider_action( struct cmdcontext *context, struct cmdinterface *self 
 	set_block_fn(block_skip);
 }
 
+void render_edit(struct zone_edit *ze)
+{
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+
+	if (screen) 
+	{
+		retroBAR( screen, screen -> double_buffer_draw_frame,  ze->x0,ze->y0,ze->x1,ze->y1, ze -> paper );
+
+		if (ze -> string)
+		{
+			int th = os_text_height( ze -> string );
+			int tb = os_text_base( ze -> string );
+
+			os_text_no_outline(screen, ze->x0,ze->y0+tb+2 ,ze -> string ,ze -> pen);
+		}
+	}
+
+
+	printf("box %d,%d to %d,%d\n", ze->x0,ze->y0,ze->x1,ze->y1);
+	getchar();
+}
+
+void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=8)
+	{
+		struct zone_edit *ze = NULL;
+
+		int zn = context -> stack[context -> stackp-8].num;
+		context -> last_zone = zn;
+
+		if (context -> zones)
+		{
+			ze = (struct zone_edit *) context -> zones[zn].custom;
+		}
+		else
+		{
+			printf("your so fucked\n");
+			getchar();
+			return;
+		}
+
+		if (ze == NULL)
+		{
+			ze = (struct zone_edit *) malloc( sizeof(struct zone_edit) );
+			ze -> pos = 0;
+			context -> zones[zn].custom = ze;
+		}
+
+		if (ze)
+		{
+			int ox,oy;
+			ox = get_dialog_x(context);
+			oy = get_dialog_y(context);
+
+			ze -> x0 = context -> stack[context -> stackp-7].num + ox;
+			ze -> y0 = context -> stack[context -> stackp-6].num + oy;
+			ze -> w = context -> stack[context -> stackp-5].num;
+			ze -> max = context -> stack[context -> stackp-4].num;
+			ze -> string = context -> stack[context -> stackp-3].str;
+			ze -> paper = context -> stack[context -> stackp-2].num;
+			ze -> pen = context -> stack[context -> stackp-1].num;
+
+			ze -> x1 = ze -> x0+(ze->w*8);
+			ze -> y1 = ze -> y0+8;
+
+			ze -> render = I_FUNC_RENDER render_edit;
+//			ze -> mouse_event = mouse_event_vslider;
+
+			ze -> render(ze);
+		}
+
+		set_block_fn(block_slider_action);
+
+	}
+
+	pop_context( context, 8);
+	context -> cmd_done = NULL;
+}
+
+void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_Edit;
+	context -> args = 8;
+}
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -2753,7 +2841,7 @@ struct cmdinterface commands[]=
 	{"BY",i_parm,NULL,icmd_BaseY},
 	{"CX",i_parm,NULL,icmd_cx},
 	{"CT",i_normal,NULL,icmd_ct},
-	{"ED",i_normal,NULL,NULL},
+	{"ED",i_normal,NULL,icmd_Edit},
 	{"EX",i_normal,NULL,icmd_Exit},
 	{"GB",i_normal,NULL,icmd_GraphicBox},
 	{"GS",i_normal,NULL,icmd_GraphicSquare},

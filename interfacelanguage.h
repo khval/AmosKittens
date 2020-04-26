@@ -54,6 +54,16 @@ struct zone_slider : zone_base
 	int step;
 };
 
+struct zone_edit : zone_base
+{
+	struct stringData *string;
+	int max;
+	int pen;
+	int paper;
+	int x1;
+	int y1;
+};
+
 struct zone_hypertext : zone_base
 {
 	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_hypertext *zb);
