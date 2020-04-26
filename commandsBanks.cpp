@@ -921,7 +921,6 @@ void __load_bank__(struct stringData *name, int bankNr )
 			if (strncmp(id,"AmBs",4)==0)
 			{
 				fread( &banks, 2, 1, fd);
-				clean_up_banks();		
 			}
 		}
 
@@ -991,6 +990,7 @@ void __load_bank__(struct stringData *name, int bankNr )
 					break;
 
 				case bank_type_work_or_data:
+
 					__load_work_data__(fd,bankNr);
 					break;
 
