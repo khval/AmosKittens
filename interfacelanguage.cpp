@@ -3054,7 +3054,7 @@ void push_context_string(struct cmdcontext *context, struct stringData *str)
 	self.str = str;
 	context -> stackp++;
 
-	printf("push %s\n",str);
+	printf("push %s\n",&str -> ptr);
 }
 
 void push_context_var(struct cmdcontext *context, int index)
