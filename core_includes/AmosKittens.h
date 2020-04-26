@@ -734,6 +734,7 @@ struct KittyInstance
 	int current_screen;
 	int current_extension;
 	int current_pattern;
+	int current_resource_bank;
 	int stack ;
 	int cmdStack ;
 	char *tokenBufferResume;

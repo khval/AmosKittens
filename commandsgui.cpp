@@ -39,8 +39,6 @@ extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
 
 std::vector<struct cmdcontext *> icmdcontexts;
 
-int current_resource_bank = 16;
-
 void _my_print_text(struct retroScreen *screen, char *text, int maxchars);
 
 uint8_t getByte( char *adr, int &pos )
@@ -85,11 +83,16 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 {
 	struct kittyBank *bank1;
 
-	bank1 = findBank(current_resource_bank);
+	bank1 = findBank(instance.current_resource_bank);
 
 	 if (__resource_bank_has_pictures( bank1 ) == false )
 	{
-		bank1 = findBank(-2);
+		dump_banks();
+
+		bank1 = findBank(instance.current_screen);
+
+		printf("bank1 %08x\n",bank1);
+		getchar();
 	}
 
 	if (bank1)
@@ -418,7 +421,7 @@ struct stringData *dialog_open_arg_script(struct kittyData *arg)
 					int idx = arg -> integer.value-1;
 					int hunk,pos,num_of_scripts,script_size,offset_data;
 
-					bank = findBank(current_resource_bank);
+					bank = findBank(instance.current_resource_bank);
 					if (bank == NULL) return NULL;
 
 					header = (resourcebank_header*) bank->start;

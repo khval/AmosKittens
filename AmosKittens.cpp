@@ -170,8 +170,8 @@ void init_instent(struct KittyInstance *instance )
 	instance -> GrWritingMode = 0;
 	instance -> paintMode = 0;
 	instance -> current_pattern = 0;
-
 	instance -> volume=0x10000;
+	instance -> current_resource_bank = -2;
 
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;

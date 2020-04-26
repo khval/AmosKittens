@@ -1245,7 +1245,7 @@ char *_bankResourceBank( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1:	current_resource_bank = getStackNum(__stack);
+		case 1:	instance.current_resource_bank = getStackNum(__stack);
 				break;
 		default:
 				setError(22,data->tokenBuffer);
@@ -1283,7 +1283,7 @@ struct stringData *getResourceStr(int id)
 {
 	struct stringData *ret = NULL;
 	int retry = 0;
-	int cbank = current_resource_bank;
+	int cbank = instance.current_resource_bank;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 

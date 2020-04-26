@@ -775,7 +775,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 			x1.num+=ox;
 			y1.num+=oy;
 
-			bank1 = findBank(16);
+			bank1 = findBank( instance.current_resource_bank );
 
 			if (bank1)
 			{
@@ -895,7 +895,7 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 			y0.num+=oy;
 			x1.num+=ox;
 
-			bank1 = findBank(16);
+			bank1 = findBank(instance.current_resource_bank);
 
 			if (bank1)
 			{
@@ -966,7 +966,7 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 			y0.num+=oy;
 			y1.num+=ox;
 
-			bank1 = findBank(16);
+			bank1 = findBank(instance.current_resource_bank);
 
 			if (bank1)
 			{

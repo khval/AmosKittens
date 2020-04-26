@@ -51,8 +51,6 @@ struct resourcebank_header
 
 //------------------------------------------------------------------------------
 
-extern int current_resource_bank ;
-
 void freeBank( int banknr );
 struct kittyBank *findBank( int bankNr );
 struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name, char *mem );
