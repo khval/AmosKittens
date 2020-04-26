@@ -125,6 +125,8 @@ struct kittyBank *findBank( int banknr )
 {
 	unsigned int n;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		if (kittyBankList[n].id == banknr)	return &kittyBankList[n];
@@ -136,6 +138,9 @@ struct kittyBank *findBank( int banknr )
 int findBankIndex( int banknr )
 {
 	unsigned int n;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	for (n=0;n<kittyBankList.size();n++)
 	{
 		if (kittyBankList[n].id == banknr) return n;
@@ -192,6 +197,8 @@ void freeBank( int banknr )
 {
 	int index;
 	struct kittyBank *bank = NULL;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	index = findBankIndex( banknr );
 
@@ -390,7 +397,7 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 
 char *_bankBsave( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args = __stack - data->stack +1 ;
 	FILE *fd;
 	char *start, *to;
@@ -424,6 +431,7 @@ struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name,
 
 	freeBank( bankNr );
 	bank = allocBank( bankNr );
+
 	if (bank)
 	{
 		bank -> length = length;
@@ -790,8 +798,6 @@ void init_banks( char *data , int size)
 	struct kittyBank *bank = NULL;
 	id[4]=0;	// null terminate id string.
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	if (data)
 	{
 		fd.mem = data;
@@ -800,11 +806,9 @@ void init_banks( char *data , int size)
 
 		if (mread( &id, 4, 1, fd )==1)
 		{	
-			printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
+//			printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 			if (strncmp(id,"AmBs",4)==0)
 			{
-				printf("file offset = %d\n", fd.off);
-
 				mread( &banks, 2, 1, fd);
 #ifdef __LITTLE_ENDIAN__
 				banks = __bswap_16(banks);
@@ -824,12 +828,9 @@ void init_banks( char *data , int size)
 						return;
 		}
 
-		printf ("ready to read %d banks\n",banks);
-
 		for (n=0;n<banks;n++)
 		{
 			type = -1;
-			printf("bank %d of %d\n",n+1,banks);
 
 			if (mread( &id, 4, 1, fd )==1)
 			{	
