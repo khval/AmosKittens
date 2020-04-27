@@ -56,8 +56,14 @@ If window flashes on the screen, you might be runing a simple exsample, without 
 
 If AmosKittens return with a token number, It might be using a command this not supported, or not implemented, check the source code of Amos program your running. Then check “Not yet supported” as bottom of this page. And check "Issues" and "current Status:" on GitHub so see what Amos Kittens support and what not.
 
-Writing Amos Kittens compatible code, I suggest using “Amos Professional X” as this is the most advanced version of Amos Pro right now, there are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
-Amos Kittens was tested whit amos programs written in AMOS PRO 2.0, so no garanties.
+Writing Amos Kittens compatible code, I suggest using “Amos Professional AGA” as this is the most advanced version of Amos Pro right now. Have a look here:
+
+http://amos-professional-aga.frederic-cordier.fr
+
+There are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
+Amos Kittens was tested whit amos programs written in AMOS Professional 2.0, so no garanties.
+
+Later I might do a new editor replacing the Editor, with the aim of making editor without the bugs and problems, that is so hard to fix, and modernizing. But I can’t do everything at once, and so its pleasing that the old code is being updated.
 
 Debuging Amos Kittens:
 ----------------------
