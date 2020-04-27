@@ -134,7 +134,7 @@ Today 26.04.2020, the copyright license of Amos Pro changed again back to MIT, s
 
 https://github.com/khval/AmosKittens/blob/master/Assets-license/AmosPro-license-26_04_2020.PNG
 
-GitHub policy about this stuff parity strict, I’m not sure I want include anything I later have to remove, because really hard to purge the git repo of this stuff, if we need to remove it again. Maybe it better solved by git branches.
+GitHub policy about this stuff very strict, I’m not sure I want include anything I later have to remove, because really hard to purge the git repo of this stuff, if we need to remove it again. Maybe it better solved by git branches.
 
 I do not have any right to orginal trademarks, like the logos, I do not own the “Amos The Creator”, "Amos 3D“, "Easy Amos”, “Amos Professional”, or any of these names, so please do not bundle trademarked graphics / designs with this package. I’m not responsible for breach of trademark. If trademarks are being protected or not is unclear as this point.
 
