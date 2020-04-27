@@ -3134,6 +3134,16 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	context -> zones = (struct izone *) malloc( sizeof(struct izone) * 20 );
 
 	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
+
+	if (context -> vars)
+	{
+		for (n =0;n<varSize;n++)
+		{
+			context -> vars[n].type = 0;
+			context -> vars[n].num = 0;
+		}
+	}
+
 	context -> block_fn = (void (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
 
 	dialog.x = x - (x % 16) ;
