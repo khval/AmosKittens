@@ -595,11 +595,12 @@ void dump_banks()
 		bank = &kittyBankList[n];
 		if (bank -> start)
 		{
-			printf("%03d - %.8s S:$%08X L:%d\n", 
+			printf("%03d - %.8s S:$%08X L:%d -> object %08x\n", 
 				bank -> id,
 				(char *) bank->start-8,
 				bank -> start, 
-				bank -> length);
+				bank -> length,
+				bank -> object_ptr);
 		}
 	}
 	printf("\n");
