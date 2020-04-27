@@ -474,6 +474,7 @@ struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name,
 		}
 
 		bank->type = type;
+		bank->object_ptr=NULL;
 
 		return bank;
 	}
