@@ -713,7 +713,7 @@ void icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=2)
 	{
