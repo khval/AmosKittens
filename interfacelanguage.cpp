@@ -2658,7 +2658,8 @@ void isetvarstr( struct cmdcontext *context,int index, struct stringData *str)
 
 	if (var.type == type_string)
 	{
-		if (var.str) free(var.str);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		if (var.str) sys_free(var.str);
 	}
 	else var.type = type_string;
 	var.str = amos_strdup(str);
@@ -2670,7 +2671,7 @@ void isetvarnum( struct cmdcontext *context,int index,int num)
 
 	if (var.type == type_string)
 	{
-		if (var.str) free(var.str);
+		if (var.str) sys_free(var.str);
 		var.str = NULL;
 	}
 
