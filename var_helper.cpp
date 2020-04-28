@@ -31,6 +31,28 @@ extern std::vector<struct  globalVar *> procedures;
 
 const char *types[]={"","#","$",""};
 
+const char *type_names[]=
+{
+	"int",
+	"float",
+	"string",
+	"file",
+	"proc int",
+	"proc float",
+	"proc string",
+	"proc file",
+	"int[]",
+	"float[]",
+	"string[]",
+	"file[]",
+	"invalid",
+	"invaild",
+	"inavild",
+	"invaild",
+	"none",
+	NULL
+};
+
 int var_type_is( struct reference *ref, int mask )
 {
 	return ref -> flags & mask;

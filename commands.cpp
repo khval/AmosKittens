@@ -484,6 +484,7 @@ BOOL setVarStringArray( struct kittyData *var, char *tokenBuffer )
 
 char *(*_do_set) ( struct glueCommands *data, int nextToken ) = _setVar;
 
+extern const char *type_names[];
 
 char *_setVar( struct glueCommands *data, int nextToken )
 {
@@ -524,11 +525,11 @@ char *_setVar( struct glueCommands *data, int nextToken )
 	{
 		if ( kittyStack[instance.stack].type !=  (var -> type & 7))
 		{
-			proc_names_printf("kittyStack[%d].type= %d, (globalVars[%08x].var.type & 7)=%d\n",
+			printf("kittyStack[%d].type= %s, (globalVars[%08x].var.type & 7)=%d\n",
 				instance.stack, 
-				kittyStack[instance.stack].type, 
+				type_names[kittyStack[instance.stack].type & 15], 
 				data -> lastVar, 
-				var -> type & 7);
+				type_names[var -> type & 15]);
 			setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
 
