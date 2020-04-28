@@ -447,6 +447,27 @@ void icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void __print_one_line__( struct retroScreen *screen, int x, int y, struct stringData *txt, int pen)
+{
+	int n;
+	char *c = &txt -> ptr;
+
+	for (n=0;n<txt -> size;n++)
+	{
+		switch (*c)
+		{
+			case 0:
+			case 10:
+			case 12:
+				return;
+		}
+
+		draw_glyph( screen, topaz8_font, x, y, *c, pen );
+		c++;
+		x+=8;
+	}
+}
+
 void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -483,7 +504,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 								int th = os_text_height( txt );
 								int tb = os_text_base( txt );
 
-								os_text_no_outline(screen, x,y+tb,txt,pen);
+								__print_one_line__(screen, x,y,txt,pen);
 								context -> xgc += os_text_width( txt ) ;
 								context -> ygc += th;
 							}
