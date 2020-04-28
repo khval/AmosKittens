@@ -568,7 +568,10 @@ void draw_HyperText(struct zone_hypertext *zh)
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 	int _x = 0, _y=-zh->pos;
+	int x0,y0,x1,y1;
 	char *c;
+	bool is_link = false;
+	bool is_id = false;
 
 	if (screen)
 	{
@@ -582,15 +585,32 @@ void draw_HyperText(struct zone_hypertext *zh)
 			{
 				switch (*c)
 				{
-					case 10:	break;					// char 10 (line feed) is ignored by AMOS.
+					case 10:	
 					case 13:	_y++; _x=0;	break;		// Amos expects lines to end with char 13 (char return), not char 10
+					case '{':	is_link = true;
+							break;
+					case '}':	is_link = false;
+							break;
+					case '[':	if (is_link) is_id = true;
+							break;
+					case ']':	if (is_link) is_id = false;
+							break;
 
-						default:
-								if ((_y>=0)&&(_y<zh->h)&&(_x>=0)&&(_x<zh->w))
-								{
-									draw_glyph( screen, topaz8_font,_x*8+zh->x0,_y*8+zh->y0,*c,zh->pen );
-									_x++;
-								}
+					default:
+							if (is_id)  break;
+
+							x0 = _x*8+zh->x0;
+							y0 = _y*8+zh->y0;
+							x1 = x0 + 8;
+							y1 = y0 + 8;
+
+							if (is_link) 	retroBAR( screen, screen -> double_buffer_draw_frame,  x0, y0, x1, y1, is_link ? zh->pen : zh -> paper );
+
+							if ((_y>=0)&&(_y<zh->h)&&(_x>=0)&&(_x<zh->w))
+							{
+								draw_glyph( screen, topaz8_font,x0,y0,*c, is_link ? zh->paper : zh -> pen );
+								_x++;
+							}
 				}
 				c++;
 			}
@@ -1425,9 +1445,8 @@ void render_edit(struct zone_edit *ze)
 		}
 	}
 
-
-	printf("box %d,%d to %d,%d\n", ze->x0,ze->y0,ze->x1,ze->y1);
-	getchar();
+//	printf("box %d,%d to %d,%d\n", ze->x0,ze->y0,ze->x1,ze->y1);
+//	getchar();
 }
 
 void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
