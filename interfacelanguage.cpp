@@ -1798,6 +1798,7 @@ void icmd_ScreenMove( struct cmdcontext *context, struct cmdinterface *self )
 void do_events_interface_script(  struct cmdcontext *context, int event, int delay )
 {
 	context -> exit_run = false;
+	context -> has_return_value = false;
 
 	if (event & 4) engine_wait_key = true;
 
@@ -1837,6 +1838,7 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 					}
 				}
 
+				if (context -> has_return_value) break;
 				if (context -> exit_run) break;
 			}
 		}
