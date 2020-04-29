@@ -937,7 +937,7 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 			{
 				int xp;
 				int w=0,h=0;
-				int _image =  image.num -1  + context -> image_offset ;
+				int _image = image.num - 1 + context -> image_offset ;
 
 				xp = x0.num;
 
@@ -1350,10 +1350,11 @@ void mouse_event_vslider(struct cmdcontext *context, int mx, int my, int zid, st
 	int t1;
 	int tpos = zl->pos;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
 	t0 = zl->h * zl -> pos / zl->total;
 	t1 = zl->h * (zl->pos+zl->trigger) / zl->total;
+
+
+	printf("%s:%d -> min %d, is %d, max %d\n",__FUNCTION__,__LINE__, zl->x0,mx,zl->x1);
 
 	if ((mx>=zl->x0)&&(mx<=zl->x1))
 	{
