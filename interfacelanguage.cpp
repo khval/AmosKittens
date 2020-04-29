@@ -2000,13 +2000,28 @@ void mouse_event_button(struct cmdcontext *context, int mx, int my, int zid, str
 
 		printf("button %d\n",zid);
 
-		zb -> value = 1;
-
-		if (zb -> script_action)
+		if (zb -> script_render)
 		{
-			execute_interface_sub_script( context, zid, zb -> script_action);
-			context -> return_value = zid;
+			context -> selected_dialog = 0;
+
+			for (zb -> value = 1; zb ->value >=0  ; zb->value --)
+			{
+				context -> dialog[0].x = zb -> x0;
+				context -> dialog[0].y = zb -> y0;
+
+				execute_interface_sub_script( context, zid, zb -> script_render);
+
+				if ((zb -> script_action) && (zb -> value == 1))
+				{
+					execute_interface_sub_script( context, zid, zb -> script_action);
+				}
+
+				while (instance.engine_mouse_key)	Delay(1);
+			}
 		}
+
+		context -> has_return_value = true;
+		context -> return_value = zid;
 	}
 }
 
