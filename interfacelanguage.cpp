@@ -2012,6 +2012,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 				if (zb)
 				{
+					zb -> value = 0;
 					zb -> script_render = NULL;
 					zb -> script_action = NULL;
 					il_set_zone( context, zn.num, iz_button,  zb);
@@ -2838,9 +2839,14 @@ void icmd_ZoneNumber( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
 {
+	struct zone_base *zb;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	push_context_num( context, context -> last_zone );
+	printf("context -> last_zone: %d\n", context -> last_zone);
+
+	zb = context -> zones[context -> last_zone].custom;
+
+	push_context_num( context, zb ? zb -> value : 0 );
 }
 
 struct cmdinterface symbols[]=
