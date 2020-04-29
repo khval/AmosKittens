@@ -152,4 +152,5 @@ extern int igetvarnum( struct cmdcontext *context, int index);
 extern void init_interface_context( struct cmdcontext *context, int id, struct stringData *script, int x, int y, int varSize, int bufferSize  );
 extern void cleanup_interface_context( struct cmdcontext *context );
 extern void execute_interface_script( struct cmdcontext *context, int32_t label);
+extern void do_events_interface_script(  struct cmdcontext *context, int event, int delay );
 

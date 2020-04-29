@@ -220,6 +220,7 @@ char *_guiDialog( struct glueCommands *data, int nextToken )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int guiChannel = 0;
+	struct cmdcontext *context = NULL;
 
 	switch (args)
 	{
@@ -230,7 +231,13 @@ char *_guiDialog( struct glueCommands *data, int nextToken )
 	}
 
 	popStack(__stack - data->stack );
-	setStackNum( 0 );
+
+	if (context = find_interface_context( guiChannel ))
+	{
+		do_events_interface_script( context,  0xF, 1 );
+	}
+
+	setStackNum( context ? (context -> has_return_value ? context -> return_value : 0) : 0 );
 
 	return NULL;
 }

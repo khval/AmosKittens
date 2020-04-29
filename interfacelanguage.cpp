@@ -1762,12 +1762,104 @@ void icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 
 // icmd_Run
 
+void icmd_ScreenMove( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+	int hw_screen_y;
+	int hw_delta;
+	int my;
+
+	if (screen == NULL) return;
+
+	hw_screen_y = screen -> scanline_y / 2 + 50;
+	hw_delta = hw_mouse_y - hw_screen_y;
+	
+	while (instance.engine_mouse_key)
+	{
+		my = hw_mouse_y ;
+	
+		screen -> scanline_y = (hw_mouse_y - hw_delta- 50)*2;
+
+		engine_lock();
+		retroApplyScreen( screen, instance.video, 
+			screen -> scanline_x,
+			screen -> scanline_y,
+			screen -> displayWidth,
+			screen -> displayHeight );
+
+		instance.video -> refreshAllScanlines = TRUE;
+		engine_unlock();
+
+		Delay(1);
+	}
+}
+
+void do_events_interface_script(  struct cmdcontext *context, int event, int delay )
+{
+	context -> exit_run = false;
+
+	if (event & 4) engine_wait_key = true;
+
+	for (;;)
+	{
+		if (event & 2)	// mouse key
+		{
+			if (instance.engine_mouse_key)
+			{
+				struct retroScreen *screen = instance.screens[instance.current_screen];
+				int n;
+				context -> mouse_key = true;
+
+				if (screen)
+				{
+					int mx = XScreen_formula( screen, hw_mouse_x );
+					int my = YScreen_formula( screen, hw_mouse_y );
+
+					for (n=0;n<20;n++)
+					{
+						switch ( context -> zones[n].type )
+						{
+							case iz_button:
+								{
+									struct zone_button *button = (struct zone_button *) context -> zones[n].custom;
+									button -> mouse_event(context, mx,my, n ,button);
+								}
+								break;
+
+							case iz_slider:
+								{
+									struct zone_slider *slider = (struct zone_slider *) context -> zones[n].custom;
+									slider -> mouse_event(context, mx,my, n, slider);
+								}
+								break;
+						}
+					}
+				}
+
+				if (context -> exit_run) break;
+			}
+		}
+
+		if (event & 4)	// key press
+		{
+			if (engine_wait_key == false)
+			{
+				engine_wait_key = false;
+				break;
+			}
+		}
+
+		if (engine_ready() == false)	break;
+		Delay(1);
+	}
+}
+
+
 void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = NULL;
-
-	context -> exit_run = false;
 
 	if (context -> stackp>=2)
 	{
@@ -1778,64 +1870,8 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			int event = arg2.num;
 			int delay = arg1.num;
-
 			pop_context( context, 2);
-
-			if (event & 4) engine_wait_key = true;
-
-			for (;;)
-			{
-				if (event & 2)	// mouse key
-				{
-					if (instance.engine_mouse_key)
-					{
-						struct retroScreen *screen = instance.screens[instance.current_screen];
-						int n;
-						context -> mouse_key = true;
-
-						if (screen)
-						{
-							int mx = XScreen_formula( screen, hw_mouse_x );
-							int my = YScreen_formula( screen, hw_mouse_y );
-
-							for (n=0;n<20;n++)
-							{
-								switch ( context -> zones[n].type )
-								{
-									case iz_button:
-										{
-											struct zone_button *button = (struct zone_button *) context -> zones[n].custom;
-											button -> mouse_event(context, mx,my, n ,button);
-										}
-										break;
-
-									case iz_slider:
-										{
-											struct zone_slider *slider = (struct zone_slider *) context -> zones[n].custom;
-											slider -> mouse_event(context, mx,my, n, slider);
-										}
-										break;
-								}
-							}
-						}
-
-						if (context -> exit_run) break;
-					}
-				}
-
-				if (event & 4)	// key press
-				{
-					if (engine_wait_key == false)
-					{
- 						engine_wait_key = false;
-						break;
-					}
-				}
-
-				if (engine_ready() == false)	break;
-
-				Delay(1);
-			}
+			do_events_interface_script( context,  event, delay );
 		}
 
 		return;	// return success
@@ -1959,6 +1995,10 @@ void mouse_event_button(struct cmdcontext *context, int mx, int my, int zid, str
 		(my>=zb->y0)&&(my<=zb->y1)  )
 	{
 		set_block_fn(NULL);
+
+		printf("button %d\n",zid);
+
+		zb -> value = 1;
 
 		if (zb -> script_action)
 		{
@@ -2910,7 +2950,7 @@ struct cmdinterface commands[]=
 	{"SA",i_normal,NULL,icmd_Save},
 	{"SH",i_parm,NULL,icmd_ScreenHeight},
 	{"SI",i_normal,NULL,icmd_Dialogsize},
-	{"SM",i_parm,NULL,NULL},
+	{"SM",i_parm,NULL,icmd_ScreenMove},
 	{"SP",i_normal,NULL,NULL},
 	{"SV",i_normal,NULL,icmd_SetVar },
 	{"SW",i_parm,NULL,icmd_ScreenWidth},
