@@ -621,10 +621,80 @@ void hypertext_render(struct zone_hypertext *zh)
 	}
 }
 
-void mouse_event_HyperText(struct cmdcontext *context, int mx, int my, int zid, struct zone_hypertext *zh)
+int get_id_hypertext(struct zone_hypertext *zh, int chr_x, int chr_y)
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+	int _x = 0, _y=-zh->pos;
+	char *c;
+	bool is_link = false;
+	bool is_id = false;
+	bool clicked = false;
+	int id = 0;
 
+	if (screen)
+	{
+		c = (char *) zh -> address;
+
+		if (c)
+		{
+			while (*c)				
+			{
+				switch (*c)
+				{
+					case 10:	
+					case 13:	_y++; _x=0;	
+
+							if ( _y > chr_y ) return 0;
+
+							break;		// Amos expects lines to end with char 13 (char return), not char 10
+					case '{':	is_link = true;
+							break;
+					case '}':	is_link = false;
+							if (clicked) return id;
+							break;
+					case '[':	if (is_link)
+							{
+								id = 0;
+								is_id = true;
+							}
+							break;
+					case ']':	if (is_link)	is_id = false;
+							break;
+
+					default:
+							if (is_id) 
+							{
+								if ((*c>='0')&&(*c<='9'))	id = id * 10 + (*c-'0');
+							}
+							else
+							{
+								if (is_link)
+								{
+									if ((chr_x == _x) && ( chr_y == _y)) clicked = true;
+								}
+								_x ++;
+							}
+							break;
+				}
+				c++;
+			}
+		}
+	}
+	return 0;
+}
+
+void hypertext_mouse_event(zone_hypertext *base,struct cmdcontext *context, int mx, int my, int zid)
+{
+	int chr_x,  chr_y;
+	if ((mx<base -> x0)||(mx>base -> x1)||(my<base ->y0)||(my>base->y1)) return ;
+
+	chr_x = (mx - base -> x0) / 8;
+	chr_y = (my - base -> y0) / 8;
+
+	base -> value = get_id_hypertext( base, chr_x, chr_y );
+	base -> event = base -> value;
+	context -> has_return_value = true;
+	context -> return_value = zid;
 }
 
 
@@ -1361,7 +1431,7 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 	t1 = base -> h * (base -> pos+base -> trigger) / base -> total;
 
 
-	printf("%s:%d -> min %d, is %d, max %d\n",__FUNCTION__,__LINE__, base -> x0,mx,base -> x1);
+//	printf("%s:%d -> min %d, is %d, max %d\n",__FUNCTION__,__LINE__, base -> x0,mx,base -> x1);
 
 	if ((mx>=base -> x0)&&(mx<=base -> x1))
 	{
@@ -1434,8 +1504,8 @@ void block_slider_action( struct cmdcontext *context, struct cmdinterface *self 
 
 void edit_mouse_event(zone_edit *base,struct cmdcontext *context, int mx, int my, int zid)
 {
-
 }
+
 
 void edit_render(struct zone_edit *ze)
 {
@@ -1454,12 +1524,6 @@ void edit_render(struct zone_edit *ze)
 		}
 	}
 
-//	printf("box %d,%d to %d,%d\n", ze->x0,ze->y0,ze->x1,ze->y1);
-//	getchar();
-}
-
-void edit_mouse_event (struct cmdcontext *context, int mx, int my, int zid)
-{
 }
 
 void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
