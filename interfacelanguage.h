@@ -30,24 +30,36 @@ struct zone_base
 		int pos;
 		int value;
 	};
+	int event;	// is reset on dialog command, used read by rdialog command.
 
 	char *script_action;
-	void (*render) (struct zone_base *zl);
+
+	void (*update) (struct zone_base *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3);
+	void (*mouse_event) (struct zone_base *base, struct cmdcontext *context, int mx, int my, int zid);	// default
+	void (*render) (struct zone_base *);
 };
 
 #define I_FUNC_RENDER (void (*) (struct zone_base *))
 
 struct zone_button : zone_base
 {
-	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_button *zb);
+	zone_button();
 
 	char *script_render;
-
 };
 
-struct zone_slider : zone_base
+struct zone_hslider : zone_base
 {
-	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_slider *zb);
+	zone_hslider();
+
+	int trigger;
+	int total;
+	int step;
+};
+
+struct zone_vslider : zone_base
+{
+	zone_vslider();
 
 	int trigger;
 	int total;
@@ -56,6 +68,8 @@ struct zone_slider : zone_base
 
 struct zone_edit : zone_base
 {
+	zone_edit();
+
 	struct stringData *string;
 	int max;
 	int pen;
@@ -66,7 +80,7 @@ struct zone_edit : zone_base
 
 struct zone_hypertext : zone_base
 {
-	void (*mouse_event) (struct cmdcontext *context, int mx, int my, int zid, struct zone_hypertext *zb);
+	zone_hypertext();
 
 	void *address;
 	int buffer;
@@ -78,7 +92,8 @@ enum
 {
 	iz_none,
 	iz_button,
-	iz_slider,
+	iz_hslider,
+	iz_vslider,
 	iz_hypertext
 };
 

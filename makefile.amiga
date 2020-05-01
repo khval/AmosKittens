@@ -49,6 +49,7 @@ main_objects = commands.cpp \
 			os/amigaos/stuff.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
+			interfaceclasses.cpp \
 			interfacelanguage.cpp \
 			debug.cpp \
 			pass1.cpp \

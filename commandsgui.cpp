@@ -172,31 +172,17 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:	guiChannel = getStackNum(__stack);
-
-				if (context = find_interface_context( guiChannel ))
-				{
-					execute_interface_script( context, -1 );
-				}
+				label = -1;
 				break;
 
 		case 2:	guiChannel = getStackNum(__stack-1);
 				label = getStackNum(__stack);
-
-				if (context = find_interface_context( guiChannel ))
-				{
-					execute_interface_script( context, label );
-				}
 				break;
 
 		case 4:	guiChannel = getStackNum(__stack-3);
 				label = getStackNum(__stack-2);
 				x = getStackNum(__stack-1);
 				y = getStackNum(__stack);
-
-				if (context = find_interface_context( guiChannel ))
-				{
-					execute_interface_script( context, label );
-				}
 				break;
 
 		default:
@@ -204,6 +190,22 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 	}
 
 	popStack(__stack - data->stack );
+
+	if (context = find_interface_context( guiChannel ))
+	{
+		//  need to reset context.
+
+		context -> xgcl = 0;
+		context -> ygcl = 0;
+		context -> xgc = 0;
+		context -> ygc = 0;
+		context -> selected_dialog = 0;
+		context -> dialog[0].x = 0;
+		context -> dialog[0].y = 0;
+
+		execute_interface_script( context, label );
+	}
+
 	setStackNum( context ? (context -> has_return_value ? context -> return_value : 0) : 0 );
 
 	return NULL;
@@ -784,7 +786,7 @@ char *_guiRdialog( struct glueCommands *data, int nextToken )
 	}
 
 	popStack(__stack - data->stack );
-	setStackNum( zb ? zb -> value : 0 );
+	setStackNum( zb ? zb -> event : 0 );
 	return NULL;
 }
 
@@ -833,25 +835,59 @@ char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
-
-	NYI(__FUNCTION__);
+	int _channel_, _zone_, _param1_,_param2_,_param3_;
+	struct cmdcontext *context = NULL;
 
 	switch (args)
 	{
 		case 2:	// Dialog Update channel,zone
+
+				_channel_ = getStackNum(__stack-1);
+				_zone_ = getStackNum(__stack);
+				popStack(__stack - data->stack );
+
 				break;
+
 		case 3:	// Dialog Update channel,zone,param1
+
+				_channel_ = getStackNum(__stack-2);
+				_zone_ = getStackNum(__stack-1);
+				_param1_ = getStackNum(__stack);
+				popStack(__stack - data->stack );
+
 				break;
+
 		case 4:	// Dialog Update channel,zone,param1,param2
+
+				_channel_ = getStackNum(__stack-3);
+				_zone_ = getStackNum(__stack-2);
+				_param1_ = getStackNum(__stack-1);
+				_param2_ = getStackNum(__stack);
+				popStack(__stack - data->stack );
+
 				break;
+
 		case 5:	// Dialog Update channel,zone,param1,param2,param3
+
+				_channel_ = getStackNum(__stack-4);
+				_zone_ = getStackNum(__stack-3);
+				_param1_ = getStackNum(__stack-2);
+				_param2_ = getStackNum(__stack-1);
+				_param3_ = getStackNum(__stack);
+				popStack(__stack - data->stack );
+
 				break;
+
 		default:
+				popStack(__stack - data->stack );
 				setError(22,data->tokenBuffer);
 	}
 
-	popStack(__stack - data->stack );
-	setStackNum( 0 );
+	if (context = find_interface_context(_channel_))
+	{
+		struct zone_base *base = context -> zones[_zone_].custom;
+		base -> update( base, context, args - 2, _param1_,_param2_,_param3_) ;
+	}
 
 	return NULL;
 }
