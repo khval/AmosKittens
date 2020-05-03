@@ -563,11 +563,9 @@ int parenthesis[MAX_PARENTHESIS_COUNT];
 char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	flushCmdParaStack(0);
-	
 	if (do_input[instance.parenthesis_count]) do_input[instance.parenthesis_count]( cmd, tokenBuffer );	// read from keyboad or disk.
 	return tokenBuffer;
 }
-
 
 char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {

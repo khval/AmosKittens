@@ -321,15 +321,25 @@ char *_cmdLeftStr( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	if (args == 2)
+	switch (args)
 	{
-		str = getStackString(__stack - 1 );
-		_len = getStackNum(__stack );
-		tmp = amos_strndup(str, _len );
-	}	
+		case 2:
+			str = getStackString(__stack - 1 );
+			_len = getStackNum(__stack );
+			if (_len>-1) tmp = amos_strndup(str, _len );
+			break;
+		default:
+			setError(22,data->tokenBuffer);
+			popStack(__stack - data->stack);
+			return NULL;
+	}
 
 	popStack(__stack - data->stack);
-	if (tmp) setStackStr(tmp);
+	if (tmp) 
+	{
+		setStackStr(tmp);
+	}
+	else setError(23,data->tokenBuffer);
 
 	return NULL;
 }
@@ -409,18 +419,37 @@ char *_cmdRightStr( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
 
-	if (args == 2)
+	switch (args)
 	{
-		str = getStackString(__stack - 1 );
-		_len = getStackNum(__stack  );
-		if (_len>str->size) _len = str ->size;
+		case 2:
+			str = getStackString(__stack - 1 );
+			_len = getStackNum(__stack  );
 
-		tmp = amos_right(str , _len );
-	}	
+			if (_len>-1)	// success
+			{
+				if (_len>str->size) _len = str ->size;
+				tmp = amos_right(str , _len );
+				break;
+			}
+			else	// failed
+			{
+				setError(23,data->tokenBuffer);
+				popStack(__stack - data->stack);
+			}
+			return NULL;
+
+		default:
+			setError(22,data->tokenBuffer);
+			popStack(__stack - data->stack);
+			return NULL;
+	}
 
 	popStack(__stack - data->stack);
-
-	if (tmp) setStackStr(tmp);
+	if (tmp) 
+	{
+		setStackStr(tmp);
+	}
+	else setError(23,data->tokenBuffer);
 
 	return NULL;
 }
