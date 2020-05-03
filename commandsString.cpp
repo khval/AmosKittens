@@ -355,54 +355,42 @@ char *_cmdMidStr( struct glueCommands *data, int nextToken )
 		case 2:
 			str = getStackString(__stack - 1 );
 			_start = getStackNum(__stack ) ;	
-
-			if (_start == 0 ) _start = 1;	// 0 is allowed, even if string starts at 1.
-			if (_start>0)
-			{
-				_start--;
-				_slen = str -> size;
-				if (_start>_slen-1) 
-				{
-					tmp = toAmosString("",0);
-				}
-				else
-				{
-					if (_start<0) _start=0;
-					tmp = amos_right(str , str -> size - _start );
-				}
-			}
+			_len = (str) ? str -> size : 0;
 			break;
 
 		case 3:
 			str = getStackString(__stack - 2 );
-			_start = getStackNum(__stack -1 ) -1 ;
+			_start = getStackNum(__stack -1 )  ;
 			_len = getStackNum(__stack );
-
-			if (_start>-1)
-			{
-				if (_start>str -> size) 
-				{
-					tmp = toAmosString("",0);
-				}
-				else
-				{
-					if ( (_start+_len) > str->size) _len = str->size- _start;
-					tmp = amos_mid(str, _start, _len );
-				}
-			}	
 			break;
 
 		default:
 			setError(22,data->tokenBuffer);
+			popStack(__stack - data->stack);
+			return NULL;
 	}
 
-	if ((_start<0)||(_len<0)) 
+	if (_start<0)
 	{
+		popStack(__stack - data->stack);
 		setError(23,data->tokenBuffer);
+		return NULL;
 	}
-	popStack(__stack - data->stack);
-
-	if (tmp) setStackStr(tmp);
+	else
+	{
+		if (_start) _start --;
+		if (_start>str -> size) 
+		{
+			tmp = toAmosString("",0);
+		}
+		else
+		{
+			if ( (_start+_len) > str->size) _len = str->size- _start;
+			tmp = amos_mid(str, _start, _len );
+		}	
+		popStack(__stack - data->stack);
+		if (tmp) setStackStr(tmp);
+	}
 	return NULL;
 }
 
