@@ -99,6 +99,7 @@ extern void channel_movex( struct kittyChannel *self );
 extern void channel_movey( struct kittyChannel *self );
 
 struct Window *My_Window = NULL;
+struct BitMap *comp_bitmap = NULL;
 
 struct retroRGB DefaultPalette[256] = 
 {
@@ -247,6 +248,12 @@ void close_engine_window( )
 		ClearPointer( My_Window );
 		CloseWindow( My_Window );
 		My_Window = NULL;
+	}
+
+	if (comp_bitmap)
+	{
+		FreeBitMap(comp_bitmap);
+		comp_bitmap = NULL;
 	}
 }
 
@@ -1082,14 +1089,13 @@ void main_engine()
 			if (My_Window)
 			{
 				AfterEffectScanline( instance.video );
-//				AfterEffectAdjustRGB( video , 8, 0 , 4);
+//				AfterEffectAdjustRGB( instance.video , 8, 0 , 4);
 				retroDmaVideo( instance.video, engine );
 
 				WaitTOF();
 				if (sig_main_vbl) Signal( &main_task->pr_Task, 1<<sig_main_vbl );
 
-				if (false)
-				{
+#if	0
 					BltBitMapTags(BLITA_SrcType, BLITT_BITMAP,
 						BLITA_Source, engine->rp.BitMap,
 						BLITA_SrcX, 0,
@@ -1101,11 +1107,9 @@ void main_engine()
 						BLITA_DestX, My_Window->BorderLeft,
 						BLITA_DestY, My_Window->BorderTop,
 						TAG_END);
-				}
-				else
-				{
+#else
 					BackFill_Func( My_Window -> RPort, NULL );
-				}
+#endif
 
 			}
 			else
