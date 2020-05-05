@@ -36,6 +36,9 @@ int main(int args, char **arg)
 	int n;
 	struct cmdcontext context;
 
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+#if 0
 	const char *script =    "IF     0VA 1=;" 
    "[" 
    "SIze   1VATW160+ SW MI,40;" 
@@ -66,8 +69,17 @@ int main(int args, char **arg)
    "PRint  1VACX,SY2/ TH2/ -,1VA,3;" 
    "]" 
    "EXit;" ;
+#endif
 
-	context.script = toAmosString_char( (char *) script,strlen(script));
+	const char *script =    "KY     $DF,0;";
+
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	context.script = toAmosString_char( script,strlen(script));
+	context.at = &context.script -> ptr;
+	context.cmd_done = NULL;
+
+printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context.script)
 	{

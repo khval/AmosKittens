@@ -23,8 +23,8 @@ dummy = tests/dummy/text.cpp
 main_objects = ${dummy} os/amigaos/stuff.cpp \
 			interfacelanguage.cpp \
 			AmosString.cpp \
-			screen_helper.cpp 
-
+			screen_helper.cpp \
+			interfaceclasses.cpp
 
 main_SRCS = tests/interfaceTest.cpp
 
