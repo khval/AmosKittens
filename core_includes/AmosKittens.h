@@ -118,9 +118,9 @@ enum
 	type_float,		// 1
 	type_string,		// 2
 	type_file,			// 3
-	type_proc,		// 4
-	type_none,		// 5
+	type_proc = 4,		// 4
 	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
+	type_none =16,	// 16
 };
 
 struct KittyInstance;
