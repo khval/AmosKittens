@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <string>
 
 #include "config.h"
 
@@ -32,6 +33,7 @@
 #include "bitmap_font.h"
 #include "amosString.h"
 #include "cleanup.h"
+#include "load_config.h"
 
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
@@ -1263,26 +1265,26 @@ char *bankResourceBank(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-const char *AmosKittensSystem = "AmosKittens:System/";
-
-const char *DefaultFileNames[] =
+struct stringData *get_default_resource_str( const char *group, int id )
 {
-	"DefaultFileNames0",	// 0		(-1 to -9)
-	"DefaultFileNames1",	// 1
-	"DefaultFileNames2",	// 2
-	"DefaultFileNames3",	// 3
-	"DefaultFileNames4",	// 4
-	"DefaultFileNames5",	// 5
-	"DefaultFileNames6",	// 6
-	"DefaultFileNames7",	// 7
-	"DefaultFileNames8",	// 8
-	NULL
-};
+	char tmp[30];
+	std::string *value;
+	
+	sprintf( tmp, "%s_%d", group, id );
+	value = getConfigValue( tmp );
 
+	if (value)
+	{
+		const char *cs = value -> c_str();
+		return toAmosString(cs, strlen(cs));
+	}
+
+	return NULL;
+}
 
 struct stringData *getResourceStr(int id)
 {
-	struct stringData *ret = NULL;
+
 	int retry = 0;
 	int cbank = instance.current_resource_bank;
 
@@ -1290,6 +1292,7 @@ struct stringData *getResourceStr(int id)
 
 	if (id>0)
 	{
+		struct stringData *ret = NULL;
 		struct kittyBank *bank1;
 
 		do
@@ -1332,23 +1335,26 @@ struct stringData *getResourceStr(int id)
 			retry++;
 
 		} while ( retry < 2 );
-	}
-	else if (id == 0)
-	{
-		ret = toAmosString(AmosKittensSystem, strlen(AmosKittensSystem));
-	}
-	if ((id >=-1 )&&(id <=-9))	// Default file names
-	{
-		ret = toAmosString( DefaultFileNames[ (-id)-1], strlen(DefaultFileNames[ (-id)-1]) );
-	}
-	else if ((id >=-10 )&&(id <=-36))	// name of extentions
-	{
 
+		return ret;
 	}
 
-	if (ret==NULL)  ret = toAmosString( "",0 );
+	// --------------------------------------------------------------------------------------------------
+	//   Doc's in AmosPro is are wrong: says -10 to -36 is extensions names, 
+	//   But extention names is from -14 to -40
+	//   Using the same command for different things kind of stupid :-(
+	// -------------------------------------------------------------------------------------------------
 
-	return ret;
+	if ((id >=-13)&&(id <=0 ))	// Default file names
+	{
+		return get_default_resource_str( "resource", -id );
+	}
+	else if ((id >=-36 )&&(id <=-14))	// name of extentions
+	{
+		return get_default_resource_str( "extension", (-id) -13 );
+	}
+
+	return NULL;
 }
 
 char *_bankResourceStr( struct glueCommands *data, int nextToken )
