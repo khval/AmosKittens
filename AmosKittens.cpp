@@ -8,6 +8,7 @@
 #include <math.h>
 #include <signal.h>
 
+#include <string>
 #include "config.h"
 
 #ifdef __amigaos4__
@@ -57,6 +58,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "label.h"
 #include "amosstring.h"
 #include "kittyaudio.h"
+#include "load_config.h"
 
 //include "ext_music.h"
 
@@ -1320,17 +1322,30 @@ int main(int args, char **arg)
 			KittyBaseInfo.rgb[n] = (DefaultPalette[n].r << 4 & 0xF00) | (DefaultPalette[n].g & 0xF0) | (DefaultPalette[n].b >> 4);
 		}
 
-		__load_bank__( (char *) "progdir:kittySystem/kittens_default_resource.Abk",-2);
+		__load_bank__( (char *) "amospro_system:APSystem/AMOSPro_Default_Resource_org.Abk",-2);
+//		__load_bank__( (char *) "progdir:kittySystem/kittens_default_resource.Abk",-2);
 		__load_bank__( (char *) "progdir:kittySystem/mouse.abk",-3);
+
 
 		// set default values.
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
-		// init default values for fake extentions
-		open_extension( "AMOSPRO_music.lib", 1 );
-		open_extension( "AMOSPRO_compact.lib", 2 );
-		open_extension( "AMOSPRO_turbo.lib", 12 );
-		open_extension( "AMOSPRO_Craft.lib", 18 );
+		load_config("progdir:kittySystem/config.yml");
+
+		{
+			char tmp[30];
+			std::string *value;
+			for (n=0;n<20;n++)
+			{
+				sprintf( tmp, "%s_%d", "extension", n );
+				value = getConfigValue( tmp );
+				if (value)
+				{
+					open_extension( value -> c_str(), n );
+				}
+			}
+		}
+
 
 		for(n=0;n<32;n++)
 		{

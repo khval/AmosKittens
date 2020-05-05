@@ -83,7 +83,8 @@ main_objects = commands.cpp \
 			bobCol.cpp \
 			spriteCol.cpp \
 			bobSpriteCol.cpp \
-			amalBank.cpp
+			amalBank.cpp \
+			load_config.cpp
 
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}

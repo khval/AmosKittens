@@ -138,19 +138,49 @@ const char *newsuffix  = ".library";
 void open_extension( const char *name, int id )
 {
 	int l;
+	bool new_format = false;
 	char					*newName = NULL;
-	char					*ext = strdup(name);
 	struct Library			*extBase = NULL;
 	struct kittyCompactIFace	*Iext = NULL;
 
-	if (ext == NULL) goto cleanup;
-	remove_words( ext, prefixList );
+	if (strlen(name)>8)
+	{
+		printf("%s\n",(name + strlen(name) - 8));
+		if (strcmp((name + strlen(name) - 8),".library")==0) new_format = true;
+	}
 
-	l = strlen(newprefix) + strlen( ext ) + strlen( newsuffix) + 1;
-	newName = (char *) malloc(l);
+	if (new_format)
+	{
+		char *c;
+		newName = strdup( name );
+
+		for (c=newName;*c;c++)
+		{
+			if ((*c>='A')&&(*c<='Z')) *c = *c-'A'+'a';
+		}		
+	}
+	else
+	{
+		char	*ext = strdup(name);
+		if (ext == NULL) goto cleanup;
+
+		if (remove_words( ext, prefixList ))
+		{
+			l = strlen(newprefix) + strlen( ext ) + strlen( newsuffix) + 1;
+			newName = (char *) malloc(l);
+			if (newName == NULL)
+			{
+				free(ext);
+				goto cleanup;
+			}
+			sprintf(newName,"%s%s%s",newprefix,ext,newsuffix);
+		}
+		else newName = strdup( ext );
+		free(ext);
+	}
+
 	if (newName == NULL) goto cleanup;
 
-	sprintf(newName,"%s%s%s",newprefix,ext,newsuffix);
 	printf("%s\n",newName);
 
 	if ( open_lib( newName, 53L , "main", 1, &extBase, (struct Interface **) &Iext  ) )
@@ -176,7 +206,7 @@ void open_extension( const char *name, int id )
 
 cleanup:
 	if (newName) free(newName);
-	if (ext) free(ext);
+
 }
 
 
