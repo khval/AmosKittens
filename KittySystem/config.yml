@@ -1,0 +1,33 @@
+#
+# Amos Kittens config file.
+#
+
+resource:
+	0: "progdir:KittySystem/"
+	1: "KittySystem/"
+	5: "AutoExec.AMOS"
+	6: ""
+	7: ""
+	8: "kittens_default_resource.Abk"
+	9: "AMOSPro_Productivity1:Equates/AMOSPro_System_Equates"
+	10: ""
+	11: ""
+	12: "AMOSPro_Accessories:AMOSPro_Help/AMOSPro_Help"
+	13: "AMOSPro_Accessories:AMOSPro_Help/LatestNews"
+
+extension:
+	1: "kittyMusic.library"
+	2: "kittyCompact.library"
+	3: "kittyRequest.library"
+	6: "kittyIOPorts.library"
+	12: "kittyTurbo.library"
+	18: "KittyCraft.library"
+	19: "KittyMusiCraft.library"
+	23: "KittyMisc.library"
+
+ports:
+	Printer: "Par:"
+	Serial: "Aux:"
+
+Default:
+	Flash: "(000,2)(440,2)(880,2)(bb0,2)(dd0,2)(ee0,2)(ff2,2)(ff8,2)(ffc,2)(fff,2)(aaf,2)(88c,2)(66a,2)(226,2)(004,2)(001,2)"
