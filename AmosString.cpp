@@ -155,10 +155,10 @@ struct stringData *toAmosString( const char *txt,int len)
 	return newstr;
 }
 
-struct stringData *toAmosString_char(char *adr, char t)
+struct stringData *toAmosString_char( const char *adr, char t)
 {
 	struct stringData *ret;
-	char *c;
+	const char *c;
 	int size = 0;
 
 	for (c=adr;*c!=t;c++) size++;
@@ -179,11 +179,11 @@ struct stringData *toAmosString_char(char *adr, char t)
 	return ret;
 }
 
-struct stringData *toAmosString_len_or_char(char *adr, int len, char t)
+struct stringData *toAmosString_len_or_char( const char *adr, int len, char t)
 {
 	struct stringData *ret;
-	char *c;
-	char *adr_end;
+	const char *c;
+	const char *adr_end;
 	int size = 0;
 
 	for (c=adr;(*c!=t)&&(size<len);c++) size++;
