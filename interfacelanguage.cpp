@@ -2986,8 +2986,8 @@ struct cmdinterface symbols[]=
 	{"-",i_parm,NULL,icmd_Minus},
 	{"*",i_parm,NULL,icmd_Mul},
 	{"/",i_parm,NULL,icmd_Div},
-	{"%",i_parm,NULL,icmd_Bin},
-	{"$",i_parm,NULL,icmd_Hex},
+	{"%",i_parm,icmd_Bin,icmd_Bin},
+	{"$",i_parm,icmd_Hex,icmd_Hex},
 
 	{NULL,i_normal,NULL,NULL}
 };
