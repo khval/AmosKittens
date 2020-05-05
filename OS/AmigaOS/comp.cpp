@@ -20,13 +20,21 @@ extern struct retroEngine *engine ;
 
 extern bool engine_pal_mode;
 
-struct XYSTW_Vertex3D { 
-	float x, y; 
-	float s, t, w; 
-}; 
+typedef struct CompositeHookData_s {
+	struct BitMap *srcBitMap; // The source bitmap
+	int32 srcWidth, srcHeight; // The source dimensions
+	int32 offsetX, offsetY; // The offsets to the destination area relative to the window's origin
+	int32 scaleX, scaleY; // The scale factors
+	uint32 retCode; // The return code from CompositeTags()
+} CompositeHookData;
+
+static struct Rectangle rect;
+static struct Hook hook;
+static CompositeHookData hookData;
 
 
 void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs);
+void set_target_hookData( void );
 
 struct Hook BackFill_Hook =
 {
@@ -36,66 +44,74 @@ struct Hook BackFill_Hook =
 	NULL
 };
 
+static ULONG compositeHookFunc(
+			struct Hook *hook, 
+			struct RastPort *rastPort, 
+			struct BackFillMessage *msg)
+ {
 
-void draw_comp_bitmap(struct BitMap *the_bitmap,struct BitMap *the_bitmap_dest, int width,int height, int wx,int wy,int ww, int wh)
-{
-	#define STEP(a,xx,yy,ss,tt,ww)   P[a].x= xx; P[a].y= yy; P[a].s= ss; P[a].t= tt; P[a].w= ww;  
+	CompositeHookData *hookData = (CompositeHookData*)hook->h_Data;
 
-	int error;
-	struct XYSTW_Vertex3D P[6];
+	hookData->retCode = CompositeTags(
+		COMPOSITE_Src, 
+			hookData->srcBitMap, 
+			rastPort->BitMap,
+		COMPTAG_SrcWidth,   hookData->srcWidth,
+		COMPTAG_SrcHeight,  hookData->srcHeight,
+		COMPTAG_ScaleX, 	hookData->scaleX,
+		COMPTAG_ScaleY, 	hookData->scaleY,
+		COMPTAG_OffsetX,    msg->Bounds.MinX - (msg->OffsetX - hookData->offsetX),
+		COMPTAG_OffsetY,    msg->Bounds.MinY - (msg->OffsetY - hookData->offsetY),
+		COMPTAG_DestX,      msg->Bounds.MinX,
+		COMPTAG_DestY,      msg->Bounds.MinY,
+		COMPTAG_DestWidth,  msg->Bounds.MaxX - msg->Bounds.MinX + 1,
+		COMPTAG_DestHeight, msg->Bounds.MaxY - msg->Bounds.MinY + 1,
+		COMPTAG_Flags,      COMPFLAG_SrcFilter | COMPFLAG_IgnoreDestAlpha | COMPFLAG_HardwareOnly,
+		TAG_END);
 
-	STEP(0, wx, wy ,0 ,0 ,1);
-	STEP(1, wx+ww,wy,width,0,1);
-	STEP(2, wx+ww,wy+wh,width,height,1);
-
-	STEP(3, wx,wy, 0,0,1);
-	STEP(4, wx+ww,wy+wh,width,height,1);
-	STEP(5, wx, wy+wh ,0 ,height ,1);
-
-	if (the_bitmap)
-	{
-		LockLayer(0, My_Window->RPort->Layer);
-
-		error = CompositeTags(COMPOSITE_Src, 
-			the_bitmap, the_bitmap_dest,
-
-			COMPTAG_VertexArray, P, 
-			COMPTAG_VertexFormat,COMPVF_STW0_Present,
-		    	COMPTAG_NumTriangles,2,
-
-			COMPTAG_SrcAlpha, (uint32) (0x0010000 ),
-			COMPTAG_Flags, COMPFLAG_SrcAlphaOverride | COMPFLAG_HardwareOnly | COMPFLAG_SrcFilter ,
-			TAG_DONE);
-
-		UnlockLayer(My_Window->RPort->Layer);
-	}
+	return 0;
 }
-
 
 void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs)
 {
-	struct BitMap *bitmap;
-	int ww;
-	int wh;
+	set_target_hookData();
 
-	ww = My_Window->Width - My_Window->BorderLeft - My_Window->BorderRight;
-	wh = My_Window->Height - My_Window->BorderTop - My_Window->BorderBottom;
-
-	bitmap = AllocBitMap( ww , wh, 32, BMF_DISPLAYABLE, My_Window ->RPort -> BitMap);
-	if (bitmap)
+	if (My_Window)
 	{
-		draw_comp_bitmap(engine->rp.BitMap, bitmap, 
-						instance.video -> width, 
-						engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6 ,
-						0,0,ww,wh);
+		register struct RastPort *RPort = My_Window->RPort;
 
-		BltBitMapRastPort(bitmap, 0, 0, My_Window -> RPort,
-			My_Window -> BorderLeft,
-			My_Window -> BorderTop,
-			ww, wh,0xc0);
-
-		FreeBitMap(bitmap);
+		LockLayer(0, RPort->Layer);
+		DoHookClipRects(&hook, RPort, &rect);
+		UnlockLayer( RPort->Layer);
 	}
 }
+
+void set_target_hookData( void )
+{
+	int image_height = (engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6);
+
+ 	rect.MinX = My_Window->BorderLeft;
+ 	rect.MinY = My_Window->BorderTop;
+ 	rect.MaxX = My_Window->Width - My_Window->BorderRight - 1;
+ 	rect.MaxY = My_Window->Height - My_Window->BorderBottom - 1;
+
+ 	float destWidth = rect.MaxX - rect.MinX + 1;
+ 	float destHeight = rect.MaxY - rect.MinY + 1;
+ 	float scaleX = (destWidth + 0.5f) / instance.video -> width;
+ 	float scaleY = (destHeight + 0.5f) / image_height;
+
+	hookData.srcBitMap = engine->rp.BitMap;
+	hookData.srcWidth = instance.video -> width;
+	hookData.srcHeight = image_height;
+	hookData.offsetX = My_Window->BorderLeft;
+	hookData.offsetY = My_Window->BorderTop;
+	hookData.scaleX = COMP_FLOAT_TO_FIX(scaleX);
+	hookData.scaleY = COMP_FLOAT_TO_FIX(scaleY);
+	hookData.retCode = COMPERR_Success;
+
+	hook.h_Entry = (HOOKFUNC) compositeHookFunc;
+	hook.h_Data = &hookData;
+}
+
 
 
