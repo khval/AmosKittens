@@ -3410,6 +3410,7 @@ void test_interface_script( struct cmdcontext *context)
 				}
 				else 
 				{
+					printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 					printf("its not a command, its not a string, its not a number wtf\n");
 					printf("Look at \"%.20s\"\n",context -> at);
 					context -> error = true;
