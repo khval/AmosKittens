@@ -84,7 +84,7 @@ struct kittyCompactIFace	*IkittyCompact = NULL;
 APTR engine_mx = 0;
 APTR channel_mx[4] = { 0,0,0,0 };
 
-void remove_words(char *name,const char **list);
+bool remove_words(char *name,const char **list);
 
 UWORD *EmptyPointer = NULL;
 
@@ -406,12 +406,13 @@ void closedown()
 	}
 }
 
-void remove_words(char *name,const char **list)
+bool remove_words(char *name,const char **list)
 {
 	const char **i;
 	char *src;
 	char *dest = name;
 	bool found;
+	bool word_removed = false;
 	int sym;
 
 	for (src = name;*src;src++)
@@ -426,6 +427,7 @@ void remove_words(char *name,const char **list)
 				src += strlen(*i);
 				src--;
 				found = true;
+				word_removed = true;
 				continue;
 			}
 		}
@@ -445,4 +447,5 @@ void remove_words(char *name,const char **list)
 	{
 		sprintf(name,"cmd");
 	}
+	return word_removed;
 }
