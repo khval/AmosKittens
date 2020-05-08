@@ -70,7 +70,6 @@ extern uint8_t getByte( char *adr, int &pos );
 extern uint16_t getWord( char *adr, int &pos );
 extern uint32_t getLong( char *adr, int &pos );
 
-
 extern int os_text_height(struct stringData *txt);
 extern int os_text_base(struct stringData *txt);
 extern int os_text_width(struct stringData *txt);
@@ -2336,56 +2335,6 @@ void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 
 // undocumented not in AmosPro manuall, used in AmosPro_Help.amos
 
-void _icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (context -> stackp>=5)
-	{
-		struct retroScreen *screen = instance.screens[instance.current_screen]; 
-		struct ivar &nr = context -> stack[context -> stackp-5];	// id
-		struct ivar &x = context -> stack[context -> stackp-4];	// x
-		struct ivar &y = context -> stack[context -> stackp-3];	// y
-		struct ivar &width = context -> stack[context -> stackp-2];	// ?
-		struct ivar &txt = context -> stack[context -> stackp-1];	// txt
-
-		if (( nr.type == type_int ) 
-			&& ( x.type == type_int )  
-			&& ( y.type == type_int )  
-			&& ( width.type == type_int )  
-			&& ( txt.type == type_string ))
-		{
-			x.num+=get_dialog_x(context);
-			y.num+=get_dialog_y(context);
-	
-			retroBox( screen, screen -> double_buffer_draw_frame,x.num, y.num, x.num+width.num-2, y.num+9,2 );
-
-			engine_lock();
-			if (engine_ready())
-			{
-				if (txt.str)
-				{
-					os_text_no_outline(screen, x.num+(width.num/2)- (os_text_width( txt.str ) / 2),y.num+os_text_base( txt.str ),txt.str,screen -> ink0 );
-				}							
-			}
-			engine_unlock();
-		}
-		else ierror(1);
-
-
-		pop_context( context, 5);
-	}
-
-	context -> cmd_done = NULL;
-}
-
-void icmd_bb( struct cmdcontext *context, struct cmdinterface *self )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmd_bb;
-	context -> args = 5;
-}
-
 void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -2995,7 +2944,6 @@ struct cmdinterface symbols[]=
 struct cmdinterface commands[]=
 {
 	{"BA",i_normal,NULL,icmd_Base},
-	{"BB",i_normal,NULL,icmd_bb },	// 6 args
 	{"BP",i_parm,NULL,icmd_ButtonPosition },
 	{"BO",i_normal,NULL,icmd_ImageBox },
 	{"BR",i_normal,NULL,icmd_ButtonReturn },
