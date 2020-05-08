@@ -65,6 +65,7 @@ void pop_context( struct cmdcontext *context, int pop );
 void push_context_num(struct cmdcontext *context, int num);
 void push_context_string(struct cmdcontext *context, struct stringData *str);
 void push_context_var(struct cmdcontext *context, int num);
+userDefined *push_context_ui( struct cmdcontext *context );
 
 extern uint8_t getByte( char *adr, int &pos );
 extern uint16_t getWord( char *adr, int &pos );
@@ -87,6 +88,44 @@ extern bool breakpoint ;
 void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at);
 
 #define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
+
+userDefined::userDefined()
+{
+	*((int *) &name ) =0;
+	args = 0;
+	action = NULL;
+}
+
+struct userDefined *cmdcontext::findUserDefined( const char *name )
+{
+	int n;
+	char *_name;
+	char c1 = name[0];
+	char c2 = name[1];	// this can be \0 or a symbol
+
+	for (n=0;n<userDefineds.size();n++)
+	{
+		_name = userDefineds[n].name;
+		if (_name[0] != c1) continue;
+		if (_name[1] != c2) continue;
+		return &userDefineds[n];
+	}
+
+	return NULL;
+}
+
+void cmdcontext::dumpUserDefined()
+{
+	int n;
+	char *_name;
+
+	for (n=0;n<userDefineds.size();n++)
+	{
+		struct userDefined *ud = &userDefineds[n];	// don't need check...
+		printf("name: %s args %d action: %08x\n", ud -> name, ud -> args, ud -> action );
+
+	}
+}
 
 void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self );
 
@@ -2307,6 +2346,18 @@ void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 1;
 }
 
+void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d - %s\n",__FUNCTION__,__LINE__, context -> ui_current -> name);
+
+	if (context -> stackp>= context -> ui_current -> args )
+	{
+		pop_context( context, context -> ui_current -> args);
+	}
+
+	context -> cmd_done = NULL;
+}
+
 void _icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -2920,6 +2971,113 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 	push_context_num( context, zb ? zb -> value : 0 );
 }
 
+#define skip_spaces while ( *context -> at == ' ' ) context -> at++
+#define is(sym) (*context -> at == sym )
+
+int get_num( struct cmdcontext *context )
+{
+	int r =0;
+	char c = *context -> at;
+
+	while ((c>='0')&&(c<='9'))
+	{
+		printf("%c\n",c);
+		r = (r*10) + (c - '0');
+		c = *(++context -> at);
+	}
+	return r;
+}
+
+void test_UserInstruction( struct cmdcontext *context, struct cmdinterface *self )
+{
+	userDefined *ud;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	context -> at += 2;
+
+	skip_spaces;
+
+	ud = push_context_ui( context  );
+
+	// if can't create it, maybe its in the list from before.
+	if (ud == NULL) ud = context -> findUserDefined( context -> at );
+
+	if (ud)
+	{
+		bool success = false;
+		context -> at += strlen(ud -> name);
+
+		skip_spaces;
+
+		printf("%c\n",*context -> at);
+
+		if (is(','))
+		{
+			context -> at++;
+			skip_spaces;
+			ud -> args = get_num(context);
+			skip_spaces;
+			success = true;
+			if (is(';'))
+			{
+				context -> at++;
+				skip_spaces;
+				ud -> action = context -> at;
+			}
+		}
+		
+		if (success== false)
+		{
+			context -> error = true;
+		}
+
+		printf("%s\n", ud -> name);
+	}
+
+	context -> at += 2;	// we skip the command name, this is a hack!!!
+
+	context -> at -= 2;
+}
+
+void icmd_UserInstruction( struct cmdcontext *context, struct cmdinterface *self )
+{
+	const char *at;
+	int block = 0;
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	// skip this command, should not be executed, its defined under test
+
+	context -> at += 2;	// skip current command name "UI".
+
+	// find the end of code block for the UI command.
+
+	at = context -> at;
+	while ( *at != 0 )
+	{
+		switch (*at) 
+		{
+			case '[':
+				block++;
+				break;
+
+			case ']':
+				at++;
+				block--;
+				break;
+		}
+		at++;
+	}
+
+	context -> at = (char *) at;
+
+	// next should be the new command.
+	printf("---%.5s\n", context -> at);
+
+	context -> at -= 2;	// undo skip of "UI" command name.
+}
+
 struct cmdinterface symbols[]=
 {
 
@@ -2992,6 +3150,7 @@ struct cmdinterface commands[]=
 	{"TL",i_parm,NULL,icmd_TextLength},
 	{"TW",i_parm,NULL,icmd_TextWidth},
 	{"UN",i_normal,NULL,icmd_Unpack},
+	{"UI",i_normal,test_UserInstruction, icmd_UserInstruction },
 	{"VA",i_parm,NULL,icmd_Var},
 	{"VS",i_normal,NULL,icmd_VerticalSlider },
 	{"VT",i_normal,NULL,NULL},
@@ -3096,6 +3255,8 @@ int find_command( char *at, int &l )
 		if (strncmp(cmd -> name,at,l)==0)
 		{
 			c = *(at+l);
+
+			printf("%s, '%c'\n", cmd -> name,c);
 
 			if ((c == ' ')||(c=='\'')||(c == 0)) return num;
 			if ((c>='0')&&(c<='9')) return num;
@@ -3317,6 +3478,22 @@ void cleanup_interface_context( struct cmdcontext *context )
 	}
 }
 
+userDefined *push_context_ui( struct cmdcontext *context )
+{
+	userDefined ud;
+	strncpy( ud.name, context -> at, 2 );
+
+	if (context -> findUserDefined( ud.name ) == NULL)
+	{
+		ud.action = NULL;
+		printf("storing possible UI command %s\n", ud.name);
+		context -> userDefineds.push_back(ud);
+		return &(context -> userDefineds.back());
+	}
+
+	return NULL;
+}
+
 void test_interface_script( struct cmdcontext *context)
 {
 	int sym,cmd;
@@ -3356,20 +3533,15 @@ void test_interface_script( struct cmdcontext *context)
 				{
 					push_context_num( context, num );
 				}
-				else 
+				else 	// Must be a user defined command, so we keep it. if not we know it its not when the test is done.
 				{
-					printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-					printf("its not a command, its not a string, its not a number wtf\n");
-					printf("Look at \"%.20s\"\n",context -> at);
-					context -> error = true;
-					break;
+					userDefined *ud = push_context_ui( context );
+					if (ud) context -> l = strlen(ud -> name);
 				}
 			}
 			else 	
 			{
 				struct cmdinterface *icmd = &commands[cmd];
-
-				printf("%s:%s\n",__FUNCTION__,icmd -> name);
 
 				if (icmd -> type == i_normal) pop_context( context, context -> stackp );
 
@@ -3476,8 +3648,17 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 				}
 				else 	
 				{
-					context -> error = true;
-					break;
+					struct userDefined *ud = context -> findUserDefined( context -> at );
+
+					if (ud)
+					{
+						Printf("found this ud command\n");
+					}
+					else
+					{
+						context -> error = true;
+						break;
+					}
 				}
 			}
 			else 	
@@ -3530,7 +3711,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	int num;
 	struct stringData *str = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( context -> zones == NULL )
 	{
@@ -3555,6 +3736,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	if (context -> tested == false)
 	{
 	 	test_interface_script( context );
+		context -> dumpUserDefined();
+		getchar();
 	}
 
 	context -> at = &(context -> script -> ptr);	// default
@@ -3586,7 +3769,6 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 
 		sym = find_symbol( context -> at, context -> l );
-
 		if (sym != -1)
 		{
 			struct cmdinterface *icmd = &symbols[sym];
@@ -3609,7 +3791,26 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 				{
 					push_context_num( context, num );
 				}
-				else 	break;
+				else 	
+				{
+					context -> ui_current = context -> findUserDefined( context -> at );
+
+					if (context -> ui_current)
+					{
+						Printf("found this ud command - %s\n", context -> ui_current -> name);
+						context -> l = strlen(context -> ui_current -> name);
+
+						context -> args = context -> ui_current -> args;
+						context -> cmd_done = _icmd_ui_cmd;
+					}
+					else
+					{
+						printf("not a command, not string, not a number, not a user defined command\n");
+
+						context -> error = true;
+						break;
+					}
+				}
 			}
 			else 	
 			{

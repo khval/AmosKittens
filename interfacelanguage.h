@@ -104,6 +104,14 @@ struct izone
 	struct zone_base *custom;
 };
 
+struct userDefined
+{
+	userDefined();	
+	char name[4];		// is always 2 chars, +1 zero, +1 pad
+	int args;
+	const char *action;
+};
+
 struct cmdcontext
 {
 	int id;
@@ -142,6 +150,10 @@ struct cmdcontext
 	int return_value;
 	bool mouse_key;
 	bool exit_run;
+	std::vector<struct userDefined> userDefineds;
+	struct userDefined *findUserDefined( const char *name );
+	void dumpUserDefined();
+	struct userDefined *ui_current;
 };
 
 struct cmdinterface

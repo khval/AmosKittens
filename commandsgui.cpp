@@ -154,7 +154,9 @@ void 	erase_interface_context( struct cmdcontext *context )
 	{
 		if (icmdcontexts[n] == context) 
 		{
-			icmdcontexts.begin()+n;
+			delete icmdcontexts[n];
+			icmdcontexts[n] = NULL;
+			icmdcontexts.erase( icmdcontexts.begin()+n);
 			return;
 		}
 	}

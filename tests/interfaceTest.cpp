@@ -35,6 +35,7 @@ int main(int args, char **arg)
 {
 	int n;
 	struct cmdcontext context;
+	struct stringData *scriptAmos;
 
 printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -71,13 +72,30 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
    "EXit;" ;
 #endif
 
+#if 0
 	const char *script =    "KY     $DF,0;";
+#endif
+
+#if 1
+	const char *script =    "UX 100,200;UI UX,2;[ KY $DF,0;]";
+#endif
 
 printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	context.script = toAmosString_char( script,strlen(script));
-	context.at = &context.script -> ptr;
-	context.cmd_done = NULL;
+	scriptAmos = toAmosString_char( script,strlen(script));
+
+
+	if (scriptAmos)
+	{
+
+
+		init_interface_context( &context, 1, scriptAmos, 0, 0, 10, 1000  );
+
+
+		// its copied so we can free it now.
+		sys_free(scriptAmos);
+		scriptAmos = NULL;	
+	}
 
 printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -89,7 +107,7 @@ printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 		execute_interface_script( &context, 0);
 
-		sys_free(context.script);
+		cleanup_interface_context( &context );
 	}
 
 	return 0;
