@@ -2667,7 +2667,7 @@ void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
-void icmd_MA( struct cmdcontext *context, struct cmdinterface *self )	// Max
+void icmd_Max( struct cmdcontext *context, struct cmdinterface *self )	// Max
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);	
 
@@ -2969,7 +2969,7 @@ struct cmdinterface commands[]=
 	{"LI",i_normal,NULL,icmd_Imagehline },
 	{"VL",i_normal,NULL,icmd_imagevline },
 	{"KY",i_normal,NULL,icmd_KeyShortCut},
-	{"MA",i_parm,NULL,icmd_MA },
+	{"MA",i_parm,NULL,icmd_Max },	
 	{"MI",i_parm,NULL,icmd_Min},
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
 	{"PR",i_normal,NULL,icmd_Print},
