@@ -94,15 +94,12 @@ userDefined::userDefined()
 struct userDefined *cmdcontext::findUserDefined( const char *name )
 {
 	unsigned int n;
-	char *_name;
-	char c1 = name[0];
-	char c2 = name[1];	// this can be \0 or a symbol
+	uint16_t twoChars = * ((uint16_t *)  name);	// name is char and myabe a \0, name should be two chars.
 
+	// command is always two chars. buffer is 4 so no issue.
 	for (n=0;n<userDefineds.size();n++)
 	{
-		_name = userDefineds[n].name;
-		if (_name[0] != c1) continue;
-		if (_name[1] != c2) continue;
+		if ( *((uint16_t *) userDefineds[n].name)  != twoChars) continue;
 		return &userDefineds[n];
 	}
 
