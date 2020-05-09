@@ -216,22 +216,13 @@ char *get_name(char *path,char *name)
 	return name ? strdup(name) : NULL;
 }
 
-void collect_lines( struct fileContext &lastFile, char *filename )		// this function should be called recursive.... for etch include.
+
+void split_path_name(struct fileContext *file, char *filename)
 {
-	std::vector<struct kittyLib> libsList;
-	struct fileContext *file;					// the file context is private, and is trown away when function ends.
-	FILE *fd;
-	char amosid[18];
-	char *tmp_filename = NULL;
-	unsigned short token;
 	int l;
 	char *c;
 
-	if (filename == NULL) return;
-
 	l = strlen(filename);
-
-	file = new_fileContext( files.size(), 0 );
 
 	for (c=filename + (l ? l-1: 0)  ; c>=filename ;c--)
 	{
@@ -242,6 +233,23 @@ void collect_lines( struct fileContext &lastFile, char *filename )		// this func
 			break;
 		}
 	}
+}
+
+void collect_lines( struct fileContext &lastFile, char *filename )		// this function should be called recursive.... for etch include.
+{
+	std::vector<struct kittyLib> libsList;
+	struct fileContext *file;					// the file context is private, and is trown away when function ends.
+	FILE *fd;
+	char amosid[18];
+	char *tmp_filename = NULL;
+	unsigned short token;
+
+
+	if (filename == NULL) return;
+
+	file = new_fileContext( files.size(), 0 );
+
+	split_path_name( file , filename);
 
 	if ((file -> path == NULL) && (lastFile.path)) file -> path = strdup(lastFile.path);
 
@@ -413,6 +421,8 @@ struct fileContext *newFile( char *name )
 			newFile -> bankSize = files[0] -> bankSize;
 			files[0] -> bank = NULL;
 		}
+
+		split_path_name( newFile, name );
 	}
 
 	clean_up_inc_files();
