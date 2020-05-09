@@ -1618,6 +1618,12 @@ void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 8;
 }
 
+void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
+{
+	char c = *(context -> at + 1);
+	isetvarnum( context, c-'0', 0 );
+}
+
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3123,6 +3129,15 @@ struct cmdinterface commands[]=
 	{"MA",i_parm,NULL,icmd_Max },	
 	{"MI",i_parm,NULL,icmd_Min},
 	{"NW",i_normal,NULL,icmd_ButtonNoWait},
+	{"P1",i_parm,NULL,icmd_param },
+	{"P2",i_parm,NULL,icmd_param },
+	{"P3",i_parm,NULL,icmd_param },
+	{"P4",i_parm,NULL,icmd_param },
+	{"P5",i_parm,NULL,icmd_param },
+	{"P6",i_parm,NULL,icmd_param },
+	{"P7",i_parm,NULL,icmd_param },
+	{"P8",i_parm,NULL,icmd_param },
+	{"P9",i_parm,NULL,icmd_param },
 	{"PR",i_normal,NULL,icmd_Print},
 	{"PO",i_normal,NULL,icmd_PrintOutline},
 	{"PU",i_normal,NULL,icmd_PushImage},
