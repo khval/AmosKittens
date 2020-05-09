@@ -1,12 +1,10 @@
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
-
-#ifdef _MSC_VER
-#include <string.h>
-#include "vs_missing_string_functions.h"
-#define strdup _strdup
-#define Printf printf
-#endif
+#include <inttypes.h>
+#include <stdbool.h>
+#include <vector>
 
 #include "debug.h"
 
@@ -32,9 +30,6 @@ extern FILE *engine_fd;
 #endif
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <vector>
 #include "AmalCompiler.h"
 #include "pass1.h"
 #include "AmosKittens.h"
