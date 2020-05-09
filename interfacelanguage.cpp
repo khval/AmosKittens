@@ -80,7 +80,7 @@ extern bool breakpoint ;
 #define call_block_fn(context,self) context -> block_fn[ context -> block_level ](context,self)
 #define inc_block() { context -> block_level++ ; context -> block_fn[ context -> block_level ] = NULL; }
 
-void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at);
+void execute_interface_sub_script( struct cmdcontext *context, int zone,  char *at);
 
 #define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
 
@@ -1391,7 +1391,7 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 			base -> pos = tpos;
 			base -> render( base );
 
-			execute_interface_sub_script( context, zid , base -> script_action);
+			execute_interface_sub_script( context, zid , (char *) base -> script_action);
 			return;
 		}
 
@@ -2343,6 +2343,9 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> stackp>= context -> ui_current -> args )
 	{
 		pop_context( context, context -> ui_current -> args);
+
+		execute_interface_sub_script( context, 0, (char *) context -> ui_current -> action );
+
 	}
 
 	context -> cmd_done = NULL;
@@ -3242,6 +3245,7 @@ int find_command( char *at, int &l )
 	for (cmd = commands; cmd -> name; cmd++)
 	{
 		l = strlen(cmd -> name);
+
 		if (strncmp(cmd -> name,at,l)==0)
 		{
 			c = *(at+l);
@@ -3513,6 +3517,7 @@ void test_interface_script( struct cmdcontext *context)
 		else
 		{
 			cmd = find_command( context -> at, context -> l );
+
 			if (cmd == -1) 
 			{
 				if (is_string(context -> at, str, context -> l) )
