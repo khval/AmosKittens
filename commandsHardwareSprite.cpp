@@ -385,5 +385,15 @@ char *hsISprite(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *hwSpriteUpdateOff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
 
+char *hwSpriteUpdate(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	return tokenBuffer;
+}
 

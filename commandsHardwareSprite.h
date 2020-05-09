@@ -18,4 +18,6 @@ char *hsSetSpriteBuffer(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsXSprite(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsYSprite(struct nativeCommand *cmd, char *tokenBuffer);
 char *hsISprite(struct nativeCommand *cmd, char *tokenBuffer);
+char *hwSpriteUpdateOff(struct nativeCommand *cmd, char *tokenBuffer);
+char *hwSpriteUpdate(struct nativeCommand *cmd, char *tokenBuffer);
 
