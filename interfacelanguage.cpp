@@ -93,7 +93,7 @@ userDefined::userDefined()
 
 struct userDefined *cmdcontext::findUserDefined( const char *name )
 {
-	int n;
+	unsigned int n;
 	char *_name;
 	char c1 = name[0];
 	char c2 = name[1];	// this can be \0 or a symbol
@@ -111,9 +111,7 @@ struct userDefined *cmdcontext::findUserDefined( const char *name )
 
 void cmdcontext::dumpUserDefined()
 {
-	int n;
-	char *_name;
-
+	unsigned int n;
 	for (n=0;n<userDefineds.size();n++)
 	{
 		struct userDefined *ud = &userDefineds[n];	// don't need check...
