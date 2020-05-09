@@ -43,6 +43,8 @@ extern void __erase_bobs_on_screen__(int screen_id);
 #define true_hires 0x8000
 #define true_laced 0x4
 
+extern struct fileContext *kittensFile;
+
 unsigned int amosModeToRetro(unsigned int aMode)
 {
 	unsigned int retMode = 0;
@@ -956,7 +958,9 @@ unsigned int AmigaModeToRetro( unsigned int modeid )
 	return mode;
 }
 
-void LoadIff( char *name,  int sn )
+extern char *get_name(char *path,char *name);		// found in include.cpp file
+
+void LoadIff( const char *org_name,  int sn )
 {
 	struct DataType *dto = NULL;
 	struct BitMapHeader *bm_header;
@@ -966,12 +970,15 @@ void LoadIff( char *name,  int sn )
 	ULONG colors;
 	ULONG bformat;
 	ULONG mode;
+	char *name;
 
 	// new screen if no current screen, or if it asks for new screen.
 
 	BOOL new_screen = (sn >-1 ) || instance.screens[instance.current_screen];
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	name = get_name( kittensFile -> path, (char *) org_name );
 
 	if(dto = (struct DataType *) NewDTObject( name, DTA_GroupID, GID_PICTURE, TAG_DONE))
 	{
@@ -1081,6 +1088,8 @@ void LoadIff( char *name,  int sn )
 		DisposeDTObject((Object*) dto);
 		engine_unlock();
 	}
+
+	if (name) free(name);
 }
 
 void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG *colors )

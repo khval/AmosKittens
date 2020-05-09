@@ -64,7 +64,6 @@ extern void setError( int _code, char * _pos ) ;
 
 bool running = true;
 bool interpreter_running = false;
-
 int sig_main_vbl = 0;
 int proc_stack_frame = 0;
 
@@ -91,6 +90,8 @@ uint32_t _file_bank_size = 0;
 
 int procStackCount = 0;
 uint32_t tokenFileLength;
+
+struct fileContext *kittensFile;
 
 bool startup = false;
 
@@ -1224,7 +1225,6 @@ void get_procedures()
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
-	struct fileContext *file;
 	char amosid[17];
 	int n;
 
@@ -1367,27 +1367,28 @@ int main(int args, char **arg)
 
 		if (instance.video) start_engine();
 
-		file = newFile( filename );
+		kittensFile = newFile( filename );
 
-		if (( ! token_not_found )&&(file)&&(instance.video)&&(init_error == false))
+		if (( ! token_not_found )&&(kittensFile)&&(instance.video)&&(init_error == false))
 		{
-			if (file -> start)
+			printf("path: %s\n", kittensFile -> path ? kittensFile -> path : "NONE");
+			if (kittensFile -> start)
 			{
-				_file_start_ = (char *) file -> start ;
-				_file_end_ = (char *) file -> end;
+				_file_start_ = (char *) kittensFile -> start ;
+				_file_end_ = (char *) kittensFile -> end;
 
 				// snifff the tokens find labels, vars, functions and so on.
 
-				pass1_reader( (char *) file -> start , _file_end_ );
+				pass1_reader( (char *) kittensFile -> start , _file_end_ );
 
 				if (instance.kittyError.code == 0)
 				{
 					runtime = TRUE;
-					if (file ->bank) init_banks( (char *) file -> bank, file -> bankSize );
+					if (kittensFile ->bank) init_banks( (char *) kittensFile -> bank, kittensFile -> bankSize );
 
 					gfxDefault(NULL, NULL);
 #ifdef run_program_yes
-					code_reader( (char *) file -> start , file -> tokenLength );
+					code_reader( (char *) kittensFile -> start , kittensFile -> tokenLength );
 #endif
 				}
 
@@ -1397,7 +1398,7 @@ int main(int args, char **arg)
 				}
 			}
 
-			 free_file(file);
+			 free_file(kittensFile);
 
 //			if (kittyError.newError == true)
 			{
@@ -1406,7 +1407,7 @@ int main(int args, char **arg)
 		}
 		else
 		{
-			if (!file) printf("AMOS file not open/can't find it\n");
+			if (!kittensFile) printf("AMOS file not open/can't find it\n");
 			if (!instance.video) printf("technical problems\n");
 		}
 
