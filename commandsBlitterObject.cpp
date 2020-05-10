@@ -496,6 +496,9 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 		case 4:	n = getStackNum(__stack-3);
 
 				bob = getBob( n );
+
+				if (!bob) bob = __new_bob__(n);
+
 				if (bob)
 				{
 					bob -> background = getStackNum(__stack-2);
