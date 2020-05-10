@@ -501,9 +501,9 @@ char *_boSetBob( struct glueCommands *data, int nextToken )
 
 				if (bob)
 				{
-					bob -> background = getStackNum(__stack-2);
-					bob -> plains = getStackNum(__stack-1);
-					bob -> mask = getStackNum(__stack);
+					stack_get_if_int(__stack-2, &bob -> background );
+					stack_get_if_int(__stack-1, &bob -> plains );
+					stack_get_if_int(__stack, &bob -> mask );
 				}
 				break;
 		default:
