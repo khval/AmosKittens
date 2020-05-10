@@ -172,7 +172,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 	if (success == false) setError(22,data->tokenBuffer);
 
-	popStack(__stack - data->stack );
+	popStack( instance.stack - data->stack );
 	return NULL;
 }
 
