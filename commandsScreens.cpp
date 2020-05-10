@@ -316,33 +316,44 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 
 			engine_lock();
 
+
 			if (screen = instance.screens[screen_num])
 			{
-				if (kittyStack[__stack-3].type ==  type_int) screen -> scanline_x = (getStackNum(__stack-3 )-128)*2;
-				if (kittyStack[__stack-2].type ==  type_int) screen -> scanline_y = (getStackNum(__stack-2 )- 50)*2;
-				if (kittyStack[__stack-1].type ==  type_int) screen -> displayWidth = getStackNum(__stack-1 );
-				if (kittyStack[__stack].type ==  type_int) screen -> displayHeight = getStackNum(__stack );
+				// can't change screen scanline_x,y direct its read only.
+
+				int tmp_scanline_x  = screen -> scanline_x;
+				int tmp_scanline_y = screen -> scanline_y;
+				int tmp_displayWidth  = screen -> displayWidth;
+				int tmp_displayHeight = screen -> displayHeight;
+
+				if (kittyStack[__stack-3].type ==  type_int) tmp_scanline_x = (getStackNum(__stack-3 )-128)*2;
+				if (kittyStack[__stack-2].type ==  type_int) tmp_scanline_y = (getStackNum(__stack-2 )- 50)*2;
+				if (kittyStack[__stack-1].type ==  type_int) tmp_displayWidth = getStackNum(__stack-1 );
+				if (kittyStack[__stack].type ==  type_int) tmp_displayHeight = getStackNum(__stack );
+
+				// This function compares input values, with what is stored inside of screen struct, 
+				// do not change screen struct values manually... they should be private.
+
 
 				retroApplyScreen( screen, instance.video, 
-					screen -> scanline_x,
-					screen -> scanline_y,
-					screen -> displayWidth,
-					screen -> displayHeight );
+					tmp_scanline_x,
+					tmp_scanline_y,
+					tmp_displayWidth,
+					tmp_displayHeight );
 			}
 			else
 			{
 				setError(47,data->tokenBuffer);	// Screen not open.
 			}
 
-			instance.video -> refreshAllScanlines = TRUE;
 			engine_unlock();
 			success = true;
 		}
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
-
 	popStack(__stack - data->stack );
+
 	return NULL;
 }
 
