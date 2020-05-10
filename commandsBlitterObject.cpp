@@ -456,8 +456,7 @@ char *_boBob( struct glueCommands *data, int nextToken )
 
 				stack_get_if_int(__stack - 2 , &(bob->x) );
 				stack_get_if_int(__stack - 1 , &(bob->y) );
-
-				bob->image = getStackNum(__stack );
+				stack_get_if_int(__stack , &(bob->image) );
 
 				if (struct retroScreen *screen = instance.screens[bob->screen_id])
 				{
