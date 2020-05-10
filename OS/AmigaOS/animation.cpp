@@ -27,7 +27,7 @@
 #include <math.h>
 
 extern void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen );
-extern bool kitten_screen_close(int screen_num );
+extern bool kitten_screen_close_atomic(int screen_num );
 extern void copy_palette(int bformat, struct ColorRegister *cr ,struct RastPort *rp,  struct retroScreen *screen , ULONG *colors );
 extern void init_amos_kittens_screen_default_text_window( struct retroScreen *screen, int colors );
 
@@ -275,7 +275,7 @@ void IffAnim( char *name, const int sn )
 	
 		mode = AmigaModeToRetro( modeid );
 
-		if (instance.screens[sn]) 	kitten_screen_close( sn );	// this function locks engine ;-)
+		if (instance.screens[sn]) 	kitten_screen_close_atomic( sn );	// this function locks engine ;-)
 
 		engine_lock();
 

@@ -220,7 +220,7 @@ char *_gfxScreenClose( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		int screen_num = getStackNum(__stack );
-		success = kitten_screen_close( screen_num );
+		success = kitten_screen_close_atomic( screen_num );
 	}
 
 	if (success == false) setError(22,data->tokenBuffer);
@@ -983,9 +983,12 @@ void LoadIff( const char *org_name,  int sn )
 	ULONG mode;
 	char *name;
 
-	// new screen if no current screen, or if it asks for new screen.
+	// new screen if screen number is set, or if current screen is not open.
 
-	BOOL new_screen = (sn >-1 ) || instance.screens[instance.current_screen];
+	BOOL new_screen = (sn >-1 ) || (instance.screens[instance.current_screen] == NULL);
+
+	// lets make sure SN is valid range.
+	if (sn<0) sn = instance.current_screen;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -1027,16 +1030,25 @@ void LoadIff( const char *org_name,  int sn )
 			mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
 			mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;
 		}
-
-		if (new_screen) if (instance.screens[sn]) kitten_screen_close( sn );	// this function locks engine ;-)
-
 		engine_lock();
 
 		if (new_screen)
 		{
+			printf("its a new screen\n");
+
+			if (instance.screens[sn])
+			{
+				printf("we are closing the old screen\n");
+				 __kitten_screen_close( sn, &instance.screens[sn] );
+			}
+
+			printf("we are opening a new screen on %d\n",sn);
+
 			instance.screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
 		}
 		else sn = instance.current_screen;
+
+		printf("screen id: %d\n", sn);
 
 		if (instance.screens[sn])
 		{
@@ -1045,14 +1057,19 @@ void LoadIff( const char *org_name,  int sn )
 			int x,y;
 			InitRastPort(&rp);
 
-			if (new_screen)	init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
+			printf("yes it looks like we can do whit, screen is open\n");
 
-			retroApplyScreen( instance.screens[sn], instance.video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
 			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
 
-			if (new_screen) set_default_colors( instance.screens[sn] );
+			if (new_screen)
+			{
+				printf("this new screen so we need to more stuff\n");
 
-			instance.current_screen = sn;
+				init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
+				retroApplyScreen( instance.screens[sn], instance.video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
+				set_default_colors( instance.screens[sn] );
+				instance.current_screen = sn;
+			}
 
 			rp.BitMap = dt_bitmap;
 
@@ -1149,32 +1166,7 @@ void convert_bitmap(int bformat, struct RastPort *rp, struct retroScreen *screen
 
 
 
-char *_gfxLoadIff( struct glueCommands *data, int nextToken )
-{
-	int args =__stack - data->stack +1 ;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	switch (args)
-	{
-		case 1:	// load iff image to current screen.
-				{
-					struct stringData *name= getStackString(__stack );
-
-					if (name)	LoadIff(&(name->ptr),-1);
-				}
-				break;
-		case 2:	// load iff image to new screen.
-				{
-					struct stringData *name= getStackString(__stack -1);
-					int screen_num = getStackNum(__stack );
-					if (name)	LoadIff( &(name->ptr),screen_num);
-				}
-				break;
-	}
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
 
 void SaveIff( char *name, const int n )
 {
@@ -1256,6 +1248,38 @@ void SaveIff( char *name, const int n )
 
 }
 
+char *_gfxLoadIff( struct glueCommands *data, int nextToken )
+{
+	int args =__stack - data->stack +1 ;
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:	// load iff image to current screen.
+				{
+					struct stringData *name= getStackString(__stack );
+					if (name)	LoadIff(&(name->ptr),-1);
+				}
+				break;
+		case 2:	// load iff image to new screen.
+				{
+					struct stringData *name= getStackString(__stack -1);
+					int screen_num = getStackNum(__stack );
+					if (name)	LoadIff( &(name->ptr),screen_num);
+				}
+				break;
+	}
+
+	popStack(__stack - data->stack );
+	return NULL;
+}
+
+char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	stackCmdNormal( _gfxLoadIff, tokenBuffer );
+	return tokenBuffer;
+}
+
 
 char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 {
@@ -1282,12 +1306,6 @@ char *_gfxSaveIff( struct glueCommands *data, int nextToken )
 
 	popStack(__stack - data->stack );
 	return NULL;
-}
-
-char *gfxLoadIff(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _gfxLoadIff, tokenBuffer );
-	return tokenBuffer;
 }
 
 char *gfxSaveIff(struct nativeCommand *cmd, char *tokenBuffer)
