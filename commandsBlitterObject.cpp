@@ -370,6 +370,7 @@ struct retroSpriteObject *__new_bob__(int id)
 		bob -> frame = NULL;
 		bob -> clear[0].mem = NULL;
 		bob -> clear[1].mem = NULL;
+		bob -> plains = 0;
 		bob -> mask = 0;
 		bob -> limitXmin = 0;
 		bob -> limitYmin = 0;
