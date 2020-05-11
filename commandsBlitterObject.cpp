@@ -650,11 +650,11 @@ char *_boPasteBob( struct glueCommands *data, int nextToken )
 
 					switch (screen -> autoback)
 					{
-						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,instance.sprites,x-hx,y-hy,image-1,flags, 0 );
+						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,instance.sprites,x-hx,y-hy,image-1,flags, 0, 0 );
 								break;
 
-						default:	retroPasteSprite(screen,0,instance.sprites,x-hx,y-hy,image-1,flags, 0 );
-								if (screen -> Memory[1]) retroPasteSprite(screen,1,instance.sprites,x,y,image-1,flags, 0 );
+						default:	retroPasteSprite(screen,0,instance.sprites,x-hx,y-hy,image-1,flags, 0, 0 );
+								if (screen -> Memory[1]) retroPasteSprite(screen,1,instance.sprites,x,y,image-1,flags, 0,0 );
 								break;
 					}
 
@@ -795,11 +795,11 @@ char *_boPutBob( struct glueCommands *data, int nextToken )
 					switch (screen -> autoback)
 					{
 						case 0:	retroPasteSprite(screen,screen -> double_buffer_draw_frame,instance.sprites,
-									bob -> x,bob -> y,image -1, flags, bob -> plains);
+									bob -> x,bob -> y,image -1, flags, bob -> plains , bob -> plains );
 								break;
 
-						default:	retroPasteSprite(screen,0,instance.sprites,bob->x,bob->y,image -1, flags, bob->plains);
-								if (screen -> Memory[1]) retroPasteSprite(screen,1,instance.sprites,bob->x,bob->y,image -1, flags, bob->plains);
+						default:	retroPasteSprite(screen,0,instance.sprites,bob->x,bob->y,image -1, flags, bob->plains , bob -> plains );
+								if (screen -> Memory[1]) retroPasteSprite(screen,1,instance.sprites,bob->x,bob->y,image -1, flags, bob->plains, bob -> plains );
 								break;
 					}
 				}
