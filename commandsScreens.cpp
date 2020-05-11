@@ -178,31 +178,34 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 
 // make sure there is standard way to close screens, that take care of clean up.
 
-bool kitten_screen_close(int screen_num )
+
+void  __kitten_screen_close( int screen_num,retroScreen **screen )
+{
+	freeAllTextWindows( *screen  );
+	freeScreenBobs( screen_num );
+	retroCloseScreen( screen );
+
+	// find a open screen, and set current screen to that.
+	if (screen_num == instance.current_screen)
+	{
+		int n;
+		for (n=7; n>-1;n--)
+		{
+			if (instance.screens[n])
+			{
+				instance.current_screen = n;
+				break;
+			}
+		}
+	}
+}
+
+bool kitten_screen_close_atomic(int screen_num )
 {
 	if ((screen_num>-1)&&(screen_num<8))
 	{
 		engine_lock();
-		freeAllTextWindows( instance.screens[screen_num]  );
-
-		freeScreenBobs( screen_num );
-
-		if (instance.screens[screen_num]) retroCloseScreen(&instance.screens[screen_num]);
-
-		// find a open screen, and set current screen to that.
-		if (screen_num == instance.current_screen)
-		{
-			int n;
-			for (n=7; n>-1;n--)
-			{
-				if (instance.screens[n])
-				{
-					instance.current_screen = n;
-					break;
-				}
-			}
-		}
-
+		__kitten_screen_close( screen_num,&instance.screens[screen_num] );
 		engine_unlock();
 		return true;
 	}
