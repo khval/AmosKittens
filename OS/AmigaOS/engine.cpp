@@ -964,10 +964,8 @@ void main_engine()
 		
 		Signal( &main_task->pr_Task, SIGF_CHILD );
 
-		Printf("clear video\n");
 		retroClearVideo(instance.video, engine_back_color);
 
-		Printf("init joysticks..\n");
 		init_joysticks();
 
 		joy_sig = 1L << (joystick_msgport -> mp_SigBit);
@@ -1160,7 +1158,6 @@ void main_engine()
 
 	engine_stopped = true;
 }
-
 
 void engine_lock()
 {

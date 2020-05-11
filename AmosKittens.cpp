@@ -1371,7 +1371,6 @@ int main(int args, char **arg)
 
 		if (( ! token_not_found )&&(kittensFile)&&(instance.video)&&(init_error == false))
 		{
-			printf("path: %s\n", kittensFile -> path ? kittensFile -> path : "NONE");
 			if (kittensFile -> start)
 			{
 				_file_start_ = (char *) kittensFile -> start ;

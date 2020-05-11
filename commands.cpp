@@ -209,8 +209,8 @@ void stack_frame_up(int varIndex)
 	struct globalVar *proc = globalVars + varIndex;
 	struct stackFrame *lastFrame;
 
-	printf("stack frame up on name %s\n",proc -> varName );
-	printf("size %d\n",proc -> localIndexSize);
+	dprintf("stack frame up on name %s\n",proc -> varName );
+	dprintf("size %d\n",proc -> localIndexSize);
 
 	lastFrame = procStcakFrame +proc_stack_frame;
 
@@ -235,7 +235,7 @@ void stack_frame_up(int varIndex)
 
 void __stack_frame_down()	// so this where we should take care of local vars and so on.
 {
-	dump_local_vars();
+//	dump_local_vars();
 	free_local_vars();
 	proc_stack_frame--;	
 	currentFrame = procStcakFrame +proc_stack_frame;

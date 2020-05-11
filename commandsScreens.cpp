@@ -315,8 +315,6 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 			struct retroScreen *screen; 
 
 			engine_lock();
-
-
 			if (screen = instance.screens[screen_num])
 			{
 				// can't change screen scanline_x,y direct its read only.
@@ -333,7 +331,6 @@ char *_gfxScreenDisplay( struct glueCommands *data, int nextToken )
 
 				// This function compares input values, with what is stored inside of screen struct, 
 				// do not change screen struct values manually... they should be private.
-
 
 				retroApplyScreen( screen, instance.video, 
 					tmp_scanline_x,

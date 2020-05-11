@@ -186,7 +186,6 @@ extern bool onMenuEnabled;
 
 void __wait_vbl()
 {
-
 	engine_lock();
 	if (bobUpdateNextWait)
 	{
@@ -231,7 +230,6 @@ char *gfxWaitVbl(struct nativeCommand *cmd, char *tokenBuffer)
 
 	return tokenBuffer;
 }
-
 
 
 void __bar( struct retroScreen *screen, int buffer, int x0,int y0, int x1, int y1 )
