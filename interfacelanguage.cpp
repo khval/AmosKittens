@@ -3547,7 +3547,19 @@ void test_interface_script( struct cmdcontext *context)
 				else 	// Must be a user defined command, so we keep it. if not we know it its not when the test is done.
 				{
 					userDefined *ud = push_context_ui( context );
-					if (ud) context -> l = strlen(ud -> name);
+					if (ud)
+					{
+						context -> l = strlen(ud -> name);
+					}
+					else // if we can't create it, it most exist before, and if not its a error.
+					{
+						userDefined *ud = context -> findUserDefined( context -> at );
+
+						if ( ud )
+						{ context -> l = ud -> len; }
+						else
+						{ context -> error = true; }
+					}
 				}
 			}
 			else 	
