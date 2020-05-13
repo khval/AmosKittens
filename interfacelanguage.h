@@ -108,6 +108,7 @@ struct userDefined
 {
 	userDefined();	
 	char name[4];		// is always 2 chars, +1 zero, +1 pad
+	int len;
 	int args;
 	const char *action;
 };

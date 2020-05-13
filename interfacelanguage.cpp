@@ -3494,6 +3494,7 @@ userDefined *push_context_ui( struct cmdcontext *context )
 
 	if (context -> findUserDefined( ud.name ) == NULL)
 	{
+		ud.len = strlen( ud.name );	 // just nice to store the length, we know it should 2 chars, but way not also support 1 char commands.
 		ud.action = NULL;
 		printf("storing possible UI command %s\n", ud.name);
 		context -> userDefineds.push_back(ud);
