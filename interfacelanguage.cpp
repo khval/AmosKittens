@@ -1621,7 +1621,8 @@ void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char c = *(context -> at + 1);
-	isetvarnum( context, c-'0', 0 );
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	push_context_num( context, context -> param[ c-'0' ] );
 }
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
@@ -2348,6 +2349,19 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>= context -> ui_current -> args )
 	{
+		int n;
+		int p = 0;
+		struct ivar *arg;
+
+
+		for (n=-context -> ui_current -> args; n<=-1;n++)
+		{
+			printf("n: %d\n",n);
+			arg = context -> stack + context -> stackp-n;	
+			if (arg -> type == type_int ) context -> param[ p ] = arg -> num;
+			p ++;
+		}
+
 		pop_context( context, context -> ui_current -> args);
 
 		execute_interface_sub_script( context, 0, (char *) context -> ui_current -> action );
