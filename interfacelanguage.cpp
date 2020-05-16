@@ -3294,12 +3294,11 @@ static void remove_lower_case(char *txt)
 bool is_command( char *at )
 {
 	struct cmdinterface *cmd;
-	int l;
 
 	for (cmd = commands; cmd -> name; cmd++)
 	{
-		l = strlen(cmd -> name);
-		if (strncmp(cmd -> name,at,l)==0) return true;
+		if (strncmp(cmd -> name,at,cmd -> len)==0) return true;
+	}
 	}
 	return false;
 }
@@ -3328,9 +3327,9 @@ int find_command( char *at, int &l )
 
 	for (cmd = commands; cmd -> name; cmd++)
 	{
-		l = strlen(cmd -> name);
+		l = cmd -> len;
 
-		if (strncmp(cmd -> name,at,l)==0)
+		if (strncmp(cmd -> name,at, l)==0)
 		{
 			c = *(at+l);
 

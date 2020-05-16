@@ -161,7 +161,8 @@ struct cmdcontext
 struct cmdinterface
 {
 	const char *name;
-	int type;
+	short len;
+	short type;
 	void (*pass)( struct cmdcontext *context, struct cmdinterface *self );
 	void (*cmd)( struct cmdcontext *context, struct cmdinterface *self );
 };
