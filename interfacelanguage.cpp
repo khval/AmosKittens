@@ -3101,7 +3101,7 @@ void test_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 		printf("%s\n", ud -> name);
 	}
 
-	context -> at += 2;	// we skip the command name, this is a hack!!!
+	context -> at += 1;	// we skip the command name, this is a hack!!!
 
 	context -> at -= 2;
 }
