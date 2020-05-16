@@ -130,10 +130,11 @@ struct cmdcontext
 	int selected_dialog;
 	struct dialog dialog[2];
 	struct izone *zones;
+	struct stringData *script;
 	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
 	int args;
+	int expected;
 	int error;
-	struct stringData *script;
 	char *at;
 	int l;
 	int ink0;

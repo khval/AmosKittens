@@ -309,6 +309,7 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_If;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
@@ -336,6 +337,7 @@ void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_KeyShortCut;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 
@@ -375,6 +377,7 @@ void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_ZoneChange;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 
@@ -421,6 +424,7 @@ void icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_Dialogsize;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
@@ -448,6 +452,7 @@ void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _ipass_label;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void _icmd_label( struct cmdcontext *context, struct cmdinterface *self )
@@ -468,6 +473,7 @@ void icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_label;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void __print_one_line__( struct retroScreen *screen, int x, int y, struct stringData *txt, int pen)
@@ -569,6 +575,7 @@ void icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_Print;
 	context -> lstackp = context -> stackp;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 void icmd_Comma( struct cmdcontext *context, struct cmdinterface *self )
@@ -781,6 +788,7 @@ void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_HyperText;
 	context -> args = 10;
+	context -> expected = i_parm;
 }
 
 void _icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
@@ -796,6 +804,7 @@ void icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_ct;
 	context -> args = 6;
+	context -> expected = i_parm;
 }
 
 
@@ -846,6 +855,7 @@ void icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_PrintOutline;
 	context -> lstackp = context -> stackp;
 	context -> args = 5;
+	context -> expected = i_parm;
 }
 
 // icmdSetVar
@@ -885,6 +895,7 @@ void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_SetVar;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
@@ -913,6 +924,7 @@ void icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_SetZone;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
@@ -1036,6 +1048,7 @@ void icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_ImageBox;
 	context -> args = 5;
+	context -> expected = i_parm;
 }
 
 void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
@@ -1109,6 +1122,7 @@ void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Imagehline;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
@@ -1178,6 +1192,7 @@ void icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_imagevline;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 
@@ -1201,6 +1216,7 @@ void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Ink;
 	context -> args = 3;
+	context -> expected = i_parm;
 }
 
 void _icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
@@ -1221,6 +1237,7 @@ void icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_WritingMode;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
@@ -1288,6 +1305,7 @@ void icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_GraphicLine;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
@@ -1329,6 +1347,7 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_GraphicBox;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 void _icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
@@ -1371,6 +1390,7 @@ void icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_RenderButton;
 	context -> args = 5;
+	context -> expected = i_parm;
 }
 
 void button_render(struct zone_button *zl)
@@ -1664,6 +1684,7 @@ void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Edit;
 	context -> args = 8;
+	context -> expected = i_parm;
 }
 
 void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
@@ -1734,6 +1755,7 @@ void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_VerticalSlider;
 	context -> args = 9;
+	context -> expected = i_parm;
 }
 
 
@@ -1799,6 +1821,7 @@ void icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *sel
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_HorizontalSlider;
 	context -> args = 9;
+	context -> expected = i_parm;
 }
 
 
@@ -1841,6 +1864,7 @@ void icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_GraphicSquare;
 	context -> args = 4;
+	context -> expected = i_parm;
 }
 
 void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
@@ -1871,6 +1895,7 @@ void icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Base;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 void icmd_BaseX( struct cmdcontext *context, struct cmdinterface *self )
@@ -1914,6 +1939,7 @@ void icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Jump;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 // icmd_Run
@@ -2044,6 +2070,7 @@ void icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Run;
 	context -> args = 2;
+	context -> expected = i_parm;
 }
 
 
@@ -2079,6 +2106,7 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 
 	context -> cmd_done = _Jump_SubRoutine;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 
@@ -2091,6 +2119,7 @@ void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 	inc_block();
 
 	context -> args = 0;
+	context -> expected = i_normal;
 }
 
 void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
@@ -2102,6 +2131,7 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> block_level > 0) context -> block_level --;
 
 	context -> args = 0;
+	context -> expected = i_normal;
 }
 
 void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self )
@@ -2264,6 +2294,7 @@ void icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 	context -> cmd_done = _icmd_Button;
 	context -> args = 8;
+	context -> expected = i_parm;
 }
 
 
@@ -2295,6 +2326,7 @@ void icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
 
 	context -> cmd_done = _icmd_ButtonReturn;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 
@@ -2358,6 +2390,7 @@ void icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Unpack;
 	context -> args = 3;
+	context -> expected = i_parm;
 }
 
 
@@ -2394,6 +2427,7 @@ void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Save;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
@@ -2448,6 +2482,7 @@ void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_PushImage;
 	context -> args = 1;
+	context -> expected = i_parm;
 }
 
 // undocumented not in AmosPro manuall, used in AmosPro_Help.amos
@@ -2842,6 +2877,7 @@ void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 	context -> at = &(context -> script -> ptr) + context -> script -> size;
 	context -> cmd_done = NULL;
 	context -> args = 0;
+	context -> expected = i_normal;
 	context -> l = 0;
 }
 
@@ -2874,6 +2910,7 @@ void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
 		context ->cmd_done(context, self);
 		context ->cmd_done = NULL;
 	}
+	context -> expected = i_normal;
 }
 
 void isetvarstr( struct cmdcontext *context,int index, struct stringData *str)
@@ -3531,6 +3568,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	context -> selected_dialog = 0;
 	context -> block_level = 0;
 	context -> saved_block = NULL;
+	context -> expected = i_normal;
 
 	context -> zones = (struct izone *) malloc( sizeof(struct izone) * 20 );
 
@@ -3778,7 +3816,14 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 		}
 		else
 		{
-			cmd = find_command_any( context -> at, context -> l );
+			switch ( context -> expected )
+			{
+				case i_normal:	cmd = find_command_pri_normal( context -> at, context -> l );
+							break;
+				case i_parm:	cmd = find_command_pri_parm( context -> at, context -> l );
+							break;
+			}
+
 			if (cmd == NULL) 
 			{
 				if (is_string(context -> at, str, context -> l) )
@@ -3922,7 +3967,14 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 		else
 		{
-			cmd = find_command_any( context -> at, context -> l );
+			switch ( context -> expected )
+			{
+				case i_normal:	cmd = find_command_pri_normal( context -> at, context -> l );
+							break;
+				case i_parm:	cmd = find_command_pri_parm( context -> at, context -> l );
+							break;
+			}
+
 			if (cmd == NULL) 
 			{
 				if (is_string(context -> at, str, context -> l) )
@@ -3942,6 +3994,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 						Printf("found this ud command - %s\n", context -> ui_current -> name);
 						context -> l = strlen(context -> ui_current -> name);
 						context -> args = context -> ui_current -> args;
+						context -> expected = (context -> args) ? i_parm : i_normal;
 						context -> cmd_done = _icmd_ui_cmd;
 					}
 					else
