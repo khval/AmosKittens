@@ -1203,6 +1203,26 @@ void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 3;
 }
 
+void _icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+//		context -> ink0  = context -> stack[context -> stackp-1].num;
+	}
+
+	pop_context( context, 1);
+	context -> cmd_done = NULL;
+}
+
+void icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_WritingMode;
+	context -> args = 1;
+}
+
 void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3196,6 +3216,7 @@ struct cmdinterface commands[]=
 	{"SP",i_normal,NULL,NULL},
 	{"SV",i_normal,NULL,icmd_SetVar },
 	{"SW",i_parm,NULL,icmd_ScreenWidth},
+	{"SW",i_normal,NULL,icmd_WritingMode },
 	{"SX",i_parm,NULL,icmd_SizeX},
 	{"SY",i_parm,NULL,icmd_SizeY},
 	{"SZ",i_normal,NULL,icmd_SetZone},
