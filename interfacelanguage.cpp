@@ -2226,6 +2226,11 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 8);
 	}
+	else 
+	{
+		dump_context_stack( context );
+		context -> error = true;
+	}
 
 	set_block_fn(block_button_render);
 
