@@ -887,6 +887,34 @@ void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 	context -> args = 2;
 }
 
+void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int )
+		{
+			struct zone_base *zb = context -> zones[context -> last_zone].custom;
+			if (zb) zb -> value = arg1.num;
+		}
+		else ierror(1);
+		pop_context( context, 1);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_SetZone;
+	context -> lstackp = context -> stackp;
+	context -> args = 1;
+}
+
 void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
@@ -3165,6 +3193,7 @@ struct cmdinterface commands[]=
 	{"SW",i_parm,NULL,icmd_ScreenWidth},
 	{"SX",i_parm,NULL,icmd_SizeX},
 	{"SY",i_parm,NULL,icmd_SizeY},
+	{"SZ",i_normal,NULL,icmd_SetZone},
 	{"RB",i_normal,NULL,icmd_RenderButton},
 	{"RT",i_normal,NULL,icmd_Return},
 	{"RU",i_normal,NULL,icmd_Run},
@@ -3836,7 +3865,6 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 					{
 						Printf("found this ud command - %s\n", context -> ui_current -> name);
 						context -> l = strlen(context -> ui_current -> name);
-
 						context -> args = context -> ui_current -> args;
 						context -> cmd_done = _icmd_ui_cmd;
 					}
