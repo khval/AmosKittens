@@ -3299,7 +3299,7 @@ static void remove_lower_case(char *txt)
 	*d = 0;
 }
 
-bool is_command( char *at )
+bool __is_command( struct cmdinterface *commands, char *at )
 {
 	struct cmdinterface *cmd;
 
@@ -3307,7 +3307,16 @@ bool is_command( char *at )
 	{
 		if (strncmp(cmd -> name,at,cmd -> len)==0) return true;
 	}
-	}
+	return false;
+}
+
+bool is_command( char *at )
+{
+	// check most likely first, more param command then normal commands.
+
+	if (__is_command( commands_param, at )) return true;
+	if (__is_command( commands_normal, at )) return true;
+	if (__is_command( commands_short, at )) return true;
 	return false;
 }
 
@@ -3327,10 +3336,9 @@ int find_symbol( char *at, int &l )
 }
 
 
-int find_command( char *at, int &l )
+struct cmdinterface *find_command( struct cmdinterface *commands, char *at, int &l )
 {
 	struct cmdinterface *cmd;
-	int num = 0;
 	char c;
 
 	for (cmd = commands; cmd -> name; cmd++)
@@ -3343,14 +3351,50 @@ int find_command( char *at, int &l )
 
 			printf("%s, '%c'\n", cmd -> name,c);
 
-			if ((c == ' ')||(c=='\'')||(c == 0)) return num;
-			if ((c>='0')&&(c<='9')) return num;
-			if (is_command(at+l)) return num;
+			if ((c == ' ')||(c=='\'')||(c == 0)) return cmd;
+			if ((c>='0')&&(c<='9')) return cmd;
+			if (is_command(at+l)) return cmd;
 		}
-		num++;
 	}
-	return -1;
+	return NULL;
 }
+
+struct cmdinterface *find_command_any(  char *at, int &l )
+{
+	struct cmdinterface *i = find_command( commands_param, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_normal, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_short, at, l );
+	return i;
+}
+
+struct cmdinterface *find_command_pri_normal(  char *at, int &l )
+{
+	struct cmdinterface *i = find_command( commands_normal, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_param, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_short, at, l );
+	return i;
+}
+
+struct cmdinterface *find_command_pri_parm(  char *at, int &l )
+{
+	struct cmdinterface *i = find_command( commands_param, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_normal, at, l );
+	if (i != NULL) return i;
+
+	i = find_command( commands_short, at, l );
+	return i;
+}
+
 
 bool is_string( char *at, struct stringData *&str, int &l )
 {
@@ -3582,8 +3626,9 @@ userDefined *push_context_ui( struct cmdcontext *context )
 
 void test_interface_script( struct cmdcontext *context)
 {
-	int sym,cmd;
+	int sym;
 	int num;
+	struct cmdinterface *cmd;
 	struct stringData *str = NULL;
 
 	if (context -> at == 0)
@@ -3608,9 +3653,9 @@ void test_interface_script( struct cmdcontext *context)
 		}
 		else
 		{
-			cmd = find_command( context -> at, context -> l );
+			cmd = find_command_any( context -> at, context -> l );
 
-			if (cmd == -1) 
+			if (cmd == NULL) 
 			{
 				if (is_string(context -> at, str, context -> l) )
 				{
@@ -3640,14 +3685,12 @@ void test_interface_script( struct cmdcontext *context)
 			}
 			else 	
 			{
-				struct cmdinterface *icmd = &commands[cmd];
+				if (cmd -> type == i_normal) pop_context( context, context -> stackp );
 
-				if (icmd -> type == i_normal) pop_context( context, context -> stackp );
-
-				if (icmd -> pass)
+				if (cmd -> pass)
 				{
-					printf("found %s\n", icmd -> name);
-					icmd -> pass( context, icmd );
+					printf("found %s\n", cmd -> name);
+					cmd -> pass( context, cmd );
 				}
 			}
 		}
@@ -3679,7 +3722,8 @@ void test_interface_script( struct cmdcontext *context)
 
 void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at)
 {
-	int sym,cmd;
+	int sym;
+	struct cmdinterface *cmd;
 	int num;
 	int initial_block_level = context -> block_level;
 	int initial_command_length = context -> l;
@@ -3734,8 +3778,8 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 		}
 		else
 		{
-			cmd = find_command( context -> at, context -> l );
-			if (cmd == -1) 
+			cmd = find_command_any( context -> at, context -> l );
+			if (cmd == NULL) 
 			{
 				if (is_string(context -> at, str, context -> l) )
 				{
@@ -3762,13 +3806,11 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 			}
 			else 	
 			{
-				struct cmdinterface *icmd = &commands[cmd];
-
-				if (icmd -> type == i_normal)
+				if (cmd -> type == i_normal)
 				{
 					if (context -> stackp >0)
 					{
-						printf("can't execute command '%s'\n",icmd -> name);
+						printf("can't execute command '%s'\n",cmd -> name);
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
 						getchar();
@@ -3776,13 +3818,13 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 					}
 				}
 
-				if (icmd -> cmd)
+				if (cmd -> cmd)
 				{
-					icmd -> cmd( context, icmd );
+					cmd -> cmd( context, cmd );
 				}
 				else
 				{
-					printf("ignored %s\n", icmd -> name);
+					printf("ignored %s\n", cmd -> name);
 					getchar();
 				}
 			}
@@ -3806,11 +3848,12 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 void execute_interface_script( struct cmdcontext *context, int32_t label)
 {
-	int sym,cmd;
+	int sym;
+	struct cmdinterface *cmd;
 	int num;
 	struct stringData *str = NULL;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	printf("--- %s:%s:%d ---\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( context -> zones == NULL )
 	{
@@ -3879,8 +3922,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 		else
 		{
-			cmd = find_command( context -> at, context -> l );
-			if (cmd == -1) 
+			cmd = find_command_any( context -> at, context -> l );
+			if (cmd == NULL) 
 			{
 				if (is_string(context -> at, str, context -> l) )
 				{
@@ -3912,15 +3955,13 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 			}
 			else 	
 			{
-				struct cmdinterface *icmd = &commands[cmd];
+				printf("%s:%s\n",__FUNCTION__,cmd -> name);
 
-				printf("%s:%s\n",__FUNCTION__,icmd -> name);
-
-				if (icmd -> type == i_normal)
+				if (cmd -> type == i_normal)
 				{
 					if (context -> stackp >0)
 					{
-						printf("can't execute command '%s'\n",icmd -> name);
+						printf("can't execute command '%s'\n",cmd -> name);
 						printf("at location %d\n", (unsigned int) ((context -> at) - (&context -> script -> ptr)) );
 						printf("Interface language: there is stuff on the stack, there shoud be none.\n");
 						dump_context_stack( context );
@@ -3928,14 +3969,14 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 					}
 				}
 
-				if (icmd -> cmd)
+				if (cmd -> cmd)
 				{
-					icmd -> cmd( context, icmd );
+					cmd -> cmd( context, cmd );
 					printf("%s:context -> error %d\n", __FUNCTION__, context -> error );
 				}
 				else
 				{
-					printf("ignored %s\n", icmd -> name);
+					printf("ignored %s\n", cmd -> name);
 					getchar();
 				}
 			}
