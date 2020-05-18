@@ -106,6 +106,11 @@ struct userDefined *cmdcontext::findUserDefined( const char *name )
 	return NULL;
 }
 
+cmdcontext::cmdcontext()
+{
+	bzero( this , sizeof( cmdcontext) );
+}
+
 void cmdcontext::dumpUserDefined()
 {
 	unsigned int n;
@@ -121,18 +126,33 @@ void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *se
 
 void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
 {
-	if (id>=20) return;
+	struct izone *iz;
 
-	if (context -> zones[id].custom == custom)
+	iz = context -> findZone(id);
+
+	if (iz == NULL) 
 	{
-		printf("bad code\n");
+		struct izone iz;
+
+		printf("%s:%s:%d -> new\n",__FILE__,__FUNCTION__,__LINE__);
+
+		iz.id = id;
+		iz.type = type;
+		iz.custom = custom;
+		context -> zones.push_back(iz);
 		return;
 	}
+	
+	if (iz -> custom == custom) {
 
-	if (context -> zones[id].custom ) free (context -> zones[id].custom);
-	context -> zones[id].id = id;
-	context -> zones[id].type = type;
-	context -> zones[id].custom = custom;
+		printf("%s:%s:%d -> unexpected reset of custom\n",__FILE__,__FUNCTION__,__LINE__);
+		getchar();
+		context -> error = true; return;}
+
+	if (iz -> custom ) delete iz -> custom;
+	iz -> id = id;
+	iz -> type = type;
+	iz -> custom = custom;
 }
 
 
@@ -229,7 +249,7 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 
 	if (resource_bank_has_pictures( bank1, block_nr ) == false)
 	{
-		bank1 = findBank(-2);
+		bank1 = findBank(-2);	// if we can't not current bank
 
 		if (bank1)
 		{
@@ -352,7 +372,9 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ((zn.type == type_int) && ( data.type == type_int ))
 		{
-			struct zone_base *zone =  context -> zones[zn.num].custom;
+			struct izone *iz = context -> findZone( zn.num);
+
+			struct zone_base *zone =  iz ? iz ->custom : NULL;
 			if (zone) 
 			{
 				zone -> value = data.num;
@@ -737,48 +759,53 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	engine_lock();
-
-	if (engine_ready())
+	if (context -> stackp>=10)
 	{
-		if (context -> stackp>=10)
+		struct zone_hypertext *zh;
+		int ox = get_dialog_x(context);
+		int oy = get_dialog_y(context);
+
+		struct ivar &zn = context -> stack[context -> stackp-10];
+
+		context -> last_zone = zn.num;
+
+		if (struct izone *iz = context -> findZone( zn.num ))
 		{
-			struct zone_hypertext *zh;
-			int ox = get_dialog_x(context);
-			int oy = get_dialog_y(context);
-
-			struct ivar &zn = context -> stack[context -> stackp-10];
-
-			context -> last_zone = zn.num;
-
-			zh = new zone_hypertext();
-			if (zh)
-			{
-				zh -> x0 = context -> stack[context -> stackp-9].num + ox;
-				zh -> y0 = context -> stack[context -> stackp-8].num + oy;
-				zh -> w = context -> stack[context -> stackp-7].num;
-				zh -> h = context -> stack[context -> stackp-6].num;
-				zh -> x1 = zh -> x0+(zh->w*8);
-				zh -> y1 = zh -> y0+(zh->h*8);
-
-				zh -> address = (void *) context -> stack[context -> stackp-5].num;
-				zh -> pos = context -> stack[context -> stackp-4].num;
-				zh -> buffer = context -> stack[context -> stackp-3].num;
-				zh -> paper = context -> stack[context -> stackp-2].num;
-				zh -> pen = context -> stack[context -> stackp-1].num;
-
-				il_set_zone( context, zn.num, iz_hypertext, zh );
-
-				zh -> render(zh);
-			}
-
-			pop_context( context, 10);
-
-			set_block_fn( block_hypertext_action );
+			zh = (zone_hypertext *) iz -> custom;
 		}
-	}
+		else
+		{
+			zh = new zone_hypertext();
+			il_set_zone( context, zn.num, iz_hypertext, zh );
+		}
 
-	engine_unlock();
+		if (zh)		// init or update
+		{
+			zh -> x0 = context -> stack[context -> stackp-9].num + ox;
+			zh -> y0 = context -> stack[context -> stackp-8].num + oy;
+			zh -> w = context -> stack[context -> stackp-7].num;
+			zh -> h = context -> stack[context -> stackp-6].num;
+			zh -> x1 = zh -> x0+(zh->w*8);
+			zh -> y1 = zh -> y0+(zh->h*8);
+
+			zh -> address = (void *) context -> stack[context -> stackp-5].num;
+			zh -> pos = context -> stack[context -> stackp-4].num;
+			zh -> buffer = context -> stack[context -> stackp-3].num;
+			zh -> paper = context -> stack[context -> stackp-2].num;
+			zh -> pen = context -> stack[context -> stackp-1].num;
+		}
+
+		engine_lock();
+		if (engine_ready())
+		{
+			zh -> render(zh);
+		}
+		engine_unlock();
+
+		pop_context( context, 10);
+
+		set_block_fn( block_hypertext_action );
+	}
 
 	context -> cmd_done = NULL;
 }
@@ -908,7 +935,8 @@ void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_int )
 		{
-			struct zone_base *zb = context -> zones[context -> last_zone].custom;
+			struct izone *iz = context -> findZone( context -> last_zone );
+			struct zone_base *zb = iz ? iz ->custom : NULL;
 			if (zb) zb -> value = arg1.num;
 		}
 		else ierror(1);
@@ -1588,7 +1616,8 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 
 void block_slider_action( struct cmdcontext *context, struct cmdinterface *self )
 {
-	struct zone_hslider *zs = (struct zone_hslider *) context -> zones[context -> last_zone].custom;
+	struct izone *iz = context -> findZone( context -> last_zone );
+	struct zone_hslider *zs = (struct zone_hslider *) (iz ? iz -> custom : NULL);
 
 	if (zs)
 	{
@@ -1633,22 +1662,16 @@ void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 		int zn = context -> stack[context -> stackp-8].num;
 		context -> last_zone = zn;
 
-		if (context -> zones)
+		if (struct izone *iz = context -> findZone(zn) )
 		{
-			ze = (struct zone_edit *) context -> zones[zn].custom;
-		}
-		else
-		{
-			printf("your so fucked\n");
-			getchar();
-			return;
+			ze = (struct zone_edit *) (iz ? iz -> custom : NULL);
 		}
 
 		if (ze == NULL)
 		{
 			ze = new zone_edit();
 			ze -> pos = 0;
-			context -> zones[zn].custom = ze;
+			context -> setZone(zn,ze);
 		}
 
 		if (ze)
@@ -1705,15 +1728,9 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 		int zn = context -> stack[context -> stackp-9].num;
 		context -> last_zone = zn;
 
-		if (context -> zones)
+		if (struct izone *iz = context -> findZone( zn ))
 		{
-			zs = (struct zone_vslider *) context -> zones[zn].custom;
-		}
-		else
-		{
-			printf("your so fucked\n");
-			getchar();
-			return;
+			zs = (struct zone_vslider *) (iz ? iz -> custom : NULL);
 		}
 
 		if (zs == NULL)
@@ -1770,15 +1787,9 @@ void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *se
 		int zn = context -> stack[context -> stackp-9].num;
 		context -> last_zone = zn;
 
-		if (context -> zones)
+		if (struct izone *iz = context -> findZone( zn ))
 		{
-			zs = (struct zone_hslider *) context -> zones[zn].custom;
-		}
-		else
-		{
-			printf("your so fucked\n");
-			getchar();
-			return;
+			zs = (struct zone_hslider *) (iz ? iz -> custom : NULL);
 		}
 
 		if (zs == NULL)
@@ -1977,11 +1988,42 @@ void icmd_ScreenMove( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
+struct izone *cmdcontext::findZone(int id)
+{
+	unsigned int i;
+
+	for ( i = 0; i < zones.size(); i++)
+	{
+		if (zones[i].id == id)
+		{
+			return &zones[i];
+		}
+	}
+	return NULL;
+}
+
+void cmdcontext::resetZoneEvents()
+{
+	struct zone_base *base;
+	unsigned int i;
+	for (i=0;i<zones.size();i++)
+	{
+		if (base = zones[i].custom) base -> event = 0;
+	}
+}
+
+struct izone *cmdcontext::setZone(int id, zone_base *base)
+{
+	struct izone *iz = findZone(id);
+
+	if (iz)
+	{
+		iz -> custom = base;
+	}
+}
+
 void do_events_interface_script(  struct cmdcontext *context, int event, int delay )
 {
-	int n;
-	struct zone_base *base;
-
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	context -> exit_run = false;
@@ -1989,10 +2031,7 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 
 	if (event & 4) engine_wait_key = true;
 
-	for (n=0;n<20;n++)
-	{
-		if (base = context -> zones[n].custom) base -> event = 0;
-	}
+	context -> resetZoneEvents();
 
 	for (;;)
 	{
@@ -2006,15 +2045,19 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 
 				if (screen)
 				{
+					std::vector<struct izone>::iterator it;
+					struct zone_base *base;
 
 					int mx = XScreen_formula( screen, hw_mouse_x );
 					int my = YScreen_formula( screen, hw_mouse_y );
 
-					for (n=0;n<20;n++)
+					for ( it = context -> zones.begin(); it != context -> zones.end(); ++it )
 					{
-						if (base = context -> zones[n].custom)
+						printf("do events on id: %d - custom %08lx\n", it -> id, it -> custom );
+
+						if (base = it -> custom)
 						{
-							base -> mouse_event(base, context, mx,my, n);
+							base -> mouse_event(base, context, mx,my, it -> id);
 						}
 					}
 				}
@@ -2136,11 +2179,14 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 
 void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self )
 {
-	struct zone_hypertext *zh = (struct zone_hypertext *) context -> zones[context -> last_zone].custom;
-
-	if (zh)
+	if (struct izone *iz = context -> findZone(context -> last_zone))
 	{
-		zh -> script_action = context -> at;
+		struct zone_hypertext *zh = (struct zone_hypertext *) (iz ? iz -> custom : NULL);
+
+		if (zh)
+		{
+			zh -> script_action = context -> at;
+		}
 	}
 
 	set_block_fn(block_skip);
@@ -2151,11 +2197,14 @@ void block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	set_block_fn(NULL);
 
-	struct zone_button *zb = (struct zone_button *) context -> zones[context -> last_zone].custom;
-
-	if (zb)
+	if (struct izone *iz = context -> findZone(context -> last_zone))
 	{
-		zb -> script_action = context -> at;
+		struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+
+		if (zb)
+		{
+			zb -> script_action = context -> at;
+		}
 	}
 
 	block_skip(context,self);		// does purge set_block_fn
@@ -2166,7 +2215,8 @@ void block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	struct zone_button *zb = (struct zone_button *) context -> zones[context -> last_zone].custom;
+	struct izone *iz = context -> findZone(context -> last_zone);
+	struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
 
 	if (zb)
 	{
@@ -2236,13 +2286,9 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 			button.width = _w.num;
 			button.height = _h.num;
 
-			if (context -> zones)
+			if (struct izone *iz = context -> findZone(zn.num))
 			{
-				zb = (struct zone_button *) context -> zones[zn.num].custom;
-			}
-			else
-			{
-				return;
+				zb = (struct zone_button *) (iz ? iz -> custom : NULL);
 			}
 
 			if (zb == NULL)
@@ -2437,9 +2483,8 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> stackp>= context -> ui_current -> args )
 	{
 		int n;
-		int p = 0;
+		int p = 0;		// this is P1
 		struct ivar *arg;
-
 
 		for (n=-context -> ui_current -> args; n<=-1;n++)
 		{
@@ -3035,11 +3080,14 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	struct zone_base *zb = context -> zones[context -> last_zone].custom;
-
-	if (zb)
+	if (struct izone *iz = context -> findZone( context -> last_zone ))
 	{
-		push_context_num( context, zb -> value );
+		struct zone_base *zb = iz -> custom;
+
+		if (zb)
+		{
+			push_context_num( context, zb -> value );
+		}
 	}
 }
 
@@ -3047,11 +3095,14 @@ void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	struct zone_base *zb = context -> zones[context -> last_zone].custom;
-
-	if (zb)
+	if (struct izone *iz = context -> findZone( context -> last_zone ))
 	{
-		push_context_num( context, zb -> pos );
+		struct zone_base *zb = iz -> custom;
+
+		if (zb)
+		{
+			push_context_num( context, zb -> pos );
+		}
 	}
 }
 
@@ -3064,14 +3115,17 @@ void icmd_ZoneNumber( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
 {
-	struct zone_base *zb;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	printf("context -> last_zone: %d\n", context -> last_zone);
 
-	zb = context -> zones[context -> last_zone].custom;
-
-	push_context_num( context, zb ? zb -> value : 0 );
+	if (struct izone *iz = context -> findZone( context -> last_zone ))
+	{
+		struct zone_base *zb = (iz ? iz -> custom : NULL);
+		push_context_num( context, zb ? zb -> value : 0 );
+		return;
+	}
+	else 	push_context_num( context,  0 );	
 }
 
 #define skip_spaces while ( *context -> at == ' ' ) context -> at++
@@ -3556,7 +3610,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	int n;
 	struct dialog &dialog = context -> dialog[0];
 
-	bzero( context, sizeof( struct cmdcontext ) );
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	remove_lower_case( &script->ptr );
 
@@ -3570,9 +3624,9 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	context -> saved_block = NULL;
 	context -> expected = i_normal;
 
-	context -> zones = (struct izone *) malloc( sizeof(struct izone) * 20 );
+	context ->cmd_done = NULL;
 
-	context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
+	if (context -> vars == NULL) context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
 
 	if (context -> vars)
 	{
@@ -3588,60 +3642,48 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
 
-	for (n=0;n<20;n++) 
-	{
-		context -> zones[n].type = iz_none;
-		context -> zones[n].custom = NULL;
-	}
 
 	for (n=0;n<20;n++) context -> block_fn[n] = NULL;
 
 }
 
-void cleanup_interface_context( struct cmdcontext *context )
+cmdcontext::~cmdcontext()
 {
-	context -> at = NULL;
+	at = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (context -> saved_block)
+	if (saved_block)
 	{
-		retroFreeBlock( context -> saved_block );
-		context -> saved_block = NULL;
+		retroFreeBlock( saved_block );
+		saved_block = NULL;
 	}
 
-	if (context -> zones)
+	while (zones.size())
 	{
-		int n=0;
-		for (n=0;n<20;n++)
+		if (zones[zones.size()-1].custom) 
 		{
-			context -> zones[n].type = 0;
-			if (context -> zones[n].custom) 
-			{
-				delete context -> zones[n].custom;
-				context -> zones[n].custom = NULL;
-			}
+			delete zones[zones.size()-1].custom;
 		}
-		free(context -> zones);
-		context -> zones = NULL;
+		zones.pop_back();
 	}
 
-	if (context -> script)
+	if (script)
 	{
-		sys_free( context -> script );
-		context -> script = NULL;
+		sys_free( script );
+		script = NULL;
 	}
 
-	if (context -> block_fn)
+	if ( block_fn)
 	{
-		free(	context -> block_fn );
-		context -> block_fn = NULL;
+		free(	block_fn );
+		block_fn = NULL;
 	}
 
-	if (context -> vars) 
+	if ( vars) 
 	{
-		free(context -> vars);
-		context -> vars = NULL;
+		free( vars);
+		vars = NULL;
 	}
 }
 
@@ -3733,12 +3775,6 @@ void test_interface_script( struct cmdcontext *context)
 			}
 		}
 
-		if (context -> zones  == NULL)
-		{
-			printf("context zones died here -> context stack %d\n", context -> stackp );
-			getchar();
-			break;
-		}
 
 		if (context -> vars  == NULL)
 		{
@@ -3761,7 +3797,7 @@ void test_interface_script( struct cmdcontext *context)
 void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at)
 {
 	int sym;
-	struct cmdinterface *cmd;
+	struct cmdinterface *cmd = NULL;
 	int num;
 	int initial_block_level = context -> block_level;
 	int initial_command_length = context -> l;
@@ -3894,18 +3930,11 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 void execute_interface_script( struct cmdcontext *context, int32_t label)
 {
 	int sym;
-	struct cmdinterface *cmd;
+	struct cmdinterface *cmd = NULL;
 	int num;
 	struct stringData *str = NULL;
 
 	printf("--- %s:%s:%d ---\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if ( context -> zones == NULL )
-	{
-		printf("%s:%s context zones damged\n",__FILE__,__FUNCTION__);
-		getchar();
-		return;
-	}
 
 	if ( context -> vars == NULL )
 	{
@@ -3973,6 +4002,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 							break;
 				case i_parm:	cmd = find_command_pri_parm( context -> at, context -> l );
 							break;
+				default:
+							cmd = NULL;
 			}
 
 			if (cmd == NULL) 
@@ -4036,13 +4067,6 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		}
 
 		context -> at += context -> l;
-
-		if (context -> zones  == NULL)
-		{
-			printf("context zones died here -> context stack %d\n", context -> stackp );
-			getchar();
-			break;
-		}
 
 		if (context -> vars  == NULL)
 		{

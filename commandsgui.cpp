@@ -297,7 +297,6 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					script = getStackString(__stack);
 					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 					execute_interface_script( &context, -1 );
-					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -313,7 +312,6 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					if (var2s) isetvarstr( &context,1,var2s);
 
 					execute_interface_script( &context, -1 );
-					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -331,7 +329,6 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 					if (var2s) isetvarstr( &context,1,var2s);
 
 					execute_interface_script( &context, -1 );
-					cleanup_interface_context( &context );
 				}
 				break;
 
@@ -401,7 +398,6 @@ char *_guiDialogClose( struct glueCommands *data, int nextToken )
 				retroPutBlock( screen , screen -> double_buffer_draw_frame, context -> saved_block, context -> dialog[0].x, context -> dialog[0].y, 0xFF );
 			}
 
-			cleanup_interface_context( context );
 			erase_interface_context( context );
 		}
 	}
@@ -769,7 +765,12 @@ char *_guiRdialog( struct glueCommands *data, int nextToken )
 
 				if (context = find_interface_context(_channel_))
 				{
-					zb = (struct zone_base *) context -> zones[_button_].custom;
+					if (struct izone *iz = context -> findZone(_button_))
+					{
+						zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+					}
+
+//					zb = (struct zone_base *) context -> zones[_button_].custom;
 				}
 				break;
 
@@ -777,9 +778,16 @@ char *_guiRdialog( struct glueCommands *data, int nextToken )
 				_button_ = getStackNum(__stack-1);
 				_object_ = getStackNum(__stack);
 
+
+
 				if (context = find_interface_context(_channel_))
 				{
-					zb = (struct zone_base *) context -> zones[_button_].custom;
+					if (struct izone *iz = context -> findZone(_button_))
+					{
+						zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+					}
+
+//					zb = (struct zone_base *) context -> zones[_button_].custom;
 				}
 				break;
 
@@ -887,8 +895,11 @@ char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
 
 	if (context = find_interface_context(_channel_))
 	{
-		struct zone_base *base = context -> zones[_zone_].custom;
-		base -> update( base, context, args - 2, _param1_,_param2_,_param3_) ;
+		if (struct izone *iz = context -> findZone(_zone_))
+		{
+			struct zone_base *base = (struct zone_button *) (iz ? iz -> custom : NULL);
+			base -> update( base, context, args - 2, _param1_,_param2_,_param3_) ;
+		}
 	}
 
 	return NULL;

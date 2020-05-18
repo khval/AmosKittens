@@ -36,6 +36,19 @@ extern void edit_mouse_event(zone_edit *base,struct cmdcontext *context, int mx,
 extern void hypertext_mouse_event(zone_hypertext *base,struct cmdcontext *context, int mx, int my, int zid);
 
 
+zone_base::zone_base()
+{
+//	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+//	getchar();
+
+	pos = 0;
+	value = 0;
+	script_action = NULL;
+	update = NULL;
+	mouse_event = NULL;
+	render = NULL;
+}
+
 void il_slider_update (struct zone_vslider *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3)
 {
 	if (args>0) base -> value = arg1;

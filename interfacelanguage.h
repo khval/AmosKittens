@@ -37,6 +37,8 @@ struct zone_base
 	void (*update) (struct zone_base *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3);
 	void (*mouse_event) (struct zone_base *base, struct cmdcontext *context, int mx, int my, int zid);	// default
 	void (*render) (struct zone_base *);
+
+	zone_base();
 };
 
 #define I_FUNC_RENDER (void (*) (struct zone_base *))
@@ -113,50 +115,61 @@ struct userDefined
 	const char *action;
 };
 
-struct cmdcontext
+class cmdcontext
 {
-	int id;
-	char *tokenBuffer;
-	struct retroBlock *saved_block;
-	bool tested;
-	int stackp;
-	int lstackp;
-	struct ivar stack[20];
-	struct ivar *vars;
-	int param[10];		// 0 to 9
-	char *labels[512];
-	int programStackCount;
-	char *programStack[10];
-	int selected_dialog;
-	struct dialog dialog[2];
-	struct izone *zones;
-	struct stringData *script;
-	void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
-	int args;
-	int expected;
-	int error;
-	char *at;
-	int l;
-	int ink0;
-	int ink1;
-	int ink3;
-	int image_offset;
-	int block_level;
-	void (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );
-	int max_vars;
-	int last_zone;
-	int xgcl;
-	int ygcl;
-	int xgc;
-	int ygc;
-	bool has_return_value;
-	int return_value;
-	bool mouse_key;
-	bool exit_run;
-	std::vector<struct userDefined> userDefineds;
-	struct userDefined *findUserDefined( const char *name );
-	void dumpUserDefined();
-	struct userDefined *ui_current;
+	public:
+		// metods
+		struct izone *findZone(int id);
+		struct izone *setZone(int id,struct zone_base *obj);
+		struct userDefined *findUserDefined( const char *name );
+		void dumpUserDefined();
+		void resetZoneEvents();
+
+		cmdcontext();
+		~cmdcontext();
+
+		std::vector<struct izone> zones;
+
+		// data
+		int id;
+		char *tokenBuffer;
+		struct retroBlock *saved_block;
+		bool tested;
+		int stackp;
+		int lstackp;
+		struct ivar stack[20];
+		struct ivar *vars;
+		int param[9];		// index 0 to 8 == P1 to P9
+		char *labels[512];
+		int programStackCount;
+		char *programStack[10];
+		int selected_dialog;
+		struct dialog dialog[2];
+		struct stringData *script;
+		void (*cmd_done)( struct cmdcontext *context, struct cmdinterface *self );
+		int args;
+		int expected;
+		int error;
+		char *at;
+		int l;
+		int ink0;
+		int ink1;
+		int ink3;
+		int image_offset;
+		int block_level;
+		void (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );
+		int max_vars;
+		int last_zone;
+		int xgcl;
+		int ygcl;
+		int xgc;
+		int ygc;
+		bool has_return_value;
+		int return_value;
+		bool mouse_key;
+		bool exit_run;
+		std::vector<struct userDefined> userDefineds;
+		struct userDefined *ui_current;
 };
 
 struct cmdinterface
@@ -181,7 +194,6 @@ extern stringData *igetvarstr( struct cmdcontext *context, int index);
 extern int igetvarnum( struct cmdcontext *context, int index);
 
 extern void init_interface_context( struct cmdcontext *context, int id, struct stringData *script, int x, int y, int varSize, int bufferSize  );
-extern void cleanup_interface_context( struct cmdcontext *context );
 extern void execute_interface_script( struct cmdcontext *context, int32_t label);
 extern void do_events_interface_script(  struct cmdcontext *context, int event, int delay );
 
