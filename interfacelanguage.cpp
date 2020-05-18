@@ -1714,7 +1714,7 @@ void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char c = *(context -> at + 1);
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, context -> param[ c-'0' ] );
+	push_context_num( context, context -> param[ c-'1' ] );		// P1 to P9
 }
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
