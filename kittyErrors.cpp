@@ -15,8 +15,11 @@
 #include "stack.h"
 #include "kittyErrors.h"
 #include "debug.h"
+#include "spawn.h"
 
 extern struct error errorsTestTime[];
+
+extern void __real_stack_trace();
 
 void setError( int _code, char * _pos ) 
 {
@@ -24,6 +27,13 @@ void setError( int _code, char * _pos )
 	instance.kittyError.pos = _pos; 
 	instance.kittyError.posResume=instance.tokenBufferResume;  
 	instance.kittyError.newError = true;
+
+	BPTR debug_output = Open("CON:",MODE_NEWFILE);
+	if (debug_output)
+	{
+		spawn( __real_stack_trace, "getStack", debug_output );
+		Wait(SIGF_CHILD);
+	}
 }
 
 char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)

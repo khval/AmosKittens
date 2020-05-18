@@ -852,3 +852,105 @@ void dump_collided()
 		printf("collided id: %d\n",collided[n]);
 	}
 }
+
+char *stackErrorBuffer = NULL;
+
+int32 printStack(struct Hook *hook, struct Task *task, struct StackFrameMsg *frame)
+{
+	struct DebugSymbol *symbol = NULL;
+
+	switch (frame->State)
+	{
+		case STACK_FRAME_DECODED:
+
+				if (symbol = ObtainDebugSymbol(frame->MemoryAddress, NULL))
+				{
+					Printf("%s : %s\n", symbol -> Name, 
+						symbol->SourceFunctionName ? symbol->SourceFunctionName : "NULL");
+						ReleaseDebugSymbol(symbol);
+				}
+				else
+				{
+					Printf("(%p) -> %p\n", frame->StackPointer, frame->MemoryAddress);
+				}
+				break;
+
+		case STACK_FRAME_INVALID_BACKCHAIN_PTR:
+
+				Printf( "(%p) invalid backchain pointer\n",
+					frame->StackPointer);
+				break;
+
+		case STACK_FRAME_TRASHED_MEMORY_LOOP:
+
+				Printf( "(%p) trashed memory loop\n",
+					frame->StackPointer);
+				break;
+
+		case STACK_FRAME_BACKCHAIN_PTR_LOOP:
+
+				Printf( "(%p) backchain pointer loop\n",
+					frame->StackPointer);
+				break;
+
+		default:
+				Printf( "Unknown state=%lu\n", frame->State);
+	}
+
+	return 0;  // Continue tracing.
+}
+
+
+static int stack_trace_recored_count = 0;
+static struct StackFrameMsg *stack_trace_recored;
+
+int32 stack_trace_recored_fn(struct Hook *hook, struct Task *task, struct StackFrameMsg *frame)
+{
+	stack_trace_recored[ stack_trace_recored_count ] = *frame;
+	stack_trace_recored_count ++;
+
+	return 0;  // Continue tracing.
+}
+
+
+
+extern struct Task *main_task;
+
+void __real_stack_trace()	// only call this from a new process.
+{
+	Printf("Error Error ---- stack trace\n");
+
+	stack_trace_recored_count = 0;
+	stack_trace_recored = (struct StackFrameMsg *) malloc( sizeof(struct StackFrameMsg) * 1000 );
+
+	if (stack_trace_recored)
+	{
+		if (main_task != NULL)
+		{
+			struct Hook *hook = (struct Hook *) AllocSysObjectTags(ASOT_HOOK, ASOHOOK_Entry, printStack, TAG_END);
+
+			if (hook != NULL)
+			{
+				SuspendTask(main_task, 0);
+				uint32 result = StackTrace(main_task, hook);
+				RestartTask(main_task, 0);
+				
+				Printf("-- stack trace count %d\n",stack_trace_recored_count);
+
+				for (int i=0; i<stack_trace_recored_count;i++)
+				{
+					printStack( hook, main_task , &stack_trace_recored[ i ]);
+				}
+
+				Delay(50*20);
+
+				FreeSysObject(ASOT_HOOK, hook);
+			}
+		}
+
+		free(stack_trace_recored);
+		stack_trace_recored = NULL;
+	}
+}
+
+
