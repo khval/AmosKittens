@@ -28,12 +28,17 @@ void setError( int _code, char * _pos )
 	instance.kittyError.posResume=instance.tokenBufferResume;  
 	instance.kittyError.newError = true;
 
+#ifdef show_stacktrace_for_errors_yes
+
 	BPTR debug_output = Open("CON:0/0/600/480/error stack trace",MODE_NEWFILE);
 	if (debug_output)
 	{
 		spawn( __real_stack_trace, "getStack", debug_output );
 		Wait(SIGF_CHILD);
 	}
+
+#endif
+
 }
 
 char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
