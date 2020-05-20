@@ -1369,21 +1369,22 @@ char *_bankResourceStr( struct glueCommands *data, int nextToken )
 	{
 		case 1:	id = getStackNum(__stack);
 				ret = getResourceStr( id );
+
+				if (ret)
+				{
+					setStackStr( ret );
+				}
+				else 
+				{
+					struct stringData tmp;
+					tmp.ptr = 0;
+					tmp.size =0;
+					setStackStrDup( &tmp );
+				}
 				break;
 		default:
+				popStack(__stack - data->stack );
 				setError(22,data->tokenBuffer);
-	}
-
-	popStack(__stack - data->stack );
-
-	if (ret)
-	{
-		setStackStr( ret );
-	}
-	else 
-	{
-		struct stringData tmp;
-		setStackStrDup( &tmp );
 	}
 
 	return NULL;
