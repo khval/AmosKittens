@@ -28,7 +28,7 @@ void setError( int _code, char * _pos )
 	instance.kittyError.posResume=instance.tokenBufferResume;  
 	instance.kittyError.newError = true;
 
-	BPTR debug_output = Open("CON:",MODE_NEWFILE);
+	BPTR debug_output = Open("CON:0/0/600/480/error stack trace",MODE_NEWFILE);
 	if (debug_output)
 	{
 		spawn( __real_stack_trace, "getStack", debug_output );

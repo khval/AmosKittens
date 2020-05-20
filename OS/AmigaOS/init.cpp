@@ -39,6 +39,8 @@ struct DataTypesIFace		*IDataTypes = NULL;
 extern struct Library		 	*DOSBase ;
 extern struct DOSIFace		*IDOS ;
 
+struct DebugIFace		*IDebug = NULL;
+
 struct Library 			*AHIBase = NULL;
 struct AHIIFace			*IAHI = NULL;
 
@@ -223,6 +225,9 @@ BOOL init()
 		kitty_extensions[i].lookup = NULL;
 	}
 
+	IDebug = (DebugIFace*) GetInterface( SysBase,"debug",1,TAG_END);
+	if ( IDebug == NULL ) return FALSE;
+
 	if ( ! open_lib( "asl.library", 0L , "main", 1, &AslBase, (struct Interface **) &IAsl  ) ) return FALSE;
 	if ( ! open_lib( "datatypes.library", 0L , "main", 1, &DataTypesBase, (struct Interface **) &IDataTypes  ) ) return FALSE;
 	if ( ! open_lib( "locale.library", 53 , "main", 1, &LocaleBase, (struct Interface **) &ILocale  ) ) return FALSE;
@@ -377,6 +382,8 @@ void closedown()
 
 	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	if (IDebug) DropInterface((struct Interface*) IDebug); IDebug = 0;
+
 	if (IIcon) DropInterface((struct Interface*) IIcon); IIcon = 0;
 	if (IconBase) CloseLibrary(IconBase); IconBase = 0;
 
@@ -479,3 +486,5 @@ bool remove_words(char *name,const char **list)
 	}
 	return word_removed;
 }
+
+

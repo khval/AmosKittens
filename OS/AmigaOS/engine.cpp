@@ -1079,7 +1079,6 @@ void main_engine()
 
 				if (synchro_on == true) 
 				{
-					Printf("running amal from VBL %ld\n",synchro_on);
 					run_amal_scripts();
 				}
 
