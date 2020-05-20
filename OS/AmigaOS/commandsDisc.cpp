@@ -1387,50 +1387,57 @@ char *discLineInputFile(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discInputStrFile( struct glueCommands *data, int nextToken )
 {
-	int args =__stack - data -> stack;
+	int args =__stack - data -> stack +1;
 	int channel = 0;
 	int len = 0;
 	struct stringData *newstr;
 	FILE *fd;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	
 	if (args == 2)
+
+	switch (args)
 	{
-		channel = getStackNum(__stack - 1 );
-		len = getStackNum(__stack );
-
-		if (( channel >0)&&( channel <11))
-		{
-			fd = kittyFiles[ channel -1 ].fd ;
-
-			if (fd)
-			{
+		case 2:
+				channel = getStackNum(__stack - 1 );
+				len = getStackNum(__stack );
+				break;
+		default:
 				popStack(__stack - data -> stack  );
-				
-				newstr = (struct stringData *) malloc( sizeof(struct stringData) + len +1);
-
-				if (newstr)	 if (fgets( &newstr -> ptr, len ,fd ))
-				{
-					popStack(__stack - data -> stack  );
-					setStackStr(newstr);
-					return NULL;
-				}
-				else
-				{
-					free(newstr);
-				}
-				
-				// set some error here
-
-				return NULL;
-			}
-			else	setError(97,data->tokenBuffer); // file not open
-		}
-		else	setError(23,data->tokenBuffer);	// "Illegal function call"
+				setError(23,data->tokenBuffer);	// "Illegal function call"
+				break;
 	}
 
 	popStack(__stack - data -> stack  );
+
+	if (( channel >0)&&( channel <11))
+	{
+		fd = kittyFiles[ channel -1 ].fd ;
+
+
+		if (fd)
+		{
+			newstr = alloc_amos_string( len );
+
+			if (newstr)
+			{
+
+				if (fgets( &newstr -> ptr, len ,fd ))
+				{
+					popStack(__stack - data -> stack  );
+
+					setStackStr(newstr);
+					return NULL;
+				}
+				sys_free(newstr);
+			}
+		}
+	}
+
+	// we ended up here something went wrong,
+
+	setError(97,data->tokenBuffer); // file not open
 	return NULL;
 }
 
