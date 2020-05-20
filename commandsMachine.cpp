@@ -305,10 +305,9 @@ char *_machineVarPtr( struct glueCommands *data, int nextToken )
 
 					printf( "var -> type: %d\n ", var -> type);
 			}
+			setStackNum(amosptr);
+			return NULL;
 		}
-
-		setStackNum(amosptr);
-		return NULL;
 	}
 
 	setError(25,data->tokenBuffer);

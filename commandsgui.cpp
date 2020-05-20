@@ -87,12 +87,7 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 
 	 if (__resource_bank_has_pictures( bank1 ) == false )
 	{
-		dump_banks();
-
 		bank1 = findBank(instance.current_screen);
-
-		printf("bank1 %08x\n",bank1);
-		getchar();
 	}
 
 	if (bank1)
