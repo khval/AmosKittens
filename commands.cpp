@@ -495,6 +495,13 @@ char *_setVar( struct glueCommands *data, int nextToken )
 
 	var = getVar(data -> lastVar);
 
+	if (var == NULL)
+	{
+		printf("%s:%s:%d -- set %s var %d\n",__FILE__,__FUNCTION__,__LINE__);
+		setError(ERROR_OBJECT_NOT_FOUND,data -> tokenBuffer);
+		return NULL;
+	}
+
 	success = FALSE;
 
 	set_tokenBuffer = data -> tokenBuffer;
@@ -523,12 +530,11 @@ char *_setVar( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		if ( kittyStack[instance.stack].type !=  (var -> type & 7))
+		if ( kittyStack[instance.stack].type !=  (var -> type & 15))
 		{
-			printf("kittyStack[%d].type= %s, (globalVars[%08x].var.type & 7)=%d\n",
+			printf("kittyStack[%d].type= %s, (var -> type & 15)=%s\n",
 				instance.stack, 
 				type_names[kittyStack[instance.stack].type & 15], 
-				data -> lastVar, 
 				type_names[var -> type & 15]);
 			setError(ERROR_Type_mismatch,data->tokenBuffer);
 		}
