@@ -355,7 +355,6 @@ char *_cmdMidStr( struct glueCommands *data, int nextToken )
 	int args = __stack - data->stack +1;
 	struct stringData *str;
 	struct stringData *tmp = NULL;
-	int _slen=0;
 	int _start=0, _len = 0;
 
 	proc_names_printf("%s: args %d\n",__FUNCTION__,args);
@@ -601,33 +600,49 @@ char *cmdFlipStr(struct nativeCommand *cmd, char *tokenBuffer )
 
 char *_cmdSpaceStr( struct glueCommands *data, int nextToken )
 {
-	int i,_len;
-	struct stringData *str;
-	char *p;
+	int args = __stack - data->stack +1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	_len = getStackNum(__stack );
+	dump_stack();
 
-	str = alloc_amos_string(_len);
-	p = &str -> ptr;
-	for (i=0;i<_len;i++) *p++=' ';
-	*p= 0;
+	switch (args)
+	{
+		case 1:
+			{
+				int i,_len = getStackNum(__stack );
+				struct stringData *str = alloc_amos_string(_len);
+				char *p;
 
-	popStack(__stack - data->stack);
+				if (str)
+				{
+					p = &str -> ptr;
+					for (i=0;i<_len;i++) *p++=' ';
+					*p= 0;
+					setStackStr(str);
+					return NULL;		// cool success return...
+				}
+			}
 
-	setStackStr(str);
+			printf("new string to allocate with %d bytes\n", _len );
+
+			setError(22 , data -> tokenBuffer);	// failed to allocate mem...	
+			return NULL;
+
+		default:
+			popStack(__stack - data->stack);
+			setError(22 , data -> tokenBuffer);
+	}
 
 	return NULL;
 }
 
-
 char *cmdSpaceStr(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	stackCmdParm( _cmdSpaceStr, tokenBuffer );	// we need to store the step counter.
+	setStackNone();
 	return tokenBuffer;
 }
-
 
 char *_cmdUpperStr( struct glueCommands *data, int nextToken )
 {
