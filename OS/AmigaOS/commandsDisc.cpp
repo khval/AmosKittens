@@ -93,10 +93,10 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-char *_open_file_( struct glueCommands *data, const char *access )
+int _open_file_( struct glueCommands *data, const char *access )
 {
 	struct stringData *_str;
-	int num;
+	int num =-1;
 	int args =__stack - data -> stack +1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -120,34 +120,52 @@ char *_open_file_( struct glueCommands *data, const char *access )
 			}
 
 			_str = getStackString(__stack );
-			if (_str) kittyFiles[ num ].fd = fopen( &_str->ptr, access );
+			if (_str)
+			{
+				printf("name: '%s'\n",&_str->ptr);
+
+				kittyFiles[ num ].fd = fopen( &_str->ptr, access );
+			}
 
 			if (kittyFiles[ num ].fd  == NULL) setError(81,data->tokenBuffer);
 		}
 	}
 
 	popStack(__stack - data -> stack  );
-	return NULL;
+	return num;
 }
 
 char *_discOpenOut( struct glueCommands *data, int nextToken )
 {
-	return _open_file_( data, "w" );
+	_open_file_( data, "w" );
+
+	return NULL;
 }
 
 char *_discOpenIn( struct glueCommands *data, int nextToken )
 {
-	return _open_file_( data, "r" );
+	int num = _open_file_( data, "r" );
+
+	if (FILE *fd = kittyFiles[ num ].fd)
+	{
+		fseek(fd,0,SEEK_END);
+		kittyFiles[ num ].fileSize = ftell( kittyFiles[ num ].fd );
+		fseek(fd,0,SEEK_SET);
+	}
+
+	return NULL;
 }
 
 char *_discAppend( struct glueCommands *data, int nextToken )
 {
-	return _open_file_( data, "a" );
+	_open_file_( data, "a" );
+	return NULL;
 }
 
 char *_discOpenRandom( struct glueCommands *data, int nextToken )
 {
-	return _open_file_( data, "w+" );
+	_open_file_( data, "w+" );
+	return NULL;
 }
 
 char *_discClose( struct glueCommands *data, int nextToken )
@@ -1106,6 +1124,17 @@ char *discClose(struct nativeCommand *cmd, char *tokenBuffer)
 
 extern char *_setVar( struct glueCommands *data, int nextToken );
 
+
+int flof( FILE *fd )
+{
+	int pos, len;
+	pos =ftell(fd);
+	fseek( fd, 0, SEEK_END );
+	len  =ftell(fd);
+	fseek( fd, pos, SEEK_SET );
+	return len;
+}
+
 void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int idx = 0;
@@ -1141,7 +1170,6 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 		if (fd)
 		{
-			char buffer[10000];
 			int ret = 0;
 			int num = 0;
 			double decimal;
@@ -1162,13 +1190,29 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 				case type_string:
 
-					ret = fscanf( fd, "%[^,],", buffer );
-					if (ret==1) 
 					{
-						struct stringData *str = toAmosString( buffer,strlen(buffer) );
-						setStackStr( str );
+						char buffer[10000];
+						char c;
+						ret = fscanf( fd, "%[^,\n\r]", buffer );
+
+						// look for break char... or end of line.
+						for(;;)
+						 {
+							if (feof( fd ) == 1) break;
+							if (fscanf( fd, "%c", &c ) == 1)
+							{
+								if (c==',') break;
+								if (c=='\n') break;
+							}
+						}
+
+						if (ret==1) 
+						{
+							struct stringData *str = toAmosString( buffer,strlen(buffer) );
+							setStackStr( str );
+						}
+						break;
 					}
-					break;
 			}
 			
 			if (ret == 1)
@@ -1487,6 +1531,9 @@ char *_discLof( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+int __set_channel__ = 0;
+char *_set_pof( struct glueCommands *data, int nextToken );
+
 char *_discPof( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data -> stack + 1;
@@ -1499,25 +1546,58 @@ char *_discPof( struct glueCommands *data, int nextToken )
 	{
 		channel = getStackNum(__stack);
 
-		if (( channel >0)&&( channel <11))
+		if ( _do_set == _set_pof )
 		{
-			fd = kittyFiles[ channel -1 ].fd ;
-
-			if (fd)
-			{
-				ret = ftell( fd );
-			}
-			else	setError(97,data->tokenBuffer); // file not open
+			__set_channel__ = channel;
 		}
-		else	setError(23,data->tokenBuffer);	// "Illegal function call"
+		else
+		{
+			if (( channel >0)&&( channel <11))
+			{
+				FILE *fd = kittyFiles[ channel -1 ].fd ;
+
+				if (fd)
+				{
+					ret = ftell( fd );
+					setStackNum( ret );
+				}
+				else	setError(97,data->tokenBuffer); // file not open
+			}
+			else	setError(23,data->tokenBuffer);	// "Illegal function call"
+		}
+	}
+	else popStack(__stack - data -> stack  );
+
+	return NULL;
+}
+
+char *_set_pof( struct glueCommands *data, int nextToken )
+{
+	unsigned int pos = getStackNum( instance.stack );
+
+	if (( __set_channel__ >0)&&( __set_channel__ <11))
+	{
+		FILE *fd = kittyFiles[ __set_channel__ -1 ].fd ;
+
+		fseek( fd, pos, SEEK_SET );
 	}
 
-	popStack(__stack - data -> stack  );
-	setStackNum( ret );
-
-	dump_stack();
-	
+	_do_set = _setVar;
 	return NULL;
+}
+
+char *discPof(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if ( instance.token_is_fresh) 
+	{
+		tokenMode = mode_store;
+		_do_set = _set_pof;
+	}
+
+	stackCmdParm( _discPof, tokenBuffer );
+	return tokenBuffer;
 }
 
 char *_discEof( struct glueCommands *data, int nextToken )
@@ -1528,29 +1608,49 @@ char *_discEof( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (args == 1)
+	switch (args)
 	{
-		channel = getStackNum(__stack);
+		case 1:
+				{
+					channel = getStackNum(__stack);
+	
+					if (( channel >0)&&( channel <11))
+					{
+						fd = kittyFiles[ channel -1 ].fd ;
 
-		dprintf("channel: %d\n",channel);
+						if (fd)
+						{
+							int _EOF = 0;
 
-		if (( channel >0)&&( channel <11))
-		{
-			fd = kittyFiles[ channel -1 ].fd ;
+							if (feof( fd ) == 0)
+							{
+								// pos can be at end, without EOF set in libc... :-(
+								if (ftell(fd) == flof( fd )) _EOF =~0;
+							}
+							else _EOF = ~0;
 
-			if (fd)
-			{
+							setStackNum( _EOF );
+							return NULL;
+						}
+						else	setError(97,data->tokenBuffer); // file not open
+					}
+					else	setError(23,data->tokenBuffer);	// "Illegal function call"
+				}
+				break;
+
+		default:
+				setError(22,data->tokenBuffer);
 				popStack(__stack - data -> stack  );
-				setStackNum( feof( fd ));
-				return NULL;
-			}
-			else	setError(97,data->tokenBuffer); // file not open
-		}
-		else	setError(23,data->tokenBuffer);	// "Illegal function call"
 	}
 
-	popStack(__stack - data -> stack  );
 	return NULL;
+}
+
+char *discEof(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _discEof, tokenBuffer );
+	return tokenBuffer;
 }
 
 
@@ -1575,19 +1675,9 @@ char *discLof(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *discPof(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _discPof, tokenBuffer );
-	return tokenBuffer;
-}
 
-char *discEof(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _discEof, tokenBuffer );
-	return tokenBuffer;
-}
+
+
 
 char *_discGet( struct glueCommands *data, int nextToken )
 {
