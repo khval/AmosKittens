@@ -1323,6 +1323,8 @@ char *_discInputIn( struct glueCommands *data, int nextToken )
 
 char *discInputIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	if (NEXT_TOKEN( tokenBuffer ) == 0x003E)
 	{
 		input_cmd_context.cmd = _discInputIn;
@@ -1489,7 +1491,6 @@ char *_discPof( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data -> stack + 1;
 	int channel = 0;
-	FILE *fd;
 	int ret =0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1863,7 +1864,7 @@ char *discAssign(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_discReadText( struct glueCommands *data, int nextToken )
 {
-	int args =__stack - data -> stack +1;
+//	int args =__stack - data -> stack +1;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	NYI(__FUNCTION__);
@@ -1949,11 +1950,7 @@ char *_cmdDiskInfoStr( struct glueCommands *data, int nextToken )
 			{
 				int result = -1;
 				struct InfoData info;
-
-				int32 success;
 				APTR oldRequest;
-
-//				printf("volumeName: %s\n",volumeName);
 
 				oldRequest = SetProcWindow(NULL);
 
