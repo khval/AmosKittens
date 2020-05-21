@@ -246,6 +246,7 @@ void kitty_getline(string &input)
 			switch (str->ptr)
 			{
 				case 0:
+
 					break;
 
 				case 8:
@@ -270,7 +271,7 @@ void kitty_getline(string &input)
 					break;
 
 				case 13:
-					printf("<enter>\n");
+
 					done=true;
 					break;
 
@@ -295,7 +296,7 @@ void kitty_getline(string &input)
 		getline(cin, input);
 	}
 
-	free(str);
+	if (str) sys_free(str);
 }
 
 char *cmdWaitKey(struct nativeCommand *cmd, char *tokenBuffer )
@@ -375,7 +376,7 @@ char *_InputStrN( struct glueCommands *data, int nextToken )
 		setStackStr( ret ); 
 	}
 
-	free(str);
+	if (str) sys_free(str);
 
 	return NULL;
 }
@@ -808,7 +809,7 @@ char *_set_keyStr( struct glueCommands *data, int nextToken )
 	{
 		if (F1_keys[keyStr_index-1])
 		{
-			free(F1_keys[keyStr_index-1]);
+			sys_free(F1_keys[keyStr_index-1]);
 			F1_keys[keyStr_index-1] = NULL;
 		}
 
