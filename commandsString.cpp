@@ -296,17 +296,17 @@ char *_len( struct glueCommands *data, int nextToken )
 			if (kittyStack[__stack].type == type_string)
 			{
 				len  = kittyStack[__stack].str -> size;
+				setStackNum( len );
+				return NULL;
 			}
+
+			setError(22,data->tokenBuffer);
 			break;
 
-		default:		
+		default:
+			popStack(__stack - data->stack);
 			setError(22,data->tokenBuffer);
-
 	}
-
-	popStack(__stack - data->stack);
-
-	setStackNum( len );
 
 	return NULL;
 }
