@@ -83,6 +83,8 @@ struct stringData *var_param_str = NULL;
 int var_param_num;
 double var_param_decimal;
 
+int joy_keyboard_index = -1;
+
 char *_file_start_ = NULL;
 char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands are executed.
 char *_file_end_ = NULL;
@@ -1222,6 +1224,28 @@ void get_procedures()
 	}
 }
 
+#include "joysticks.h"
+
+void dump_joysticks();
+
+void cfg_joystick( int j, const char *type )
+{
+	struct joystick *joy=joysticks + j ;
+
+	joy -> port = j;
+	joy -> type = joy_usb;
+	joy -> device_id = 0;
+
+	printf("joysticks[%d].type = %d\n", j, joy -> type);
+
+	if (strcasecmp( type, "keyboard") == 0)
+	{
+		joy -> type = joy_keyb;
+		joy_keyboard_index = j;
+		return;
+	}
+}
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1335,6 +1359,17 @@ int main(int args, char **arg)
 		{
 			char tmp[30];
 			std::string *value;
+
+			for (n = 0; n < 4; n++ )
+			{
+				sprintf( tmp, "%s_%d", "joysticks", n );
+				value = getConfigValue( tmp );
+
+				printf (" %d\n", value );
+
+				cfg_joystick( n , value ? value -> c_str() : "usb" );
+			
+			}
 			for (n=0;n<20;n++)
 			{
 				sprintf( tmp, "%s_%d", "extension", n );

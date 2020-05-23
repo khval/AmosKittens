@@ -705,6 +705,70 @@ void handel_engine_keys(ULONG ccode)
 	}	
 }
 
+bool handel_keyboard_joypad(ULONG code, ULONG Qualifier)
+{
+	ULONG ccode = code & ~IECODE_UP_PREFIX;
+
+	Printf("joy_keyboard_index: %lx Qualifier %0lx code %ld\n",joy_keyboard_index, Qualifier, ccode);
+
+	if (joy_keyboard_index == -1) return false;
+
+	if (Qualifier & 0x100 ) 
+	{
+		int joy_b = 0;
+		int joy_d = 0;
+
+		switch (ccode)
+		{
+
+			case 62:
+			case 76: joy_d = joy_up; break;
+
+			case 46: joy_d = joy_down; break;
+
+			case 45: 
+			case 79: joy_d = joy_left; break;
+
+			case 47:
+			case 78: joy_d = joy_right; break;
+
+			case 67: joy_b = 1; break;
+			case 15: joy_b = 2; break;
+			case 60: joy_b = 3; break;
+		}
+
+
+
+		if (joy_d)
+		{
+			if (code & IECODE_UP_PREFIX)
+			{
+				amiga_joystick_dir[joy_keyboard_index] &= ~joy_d;
+			}
+			else
+			{
+				amiga_joystick_dir[joy_keyboard_index] |= joy_d;
+			}
+			return true;
+		}
+
+		if (joy_b)
+		{
+			if (code & IECODE_UP_PREFIX)
+			{
+				amiga_joystick_button[joy_keyboard_index] &= ~joy_b;
+			}
+			else
+			{
+				amiga_joystick_button[joy_keyboard_index] |= joy_b;
+			}
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void handel_window()
 {
 	ULONG Class;
@@ -820,6 +884,8 @@ void handel_window()
 										engine_key = ccode;
 										break;
 								}							
+
+								if (handel_keyboard_joypad( Code, Qualifier )) break;
 
 								if (engine_key) 
 								{
@@ -966,7 +1032,7 @@ void main_engine()
 
 		retroClearVideo(instance.video, engine_back_color);
 
-		init_joysticks();
+		init_usb_joysticks();
 
 		joy_sig = 1L << (joystick_msgport -> mp_SigBit);
 
@@ -991,15 +1057,23 @@ void main_engine()
 			}
 			else
 			{
-				for (n=0;n<4;n++)
+				struct joystick *joy;
+
+				for (joy=joysticks;joy<joysticks+4;joy++)
 				{
-					if (joysticks[n].id)
+					switch (joy -> type)
 					{
-						AIN_Query(
-							joysticks[n].controller, 
-							joysticks[n].id,
-							AINQ_CONNECTED,0,
-							&joysticks[n].connected,4 );
+						case joy_usb:
+
+								if (joy -> device_id)
+								{
+									AIN_Query(
+										joy -> controller, 
+										joy -> device_id,
+										AINQ_CONNECTED,0,
+										&joy -> connected,4 );
+								}
+								break;
 					}
 				}
 			}

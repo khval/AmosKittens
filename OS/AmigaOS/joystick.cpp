@@ -35,8 +35,6 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 	BOOL ret = FALSE;
 	int connected = 0;
 
-	Printf("%s\n",__FUNCTION__);
-
 	if (device->Type == AINDT_JOYSTICK) 
 	{
 		Printf("is a joystick\n");
@@ -44,7 +42,7 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 		AIN_Query(joy ->controller, device -> DeviceID,AINQ_CONNECTED,0,&connected,4 );
 		if (connected)
 		{
-			if (found_joysticks==joy->num)
+			if (found_joysticks==joy->type_count)
 			{
 				Printf("Devce Type %ld \tID %lx \tdevce Name %s\n",
 					device -> Type, 
@@ -52,7 +50,7 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 					device -> DeviceName);
 
 				ret = TRUE;
-				joy -> id = device -> DeviceID;
+				joy -> device_id = device -> DeviceID;
 			}
 			found_joysticks ++;
 		}
@@ -65,10 +63,47 @@ static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 	return ret;
 }
 
-void init_joysticks()
+
+void init_usb_joystick(int usb_count, int port, struct joystick *joy, struct TagItem *AIN_Tags)
 {
-	int nn;
-	int n;
+	joy -> device_id = -1;
+	joy -> type_count = usb_count;
+	joy -> port = port;
+	joy->controller = AIN_CreateContext (1, AIN_Tags);
+
+	if (joy->controller)
+	{
+		Printf("looking for usb joystcik #%ld on port #%ld\n",usb_count, port);
+
+		found_joysticks = 0;
+		AIN_EnumDevices(joy->controller, (void *) get_joy, (void *) joy );
+	}
+	else
+	{
+		Printf("Amiga input can't create context\n");
+	}
+}
+
+void dump_joysticks()
+{
+	printf("-- joysticks --\n");
+
+	// show found joysticks
+	for (struct joystick *joy=joysticks;joy<joysticks+4;joy++)
+	{
+		Printf("joy[%08lx] port #%ld, type %ld, Using device ID %lx\n",
+			joy,
+			joy -> port,
+			joy -> type,
+			joy -> device_id);
+	}
+}
+
+void init_usb_joysticks()
+{
+	int index;
+	int usb_count = 0;
+	int port_number;
 	struct TagItem AIN_Tags[2];
 
 	joystick_msgport = (struct MsgPort *) AllocSysObjectTags(ASOT_PORT, TAG_END );	
@@ -78,54 +113,37 @@ void init_joysticks()
 	AIN_Tags[0].ti_Data = (ULONG) joystick_msgport;
 	AIN_Tags[1].ti_Tag = TAG_END;
 
-	for (nn=0;nn<4;nn++)
+	for (index=0;index<4;index++)
 	{
 		// joy0 is mouse port on Amiga (2 player games)
 		// joy1 is joystick port (1 player games)
 
-		switch (nn)
+		switch (index)
 		{
-			case 0: n=1;	break;
-			case 1: n=0;	break;
-			default: n=nn;	break;
+			case 0: port_number=1;	break;
+			case 1: port_number=0;	break;
+			default: port_number=index;	break;
 		}
 
-		joysticks[n].id = -1;
-		joysticks[n].num = nn;
-		joysticks[n].controller = AIN_CreateContext (1, (TagItem*) &AIN_Tags);
-
-		if (joysticks[n].controller)
+		if ( joysticks[ port_number ].type == joy_usb )
 		{
-			Printf("looking for joystcik #%ld\n",n);
-
-			found_joysticks = 0;
-			AIN_EnumDevices(joysticks[n].controller, (void *) get_joy, (void *) &joysticks[n] );
-		}
-		else
-		{
-			Printf("Amiga input can't create context\n");
+			init_usb_joystick( usb_count, port_number, joysticks + port_number, (TagItem*) &AIN_Tags );
+			usb_count ++;
 		}
 	}
 
-	// show found joysticks
-	for (n=0;n<4;n++)
-	{
-		if (joysticks[n].id>0)
-		{
-			 Printf("joystick #%ld Using device ID %lx\n",n,joysticks[n].id);
-		}
-	}
+	dump_joysticks();
 
 	// obtain joysticks
-	for (n=0;n<4;n++)
+	for (index=0;index<4;index++)
 	{
-		if (joysticks[n].id>0)
+		if (joysticks[index].device_id>0)
 		{
-			joysticks[n].handle = AIN_ObtainDevice(joysticks[n].controller, joysticks[n].id );
+			joysticks[index].handle = AIN_ObtainDevice(joysticks[index].controller, joysticks[index].device_id );
 
-			if (joysticks[n].handle)
+			if (joysticks[index].handle)
 			{
-				joysticks[n].res =  AIN_SetDeviceParameter(joysticks[n].controller,joysticks[n].handle,AINDP_EVENT,TRUE);
+				joysticks[index].res =  AIN_SetDeviceParameter(joysticks[index].controller,joysticks[index].handle,AINDP_EVENT,TRUE);
 			}
 		}
 	}
@@ -212,7 +230,7 @@ void joy_stick(int joy,void *controller)
 	{
 		j = 0;
 
-		for (n=0;n<4;n++)	if ( (unsigned int) joysticks[n].id == ain_mess -> ID) j =n;
+		for (n=0;n<4;n++)	if ( (unsigned int) joysticks[n].device_id == ain_mess -> ID) j =n;
 
 
 		switch (ain_mess -> Type)
