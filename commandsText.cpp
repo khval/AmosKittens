@@ -190,7 +190,6 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 		if (textWindow)
 		{
 			clear_cursor(screen);
-//			if (next_print_line_feed) textWindow -> locateY++;
 
 			switch (args)
 			{
@@ -214,8 +213,6 @@ char *_textLocate( struct glueCommands *data, int nextToken )
 			draw_cursor(screen);
 		}
 	}
-
-//	next_print_line_feed = false;
 
 	popStack(__stack - data->stack );
 	return NULL;
@@ -248,11 +245,9 @@ char *_textHome( struct glueCommands *data, int nextToken )
 				clear_cursor(screen);
 				textWindow -> locateX = 0;
 				textWindow -> locateY = 0;
-//				next_print_line_feed = false;
 				draw_cursor(screen);
 			}
 		}
-//		next_print_line_feed = false;
 		success = true;
 	}
 
@@ -442,11 +437,14 @@ void _print_break( struct nativeCommand *cmd, char *tokenBuffer )
 {
 	int nextToken = *((short *) tokenBuffer );
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	flushCmdParaStack( nextToken );
 
 	stackCmdOnBreakOrNewCmd( _addDataToText, tokenBuffer, token_add );
 	__stack++;
  	kittyStack[__stack].type = type_none;
+
 }
 
 char *_textPrint( struct glueCommands *data, int nextToken )
@@ -455,6 +453,8 @@ char *_textPrint( struct glueCommands *data, int nextToken )
 	int n;
 
 	next_print_line_feed = true;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	flushCmdParaStack( nextToken );
 	if (screen)
