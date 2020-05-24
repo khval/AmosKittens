@@ -775,8 +775,8 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	item0 = kittyStack + __stack;
 	item1 = kittyStack + __stack+1;
 
-	type0 = item0 -> type & 7;
-	type1 = item1 -> type & 7;
+	type0 = item0 -> type ;		// should not need to filter, no arrays or procs on the stack, 
+	type1 = item1 -> type ;
 
 	switch( type0 )
 	{
@@ -798,7 +798,9 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 		case type_int:		success = stackStrAddValue( item0, item1 ); break;
 		case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
 		case type_string:	success = stackStrAddStr( item0, item1 ); break;
-		case type_none:	success = true; __stack++; break;	// nothing to add, will be added some where else.
+
+		case type_none:	success = true; __stack++; break;	
+						// nothing to add, restores stack pointer and exit.
 	}
 	
 	if (success )
