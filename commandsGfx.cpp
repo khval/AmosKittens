@@ -1000,8 +1000,8 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	kittyStack[__stack].type = type_none;
 	stackCmdNormal( _gfxPlot, tokenBuffer );
+	setStackNone():
 	return tokenBuffer;
 }
 
