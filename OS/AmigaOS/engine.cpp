@@ -469,20 +469,22 @@ void DrawSprite(
 
 	if (y>0)
 	{
-		if (y+height> (int) (instance.video->height/2)) height = (instance.video->height/2) - y;
+		if (y+height>= (int) (instance.video->height/2)) height = (instance.video->height/2) - y;
 	}
 	else
 	{
-		 source_y0 = -y; y = 0; height -= source_y0;
+		source_y0 = -y; y = 0; height -= source_y0;
+		if (height>= (int) (instance.video->height/2)) height = (instance.video->height/2) ;	
 	}
 
 	if (x>0)
 	{
-		if (x+width> (int) (instance.video->width/2)) width =(instance.video->width/2) - x;
+		if (x+width>= (int) (instance.video->width/2)) width =(instance.video->width/2) - x;
 	}
 	else
 	{
 		source_x0 = -x; x = 0; width -= source_x0;
+		if (width>= (int) (instance.video->width/2)) width =(instance.video->width/2) ;
 	}
 
 	destination_row_start = instance.video -> Memory + (instance.video -> width * (y*2)) + (x*2);
