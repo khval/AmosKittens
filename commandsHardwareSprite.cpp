@@ -111,8 +111,9 @@ char *_hsSprite( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	engine_lock();
 	num = getStackNum(__stack - 3 );
+
+	engine_lock();
 	sprite = &instance.video -> sprites[num];
 
 	sprite -> id = num;
