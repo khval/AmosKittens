@@ -1009,7 +1009,7 @@ char *_gfxPlot( struct glueCommands *data, int nextToken )
 char *gfxPlot(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _gfxPlot, tokenBuffer );
-	setStackNone():
+	setStackNone();
 	return tokenBuffer;
 }
 
