@@ -357,7 +357,9 @@ void drawBobsOnScreenExceptBob( struct retroScreen *screen, struct retroSpriteOb
 
 struct retroSpriteObject *__new_bob__(int id)
 {
-	struct retroSpriteObject *bob = new retroSpriteObject;
+	struct retroSpriteObject *bob = new retroSpriteObject();
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (bob)
 	{
@@ -366,26 +368,37 @@ struct retroSpriteObject *__new_bob__(int id)
 		bob -> y = 0;
 		bob -> image = 0;
 		bob -> screen_id = instance.current_screen;
+
+		bob -> clear[0].image = 0;
+		bob -> clear[0].w = 0;
+		bob -> clear[0].h = 0;
+		bob -> clear[0].mem = NULL;
+		bob -> clear[0].size = 0;
+
+		bob -> clear[1].image = 0;
+		bob -> clear[1].w = 0;
+		bob -> clear[1].h = 0;
+		bob -> clear[1].mem = NULL;
+		bob -> clear[1].size = 0;
+
 		bob -> sprite = NULL;
 		bob -> frame = NULL;
-		bob -> clear[0].mem = NULL;
-		bob -> clear[1].mem = NULL;
+
+		bob -> background = 0;	// if background color is set, background is not copied.
 		bob -> plains = 0;
 		bob -> mask = 0;
 		bob -> limitXmin = 0;
 		bob -> limitYmin = 0;
 		bob -> limitXmax = 0;
 		bob -> limitYmax = 0;
-		bob -> background = 0;	// if background color is set, background is not copied.
 
-		engine_lock();				
+		engine_lock();
 		bobs.push_back( bob );
 		engine_unlock();
 	}
 
 	return bob;
 }
-
 
 void freeBobClear( struct retroSpriteObject *bob )
 {
