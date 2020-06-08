@@ -145,14 +145,6 @@ char *_discOpenOut( struct glueCommands *data, int nextToken )
 char *_discOpenIn( struct glueCommands *data, int nextToken )
 {
 	int num = _open_file_( data, "r" );
-
-	if (FILE *fd = kittyFiles[ num ].fd)
-	{
-		fseek(fd,0,SEEK_END);
-		kittyFiles[ num ].fileSize = ftell( kittyFiles[ num ].fd );
-		fseek(fd,0,SEEK_SET);
-	}
-
 	return NULL;
 }
 
