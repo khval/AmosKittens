@@ -9,13 +9,14 @@
 #if defined(__amigaos4__) || defined(__amigaos__)
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/retromode.h>
 #endif
 
+#include "amoskittens.h"
 #include "AmalCompiler.h"
 #include "channel.h"
 #include "AmalCommands.h"
 #include "amal_object.h"
-#include "amoskittens.h"
 #include "commandsScreens.h"
 #include "amosstring.h"
 

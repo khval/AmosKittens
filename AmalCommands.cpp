@@ -28,7 +28,7 @@
 #include "amosstring.h"
 #include "amalBank.h"
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 #include "debug_amal_test_app.h"
 #else
 #include "debug.h"
@@ -40,7 +40,6 @@ extern void dumpAmalRegs();
 
 
 #if defined(show_debug_amal_yes) || defined(test_app)
-#warning hello
 extern void dumpAmalProgStack( struct kittyChannel *channel );
 #endif
 
@@ -51,14 +50,6 @@ void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 extern int bobColRange( unsigned short bob, unsigned short start, unsigned short end );
 extern int spriteColRange( unsigned short bob, unsigned short start, unsigned short end );
 
-#ifdef test_app
-	#define instance.amal_mouse_x 1000
-	#define instance.amal_mouse_y 2000
-	#define instance.engine_mouse_key 0
-#else
-	#define amal_mouse_x engine_mouse_x
-	#define amal_mouse_y engine_mouse_y
-#endif
 
 #ifdef show_debug_amal_no
 #define dumpAmalStack(...)
@@ -137,7 +128,7 @@ void *amal_call_j0 API_AMAL_CALL_ARGS
 	return NULL;
 }
 
-#ifndef test_app
+#ifndef __amoskittens_amal_test__
 
 void *amal_call_pause API_AMAL_CALL_ARGS
 {
@@ -1133,7 +1124,7 @@ void *amal_call_anim API_AMAL_CALL_ARGS
 	le = (int) code[1];
 	animCode = getRealAnimString(self, (char *) &code[2]);
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 
 	if (animCode)
 	{

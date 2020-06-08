@@ -12,7 +12,9 @@ VERSION = 1
 
 warnings = -Wuninitialized
 
-opt=-Dtest_app
+inc = -I./ -I../../ -Isdk:include/amoskittens
+
+opt=-D__amoskittens_amal_test__
 
 objects_dir = objs_amalcompiler/
 
@@ -37,10 +39,10 @@ show:
 	@echo $(objects_in_dir)
 
 ${objects_dir}%.o:		%.cpp	debug.h 
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ ${opt} $(@:${objects_dir}%.o=%.cpp) -o $@
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ ${opt} $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
 AmalCompiler.exe:		AmalCompiler.cpp  ${objects_in_dir} AmalCompiler.h
-	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
+	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} $(inc) -o $@
 
 clean:
 	delete $(programs) ${objects_in_dir}

@@ -11,7 +11,7 @@
 //#define Printf printf
 #endif
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 #include "debug_amal_test_app.h"
 #else
 #include "debug.h"
@@ -31,7 +31,7 @@
 #include <retromode_lib.h>
 #define Printf printf
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 #define engine_fd stdout
 #else
 extern FILE *engine_fd;
@@ -83,7 +83,7 @@ struct amalNested amal_nested_command[ max_nested_commands ];
 
 
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 	int nested_count = 0;
 	int parenthesis_count;
 	int amreg[26];
@@ -181,7 +181,7 @@ void dumpAmalProgStack( struct kittyChannel *channel )
 
 void pushBackAmalCmd( amal::Flags flags, void **code, struct kittyChannel *channel, void *(*cmd)  (struct kittyChannel *self, struct amalCallBack *cb)  )
 {
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 	const char *name;
 	name = getAmalProgStackName( cmd  );
 	printf("push_back %08x (%s)\n", cmd, name ? name : "<NULL>");
@@ -287,7 +287,7 @@ int animScriptLength( const char *str, const char *valid_chars )
 
 	printf("exited on '%c' - len %d\n",*c,l);
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 	printf("%s\n",str);
 	printf("%s: ",__FUNCTION__);
 	for (c = str; c<(str+l);c++) printf("%c",*c);
@@ -1211,7 +1211,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 	// reset R0-R9 registers, must be reset etch time we compile a new amal script.
 	memset( (char *) channel -> reg, 0, sizeof(channel -> reg) );
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
 // 1000 to avoid reallocs.
 // 20 to test reallocs.
 	allocAmalBuf( amalProg, 60 );
@@ -1482,11 +1482,12 @@ void dump_amal_labels()
 }
 
 
-#ifdef test_app
+#ifdef __amoskittens_amal_test__
+
+struct KittyInstance instance;
 
 unsigned int amiga_joystick_dir[4];
 unsigned int amiga_joystick_button[4];
-struct retroScreen *screens[8];
 
 int obj_x = 100, obj_y = 50, obj_image = 20;
 

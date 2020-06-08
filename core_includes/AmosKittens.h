@@ -765,7 +765,7 @@ extern struct glueCommands cmdTmp[];
 #define last_var instance.last_var
 #endif
 
-#if defined(__amoskittens__) || defined(__amoskittens_interface_test__)
+#if defined(__amoskittens__) || defined(__amoskittens_interface_test__) || defined(__amoskittens_amal_test__)
 extern struct KittyInstance instance;
 #endif
 
