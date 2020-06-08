@@ -775,7 +775,7 @@ unsigned int amal_for_to ( struct kittyChannel *channel, struct amalTab *self,
 				struct amalWriterData *data,
 				unsigned int num)
 {
-		AmalPrintf("writing [code block] to %08x - for \n", (unsigned int) &call_array[0]);
+		AmalPrintf("writing [code block] to %010d - for \n", (unsigned int) &call_array[0]);
 		char *current_location = (char *) (&call_array[1]);
 		char *start_location = (char *) channel -> amalProg.call_array;
 
@@ -867,7 +867,7 @@ unsigned int stdAmalWriterReg (  struct kittyChannel *channel,struct amalTab *se
 				unsigned int )
 {
 	int num = *(data -> at_script + 1);
-	AmalPrintf("writing %08x to %010x  - %s\n",(unsigned int) amal_call_reg,(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, self -> name );
+	AmalPrintf("writing %08x to %010d  - %s\n",(unsigned int) amal_call_reg,(unsigned int) &call_array[0] - (unsigned int) channel -> amalProg.call_array, self -> name );
 	call_array[0] = amal_call_reg;
 	*((int *) &call_array[1]) = num;
 
