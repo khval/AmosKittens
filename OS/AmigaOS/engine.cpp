@@ -419,6 +419,23 @@ void retroFadeScreen_beta(struct retroScreen * screen)
 	}
 }
 
+// idea, use macros to range check if needed...
+
+#if 1
+	#define set(adr,v) *(adr)=v
+	#define get(adr) *(adr)
+#else
+	#define set(adr,v) if ((( (char *) adr)>=(set_min)) && (( (char *) adr)<=(set_max))) { *(adr)=(v); } else { Printf("set out of range, min %08lx value %08lx max %08lx - ypos %ld\n",set_min,adr,set_max, ypos); }
+	#define get(adr) ((( (char *) adr)>=(get_min)) &&(( (char *) adr)<=(get_max))) ? *(adr) : get_error_code;
+	#define set_min ( (char *) instance.video -> Memory)
+	#define set_max ( (char *)  instance.video -> Memory + (instance.video -> BytesPerRow * instance.video -> height))
+	#define get_min ((char *) (frame -> data))
+	#define get_max ((char *) frame -> data + ( frame -> bytesPerRow * frame -> height))
+	#define get_error_code 0
+#endif
+
+
+
 void DrawSprite(
 	int num,
 	struct retroSprite * sprite,
@@ -526,6 +543,9 @@ void DrawSprite(
 		source_row_end += frame -> bytesPerRow;
 	}
 }
+
+#undef set
+#undef get
 
 extern void enable_Iconify();
 extern void disable_Iconify();
