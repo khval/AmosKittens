@@ -33,6 +33,7 @@
 #include "channel.h"
 #include "amal_object.h"
 #include "amosstring.h"
+#include "commandsBanks.h"
 
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken );
 extern char *_setVar( struct glueCommands *data, int nextToken );
@@ -344,10 +345,52 @@ void channel_amal( struct kittyChannel *channel )
 }
 
 
+
+void SetChannelScript( int channel, struct stringData *script, int *_err )
+{
+	struct kittyChannel *item;
+	struct stringData *nscript;	// create new script, so its not freed from stack, or bank by accident.
+
+	AmalPrintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	engine_lock();				// most be thread safe!!!
+	if (item = channels -> getChannel(channel))
+	{
+		nscript = amos_strdup(script);
+		if (nscript)
+		{
+			remove_lower_case( nscript );
+			setChannelAmal( item, nscript  );
+			*_err = asc_to_amal_tokens( item );
+			amal_fix_labels( (void **) item -> amalProg.call_array );
+			amal_clean_up_labels( );
+		}
+	}
+	else
+	{
+		if (item = channels -> newChannel( channel ))
+		{
+			setChannelToken(item,0x1A94,channel); // default to sprite token
+
+			nscript = amos_strdup(script);
+			if (nscript)
+			{
+				remove_lower_case( nscript );
+				setChannelAmal( item, nscript );
+				*_err = asc_to_amal_tokens( item );
+				amal_fix_labels( (void **) item -> amalProg.call_array );
+				amal_clean_up_labels( );
+			}
+		}
+	}
+
+	engine_unlock();
+}
+
 char *_amalAmal( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data->stack +1 ;
-	int _err=0;
+	int _err = 0;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -355,42 +398,62 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 	{
 		case 2:
 			{
-				struct kittyChannel *item;
 				int channel = getStackNum(__stack -1 );
-				struct stringData *script = getStackString(__stack );
-				struct stringData *nscript;
 
-				engine_lock();				// most be thread safe!!!
-				if (item = channels -> getChannel(channel))
+				switch ( kittyStack[__stack].type )
 				{
-					nscript = amos_strdup(script);
-					if (nscript)
-					{
-						remove_lower_case( nscript );
-						setChannelAmal( item, nscript  );
-						_err = asc_to_amal_tokens( item );
-						amal_fix_labels( (void **) item -> amalProg.call_array );
-						amal_clean_up_labels( );
-					}
-				}
-				else
-				{
-					if (item = channels -> newChannel( channel ))
-					{
-						setChannelToken(item,0x1A94,channel); // default to sprite token
+					case type_string:
 
-						nscript = amos_strdup(script);
-						if (nscript)
+						SetChannelScript( channel, kittyStack[__stack].str , &_err );
+						break;
+
+					case type_int:
+
 						{
-							remove_lower_case( nscript );
-							setChannelAmal( item, nscript );
-							_err = asc_to_amal_tokens( item );
-							amal_fix_labels( (void **) item -> amalProg.call_array );
-							amal_clean_up_labels( );
+							kittyBank *bank = findBank( 4 );
+						
+							if (bank)
+							{
+								int i = kittyStack[ __stack].integer.value;
+								amalBankScript obj( bank -> start );
+								char *script_ptr;
+								struct stringData *script;
+
+								if ((i < 0) || (i >= obj.progs) )
+								{
+									popStack(__stack - data->stack );
+									setError(33,data->tokenBuffer);
+									return NULL;
+								}
+
+								// get Amos script string.
+								script_ptr = (((char *) obj.offsets) + (obj.offsets[ i ] * 2))  ;
+
+								// convert to kitty string	(has integer size, not short size)
+								script = toAmosString( script_ptr +2 , *((unsigned short *) script_ptr ) );
+
+								if (script)
+								{
+									for (char *c = &script -> ptr ; *c ; c++  )
+									{
+										if (*c=='~') *c = ' ';	// banks use ~ as newline..
+									}
+
+									printf("%s\n",&script -> ptr);
+
+									SetChannelScript( channel, script , &_err );
+									// SetChannelScript will copy the string, so we must free the script now.
+									sys_free( script );
+								}						
+							}
 						}
-					}
+						break;
+
+					default:
+						popStack(__stack - data->stack );
+						setError(40,data->tokenBuffer);
+						return NULL;
 				}
-				engine_unlock();	
 			}
 			break;
 		defaut:
