@@ -33,6 +33,7 @@ struct amalBuf
 	unsigned int used;		// used
 	unsigned int elements;	// max
 	unsigned int size;		// size in bytes.
+	unsigned int prog_crc;	// amal prog crc...
 	void *(**call_array) API_AMAL_CALL_ARGS;
 	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
 	void *(**amalAutotest) API_AMAL_CALL_ARGS;

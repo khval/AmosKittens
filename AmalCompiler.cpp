@@ -81,14 +81,15 @@ void *amalAllocBuffer( int size )
 
 struct amalNested amal_nested_command[ max_nested_commands ];
 
-
-
 #ifdef __amoskittens_amal_test__
 	int nested_count = 0;
 	int parenthesis_count;
 	int amreg[26];
 	void print_code( void **adr );
 	int parenthesis[40];
+
+	#define dump_channels()
+
 #else
 	extern int amreg[26];
 	extern int parenthesis[];
@@ -1347,6 +1348,12 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 
 	amalProg -> call_array[amalProg -> used++] = amal_call_next_cmd;
 	amalProg -> call_array[amalProg -> used] = 0;
+
+	amalProg -> prog_crc = 0;
+	for (unsigned int i = 0; i < amalProg -> used; i++)
+	{
+		amalProg -> prog_crc ^= (unsigned int) amalProg -> call_array[i];
+	}
 
 	// setup default stack of 500.
 

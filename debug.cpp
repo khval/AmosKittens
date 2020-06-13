@@ -807,10 +807,11 @@ void dump_channels()
 
 		if (item)
 		{	
-			Printf("id: %ld, amal status: %ld amal script %s, anim status: %ld, anim script: %s\n",
+			Printf("id: %ld, amal status: %ld amal script %s, (%08lx) anim status: %ld, anim script: %s\n",
 				item -> id,
 				item -> amalStatus,
 				item -> amal_script ? "Yes" : "No",
+				item -> amalProg.prog_crc,
 				item -> animStatus,
 				item -> anim_script ? "Yes" : "No"
 				);
