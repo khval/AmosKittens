@@ -989,6 +989,25 @@ struct amalTab amalCmds[] =
 	{NULL, amal::class_cmd_arg,NULL,NULL }
 };
 
+const char *amalAdr2Name( void *adr )
+{
+	struct amalTab *itm;
+
+	if (adr == NULL) return NULL;
+
+	for ( itm = amalCmds; itm -> name; itm ++ )
+	{
+		if ( ((void *) itm -> call) == adr) return itm -> name;
+	}
+
+	for ( itm = amalSymbols; itm -> name; itm ++ )
+	{
+		if ( ((void *) itm -> call) == adr) return itm -> name;
+	}
+
+	return NULL;
+}
+
 void print_code( void **adr )
 {
 	if (*adr == NULL)
@@ -1375,7 +1394,6 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 	}
 	else channel -> amalProg.amalAutotest =  NULL;
 
-	AmalPrintf("channel -> amalProgCounter = %08x\n",(unsigned int) channel -> amalProg.amalProgCounter);
 
 	return 0;
 }
@@ -1489,6 +1507,29 @@ void dump_amal_labels()
 		AmalPrintf("pos 0x%08x, name %s\n",found_labels[i].pos,found_labels[i].name);
 	}
 }
+
+void amalDiscompile( amalBuf *amalProg )
+{
+	unsigned int off;
+	void **ptr;
+	const char *name;
+
+	if (amalProg->call_array == NULL) return;
+
+	for (off = 0; off < amalProg -> used ; off++)
+	{
+		ptr =  (void **) &amalProg->call_array[ off ];
+		name = amalAdr2Name( *ptr );
+
+		if (name)
+		{
+			printf("%10d - %s\n", (unsigned int) ptr - (unsigned int)  amalProg -> call_array ,name);
+		}
+		else printf("%10d - %08x (%d)\n", (unsigned int) ptr - (unsigned int)  amalProg -> call_array ,*ptr,*ptr);
+	}
+	getchar();
+}
+
 
 
 #ifdef __amoskittens_amal_test__

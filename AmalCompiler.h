@@ -82,4 +82,5 @@ extern void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API
 extern bool amal_fix_labels( void **code );
 extern void amal_clean_up_labels();
 extern void freeAmalBuf( struct amalBuf *i);
+extern void amalDiscompile( amalBuf *amalProg );
 
