@@ -30,8 +30,9 @@ struct amalNested
 
 struct amalBuf
 {
-	unsigned int elements;
-	unsigned int size;
+	unsigned int used;		// used
+	unsigned int elements;	// max
+	unsigned int size;		// size in bytes.
 	void *(**call_array) API_AMAL_CALL_ARGS;
 	void *(**amalProgCounter) API_AMAL_CALL_ARGS;
 	void *(**amalAutotest) API_AMAL_CALL_ARGS;
@@ -40,7 +41,7 @@ struct amalBuf
 
 struct amalWriterData
 {
-	unsigned int pos;
+//	unsigned int pos;
 	const char *at_script;
 	unsigned int command_len;
 	unsigned int arg_len;

@@ -64,6 +64,9 @@ kittyChannel::kittyChannel( int channel )
 		argStack = NULL;
 		argStackCount = 0;
 
+		amalProg.used = 0;
+		amalProg.elements = 0;
+		amalProg.size = 0;
 		amalProg.amalProgCounter = NULL;
 		amalProg.amalAutotest = NULL;
 		amalProg.directProgCounter = NULL;

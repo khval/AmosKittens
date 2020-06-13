@@ -351,12 +351,12 @@ unsigned int stdAmalWriterScript (	struct kittyChannel *channel, struct amalTab 
 
 // check if size is ok, or need a new buffer.
 
-	if (data -> pos > amalProg -> elements - size )	// larger writer, takes max 6 elements.
+	if (amalProg -> used > amalProg -> elements - size )	// larger writer, takes max 6 elements.
 	{
 		reAllocAmalBuf(amalProg,size + 20);	// add another 20 elements if buffer is low.
 
 		// now that call array is new, need to reset it.
-		call_array = &amalProg -> call_array[data -> pos];
+		call_array = &amalProg -> call_array[amalProg -> used];
 	}
 
 // text arg length, 			(do not confuse with token arg length)
@@ -1142,6 +1142,8 @@ void allocAmalBuf( struct amalBuf *i, int e )
 {
 	i -> elements = e;
 	i -> size = sizeof(void *) * i -> elements;
+	i -> used = 0;
+	i -> prog_crc = 0;
 	i -> call_array = (void *(**) API_AMAL_CALL_ARGS) amalAllocBuffer(i -> size);
 }
 
@@ -1149,6 +1151,7 @@ void freeAmalBuf( struct amalBuf *i)
 {
 	i -> elements = 0;
 	i -> size = 0;
+	i -> prog_crc = 0;
 	if ( i -> call_array ) amalFreeBuffer( i -> call_array );
 	i -> call_array = NULL;
 }
@@ -1219,7 +1222,6 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 	allocAmalBuf( amalProg, 60 );
 #endif
 
-	data.pos = 0;
 	autotest_start_ptr_offset = -1;
 
 	s=&script -> ptr;
@@ -1252,17 +1254,17 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 				switch (GET_LAST_AMAL_NEST)
 				{
 					case nested_if:
-						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );
+						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[amalProg -> used] - (unsigned int) channel -> amalProg.call_array );
 						write_cmd.call = amal_call_then;
-						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_then);
+						amalProg -> used += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[amalProg -> used], &data, nested_then);
 						amal_cmd_equal = NULL;
 						break;
 
 					case nested_then:
-						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[data.pos] - (unsigned int) channel -> amalProg.call_array );	// skip over else
+						fix_condition_branch( channel, (unsigned int) &amalProg -> call_array[amalProg -> used] - (unsigned int) channel -> amalProg.call_array );	// skip over else
 						write_cmd.call = amal_call_else;
 
-//						data.pos += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[data.pos], &data, nested_else);
+//						amalProg -> used += AmalWriterCondition( channel, &write_cmd , &amalProg -> call_array[amalProg -> used], &data, nested_else);
 
 						nested_count--;
 
@@ -1271,7 +1273,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 				}
 			}
 
-			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, 0 );
+			amalProg -> used += found -> write( channel, found, &amalProg -> call_array[amalProg -> used], &data, 0 );
 			data.lastClass = found -> Class;
 			s += data.command_len + data.arg_len;
 		}
@@ -1293,7 +1295,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 			data.command_len =0;
 			data.arg_len = 0;
 
-			data.pos += found -> write( channel, found, &amalProg -> call_array[data.pos], &data, num );
+			amalProg -> used += found -> write( channel, found, &amalProg -> call_array[amalProg -> used], &data, num );
 			data.lastClass = found -> Class;
 		}
 		else if ((*s >= 'A')&&(*s<='Z'))	 	// have not found command, maybe its a label
@@ -1310,7 +1312,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 			if (*l==':')	// check if its vaild label.
 			{
 				struct AmalLabelRef label;
-				label.pos = data.pos;
+				label.pos = amalProg -> used;
 				label.name = strdup( txt );
 				found_labels.push_back( label );
 				s = l+1;
@@ -1319,7 +1321,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 			{
 				AmalPrintf("code bad at: '%s'\n",s);
 
-				amalProg -> call_array[data.pos] = 0;
+				amalProg -> call_array[amalProg -> used] = 0;
 				amal_error_pos = (ULONG) (s - &(channel -> amal_script -> ptr));
 				printf("%d\n",amal_error_pos);
 
@@ -1331,20 +1333,20 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 			AmalPrintf("script: %s\n",&(channel -> amal_script -> ptr));
 			AmalPrintf("code bad at: '%s'\n",s);
 
-			amalProg -> call_array[data.pos] = 0;
+			amalProg -> call_array[amalProg -> used] = 0;
 			amal_error_pos = (ULONG) (s - &(channel -> amal_script -> ptr));
 
 			return 107;
 		}
 
-		if (data.pos > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
+		if (amalProg -> used > amalProg -> elements - 6 )	// larger writer, takes max 6 elements.
 		{
 			reAllocAmalBuf(amalProg,20);	// add another 20 elements if buffer is low.
 		}
 	}
 
-	amalProg -> call_array[data.pos++] = amal_call_next_cmd;
-	amalProg -> call_array[data.pos] = 0;
+	amalProg -> call_array[amalProg -> used++] = amal_call_next_cmd;
+	amalProg -> call_array[amalProg -> used] = 0;
 
 	// setup default stack of 500.
 
