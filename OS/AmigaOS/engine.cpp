@@ -457,6 +457,7 @@ void DrawSprite(
 	unsigned char *source_row_ptr;
 	unsigned char *source_row_end ;
 	struct retroRGB *rgb = NULL;
+	struct retroRGB *Nrgb = NULL;
 	struct retroRGB *rgb2;
 	unsigned int color;
 	struct retroFrameHeader *frame;
@@ -509,7 +510,8 @@ void DrawSprite(
 
 	for ( ypos = 0; ypos < height; ypos++ )
 	{
-		rgb = instance.video -> scanlines[ypos + (y*2) ].scanline[0].orgPalette;
+		Nrgb = instance.video -> scanlines[ypos + (y*2) ].scanline[0].orgPalette;
+		if (Nrgb) rgb = Nrgb;
 
 		if (rgb)
 		{
