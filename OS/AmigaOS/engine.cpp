@@ -448,15 +448,15 @@ void DrawSprite(
 	int height;
 	int ypos;
 	int source_x0 = 0,source_y0 = 0;
-	int color_offset = 0;
+	unsigned short c;
+	unsigned short color_min = 0;
 	unsigned int *destination_row_ptr;
 	unsigned int *destination_row_ptr2;
 	unsigned int *destination_row_start;
 	unsigned char *source_row_start;
 	unsigned char *source_row_ptr;
 	unsigned char *source_row_end ;
-	struct retroRGB *Nrgb;
-	struct retroRGB *rgb;
+	struct retroRGB *rgb = NULL;
 	struct retroRGB *rgb2;
 	unsigned int color;
 	struct retroFrameHeader *frame;
@@ -464,15 +464,14 @@ void DrawSprite(
 	switch (num)
 	{
 		case 0:
-		case 1: color_offset = 16; break;
+		case 1: color_min = 16; break;
 		case 2:
-		case 3: color_offset = 20; break;
+		case 3: color_min = 20; break;
 		case 4:
-		case 5: color_offset = 24; break;
+		case 5: color_min = 24; break;
 		case 6:
-		case 7: color_offset = 28; break;
+		case 7: color_min = 28; break;
 	}
-
 
 	if (image >= sprite -> number_of_frames) image = instance.sprites -> number_of_frames-1;
 	if (image < 0) image = 0;
@@ -504,41 +503,43 @@ void DrawSprite(
 		if (width>= (int) (instance.video->width/2)) width =(instance.video->width/2) ;
 	}
 
-	destination_row_start = instance.video -> Memory + (instance.video -> width * (y*2)) + (x*2);
+	destination_row_start =(unsigned int *) ((char *) instance.video -> Memory + (instance.video -> BytesPerRow * (y*2)) ) + (x*2);
 	source_row_start = (unsigned char *) frame -> data + (source_y0 * frame -> bytesPerRow ) + source_x0;
 	source_row_end = source_row_start + width;
 
 	for ( ypos = 0; ypos < height; ypos++ )
 	{
-		Nrgb = instance.video -> scanlines[ypos + (y*2) ].scanline[0].orgPalette;
-		if (Nrgb) rgb = Nrgb + color_offset;
+		rgb = instance.video -> scanlines[ypos + (y*2) ].scanline[0].orgPalette;
 
 		if (rgb)
 		{
 			destination_row_ptr = destination_row_start;
-			destination_row_ptr2 = destination_row_start + instance.video -> width;
+			destination_row_ptr2 =  (unsigned int *) ((char *) destination_row_start + instance.video -> BytesPerRow );
 
 			for ( source_row_ptr = source_row_start;  source_row_ptr < source_row_end ; source_row_ptr++ )
-			{
-				if (rgb) 
+			{	
+				c = get(source_row_ptr);
+				if (c) 
 				{
-					rgb2 = rgb + (*source_row_ptr);
-					color = (rgb2->r << 16) | (rgb2->g<<8) | rgb2->b;
-				}
-				else color = 0;
+					c += color_min;
+					if ( c < 256)
+					{
+						rgb2 = rgb + c;
+						color = (rgb2->r << 16) | (rgb2->g<<8) | rgb2->b;
 
-				if (*source_row_ptr) 
-				{
-					*destination_row_ptr= color;
-					*(destination_row_ptr+1)= color;
-					*destination_row_ptr2= color;
-					*(destination_row_ptr2+1)= color;
+						set(destination_row_ptr,color);
+						set(destination_row_ptr+1,color);
+						set(destination_row_ptr2,color);
+						set(destination_row_ptr2+1,color);
+					}
 				}
+
 				destination_row_ptr+=2;
+				destination_row_ptr2+=2;
 			}
 		}
 
-		destination_row_start += (instance.video -> width*2);
+		destination_row_start = (unsigned int *) ( (char *) destination_row_start + (instance.video -> BytesPerRow * 2));	// every 2en row
 		source_row_start += frame -> bytesPerRow;
 		source_row_end += frame -> bytesPerRow;
 	}
