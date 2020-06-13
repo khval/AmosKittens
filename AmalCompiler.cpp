@@ -1405,7 +1405,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 
 	for (call = prog ;  *call ; call ++ )
 	{
-		AmalPrintf("offset %d status %08x\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array, channel -> amalStatus );
+		AmalPrintf("offset %d call %08x status %08x\n", (unsigned int) call - (unsigned int) channel -> amalProg.call_array,  *call, channel -> amalStatus );
 
 		ret = (*call) ( channel, (void **) call, 0 );
 		if (ret)
