@@ -1442,7 +1442,7 @@ void amal_run_one_cycle(struct kittyChannel  *channel, void *(**prog) API_AMAL_C
 	}
 	else	// autotest prog
 	{
-		if (*call == NULL ) printf("autotest end\n");
+		if (*call == NULL ) Printf("autotest end\n");
 
 	}
 }
@@ -1631,8 +1631,8 @@ void test_run(struct kittyChannel  *channel)
 			{
 				channel -> amalStatus &= ~channel_status::paused;
 
-				printf("Amal Status %d\n",channel -> amalStatus);
-				printf("Paused (1=contune, 0=quit)\n");
+				Printf("Amal Status %ld\n",channel -> amalStatus);
+				Printf("Paused (1=contune, 0=quit)\n");
 				char c=getchar();
 				if (c=='0') break;
 			}

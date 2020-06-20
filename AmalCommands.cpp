@@ -136,14 +136,14 @@ void *amal_call_pause API_AMAL_CALL_ARGS
 	self -> amalStatus |= channel_status::paused;
 	self -> loopCount = 0;
 
-	printf("Amal Status %d\n",self -> amalStatus);
+	AmalPrintf("Amal Status %ld\n",self -> amalStatus);
 
 	return NULL;
 }
 
 void *amal_call_j1 API_AMAL_CALL_ARGS
 {
-	AmalPrintf("%s:%s:%ld - channel %d\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
+	AmalPrintf("%s:%s:%ld - channel %ld\n",__FILE__,__FUNCTION__,__LINE__, self -> id);
 	self -> argStack [ self -> argStackCount ] = amiga_joystick_dir[1] | (amiga_joystick_button[1] << 4);
 	amalFlushParaCmds( self );
 	return NULL;
