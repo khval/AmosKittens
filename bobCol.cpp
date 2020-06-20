@@ -36,7 +36,7 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 	struct retroSpriteObject *otherBob;
 	struct retroFrameHeader *frame;
 	int minX, maxX, minY, maxY;
-	int n,r;
+	int n,r, i;
 
 	thisBob = getBob(bob);
 
@@ -47,9 +47,16 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 	 	return 0;
 	}
 
-	if (thisBob -> image < 1) return 0;	// does not have image.
+	if (instance.sprites == NULL) return 0;
 
-	frame = &instance.sprites -> frames[ thisBob -> image-1 ];
+	i = thisBob -> image -1;
+
+	// check if inside range.
+
+	if (i < 0) return 0;
+	if (i >= instance.sprites -> number_of_frames) return 0;
+
+	frame = &instance.sprites -> frames[ i ];
 	minX = thisBob -> x - frame -> XHotSpot;
 	minY = thisBob -> y - frame -> XHotSpot;
 	maxX = minX + frame -> width;
@@ -62,7 +69,10 @@ int bobColRange( unsigned short bob, unsigned short start, unsigned short end )
 		// filter out bad data....
 		if ( ! otherBob) continue;
 		if (otherBob == thisBob) continue;
-		if (otherBob -> image <1) continue;
+
+		i = otherBob -> image -1;
+		if (i <0) continue;
+		if (i >= instance.sprites -> number_of_frames) continue;
 
 		// check if bob is inside.
 		r = inBob( frame -> mask, minX,minY,maxX,maxY, otherBob );
