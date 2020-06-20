@@ -797,7 +797,10 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	{
 		case type_int:		success = stackStrAddValue( item0, item1 ); break;
 		case type_float:	success = stackStrAddDecimal( item0, item1 ); break;
-		case type_string:	success = stackStrAddStr( item0, item1 ); break;
+		case type_string:	success = stackStrAddStr( item0, item1 ); 
+						__stack ++;		// restore to last item on stack
+						popStack(1);		// remove last item on stack.
+						break;
 
 		case type_none:	success = true; __stack++; break;	
 						// nothing to add, restores stack pointer and exit.
@@ -922,8 +925,8 @@ char *_subData( struct glueCommands *data, int nextToken )
 				if ( type1 == type_string ) 
 				{
 					success = _subStr( item0 , item1 ); 
-					__stack++;
-					popStack( 1 );
+					__stack++;		// restore stack to last item
+					popStack( 1 );		// free memory of last item.
 				}
 				break;
 	}
@@ -1397,10 +1400,6 @@ char *_signedData( struct glueCommands *data, int nextToken )
 	struct kittyData *i;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("%d\n", __stack);
-
-	dump_stack();
 
 	i = kittyStack + __stack;
 

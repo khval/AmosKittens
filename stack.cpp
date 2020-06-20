@@ -133,6 +133,8 @@ char *flushCmdParaStack( this_instance_first int nextToken )
 }
 #endif
 
+// this function pops x number of args from stack
+
 void popStack( this_instance_first int n)
 {
 	struct kittyData *s,*i,*e;
@@ -144,7 +146,7 @@ void popStack( this_instance_first int n)
 	s = &kittyStack[_s];
 	e = &kittyStack[instance_stack];
 
-	for (i=e; i>=s ; i-- )
+	for (i=e; i>s ; i-- )	// should not pop start, do not change ;-)
 	{
 		if (i -> str)
 		{
