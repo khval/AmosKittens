@@ -743,6 +743,7 @@ struct nativeCommand nativeCommands[]=
 	{0xFFB6,">",0, moreData },
 	{0xFFC0,"+",0, addData },
 	{0xFFCA,"-", 0, subData },
+	{0xFFCA+sizeof(void *),"<signed>",0,signedData },	// Amos Tokens Only, replace $FFCA, when its: "(-123) or command -123 or command 123,-234
 	{0xFFD4,"mod",0,modData },
 	{0xFFE2,"*", 0, mulData },
 	{0xFFEC,"/", 0, divData },

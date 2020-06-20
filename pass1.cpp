@@ -40,12 +40,13 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct defFn> defFns;
 char *lastLineAddr;
 
+// we need to keep count, to make sure code is valid.
+
 int ifCount = 0;
 int endIfCount = 0;
 int currentLine = 0;
 int pass1_bracket_for;
 int pass1_token_count = 0;
-
 int nest_loop_count = 0;
 
 extern uint32_t _file_bank_size;
@@ -54,7 +55,8 @@ extern uint32_t _file_bank_size;
 extern uint32_t bank_crc;
 #endif
 
-unsigned short last_tokens[MAX_PARENTHESIS_COUNT];
+unsigned short last_tokens[MAX_PARENTHESIS_COUNT];		// used for nested loops, etc.
+unsigned short pass1_prev_token =0;	// not for nested loops. (can't be used sub passes)
 
 enum
 {
@@ -437,6 +439,38 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 }
 
 static struct globalVar *current_proc = NULL;
+
+
+void pass1_sign( char * ptr )
+{
+
+	switch ( pass1_prev_token )	// should be signes
+	{
+		case 0x0074:	//	"("
+		case 0x005C:	//	","
+				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+				return;	// nothing more to do....
+
+		default:				// not sure if its signes or subtract
+
+				switch ( pass1_prev_token )		// exclude list	(for signes)
+				{
+					case 0x0006:	//	"vars"
+					case 0x001E:	//	"bin"
+					case 0x0036:	//	"hex"
+					case 0x003E:	//	"numbers"
+					case 0x0046:	//	"float"
+					case 0x005C:	//	"arg"
+					case 0x123E:	//	"True"
+					case 0x1248:	//	"False"
+							return;	// nothing more to do....
+					default:
+							*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+							return;
+				}
+				break;
+	}
+}
 
 char *pass1_procedure( char *ptr )
 {
@@ -1079,7 +1113,10 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							addNest( nested_data );
 
 							break;
-
+				
+				case 0xFFCA:	// negative sign... check if is used for signes.
+							pass1_sign( ptr );
+							break;
 			}
 
 			ret += cmd -> size;
@@ -1152,6 +1189,8 @@ void pass1_reader( char *start, char *file_end )
 	unsigned int n;
 
 	lastLineAddr = start;
+	
+	pass1_prev_token = 0x0;
 	token = *((short *) start);
 	ptr = start +2;
 
@@ -1160,6 +1199,8 @@ void pass1_reader( char *start, char *file_end )
 		if (ptr == NULL) break;
 
 		last_tokens[instance.parenthesis_count] = token;
+
+		pass1_prev_token = token;
 		token = *((short *) ptr);
 		ptr += 2;	// next token.
 	}

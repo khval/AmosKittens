@@ -34,3 +34,5 @@ char *_equalData( struct glueCommands *data, int nextToken );
 
 char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer);
 
+char *signedData(struct nativeCommand *cmd, char *tokenBuffer);
+

@@ -1392,3 +1392,39 @@ char *cmdNotEqual(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *_signedData( struct glueCommands *data, int nextToken )
+{
+	struct kittyData *i;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	printf("%d\n", __stack);
+
+	dump_stack();
+
+	i = kittyStack + __stack;
+
+	switch (i -> type)
+	{
+		case type_int:
+			i->integer.value = -i->integer.value;		// flip the signess on stack
+			break;
+
+		case type_float:
+			i->decimal.value = -i->decimal.value;
+			break;
+
+		default:
+			setError(22,data -> tokenBuffer);
+			break;
+	}
+	return NULL;
+}
+
+char *signedData(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdMathOperator( _signedData, tokenBuffer, token_sub );
+	return tokenBuffer;
+}
+
