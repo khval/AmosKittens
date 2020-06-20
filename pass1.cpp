@@ -460,9 +460,9 @@ void pass1_sign( char * ptr )
 					case 0x0036:	//	"hex"
 					case 0x003E:	//	"numbers"
 					case 0x0046:	//	"float"
-					case 0x005C:	//	"arg"
 					case 0x123E:	//	"True"
 					case 0x1248:	//	"False"
+					case 0x0026:	//	"Strings"
 							return;	// nothing more to do....
 					default:
 							*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
