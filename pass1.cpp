@@ -465,7 +465,11 @@ void pass1_sign( char * ptr )
 					case 0x0026:	//	"Strings"
 							return;	// nothing more to do....
 					default:
-							*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+							if (pass1_token_count <= 2)
+							{
+								printf("moded\n");
+								*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+							}
 							return;
 				}
 				break;
@@ -898,7 +902,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x0054:	pass1_token_count = 0;
+				case 0x0054:	pass1_token_count = 0;		// next command 
 							break;
 
 				case 0x00b0:	procCount ++;
