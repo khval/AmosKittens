@@ -866,54 +866,6 @@ char *_gfxDefScroll( struct glueCommands *data, int nextToken )
 }
 
 
-void _scroll( struct retroScreen *screen, int buf, int x0,int y0, int x1, int y1, int dx,int dy )
-{
-	int bytesPerRow = screen -> bytesPerRow;
-	unsigned char *mem = screen -> Memory[ buf ];
-	unsigned char *src;
-	unsigned char *des;
-	int x,y;
-
-	if (dy>0)
-	{
-		if (dx>0)
-		{
-			for (y=y1;y>=y0;y--)
-			{
-				src = mem + (bytesPerRow * y) + x1;	des = mem + (bytesPerRow * (y+dy)) + x1 +dx;
-				for (x=x1;x>=x0;x--) *des--=*src--;		
-			}
-		}
-		else
-		{
-			for (y=y1;y>=y0;y--)
-			{
-				src = mem + (bytesPerRow * y) + x0; 	des = mem + (bytesPerRow * (y+dy)) + x0 +dx;
-				for (x=x0;x<=x1;x++) *des++=*src++;		
-			}
-		}
-	}
-	else
-	{
-		if (dx>0)
-		{
-			for (y=y0;y<=y1;y++)
-			{
-				src = mem + (bytesPerRow * (y-dy)) + x1;	des = mem + (bytesPerRow * y) + x1 +dx;
-				for (x=x1;x>=x0;x--) *des--=*src--;		
-			}
-		}
-		else
-		{
-			for (y=y0;y<=y1;y++)
-			{
-				src = mem + (bytesPerRow * (y-dy)) + x0; 	des = mem + (bytesPerRow * y) + x0 +dx;
-				for (x=x0;x<=x1;x++) *des++=*src++;		
-			}
-		}
-	}
-}
-
 char *_gfxScroll( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data->stack +1 ;
@@ -962,10 +914,10 @@ char *_gfxScroll( struct glueCommands *data, int nextToken )
 
 						switch (screen -> autoback)
 						{
-							case 0:	_scroll( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,dx,dy );
+							case 0:	retroScroll( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,dx,dy );
 									break;
-							default:	_scroll( screen, 0, x0,y0,x1,y1,dx,dy );
-									if (screen -> Memory[1]) _scroll( screen, 1, x0,y0,x1,y1,dx,dy );
+							default:	retroScroll( screen, 0, x0,y0,x1,y1,dx,dy );
+									if (screen -> Memory[1]) retroScroll( screen, 1, x0,y0,x1,y1,dx,dy );
 						}
 					}
 				}
