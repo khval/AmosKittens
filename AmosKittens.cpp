@@ -188,6 +188,9 @@ void init_instent(struct KittyInstance *instance )
 
 	instance -> api.engineLock =engine_lock;
 	instance -> api.engineUnlock =engine_unlock;
+	instance -> api.engineAddVblInterrupt =engine_add_vbl_Interrupt;
+	instance -> api.engineRemoveVblInterrupt =engine_remove_vbl_Interrupt;
+
 	instance -> api.findBank =findBank;
 	instance -> api.freeBank =freeBank;
 	instance -> api.reserveAs =reserveAs;

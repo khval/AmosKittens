@@ -665,6 +665,8 @@ enum
 //       the API allows extensions to access routines from the outside
 // --------------------------------------------------------------------------------------------
 
+#define VBL_FUNC_ARGS ( void *custom )
+
 struct kittyApi
 {
 //	-- runtime --
@@ -679,6 +681,8 @@ struct kittyApi
 
 	void (*engineLock) (void);
 	void (*engineUnlock) (void);
+	void (*engineAddVblInterrupt) ( void (*fn) VBL_FUNC_ARGS, void *custom );
+	void (*engineRemoveVblInterrupt) ( void (*fn) VBL_FUNC_ARGS );
 
 //	-- debug --
 
@@ -708,6 +712,7 @@ struct kittyApi
 	bool (*audioPlay) (uint8_t * data,int len, int channel, int frequency);
 	void (*audioDeviceFlush) (int voices);
 	void (*audioSetSampleLoop) ( ULONG voices, bool value );
+
 };
 
 // --------------------------------------------------------------------------------------------

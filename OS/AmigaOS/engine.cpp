@@ -59,6 +59,7 @@ extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
 std::vector<struct amos_selected> amosSelected;
 std::vector<int> engineCmdQue;
+std::vector<struct kittyVblInterrupt> kittyVblInterrupts;
 
 int autoView = 1;
 int bobDoUpdate = 0;			// when we are ready to update bobs.
@@ -1037,7 +1038,7 @@ void main_engine()
 	{
 		Printf("init engine done..\n");
 		
-		struct retroScreen *screen = NULL;
+
 
 		ULONG sigs;
 		ULONG joy_sig;
@@ -1135,35 +1136,10 @@ void main_engine()
 
 			if (autoView)
 			{
-				retroClearVideo( instance.video, engine_back_color );
+				retroClearVideo( instance.video, instance.engine_back_color );
 
-				for (n=0; n<8;n++)
-				{
-					screen = instance.screens[n];
-
-					if (screen)
-					{
-						retroFadeScreen_beta(screen);
-
-//						Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
-//						dump_channels();
-//						dump_anim();
-
-						if (screen -> event_flags & engine_update_flags)
-						{
-							// dump_bobs_on_screen( n );
-							clearBobsOnScreen(screen);
-							drawBobsOnScreenExceptBob(screen,NULL);
-
-							if (screen -> Memory[1]) 	// has double buffer
-							{
-								swap_buffer( screen );
-							}
-
-						}
-						screen -> event_flags = 0;
-					}
-				}	// next
+					engine_draw_vbl_Interrupts();
+					engine_draw_bobs_and_do_vbl();
 
 				retroDrawVideo( instance.video );
 
@@ -1257,6 +1233,95 @@ void engine_unlock()
 {
 	MutexRelease(engine_mx);
 }
+
+bool engine_have_vbl_Interrupt( void (*fn) VBL_FUNC_ARGS )		// is not atomic.
+{
+	engine_lock();
+	unsigned int i;
+	for (i = 0; i < kittyVblInterrupts.size(); i++)
+	{
+		if (kittyVblInterrupts[i].fn == fn) 
+		{
+			engine_unlock();
+			return true;
+		}
+	}
+	engine_unlock();
+	return false;
+}
+
+void engine_add_vbl_Interrupt( void (*fn) VBL_FUNC_ARGS, void *custom )
+{
+	if (engine_have_vbl_Interrupt(fn) == false)
+	{
+		struct kittyVblInterrupt new_Interrupt;
+
+		engine_lock();
+		new_Interrupt.fn = fn;
+		new_Interrupt.custom = custom;
+		kittyVblInterrupts.push_back(new_Interrupt);
+		engine_unlock();
+	}
+}
+
+
+void engine_remove_vbl_Interrupt( void (*fn) VBL_FUNC_ARGS )
+{
+	unsigned int i;
+	engine_lock();
+	for (i = 0; i < kittyVblInterrupts.size(); i++)
+	{
+		if (kittyVblInterrupts[i].fn == fn)
+		{
+			kittyVblInterrupts.erase(kittyVblInterrupts.begin()+i);
+			break;
+		}
+	}
+	engine_unlock();
+}
+
+void engine_draw_vbl_Interrupts()
+{
+	unsigned int i;
+	for (i = 0; i < kittyVblInterrupts.size(); i++)
+	{
+		kittyVblInterrupts[i].fn( kittyVblInterrupts[i].custom );
+	}
+}
+
+void engine_draw_bobs_and_do_vbl()
+{
+	int n;
+	struct retroScreen *screen;
+
+	for (n=0; n<8;n++)
+	{
+		screen = instance.screens[n];
+
+		if (screen)
+		{
+			retroFadeScreen_beta(screen);
+
+//			Printf("screen id: %ld, flags %08lx,%08lx\n",n, screen -> event_flags , engine_update_flags);
+//			dump_channels();
+//			dump_anim();
+
+			if (screen -> event_flags & engine_update_flags)
+			{
+				// dump_bobs_on_screen( n );
+				clearBobsOnScreen(screen);
+				drawBobsOnScreenExceptBob(screen,NULL);
+
+				if (screen -> Memory[1]) 	// has double buffer
+				{
+					swap_buffer( screen );
+				}
+			}
+			screen -> event_flags = 0;
+		}
+	}	// next
+}
+
 
 char *asl()
 {
