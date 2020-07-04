@@ -2029,7 +2029,7 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 	context -> exit_run = false;
 	context -> has_return_value = false;
 
-	if (event & 4) engine_wait_key = true;
+	if (event & 4) instance.engine_wait_key = true;
 
 	context -> resetZoneEvents();
 
@@ -2069,9 +2069,9 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 
 		if (event & 4)	// key press
 		{
-			if (engine_wait_key == false)
+			if (instance.engine_wait_key == false)
 			{
-				engine_wait_key = false;
+				instance.engine_wait_key = false;
 				break;
 			}
 		}
