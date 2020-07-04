@@ -18,8 +18,6 @@
 extern struct Window *My_Window;
 extern struct retroEngine *engine ;
 
-extern bool engine_pal_mode;
-
 typedef struct CompositeHookData_s {
 	struct BitMap *srcBitMap; // The source bitmap
 	int32 srcWidth, srcHeight; // The source dimensions
@@ -88,7 +86,7 @@ void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs)
 
 void set_target_hookData( void )
 {
-	int image_height = (engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6);
+	int image_height = (instance.engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6);
 
  	rect.MinX = My_Window->BorderLeft;
  	rect.MinY = My_Window->BorderTop;

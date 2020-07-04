@@ -132,10 +132,6 @@ extern void *newTextWindow ( struct retroScreen *, int );
 extern void freeAllTextWindows ( struct retroScreen * );
 extern void kittyText(struct retroScreen *screen, int x, int y,struct stringData *txt);
 
-//	void engine_lock (void);
-//	void engine_unlock( void );
-//	void *findBank (int);
-//	void freeBank (int);
 extern struct kittyBank *reserveAs ( int, int ,int, const char *, char * );
 
 void setCmdTo( int option )
@@ -170,6 +166,14 @@ void init_instent(struct KittyInstance *instance )
 	instance -> engine_mouse_x = 0;
 	instance -> engine_mouse_y = 0;
 
+	instance -> engine_wait_key = false;
+	instance -> engine_key_repeat = false;
+	instance -> engine_key_down = false;
+	instance -> engine_stopped = false;
+	instance -> engine_mouse_hidden = false;
+	instance -> engine_pal_mode= true;
+	instance -> engine_back_color = 0;
+
 	instance -> xgr = 0;
 	instance -> ygr = 0;
 	instance -> GrWritingMode = 0;
@@ -181,6 +185,7 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;
 	instance -> api.freeAllTextWindows =freeAllTextWindows;
+
 	instance -> api.engineLock =engine_lock;
 	instance -> api.engineUnlock =engine_unlock;
 	instance -> api.findBank =findBank;

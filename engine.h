@@ -13,11 +13,6 @@ extern void draw_cursor( struct retroScreen *screen );
 extern void atomic_add_key( ULONG eventCode, ULONG Code, ULONG Qualifier, char Char );
 extern void run_amal_scripts();
 
-extern bool engine_wait_key;
-extern uint32_t engine_back_color;
-extern bool engine_stopped;
-extern bool engine_mouse_hidden;
-
 extern uint32_t engine_update_flags ;
 
 extern bool synchro_on;
@@ -77,4 +72,6 @@ struct amosMenuItem
 
 #define hw_mouse_x instance.engine_mouse_x/2+hardware_upper_left
 #define hw_mouse_y instance.engine_mouse_y/2+hardware_upper_top
+#define hw_mouse_x (instance.engine_mouse_x/2+hardware_upper_left)
+#define hw_mouse_y (instance.engine_mouse_y/2+hardware_upper_top)
 

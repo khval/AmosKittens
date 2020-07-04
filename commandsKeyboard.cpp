@@ -38,13 +38,12 @@ extern std::vector<struct keyboard_buffer> keyboardBuffer;
 
 extern ULONG *codeset_page;
 extern struct globalVar globalVars[];
+
 int _scancode;
 int _keyshift;
-int keyState[256];
 
 extern int bobDoUpdate ;
 extern int bobUpdateNextWait ;
-
 
 extern bool next_print_line_feed;
 extern char *(*_do_set) ( struct glueCommands *data, int nextToken ) ;
@@ -289,7 +288,7 @@ void kitty_getline(string &input)
 					break;	
 			}
 
-		} while ( (done == false) && (engine_stopped==false) );
+		} while ( (done == false) && (instance.engine_stopped==false) );
 	}
 	else
 	{
@@ -439,7 +438,7 @@ char *_cmdKeyState( struct glueCommands *data,int nextToken )
 
 		if ((key>-1)&&(key<256))
 		{
-			ret = keyState[key];
+			ret = instance.engine_key_state[key];
 			success = true;
 		}
 	}

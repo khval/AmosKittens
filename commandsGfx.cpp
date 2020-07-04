@@ -1828,14 +1828,14 @@ char *_gfxColourBack( struct glueCommands *data, int nextToken )
 				color = getStackNum(__stack);
 				if (color & 0xFF000000)		// has ALPHA so its ARGB
 				{
-					engine_back_color = color & 0x00FFFFFF;
+					instance.engine_back_color = color & 0x00FFFFFF;
 				}
 				else
 				{
 					r = (color & 0xF00) >> 8;
 					g = (color & 0x0F0) >> 4;
 					b = color & 0xF;
-					engine_back_color = (r * 0x110000) | (g * 0x001100) | ( b * 0x000011 );
+					instance.engine_back_color = (r * 0x110000) | (g * 0x001100) | ( b * 0x000011 );
 				}
 			break;
 		default:

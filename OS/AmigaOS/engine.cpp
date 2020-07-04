@@ -34,7 +34,7 @@
 extern int sig_main_vbl;
 extern bool running;			// 
 extern bool interpreter_running;	// interprenter is really running.
-extern int keyState[256];
+
 extern char *F1_keys[20];
 extern struct Menu *amiga_menu;
 
@@ -43,13 +43,6 @@ extern void BackFill_Func(struct RastPort *ArgRP, struct BackFillArgs *MyArgs);
 struct Process *EngineTask = NULL;
 struct Screen *fullscreen_screen = NULL;
 extern UWORD *EmptyPointer;
-
-bool engine_wait_key = false;
-bool engine_stopped = false;
-bool engine_key_repeat = false;
-bool engine_key_down = false;
-bool engine_mouse_hidden = false;
-bool engine_pal_mode= true;
 
 bool synchro_on = true;
 
@@ -66,8 +59,6 @@ extern ChannelTableClass *channels;
 std::vector<struct keyboard_buffer> keyboardBuffer;
 std::vector<struct amos_selected> amosSelected;
 std::vector<int> engineCmdQue;
-
-uint32_t	engine_back_color = 0x000000;
 
 int autoView = 1;
 int bobDoUpdate = 0;			// when we are ready to update bobs.
@@ -336,7 +327,7 @@ bool start_engine()
 	EngineTask = spawn( main_engine, "Amos kittens graphics engine",engine_debug_output);
 
 	Wait(SIGF_CHILD);
-	return ((EngineTask) && (engine_stopped == false));
+	return ((EngineTask) && (instance.engine_stopped == false));
 }
 
 void set_default_colors( struct retroScreen *screen )
@@ -586,7 +577,7 @@ void engine_ShowMouse( ULONG enable )
 		}
 	}
 
-	engine_mouse_hidden = !enable;
+	instance.engine_mouse_hidden = !enable;
 }
 
 extern std::vector<struct amosMenuItem *> menuitems;
@@ -714,7 +705,7 @@ void handel_engine_keys(ULONG ccode)
 	switch (ccode)
 	{
 		case RAWKEY_F11:
-			engine_pal_mode = engine_pal_mode ? false : true;
+			instance.engine_pal_mode = instance.engine_pal_mode ? false : true;
 			break;					
 
 		case RAWKEY_F12:
@@ -852,7 +843,7 @@ void handel_window()
 								int wh;
 								int ih;
 
-								ih = engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6;
+								ih = instance.engine_pal_mode ? instance.video -> height : instance.video -> height * 5 / 6;
 
 								if (fullscreen_screen)
 								{
@@ -919,7 +910,7 @@ void handel_window()
 								}
 							}
 
-							engine_wait_key = false;
+							instance.engine_wait_key = false;
 
 							if (menu_shortcut( Code ,  Qualifier)) break;
 
@@ -929,7 +920,7 @@ void handel_window()
 							{
 								int emu_code = Code &~ IECODE_UP_PREFIX;
 								if (emu_code==75) emu_code = 95;
-								keyState[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
+								instance.engine_key_state[ emu_code ] = (Code & IECODE_UP_PREFIX) ? 0 : -1;
 							}
 
 							if ((ccode >= RAWKEY_F1) && (ccode <= RAWKEY_F10))
@@ -1055,7 +1046,7 @@ void main_engine()
 		
 		Signal( &main_task->pr_Task, SIGF_CHILD );
 
-		retroClearVideo(instance.video, engine_back_color);
+		retroClearVideo(instance.video, instance.engine_back_color);
 
 		init_usb_joysticks();
 
@@ -1254,7 +1245,7 @@ void main_engine()
 	if (fullscreen_screen) CloseScreen(fullscreen_screen);
 	fullscreen_screen = NULL;
 
-	engine_stopped = true;
+	instance.engine_stopped = true;
 }
 
 void engine_lock()

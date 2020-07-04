@@ -743,6 +743,14 @@ struct KittyInstance
 	int engine_mouse_key ;
 	int engine_mouse_x ;
 	int engine_mouse_y ;
+	bool engine_wait_key;
+	bool engine_key_repeat;
+	bool engine_key_down;
+	bool engine_stopped;
+	bool engine_mouse_hidden;
+	bool engine_pal_mode;
+	uint32_t engine_back_color;
+	int engine_key_state[256];
 	int xgr;
 	int ygr;
 	int GrWritingMode;
