@@ -144,6 +144,8 @@ void setCmdTo( int option )
 	}
 }
 
+extern void __wait_vbl();
+
 void init_instent(struct KittyInstance *instance )
 {
 	instance -> video = NULL;
@@ -205,6 +207,7 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.audioPlay = audioPlay;
 	instance -> api.audioPlayWave = audioPlayWave;
 	instance -> api.audioSetSampleLoop = audioSetSampleLoop;
+	instance -> api.waitvbl = __wait_vbl;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 

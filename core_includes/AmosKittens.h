@@ -713,6 +713,10 @@ struct kittyApi
 	void (*audioDeviceFlush) (int voices);
 	void (*audioSetSampleLoop) ( ULONG voices, bool value );
 
+//	-- system --
+
+	void (*waitvbl) ();
+
 };
 
 // --------------------------------------------------------------------------------------------
@@ -760,9 +764,9 @@ struct KittyInstance
 	int ygr;
 	int GrWritingMode;
 	int paintMode;
-	struct kittyApi api;
 	bool audio_3k3_lowpass;
 	LONG volume;
+	struct kittyApi api;
 };
 
 #if defined(__amoskittens__)
