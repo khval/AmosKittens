@@ -326,4 +326,5 @@ struct error errorsRunTime[]= {
 // Kitty errors 
 	{ 1000,"Amos Kittens don't support this command" },
 	{ 1001,"Command needs AmigaOS (not supported on Linux/Windows/MacOSX)" },
+	{ 1002,"Amos Kittens don't support this yet." },
 	{ 0,NULL }};

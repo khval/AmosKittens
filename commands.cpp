@@ -2050,36 +2050,47 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 	unsigned short next_token = NEXT_TOKEN(tokenBuffer);
 	proc_names_printf("%s:%d\n", __FUNCTION__,__LINE__);
 
-	if ((next_token == 0x0006 ) || (next_token == 0x0018))
+	switch (next_token)
 	{
-		struct reference *ref = (struct reference *) (tokenBuffer + 2);
+		case 0x0006:
+		case 0x0018:
+				{
+					struct reference *ref = (struct reference *) (tokenBuffer + 2);
 
-		if (ref -> ref)
-		{
-			char *name;
-			int idx = ref->ref-1;
-			switch (globalVars[idx].var.type & 7 )
-			{
-				case type_int:
-				case type_proc:
-						if (name = dupRef( ref ))
+					if (ref -> ref)
+					{
+						char *name;
+						int idx = ref->ref-1;
+						switch (globalVars[idx].var.type & 7 )
 						{
-							struct label *label = findLabel(name, procStcakFrame[proc_stack_frame].id);
-							char *ptr = label -> tokenLocation;
-							free(name);
+							case type_int:
+							case type_proc:
+								if (name = dupRef( ref ))
+								{
+									struct label *label = findLabel(name, procStcakFrame[proc_stack_frame].id);
+									char *ptr = label -> tokenLocation;
+									free(name);
 
-							if (ptr) 
-							{
-								ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
-								procStcakFrame[proc_stack_frame].dataPointer = ptr;
-							}
-							else 	setError( 40, tokenBuffer );
+									if (ptr) 
+									{
+										ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
+										procStcakFrame[proc_stack_frame].dataPointer = ptr;
+									}
+									else 	setError( 40, tokenBuffer );
+								}
+								return tokenBuffer + 2 + sizeof(struct reference) + ref -> length;
 						}
-						return tokenBuffer + 2 + sizeof(struct reference) + ref -> length;
-			}
+						printf("type: %d\n",globalVars[idx].var.type & 7);
+					}
+				}
+				break;
 
-			printf("type: %d\n",globalVars[idx].var.type & 7);
-		}
+		case 0x0000:	// new line.
+		case 0x0054:	// next command 
+
+				printf("Restore: should reset to first Data statement in the scope.\n");
+				setError( 1002, tokenBuffer );
+				break;
 	}
 
 	// if we are here, then we did not use name of var as label name.
