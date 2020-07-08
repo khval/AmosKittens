@@ -23,8 +23,9 @@ extern int findVarPublic( char *name, int type );
 extern int findProc( char *name );
 extern char *dupRef( struct reference *ref );
 
-extern struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 extern struct globalVar globalVars[1000];
+extern struct stackFrame *currentFrame;
+
 extern int var_count[2];
 extern std::vector<struct label> labels;
 extern std::vector<struct  globalVar *> procedures;
@@ -63,7 +64,7 @@ struct label *var_JumpToName(struct reference *ref)
 	char *name = dupRef(ref);
 	if (name) 
 	{
-		struct label *label = findLabel( name, procStcakFrame[proc_stack_frame].id );
+		struct label *label = findLabel( name, currentFrame -> id );
 		free(name);
 		return label;
 	}

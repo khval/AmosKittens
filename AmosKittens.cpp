@@ -389,7 +389,7 @@ char *cmdRem(nativeCommand *cmd, char *ptr)
 
 				for (c=var_name;*c;c++) if (*c==' ') *c = 0;
 
-				if (show_var( ptr, var_name, procStcakFrame[ proc_stack_frame].id ) == false )
+				if (show_var( ptr, var_name, currentFrame -> id ) == false )
 				{
 					if (show_var( ptr, var_name, 0) == false )
 					{
@@ -1267,6 +1267,8 @@ int main(int args, char **arg)
 
 	procStcakFrame[0].localVarData = stackFrameData;	// this just temp... need to manage size, lett it grow..
 	procStcakFrame[0].localVarDataNext = stackFrameData;
+	currentFrame = procStcakFrame;
+
 
 #ifdef __amigaos__
 	struct Task *me;

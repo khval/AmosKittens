@@ -26,20 +26,19 @@
 
 extern struct globalVar globalVars[];
 extern struct nativeCommand nativeCommands[];
-extern int nativeCommandsSize;
-extern const char *TokenName( unsigned short token );
-extern unsigned short token_not_found;
-extern char *_gosub_return( struct glueCommands *data, int nextToken );
-
 extern struct globalVar globalVars[1000];
-extern char *dupRef( struct reference *ref );
-
-extern void stack_frame_up(int varIndex);
-extern int tokenMode;
-
 extern std::vector<struct label> labels;
+extern struct stackFrame *currentFrame;
 
+extern int nativeCommandsSize;
+extern unsigned short token_not_found;
+extern int tokenMode;
 static unsigned int is_token_cmd = 0;
+
+extern const char *TokenName( unsigned short token );
+extern char *_gosub_return( struct glueCommands *data, int nextToken );
+extern char *dupRef( struct reference *ref );
+extern void stack_frame_up(int varIndex);
 
 char *executeOnToken(char *ptr, unsigned short token)
 {
@@ -134,7 +133,7 @@ struct label *GetLabel( unsigned int is_token, int ref_num )
 
 	switch (is_token)
 	{
-		case 0x0006:		label = findLabel(globalVars[ref_num-1].varName, procStcakFrame[proc_stack_frame].id );
+		case 0x0006:		label = findLabel(globalVars[ref_num-1].varName, currentFrame -> id );
 						break;
 
 		case 0x0018:		label = &labels[ref_num-1];
@@ -282,7 +281,7 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 							if (name)
 							{
 								dprintf("name: %s\n",name);
-								ref_num = ref->ref = findLabelRef( name, procStcakFrame[proc_stack_frame].id );
+								ref_num = ref->ref = findLabelRef( name, currentFrame -> id );
 								free(name); 
 							}
 
@@ -309,7 +308,7 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 					{
 						char num[50];
 						sprintf(num,"%d", *((int *) tokenBuffer));
-						ref_num = findLabelRef( num, procStcakFrame[proc_stack_frame].id );
+						ref_num = findLabelRef( num, currentFrame -> id );
 					}
 
 					tokenBuffer += 4;

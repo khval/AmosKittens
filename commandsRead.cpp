@@ -27,6 +27,8 @@ extern int _last_var_index;		// we need to know what index was to keep it.
 extern int _set_var_index;		// we need to resore index 
 extern unsigned short token_not_found;
 
+extern struct stackFrame *currentFrame;
+
 // this code should be able to handel expresion in data statement.
 //
 // The process:
@@ -63,7 +65,7 @@ char *executeDataToken(char *ptr, unsigned short token)
 					if (ptr)	// if ptr, then token is 0x0404 (new line)
 					{
 						ptr+=4;	// skip token.
-						procStcakFrame[proc_stack_frame].dataPointer = ptr;	// set data_read_poiner
+						currentFrame -> dataPointer = ptr;	// set data_read_poiner
 						
 						// end of line => comma, exit we have read something I hope.
 						if (do_input[instance.parenthesis_count] == _exit_read_data) 
