@@ -11,5 +11,7 @@ int QuoteByteLength(char *ptr);
 char *dupRef( struct reference *ref );
 struct label *findLabel( char *name, int _proc );
 int findLabelRef( char *name, int _proc );
-int findProc( char *name );
+
+int findProcByName( char *name );
+struct globalVar *findProcPtrById( int _proc );
 

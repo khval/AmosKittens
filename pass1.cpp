@@ -438,16 +438,19 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 	return NULL;
 }
 
-static struct globalVar *current_proc = NULL;
+extern struct globalVar proc_main_data;
+static struct globalVar *current_proc = &proc_main_data;
 
 
 void pass1_sign( char * ptr )
 {
+//	printf("prev %04x this %04x",pass1_prev_token ,*((unsigned short *) (ptr -2) ));
 
 	switch ( pass1_prev_token )	// should be signes
 	{
 		case 0x0074:	//	"("
 		case 0x005C:	//	","
+				printf("moded\n");
 				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
 				return;	// nothing more to do....
 
@@ -826,7 +829,7 @@ void pass1_proc_end( char *ptr )
 	nested_count --;
 	pass1_inside_proc = false;
 
-	current_proc = NULL;
+	current_proc = &proc_main_data;
 }
 
 void pass1_bracket_end( char *ptr )
@@ -1108,12 +1111,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 
 				case 0x0404:	// Data
 
-							if (current_proc)
-							{
-								if (current_proc -> procDataPointer == NULL) current_proc -> procDataPointer = ptr + 2;
-							}
-							else 	if (procStcakFrame[0].dataPointer == NULL) procStcakFrame[0].dataPointer = ptr + 2;
-
+							if (current_proc -> procDataPointer == NULL) current_proc -> procDataPointer = ptr + 2;
 							addNest( nested_data );
 
 							break;

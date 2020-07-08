@@ -106,6 +106,7 @@ extern unsigned int var_count[2];
 
 unsigned short token_not_found = 0x0000;
 
+struct globalVar proc_main_data;
 struct stackFrame procStcakFrame[PROC_STACK_SIZE];
 struct stackFrame *currentFrame = NULL;
 

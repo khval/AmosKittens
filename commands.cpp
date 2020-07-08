@@ -51,6 +51,7 @@ static struct timeval timer_before, timer_after;
 
 extern std::vector<struct label> labels;
 extern std::vector<int> engineCmdQue;
+extern struct globalVar proc_main_data;
 
 extern struct kittyData *getVar(uint16_t ref);
 
@@ -2074,7 +2075,7 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 									if (ptr) 
 									{
 										ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
-										procStcakFrame[proc_stack_frame].dataPointer = ptr;
+										currentFrame -> dataPointer = ptr;
 									}
 									else 	setError( 40, tokenBuffer );
 								}
@@ -2088,9 +2089,16 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 		case 0x0000:	// new line.
 		case 0x0054:	// next command 
 
-				printf("Restore: should reset to first Data statement in the scope.\n");
-				setError( 1002, tokenBuffer );
-				break;
+				if (proc_stack_frame)
+				{
+					struct globalVar *this_proc = findProcPtrById( currentFrame -> id );
+					currentFrame ->  dataPointer = this_proc -> procDataPointer;
+				}
+				else
+				{
+					currentFrame ->  dataPointer = proc_main_data.procDataPointer;
+				}
+				return tokenBuffer;
 	}
 
 	// if we are here, then we did not use name of var as label name.
