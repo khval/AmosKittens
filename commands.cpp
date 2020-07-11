@@ -2025,18 +2025,34 @@ char *_cmdRestore( struct glueCommands *data, int nextToken )
 	char *ptr = NULL;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	struct stringData *name = getStackString(instance.stack);
-	if (name)	
+	switch (kittyStack[instance_stack].type)
 	{
-		struct label *label = findLabel( &name -> ptr, procStcakFrame[proc_stack_frame].id );
-		ptr = label ? label -> tokenLocation : NULL;
+		case type_string:
+			{
+				struct stringData *name = kittyStack[instance_stack].str;
+				if (name)	
+				{
+					struct label *label = findLabel( &name -> ptr, currentFrame -> id );
+					ptr = label ? label -> tokenLocation : NULL;
+				}
+			}
+			break;
+		case type_int:
+			{
+				char tmp[ 30 ];
+				sprintf( tmp, "%d", kittyStack[instance_stack].integer.value );
+				struct label *label = findLabel( tmp, currentFrame -> id );
+				ptr = label ? label -> tokenLocation : NULL;
+			}
+			break;
 	}
+
 	popStack( instance.stack - data->stack  );
 
 	if (ptr)
 	{
 		ptr = FinderTokenInBuffer( ptr-2, 0x0404 , -1, -1, _file_end_ );
-		procStcakFrame[proc_stack_frame].dataPointer = ptr;
+		currentFrame -> dataPointer = ptr;
 	}
 	else
 	{
@@ -2053,8 +2069,8 @@ char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer )
 
 	switch (next_token)
 	{
-		case 0x0006:
-		case 0x0018:
+		case 0x0006:	// var
+		case 0x0018:	// label
 				{
 					struct reference *ref = (struct reference *) (tokenBuffer + 2);
 
