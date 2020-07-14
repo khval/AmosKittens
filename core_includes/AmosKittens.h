@@ -717,6 +717,11 @@ struct kittyApi
 
 	void (*waitvbl) ();
 
+//	-- blocks --
+
+	struct retroBlock *(*findBlock_in_blocks) ( int id );
+	struct retroBlock *(*findBlock_in_cblocks) ( int id );
+
 };
 
 // --------------------------------------------------------------------------------------------

@@ -49,6 +49,30 @@ struct retroIcon
 std::vector<struct retroBlock> blocks;	
 std::vector<struct retroBlock> cblocks;	
 
+struct retroBlock *findBlock_in_blocks(int id)
+{
+	unsigned int b;
+
+	for (b=0;b<blocks.size();b++)
+	{
+		if (blocks[b].id == id) return &blocks[b];
+	}
+	return NULL;
+}
+
+
+struct retroBlock *findBlock_in_cblocks(int id)
+{
+	unsigned int b;
+
+	for (b=0;b<cblocks.size();b++)
+	{
+		if (cblocks[b].id == id) return &cblocks[b];
+	}
+	return NULL;
+}
+
+
 
 char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 {
@@ -302,16 +326,6 @@ void del_block(std::vector<struct retroBlock> &blocks,int id)
 }
 
 
-struct retroBlock *findBlock(std::vector<struct retroBlock> &blocks,int id)
-{
-	unsigned int b;
-
-	for (b=0;b<blocks.size();b++)
-	{
-		if (blocks[b].id == id) return &blocks[b];
-	}
-	return NULL;
-}
 
 
 char *_bgGetBlock( struct glueCommands *data, int nextToken )
@@ -383,7 +397,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 			id = getStackNum(__stack);
-			block = findBlock(blocks, id);
+			block = findBlock_in_blocks( id);
 			if (block)
 			{
 				x=block->x;
@@ -395,7 +409,7 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 			id = getStackNum(__stack-2);
 			x = getStackNum(__stack-1);
 			y = getStackNum(__stack);
-			block = findBlock(blocks, id);
+			block = findBlock_in_blocks(id);
 			popStack(__stack - data->stack );
 			break;
 
@@ -528,7 +542,7 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 	switch (args)
 	{
 		case 1:
-			block = findBlock(blocks, getStackNum(__stack));
+			block = findBlock_in_cblocks( getStackNum(__stack));
 			if (block)
 			{
 				x = block -> x;
@@ -536,7 +550,7 @@ char *_bgPutCBlock( struct glueCommands *data, int nextToken )
 			}
 			break;
 		case 3:
-			block = findBlock(cblocks, getStackNum(__stack-2));
+			block = findBlock_in_cblocks( getStackNum(__stack-2));
 			x = getStackNum(__stack-1);
 			y = getStackNum(__stack);
 			x -= x & 8;
@@ -652,7 +666,7 @@ char *_bgVrevBlock( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		block = findBlock(blocks, getStackNum(__stack));
+		block = findBlock_in_blocks( getStackNum(__stack));
 		if (block) block -> flag ^= flag_block_vrev;
 		popStack(__stack - data->stack );
 		return NULL;
@@ -684,7 +698,7 @@ char *_bgHrevBlock( struct glueCommands *data, int nextToken )
 
 	if (args==1)
 	{
-		block = findBlock(blocks, getStackNum(__stack));
+		block = findBlock_in_blocks( getStackNum(__stack));
 		if (block) block -> flag ^= flag_block_hrev;
 		popStack(__stack - data->stack );
 		return NULL;

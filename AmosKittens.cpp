@@ -45,6 +45,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "commandsErrors.h"
 #include "commandsScreens.h"
 #include "commandsBanks.h"
+#include "commandsBackgroundGraphics.h"
 
 #include "debug.h"
 #include "kittyErrors.h"
@@ -209,6 +210,9 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.audioPlayWave = audioPlayWave;
 	instance -> api.audioSetSampleLoop = audioSetSampleLoop;
 	instance -> api.waitvbl = __wait_vbl;
+
+	instance -> api.findBlock_in_blocks = findBlock_in_blocks;
+	instance -> api.findBlock_in_cblocks = findBlock_in_cblocks;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 
