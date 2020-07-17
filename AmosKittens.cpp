@@ -1312,6 +1312,7 @@ int main(int args, char **arg)
 					break;
 #if defined(__amigaos4__)
 			case 0:
+			case 1:
 					filename = asl();
 					break;	
 #endif
