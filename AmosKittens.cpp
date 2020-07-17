@@ -1421,7 +1421,7 @@ int main(int args, char **arg)
 
 		if (instance.video) start_engine();
 
-		kittensFile = newFile( filename );
+		kittensFile = filename ? newFile( filename ) : NULL;
 
 		if (( ! token_not_found )&&(kittensFile)&&(instance.video)&&(init_error == false))
 		{
