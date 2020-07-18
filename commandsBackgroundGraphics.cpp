@@ -423,17 +423,14 @@ char *_bgPutBlock( struct glueCommands *data, int nextToken )
 		screen = instance.screens[ instance.current_screen ];
 		if (screen)
 		{
-			if (block) 
+			switch (screen -> autoback)
 			{
-				switch (screen -> autoback)
-				{
-					case 0:	retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
-							break;
-					default:	retroPutBlock(screen, 0, block, x,y, 255);
-							if (screen -> Memory[1]) retroPutBlock(screen, 1, block, x,y, 255);
-							break;
-				}	
-			}
+				case 0:	retroPutBlock(screen, screen -> double_buffer_draw_frame, block, x,y, 255);
+						break;
+				default:	retroPutBlock(screen, 0, block, x,y, 255);
+						if (screen -> Memory[1]) retroPutBlock(screen, 1, block, x,y, 255);
+						break;
+			}	
 		}
 	}
 
