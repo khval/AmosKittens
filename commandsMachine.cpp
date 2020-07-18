@@ -1004,7 +1004,7 @@ proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	{
 		int bankNr_or_address = getStackNum(__stack);
 
-		bank = findBank(bankNr_or_address);
+		bank = findBankById(bankNr_or_address);
 		if (bank)
 		{
 			if ((bank -> type >= 8)&&(bank -> type <= 10)) code = bank -> start;

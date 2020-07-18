@@ -249,7 +249,7 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 
 	if (resource_bank_has_pictures( bank1, block_nr ) == false)
 	{
-		bank1 = findBank(-2);	// if we can't not current bank
+		bank1 = findBankById(-2);	// if we can't not current bank
 
 		if (bank1)
 		{
@@ -982,7 +982,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 			x1.num+=ox;
 			y1.num+=oy;
 
-			bank1 = findBank( instance.current_resource_bank );
+			bank1 = findBankById( instance.current_resource_bank );
 
 			if (bank1)
 			{
@@ -1103,7 +1103,7 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 			y0.num+=oy;
 			x1.num+=ox;
 
-			bank1 = findBank(instance.current_resource_bank);
+			bank1 = findBankById(instance.current_resource_bank);
 
 			if (bank1)
 			{
@@ -1175,7 +1175,7 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 			y0.num+=oy;
 			y1.num+=ox;
 
-			bank1 = findBank(instance.current_resource_bank);
+			bank1 = findBankById(instance.current_resource_bank);
 
 			if (bank1)
 			{
@@ -2408,7 +2408,7 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 
 			printf("unpack %d,%d,%d + (%d )\n", arg1.num, arg2.num, arg3.num, context -> image_offset);
 
-			bank1 = findBank(instance.current_resource_bank);
+			bank1 = findBankById(instance.current_resource_bank);
 	
 			if (bank1)
 			{

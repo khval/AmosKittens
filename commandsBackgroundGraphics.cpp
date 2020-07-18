@@ -144,7 +144,7 @@ char *_bgGetIcon( struct glueCommands *data, int nextToken )
 							retroGetSprite(screen,instance.icons,image-1,x0,y0,x1,y1);
 						}
 
-						bank1 = findBank(2);
+						bank1 = findBankById(2);
 
 						if (!bank1) 
 						{

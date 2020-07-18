@@ -410,7 +410,7 @@ char *_amalAmal( struct glueCommands *data, int nextToken )
 					case type_int:
 
 						{
-							kittyBank *bank = findBank( 4 );
+							kittyBank *bank = findBankById( 4 );
 						
 							if (bank)
 							{

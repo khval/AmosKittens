@@ -52,7 +52,10 @@ struct resourcebank_header
 //------------------------------------------------------------------------------
 
 void freeBank( int banknr );
-struct kittyBank *findBank( int bankNr );
+struct kittyBank *firstBank(); 
+struct kittyBank *findBankById( int bankNr );
+struct kittyBank *findBankByIndex( int index );
+int getBankListSize();
 struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name, char *mem );
 
 extern char *bankReserveAsWork(nativeCommand *cmd, char *ptr);

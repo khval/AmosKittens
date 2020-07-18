@@ -83,11 +83,11 @@ void init_amos_kittens_screen_resource_colors(struct retroScreen *screen)
 {
 	struct kittyBank *bank1;
 
-	bank1 = findBank(instance.current_resource_bank);
+	bank1 = findBankById(instance.current_resource_bank);
 
 	 if (__resource_bank_has_pictures( bank1 ) == false )
 	{
-		bank1 = findBank(instance.current_screen);
+		bank1 = findBankById(instance.current_screen);
 	}
 
 	if (bank1)
@@ -423,7 +423,7 @@ struct stringData *dialog_open_arg_script(struct kittyData *arg)
 					int idx = arg -> integer.value-1;
 					int hunk,pos,num_of_scripts,script_size,offset_data;
 
-					bank = findBank(instance.current_resource_bank);
+					bank = findBankById(instance.current_resource_bank);
 					if (bank == NULL) return NULL;
 
 					header = (resourcebank_header*) bank->start;

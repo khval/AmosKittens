@@ -694,9 +694,13 @@ struct kittyApi
 
 //	-- banks --
 
-	struct kittyBank *(*findBank) (int);
+	struct kittyBank *(*findBankById) (int);
+	struct kittyBank *(*findBankByIndex) (int);
+	struct kittyBank *(*firstBank)();
+	int (*getBankListSize)();
 	struct kittyBank *(*reserveAs) ( int, int ,int, const char *, char * );
 	void (*freeBank) (int);
+	void *(*getBankObject) (int id);
 
 //	--  text --
 

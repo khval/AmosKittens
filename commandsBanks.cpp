@@ -123,7 +123,15 @@ int mseek( struct retroMemFd &fd, int off, unsigned mode )
 	return 1;
 }
 
-struct kittyBank *findBank( int banknr )
+struct kittyBank *firstBank()
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (kittyBankList.size()) return &kittyBankList[0];
+	return NULL;
+}
+
+struct kittyBank *findBankById( int banknr )
 {
 	unsigned int n;
 
@@ -135,6 +143,15 @@ struct kittyBank *findBank( int banknr )
 	}
 
 	return NULL;
+}
+
+struct kittyBank *findBankByIndex( int index )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	if (index<-1) return NULL;
+	if ( (unsigned int) index>=kittyBankList.size()) return NULL;
+	return &kittyBankList[index];
 }
 
 int findBankIndex( int banknr )
@@ -151,6 +168,11 @@ int findBankIndex( int banknr )
 	return -1;
 }
 
+int getBankListSize()
+{
+	return kittyBankList.size();
+}
+
 struct kittyBank * allocBank( int banknr ) 
 {
 	struct kittyBank _bank;
@@ -158,7 +180,7 @@ struct kittyBank * allocBank( int banknr )
 	_bank.start = NULL;
 	_bank.length = 0;
 	kittyBankList.push_back(_bank );
-	return findBank( banknr );
+	return findBankById( banknr );
 }
 
 int bankCount(int opt) 
@@ -322,7 +344,7 @@ char *_bankStart( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		n = getStackNum(__stack);
-		if ( bank = findBank(n))	ret = (int) bank -> start;
+		if ( bank = findBankById(n))	ret = (int) bank -> start;
 	}
 
 	if (bank == NULL) ret = 0;
@@ -344,7 +366,7 @@ char *_bankLength( struct glueCommands *data, int nextToken )
 	if (args==1)
 	{
 		n = getStackNum(__stack);
-		if ( bank = findBank(n))	ret = (int) bank -> length;
+		if ( bank = findBankById(n))	ret = (int) bank -> length;
 	}
 
 	popStack(__stack - data->stack );
@@ -376,7 +398,7 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 			if (size)
 			{
 				bankid_or_address = getStackNum(__stack);
-				bank = findBank( bankid_or_address );	// bank must be previously reserved 
+				bank = findBankById( bankid_or_address );	// bank must be previously reserved 
 
 				if (bank)
 				{
@@ -1062,7 +1084,7 @@ void __save_sprite_data__(FILE *fd, cust_fread_t cust_fwrite, struct kittyBank *
 
 void __write_bank__( FILE *fd, int bankid )
 {
-	struct kittyBank *bank = findBank( bankid );
+	struct kittyBank *bank = findBankById( bankid );
 
 	if (bank)
 	{
@@ -1200,8 +1222,8 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 		case 2:	b1 = getStackNum(__stack-1);
 				b2 = getStackNum(__stack);
 
-				bank1 = findBank(b1);
-				bank2 = findBank(b2);
+				bank1 = findBankById(b1);
+				bank2 = findBankById(b2);
 
 				if (bank1)
 				{
@@ -1217,10 +1239,10 @@ char *_bankBankSwap( struct glueCommands *data, int nextToken )
 				instance.icons = NULL;
 				instance.sprites = NULL;
 
-				bank1 = findBank(1);
+				bank1 = findBankById(1);
 				if (bank1) if (bank1 -> type == type_Sprites ) instance.sprites = (struct retroSprite *) bank1 -> object_ptr;
 
-				bank1 = findBank(2);
+				bank1 = findBankById(2);
 				if (bank1) if (bank1 -> type == type_Icons ) instance.sprites = (struct retroSprite *) bank1 -> object_ptr;
 
 				engine_unlock();
@@ -1297,7 +1319,7 @@ struct stringData *getResourceStr(int id)
 
 		do
 		{
-			bank1 = findBank(cbank);
+			bank1 = findBankById(cbank);
 
 			if (bank1)
 			{
@@ -1412,7 +1434,7 @@ char *_bankBankShrink( struct glueCommands *data, int nextToken )
 		case 2:	banknr = getStackNum(__stack-1);
 				size = getStackNum(__stack);
 
-				bank = findBank( banknr );
+				bank = findBankById( banknr );
 				if (bank)
 				{
 					char *_new = (char *) sys_priv_alloc( bank_header+size );

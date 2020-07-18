@@ -195,7 +195,10 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.engineAddVblInterrupt =engine_add_vbl_Interrupt;
 	instance -> api.engineRemoveVblInterrupt =engine_remove_vbl_Interrupt;
 
-	instance -> api.findBank =findBank;
+	instance -> api.firstBank =firstBank;
+	instance -> api.findBankById =findBankById;
+	instance -> api.findBankByIndex =findBankByIndex;
+	instance -> api.getBankListSize =getBankListSize;
 	instance -> api.freeBank =freeBank;
 	instance -> api.reserveAs =reserveAs;
 	instance -> api.setError =setError;

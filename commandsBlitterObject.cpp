@@ -736,7 +736,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 		{
 			instance.sprites = (struct retroSprite *) sys_public_alloc_clear( sizeof(struct retroSprite) );
 
-			bank1 = findBank(1);
+			bank1 = findBankById(1);
 			if (!bank1) 
 			{
 				if (bank1 = reserveAs( bank_type_sprite, 1,0,NULL, NULL))							
@@ -760,7 +760,7 @@ char *_boGetBob( struct glueCommands *data, int nextToken )
 			retroMakeMask( &instance.sprites -> frames[ image-1 ] );
 			engine_unlock();
 
-			bank1 = findBank(1);
+			bank1 = findBankById(1);
 			if (bank1) 
 			{
 				if (bank1 -> object_ptr == (char *) instance.sprites)							
