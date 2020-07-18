@@ -22,6 +22,19 @@ amalBankPlay::amalBankPlay( char *start)
 }
 
 
+amalBankScript::amalBankScript( char *start)
+{
+	unsigned int offset = *((unsigned int *) start)  ;
+
+	printf("offset in bank: %08x\n",offset);
+
+	prog_block = start +offset;
+
+	progs = *((unsigned short *) prog_block);
+	offsets = (unsigned short *)  (prog_block + 2);
+	first_script = (prog_block+2) + ((progs+1) * 2);
+}
+
 namespace amalBank
 {
 
