@@ -92,7 +92,7 @@ int play( struct kittyChannel *self, int id )
 
 	if (self -> amalPlayBank == NULL)
 	{
-		struct kittyBank *bank = findBank( 4 );
+		struct kittyBank *bank = findBankById( 4 );
 
 		if (bank)
 		{
