@@ -79,15 +79,15 @@ int find_zone_in_any_screen_hard( int hx, int hy)
 	struct zone *zz;
 	struct retroScreen *s;
 
-	for (z=0;z<zones_allocated;z++)
+	for (z=0;z<instance.zones_allocated;z++)
 	{
-		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		if ((instance.zones[z].screen>-1) && (instance.zones[z].screen<8))
 		{
-			if (s = instance.screens[zones[z].screen])
+			if (s = instance.screens[instance.zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
-				zz = &zones[z];
+				zz = &instance.zones[z];
 				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
@@ -101,15 +101,15 @@ int find_zone_in_any_screen_pixel( int hx, int hy)
 	struct zone *zz;
 	struct retroScreen *s;
 
-	for (z=0;z<zones_allocated;z++)
+	for (z=0;z<instance.zones_allocated;z++)
 	{
-		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		if ((instance.zones[z].screen>-1) && (instance.zones[z].screen<8))
 		{
-			if (s = instance.screens[zones[z].screen])
+			if (s = instance.screens[instance.zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
-				zz = &zones[z];
+				zz = &instance.zones[z];
 				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
@@ -124,15 +124,15 @@ int find_zone_in_only_screen_hard( int screen, int hx, int hy)
 	struct zone *zz;
 	struct retroScreen *s;
 
-	for (z=0;z<zones_allocated;z++)
+	for (z=0;z<instance.zones_allocated;z++)
 	{
-		if (zones[z].screen == screen)
+		if (instance.zones[z].screen == screen)
 		{
-			if (s = instance.screens[zones[z].screen])
+			if (s = instance.screens[instance.zones[z].screen])
 			{
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
-				zz = &zones[z];
+				zz = &instance.zones[z];
 				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 			}
 		}
@@ -145,11 +145,11 @@ int find_zone_in_only_screen_pixel( int screen, int x, int y)
 	int z;
 	struct zone *zz;
 
-	for (z=0;z<zones_allocated;z++)
+	for (z=0;z<instance.zones_allocated;z++)
 	{
-		if (zones[z].screen == screen)
+		if (instance.zones[z].screen == screen)
 		{
-			zz = &zones[z];
+			zz = &instance.zones[z];
 			if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
 		}
 	}
@@ -279,8 +279,8 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (zones) free(zones);
-	zones_allocated = 0;
+	if (instance.zones) free(instance.zones);
+	instance.zones_allocated = 0;
 
 	if (args == 1)
 	{
@@ -288,8 +288,8 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 
 		if (newzones)
 		{
-			zones = allocStruct(zone,(newzones+1));
-			zones_allocated = (newzones+1);
+			instance.zones = allocStruct(zone,(newzones+1));
+			instance.zones_allocated = (newzones+1);
 		}
 	}
 	else setError(22,data->tokenBuffer);;
@@ -317,7 +317,7 @@ char *_ocZoneStr( struct glueCommands *data, int nextToken )
 		struct stringData *txt = getStackString(__stack-1 );
 		int zone = getStackNum(__stack );
 
-		if ((txt)&&(zone>-1)&&(zone<zones_allocated))
+		if ((txt)&&(zone>-1)&&(zone<instance.zones_allocated))
 		{
 			newstr = alloc_amos_string( txt -> size + 6 );
 
@@ -530,13 +530,13 @@ char *_ocSetZone( struct glueCommands *data, int nextToken )
 		int x1 = getStackNum(__stack -1 );
 		int y1 = getStackNum(__stack );
 
-		if ((zones)&&(z>-1)&&(z<zones_allocated))
+		if ((instance.zones)&&(z>-1)&&(z<instance.zones_allocated))
 		{
-			zones[z].screen = instance.current_screen;
-			zones[z].x0 = x0;
-			zones[z].y0 = y0;
-			zones[z].x1 = x1;
-			zones[z].y1 = y1;
+			instance.zones[z].screen = instance.current_screen;
+			instance.zones[z].x0 = x0;
+			instance.zones[z].y0 = y0;
+			instance.zones[z].x1 = x1;
+			instance.zones[z].y1 = y1;
 		}
 	}
 	else setError(22,data->tokenBuffer);;
@@ -569,13 +569,13 @@ char *_ocResetZone( struct glueCommands *data, int nextToken )
 					{
 						int z = kittyStack[__stack].integer.value;
 
-						if ((zones)&&(z>-1)&&(z<zones_allocated))
+						if ((instance.zones)&&(z>-1)&&(z<instance.zones_allocated))
 						{
-							zones[z].screen = NULL;
-							zones[z].x0 = 0;
-							zones[z].y0 = 0;
-							zones[z].x1 = 0;
-							zones[z].y1 = 0;
+							instance.zones[z].screen = NULL;
+							instance.zones[z].x0 = 0;
+							instance.zones[z].y0 = 0;
+							instance.zones[z].x1 = 0;
+							instance.zones[z].y1 = 0;
 						}
 					}
 					popStack(__stack - data->stack );

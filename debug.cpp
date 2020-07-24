@@ -754,17 +754,18 @@ void dump_bobs_on_screen(int screen_id)
 
 void dump_zones()
 {
-	int z;
+	struct zone *item;
+	struct zone *zones_end = instance.zones + instance.zones_allocated;
 	struct zone *zz;
 	struct retroScreen *s;
-	for (z=0;z<zones_allocated;z++)
+	for (item=instance.zones ;item<zones_end;item++)
 	{
-		if ((zones[z].screen>-1) && (zones[z].screen<8))
+		if ((item -> screen>-1) && (item -> screen<8))
 		{
-			if (s = instance.screens[zones[z].screen])
+			if (s = instance.screens[item -> screen])
 			{
-				zz = &zones[z];
-				printf ("zone %d at %d,%d to %d,%d - on screen %d\n",z, zz->x0,zz->y0,zz->x1,zz->y1,zz -> screen );
+				zz = item;
+				printf ("zone %d at %d,%d to %d,%d - on screen %d\n", zz - instance.zones , zz->x0,zz->y0,zz->x1,zz->y1,zz -> screen );
 			}
 		}
 	}

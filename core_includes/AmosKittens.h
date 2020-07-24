@@ -612,10 +612,6 @@ struct kittyLib
 	cmdTmp[__cmdStack].parenthesis_count =instance_parenthesis_count; \
 	__cmdStack++; \
 
-
-extern struct zone *zones;
-extern int zones_allocated;
-
 extern int currentLine;
 
 extern bool equal_symbol;
@@ -749,6 +745,8 @@ struct KittyInstance
 	struct kittyData *kittyStack;
 	struct glueCommands *cmdTmp;
 	struct errorAt kittyError;
+	struct zone *zones ;
+	int zones_allocated ;
 	int current_screen;
 	int current_extension;
 	int current_pattern;

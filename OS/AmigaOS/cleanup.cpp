@@ -326,10 +326,10 @@ void clean_up_special()
 
 	dprintf("clean up zones\n");
 
-	if (zones)
+	if (instance.zones)
 	{
-		freeStruct(zones);
-		zones = NULL;
+		freeStruct(instance.zones);
+		instance.zones = NULL;
 	}
 }
 

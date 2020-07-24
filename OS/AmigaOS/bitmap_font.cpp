@@ -600,15 +600,17 @@ struct esc_cmd
 
 void esc_zone (struct retroScreen *screen,struct esc_data *data, int x1, int y1, char c )
 {
+	struct zone *item;
 	int z = c - '0';
 
-	if ((z>-1)&&(z<zones_allocated))
+	if ((z>-1)&&(z<instance.zones_allocated))
 	{
-		zones[z].screen = instance.current_screen ;
-		zones[z].x0 = data -> x * 8;
-		zones[z].y0 = data -> y * 8;
-		zones[z].x1 = x1*8;
-		zones[z].y1 = y1*8+7;
+		item  = instance.zones + z;
+		item -> screen = instance.current_screen ;
+		item -> x0 = data -> x * 8;
+		item -> y0 = data -> y * 8;
+		item -> x1 = x1*8;
+		item -> y1 = y1*8+7;
 
 //		retroBAR( screen,zones[z].x0,zones[z].y0,zones[z].x1,zones[z].y1,4);
 	}

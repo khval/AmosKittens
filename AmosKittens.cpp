@@ -185,6 +185,8 @@ void init_instent(struct KittyInstance *instance )
 	instance -> current_pattern = 0;
 	instance -> volume=0x10000;
 	instance -> current_resource_bank = -2;
+	instance -> zones = NULL;
+	instance -> zones_allocated = 0;
 
 	instance -> api.freeScreenBobs =freeScreenBobs;
 	instance -> api.newTextWindow =newTextWindow;
@@ -222,9 +224,6 @@ void init_instent(struct KittyInstance *instance )
 }
 
 struct retroSprite *patterns = NULL;
-
-struct zone *zones = NULL;
-int zones_allocated = 0;
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
 
