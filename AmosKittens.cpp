@@ -46,6 +46,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "commandsScreens.h"
 #include "commandsBanks.h"
 #include "commandsBackgroundGraphics.h"
+#include "commandsBlitterObject.h"
 
 #include "debug.h"
 #include "kittyErrors.h"
@@ -219,6 +220,8 @@ void init_instent(struct KittyInstance *instance )
 
 	instance -> api.findBlock_in_blocks = findBlock_in_blocks;
 	instance -> api.findBlock_in_cblocks = findBlock_in_cblocks;
+
+	instance -> api.getBob = getBob;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 

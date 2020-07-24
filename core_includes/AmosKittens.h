@@ -722,6 +722,10 @@ struct kittyApi
 	struct retroBlock *(*findBlock_in_blocks) ( int id );
 	struct retroBlock *(*findBlock_in_cblocks) ( int id );
 
+//	-- bobs --
+
+	struct retroSpriteObject *(*getBob) (unsigned int id);
+
 };
 
 // --------------------------------------------------------------------------------------------

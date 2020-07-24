@@ -33,6 +33,10 @@ char *boBobUpdate(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobClear(struct nativeCommand *cmd, char *tokenBuffer);
 char *boBobDraw(struct nativeCommand *cmd, char *tokenBuffer);
 char *boMakeMask(struct nativeCommand *cmd, char *tokenBuffer);
+
+// -- not commands
+
 void freeScreenBobs( int screen_id );
 void freeBobClear( struct retroSpriteObject *bob );
+struct retroSpriteObject *getBob(unsigned int id);
 
