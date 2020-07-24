@@ -1442,6 +1442,8 @@ int main(int args, char **arg)
 
 				pass1_reader( (char *) kittensFile -> start , _file_end_ );
 
+				currentFrame -> dataPointer  = proc_main_data.procDataPointer;
+
 				if (instance.kittyError.code == 0)
 				{
 					runtime = TRUE;
