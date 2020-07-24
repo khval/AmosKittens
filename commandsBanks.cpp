@@ -125,9 +125,14 @@ int mseek( struct retroMemFd &fd, int off, unsigned mode )
 
 struct kittyBank *firstBank()
 {
+	int n=0;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (kittyBankList.size()) return &kittyBankList[0];
+	while (n<kittyBankList.size())
+	{
+		if (kittyBankList[n].id > 0) 	return &kittyBankList[n];
+		n++;
+	}
 	return NULL;
 }
 
