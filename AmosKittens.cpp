@@ -201,6 +201,7 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.findBankById =findBankById;
 	instance -> api.findBankByIndex =findBankByIndex;
 	instance -> api.getBankListSize =getBankListSize;
+	instance -> api.getBankObject = getBankObject;
 	instance -> api.freeBank =freeBank;
 	instance -> api.reserveAs =reserveAs;
 	instance -> api.setError =setError;
