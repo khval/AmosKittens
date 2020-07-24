@@ -2421,6 +2421,13 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 		tokenMode = mode_store;
 		_do_set = _set_timer;
 	}
+	else
+	{
+		if ( correct_order( getLastProgStackToken(),  next_token ) == false )
+		{
+			setStackHiddenCondition();
+		}
+	}	
 
 	gettimeofday(&timer_after, NULL);	// reset diff.
 
