@@ -2432,7 +2432,6 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	if (timer_diff) timer_before = timer_after ;
 
 	timer_offset += timer_diff;
-	
 
 	setStackNum( timer_offset );		// 1/50 sec = every 20 ms
 	kittyStack[instance.stack].state = state_none;

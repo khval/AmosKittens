@@ -95,7 +95,7 @@ char *_bgPasteIcon( struct glueCommands *data, int nextToken )
 						default:	retroPasteIcon( screen, 0, instance.icons,x,y,image-1);
 								if (screen -> Memory[1]) retroPasteIcon( screen, 1,  instance.icons,x,y,image-1);
 								break;
-					}		
+					}
 				}
 				break;
 			break;

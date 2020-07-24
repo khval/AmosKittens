@@ -1274,6 +1274,8 @@ int main(int args, char **arg)
 
 	procStcakFrame[0].localVarData = stackFrameData;	// this just temp... need to manage size, lett it grow..
 	procStcakFrame[0].localVarDataNext = stackFrameData;
+
+
 	currentFrame = procStcakFrame;
 
 

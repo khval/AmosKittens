@@ -1399,7 +1399,7 @@ char *_signedData( struct glueCommands *data, int nextToken )
 {
 	struct kittyData *i;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	i = kittyStack + __stack;
 
@@ -1422,7 +1422,7 @@ char *_signedData( struct glueCommands *data, int nextToken )
 
 char *signedData(struct nativeCommand *cmd, char *tokenBuffer)
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	stackCmdMathOperator( _signedData, tokenBuffer, token_sub );
 	return tokenBuffer;
 }

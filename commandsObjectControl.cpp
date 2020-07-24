@@ -926,7 +926,7 @@ char *_ocZone( struct glueCommands *data, int nextToken )
 				setError(22, data-> tokenBuffer);
 	}
 
-	printf("Zone(%d,%d,%d) is %d\n",s,x,y,ret);
+//	printf("Zone(%d,%d,%d) is %d\n",s,x,y,ret);
 
 	popStack(__stack - data->stack );
 	setStackNum( ret );
