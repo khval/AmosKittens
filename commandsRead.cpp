@@ -197,7 +197,9 @@ char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (procStcakFrame[proc_stack_frame].dataPointer == 0x0000) 
+	printf("proc_stack_frame: %d\n",currentFrame -> dataPointer);
+
+	if (currentFrame -> dataPointer == 0x0000) 
 	{
 		getLineFromPointer( tokenBuffer );
 		printf("setting error in %s at line %d\n",__FUNCTION__, lineFromPtr.line);
