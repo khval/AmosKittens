@@ -88,7 +88,7 @@ int find_zone_in_any_screen_hard( int hx, int hy)
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
 				zz = &instance.zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
+				if ((x>=zz->x0)&&(y>=zz->y0)&&(x<=zz->x1)&&(y<=zz->y1))	return z+1;
 			}
 		}
 	}
@@ -110,7 +110,7 @@ int find_zone_in_any_screen_pixel( int hx, int hy)
 				x = XScreen_formula( s, hx );
 				y = YScreen_formula( s, hy );
 				zz = &instance.zones[z];
-				if ((x>zz->x0)&&(y>zz->y0)&&(x<zz->x1)&&(y<zz->y1))	return z+1;
+				if ((x>=zz->x0)&&(y>=zz->y0)&&(x<=zz->x1)&&(y<=zz->y1))	return z+1;
 			}
 		}
 	}
