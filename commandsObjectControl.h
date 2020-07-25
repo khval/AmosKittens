@@ -47,3 +47,10 @@ char *ocUpdateOn(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocJoy(struct nativeCommand *cmd, char *tokenBuffer);
 char *ocMouseScreen(struct nativeCommand *cmd, char *tokenBuffer);
 
+//--- api functions ---
+
+int find_zone_in_any_screen_hard( int hx, int hy);
+int find_zone_in_any_screen_pixel( int hx, int hy);
+int find_zone_in_only_screen_hard( int screen, int hx, int hy);
+int find_zone_in_only_screen_pixel( int screen, int x, int y);
+

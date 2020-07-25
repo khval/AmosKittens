@@ -28,6 +28,7 @@
 #include "commandsGfx.h"
 #include "kittyErrors.h"
 #include "engine.h"
+#include "amal_object_sprite.h"
 
 int XScreen_formula( struct retroScreen *screen, int x );
 int YScreen_formula( struct retroScreen *screen, int y );
@@ -44,11 +45,6 @@ extern struct retroRGB DefaultPalette[256];
 extern std::vector<int> collided;
 extern bool has_collided(int id);
 extern void flush_collided();
-
-extern int XSprite_formula(int x);
-extern int YSprite_formula(int y);
-extern int from_XSprite_formula(int x);
-extern int from_YSprite_formula(int y);
 
 #define getSprite(num) &(instance.video -> sprites[num])
 

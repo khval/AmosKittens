@@ -47,6 +47,8 @@ extern void setError( int _code, char * _pos ) ;
 #include "commandsBanks.h"
 #include "commandsBackgroundGraphics.h"
 #include "commandsBlitterObject.h"
+#include "commandsObjectControl.h"
+#include "amal_object_sprite.h"
 
 #include "debug.h"
 #include "kittyErrors.h"
@@ -222,6 +224,16 @@ void init_instent(struct KittyInstance *instance )
 	instance -> api.findBlock_in_cblocks = findBlock_in_cblocks;
 
 	instance -> api.getBob = getBob;
+
+	instance -> api.find_zone_in_any_screen_hard = find_zone_in_any_screen_hard;
+	instance -> api.find_zone_in_any_screen_pixel = find_zone_in_any_screen_pixel;
+	instance -> api.find_zone_in_only_screen_hard = find_zone_in_only_screen_hard;
+	instance -> api.find_zone_in_only_screen_pixel = find_zone_in_only_screen_pixel;
+
+	instance -> api.XSprite_formula = XSprite_formula;
+	instance -> api.YSprite_formula = YSprite_formula;
+	instance -> api.from_XSprite_formula = from_XSprite_formula;
+	instance -> api.from_YSprite_formula = from_YSprite_formula;
 
 	bzero( instance -> extensions_context, sizeof(instance -> extensions_context) );
 

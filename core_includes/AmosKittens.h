@@ -726,6 +726,20 @@ struct kittyApi
 
 	struct retroSpriteObject *(*getBob) (unsigned int id);
 
+//	-- sprite --
+
+	int (*XSprite_formula) (int x);
+	int (*YSprite_formula) (int y);
+	int (*from_XSprite_formula) (int x);
+	int (*from_YSprite_formula) (int y);
+
+//	-- zones --
+
+	int (*find_zone_in_any_screen_hard) ( int hx, int hy );
+	int (*find_zone_in_any_screen_pixel) ( int hx, int hy );
+	int (*find_zone_in_only_screen_hard) ( int screen, int hx, int hy );
+	int (*find_zone_in_only_screen_pixel) ( int screen, int hx, int hy );
+
 };
 
 // --------------------------------------------------------------------------------------------
