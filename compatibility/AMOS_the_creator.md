@@ -1,7 +1,6 @@
 **Config1_3.AMOS**
 
 Looks like it work, 
-there are some debug text that should be removed.
 
 **Execute.AMOS**
 
@@ -9,11 +8,12 @@ Exit qucik without any error, I think this one works.
 
 **Get_Time.AMOS**
 
-Error: No THEN in structured test.
+Works
 
 **Menu_Editor.AMOS**
 
-missing token: 0x0882 - "Menu tline" command
+missing token: 0x0894 - 
+in file Menu_Editor.AMOS at the linue number 1450
 
 **Sample_Double_Buffering.AMOS**
 
