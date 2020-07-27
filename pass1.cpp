@@ -448,9 +448,26 @@ void pass1_sign( char * ptr )
 
 	switch ( pass1_prev_token )	// should be signes
 	{
-		case 0x0074:	//	"("
-		case 0x005C:	//	","
-		case 0x0094:	//	To
+		case 0xFF4C:	// or
+		case 0xFF3E:	// xor
+		case 0xFF58:	// and
+		case 0xFF66:	// not equal
+		case 0xFF7A:	// less or equal
+		case 0xFF84:
+		case 0xFF8E:	// more or euqal
+		case 0xFF98:
+		case 0xFFA2:	// equal / or set.
+		case 0xFFAC:	// less 
+		case 0xFFB6:	// more
+		case 0xFFC0:	// add
+		case 0xFFCA:	// subtract
+		case 0xFFD4:	// mode
+		case 0xFFE2:	// *
+		case 0xFFEC:	// div
+		case 0xFFF6:	// power
+		case 0x0074:	// "("
+		case 0x005C:	// ","
+		case 0x0094:	// To
 				printf("moded\n");
 				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
 				return;	// nothing more to do....
