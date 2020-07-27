@@ -22,7 +22,7 @@ works, (don't like bullet fonts)
 
 **Get_Time.AMOS**
 
-Pass1 error: No THEN in a structured test
+works
 
 **GMC_to_AMOS.AMOS**
 
