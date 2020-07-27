@@ -65,7 +65,7 @@ on line 90, new syntax error on line 176 at Return command
 
 **Scrolling_text_demo.AMOS**
 
-cooper effect looks like is at the wrong location, but it looks like it works.
+works.
 
 **Sonix.AMOS**
 
@@ -73,11 +73,11 @@ work, but there is DSI error, due to mystery mem corruption.
 
 **Sound_tracker2_1.AMOS**
 
-works,
+works.
 
 **Sprite_Plotter.AMOS**
 
-works (just make sure you pick vaild sprite, no error handling in this example.)
+works (just make sure you pick a vaild sprite, no error handling in this example.)
 
 **Squash_A_Bob.AMOS**
 
