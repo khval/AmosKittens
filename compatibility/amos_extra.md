@@ -60,8 +60,9 @@ missing token: 0894 - command: Menu Movable
 
 **RAMOS1_3_Install.AMOS**
 
-got out of index error on jmp$() array, with -1 index.
-on line 90, new syntax error on line 176 at Return command
+Error: illlegal function call
+at line number: 261 
+(Looks like it does not know it should flush gosub at end of procedure.)
 
 **Scrolling_text_demo.AMOS**
 
