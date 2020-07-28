@@ -441,6 +441,18 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 extern struct globalVar proc_main_data;
 static struct globalVar *current_proc = &proc_main_data;
 
+void pass1_restore( char *ptr )
+{
+	unsigned short next_token = *((unsigned short *) (ptr));
+
+	switch ( next_token )
+	{
+		case 0x0000:	// new line.
+		case 0x0054:	// next command 
+				printf("moded to restore command with no args\n");
+				*((unsigned short *) (ptr - 2)) = 0x0418+sizeof(void *);
+	}
+}
 
 void pass1_sign( char * ptr )
 {
@@ -1125,6 +1137,10 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							}
 							// inside procedure this command should copies from global to local..
 
+							break;
+
+				case 0x0418:	// Restore
+							pass1_restore( ptr );
 							break;
 
 				case 0x0404:	// Data

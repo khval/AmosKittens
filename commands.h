@@ -52,6 +52,7 @@ char *cmdParamStr(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdRead(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdData(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdRestore(struct nativeCommand *cmd, char *tokenBuffer );
+char *cmdRestoreNoArgs(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExit(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdExitIf(struct nativeCommand *cmd, char *tokenBuffer );
 char *cmdEveryOn(struct nativeCommand *cmd, char *tokenBuffer );
