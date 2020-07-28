@@ -233,3 +233,12 @@ int findLabelRef( char *name, int _proc )
 	return 0;
 }
 
+struct kittyData *getVar(uint16_t ref)
+{
+	if (ref & 0x8000)
+	{
+		return currentFrame -> localVarData + ((ref & 0x7FFF) -1);
+	}
+
+	return &globalVars[ref-1].var;
+}
