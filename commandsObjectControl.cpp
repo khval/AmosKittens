@@ -279,22 +279,25 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 	int args =__stack - data->stack +1 ;
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (instance.zones) free(instance.zones);
-	instance.zones_allocated = 0;
-
 	if (args == 1)
 	{
 		int newzones = getStackNum(__stack );
 
 		if (newzones)
 		{
+			if (instance.zones) free(instance.zones);
 			instance.zones = allocStruct(zone,(newzones+1));
 			instance.zones_allocated = (newzones+1);
+			return NULL;
 		}
 	}
 	else setError(22,data->tokenBuffer);;
-
 	popStack(__stack - data->stack );
+
+	if (instance.zones) free(instance.zones);
+	instance.zones = NULL;
+	instance.zones_allocated = 0;
+
 	return NULL;
 }
 
