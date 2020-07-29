@@ -10,11 +10,14 @@ Syntax error at line 474
 
 **AMAL_Joystick.AMOS**
 
-works almost, nothing displayed
+Works
 
 **Dataflex.AMOS**
 
-Not working: stuck on some block splach screen.
+*Not working:*
+
+    Tying something into the card, you can’t remove chars.
+    It crashes when pressing right arrow. 
 
 **Font_Convert.AMOS**
 
@@ -60,9 +63,7 @@ missing token: 0894 - command: Menu Movable
 
 **RAMOS1_3_Install.AMOS**
 
-Error: illlegal function call
-at line number: 261 
-(Looks like it does not know it should flush gosub at end of procedure.)
+Works.
 
 **Scrolling_text_demo.AMOS**
 
