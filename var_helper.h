@@ -22,3 +22,5 @@ int findLabelRef( char *name, int _proc );
 
 int findProcByName( char *name );
 struct globalVar *findProcPtrById( int _proc );
+void get_procedures();
+

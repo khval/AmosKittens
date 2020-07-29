@@ -114,7 +114,6 @@ int findProcByName( char *name )
 	for (n=0;n<procedures.size();n++)
 	{
 		var = procedures[n];
-
 		if (var -> varName == NULL) return 0;
 
 		if ( strcasecmp( var -> varName, name)==0) 
@@ -216,8 +215,6 @@ int findLabelRef( char *name, int _proc )
 	unsigned int n;
 	struct label *label;
 
-	printf("%s(%s,%d)\n",__FUNCTION__,name,_proc);
-
 	for (n=0;n<labels.size();n++)
 	{
 		label = &labels[n];
@@ -241,4 +238,13 @@ struct kittyData *getVar(uint16_t ref)
 	}
 
 	return &globalVars[ref-1].var;
+}
+
+void get_procedures()
+{
+	unsigned int n;
+	for (n=0;n<var_count[0];n++)
+	{
+		if (globalVars[n].var.type == type_proc)	procedures.push_back( globalVars +n );
+	}
 }

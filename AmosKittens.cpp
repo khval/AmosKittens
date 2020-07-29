@@ -63,6 +63,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "amosstring.h"
 #include "kittyaudio.h"
 #include "load_config.h"
+#include "var_helper.h"
 
 //include "ext_music.h"
 
@@ -1240,15 +1241,6 @@ ULONG exceptCode ( struct ExecBase *SysBase, ULONG signals, ULONG exceptData)
 #endif
 
 extern struct retroRGB DefaultPalette[256];
-
-void get_procedures()
-{
-	unsigned int n;
-	for (n=0;n<var_count[0];n++)
-	{
-		if (globalVars[n].var.type == type_proc)	procedures.push_back( globalVars +n );
-	}
-}
 
 #include "joysticks.h"
 
