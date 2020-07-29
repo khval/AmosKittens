@@ -91,4 +91,4 @@ exit quick, maybe work.
 
 **Xerxes'Revenge.AMOS**
 
-works until space ship crash with alien.
+Works.
