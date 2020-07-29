@@ -1446,6 +1446,7 @@ int main(int args, char **arg)
 					if (kittensFile ->bank) init_banks( (char *) kittensFile -> bank, kittensFile -> bankSize );
 
 					gfxDefault(NULL, NULL);
+					get_procedures();
 #ifdef run_program_yes
 					code_reader( (char *) kittensFile -> start , kittensFile -> tokenLength );
 #endif
