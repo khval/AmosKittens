@@ -16,7 +16,7 @@ Works
 
 *Not working:*
 
-    Tying something into the card, you can’t remove chars.
+    Typing something into the card, you can’t remove chars.
     It crashes when pressing right arrow. 
 
 **Font_Convert.AMOS**
