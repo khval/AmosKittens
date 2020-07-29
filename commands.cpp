@@ -1638,6 +1638,15 @@ char *cmdEndProc(struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (instance.cmdStack)
 	{
+		while (cmdTmp[instance.cmdStack-1].cmd != _procedure )
+		{
+			instance.cmdStack --;
+			if (instance.cmdStack == 0) break;
+		}
+	}
+
+	if (instance.cmdStack)
+	{
 		if (cmdTmp[instance.cmdStack-1].cmd == _procedure )
 		{
 			if (proc_stack_frame)
