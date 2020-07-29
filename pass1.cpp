@@ -480,7 +480,7 @@ void pass1_sign( char * ptr )
 		case 0x0074:	// "("
 		case 0x005C:	// ","
 		case 0x0094:	// To
-				printf("moded\n");
+				printf("moded to negative sign\n");
 				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
 				return;	// nothing more to do....
 

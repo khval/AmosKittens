@@ -604,8 +604,6 @@ char *_cmdSpaceStr( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	dump_stack();
-
 	switch (args)
 	{
 		case 1:

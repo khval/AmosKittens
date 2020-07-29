@@ -103,6 +103,7 @@ char *execute_on( int num, char *tokenBuffer, char *returnTokenBuffer, unsigned 
 char *cmdOn(struct nativeCommand *cmd, char *tokenBuffer )
 {
 	unsigned int flags;
+
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	is_token_cmd = 0;
