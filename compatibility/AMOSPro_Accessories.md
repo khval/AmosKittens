@@ -33,7 +33,8 @@ Works it starts "AMOSPro_Producitivity1:Menu_editor.amos"
 
 **Object_Editor.AMOS**
 
-Stops at "Screen Base" command, that is not implemented.
+ERROR: Address error
+At line number: 1184
 
 **Resource_Bank_Maker.AMOS**
 
