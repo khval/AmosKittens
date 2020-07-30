@@ -1,10 +1,15 @@
 This result of trying to run different .amos files, on Amos Kittens, there is stuff missing, the list is to keep track of problems with etch .amos program, so we can fix problems we have.
 
 **Amal_Editor.AMOS**
+(c) 1990-1992 Europress Software Ltd
 
 (works maybe, takes lot time to start in debug mode, it does not work in AmosPRO some programing error some where.)
 
+This code uses command “Exit If” command, it does not read the menu with “Choice”, other than that code is better structured.
+It’s possible “Exit If” command is not 100% implemented.
+
 **Amal_Editor_Fixed.AMOS**
+(c) 1990 Mandarin / Jawx
 
 It does load, but does not render correct, after running the program, AmigaOS starts crashing…
 
