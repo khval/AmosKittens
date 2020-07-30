@@ -6,7 +6,7 @@ This result of trying to run different .amos files, on Amos Kittens, there is st
 (works maybe, takes lot time to start in debug mode, it does not work in AmosPRO some programing error some where.)
 
 This code uses command “Exit If” command, it does not read the menu with “Choice”, other than that code is better structured.
-It’s possible “Exit If” command is not 100% implemented.
+It’s possible “Exit If” command is not 100% implemented. (and maybe "Exit If" is buggy in AmosPro)
 
 **Amal_Editor_Fixed.AMOS**
 (c) 1990 Mandarin / Jawx
