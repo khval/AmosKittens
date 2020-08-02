@@ -1207,6 +1207,7 @@ void SaveIff( char *name, const int n )
 	struct BitMap *dt_bitmap;
 	struct ColorRegister *cr;
 	struct RastPort rp;
+	int maxColor = 0;
 
 	printf("we try to create a datatype\n");
 
@@ -1217,6 +1218,7 @@ void SaveIff( char *name, const int n )
 
 	if (dt_bitmap)
 	{
+		int col = 0;
 		int x,y;
 		dto = (struct DataType *) NewDTObject( NULL, 
 				DTA_SourceType, DTST_RAM,
@@ -1231,8 +1233,10 @@ void SaveIff( char *name, const int n )
 		for (y=0;y<instance.screens[n]-> realHeight;y++)
 		for (x=0;x<instance.screens[n] -> realWidth;x++)
 		{
-			SetAPen(&rp, retroPoint(instance.screens[n],x,y));
+			col = retroPoint(instance.screens[n],x,y);
+			SetAPen(&rp, col );
 			WritePixel(&rp,x,y);
+			maxColor = col > maxColor ? col : maxColor;
 		}
 	}
 
@@ -1258,9 +1262,12 @@ void SaveIff( char *name, const int n )
 		{
 			bm_header -> bmh_Width = instance.screens[n] -> realWidth;
 			bm_header -> bmh_Height = instance.screens[n]-> realHeight;
-			bm_header -> bmh_Depth = 8;
-			bm_header -> bmh_XAspect = 22;
-			bm_header -> bmh_YAspect = 22;
+
+			bm_header -> bmh_Depth = 1;
+			while ( (1 << bm_header -> bmh_Depth) < maxColor ) bm_header -> bmh_Depth <<= 1;
+
+			bm_header -> xAspect = (instance.screens[n]->videomode & retroHires) ? 11 : 22;
+			bm_header -> yAspect = (instance.screens[n]->videomode & retroInterlaced) ? 11 : 22;
 		}
 
 		SaveDTObject( (Object*) dto, NULL,NULL, name, FALSE, TAG_END );
