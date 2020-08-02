@@ -14,6 +14,11 @@
 #include <proto/retroMode.h>
 #include <proto/datatypes.h>
 #include <datatypes/pictureclass.h>
+
+// undo stupid changes in the SDK.
+
+#define xAspect bmh_XAspect
+#define yAspect bmh_YAspect
 #endif
 
 #ifdef __linux__
@@ -1019,12 +1024,30 @@ void LoadIff( const char *org_name,  int sn )
 	
 		if (modeid != (ULONG) ~0)
 		{
+			int xAspect = bm_header -> xAspect -  bm_header -> xAspect % 10;	
+			int yAspect =  bm_header -> yAspect - bm_header -> yAspect % 10;
+
+			float expected_aspect;
+			float image_aspect;
+
+
+			image_aspect = xAspect ?  ( 1.0f / (float) xAspect) / (1.0f / (float) yAspect) : 0.0f;
+
 			switch (bformat)
 			{
 				case PIXF_NONE:
 				case PIXF_CLUT:
-					mode = AmigaModeToRetro (modeid);
-					break;		
+					AmigaModeToRetro (modeid , &mode, &expected_aspect);
+
+					if (image_aspect) if (image_aspect != expected_aspect)
+					{
+						if ((modeid == 0x8000)&&(image_aspect==1.0f))
+						{
+							mode = retroLowres;
+							break;
+						}
+					}
+					break;	
 				default:
 					mode = (bm_header -> bmh_Width>=640) ? retroHires : retroLowres;
 					mode |= (bm_header -> bmh_Height>256) ? retroInterlaced : 0;

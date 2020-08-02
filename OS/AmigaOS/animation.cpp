@@ -202,7 +202,7 @@ bool old_frame(struct animContext *context,ULONG TimeStamp )
 	return FALSE;
 }
 
-extern unsigned int AmigaModeToRetro( unsigned int mode );
+extern void AmigaModeToRetro( unsigned int mode, ULONG *retMode, float *aspect );
 
 extern void __wait_vbl();
 
@@ -220,6 +220,7 @@ void IffAnim( char *name, const int sn )
 	struct FrameInfo fri;
 	ULONG time = 0;
 	struct animContext context;
+	float expected_aspect;
 
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -273,7 +274,7 @@ void IffAnim( char *name, const int sn )
 		printf("bformat %d\n",context.bformat);
 		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
-		mode = AmigaModeToRetro( modeid );
+		AmigaModeToRetro( modeid, &mode, &expected_aspect );
 
 		if (instance.screens[sn]) 	kitten_screen_close_atomic( sn );	// this function locks engine ;-)
 
