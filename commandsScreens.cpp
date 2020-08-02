@@ -79,6 +79,49 @@ unsigned int retroModeToAmosMode(unsigned int rMode)
 	return retMode;
 }
 
+void AmigaModeToRetro( unsigned int modeid, ULONG *retMode, float *aspect )
+{
+	unsigned int encoding = modeid & (0x800 | 0x1000 | 0x8000);
+	*retMode = 0;
+	float xdpi = 40;
+	float ydpi = 40;
+
+	switch (encoding)
+	{
+		case 0x0800:
+				*retMode |= retroHam6;
+				break;
+
+		case 0x8800:					// this is set in HAM8 file I'm testing.
+				*retMode |= retroHam8;
+				break;
+		case 0x1000:					// this was set in anim8 file I'm testing.
+				*retMode |= retroHam6;
+				break;
+	}
+
+	if (modeid & (0x0100 | 0x0008 | 0x0004)) 
+	{
+		*retMode |= retroInterlaced;
+		ydpi = 20;
+		printf("Interlaced\n");
+	}
+
+	if (modeid & 0x8000)
+	{
+		*retMode |= retroHires;
+		xdpi = 20;
+		printf("hires\n");
+	}
+	else
+	{
+		*retMode |= retroLowres;
+		printf("lowres\n");
+	}
+
+	*aspect = (1.0f / xdpi) / (1.0f / ydpi);
+}
+
 
 int	physical( retroScreen *screen )
 {
@@ -930,44 +973,6 @@ void dmode( const char *name, uint64_t mode )
 	}
 }
 
-unsigned int AmigaModeToRetro( unsigned int modeid )
-{
-	unsigned int mode = 0;
-	unsigned int encoding = modeid & (0x800 | 0x1000 | 0x8000);
-
-	switch (encoding)
-	{
-		case 0x0800:
-				mode |= retroHam6;
-				break;
-
-		case 0x8800:					// this is set in HAM8 file I'm testing.
-				mode |= retroHam8;
-				break;
-		case 0x1000:					// this was set in anim8 file I'm testing.
-				mode |= retroHam6;
-				break;
-	}
-
-	if (modeid & (0x0100 | 0x0008 | 0x0004)) 
-	{
-		mode |= retroInterlaced;
-		printf("Interlaced\n");
-	}
-
-	if (modeid & 0x8000)
-	{
-		mode |= retroHires;
-		printf("hires\n");
-	}
-	else
-	{
-		mode |= retroLowres;
-		printf("lowres\n");
-	}
-
-	return mode;
-}
 
 extern char *get_name(char *path,char *name);		// found in include.cpp file
 
