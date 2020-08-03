@@ -1395,6 +1395,10 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 	else channel -> amalProg.amalAutotest =  NULL;
 
 
+	amalDiscompile( &channel -> amalProg );
+
+//	dump_channels();
+
 	return 0;
 }
 
@@ -1653,6 +1657,7 @@ const char *arg_names[] =
 		"-regA",
 		"-script",
 		"-bin",
+		"-file",
 		NULL
 	};
 
@@ -1661,7 +1666,8 @@ enum
 	arg_reg0 ,
 	arg_regA,
 	arg_script,
-	arg_bin
+	arg_bin,
+	arg_file
 };
 
 int _main(int args, const char **arg);
@@ -1714,6 +1720,7 @@ int main(int args, const char **arg)
 	return ret;
 }
 
+
 int _main(int args, const char **arg)
 {
 	int n,nn,reg0,regA;
@@ -1750,6 +1757,7 @@ int _main(int args, const char **arg)
 			{
 				case arg_script:	script = arg[n]; break;
 				case arg_bin:		readBIn( arg[n] ); break;
+				case arg_file:		file = arg[n]; break;
 				case arg_reg0:		sscanf(arg[n],"%d",&channel.reg[reg0]); reg0++; break;
 				case arg_regA:		sscanf(arg[n],"%d",&channel.reg[regA]); regA++; break;			
 			}
@@ -1787,6 +1795,8 @@ int _main(int args, const char **arg)
 
 			if (err == 0)
 			{
+				amalDiscompile( amalProg );
+
 //				dump_object();
 //				dump_amal_labels();
 
