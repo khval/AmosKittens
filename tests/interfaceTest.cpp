@@ -21,6 +21,9 @@
 struct KittyInstance instance;
 int breakpoint;
 
+struct retroSprite *patterns = NULL;
+std::vector<struct kittyBank> kittyBankList;
+
 struct Library 			*RetroModeBase = NULL;
 struct RetroModeIFace 	*IRetroMode = NULL;
 
@@ -31,138 +34,120 @@ extern void draw_HyperText(struct zone_hypertext *zh);
 
 struct TextFont *topaz8_font = NULL;
 
+
+const char *arg_names[] = 
+	{
+		"-reg0",
+		"-regA",
+		"-script",
+		"-bin",
+		"-file",
+		NULL
+	};
+
+enum
+{
+	arg_script,
+	arg_file
+};
+
+char *script = NULL;
+char *file = NULL;
+
+void get_args(int args, char **arg)
+{
+	int n,nn;
+	int arg_type = 0;
+	bool arg_type_found;
+
+	for (n=1;n<args;n++)
+	{
+		arg_type_found = false;
+
+		for (nn = 0; arg_names[nn]; nn++)
+		{
+			if (strcasecmp(arg[n],arg_names[nn])==0)
+			{
+				arg_type = nn;
+				arg_type_found = true;
+				break;
+			}
+		}
+
+		if (arg_type_found == false)
+		{
+			printf("%s\n",arg_names[arg_type]);
+			printf("%s\n",arg[n]);
+
+			switch (arg_type)
+			{
+				case arg_script:	script = arg[n]; break;
+				case arg_file:		file = arg[n]; break;
+			}
+		}
+	}
+}
+
+void readFile( const char *file )
+{
+	int length;
+	FILE *fd;
+
+	fd = fopen(file,"r");
+	if (fd)
+	{
+		fseek(fd,0,SEEK_END);
+		length = ftell(fd);
+		fseek(fd,0,SEEK_SET);
+
+		script = (char *) calloc( length + 1, 1 );
+		if (script)
+		{
+			fread( script, length, 1, fd );
+		}
+
+		fclose(fd);
+	}
+}
+
 int main(int args, char **arg)
 {
 	int n;
-	struct cmdcontext context;
+	class cmdcontext *context = new cmdcontext();
 	struct stringData *scriptAmos;
 
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	get_args( args, arg);
 
-#if 0
-	const char *script =    "IF     0VA 1=;" 
-   "[" 
-   "SIze   1VATW160+ SW MI,40;" 
-   "BAse   SWidth SX -2/,SHeight SY- 2/;" 
-   "SAve   1;" 
-   "BOx    0,0,1,SX,SY;" 
-   "PRint  1VACX,SY2/ TH2/ -,1VA,3;" 
-   "RUn    0,%1111;" 
-   "]" 
-   "IF     0VA 2=;" 
-   "[" 
-   "SIze   SWidth 1VATW80+ MIn,64;" 
-   "BAse   SWidth SX -2/,SHeight SY- 2/;" 
-   "SAve   1;" 
-   "BOx    0,0,1,SX,SY;" 
-   "PRint  1VACX,16,1VA,3;" 
-   "BUtton 1,16,SY24-,64,16,0,0,1;[UNpack 0,0,13BP+; PRint 12ME CX BP+,4,12ME,3;][BR0;BQ;]" 
-   "KY     27,0;" 
-   "BUtton 2,SX72-,SY24-,64,16,0,0,1;[UNpack 0,0,13BP+; PRint 11ME CX BP+,4,11ME,3;][BR0;BQ;]" 
-   "KY     13,0;" 
-   "RUn    0,3;" 
-   "]" 
-   "IF     0VA 3=;" 
-   "[" 
-   "SIze   1VATW160+ SW MI,40;" 
-   "BAse   SWidth SX -2/,SHeight SY- 2/;" 
-   "BOx    0,0,1,SX,SY;" 
-   "PRint  1VACX,SY2/ TH2/ -,1VA,3;" 
-   "]" 
-   "EXit;" ;
-#endif
+	if (file) readFile( file );
 
-#if 1
-	const char *script = 
-
-	"IF     0VA 1=;["
-		"SIze   1VATW160+ SW MI,40;"
-		"BAse   SWidth SX -2/,SHeight SY- 2/;"
-		"SAve   1;"
-		"BOx    0,0,1,SX,SY;"
-		"PRint  1VACX,SY2/ TH2/ -,1VA,3;"
-		"RUn    0,%1111;]"
-
-	"IF     0VA 2=;["
-		"SIze   SWidth 1VATW80+ MIn,64;"
-		"BAse   SWidth SX -2/,SHeight SY- 2/;"
-		"SAve   1;"
-		"BOx    0,0,1,SX,SY;"
-		"PRint  1VACX,16,1VA,3;"
-		"BUtton 1,16,SY24-,64,16,0,0,1;[UNpack 0,0,13BP+; PRint 12ME CX BP+,4,12ME,3;][BR0;BQ;]KY     27,0;"
-		"BUtton 2,SX72-,SY24-,64,16,0,0,1;[UNpack 0,0,13BP+; PRint 11ME CX BP+,4,11ME,3;][BR0;BQ;]KY     13,0;"
-		"RUn    0,3;]"
-
-	"IF     0VA 3=;["
-		"SIze   1VATW160+ SW MI,40;"
-		"BAse   SWidth SX -2/,SHeight SY- 2/;"
-		"BOx    0,0,1,SX,SY;"
-		"PRint  1VACX,SY2/ TH2/ -,1VA,3;]"
-
-	"EXit;"
-	"LA 1;SIze   SW,SH;"
-	"BAse   SWidth SX -2/,SHeight SY- 2/;PUzzle  21;"
-	"SVar    2,0;LIne 24,0,7,SX288-;"
-	"LIne 0,SY4-,10,SX;"
-	"VLine SX16-,24,17,SY4-;"
-	"BUtton 1,0,0,24,16,0,0,1;[UNpack 0,0,1 BP+;][BR0;]KY     27,0;KY     $DF,0;"
-	"BUtton 2,SX16-,10,16,7,0,0,1;[UNpack 0,0,13 BP+;][SV2,0 2VA1- MAx;ZC4,2VA;BR0;]KY     $CC,0;"
-	"BUtton 3,XA,YB,16,7,0,0,1;[UNpack 0,0,15 BP+;][SV2,3VA 2VA1+ MIn;ZC4,2VA;BR0;]KY     $CD,0;"
-	"HText  5,0,11,SX16-8/,SY16-8/,0VA,2VA,8,2,3;[]SVar 3,ZVar;"
-	"VSlide 4,SX11-,25,8,SY30-,0,SH8/2-,3VA,SH16-8/2-;[SV2,ZP;ZC 5,2VA;]"
-	"BB     6,SX288-,0,96,7 ME;"
-	"BB     7,SX96-,0,96,8 ME;"
-	"BB     8,SX192-,0,96,3 ME;"
-	"BUtton 0,24,0,SX160-,10,0,0,0;[][SM;]"
-	"EXit;"
-	"UI     BB,5;[SZone  P5;BUtton P1,P2,P3,P4,10,0,0,1;[SW 0;LIne 0,0,BP3* 20+,SX;PRint ZV CX BP+,1,ZV,3;][BR0;]]";
-#endif
-
-#if 0
-	const char *script =    "KY     $DF,0;";
-#endif
-
-#if 0
-	const char *script =    "UX 100,200;UI UX,2;[ KY $DF,0;]";
-#endif
-
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	scriptAmos = toAmosString_char( script,strlen(script));
-
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (scriptAmos)
+	if (script)
 	{
+		scriptAmos = toAmosString_char( script,strlen(script));	
 
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		if (scriptAmos)
+		{
+			init_interface_context( context, 1, scriptAmos, 0, 0, 10, 1000  );
 
-		init_interface_context( &context, 1, scriptAmos, 0, 0, 10, 1000  );
+			// its copied so we can free it now.
+			sys_free(scriptAmos);
+			scriptAmos = NULL;	
+		}
 
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+		if (context -> script)
+		{
+			printf("%s\n",&context -> script ->ptr);
+			execute_interface_script( context, 0);
+			delete context;
+		}
 
-		// its copied so we can free it now.
-		sys_free(scriptAmos);
-		scriptAmos = NULL;	
-	}
-
-printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (context.script)
-	{
-		printf("%s\n",&context.script ->ptr);
-		
-		printf("\n\n");
-
-		execute_interface_script( &context, 0);
-
-		cleanup_interface_context( &context );
+		if ((file) && (script)) free (script);
 	}
 
 	return 0;
 }
 
-
+void makeMaskForAll()
+{}
 
 void setError( int _code, char * _pos ) 
 {}
