@@ -28,6 +28,10 @@ extern void *amalFlushAllParenthsesCmds( struct kittyChannel *self );
 
 extern void dump_object();
 
+struct retroSprite *patterns = NULL;
+std::vector<struct kittyBank> kittyBankList;
+
+
 // this functions are used for testing the Amal compiler.
 
 int bobCol( unsigned short bob, unsigned short start, unsigned short end )
