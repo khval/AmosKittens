@@ -47,7 +47,7 @@ struct stringData *alloc_amos_string( int size )
 	if (newstr)
 	{
 		newstr -> size = size;
-		(&newstr -> ptr)[size]=0;	// unlike AmosPro, Amos kitten strings be should 0 terminaled, so they will work with standard OS libraryes and C libs.
+		(&newstr -> ptr)[size]=0;	// unlike AmosPro, Amos kitten strings should be 0 terminaled, so they will work with standard OS libraryes and C libs.
 	}
 	return newstr;
 }
