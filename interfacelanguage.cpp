@@ -1392,7 +1392,7 @@ void _icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
 		int y0 = context -> stack[context -> stackp-4].num;
 		int x1 = context -> stack[context -> stackp-3].num;
 		int y1 = context -> stack[context -> stackp-2].num;
-		int buttonPos = context -> stack[context -> stackp-1].num;
+//		int buttonPos = context -> stack[context -> stackp-1].num;
 
 		context -> xgcl = x0;
 		context -> ygcl = y0;
@@ -1642,7 +1642,7 @@ void edit_render(struct zone_edit *ze)
 
 		if (ze -> string)
 		{
-			int th = os_text_height( ze -> string );
+//			int th = os_text_height( ze -> string );
 			int tb = os_text_base( ze -> string );
 
 			os_text_no_outline(screen, ze->x0,ze->y0+tb+2 ,ze -> string ,ze -> pen);
