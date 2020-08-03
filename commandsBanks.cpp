@@ -1,4 +1,3 @@
-#include "stdafx.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +33,7 @@
 #include "amosString.h"
 #include "cleanup.h"
 #include "load_config.h"
+#include "bank_helper.h"
 
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
@@ -41,7 +41,6 @@ extern int tokenMode;
 extern int tokenlength;
 extern struct retroVideo *video;
 extern struct retroRGB DefaultPalette[256];
-extern struct retroSprite *patterns;
 
 extern std::vector<struct kittyBank> kittyBankList;
 
@@ -71,29 +70,6 @@ const char *bankTypes[] = {
 	"Code"
 };
 
-void *getBankObject(int id)
-{
-	unsigned int n;
-	for (n=0;n<kittyBankList.size();n++)
-	{
-		if (id == kittyBankList[n].id) return kittyBankList[n].object_ptr;
-	}
-
-	return NULL;
-}
-
-extern void makeMaskForAll();
-
-void update_objects()
-{
-	patterns = (struct retroSprite *) getBankObject( - 3 );
-
-	instance.sprites = (struct retroSprite *) getBankObject( 1 );
-	instance.icons = (struct retroSprite *) getBankObject( 2 );
-
-	makeMaskForAll();
-}
-
 int hook_mread( char *dest, int size, int e, struct retroMemFd *fd )
 {
 	void *ret = NULL;
@@ -122,145 +98,6 @@ int mseek( struct retroMemFd &fd, int off, unsigned mode )
 
 	return 1;
 }
-
-struct kittyBank *firstBank()
-{
-	int n=0;
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	while (n<kittyBankList.size())
-	{
-		if (kittyBankList[n].id > 0) 	return &kittyBankList[n];
-		n++;
-	}
-	return NULL;
-}
-
-struct kittyBank *findBankById( int banknr )
-{
-	unsigned int n;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	for (n=0;n<kittyBankList.size();n++)
-	{
-		if (kittyBankList[n].id == banknr)	return &kittyBankList[n];
-	}
-
-	return NULL;
-}
-
-struct kittyBank *findBankByIndex( int index )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	if (index<-1) return NULL;
-	if ( (unsigned int) index>=kittyBankList.size()) return NULL;
-	return &kittyBankList[index];
-}
-
-int findBankIndex( int banknr )
-{
-	unsigned int n;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	for (n=0;n<kittyBankList.size();n++)
-	{
-		if (kittyBankList[n].id == banknr) return n;
-	}
-
-	return -1;
-}
-
-int getBankListSize()
-{
-	return kittyBankList.size();
-}
-
-struct kittyBank * allocBank( int banknr ) 
-{
-	struct kittyBank _bank;
-	_bank.id = banknr;
-	_bank.start = NULL;
-	_bank.length = 0;
-	kittyBankList.push_back(_bank );
-	return findBankById( banknr );
-}
-
-int bankCount(int opt) 
-{
-	int ret = 0;
-
-	switch (opt)
-	{
-		case -1:
-			{
-				unsigned int n = 0;
-				for (n=0;n<kittyBankList.size();n++)
-				{
-					if (kittyBankList[n].id<0) ret++;
-				}
-			}
-			break;
-		case 0:
-			ret = kittyBankList.size();
-			break;
-		case 1:
-			{
-				unsigned int n = 0;
-				for (n=0;n<kittyBankList.size();n++)
-				{
-					if (kittyBankList[n].id>0) ret++;
-				}
-			}
-			break;
-	}
-	return ret;	
-}
-
-bool bank_is_object( struct kittyBank *bank, void *ptr);
-
-
-void freeBank( int banknr )
-{
-	int index;
-	struct kittyBank *bank = NULL;
-
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	index = findBankIndex( banknr );
-
-	if (index>-1)
-	{
-		bank = &kittyBankList[index];
-		if (bank)
-		{
-			switch (bank -> type)
-			{
-				case bank_type_sprite:
-
-					if (bank_is_object(bank,instance.sprites)) instance.sprites = NULL;
-					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
-					break;
-
-				case bank_type_icons:
-
-					if (bank_is_object(bank,instance.icons)) instance.icons = NULL;
-					retroFreeSprite( (struct retroSprite *) bank -> object_ptr );
-					break;
-			}
-
-			bank -> object_ptr = NULL;
-			bank->start = NULL;
-			bank->length = 0;
-			bank->type = 0;
-		}
-
-		kittyBankList.erase(kittyBankList.begin()+index);
-	}
-}
-
 
 char *_bankErase( struct glueCommands *data, int nextToken )
 {
@@ -305,7 +142,6 @@ char *bankEraseAll(nativeCommand *cmd, char *tokenBuffer)
 	stackCmdNormal( _bankEraseAll, tokenBuffer );
 	return tokenBuffer;
 }
-
 
 char *bankEraseTemp(nativeCommand *cmd, char *tokenBuffer)
 {
@@ -510,7 +346,6 @@ struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name,
 
 	return NULL;
 }
-
 
 char *__bankReserveAsWork( struct glueCommands *data, int nextToken )
 {
@@ -794,20 +629,6 @@ int cust_fwrite (void *ptr, int size,int elements, FILE *fd)
 		return fwrite(ptr,size,elements,fd);
 	}
 	else return 0;
-}
-
-extern void clean_up_banks();
-
-bool bank_is_object( struct kittyBank *bank, void *ptr)
-{
-	if (ptr) 
-	{
-		if (bank -> object_ptr == ptr ) 
-		{
-			return true;
-		}
-	}
-	return false;
 }
 
 void __write_ambs__( FILE *fd, uint16_t banks)

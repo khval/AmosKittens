@@ -18,13 +18,14 @@ inc = -I./ -I../../ -Isdk:include/amoskittens
 
 objects_dir = objs_interface/
 
-dummy = tests/dummy/text.cpp
+dummy = tests/dummy/text.cpp 
 
 main_objects = ${dummy} os/amigaos/stuff.cpp \
 			interfacelanguage.cpp \
 			AmosString.cpp \
 			screen_helper.cpp \
-			interfaceclasses.cpp
+			interfaceclasses.cpp \
+			bank_helper.cpp
 
 main_SRCS = tests/interfaceTest.cpp
 

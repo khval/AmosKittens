@@ -8,27 +8,7 @@
 
 #include "amosKittens.h"
 
-#define bank_type_work_or_data 0
-#define bank_type_icons 2
-#define bank_type_sprite 3
-
 void init_banks( char *data , int size);
-
-enum
-{
-	type_ChipWork,	// 0
-	type_FastWork,	// 1
-	type_Icons,		// 2
-	type_Sprites,		// 3
-	type_Music,		// 4
-	type_Amal,		// 5
-	type_Samples,		// 6
-	type_Menu,		// 7
-	type_ChipData,	// 8
-	type_FastData,	// 9
-	type_Code,		// 10
-	type_num_of_banks
-};
 
 struct resourcebank_header
 {
