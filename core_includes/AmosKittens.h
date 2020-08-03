@@ -494,7 +494,7 @@ struct kittyLib
 	struct Library *base;
 };
 
-#ifdef __amoskittens__
+#if defined(__amoskittens__) || defined(__amoskittens_interface_test__)
 #define __cmdStack instance.cmdStack
 #define __stack instance.stack
 #define instance_stack instance.stack
