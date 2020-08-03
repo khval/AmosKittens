@@ -3596,7 +3596,7 @@ void dump_context_stack( struct cmdcontext *context )
 		switch ( context -> stack[n].type)
 		{
 			case type_string:
-				printf("     stack[%d]='%s'\n",n,context -> stack[n].str);
+				printf("     stack[%d]='%s'\n",n,&context -> stack[n].str -> ptr);
 				break;
 			case type_int:
 				printf("     stack[%d]=%d\n",n,context -> stack[n].num);
