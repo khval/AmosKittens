@@ -25,7 +25,7 @@
 #include <stack.h>
 #include "debug.h"
 #include "commands.h"
-#include "commandsbanks.h"
+#include "bank_helper.h"
 #include "kittyErrors.h"
 #include "engine.h"
 #include "amosString.h"

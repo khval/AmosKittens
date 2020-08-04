@@ -29,7 +29,7 @@
 #include "debug.h"
 #include "commands.h"
 #include "commandsMachine.h"
-#include "commandsBanks.h"
+#include "bank_helper.h"
 #include "kittyErrors.h"
 #include "amosString.h"
 

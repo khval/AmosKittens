@@ -10,33 +10,8 @@
 
 void init_banks( char *data , int size);
 
-struct resourcebank_header
-{
-	uint16_t chunks;
-	uint32_t img_offset;
-	uint32_t var_offset;		 // 001A
-	uint32_t script_offset;	 // 002E
-	uint32_t gadget_offset;	 // 0000
-} PACKED;
-
-// resource strings starts with size, text.
-// and ends when size is 0x00FF, last int16 not counted in block_string_size.
-
-// next block starts with 00004 --> this might be number of scripts.
-// 00026	-- this numbers looks like incremted offsets.
-// 00046
-// 00066
-// 00000	--> this changes to 0086, when I have 4 scripts.
-
 
 //------------------------------------------------------------------------------
-
-void freeBank( int banknr );
-struct kittyBank *firstBank(); 
-struct kittyBank *findBankById( int bankNr );
-struct kittyBank *findBankByIndex( int index );
-int getBankListSize();
-struct kittyBank *reserveAs( int type, int bankNr, int length, const char *name, char *mem );
 
 extern char *bankReserveAsWork(nativeCommand *cmd, char *ptr);
 extern char *bankReserveAsChipWork(nativeCommand *cmd, char *ptr);

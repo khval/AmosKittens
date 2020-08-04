@@ -29,7 +29,7 @@
 #include "commandsBlitterObject.h"
 #include "kittyErrors.h"
 #include "engine.h"
-#include "commandsBanks.h"
+#include "bank_helper.h"
 
 #include "AmalCompiler.h"
 #include "channel.h"

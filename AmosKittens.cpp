@@ -64,6 +64,7 @@ extern void setError( int _code, char * _pos ) ;
 #include "kittyaudio.h"
 #include "load_config.h"
 #include "var_helper.h"
+#include "bank_helper.h"
 
 //include "ext_music.h"
 

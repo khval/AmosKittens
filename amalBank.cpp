@@ -7,8 +7,9 @@
 #include <proto/retroMode.h>
 #include <string.h>
 
-#include "commandsBanks.h"
+#include "bank_helper.h"
 
+#include "amosKittens.h"
 #include "AmalCompiler.h"
 #include "channel.h"
 

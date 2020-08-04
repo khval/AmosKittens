@@ -28,7 +28,7 @@
 #include "commandsBackgroundGraphics.h"
 #include "kittyErrors.h"
 #include "engine.h"
-#include "commandsbanks.h"
+#include "bank_helper.h"
 		
 extern struct globalVar globalVars[];
 extern unsigned short last_token;
