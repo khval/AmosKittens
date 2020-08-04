@@ -1,2 +1,4 @@
-; tests/interfaceTest.exe -file tests/interface/resource_bank_maker
- tests/interfaceTest.exe -file tests/interface/test1.asc
+;tests/interfaceTest.exe -file tests/interface/resource_bank_maker
+;tests/interfaceTest.exe -file tests/interface/ky
+tests/interfaceTest.exe -file tests/interface/ui
+;tests/interfaceTest.exe -file tests/interface/test1.asc

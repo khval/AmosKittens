@@ -37,10 +37,7 @@ struct TextFont *topaz8_font = NULL;
 
 const char *arg_names[] = 
 	{
-		"-reg0",
-		"-regA",
 		"-script",
-		"-bin",
 		"-file",
 		NULL
 	};
@@ -76,13 +73,15 @@ void get_args(int args, char **arg)
 
 		if (arg_type_found == false)
 		{
-			printf("%s\n",arg_names[arg_type]);
-			printf("%s\n",arg[n]);
-
 			switch (arg_type)
 			{
-				case arg_script:	script = arg[n]; break;
-				case arg_file:		file = arg[n]; break;
+				case arg_script:
+						script = arg[n]; 
+						break;
+
+				case arg_file:
+						file = arg[n]; 
+						break;
 			}
 		}
 	}
@@ -93,6 +92,8 @@ void readFile( const char *file )
 	int length;
 	FILE *fd;
 
+	script = NULL;
+
 	fd = fopen(file,"r");
 	if (fd)
 	{
@@ -100,48 +101,55 @@ void readFile( const char *file )
 		length = ftell(fd);
 		fseek(fd,0,SEEK_SET);
 
-		script = (char *) calloc( length + 1, 1 );
-		if (script)
-		{
-			fread( script, length, 1, fd );
-		}
-
+		script = (char *) malloc( length + 1 );
+		if (script)	script[fread( script, 1, length, fd )]=0;
 		fclose(fd);
 	}
+	else printf("file not found '%s'\n",file);
 }
 
 int main(int args, char **arg)
 {
 	int n;
 	class cmdcontext *context = new cmdcontext();
-	struct stringData *scriptAmos;
+	struct stringData *scriptAmos = NULL;
 
 	get_args( args, arg);
 
-	if (file) readFile( file );
+	printf("file: %s\n", file ? file : "<NULL>");
 
-	if (script)
+	if (file)
 	{
-		scriptAmos = toAmosString_char( script,strlen(script));	
+		readFile( file );
 
-		if (scriptAmos)
+		if (script)	// str is allocated
 		{
-			init_interface_context( context, 1, scriptAmos, 0, 0, 10, 1000  );
-
-			// its copied so we can free it now.
-			sys_free(scriptAmos);
-			scriptAmos = NULL;	
+			scriptAmos = toAmosString( script, strlen(script));
+			free (script);
 		}
-
-		if (context -> script)
-		{
-			printf("%s\n",&context -> script ->ptr);
-			execute_interface_script( context, 0);
-			delete context;
-		}
-
-		if ((file) && (script)) free (script);
+		script = NULL;
 	}
+	else if (script)	// str from arg
+	{
+		scriptAmos = toAmosString( script, strlen(script));
+	}
+
+	if (scriptAmos)
+	{
+		init_interface_context( context, 1, scriptAmos, 0, 0, 10, 1000  );
+
+		// its copied so we can free it now.
+		sys_free(scriptAmos);
+		scriptAmos = NULL;	
+	}
+
+	if (context -> script)
+	{
+		printf("%s\n",&context -> script ->ptr);
+		execute_interface_script( context, 0);
+		delete context;
+	}
+
 
 	return 0;
 }
@@ -189,7 +197,4 @@ uint32_t getLong( char *adr, int &pos )
 	return ret;
 }
 
-void getResourceStr(int)
-{
-}
 

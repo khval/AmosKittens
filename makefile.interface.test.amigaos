@@ -25,7 +25,8 @@ main_objects = ${dummy} os/amigaos/stuff.cpp \
 			AmosString.cpp \
 			screen_helper.cpp \
 			interfaceclasses.cpp \
-			bank_helper.cpp
+			bank_helper.cpp \
+			load_config.cpp
 
 main_SRCS = tests/interfaceTest.cpp
 
