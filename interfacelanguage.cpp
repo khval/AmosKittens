@@ -3566,6 +3566,21 @@ struct cmdinterface *find_command( struct cmdinterface *commands, char *at, int 
 			if (is_command(at+l)) return cmd;
 		}
 	}
+
+	// special case, command not followed by a known command
+	// nor is it always followed by a separator symbol
+
+	if (commands == commands_normal)
+	{
+		if (strncmp(at,"UI",2)==0)
+		{
+			for (cmd = commands; cmd -> name; cmd++)
+			{
+				if (strncmp(cmd -> name,at, l)==0)	return cmd;
+			}
+		}
+	}
+
 	return NULL;
 }
 
