@@ -2691,6 +2691,81 @@ void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 	else ierror(1);
 }
 
+void icmd_strAdd( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct stringData *ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-2];
+		struct ivar &arg2 = context -> stack[context -> stackp-1];
+
+		if (( arg1.type == type_string ) && ( arg2.type == type_string ))
+		{
+			printf("&(arg1.str -> ptr)= %s \n",&(arg1.str -> ptr));
+			printf("&(arg2.str -> ptr)= %s \n",&(arg2.str -> ptr));
+
+			ret = alloc_amos_string( arg1.str ->size + arg2.str -> size );
+			if (ret)
+			{
+				memcpy( 
+					&(ret -> ptr), 
+					&(arg1.str -> ptr), 
+					arg1.str ->size  );
+
+				memcpy( 
+					&(ret -> ptr) + arg1.str ->size, 
+					&(arg2.str -> ptr), 
+					arg2.str ->size );
+			}
+		}
+
+		pop_context( context, 2 );
+
+		if (ret == NULL)
+		{
+			ierror(1);
+			return;
+		}
+
+		push_context_string( context, ret );
+	}
+	else ierror(1);
+}
+
+
+void icmd_toStr( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct stringData *ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int )
+		{
+			ret = alloc_amos_string( 30 );
+			if (ret)
+			{
+				sprintf(&(ret -> ptr), "%d",	arg1.num  );
+			}
+		}
+
+		pop_context( context, 1 );
+
+		if (ret == NULL)
+		{
+			ierror(1);
+			return;
+		}
+
+		push_context_string( context, ret );
+	}
+	else ierror(1);
+}
+
 void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -3252,6 +3327,8 @@ struct cmdinterface symbols[]=
 	{"/",1,i_parm,NULL,icmd_Div},
 	{"%",1,i_parm,icmd_Bin,icmd_Bin},
 	{"$",1,i_parm,icmd_Hex,icmd_Hex},
+	{"!",1,i_parm,NULL,icmd_strAdd},
+	{"#",1,i_parm,NULL,icmd_toStr},
 	{NULL,0,i_normal,NULL,NULL}
 };
 
@@ -3352,6 +3429,8 @@ struct cmdinterface commands_short[]=
 	{"\\",1,i_parm,NULL,icmd_NotEqual},
 	{">",1,i_parm,NULL,icmd_More },
 	{"<",1,i_parm,NULL,icmd_Less },
+	{"!",1,i_parm,NULL,icmd_strAdd},
+	{"#",1,i_parm,NULL,icmd_toStr},
 	{NULL,0,i_normal,NULL,NULL}
 };
 
