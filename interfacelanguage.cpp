@@ -34,7 +34,7 @@ extern FILE *engine_fd;
 #include "pass1.h"
 #include "AmosKittens.h"
 #include "interfacelanguage.h"
-#include "commandsBanks.h"
+#include "bank_helper.h"
 #include "kittyErrors.h"
 #include "engine.h"
 #include "bitmap_font.h"
@@ -3356,7 +3356,7 @@ struct cmdinterface commands_short[]=
 };
 
 
-static void remove_lower_case(char *txt)
+static void interface_remove_lower_case(char *txt)
 {
 	char *c;
 	char *d;
@@ -3373,7 +3373,7 @@ static void remove_lower_case(char *txt)
 		if (is_text == false)
 		{
 			// remove noice.
-			while (((*c>='a')&&(*c<='z'))||(*c=='#')||(*c=='\n'))	{ c++;  }
+			while (((*c>='a')&&(*c<='z'))||(*c=='\n'))	{ c++;  }
 
 			if (d!=txt)
 			{
@@ -3612,7 +3612,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	remove_lower_case( &script->ptr );
+	interface_remove_lower_case( &script->ptr );
 
 	context -> id = id;
 	context -> stackp = 0;
