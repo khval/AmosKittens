@@ -170,6 +170,7 @@ class cmdcontext
 		bool exit_run;
 		std::vector<struct userDefined> userDefineds;
 		struct userDefined *ui_current;
+		int pass_store;
 };
 
 struct cmdinterface

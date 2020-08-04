@@ -453,6 +453,7 @@ void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = NULL;
+	context -> pass_store --;
 
 	if (context -> stackp>=1)
 	{
@@ -475,6 +476,7 @@ void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
 	context -> expected = i_parm;
+	context -> pass_store ++;
 }
 
 void _icmd_label( struct cmdcontext *context, struct cmdinterface *self )
@@ -3796,6 +3798,8 @@ void test_interface_script( struct cmdcontext *context)
 		return ;
 	}
 
+	context -> pass_store = 0;
+
 	while ((*context -> at != 0) && (context -> error == false))
 	{
 		while (*context -> at==' ') context -> at++;
@@ -3818,11 +3822,13 @@ void test_interface_script( struct cmdcontext *context)
 			{
 				if (is_string(context -> at, str, context -> l) )
 				{
-					push_context_string( context, str );
+					printf("context -> pass_store: %d\n", context -> pass_store);
+					if (context -> pass_store>0) push_context_string( context, str );
 				}
 				else 	if (is_number(context -> at, num, context -> l))
 				{
-					push_context_num( context, num );
+					printf("context -> pass_store: %d\n", context -> pass_store);
+					if (context -> pass_store>0) push_context_num( context, num );
 				}
 				else 	// Must be a user defined command, so we keep it. if not we know it its not when the test is done.
 				{
