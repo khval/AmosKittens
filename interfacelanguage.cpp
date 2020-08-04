@@ -3351,7 +3351,6 @@ void icmd_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 
 struct cmdinterface symbols[]=
 {
-
 	{"=",1,i_parm,NULL,icmd_Equal },
 	{"\\",1, i_parm,NULL,icmd_NotEqual},
 	{">",1, i_parm,NULL,icmd_More },
@@ -3470,6 +3469,8 @@ struct cmdinterface commands_short[]=
 	{"<",1,i_parm,NULL,icmd_Less },
 	{"!",1,i_parm,NULL,icmd_strAdd},
 	{"#",1,i_parm,NULL,icmd_toStr},
+	{"%",1,i_parm,icmd_Bin_pass,icmd_Bin},
+	{"$",1,i_parm,icmd_Hex_pass,icmd_Hex},
 	{NULL,0,i_normal,NULL,NULL}
 };
 
