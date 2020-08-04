@@ -3860,12 +3860,10 @@ void test_interface_script( struct cmdcontext *context)
 			{
 				if (is_string(context -> at, str, context -> l) )
 				{
-					printf("context -> pass_store: %d\n", context -> pass_store);
 					if (context -> pass_store>0) push_context_string( context, str );
 				}
 				else 	if (is_number(context -> at, num, context -> l))
 				{
-					printf("context -> pass_store: %d\n", context -> pass_store);
 					if (context -> pass_store>0) push_context_num( context, num );
 				}
 				else 	// Must be a user defined command, so we keep it. if not we know it its not when the test is done.
