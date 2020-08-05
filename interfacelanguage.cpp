@@ -122,7 +122,7 @@ void cmdcontext::dumpUserDefined()
 	}
 }
 
-void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self );
+bool block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self );
 
 void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base *custom )
 {
@@ -133,9 +133,6 @@ void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base
 	if (iz == NULL) 
 	{
 		struct izone iz;
-
-		printf("%s:%s:%d -> new\n",__FILE__,__FUNCTION__,__LINE__);
-
 		iz.id = id;
 		iz.type = type;
 		iz.custom = custom;
@@ -144,9 +141,6 @@ void il_set_zone( struct cmdcontext *context, int id, int type, struct zone_base
 	}
 	
 	if (iz -> custom == custom) {
-
-		printf("%s:%s:%d -> unexpected reset of custom\n",__FILE__,__FUNCTION__,__LINE__);
-		getchar();
 		context -> error = true; return;}
 
 	if (iz -> custom ) delete iz -> custom;
@@ -180,7 +174,7 @@ void il_dump_vars( struct cmdcontext *context)
 
 
 
-void block_skip( struct cmdcontext *context, struct cmdinterface *self )
+bool block_skip( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char *at = context -> at;
 	int block_count = 0;
@@ -208,6 +202,7 @@ void block_skip( struct cmdcontext *context, struct cmdinterface *self )
 	context -> at = at;
 	context -> l = 0;
 	set_block_fn(NULL);
+	return false;
 }
 
 
@@ -1423,7 +1418,7 @@ void icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_parm;
 }
 
-void block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
+bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	set_block_fn(NULL);
@@ -1439,6 +1434,7 @@ void block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *s
 	}
 
 	set_block_fn(NULL);
+	return block_skip( context, self );
 }
 
 void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
@@ -1708,7 +1704,7 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 	}
 }
 
-void block_slider_action( struct cmdcontext *context, struct cmdinterface *self )
+bool block_slider_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct izone *iz = context -> findZone( context -> last_zone );
 	struct zone_hslider *zs = (struct zone_hslider *) (iz ? iz -> custom : NULL);
@@ -1719,6 +1715,7 @@ void block_slider_action( struct cmdcontext *context, struct cmdinterface *self 
 	}
 
 	set_block_fn(block_skip);
+	return block_skip(context, self);
 }
 
 void edit_mouse_event(zone_edit *base,struct cmdcontext *context, int mx, int my, int zid)
@@ -2249,11 +2246,12 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 {
+	bool inc = true;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ( has_block_fn() ) call_block_fn( context, self );
+	if ( has_block_fn() ) inc= call_block_fn( context, self );
 
-	inc_block();
+	if (inc) inc_block();
 
 	context -> args = 0;
 	context -> expected = i_normal;
@@ -2271,7 +2269,7 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_normal;
 }
 
-void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self )
+bool block_hypertext_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	if (struct izone *iz = context -> findZone(context -> last_zone))
 	{
@@ -2284,9 +2282,10 @@ void block_hypertext_action( struct cmdcontext *context, struct cmdinterface *se
 	}
 
 	set_block_fn(block_skip);
+	return block_skip( context, self );
 }
 
-void block_button_action( struct cmdcontext *context, struct cmdinterface *self )
+bool block_button_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 	set_block_fn(NULL);
@@ -2301,11 +2300,11 @@ void block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 		}
 	}
 
-	block_skip(context,self);		// does purge set_block_fn
 	set_block_fn(NULL);
+	return block_skip(context, self);
 }
 
-void block_button_render( struct cmdcontext *context, struct cmdinterface *self )
+bool block_button_render( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
@@ -2318,6 +2317,7 @@ void block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 	}
 
 	set_block_fn(block_button_action);
+	return false;
 }
 
 void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, int my, int zid)
@@ -3892,7 +3892,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 		}
 	}
 
-	context -> block_fn = (void (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
+	context -> block_fn = (bool (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
 
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;

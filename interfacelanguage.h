@@ -157,7 +157,7 @@ class cmdcontext
 		int ink3;
 		int image_offset;
 		int block_level;
-		void (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );
+		bool (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );	// true skip block, false inc block
 		int max_vars;
 		int last_zone;
 		int xgcl;
