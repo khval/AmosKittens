@@ -35,7 +35,8 @@ At line number: 1184
 
 **Resource_Bank_Maker.AMOS**
 
-Interface script error, need to debug the script.
+Interface script is executed, but it’s not rendered correct.
+something is not correct, need to pick It apart, to see way its not working.
 
 **Sample_Bank_Maker.AMOS**
 
