@@ -295,6 +295,16 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				}
 				break;
 
+		case 2:
+				{
+					script = getStackString(__stack-1);
+					int var1 = getStackNum(__stack);
+					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
+					isetvarnum( &context,0,var1); 
+					execute_interface_script( &context, -1 );
+				}
+				break;
+
 		case 3:	
 				{
 					script = getStackString(__stack-2);

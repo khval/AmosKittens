@@ -668,6 +668,7 @@ struct nativeCommand nativeCommands[]=
 	{0x26C8,"Erase Temp",0,bankEraseTemp },
 	{0x26D8,"Erase All", 0, bankEraseAll },
 	{0x26E8,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$)
+	{0x26FA,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$,value)
 	{0x2704,"Dialog Box",0,guiDialogBox },		// d=Dialog box(a$,value,b$)
 	{0x2710,"Dialog Box",0,guiDialogBox },		// d=Dialog Box(a$,value,b$,n,n)
 	{0x2720,"Dialog Open",0,guiDialogOpen },	// d=Dialog Open n,a$
