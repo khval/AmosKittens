@@ -1423,6 +1423,98 @@ void icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_parm;
 }
 
+void block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	set_block_fn(NULL);
+
+	if (struct izone *iz = context -> findZone(context -> last_zone))
+	{
+		struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+
+		if (zb)
+		{
+			zb -> script_action = context -> at;
+		}
+	}
+
+	set_block_fn(NULL);
+}
+
+void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
+{
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_context_stack( context );
+
+	if (context -> stackp>=10)
+	{
+		int x1,y1;
+		int ox,oy;
+		struct zone_button *zb;
+
+		int zone = context -> stack[context -> stackp-10].num;
+		int x0 = context -> stack[context -> stackp-9].num;
+		int y0 = context -> stack[context -> stackp-8].num;
+		int w = context -> stack[context -> stackp-7].num;
+		int h = context -> stack[context -> stackp-6].num;
+		int address = context -> stack[context -> stackp-5].num;
+		int index = context -> stack[context -> stackp-4].num;
+		int flag = context -> stack[context -> stackp-3].num;
+		int paper = context -> stack[context -> stackp-2].num;
+		int pen = context -> stack[context -> stackp-1].num;
+
+		x1 = x0+w;
+		y1 = y0+h;
+
+		context -> xgcl = x0;
+		context -> ygcl = y0;
+		context -> xgc = x1;
+		context -> ygc = y1;
+
+		if (struct izone *iz = context -> findZone(zone))
+		{
+			zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+		}
+
+		if (zb)
+		{
+			zb -> x0 = x0 + get_dialog_x(context);
+			zb -> y0 = y1 + get_dialog_y(context);
+			zb -> w = w;
+			zb -> h = h;
+			zb -> x1 = zb -> x0+zb->w;
+			zb -> y1 = zb -> y0+zb->h;
+		}
+
+		if (screen)
+		{
+			retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,paper );
+			retroBox( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,pen );
+		}
+	}
+
+	pop_context( context, 10);
+
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	dump_context_stack( context );
+
+	context -> cmd_done = NULL;
+	set_block_fn(block_ActiveList_action);
+}
+
+void icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_ActiveList;
+	context -> args = 10;
+	context -> expected = i_parm;
+}
+
+
 void button_render(struct zone_button *zl)
 {
 }
@@ -3425,6 +3517,7 @@ struct cmdinterface commands_normal[]=
 	{"PR",2,i_normal,NULL,icmd_Print},
 	{"PU",2,i_normal,NULL,icmd_PushImage},
 	{"RB",2,i_normal,NULL,icmd_RenderButton},
+	{"AL",2,i_normal,NULL,icmd_ActiveList },
 	{"RT",2,i_normal,NULL,icmd_Return},
 	{"RU",2,i_normal,NULL,icmd_Run},
 	{"SA",2,i_normal,NULL,icmd_Save},
