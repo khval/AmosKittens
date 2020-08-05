@@ -1449,7 +1449,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 	{
 		int x1,y1;
 		int ox,oy;
-		struct zone_button *zb;
+		struct zone_button *zb = NULL;
 
 		int zone = context -> stack[context -> stackp-10].num;
 		int x0 = context -> stack[context -> stackp-9].num;
@@ -1462,8 +1462,8 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 		int paper = context -> stack[context -> stackp-2].num;
 		int pen = context -> stack[context -> stackp-1].num;
 
-		x1 = x0+w;
-		y1 = y0+h;
+		x1 = x0+(w*8);
+		y1 = y0+(h*8);
 
 		context -> xgcl = x0;
 		context -> ygcl = y0;
@@ -1475,28 +1475,37 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 			zb = (struct zone_button *) (iz ? iz -> custom : NULL);
 		}
 
+		if (zb == NULL)
+		{
+			zb = new zone_button();
+
+			if (zb)
+			{
+				zb -> value = 0;
+				zb -> script_render = NULL;
+				zb -> script_action = NULL;
+				il_set_zone( context, zone, iz_button,  zb);
+			}
+		}
+
 		if (zb)
 		{
 			zb -> x0 = x0 + get_dialog_x(context);
 			zb -> y0 = y1 + get_dialog_y(context);
-			zb -> w = w;
-			zb -> h = h;
-			zb -> x1 = zb -> x0+zb->w;
-			zb -> y1 = zb -> y0+zb->h;
+			zb -> w = w*8;
+			zb -> h = h*8;
+			zb -> x1 = zb -> x0+(zb->w*8);
+			zb -> y1 = zb -> y0+(zb->h*8);
 		}
 
 		if (screen)
 		{
 			retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,paper );
-			retroBox( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,pen );
 		}
 	}
 
 	pop_context( context, 10);
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	dump_context_stack( context );
 
 	context -> cmd_done = NULL;
 	set_block_fn(block_ActiveList_action);
