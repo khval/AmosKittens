@@ -2768,6 +2768,33 @@ void icmd_toStr( struct cmdcontext *context, struct cmdinterface *self )
 	else ierror(1);
 }
 
+void icmd_ArraySize( struct cmdcontext *context, struct cmdinterface *self )
+{
+	int ret = 0;
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>1)
+	{
+		struct ivar &arg1 = context -> stack[context -> stackp-1];
+
+		if ( arg1.type == type_int )
+		{
+			struct stringArrayData *ptr = (struct stringArrayData *) arg1.num ;
+			
+			if (ptr)
+			{
+				ret = ptr -> size;
+			}
+			else ierror(1);
+		}
+		else ierror(1);
+
+		pop_context( context, 1 );
+		push_context_num( context, ret );
+	}
+	else ierror(1);
+}
+
 void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
@@ -3450,6 +3477,7 @@ struct cmdinterface commands_param[]=
 	{"ZN",2,i_parm,NULL,icmd_ZoneNumber},
 	{"ZP",2,i_parm,NULL,icmd_ZonePosition},
 	{"ZV",2,i_parm,NULL,icmd_ZoneValue},
+	{"AS",2,i_parm,NULL,icmd_ArraySize },
 	{NULL,0,i_normal,NULL,NULL}
 };
 
