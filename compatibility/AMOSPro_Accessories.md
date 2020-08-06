@@ -35,8 +35,8 @@ At line number: 1184
 
 **Resource_Bank_Maker.AMOS**
 
-Interface script is executed, but it’s not rendered correct.
-something is not correct, need to pick It apart, to see way its not working.
+Interface: is rendered with wrong colors.
+Error at line 1497, when pressing a button.
 
 **Sample_Bank_Maker.AMOS**
 
