@@ -1375,49 +1375,6 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_parm;
 }
 
-void _icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
-{
-	struct retroScreen *screen = instance.screens[instance.current_screen];
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (context -> stackp>=5)
-	{
-		int ox,oy;
-
-		int x0 = context -> stack[context -> stackp-5].num;
-		int y0 = context -> stack[context -> stackp-4].num;
-		int x1 = context -> stack[context -> stackp-3].num;
-		int y1 = context -> stack[context -> stackp-2].num;
-//		int buttonPos = context -> stack[context -> stackp-1].num;
-
-		context -> xgcl = x0;
-		context -> ygcl = y0;
-		context -> xgc = x1;
-		context -> ygc = y1;
-
-		ox = get_dialog_x(context);
-		oy = get_dialog_y(context);
-		x0+=ox;
-		y0+=oy;
-		x1+=ox;
-		y1+=oy;
-
-		if (screen) retroBox( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,context -> ink0 );
-	}
-
-	pop_context( context, 5);
-	context -> cmd_done = NULL;
-}
-
-void icmd_RenderButton( struct cmdcontext *context, struct cmdinterface *self )
-{
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	context -> cmd_done = _icmd_RenderButton;
-	context -> args = 5;
-	context -> expected = i_parm;
-}
-
 bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3531,7 +3488,6 @@ struct cmdinterface commands_normal[]=
 	{"PO",2,i_normal,NULL,icmd_PrintOutline},
 	{"PR",2,i_normal,NULL,icmd_Print},
 	{"PU",2,i_normal,NULL,icmd_PushImage},
-	{"RB",2,i_normal,NULL,icmd_RenderButton},
 	{"AL",2,i_normal,NULL,icmd_ActiveList },
 	{"RT",2,i_normal,NULL,icmd_Return},
 	{"RU",2,i_normal,NULL,icmd_Run},
