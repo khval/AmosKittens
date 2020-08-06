@@ -1227,9 +1227,14 @@ void _icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=3)
 	{
-		context -> ink0  = context -> stack[context -> stackp-3].num;
-		context -> ink1 -= context ->  stack[context -> stackp-2].num;
-		context -> ink3 = context -> stack[context -> stackp-1].num;
+		struct retroScreen *screen = instance.screens[instance.current_screen];
+
+		if (screen)
+		{
+			screen -> ink0 = context -> stack[context -> stackp-3].num;
+			screen -> ink1 = context ->  stack[context -> stackp-2].num;
+			screen -> ink2 = context -> stack[context -> stackp-1].num;
+		}
 	}
 
 	pop_context( context, 3);
@@ -1250,7 +1255,7 @@ void _icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=1)
 	{
-//		context -> ink0  = context -> stack[context -> stackp-1].num;
+		struct retroScreen *screen = instance.screens[instance.current_screen];
 	}
 
 	pop_context( context, 1);
@@ -1318,7 +1323,7 @@ void _icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroLine( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroLine( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,screen -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -1360,7 +1365,7 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,screen -> ink0 );
 	}
 
 	pop_context( context, 4);
@@ -1920,7 +1925,7 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,context -> ink0 );
+		if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,screen -> ink0 );
 	}
 
 	pop_context( context, 4);
