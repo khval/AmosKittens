@@ -2592,8 +2592,14 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 		for (n=-context -> ui_current -> args; n<=-1;n++)
 		{
 			printf("n: %d\n",n);
-			arg = context -> stack + context -> stackp-n;	
-			if (arg -> type == type_int ) context -> param[ p ] = arg -> num;
+			arg = &context -> stack [ context -> stackp+n];	
+			if (arg -> type == type_int ) 
+			{
+#ifdef __amoskittens_interface_test__
+		printf("context -> param[ %d ] = arg -> num %d\n", p , arg -> num);
+#endif
+				context -> param[ p ] = arg -> num;
+			}
 			p ++;
 		}
 
@@ -3659,7 +3665,6 @@ bool is_command( char *at )
 	if (__is_command( commands_short, at )) return true;
 	return false;
 }
-
 
 int find_symbol( char *at, int &l )
 {
