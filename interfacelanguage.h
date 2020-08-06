@@ -157,7 +157,10 @@ class cmdcontext
 		int ink3;
 		int image_offset;
 		int block_level;
-		bool (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );	// true skip block, false inc block
+
+		// if true increment block counter, if false block was skipped, end block not expected.
+		bool (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );	
+
 		int max_vars;
 		int last_zone;
 		int xgcl;
