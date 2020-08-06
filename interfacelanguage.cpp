@@ -2283,7 +2283,7 @@ bool block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 	}
 
 	set_block_fn(block_button_action);
-	return false;
+	return true;
 }
 
 void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, int my, int zid)
