@@ -425,7 +425,15 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type ))
 				{
 					_new -> proc = (pass1_inside_proc ? procCount : 0);
-					ref -> ref = var_count[ procStackCount ? 1:0] | (procStackCount ? 0x8000 : 0x0000);
+
+					if (is_proc_call)
+					{
+						ref -> ref = var_count[ procStackCount ? 1:0] ;
+					}
+					else
+					{
+						ref -> ref = var_count[ procStackCount ? 1:0] | (procStackCount ? 0x8000 : 0x0000);
+					}
 					return _new;
 				}
 			}
@@ -931,7 +939,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0x0386:	pass1_token_count = 0;
 							break;
 
-				case 0x0006:	pass1var( ptr, (pass1_token_count == 1), false, false );
+				case 0x0006:	pass1var( ptr, (pass1_token_count == 1), false, false );	// is not proc call, is not procedure
 							ret += ReferenceByteLength(ptr);
 							break;
 
@@ -951,7 +959,7 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 							ret += ReferenceByteLength(ptr);
 							break;
 
-				case 0x0012:	pass1var( ptr, true, true, false );
+				case 0x0012:	pass1var( ptr, true, true, false );		// is first token, is proc call, is not procedure.
 							ret += ReferenceByteLength(ptr);
 							break;
 
