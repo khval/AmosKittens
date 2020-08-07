@@ -208,7 +208,7 @@ void kitty_getline(string &input)
 	int cursx = 0;
 	int scrollx = 0;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	input = "";
 	
@@ -240,7 +240,7 @@ void kitty_getline(string &input)
 			sleep(1);
 #endif
 
-			if (str -> size != 0) printf("--%d--\n",&(str -> ptr));
+			if (str -> size != 0) printf("char %d\n",str -> ptr);
 
 			switch (str->ptr)
 			{

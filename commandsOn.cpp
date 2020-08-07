@@ -45,6 +45,8 @@ char *executeOnToken(char *ptr, unsigned short token)
 	struct nativeCommand *cmd;
 	char *ret;
 
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
 	// we are at end of line, we need to find the next data command.
 
 	switch (token)
@@ -86,6 +88,8 @@ static char *collect_data(char *ptr)
 	unsigned short token = *((short *) ptr );
 	setStackNum(0);
 	ptr+=2;
+
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	while ( (ptr = executeOnToken(  ptr,  token )) && (is_token_cmd == 0) )
 	{
