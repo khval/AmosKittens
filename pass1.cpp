@@ -197,6 +197,8 @@ int findVar( char *name, bool is_first_token, int type, int _proc )
 	return 0;
 }
 
+// this function does allocate memory, it uses static list.
+
 struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type )
 {
 	struct globalVar *_new = NULL;
@@ -337,6 +339,8 @@ uint32_t getTrueVarType( char *varname, uint32_t type )
 	}
 	return type;
 }
+
+ // this function does allocate memory, it uses a static list as return value.
 
 struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool is_procedure )
 {

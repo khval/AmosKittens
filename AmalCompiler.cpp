@@ -1395,8 +1395,7 @@ int asc_to_amal_tokens( struct kittyChannel  *channel )		// return error code
 	else channel -> amalProg.amalAutotest =  NULL;
 
 
-	amalDiscompile( &channel -> amalProg );
-
+//	amalDiscompile( &channel -> amalProg );
 //	dump_channels();
 
 	return 0;
@@ -1795,8 +1794,7 @@ int _main(int args, const char **arg)
 
 			if (err == 0)
 			{
-				amalDiscompile( amalProg );
-
+//				amalDiscompile( amalProg );
 //				dump_object();
 //				dump_amal_labels();
 
