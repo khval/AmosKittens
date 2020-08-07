@@ -715,7 +715,7 @@ char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 					engine_lock();
 					if (instance.screens[screen_num]) retroCloseScreen(&instance.screens[screen_num]);
 
-					instance.screens[screen_num] = retroOpenScreen(w,h,retroLowres);
+					instance.screens[screen_num] = retroOpenScreen(w,h,w >= 640 ? retroHires : retroLowres);
 					if (screen = instance.screens[screen_num])
 					{
 						init_amos_kittens_screen_default_text_window(screen, 64);
