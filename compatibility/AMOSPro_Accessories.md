@@ -35,8 +35,9 @@ At line number: 1184
 
 **Resource_Bank_Maker.AMOS**
 
-Interface: is rendered with wrong colors.
-Error at line 1497, when pressing a button.
+Interface: Is buggy.
+
+Some crashes if you try to press buttons.
 
 **Sample_Bank_Maker.AMOS**
 
