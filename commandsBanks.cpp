@@ -1077,7 +1077,7 @@ char *bankResourceStr(nativeCommand *cmd, char *tokenBuffer)
 {
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	stackCmdNormal( _bankResourceStr, tokenBuffer );
+	stackCmdParm( _bankResourceStr, tokenBuffer );
 	return tokenBuffer;
 }
 
