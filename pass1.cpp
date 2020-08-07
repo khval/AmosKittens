@@ -363,12 +363,12 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 			// <EOL> <VAR> <NEXT CMD>
 			// <EOL> <VAR> <BRACKET START>
 
-			if ((next_token == 0x0000) || (next_token == 0x0054) || (next_token == 0x0084))
+			if ((next_token == 0x0000) || (next_token == 0x0054) || (next_token == 0x0084)||(is_proc_call))
 			{
 #ifdef show_pass1_procedure_fixes_yes
 				printf("this looks alot like a procedure call\n");
 #endif
-				pass1CallProcedures.push_back(ref);
+				pass1CallProcedures.push_back(ref);		// this token will get ref number set correct,
 				is_proc_call = true;
 			}
 		}
@@ -424,20 +424,12 @@ struct globalVar * pass1var(char *ptr, bool first_token, bool is_proc_call, bool
 					return _new;
 				}
 			}
-			else
+			else 	if (is_proc_call == false)
 			{
 				if (struct globalVar *_new = add_var_from_ref( ref, &tmp, type ))
 				{
 					_new -> proc = (pass1_inside_proc ? procCount : 0);
-
-					if (is_proc_call)
-					{
-						ref -> ref = var_count[ procStackCount ? 1:0] ;
-					}
-					else
-					{
-						ref -> ref = var_count[ procStackCount ? 1:0] | (procStackCount ? 0x8000 : 0x0000);
-					}
+					ref -> ref = var_count[ procStackCount ? 1:0] | (procStackCount ? 0x8000 : 0x0000);
 					return _new;
 				}
 			}
