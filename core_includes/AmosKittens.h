@@ -348,10 +348,12 @@ struct kittyVideoInfo
 #ifdef _MSC_VER
 #pragma pack(push, 1)
 #endif
-	uint16_t videoWidth;
-	uint16_t videoHeight;
-	uint16_t display_x;
-	uint16_t display_y; 
+	uint16_t videoWidth;		// 2
+	uint16_t videoHeight;	// 4
+	uint16_t display_x;		// 6
+	uint16_t display_y; 		// 8
+	char _dummy_[20];		// 28
+	uint16_t rgb[32];
 #ifdef _MSC_VER
 #pragma pack(pop)
 #endif

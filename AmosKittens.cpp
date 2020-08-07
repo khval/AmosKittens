@@ -309,10 +309,23 @@ bool alloc_video()
 
 	if (instance.video)
 	{
+		uint16_t *rgb;
+
 		KittyBaseVideoInfo.videoWidth = instance.video -> width;
 		KittyBaseVideoInfo.videoHeight = instance.video -> height;
 		KittyBaseVideoInfo.display_x = 128;
 		KittyBaseVideoInfo.display_y = 50;
+
+		rgb = KittyBaseVideoInfo.rgb;
+
+		rgb[0] = 0x000;
+		rgb[1] = 0x06F;
+		rgb[2] = 0x077;
+		rgb[3] = 0xEEE;
+		rgb[4] = 0xF00;
+		rgb[5] = 0x0DD;
+		rgb[6] = 0x0AA;
+		rgb[7] = 0xFF3;
 	}
 
 	KittyBaseInfo.video = &KittyBaseVideoInfo;
