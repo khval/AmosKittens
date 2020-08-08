@@ -15,6 +15,7 @@
 
 //--------- other options ------------
 
+#define enable_interface_debug_yes
 #define show_error_at_file_no
 #define show_debug_amal_no
 #define show_array_no

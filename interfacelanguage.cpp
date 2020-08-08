@@ -2557,7 +2557,7 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 			arg = &context -> stack [ context -> stackp+n];	
 			if (arg -> type == type_int ) 
 			{
-#ifdef __amoskittens_interface_test__
+#if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
 		printf("context -> param[ %d ] = arg -> num %d\n", p , arg -> num);
 #endif
 				context -> param[ p ] = arg -> num;
@@ -4058,6 +4058,10 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 	while ((*context -> at != 0) && (context -> error == false) && (context -> has_return_value == false))
 	{
+
+		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
+
+
 		if (initial_block_level == context -> block_level)
 		{
 			if (*context -> at == ']') break;		// time to exit block.
