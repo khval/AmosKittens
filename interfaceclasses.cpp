@@ -28,12 +28,14 @@ extern void button_render(zone_button *base);
 extern void hslider_render(zone_hslider *base);
 extern void vslider_render(zone_vslider *base);
 extern void hypertext_render(zone_hypertext *base);
+extern void activelist_render(zone_activelist *base);
 
 extern void hslider_mouse_event(zone_hslider *base,struct cmdcontext *context, int mx, int my, int zid);
 extern void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, int my, int zid);
 extern void button_mouse_event(zone_button *base,struct cmdcontext *context, int mx, int my, int zid);
 extern void edit_mouse_event(zone_edit *base,struct cmdcontext *context, int mx, int my, int zid);
 extern void hypertext_mouse_event(zone_hypertext *base,struct cmdcontext *context, int mx, int my, int zid);
+extern void activelist_mouse_event(zone_activelist *base,struct cmdcontext *context, int mx, int my, int zid);
 
 
 zone_base::zone_base()
@@ -77,6 +79,15 @@ void il_edit_update (struct zone_hypertext *base, struct cmdcontext *context, in
 	base -> render( (struct zone_base *) base);
 }
 
+void il_activelist_update (struct zone_hypertext *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3)
+{
+	printf("args: %d arg1: %d, arg2: %d, arg3 %d\n",args , arg1,arg2,arg3);
+	getchar();
+
+	if (args>=0) base -> pos = arg1;
+	base -> render( (struct zone_base *) base);
+}
+
 zone_hslider::zone_hslider()
 {
 	update = I_FUNC_UPDATE	il_slider_update;
@@ -112,3 +123,9 @@ zone_edit::zone_edit()
 	mouse_event = I_FUNC_MOUSE_EVENT edit_mouse_event;
 }
 
+zone_activelist::zone_activelist()
+{
+	update =I_FUNC_UPDATE		il_activelist_update;
+	render = I_FUNC_RENDER	activelist_render;
+	mouse_event = I_FUNC_MOUSE_EVENT activelist_mouse_event;
+}

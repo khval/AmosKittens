@@ -1399,10 +1399,37 @@ bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *s
 	return block_skip( context, self );
 }
 
-void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
+void activelist_render(struct zone_activelist *al)
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
+	struct stringData *str;
 
+	if (screen)
+	{
+		int i,n;
+		int h = al -> h;
+
+		retroBAR( screen, screen -> double_buffer_draw_frame,  al -> x0,al -> y0,al -> x1,al -> y1,al -> paper );
+
+		for (i=0;i<h;i++)
+		{
+			n = i + al -> pos;
+
+			if (n < al -> array -> size)
+			{				
+				printf("-n: %d\n",n);
+
+				str = *((&al -> array -> ptr) + n);
+
+				if (str) __print_one_line__(screen, al -> x0,al -> y0+i*8,str,al -> pen);
+			}
+		}
+	}
+}
+
+
+void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
+{
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	dump_context_stack( context );
@@ -1410,19 +1437,21 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> stackp>=10)
 	{
 		int x1,y1;
-		int ox,oy;
-		struct zone_button *zb = NULL;
+		struct zone_activelist *al = NULL;
 
 		int zone = context -> stack[context -> stackp-10].num;
 		int x0 = context -> stack[context -> stackp-9].num;
 		int y0 = context -> stack[context -> stackp-8].num;
 		int w = context -> stack[context -> stackp-7].num;
 		int h = context -> stack[context -> stackp-6].num;
-		int address = context -> stack[context -> stackp-5].num;
+		struct stringArrayData *array = (struct stringArrayData *) context -> stack[context -> stackp-5].num;
 		int index = context -> stack[context -> stackp-4].num;
 		int flag = context -> stack[context -> stackp-3].num;
 		int paper = context -> stack[context -> stackp-2].num;
 		int pen = context -> stack[context -> stackp-1].num;
+
+		x0+=get_dialog_x(context);
+		y0+=get_dialog_y(context);
 
 		x1 = x0+(w*8);
 		y1 = y0+(h*8);
@@ -1434,35 +1463,36 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (struct izone *iz = context -> findZone(zone))
 		{
-			zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+			al = (struct zone_activelist *) (iz ? iz -> custom : NULL);
 		}
 
-		if (zb == NULL)
+		if (al == NULL)
 		{
-			zb = new zone_button();
+			al = new zone_activelist();
 
-			if (zb)
+			if (al)
 			{
-				zb -> value = 0;
-				zb -> script_render = NULL;
-				zb -> script_action = NULL;
-				il_set_zone( context, zone, iz_button,  zb);
+				al -> value = 0;
+				al -> script_action = NULL;
+				il_set_zone( context, zone, iz_activelist,  al);
 			}
 		}
 
-		if (zb)
+		if (al)
 		{
-			zb -> x0 = x0 + get_dialog_x(context);
-			zb -> y0 = y1 + get_dialog_y(context);
-			zb -> w = w*8;
-			zb -> h = h*8;
-			zb -> x1 = zb -> x0+(zb->w*8);
-			zb -> y1 = zb -> y0+(zb->h*8);
-		}
+			al -> pos = index;
+			al -> flag = flag;
+			al -> pen = pen;
+			al -> paper = paper;
+			al -> array = array;
+			al -> x0 = x0 ;
+			al -> y0 = y1 ;
+			al -> w = w;
+			al -> h = h;
+			al -> x1 = al -> x0+(al->w*8);
+			al -> y1 = al -> y0+(al->h*8);
 
-		if (screen)
-		{
-			retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,paper );
+			al -> render(al);
 		}
 	}
 
@@ -1604,6 +1634,10 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 	}
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
+}
+
+void activelist_mouse_event(zone_activelist *base,struct cmdcontext *context, int mx, int my, int zid)
+{
 }
 
 void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, int my, int zid)

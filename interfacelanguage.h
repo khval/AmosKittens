@@ -90,13 +90,24 @@ struct zone_hypertext : zone_base
 	int pen;
 };
 
+
+struct zone_activelist : zone_base
+{
+	zone_activelist();
+	struct stringArrayData *array;
+	int paper;
+	int pen;
+	int flag;
+};
+
 enum 
 {
 	iz_none,
 	iz_button,
 	iz_hslider,
 	iz_vslider,
-	iz_hypertext
+	iz_hypertext,
+	iz_activelist
 };
 
 struct izone
