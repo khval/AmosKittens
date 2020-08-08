@@ -12,6 +12,7 @@
 #include "amosKittens.h"
 #include "AmalCompiler.h"
 #include "channel.h"
+#include "amalBank.h"
 
 
 amalBankPlay::amalBankPlay( char *start)
