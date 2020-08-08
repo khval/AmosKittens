@@ -4142,11 +4142,15 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 				}
 				else 	
 				{
-					struct userDefined *ud = context -> findUserDefined( context -> at );
+					context -> ui_current = context -> findUserDefined( context -> at );
 
-					if (ud)
+					if (context -> ui_current)
 					{
-						Printf("found this ud command\n");
+						Printf("found this ud command - %s\n", context -> ui_current -> name);
+						context -> l = strlen(context -> ui_current -> name);
+						context -> args = context -> ui_current -> args;
+						context -> expected = (context -> args) ? i_parm : i_normal;
+						context -> cmd_done = _icmd_ui_cmd;
 					}
 					else
 					{
