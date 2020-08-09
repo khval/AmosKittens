@@ -150,7 +150,7 @@ class cmdcontext
 		int lstackp;
 		struct ivar stack[20];
 		struct ivar *vars;
-		int param[9];		// index 0 to 8 == P1 to P9
+		struct ivar param[9];		// index 0 to 8 == P1 to P9
 		char *labels[512];
 		int programStackCount;
 		char *programStack[10];

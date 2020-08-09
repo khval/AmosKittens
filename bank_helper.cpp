@@ -325,7 +325,7 @@ struct stringData *getResourceStr(int id)
 				}
 			}
 
-			if (ret) break;
+			if (ret) break;	// exit if found.
 
 			cbank = -2;		// try default resource if not found
 			retry++;

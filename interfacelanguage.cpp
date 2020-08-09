@@ -82,6 +82,11 @@ extern bool breakpoint ;
 
 void execute_interface_sub_script( struct cmdcontext *context, int zone,  char *at);
 
+void free_ivar( struct ivar *var );
+void copy_ivar( struct ivar *from, struct ivar *to );
+void dump_ivar_array( struct ivar *array, int size );
+
+
 #define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
 
 userDefined::userDefined()
@@ -96,10 +101,17 @@ struct userDefined *cmdcontext::findUserDefined( const char *name )
 	unsigned int n;
 	uint16_t twoChars = * ((uint16_t *)  name);	// name is char and myabe a \0, name should be two chars.
 
+	printf("looking for: %.2s\n", name);
+
 	// command is always two chars. buffer is 4 so no issue.
 	for (n=0;n<userDefineds.size();n++)
 	{
+		printf("%d\n",n);
+
 		if ( *((uint16_t *) userDefineds[n].name)  != twoChars) continue;
+
+		printf("userDefineds[n].name: %s\n", userDefineds[n].name ? userDefineds[n].name : "<NULL>");
+
 		return &userDefineds[n];
 	}
 
@@ -117,8 +129,10 @@ void cmdcontext::dumpUserDefined()
 	for (n=0;n<userDefineds.size();n++)
 	{
 		struct userDefined *ud = &userDefineds[n];	// don't need check...
-		printf("name: %s args %d action: %08x\n", ud -> name, ud -> args, ud -> action );
-
+		printf("name: %s args %d action: %08x\n", 
+				ud -> name ? ud-> name : "<NULL>", 
+				ud -> args, 
+				ud -> action );
 	}
 }
 
@@ -1365,7 +1379,10 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,screen -> ink0 );
+		if (screen) 
+		{
+			retroBAR( screen, screen -> double_buffer_draw_frame,  x0,y0,x1,y1,screen -> ink0 );
+		}
 	}
 
 	pop_context( context, 4);
@@ -1810,7 +1827,11 @@ void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char c = *(context -> at + 1);
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	push_context_num( context, context -> param[ c-'1' ] );		// P1 to P9
+
+	// push ivar from param to stack...
+
+	copy_ivar( &context -> param[ c-'1' ], &context -> stack[context -> stackp ]  ); 
+	context -> stackp++;
 }
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
@@ -2370,6 +2391,9 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &_min = context -> stack[context -> stackp-2];
 		struct ivar &_max = context -> stack[context -> stackp-1];
 
+		dump_context_stack( context );
+		getchar();
+
 		if (( zn.type == type_int ) && ( _x.type == type_int )  && ( _y.type == type_int )  && ( _w.type == type_int )  && ( _h.type == type_int )  
 				&& ( arg6.type == type_int ) && ( _min.type == type_int ) && ( _max.type == type_int ))
 		{
@@ -2575,6 +2599,36 @@ void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_parm;
 }
 
+void free_ivar( struct ivar *arg )
+{
+	switch (arg -> type)
+	{
+		case type_string:
+			if (arg -> str)
+			{
+				sys_free (arg -> str);
+				arg -> str = NULL;
+			}
+			arg -> type = type_int;
+			break;
+	}
+}
+
+void copy_ivar( struct ivar *from, struct ivar *to )
+{
+	free_ivar( to );
+
+	*to = *from;	// copy data..
+
+	switch (from -> type)
+	{
+		case type_string:
+			to -> str = NULL;
+			if (from -> str)	 to -> str = amos_strdup( from -> str );
+			break;
+	}
+}
+
 void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d - %s\n",__FUNCTION__,__LINE__, context -> ui_current -> name);
@@ -2587,15 +2641,23 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 		for (n=-context -> ui_current -> args; n<=-1;n++)
 		{
-			printf("n: %d\n",n);
 			arg = &context -> stack [ context -> stackp+n];	
-			if (arg -> type == type_int ) 
-			{
+
 #if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
-		printf("context -> param[ %d ] = arg -> num %d\n", p , arg -> num);
+
+	switch (arg -> type)
+	{
+		case type_int:
+				printf("context -> param[ %d ] = arg -> num %d\n", p , arg -> num);
+				break;
+		case type_string:
+				printf("context -> param[ %d ] = arg -> str %s\n", p , &arg -> str -> ptr);
+				break;
+	}
+
 #endif
-				context -> param[ p ] = arg -> num;
-			}
+
+			copy_ivar( arg, &context -> param[ p ] );
 			p ++;
 		}
 
@@ -3851,22 +3913,29 @@ void push_context_var(struct cmdcontext *context, int index)
 	}
 }
 
-void dump_context_stack( struct cmdcontext *context )
+
+
+void dump_ivar_array( struct ivar *array, int size )
 {
 	int n;
 
-	for (n=0; n<context -> stackp;n++)
+	for (n=0; n<size;n++)
 	{
-		switch ( context -> stack[n].type)
+		switch ( array[n].type)
 		{
 			case type_string:
-				printf("     stack[%d]='%s'\n",n,&context -> stack[n].str -> ptr);
+				printf("     stack[%d]='%s'\n",n,&array[n].str -> ptr);
 				break;
 			case type_int:
-				printf("     stack[%d]=%d\n",n,context -> stack[n].num);
+				printf("     stack[%d]=%d\n",n,array[n].num);
 				break;
 		}
 	}
+}
+
+void dump_context_stack( struct cmdcontext *context )
+{
+	dump_ivar_array( context -> stack, context -> stackp );
 }
 
 void init_interface_context( struct cmdcontext *context, int id, struct stringData *script, int x, int y, int varSize, int bufferSize  )
@@ -3913,6 +3982,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 
 cmdcontext::~cmdcontext()
 {
+	int n = 0;
 	at = NULL;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3949,6 +4019,9 @@ cmdcontext::~cmdcontext()
 		free( vars);
 		vars = NULL;
 	}
+
+	for (n=0;n<10;n++) free_ivar ( &param[n] );
+
 }
 
 userDefined *push_context_ui( struct cmdcontext *context )
@@ -4093,8 +4166,9 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 	while ((*context -> at != 0) && (context -> error == false) && (context -> has_return_value == false))
 	{
 
+#if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
 		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
-
+#endif
 
 		if (initial_block_level == context -> block_level)
 		{
@@ -4250,7 +4324,9 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	{
 		while (*context -> at==' ') context -> at++;
 
-//		printf("%s\n", context -> at);
+#if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
+		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
+#endif
 
 		if (breakpoint)
 		{
