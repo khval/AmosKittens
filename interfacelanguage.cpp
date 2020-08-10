@@ -3045,23 +3045,9 @@ void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
-	int ret = 0;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (context -> stackp>0)
-	{
-		struct ivar &arg1 = context -> stack[context -> stackp-1];
-
-		if ( arg1.type == type_string ) 
-		{
-			ret = os_text_height( arg1.str );
-		}
-		else ret = 0;
-
-		pop_context( context, 1);
-		push_context_num( context, ret );
-	}
-	else ierror(1);
+	push_context_num( context, 8 );
 }
 
 void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
