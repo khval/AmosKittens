@@ -2914,6 +2914,8 @@ void icmd_toStr( struct cmdcontext *context, struct cmdinterface *self )
 			if (ret)
 			{
 				sprintf(&(ret -> ptr), "%d",	arg1.num  );
+				ret -> size = strlen( &(ret -> ptr) ) ;
+				(&(ret -> ptr))[ ret -> size ] = 0;
 			}
 		}
 
