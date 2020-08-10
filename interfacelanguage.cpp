@@ -40,8 +40,9 @@ extern FILE *engine_fd;
 #include "bitmap_font.h"
 #include "amosstring.h"
 
-extern struct TextFont *topaz8_font;
+#define by_ref
 
+extern struct TextFont *topaz8_font;
 extern int sig_main_vbl;
 
 extern struct retroVideo *video;
@@ -4090,7 +4091,7 @@ void test_interface_script( struct cmdcontext *context)
 				{
 					if (context -> pass_store>0) push_context_string( context, str );
 				}
-				else 	if (is_number(context -> at, num, context -> l))
+				else 	if (is_number(context -> at, by_ref num, by_ref context -> l))
 				{
 					if (context -> pass_store>0) push_context_num( context, num );
 				}
