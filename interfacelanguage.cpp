@@ -2868,18 +2868,20 @@ void icmd_strAdd( struct cmdcontext *context, struct cmdinterface *self )
 			printf("&(arg1.str -> ptr)= %s \n",&(arg1.str -> ptr));
 			printf("&(arg2.str -> ptr)= %s \n",&(arg2.str -> ptr));
 
-			ret = alloc_amos_string( arg1.str ->size + arg2.str -> size );
+			ret = alloc_amos_string( arg1.str ->size + arg2.str -> size  );
 			if (ret)
 			{
 				memcpy( 
 					&(ret -> ptr), 
 					&(arg1.str -> ptr), 
-					arg1.str ->size  );
+					arg1.str ->size  );		// size is null terminated so need subtract -1
 
 				memcpy( 
-					&(ret -> ptr) + arg1.str ->size, 
+					&(ret -> ptr) + arg1.str ->size , 
 					&(arg2.str -> ptr), 
 					arg2.str ->size );
+
+				(&(ret -> ptr))[ ret -> size ] = 0;
 			}
 		}
 
