@@ -3368,15 +3368,8 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (struct izone *iz = context -> findZone( context -> last_zone ))
-	{
-		struct zone_base *zb = iz -> custom;
-
-		if (zb)
-		{
-			push_context_num( context, zb -> value );
-		}
-	}
+	copy_ivar( &context -> defaultZoneValue, &context -> stack[context -> stackp] );
+	context -> stackp++;
 }
 
 void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
