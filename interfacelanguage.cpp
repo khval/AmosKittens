@@ -532,7 +532,7 @@ void __print_one_line__( struct retroScreen *screen, int x, int y, struct string
 
 void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
