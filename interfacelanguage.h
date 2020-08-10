@@ -150,7 +150,12 @@ class cmdcontext
 		int lstackp;
 		struct ivar stack[20];
 		struct ivar *vars;
+
 		struct ivar param[9];		// index 0 to 8 == P1 to P9
+		struct ivar *params_backup[10];
+		int ui_stackp;
+		struct ivar	defaultZoneValue;
+			
 		char *labels[512];
 		int programStackCount;
 		char *programStack[10];

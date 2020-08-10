@@ -86,6 +86,8 @@ void free_ivar( struct ivar *var );
 void copy_ivar( struct ivar *from, struct ivar *to );
 void dump_ivar_array( struct ivar *array, int size );
 
+void backup_param( struct cmdcontext *context );
+void restore_param_backup( struct cmdcontext *context );
 
 #define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
 
@@ -2667,6 +2669,7 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 	}
 
+	restore_param_backup(context);
 	context -> cmd_done = NULL;
 }
 
@@ -4020,7 +4023,14 @@ cmdcontext::~cmdcontext()
 		vars = NULL;
 	}
 
-	for (n=0;n<10;n++) free_ivar ( &param[n] );
+	for (n=0;n<9;n++) free_ivar ( &param[n] );
+
+	// check all pointers, memory is kept, to avoid reallocations.
+	for (n=0;n<10;n++)
+	{
+		if (params_backup[n]) free(params_backup[n]);
+		params_backup[n] = NULL;
+	}
 
 }
 
@@ -4133,6 +4143,35 @@ void test_interface_script( struct cmdcontext *context)
 	context -> tested = true;
 }
 
+void backup_param( struct cmdcontext *context )
+{
+	int n;
+
+	// we allocate backup when we need it, no need to free it, its going deleted when context is deleted.
+	// so we keep it in memory as long as we might need it.
+
+	if (context -> params_backup[ context -> ui_stackp ] == NULL)	
+	{
+		context -> params_backup[ context -> ui_stackp ] = (struct ivar *) malloc( sizeof(struct ivar) * 9 );
+	}
+
+	memcpy( context -> params_backup[ context -> ui_stackp ], &context -> param, sizeof(struct ivar) * 9 );
+
+	bzero( (char *) &context -> param, sizeof(struct ivar) * 9  );
+	for ( n=0;n<9;n++)	copy_ivar( context -> params_backup[ context -> ui_stackp ]+ n, &context -> param[n] );
+
+	context -> ui_stackp ++ ;
+}
+
+void restore_param_backup( struct cmdcontext *context )
+{
+	int n;
+	context -> ui_stackp --;
+	for ( n=0;n<9;n++)	free_ivar( &context -> param[n] );
+	memcpy( &context -> param, context -> params_backup[ context -> ui_stackp ], sizeof(struct ivar) * 9 );
+	bzero( context -> params_backup[ context -> ui_stackp ], sizeof(struct ivar) * 9  );
+}
+
 void execute_interface_sub_script( struct cmdcontext *context, int zone, char *at)
 {
 	int sym;
@@ -4143,8 +4182,6 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 	struct stringData *str = NULL;
 	char *backup_at = context -> at;
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> last_zone = zone;
 	context -> at = at;
@@ -4225,6 +4262,8 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 						context -> args = context -> ui_current -> args;
 						context -> expected = (context -> args) ? i_parm : i_normal;
 						context -> cmd_done = _icmd_ui_cmd;
+
+						backup_param( context );
 					}
 					else
 					{
@@ -4272,6 +4311,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 	context -> at = backup_at;	
 	context -> l = initial_command_length;
+
 }
 
 
@@ -4377,6 +4417,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 						context -> args = context -> ui_current -> args;
 						context -> expected = (context -> args) ? i_parm : i_normal;
 						context -> cmd_done = _icmd_ui_cmd;
+
+						backup_param( context );
 					}
 					else
 					{
