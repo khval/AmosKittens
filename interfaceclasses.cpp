@@ -43,8 +43,9 @@ zone_base::zone_base()
 //	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 //	getchar();
 
-	pos = 0;
-	value = 0;
+	bzero( &pos, sizeof( struct ivar));
+	bzero( &value, sizeof( struct ivar));
+
 	script_action = NULL;
 	update = NULL;
 	mouse_event = NULL;
@@ -53,14 +54,14 @@ zone_base::zone_base()
 
 void il_slider_update (struct zone_vslider *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3)
 {
-	if (args>0) base -> value = arg1;
+	if (args>0) base -> value.num = arg1;
 	if (args>1) base -> total = arg2;
 	base -> render( (struct zone_base *) base);
 }
 
 void il_button_update (struct zone_button *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3)
 {
-	if (args>0) base -> value = arg1;
+	if (args>0) base -> value.num = arg1;
 	base -> render( (struct zone_base *) base);
 }
 
@@ -69,13 +70,13 @@ void il_hypertext_update (struct zone_hypertext *base, struct cmdcontext *contex
 	printf("args: %d arg1: %d, arg2: %d, arg3 %d\n",args , arg1,arg2,arg3);
 	getchar();
 
-	if (args>0) base -> pos = arg1;
+	if (args>0) base -> pos.num = arg1;
 	base -> render( (struct zone_base *) base);
 }
 
 void il_edit_update (struct zone_hypertext *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3)
 {
-	if (args>0) base -> value = arg1;
+	if (args>0) base -> value.num = arg1;
 	base -> render( (struct zone_base *) base);
 }
 
@@ -84,7 +85,7 @@ void il_activelist_update (struct zone_hypertext *base, struct cmdcontext *conte
 	printf("args: %d arg1: %d, arg2: %d, arg3 %d\n",args , arg1,arg2,arg3);
 	getchar();
 
-	if (args>=0) base -> pos = arg1;
+	if (args>=0) base -> pos.num = arg1;
 	base -> render( (struct zone_base *) base);
 }
 

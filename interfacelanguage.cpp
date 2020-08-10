@@ -389,7 +389,7 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 			struct zone_base *zone =  iz ? iz ->custom : NULL;
 			if (zone) 
 			{
-				zone -> value = data.num;
+				zone -> value.num = data.num;
 				pop_context( context, 2);
 
 				if (zone -> render) zone -> render( zone );
@@ -641,7 +641,7 @@ void gfx_debug_print(int x, int y, char *txt)
 void hypertext_render(struct zone_hypertext *zh)
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	int _x = 0, _y=-zh->pos;
+	int _x = 0, _y=-zh->pos.num;
 	int x0,y0,x1,y1;
 	char *c;
 	bool is_link = false;
@@ -695,7 +695,7 @@ void hypertext_render(struct zone_hypertext *zh)
 int get_id_hypertext(struct zone_hypertext *zh, int chr_x, int chr_y)
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	int _x = 0, _y=-zh->pos;
+	int _x = 0, _y=-zh->pos.num;
 	char *c;
 	bool is_link = false;
 	bool is_id = false;
@@ -762,8 +762,8 @@ void hypertext_mouse_event(zone_hypertext *base,struct cmdcontext *context, int 
 	chr_x = (mx - base -> x0) / 8;
 	chr_y = (my - base -> y0) / 8;
 
-	base -> value = get_id_hypertext( base, chr_x, chr_y );
-	base -> event = base -> value;
+	base -> value.num = get_id_hypertext( base, chr_x, chr_y );
+	base -> event = base -> value.num;
 	context -> has_return_value = true;
 	context -> return_value = zid;
 }
@@ -803,7 +803,7 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 			zh -> y1 = zh -> y0+(zh->h*8);
 
 			zh -> address = (void *) context -> stack[context -> stackp-5].num;
-			zh -> pos = context -> stack[context -> stackp-4].num;
+			zh -> pos.num = context -> stack[context -> stackp-4].num;
 			zh -> buffer = context -> stack[context -> stackp-3].num;
 			zh -> paper = context -> stack[context -> stackp-2].num;
 			zh -> pen = context -> stack[context -> stackp-1].num;
@@ -946,14 +946,7 @@ void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 	if (context -> stackp>=1)
 	{
 		struct ivar &arg1 = context -> stack[context -> stackp-1];
-
-		if ( arg1.type == type_int )
-		{
-			struct izone *iz = context -> findZone( context -> last_zone );
-			struct zone_base *zb = iz ? iz ->custom : NULL;
-			if (zb) zb -> value = arg1.num;
-		}
-		else ierror(1);
+		copy_ivar( &arg1, &context -> defaultZoneValue);
 		pop_context( context, 1);
 	}
 
@@ -1433,7 +1426,7 @@ void activelist_render(struct zone_activelist *al)
 
 		for (i=0;i<h;i++)
 		{
-			n = i + al -> pos;
+			n = i + al -> pos.num;
 
 			if (n < al -> array -> size)
 			{				
@@ -1492,7 +1485,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 			if (al)
 			{
-				al -> value = 0;
+				al -> value.num = 0;
 				al -> script_action = NULL;
 				il_set_zone( context, zone, iz_activelist,  al);
 			}
@@ -1500,7 +1493,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (al)
 		{
-			al -> pos = index;
+			al -> pos.num = index;
 			al -> flag = flag;
 			al -> pen = pen;
 			al -> paper = paper;
@@ -1542,8 +1535,8 @@ void hslider_render(struct zone_hslider *zl)
 	int t1;
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	t0 = zl->w * zl -> pos / zl->total;
-	t1 = zl->w * (zl->pos+zl->trigger) / zl->total;
+	t0 = zl->w * zl -> pos.num / zl->total;
+	t1 = zl->w * (zl->pos.num+zl->trigger) / zl->total;
 	
 	if (screen) 
 	{
@@ -1559,8 +1552,8 @@ void vslider_render(zone_vslider *base)
 	int t1;
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	t0 = base -> h *  base -> pos / base -> total;
-	t1 = base -> h * (base -> pos+base -> trigger) / base -> total;
+	t0 = base -> h *  base -> pos.num / base -> total;
+	t1 = base -> h * (base -> pos.num+base -> trigger) / base -> total;
 	
 	if (screen) 
 	{
@@ -1580,12 +1573,12 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 {
 	int t0;
 	int t1;
-	int tpos = base -> pos;
+	int tpos = base -> pos.num;
 
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	t0 = base -> w *  base -> pos / base -> total;
-	t1 = base -> w * (base -> pos+base -> trigger) / base -> total;
+	t0 = base -> w *  base -> pos.num / base -> total;
+	t1 = base -> w * (base -> pos.num+base -> trigger) / base -> total;
 
 	if ((my>=base -> y0)&&(my<=base -> y1))
 	{
@@ -1595,7 +1588,7 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 		{
 			tpos -= ( tpos - base -> step < 0) ? 1: base -> step;
 			if (tpos < 0 )	tpos =0;
-			base -> pos = tpos;
+			base -> pos.num = tpos;
 			base -> render( base );
 
 			execute_interface_sub_script( context, zid , (char *) base -> script_action);
@@ -1622,7 +1615,7 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 
 				if (tpos > (base -> total - base -> trigger)) tpos = base -> total - base -> trigger; 
 
-				base -> pos = tpos;
+				base -> pos.num = tpos;
 
 				printf("mx  %d, mouse x  %d, x %d, dx %d, t0 %d tpos %d\n",
 						mx,
@@ -1644,7 +1637,7 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 		{
 			tpos += ( tpos + base -> trigger + base -> step > base -> total) ? 1: base -> step;
 			if ( tpos + base -> trigger >  base -> total )	tpos = base -> total - base -> trigger;
-			base -> pos = tpos;
+			base -> pos.num = tpos;
 			base -> event = tpos;
 			base -> render( base );
 
@@ -1664,10 +1657,10 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 {
 	int t0;
 	int t1;
-	int tpos = base -> pos;
+	int tpos = base -> pos.num;
 
-	t0 = base -> h *  base -> pos / base -> total;
-	t1 = base -> h * (base -> pos+base -> trigger) / base -> total;
+	t0 = base -> h *  base -> pos.num / base -> total;
+	t1 = base -> h * (base -> pos.num+base -> trigger) / base -> total;
 
 
 //	printf("%s:%d -> min %d, is %d, max %d\n",__FUNCTION__,__LINE__, base -> x0,mx,base -> x1);
@@ -1680,7 +1673,7 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 		{
 			tpos -= ( tpos - base -> step < 0) ? 1: base -> step;
 			if (tpos < 0 )	tpos =0;
-			base -> pos = tpos;
+			base -> pos.num = tpos;
 			base -> render( base );
 			execute_interface_sub_script( context, zid, base -> script_action);
 			return;
@@ -1706,7 +1699,7 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 
 				if (tpos > (base -> total - base -> trigger)) tpos = base -> total - base -> trigger; 
 
-				base -> pos = tpos;
+				base -> pos.num = tpos;
 				base -> event = tpos;
 				base -> render( base );
 
@@ -1721,7 +1714,7 @@ void vslider_mouse_event(zone_vslider *base,struct cmdcontext *context, int mx, 
 		{
 			tpos += ( tpos + base -> trigger + base -> step > base -> total) ? 1: base -> step;
 			if ( tpos + base -> trigger > base -> total )	tpos = base -> total - base -> trigger;
-			base -> pos = tpos;
+			base -> pos.num = tpos;
 			base -> render( base );
 			execute_interface_sub_script( context, zid, base -> script_action);
 			return;
@@ -1786,7 +1779,7 @@ void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 		if (ze == NULL)
 		{
 			ze = new zone_edit();
-			ze -> pos = 0;
+			ze -> pos.num = 0;
 			context -> setZone(zn,ze);
 		}
 
@@ -1856,7 +1849,7 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 		if (zs == NULL)
 		{
 			zs = new zone_vslider();
-			zs -> pos = context -> stack[context -> stackp-4].num;
+			zs -> pos.num = context -> stack[context -> stackp-4].num;
 			il_set_zone( context, zn, iz_vslider, zs);
 		}
 
@@ -1915,7 +1908,7 @@ void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *se
 		if (zs == NULL)
 		{
 			zs = new zone_hslider();
-			zs -> pos = context -> stack[context -> stackp-4].num;
+			zs -> pos.num = context -> stack[context -> stackp-4].num;
 			il_set_zone( context, zn, iz_hslider, zs);
 		}
 
@@ -2357,7 +2350,7 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 
 	if ( base -> script_render)
 	{
-		for ( base -> value = 1; base -> value >=0  ; base -> value --)
+		for ( base -> value.num = 1; base -> value.num >=0  ; base -> value.num --)
 		{
 			context -> selected_dialog = 0;
 			context -> dialog[0].x =  base -> x0;
@@ -2365,7 +2358,7 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 
 			execute_interface_sub_script( context, zid, base -> script_render);
 
-			if (( base -> script_action) && ( base -> value == 1))
+			if (( base -> script_action) && ( base -> value.num == 1))
 			{
 				execute_interface_sub_script( context, zid, base -> script_action);
 			}
@@ -2394,8 +2387,6 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &_min = context -> stack[context -> stackp-2];
 		struct ivar &_max = context -> stack[context -> stackp-1];
 
-		dump_context_stack( context );
-		getchar();
 
 		if (( zn.type == type_int ) && ( _x.type == type_int )  && ( _y.type == type_int )  && ( _w.type == type_int )  && ( _h.type == type_int )  
 				&& ( arg6.type == type_int ) && ( _min.type == type_int ) && ( _max.type == type_int ))
@@ -2423,7 +2414,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 				if (zb)
 				{
-					zb -> value = 0;
+					zb -> value.num = 0;
 					zb -> script_render = NULL;
 					zb -> script_action = NULL;
 					il_set_zone( context, zn.num, iz_button,  zb);
@@ -3154,9 +3145,6 @@ void icmd_Max( struct cmdcontext *context, struct cmdinterface *self )	// Max
 
 		pop_context( context, 2);
 		push_context_num( context, ret );
-
-			dump_context_stack( context );
-
 	}
 	else ierror(1);
 }
@@ -3432,7 +3420,7 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 	if (struct izone *iz = context -> findZone( context -> last_zone ))
 	{
 		struct zone_base *zb = (iz ? iz -> custom : NULL);
-		push_context_num( context, zb ? zb -> value : 0 );
+		push_context_num( context, zb ? zb -> value.num : 0 );
 		return;
 	}
 	else 	push_context_num( context,  0 );	
@@ -4026,6 +4014,8 @@ cmdcontext::~cmdcontext()
 
 	for (n=0;n<9;n++) free_ivar ( &param[n] );
 
+	free_ivar( &defaultZoneValue );
+
 	// check all pointers, memory is kept, to avoid reallocations.
 	for (n=0;n<10;n++)
 	{
@@ -4206,6 +4196,8 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 #if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
 		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
+//	dump_context_stack( context ); 
+
 #endif
 
 		if (initial_block_level == context -> block_level)

@@ -27,8 +27,8 @@ struct zone_base
 	int x0,y0,x1,y1,w,h;
 	union 
 	{
-		int pos;
-		int value;
+		struct ivar pos;
+		struct ivar value;
 	};
 	int event;	// is reset on dialog command, used read by rdialog command.
 
