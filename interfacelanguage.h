@@ -126,6 +126,17 @@ struct userDefined
 	const char *action;
 };
 
+struct iblock
+{
+	bool (*start_fn)( struct cmdcontext *context, struct cmdinterface *self );
+	void (*end_fn)( struct cmdcontext *context);
+
+	void set(
+			bool (*start_fn)( struct cmdcontext *, struct cmdinterface * ),
+			void (*end_fn)( struct cmdcontext *)
+		 );
+};
+
 class cmdcontext
 {
 	public:
@@ -172,7 +183,8 @@ class cmdcontext
 		int block_level;
 
 		// if true increment block counter, if false block was skipped, end block not expected.
-		bool (**block_fn)( struct cmdcontext *context, struct cmdinterface *self );	
+
+		struct iblock *iblocks;
 
 		int max_vars;
 		int last_zone;

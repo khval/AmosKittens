@@ -76,10 +76,12 @@ extern void os_text_no_outline(struct retroScreen *screen,int x, int y, struct s
 
 extern bool breakpoint ;
 
-#define set_block_fn(name) context -> block_fn[ context -> block_level ] = name
-#define has_block_fn() context -> block_fn[ context -> block_level ]
-#define call_block_fn(context,self) context -> block_fn[ context -> block_level ](context,self)
-#define inc_block() { context -> block_level++ ; context -> block_fn[ context -> block_level ] = NULL; }
+#define set_block_fn(startfn,endfn) context -> iblocks[ context -> block_level ].set( startfn, endfn )
+#define has_block_start_fn() context -> iblocks[ context -> block_level ].start_fn
+#define has_block_end_fn() context -> iblocks[ context -> block_level ].end_fn
+#define call_block_start_fn(context,self) context -> iblocks[ context -> block_level ].start_fn(context,self)
+#define call_block_end_fn(context,self) context -> iblocks[ context -> block_level ].end_fn(context)
+#define inc_block() { context -> block_level++ ; context -> iblocks[ context -> block_level ].set(NULL,NULL); }
 
 void execute_interface_sub_script( struct cmdcontext *context, int zone,  char *at);
 
@@ -218,7 +220,7 @@ bool block_skip( struct cmdcontext *context, struct cmdinterface *self )
 
 	context -> at = at;
 	context -> l = 0;
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 	return false;
 }
 
@@ -327,7 +329,7 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_int ) && (arg1.num == 0)) 
 		{
-			set_block_fn(block_skip);
+			set_block_fn(block_skip,NULL);
 		}
 
 		pop_context( context, 1);
@@ -589,7 +591,7 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 								int th = os_text_height( str );
 								int tb = os_text_base( str );
 
-								os_text_no_outline(screen, x,y+tb ,str,pen);
+								os_text_no_outline(screen, x,y+tb ,str,pen );
 								context -> xgc += os_text_width( str ) ;
 								context -> ygc += th;
 							}
@@ -818,7 +820,7 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, 10);
 
-		set_block_fn( block_hypertext_action );
+		set_block_fn( block_hypertext_action, NULL );
 	}
 
 	context -> cmd_done = NULL;
@@ -1396,7 +1398,7 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 
 	if (struct izone *iz = context -> findZone(context -> last_zone))
 	{
@@ -1408,7 +1410,7 @@ bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *s
 		}
 	}
 
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 	return block_skip( context, self );
 }
 
@@ -1513,7 +1515,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 
 	context -> cmd_done = NULL;
-	set_block_fn(block_ActiveList_action);
+	set_block_fn(block_ActiveList_action,NULL);
 }
 
 void icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
@@ -1732,7 +1734,7 @@ bool block_slider_action( struct cmdcontext *context, struct cmdinterface *self 
 		zs -> script_action = context -> at;
 	}
 
-	set_block_fn(block_skip);
+	set_block_fn(block_skip,NULL);
 	return block_skip(context, self);
 }
 
@@ -1803,7 +1805,7 @@ void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 			ze -> render(ze);
 		}
 
-		set_block_fn(block_slider_action);
+		set_block_fn(block_slider_action,NULL);
 
 	}
 
@@ -1872,7 +1874,7 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 			zs -> render(zs);
 		}
 
-		set_block_fn(block_slider_action);
+		set_block_fn(block_slider_action,NULL);
 
 	}
 
@@ -1932,7 +1934,7 @@ void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *se
 			zs -> render(zs);
 		}
 
-		set_block_fn(block_slider_action);
+		set_block_fn(block_slider_action,NULL);
 
 	}
 
@@ -2271,7 +2273,7 @@ void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 	bool inc = true;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if ( has_block_fn() ) inc= call_block_fn( context, self );
+	if ( has_block_start_fn() ) inc= call_block_start_fn(context, self);
 
 	if (inc) inc_block();
 
@@ -2286,6 +2288,8 @@ void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 	context -> selected_dialog = 0;
 
 	if (context -> block_level > 0) context -> block_level --;
+
+	if ( has_block_end_fn() ) call_block_end_fn(context, self);
 
 	context -> args = 0;
 	context -> expected = i_normal;
@@ -2303,14 +2307,14 @@ bool block_hypertext_action( struct cmdcontext *context, struct cmdinterface *se
 		}
 	}
 
-	set_block_fn(block_skip);
+	set_block_fn(block_skip,NULL);
 	return block_skip( context, self );
 }
 
 bool block_button_action( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 
 	if (struct izone *iz = context -> findZone(context -> last_zone))
 	{
@@ -2322,9 +2326,29 @@ bool block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 		}
 	}
 
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 	return block_skip(context, self);
 }
+
+
+void block_button_render_end( struct cmdcontext *context )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	struct izone *iz = context -> findZone(context -> last_zone);
+	struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
+
+	if (zb)
+	{
+		context -> xgcl = zb -> x0;
+		context -> ygcl = zb -> y0;
+		context -> xgc = zb -> x1;
+		context -> ygc = zb -> y1;
+	}
+
+	set_block_fn(block_button_action,NULL);
+}
+
 
 bool block_button_render( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -2338,15 +2362,15 @@ bool block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 		zb -> script_render = context -> at;
 	}
 
-	set_block_fn(block_button_action);
 	return true;
 }
+
 
 void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, int my, int zid)
 {
 	if ((mx<base -> x0)||(mx>base -> x1)||(my<base -> y0)||(my>base -> y1)) return;
 
-	set_block_fn(NULL);
+	set_block_fn(NULL,NULL);
 
 	if ( base -> script_render)
 	{
@@ -2429,12 +2453,12 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				zb -> h = _h.num;
 				zb -> x1 = zb -> x0+zb->w;
 				zb -> y1 = zb -> y0+zb->h;
-			}
 
-			context -> xgcl = _x.num;
-			context -> ygcl =_y.num;
-			context -> xgc = _x.num + _w.num;
-			context -> ygc = _y.num + _h.num;
+				context -> xgcl = zb -> x0;
+				context -> ygcl = zb -> y0;
+				context -> xgc = zb -> x1;
+				context -> ygc = zb -> y1;
+			}
 		}
 
 		pop_context( context, 8);
@@ -2445,7 +2469,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 		context -> error = true;
 	}
 
-	set_block_fn(block_button_render);
+	set_block_fn(block_button_render,block_button_render_end );
 
 	context -> selected_dialog = 1;
 	context -> cmd_done = NULL;
@@ -3374,17 +3398,13 @@ void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 {
+	struct zone_base *zb = NULL;
+
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	if (struct izone *iz = context -> findZone( context -> last_zone ))
-	{
-		struct zone_base *zb = iz -> custom;
+	if (struct izone *iz = context -> findZone( context -> last_zone )) zb = iz -> custom;
 
-		if (zb)
-		{
-			push_context_num( context, zb -> pos );
-		}
-	}
+	push_context_num( context, zb ? zb -> pos.num  : 0 );
 }
 
 void icmd_ZoneNumber( struct cmdcontext *context, struct cmdinterface *self )
@@ -3945,13 +3965,13 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 		}
 	}
 
-	context -> block_fn = (bool (**)( struct cmdcontext *, struct cmdinterface * )) malloc( sizeof(void *) * 20  );
+	context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
 
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
 
 
-	for (n=0;n<20;n++) context -> block_fn[n] = NULL;
+	for (n=0;n<20;n++) context -> iblocks[n].set( NULL,NULL );
 
 }
 
@@ -3983,10 +4003,10 @@ cmdcontext::~cmdcontext()
 		script = NULL;
 	}
 
-	if ( block_fn)
+	if ( iblocks )
 	{
-		free(	block_fn );
-		block_fn = NULL;
+		free(	iblocks );
+		iblocks = NULL;
 	}
 
 	if ( vars) 

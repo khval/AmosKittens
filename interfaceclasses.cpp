@@ -130,3 +130,10 @@ zone_activelist::zone_activelist()
 	render = I_FUNC_RENDER	activelist_render;
 	mouse_event = I_FUNC_MOUSE_EVENT activelist_mouse_event;
 }
+
+void iblock::set(bool (*_start_fn)(cmdcontext*, cmdinterface*), void (*_end_fn)(cmdcontext*))
+{
+	start_fn = _start_fn;
+	end_fn = _end_fn;
+}
+
