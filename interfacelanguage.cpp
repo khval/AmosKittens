@@ -2366,6 +2366,11 @@ bool block_button_render( struct cmdcontext *context, struct cmdinterface *self 
 	if (zb)
 	{
 		zb -> script_render = context -> at;
+
+		context -> xgcl = zb -> x0;
+		context -> ygcl = zb -> y0;
+		context -> xgc = zb -> x1;
+		context -> ygc = zb -> y1;
 	}
 
 	return true;
