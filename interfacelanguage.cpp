@@ -2383,6 +2383,10 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 
 	set_block_fn(NULL,NULL);
 
+	context -> current_params = base -> params;
+	// restore zone value...
+	copy_ivar( &base -> value, &context -> defaultZoneValue ); 
+
 	if ( base -> script_render)
 	{
 		for ( base -> value.num = 1; base -> value.num >=0  ; base -> value.num --)
@@ -2390,6 +2394,13 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 			context -> selected_dialog = 0;
 			context -> dialog[0].x =  base -> x0;
 			context -> dialog[0].y =  base -> y0;
+			context -> dialog[0].width =  base -> x1 - base -> x0;
+			context -> dialog[0].height =  base -> y1 - base -> y0;
+
+			context -> xgcl = base -> x0;
+			context -> ygcl = base -> y0;
+			context -> xgc = base -> x1;
+			context -> ygc = base -> y1;
 
 			execute_interface_sub_script( context, zid, base -> script_render);
 
