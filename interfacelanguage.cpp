@@ -3376,6 +3376,41 @@ void icmd_Hex_pass( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
+
+void _icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
+{
+	if (context -> stackp>=4)
+	{
+		struct ivar &x1 = context -> stack[context -> stackp-4];
+		struct ivar &y1 = context -> stack[context -> stackp-3];
+		struct ivar &x2 = context -> stack[context -> stackp-2];
+		struct ivar &y2 = context -> stack[context -> stackp-1];
+
+		if (( x1.type == type_int ) && ( y1.type == type_int ) && ( x2.type == type_int ) && ( y2.type == type_int ))
+		{
+			printf("XY: %d,%d,%d,%d\n",x1.num,y1.num,x2.num,y2.num);
+			getchar();
+
+			context -> xgcl = x1.num;
+			context -> ygcl = y1.num;
+			context -> xgc = x2.num;
+			context -> ygc = y2.num;
+		}
+
+		pop_context( context, 4);
+	}
+
+	context -> cmd_done = NULL;
+}
+
+void icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_XY;
+	context -> args = 4;
+	context -> expected = i_parm;
+}
+
 void icmd_XGCL( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
@@ -3646,7 +3681,7 @@ struct cmdinterface commands_param[]=
 	{"VA",2,i_parm,NULL,icmd_Var},
 	{"XA",2,i_parm,NULL,icmd_XGCL},
 	{"XB",2,i_parm,NULL,icmd_XGC},
-	{"XY",2,i_parm,NULL,NULL},
+	{"XY",2,i_parm,NULL,icmd_XY},
 	{"YA",2,i_parm,NULL,icmd_YGCL},
 	{"YB",2,i_parm,NULL,icmd_YGC},
 	{"ZC",2,i_normal,NULL,icmd_ZoneChange},
