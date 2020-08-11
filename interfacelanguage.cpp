@@ -4013,18 +4013,18 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	context -> block_level = 0;
 	context -> saved_block = NULL;
 	context -> expected = i_normal;
-
 	context ->cmd_done = NULL;
 
-	if (context -> vars == NULL) context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	if (context -> vars)
+	if (context -> vars == NULL) 
 	{
-		for (n =0;n<varSize;n++)
-		{
-			context -> vars[n].type = 0;
-			context -> vars[n].num = 0;
-		}
+		context -> vars = (struct ivar *) malloc( sizeof(struct ivar) * varSize  );
+		if (context -> vars ) bzero( context -> vars, sizeof(struct ivar) * varSize );
+	}
+	else
+	{
+		for (n=0;n<varSize;n++) free_ivar ( &context -> vars[n] );
 	}
 
 	context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
