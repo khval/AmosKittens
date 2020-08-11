@@ -2676,7 +2676,7 @@ void copy_ivar( struct ivar *from, struct ivar *to )
 
 void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d - %s\n",__FUNCTION__,__LINE__, context -> ui_current -> name);
+	printf("%s:%s:%d - %s\n",__FILE__,__FUNCTION__,__LINE__, context -> ui_current -> name);
 
 	if (context -> stackp>= context -> ui_current -> args )
 	{
@@ -4000,7 +4000,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	int n;
 	struct dialog &dialog = context -> dialog[0];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	interface_remove_lower_case( &script->ptr );
 
