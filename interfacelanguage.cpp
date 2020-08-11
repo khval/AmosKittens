@@ -3423,7 +3423,7 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 	if (struct izone *iz = context -> findZone( context -> last_zone ))
 	{
 		struct zone_base *zb = (iz ? iz -> custom : NULL);
-		push_context_num( context, zb ? zb -> value.num : 0 );
+		push_context_num( context, zb ? zb -> pos.num : 0 );
 		return;
 	}
 	else 	push_context_num( context,  0 );	

@@ -25,11 +25,10 @@ struct ibutton
 struct zone_base
 {
 	int x0,y0,x1,y1,w,h;
-	union 
-	{
-		struct ivar pos;
-		struct ivar value;
-	};
+
+	struct ivar value;
+	struct ivar pos;
+
 	int event;	// is reset on dialog command, used read by rdialog command.
 
 	char *script_action;
