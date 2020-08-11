@@ -108,6 +108,8 @@ zone_button::zone_button()
 	update = I_FUNC_UPDATE	il_button_update;
 	render = I_FUNC_RENDER	button_render;
 	mouse_event = I_FUNC_MOUSE_EVENT button_mouse_event;
+
+	bzero( params, sizeof(ivar) * 9 );
 }
 
 zone_hypertext::zone_hypertext()

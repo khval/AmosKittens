@@ -87,7 +87,8 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone,  char *
 
 void free_ivar( struct ivar *var );
 void copy_ivar( struct ivar *from, struct ivar *to );
-void dump_ivar_array( struct ivar *array, int size );
+void dump_ivar_array( const char *arrayname, struct ivar *array, int size );
+void copy_params( struct ivar *src, struct ivar *dest );
 
 void backup_param( struct cmdcontext *context );
 void restore_param_backup( struct cmdcontext *context );
@@ -126,6 +127,7 @@ struct userDefined *cmdcontext::findUserDefined( const char *name )
 cmdcontext::cmdcontext()
 {
 	bzero( this , sizeof( cmdcontext) );
+	current_params = params;
 }
 
 void cmdcontext::dumpUserDefined()
@@ -1824,12 +1826,16 @@ void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char c = *(context -> at + 1);
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// push ivar from param to stack...
 
-	copy_ivar( &context -> param[ c-'1' ], &context -> stack[context -> stackp ]  ); 
+//	dump_ivar_array( "parms", context -> current_params, 9 );
+
+	copy_ivar( context -> current_params + ( c-'1'), &context -> stack[context -> stackp ]  ); 
 	context -> stackp++;
+
+//	getchar();
 }
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
@@ -2394,6 +2400,8 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 		context -> has_return_value = true;
 		context -> return_value = zid;
 	}
+
+	context -> current_params = context -> params;
 }
 
 void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
@@ -2458,6 +2466,9 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 				context -> ygcl = zb -> y0;
 				context -> xgc = zb -> x1;
 				context -> ygc = zb -> y1;
+
+				copy_params( context -> current_params, zb -> params );
+				copy_ivar( &context -> defaultZoneValue , &zb -> value );
 			}
 		}
 
@@ -2675,7 +2686,7 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 #endif
 
-			copy_ivar( arg, &context -> param[ p ] );
+			copy_ivar( arg, context -> current_params + p );
 			p ++;
 		}
 
@@ -3910,7 +3921,7 @@ void push_context_var(struct cmdcontext *context, int index)
 
 
 
-void dump_ivar_array( struct ivar *array, int size )
+void dump_ivar_array( const char *arrayname, struct ivar *array, int size )
 {
 	int n;
 
@@ -3919,10 +3930,10 @@ void dump_ivar_array( struct ivar *array, int size )
 		switch ( array[n].type)
 		{
 			case type_string:
-				printf("     stack[%d]='%s'\n",n,&array[n].str -> ptr);
+				printf("     %s[%d]='%s'\n",arrayname, n,&array[n].str -> ptr);
 				break;
 			case type_int:
-				printf("     stack[%d]=%d\n",n,array[n].num);
+				printf("     %s[%d]=%d\n",arrayname, n,array[n].num);
 				break;
 		}
 	}
@@ -3930,7 +3941,7 @@ void dump_ivar_array( struct ivar *array, int size )
 
 void dump_context_stack( struct cmdcontext *context )
 {
-	dump_ivar_array( context -> stack, context -> stackp );
+	dump_ivar_array( "stack", context -> stack, context -> stackp );
 }
 
 void init_interface_context( struct cmdcontext *context, int id, struct stringData *script, int x, int y, int varSize, int bufferSize  )
@@ -4015,7 +4026,7 @@ cmdcontext::~cmdcontext()
 		vars = NULL;
 	}
 
-	for (n=0;n<9;n++) free_ivar ( &param[n] );
+	for (n=0;n<9;n++) free_ivar ( &params[n] );
 
 	free_ivar( &defaultZoneValue );
 
@@ -4137,9 +4148,17 @@ void test_interface_script( struct cmdcontext *context)
 	context -> tested = true;
 }
 
+void copy_params( struct ivar *src, struct ivar *dest )
+{
+	int n;
+	for ( n=0;n<9;n++)	copy_ivar( src + n, dest + n );
+}
+
 void backup_param( struct cmdcontext *context )
 {
 	int n;
+
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// we allocate backup when we need it, no need to free it, its going deleted when context is deleted.
 	// so we keep it in memory as long as we might need it.
@@ -4149,10 +4168,14 @@ void backup_param( struct cmdcontext *context )
 		context -> params_backup[ context -> ui_stackp ] = (struct ivar *) malloc( sizeof(struct ivar) * 9 );
 	}
 
-	memcpy( context -> params_backup[ context -> ui_stackp ], &context -> param, sizeof(struct ivar) * 9 );
+	printf("context -> current_params: %08x\n",context -> current_params);
 
-	bzero( (char *) &context -> param, sizeof(struct ivar) * 9  );
-	for ( n=0;n<9;n++)	copy_ivar( context -> params_backup[ context -> ui_stackp ]+ n, &context -> param[n] );
+	memcpy( context -> params_backup[ context -> ui_stackp ], context -> current_params, sizeof(struct ivar) * 9 );
+
+	// make sure strings are not freed by removing ptr ref.
+	bzero( (char *) context -> current_params, sizeof(struct ivar) * 9  );
+
+	copy_params( context -> params_backup[ context -> ui_stackp ], context -> current_params );
 
 	context -> ui_stackp ++ ;
 }
@@ -4161,8 +4184,12 @@ void restore_param_backup( struct cmdcontext *context )
 {
 	int n;
 	context -> ui_stackp --;
-	for ( n=0;n<9;n++)	free_ivar( &context -> param[n] );
-	memcpy( &context -> param, context -> params_backup[ context -> ui_stackp ], sizeof(struct ivar) * 9 );
+
+	// free current 
+	for ( n=0;n<9;n++)	free_ivar( context -> current_params + n );
+
+	// move backup
+	memcpy( context -> current_params, context -> params_backup[ context -> ui_stackp ], sizeof(struct ivar) * 9 );
 	bzero( context -> params_backup[ context -> ui_stackp ], sizeof(struct ivar) * 9  );
 }
 

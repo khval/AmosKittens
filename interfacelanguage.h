@@ -31,6 +31,7 @@ struct zone_base
 
 	int event;	// is reset on dialog command, used read by rdialog command.
 
+	struct ivar params[9];		// index 0 to 8 == P1 to P9
 	char *script_action;
 
 	void (*update) (struct zone_base *base, struct cmdcontext *context, int args, int arg1,int arg2,int arg3);
@@ -161,7 +162,9 @@ class cmdcontext
 		struct ivar stack[20];
 		struct ivar *vars;
 
-		struct ivar param[9];		// index 0 to 8 == P1 to P9
+		struct ivar params[9];			// index 0 to 8 == P1 to P9
+		struct ivar *current_params;		// points to the current params
+
 		struct ivar *params_backup[10];
 		int ui_stackp;
 		struct ivar	defaultZoneValue;
