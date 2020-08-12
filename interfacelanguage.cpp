@@ -537,6 +537,28 @@ void __print_one_line__( struct retroScreen *screen, int x, int y, struct string
 	}
 }
 
+void __print_vertical__( struct retroScreen *screen, int x, int y, struct stringData *txt, int pen)
+{
+	int n;
+	char *c = &txt -> ptr;
+
+	for (n=0;n<txt -> size;n++)
+	{
+		switch (*c)
+		{
+			case 0:
+			case 10:
+			case 12:
+				return;
+		}
+
+		draw_glyph( screen, topaz8_font, x, y, *c, pen );
+
+		c++;
+		y+=8;
+	}
+}
+
 void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
 	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
@@ -1896,6 +1918,47 @@ void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self 
 	context -> expected = i_parm;
 }
 
+void _icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	if (context -> stackp>=4)
+	{
+		struct retroScreen *screen = instance.screens[instance.current_screen];
+		int ox,oy;
+
+		int x = context -> stack[context -> stackp-4].num;
+		int y = context -> stack[context -> stackp-3].num;
+		struct ivar &data = context -> stack[context -> stackp-2];
+		int pen = context -> stack[context -> stackp-1].num;
+
+		x += get_dialog_x(context);
+		y += get_dialog_y(context);
+
+		engine_lock();
+		if (engine_ready())
+		{
+			switch (data.type)
+			{
+				case type_string:
+						__print_vertical__( screen, x, y, data.str, pen );
+						break;
+			}
+		}
+		engine_unlock();
+	}
+
+	pop_context( context, 4);
+	context -> cmd_done = NULL;
+}
+
+void icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
+{
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	context -> cmd_done = _icmd_VerticalText;
+	context -> args = 4;
+	context -> expected = i_parm;
+}
 
 void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
@@ -3659,7 +3722,7 @@ struct cmdinterface commands_normal[]=
 	{"UN",2,i_normal,NULL,icmd_Unpack},
 	{"VL",2,i_normal,NULL,icmd_imagevline },
 	{"VS",2,i_normal,NULL,icmd_VerticalSlider },
-	{"VT",2,i_normal,NULL,NULL},
+	{"VT",2,i_normal,NULL,icmd_VerticalText },
 	{NULL,0,i_normal,NULL,NULL}
 };
 
