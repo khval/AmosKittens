@@ -4097,6 +4097,14 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 		for (n=0;n<varSize;n++) free_ivar ( &context -> vars[n] );
 	}
 
+
+	if (context -> iblocks == NULL)
+	{
+		context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
+	}
+
+	for (n=0;n<20;n++) context -> iblocks[n].set( NULL,NULL );
+
 	context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
 
 	dialog.x = x - (x % 16) ;
