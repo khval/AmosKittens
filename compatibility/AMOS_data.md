@@ -1,24 +1,26 @@
 **Amosteroids.AMOS**
 
-Game is playable.
+    Game is playable.
 
 **Castle_Amos.AMOS**
 
-Game is playable.
+    Game is playable.
 
-Problems:
+    Problems:
 
-* Menu system is too fast.
-* Some minor graphic glitches.
+    * Menu system is too fast.
+    * Some minor graphic glitches.
 
 **Magic_Forest.AMOS**
 
-Game is not playable.
+    Game is playable.
 
-Problems:
+    Problems:
 
-* Picking the flute and game lucks up.
+    * No music yet.
+    * hi-source is messed up.
+    * Games runs a bit fast
 
 **Number_Leap.AMOS**
 
-Work, (need to retest, used to crash when compliting the level.)
+    DSI error, crashes on errResume function.
