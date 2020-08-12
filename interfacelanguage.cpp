@@ -3215,7 +3215,7 @@ void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
 
 		if ( arg1.type == type_string ) 
 		{
-			ret = os_text_width(arg1.str);
+			ret = arg1.str -> size;
 		}
 		else ret = 0;
 
