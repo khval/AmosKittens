@@ -4143,11 +4143,17 @@ cmdcontext::~cmdcontext()
 
 	if ( vars) 
 	{
+		// free the strings.
+		for (n=0;n<max_vars;n++)  free_ivar( vars + n );
+
+		// free the array buffer.
 		free( vars);
 		vars = NULL;
 	}
 
 	for (n=0;n<9;n++) free_ivar ( &params[n] );
+
+	current_params = NULL;
 
 	free_ivar( &defaultZoneValue );
 
