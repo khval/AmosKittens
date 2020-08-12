@@ -37,7 +37,14 @@ At line number: 1184
 
 Interface: Is buggy.
 
-Some crashes if you try to press buttons.
+* Interface User defined instruction are not always found on actions. (pressing buttons)
+
+* Some buttons are rendered at the wrong position, problem with XA,XB,YA,YB.
+
+Pressing QUIT causes NULL pointer, programs sets error, and program terminates, safely.
+
+Program uses sload, (sload is for loading sample so its not supported yet.), 
+so program can’t load banks yet.
 
 **Sample_Bank_Maker.AMOS**
 
