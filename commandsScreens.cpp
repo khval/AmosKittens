@@ -685,9 +685,12 @@ char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			retroScreenToFront(instance.screens[screen_num]);
-			instance.video -> refreshAllScanlines = TRUE;
-			success = true;
+			if (instance.screens[screen_num])
+			{
+				retroScreenToFront(instance.screens[screen_num]);
+				instance.video -> refreshAllScanlines = TRUE;
+				success = true;
+			}
 		}
 	}
 
@@ -695,6 +698,13 @@ char *_gfxScreenToFront( struct glueCommands *data, int nextToken )
 
 	popStack(__stack - data->stack );
 	return NULL;
+}
+
+char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	stackCmdParm( _gfxScreenToFront, tokenBuffer );
+	return tokenBuffer;
 }
 
 char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
@@ -716,9 +726,12 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 
 		if ((screen_num>-1)&&(screen_num<8))
 		{
-			retroScreenToBack(instance.screens[screen_num]);
-			instance.video -> refreshAllScanlines = TRUE;
-			success = true;
+			if (instance.screens[screen_num])
+			{
+				retroScreenToBack(instance.screens[screen_num]);
+				instance.video -> refreshAllScanlines = TRUE;
+				success = true;
+			}
 		}
 	}
 
@@ -726,13 +739,6 @@ char *_gfxScreenToBack( struct glueCommands *data, int nextToken )
 
 	popStack(__stack - data->stack );
 	return NULL;
-}
-
-char *gfxScreenToFront(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	stackCmdParm( _gfxScreenToFront, tokenBuffer );
-	return tokenBuffer;
 }
 
 char *gfxScreenToBack(struct nativeCommand *cmd, char *tokenBuffer)
