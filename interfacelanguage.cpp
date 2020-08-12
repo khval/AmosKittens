@@ -1208,6 +1208,10 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 			y0.num+=oy;
 			y1.num+=ox;
 
+			context -> xgcl = x0.num;
+			context -> ygcl = y0.num;
+
+
 			bank1 = findBankById(instance.current_resource_bank);
 
 			if (bank1)
@@ -1240,6 +1244,9 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
 				}
+
+				context -> xgc = x0.num +w;
+				context -> ygc = yp + h;
 			}
 		}
 	}
