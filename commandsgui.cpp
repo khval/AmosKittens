@@ -277,7 +277,7 @@ char *guiDialogStr(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialogBox( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	struct stringData *script = NULL;
 	struct cmdcontext context ;
@@ -285,19 +285,24 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 	context.return_value = 0;
 	context.tokenBuffer = data -> tokenBuffer;
 
+	printf("args: %d\n",args);
+
 	switch (args)
 	{
-		case 1:
+		case 1:	script = getStackString(__stack);
+
+				if (script)
 				{
-					script = getStackString(__stack);
 					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 					execute_interface_script( &context, -1 );
 				}
 				break;
 
-		case 2:
+		case 2:	script = getStackString(__stack-1);
+
+				if (script)
 				{
-					script = getStackString(__stack-1);
+
 					int var1 = getStackNum(__stack);
 					init_interface_context( &context, 0, script, 0, 0, 16, 0 );
 					isetvarnum( &context,0,var1); 
@@ -305,9 +310,10 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				}
 				break;
 
-		case 3:	
+		case 3:	script = getStackString(__stack-2);
+
+				if (script)
 				{
-					script = getStackString(__stack-2);
 					int var1 = getStackNum(__stack-1);
 					struct stringData *var2s = getStackString(__stack);
 
@@ -320,9 +326,10 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 				}
 				break;
 
-		case 5:
+		case 5:	script = getStackString(__stack-4);
+
+				if (script)
 				{
-					script = getStackString(__stack-4);
 					int var1 = getStackNum(__stack-3);
 					struct stringData *var2s = getStackString(__stack-2);
 					int x = getStackNum(__stack-1);
@@ -339,6 +346,11 @@ char *_guiDialogBox( struct glueCommands *data, int nextToken )
 
 		default:
 				setError(22,data->tokenBuffer);
+	}
+
+	if (script == NULL)
+	{
+		setError(22,data->tokenBuffer);
 	}
 
 	popStack(__stack - data->stack );
