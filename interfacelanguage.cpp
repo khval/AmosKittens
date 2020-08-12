@@ -2778,7 +2778,7 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 		pop_context( context, context -> ui_current -> args);
 
-		execute_interface_sub_script( context, 0, (char *) context -> ui_current -> action );
+		execute_interface_sub_script( context, -1, (char *) context -> ui_current -> action );
 
 	}
 
@@ -4325,7 +4325,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 	struct stringData *str = NULL;
 	char *backup_at = context -> at;
 
-	context -> last_zone = zone;
+	if (zone > - 1) context -> last_zone = zone;
 	context -> at = at;
 
 	if (context -> at == 0) 
