@@ -33,6 +33,10 @@ Works it starts "AMOSPro_Producitivity1:Menu_editor.amos"
 ERROR: Address error
 At line number: 1184
 
+Line " A=Start(BPIC)+Deek(BPIC)+2*(N-1)) "
+BPIC is 10, bank 10 not found, 
+(This looks like a bug in Object_Editor.AMOS, not an Amos Kittens Bug.)
+
 **Resource_Bank_Maker.AMOS**
 
 Interface: Is buggy.
