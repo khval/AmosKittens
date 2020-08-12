@@ -638,8 +638,6 @@ extern char *_file_end_;
 
 extern APTR contextDir;
 
-extern struct kittyFile kittyFiles[10];
-
 extern void (*do_breakdata) ( struct nativeCommand *cmd, char *tokenBuffer );
 
 extern struct glueCommands input_cmd_context;
@@ -763,6 +761,7 @@ struct KittyInstance
 	struct retroSprite *sprites ;
 	struct retroSprite *icons ;
 	struct kittyData *kittyStack;
+	struct kittyFile files[10];
 	struct glueCommands *cmdTmp;
 	struct errorAt kittyError;
 	struct zone *zones ;

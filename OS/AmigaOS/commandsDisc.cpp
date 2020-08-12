@@ -66,7 +66,7 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 
 	if ((num>-1)&&(num<10))
 	{
-		fd =  kittyFiles[ num ].fd;
+		fd =  instance.files[ num ].fd;
 
 		for (n=data->stack+1;n<=__stack;n++)
 		{
@@ -107,16 +107,16 @@ int _open_file_( struct glueCommands *data, const char *access )
 
 		if ((num>-1)&&(num<10))
 		{
-			if ( kittyFiles[ num ].fd )
+			if ( instance.files[ num ].fd )
 			{
-				fclose( kittyFiles[ num ].fd );
-				kittyFiles[ num ].fd = NULL;
+				fclose( instance.files[ num ].fd );
+				instance.files[ num ].fd = NULL;
 			}
 			
-			if ( kittyFiles[ num ].fields )
+			if ( instance.files[ num ].fields )
 			{
-				free( kittyFiles[ num ].fields );
-				kittyFiles[ num ].fields = NULL;
+				free( instance.files[ num ].fields );
+				instance.files[ num ].fields = NULL;
 			}
 
 			_str = getStackString(__stack );
@@ -124,10 +124,10 @@ int _open_file_( struct glueCommands *data, const char *access )
 			{
 				printf("name: '%s'\n",&_str->ptr);
 
-				kittyFiles[ num ].fd = fopen( &_str->ptr, access );
+				instance.files[ num ].fd = fopen( &_str->ptr, access );
 			}
 
-			if (kittyFiles[ num ].fd  == NULL) setError(81,data->tokenBuffer);
+			if (instance.files[ num ].fd  == NULL) setError(81,data->tokenBuffer);
 		}
 	}
 
@@ -173,13 +173,13 @@ char *_discClose( struct glueCommands *data, int nextToken )
 
 		if ((num>-1)&&(num<10))
 		{
-			fclose( kittyFiles[ num ].fd );
-			kittyFiles[ num ].fd = NULL;
+			fclose( instance.files[ num ].fd );
+			instance.files[ num ].fd = NULL;
 
-			if (kittyFiles[ num ].fields)
+			if (instance.files[ num ].fields)
 			{
-				free(kittyFiles[ num ].fields);
-				kittyFiles[ num ].fields = NULL;
+				free(instance.files[ num ].fields);
+				instance.files[ num ].fields = NULL;
 			}
 		}
 	}
@@ -257,68 +257,81 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
+		dump_stack();
+
+		printf("args: %d\n",args);
+
 		switch (args)
 		{
 			case 1:
 					str = getStackString(__stack );
 
-					split_path_pattern( str, &path, &pattern );
-					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
+					if (str)
+					{
+						split_path_pattern( str, &path, &pattern );
+						amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
-					success = AslRequestTags( (void *) filereq, 
-						ASLFR_DrawersOnly, FALSE,	
-						ASLFR_InitialDrawer, path ? &path -> ptr : "",
-						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
-						ASLFR_DoPatterns, TRUE,
-						TAG_DONE );
+						success = AslRequestTags( (void *) filereq, 
+							ASLFR_DrawersOnly, FALSE,	
+							ASLFR_InitialDrawer, path ? &path -> ptr : "",
+							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
+							ASLFR_DoPatterns, TRUE,
+							TAG_DONE );
+					}
 					break;
 
 			case 3:
 					str = getStackString(__stack -2 );
-
-					split_path_pattern( str, &path, &pattern );
-					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
-
 					_default_ = getStackString(__stack -1 );
 					_title_ = getStackString(__stack );
 
-					success = AslRequestTags( (void *) filereq, 
-						ASLFR_DrawersOnly, FALSE,	
-						ASLFR_TitleText, &_title_ -> ptr,
-						ASLFR_InitialFile, &_default_ -> ptr,
-						ASLFR_InitialDrawer, path ? &path -> ptr : "",
-						ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
-						ASLFR_DoPatterns, TRUE,
-						TAG_DONE );
+					if ((str)&&(_default_)&&(_title_))
+					{
+						split_path_pattern( str, &path, &pattern );
+						amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
+
+						success = AslRequestTags( (void *) filereq, 
+							ASLFR_DrawersOnly, FALSE,	
+							ASLFR_TitleText, &_title_ -> ptr,
+							ASLFR_InitialFile, &_default_ -> ptr,
+							ASLFR_InitialDrawer, path ? &path -> ptr : "",
+							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
+							ASLFR_DoPatterns, TRUE,
+							TAG_DONE );
+					}
 					break;
 
 			case 4:
 					str = getStackString(__stack -3 );
-
-					split_path_pattern( str, &path, &pattern );
-					amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
-
 					_default_ = getStackString(__stack -2 );
 					_title_ = getStackString(__stack-1 );
 					_title2_ = getStackString(__stack );
 
-					_title_temp_ = alloc_amos_string( _title_ -> size + 1 + _title2_ -> size  );
+					printf("%08x,%08x,%08x,%08x\n",str,_default_,_title_,_title2_);
 
-					if (_title_temp_)
+					if ((str)&&(_default_)&&(_title_)&&(_title2_))
 					{
-						sprintf(&_title_temp_ -> ptr,"%s\n%s",&_title_ -> ptr ,&_title2_ -> ptr);
+						split_path_pattern( str, &path, &pattern );
+						amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
-						success = AslRequestTags( (void *) filereq, 
-							ASLFR_DrawersOnly, FALSE,	
-							ASLFR_TitleText, &_title_temp_ -> ptr,
-							ASLFR_InitialFile, &_default_ -> ptr,
-							ASLFR_InitialPattern, amigaPattern ? amigaPattern  : "",
-							ASLFR_DoPatterns, TRUE,
-							TAG_DONE );
+						printf("_title_ -> size: %d, _title2_ -> size: %d\n", _title_ -> size ,  _title2_ -> size);
+
+						_title_temp_ = alloc_amos_string( _title_ -> size + 1 + _title2_ -> size  );
+
+						if (_title_temp_)
+						{
+							sprintf(&_title_temp_ -> ptr,"%s\n%s",&_title_ -> ptr ,&_title2_ -> ptr);
+
+							success = AslRequestTags( (void *) filereq, 
+								ASLFR_DrawersOnly, FALSE,	
+								ASLFR_TitleText, &_title_temp_ -> ptr,
+								ASLFR_InitialFile, &_default_ -> ptr,
+								ASLFR_InitialPattern, amigaPattern ? amigaPattern  : "",
+								ASLFR_DoPatterns, TRUE,
+								TAG_DONE );
+						}
 					}
-
 					break;
-
 		}
 
 		if (path) sys_free(path);
@@ -365,6 +378,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	{
 		setStackStr(toAmosString("", 0));
 	}
+	getchar();
 
 	return NULL;
 }
@@ -1152,7 +1166,7 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
-			fd = kittyFiles[ input_cmd_context.lastVar -1 ].fd ;
+			fd = instance.files[ input_cmd_context.lastVar -1 ].fd ;
 		}
 		else
 		{
@@ -1311,7 +1325,7 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 	{
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
-			fd = kittyFiles[ input_cmd_context.lastVar -1 ].fd ;
+			fd = instance.files[ input_cmd_context.lastVar -1 ].fd ;
 		}
 		else
 		{
@@ -1451,7 +1465,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 
 	if (( channel >0)&&( channel <11))
 	{
-		fd = kittyFiles[ channel -1 ].fd ;
+		fd = instance.files[ channel -1 ].fd ;
 
 
 		if (fd)
@@ -1503,7 +1517,7 @@ char *_discLof( struct glueCommands *data, int nextToken )
 
 		if (( channel >0)&&( channel <11))
 		{
-			fd = kittyFiles[ channel -1 ].fd ;
+			fd = instance.files[ channel -1 ].fd ;
 
 			if (fd)
 			{
@@ -1546,7 +1560,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 		{
 			if (( channel >0)&&( channel <11))
 			{
-				FILE *fd = kittyFiles[ channel -1 ].fd ;
+				FILE *fd = instance.files[ channel -1 ].fd ;
 
 				if (fd)
 				{
@@ -1569,7 +1583,7 @@ char *_set_pof( struct glueCommands *data, int nextToken )
 
 	if (( __set_channel__ >0)&&( __set_channel__ <11))
 	{
-		FILE *fd = kittyFiles[ __set_channel__ -1 ].fd ;
+		FILE *fd = instance.files[ __set_channel__ -1 ].fd ;
 
 		fseek( fd, pos, SEEK_SET );
 	}
@@ -1608,7 +1622,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 	
 					if (( channel >0)&&( channel <11))
 					{
-						fd = kittyFiles[ channel -1 ].fd ;
+						fd = instance.files[ channel -1 ].fd ;
 
 						if (fd)
 						{
@@ -1689,14 +1703,14 @@ char *_discGet( struct glueCommands *data, int nextToken )
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
-			fields = kittyFiles[channel-1].fields ;
-			fd = kittyFiles[channel-1].fd ;
+			fields = instance.files[channel-1].fields ;
+			fd = instance.files[channel-1].fd ;
 
-			printf("Seek to %d\n",(index -1) * kittyFiles[channel-1].fieldsSize);
+			printf("Seek to %d\n",(index -1) * instance.files[channel-1].fieldsSize);
 
-			fseek( fd, (index -1) * kittyFiles[channel-1].fieldsSize , SEEK_SET);
+			fseek( fd, (index -1) * instance.files[channel-1].fieldsSize , SEEK_SET);
 
-			for (n=0; n<kittyFiles[channel-1].fieldsCount;n++)
+			for (n=0; n<instance.files[channel-1].fieldsCount;n++)
 			{
 				if (globalVars[ fields -> ref -1 ].var.str) free(globalVars[ fields -> ref -1 ].var.str);
 
@@ -1724,7 +1738,7 @@ bool write_file_start_end( int channel, char *start, char *end )
 
 	if ((channel>0)&&(channel<11))
 	{
-		FILE *fd = kittyFiles[channel-1].fd ;
+		FILE *fd = instance.files[channel-1].fd ;
 		printf("channel\n");
 
 		if (fd)
@@ -1761,14 +1775,14 @@ char *_discPut( struct glueCommands *data, int nextToken )
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
-			fields = kittyFiles[channel-1].fields ;
-			fd = kittyFiles[channel-1].fd ;
+			fields = instance.files[channel-1].fields ;
+			fd = instance.files[channel-1].fd ;
 
-			printf("Seek to %d\n",(index -1) * kittyFiles[channel-1].fieldsSize);
+			printf("Seek to %d\n",(index -1) * instance.files[channel-1].fieldsSize);
 
-			fseek( fd, (index -1) * kittyFiles[channel-1].fieldsSize , SEEK_SET);
+			fseek( fd, (index -1) * instance.files[channel-1].fieldsSize , SEEK_SET);
 
-			for (n=0; n<kittyFiles[channel-1].fieldsCount;n++)
+			for (n=0; n<instance.files[channel-1].fieldsCount;n++)
 			{
 				printf(" [%d,%d] ", fields -> size, fields -> ref );
 
@@ -1817,12 +1831,12 @@ char *discField(struct nativeCommand *cmd, char *ptr)
 					{
 						channel = *((int *) ptr);
 
-						if (kittyFiles[channel-1].fields == NULL)
+						if (instance.files[channel-1].fields == NULL)
 						{
-							kittyFiles[channel-1].fields = (struct kittyField *) malloc( sizeof(struct kittyField) * 100 );
+							instance.files[channel-1].fields = (struct kittyField *) malloc( sizeof(struct kittyField) * 100 );
 						}
 
-						fields = kittyFiles[channel-1].fields;
+						fields = instance.files[channel-1].fields;
 					}
 					else if (fields)
 					{
@@ -1862,8 +1876,8 @@ char *discField(struct nativeCommand *cmd, char *ptr)
 
 	if (channel) 
 	{
-		kittyFiles[channel-1].fieldsCount = count ;
-		kittyFiles[channel-1].fieldsSize = size ;
+		instance.files[channel-1].fieldsCount = count ;
+		instance.files[channel-1].fieldsSize = size ;
 	}
 
 	return ptr - 2;

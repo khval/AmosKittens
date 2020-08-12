@@ -196,11 +196,11 @@ void clean_up_files()
 	int n;
 	for (n=0;n<10;n++)
 	{
-		if (kittyFiles[n].fd) fclose(kittyFiles[n].fd);
-		if (kittyFiles[n].fields) free(kittyFiles[n].fields);
+		if (instance.files[n].fd) fclose(instance.files[n].fd);
+		if (instance.files[n].fields) free(instance.files[n].fields);
 
-		kittyFiles[n].fd = NULL;
-		kittyFiles[n].fields = NULL;
+		instance.files[n].fd = NULL;
+		instance.files[n].fields = NULL;
 	}
 }
 
