@@ -4105,13 +4105,11 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 
 	for (n=0;n<20;n++) context -> iblocks[n].set( NULL,NULL );
 
-	context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
+	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
 
-
-	for (n=0;n<20;n++) context -> iblocks[n].set( NULL,NULL );
 
 }
 
