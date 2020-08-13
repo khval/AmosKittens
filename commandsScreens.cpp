@@ -207,6 +207,7 @@ char *_gfxScreenOpen( struct glueCommands *data, int nextToken )
 			colors = getStackNum(__stack-1 );
 			mode = amosModeToRetro(getStackNum(__stack ));
 
+			if (colors == 0x40000 ) mode |= retroHam8;
 			if (colors == 4096) mode |= retroHam6 ;
 			if (colors == -6) mode |= retroHam6 ;
 			if (colors == -8) mode |= retroHam8 ;
