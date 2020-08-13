@@ -16,6 +16,7 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
+#include <workbench/startup.h>
 #include <amosKittens.h>
 
 extern char *asl();
@@ -1278,6 +1279,31 @@ void cfg_joystick( int j, const char *type )
 	}
 }
 
+BPTR wbstartup_olddir = NULL;
+
+char *wbargs(struct WBStartup *argmsg)
+{
+	struct WBArg *arg;
+
+	printf("argmsg -> sm_NumArgs: %d\n", argmsg -> sm_NumArgs);
+
+	if (argmsg -> sm_NumArgs>1)	// check if we have args
+	{
+		arg = argmsg -> sm_ArgList +1;	// only read the first arg.
+		wbstartup_olddir = SetCurrentDir( arg -> wa_Lock );
+		return strdup(arg -> wa_Name);
+	}
+
+	return NULL;
+}
+
+void wbargclose()
+{
+	if (wbstartup_olddir)	SetCurrentDir(wbstartup_olddir);
+	wbstartup_olddir = NULL;
+}
+
+
 int main(int args, char **arg)
 {
 	BOOL runtime = FALSE;
@@ -1328,16 +1354,19 @@ int main(int args, char **arg)
 		{
 			case 2:	filename = strdup(arg[1]);
 					break;
+
 #if defined(__amigaos4__)
-			case 0:
-			case 1:
-					filename = asl();
+
+			case 0:	filename = wbargs( (struct WBStartup *) arg );
+					break;
+
+			case 1:	filename = asl();
 					break;	
 #endif
 		}
 	}
 
-	amosid[16] = 0;	// /0 string.
+	amosid[16] = 0;	// 0 string.
 
 #ifdef enable_fast_execution_yes
 
@@ -1511,7 +1540,10 @@ int main(int args, char **arg)
 	clean_up_stack();
 	clean_up_files();
 	clean_up_special();	// we add other stuff to this one.
+
+	wbargclose();
 	closedown();
+
 
 	if (sig_main_vbl) 
 	{
