@@ -84,44 +84,54 @@ unsigned int retroModeToAmosMode(unsigned int rMode)
 	return retMode;
 }
 
-void AmigaModeToRetro( unsigned int modeid, ULONG *retMode, float *aspect )
+#define monitor_id_mask 0xFFFF1000
+
+struct mode_table 
 {
-	unsigned int encoding = modeid & (0x800 | 0x1000 | 0x8000);
+	unsigned int key;
+	unsigned xdpi;
+	unsigned ydpi;
+};
+
+
+void AmigaModeToRetro(  unsigned int modeid, ULONG *retMode, float *aspect )
+{
+	unsigned int monitor_id = modeid & monitor_id_mask;
+	unsigned int id = modeid & ~monitor_id_mask;
 	*retMode = 0;
 	float xdpi = 40;
 	float ydpi = 40;
 
-	switch (encoding)
-	{
-		case 0x0800:
-				*retMode |= retroHam6;
-				break;
 
-		case 0x8800:					// this is set in HAM8 file I'm testing.
-				*retMode |= retroHam8;
-				break;
-		case 0x1000:					// this was set in anim8 file I'm testing.
-				*retMode |= retroHam6;
-				break;
-	}
-
-	if (modeid & (0x0100 | 0x0008 | 0x0004)) 
+	if ((monitor_id == PAL_MONITOR_ID) || (monitor_id == NTSC_MONITOR_ID) || (monitor_id == 0x0000 ))
 	{
-		*retMode |= retroInterlaced;
-		ydpi = 20;
-		printf("Interlaced\n");
-	}
+		if (id & 0x800)	*retMode |= retroHam6;
 
-	if (modeid & 0x8000)
-	{
-		*retMode |= retroHires;
-		xdpi = 20;
-		printf("hires\n");
+		id &= ~0x800;	// remove ham bit..
+		id &= ~0x080;	// remove half bright
+
+		if ( (modeid & 0x0004) || (modeid & 0x0400) )	// Interlaced or double productivity frequency
+		{
+			*retMode |= retroInterlaced;
+			ydpi = 20;
+			printf("Interlaced\n");
+		}
+
+		if (modeid & 0x8000)
+		{
+			*retMode |= retroHires;
+			xdpi = 20;
+			printf("hires\n");
+		}
+		else
+		{
+			*retMode |= retroLowres;
+			printf("lowres\n");
+		}
 	}
 	else
 	{
-		*retMode |= retroLowres;
-		printf("lowres\n");
+		*retMode = retroHires | retroInterlaced;
 	}
 
 	*aspect = (1.0f / xdpi) / (1.0f / ydpi);
@@ -995,6 +1005,7 @@ void LoadIff( const char *org_name,  int sn )
 	struct ColorRegister *cr;
 	ULONG modeid = 0; 
 	ULONG colors;
+	ULONG depth;
 	ULONG bformat;
 	ULONG mode;
 	char *name;
@@ -1023,7 +1034,10 @@ void LoadIff( const char *org_name,  int sn )
 
 		bformat = GetBitMapAttr(dt_bitmap,BMA_PIXELFORMAT);
 
+		depth = GetBitMapAttr(dt_bitmap,BMA_DEPTH);
+
 		printf("colors %d\n",colors);
+		printf("depth: %d\n",depth);
 		printf("mode id %08x\n",modeid);
 		printf("bformat %d\n",bformat);
 		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
@@ -1044,6 +1058,12 @@ void LoadIff( const char *org_name,  int sn )
 				case PIXF_NONE:
 				case PIXF_CLUT:
 					AmigaModeToRetro (modeid , &mode, &expected_aspect);
+
+					if (mode & retroHam6)
+					{
+						// upgrade to ham8...
+						if (depth == 8) mode = mode & ~retroHam6 | retroHam8;
+					}
 
 					if (image_aspect) if (image_aspect != expected_aspect)
 					{
