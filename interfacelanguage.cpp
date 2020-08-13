@@ -4358,7 +4358,8 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 	{
 
 #if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
-		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
+		printf("%08d: %.20s\n", context -> at - &(context -> script -> ptr),  context -> at);
+		printf("%d,%d,%d,%d\n", context -> xgcl, context -> ygcl,	context -> xgc, context -> ygc );
 //	dump_context_stack( context ); 
 
 #endif
@@ -4521,7 +4522,8 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		while (*context -> at==' ') context -> at++;
 
 #if defined(__amoskittens_interface_test__) || defined(enable_interface_debug_yes)
-		printf("%08d: %.8s\n", context -> at - &(context -> script -> ptr),  context -> at);
+		printf("%08d: %.20s\n", context -> at - &(context -> script -> ptr),  context -> at);
+		printf("%d,%d,%d,%d\n", context -> xgcl, context -> ygcl,	context -> xgc, context -> ygc );
 #endif
 
 		if (breakpoint)
