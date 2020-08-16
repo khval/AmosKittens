@@ -28,9 +28,12 @@
 #include "debug.h"
 #include "kittyErrors.h"
 #include "amosString.h"
+#include "engine.h"
 
 extern struct globalVar globalVars[];
 extern int tokenMode;
+
+extern struct Screen *fullscreen_screen;
 
 std::vector<std::string> devList;
 
@@ -255,12 +258,10 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+	engine_lock();
+
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
-		dump_stack();
-
-		printf("args: %d\n",args);
-
 		switch (args)
 		{
 			case 1:
@@ -276,6 +277,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 							ASLFR_InitialDrawer, path ? &path -> ptr : "",
 							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 							ASLFR_DoPatterns, TRUE,
+							ASLFR_Screen, fullscreen_screen,
 							TAG_DONE );
 					}
 					break;
@@ -297,6 +299,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 							ASLFR_InitialDrawer, path ? &path -> ptr : "",
 							ASLFR_InitialPattern, amigaPattern ? amigaPattern : "",
 							ASLFR_DoPatterns, TRUE,
+							ASLFR_Screen, fullscreen_screen,
 							TAG_DONE );
 					}
 					break;
@@ -314,8 +317,6 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 						split_path_pattern( str, &path, &pattern );
 						amigaPattern = amos_to_amiga_pattern( &(pattern -> ptr) );
 
-						printf("_title_ -> size: %d, _title2_ -> size: %d\n", _title_ -> size ,  _title2_ -> size);
-
 						_title_temp_ = alloc_amos_string( _title_ -> size + 1 + _title2_ -> size  );
 
 						if (_title_temp_)
@@ -328,6 +329,7 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 								ASLFR_InitialFile, &_default_ -> ptr,
 								ASLFR_InitialPattern, amigaPattern ? amigaPattern  : "",
 								ASLFR_DoPatterns, TRUE,
+								ASLFR_Screen, fullscreen_screen,
 								TAG_DONE );
 						}
 					}
@@ -364,6 +366,8 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 			}
 		}
 		 FreeAslRequest( filereq );
+
+		engine_unlock();
 	}
 
 	popStack(__stack - data -> stack  );
@@ -378,7 +382,6 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	{
 		setStackStr(toAmosString("", 0));
 	}
-	getchar();
 
 	return NULL;
 }
