@@ -1050,7 +1050,6 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 				ew = ((x1.num - x0.num + 1) & 0xFFFFF8) / w  ;
 				eh = (y1.num - y0.num + 1) / h  ;
 
-
 				if (get_resource_block( bank1, _image +2, x0.num + (ew-1)*w , y0.num, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
@@ -1068,7 +1067,6 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
 				}
-		
 
 				for (y=1; y<eh;y++)
 				{
@@ -2272,7 +2270,7 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 
 					for ( it = context -> zones.begin(); it != context -> zones.end(); ++it )
 					{
-						printf("do events on id: %d - custom %08lx\n", it -> id, it -> custom );
+						interface_printf("do events on id: %d - custom %08lx\n", it -> id, it -> custom );
 
 						if (base = it -> custom)
 						{
@@ -3012,9 +3010,6 @@ void icmd_strAdd( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( arg1.type == type_string ) && ( arg2.type == type_string ))
 		{
-			printf("&(arg1.str -> ptr)= %s \n",&(arg1.str -> ptr));
-			printf("&(arg2.str -> ptr)= %s \n",&(arg2.str -> ptr));
-
 			ret = alloc_amos_string( arg1.str ->size + arg2.str -> size  );
 			if (ret)
 			{
@@ -3575,7 +3570,7 @@ void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self 
 {
 	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
-	printf("context -> last_zone: %d\n", context -> last_zone);
+//	printf("context -> last_zone: %d\n", context -> last_zone);
 
 	if (struct izone *iz = context -> findZone( context -> last_zone ))
 	{
