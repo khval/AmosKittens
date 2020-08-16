@@ -107,16 +107,16 @@ struct userDefined *cmdcontext::findUserDefined( const char *name )
 	unsigned int n;
 	uint16_t twoChars = * ((uint16_t *)  name);	// name is char and myabe a \0, name should be two chars.
 
-	printf("looking for: %.2s\n", name);
+	interface_printf("looking for: %.2s\n", name);
 
 	// command is always two chars. buffer is 4 so no issue.
 	for (n=0;n<userDefineds.size();n++)
 	{
-		printf("%d\n",n);
+		interface_printf("%d\n",n);
 
 		if ( *((uint16_t *) userDefineds[n].name)  != twoChars) continue;
 
-		printf("userDefineds[n].name: %s\n", userDefineds[n].name ? userDefineds[n].name : "<NULL>");
+		interface_printf("userDefineds[n].name: %s\n", userDefineds[n].name ? userDefineds[n].name : "<NULL>");
 
 		return &userDefineds[n];
 	}
@@ -201,7 +201,7 @@ bool block_skip( struct cmdcontext *context, struct cmdinterface *self )
 	int block_count = 0;
 	int size = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	while (*at != 0)
 	{
@@ -321,7 +321,7 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char *at;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	at = context->at;
 
@@ -341,7 +341,8 @@ void _icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_If;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
@@ -350,7 +351,7 @@ void icmd_If( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp >= 2)
 	{
@@ -369,7 +370,8 @@ void _icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_KeyShortCut;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
@@ -379,7 +381,7 @@ void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp >= 2)
 	{
@@ -410,7 +412,7 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> cmd_done = _icmd_ZoneChange;
 	context -> lstackp = context -> stackp;
@@ -435,7 +437,7 @@ static int get_dialog_y(struct cmdcontext *context)
 
 void _icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=2)
 	{
@@ -458,7 +460,8 @@ void _icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Dialogsize;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
@@ -467,7 +470,8 @@ void icmd_Dialogsize( struct cmdcontext *context, struct cmdinterface *self )
 
 void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = NULL;
 	context -> pass_store --;
 
@@ -487,7 +491,8 @@ void _ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 
 void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _ipass_label;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
@@ -497,7 +502,8 @@ void ipass_label( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = NULL;
 
 	if (context -> stackp>=1)
@@ -509,7 +515,8 @@ void _icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_label( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_label;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
@@ -561,7 +568,7 @@ void __print_vertical__( struct retroScreen *screen, int x, int y, struct string
 
 void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
@@ -633,7 +640,8 @@ void _icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Print;
 	context -> lstackp = context -> stackp;
 	context -> args = 4;
@@ -642,11 +650,11 @@ void icmd_Print( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Comma( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> cmd_done)
 	{
-		printf("args %d found args %d\n",context -> stackp - context -> lstackp, context -> args );
+		interface_printf("args %d found args %d\n",context -> stackp - context -> lstackp, context -> args );
 
 		if ((context -> stackp - context -> lstackp) == context -> args)
 		{
@@ -797,7 +805,7 @@ void hypertext_mouse_event(zone_hypertext *base,struct cmdcontext *context, int 
 
 void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=10)
 	{
@@ -852,7 +860,8 @@ void _icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_HyperText;
 	context -> args = 10;
 	context -> expected = i_parm;
@@ -860,7 +869,8 @@ void icmd_HyperText( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	pop_context( context, 6);
 	context -> cmd_done = NULL;
 }
@@ -868,7 +878,8 @@ void _icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_ct;
 	context -> args = 6;
 	context -> expected = i_parm;
@@ -880,7 +891,7 @@ void icmd_ct( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=5)
 	{
@@ -918,7 +929,8 @@ void _icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_PrintOutline;
 	context -> lstackp = context -> stackp;
 	context -> args = 5;
@@ -929,7 +941,7 @@ void icmd_PrintOutline( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=2)
 	{
@@ -958,7 +970,8 @@ void _icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_SetVar;
 	context -> lstackp = context -> stackp;
 	context -> args = 2;
@@ -967,7 +980,7 @@ void icmd_SetVar( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -981,7 +994,8 @@ void _icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_SetZone;
 	context -> lstackp = context -> stackp;
 	context -> args = 1;
@@ -991,7 +1005,8 @@ void icmd_SetZone( struct cmdcontext *context, struct cmdinterface *self )
 void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( (screen) && (context -> stackp>=5) )
 	{
@@ -1107,7 +1122,8 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_ImageBox;
 	context -> args = 5;
 	context -> expected = i_parm;
@@ -1116,7 +1132,8 @@ void icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( (screen) && (context -> stackp>=4) )
 	{
@@ -1181,7 +1198,9 @@ void _icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Imagehline;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -1190,7 +1209,8 @@ void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( (screen) && (context -> stackp>=4) )
 	{
@@ -1258,7 +1278,8 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_imagevline;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -1267,7 +1288,7 @@ void icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=3)
 	{
@@ -1287,7 +1308,8 @@ void _icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Ink;
 	context -> args = 3;
 	context -> expected = i_parm;
@@ -1295,7 +1317,7 @@ void icmd_Ink( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -1308,7 +1330,8 @@ void _icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_WritingMode;
 	context -> args = 1;
 	context -> expected = i_parm;
@@ -1316,7 +1339,7 @@ void icmd_WritingMode( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Message( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -1344,7 +1367,7 @@ void _icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
@@ -1376,7 +1399,8 @@ void _icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_GraphicLine( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_GraphicLine;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -1386,7 +1410,7 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
@@ -1421,7 +1445,8 @@ void _icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_GraphicBox;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -1429,7 +1454,8 @@ void icmd_GraphicBox( struct cmdcontext *context, struct cmdinterface *self )
 
 bool block_ActiveList_action( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	set_block_fn(NULL,NULL);
 
 	if (struct izone *iz = context -> findZone(context -> last_zone))
@@ -1477,9 +1503,11 @@ void activelist_render(struct zone_activelist *al)
 
 void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
+#ifdef enable_interface_debug_yes
 	dump_context_stack( context );
+#endif
 
 	if (context -> stackp>=10)
 	{
@@ -1552,7 +1580,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_ActiveList;
 	context -> args = 10;
 	context -> expected = i_parm;
@@ -1609,7 +1637,7 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 	int t1;
 	int tpos = base -> pos.num;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	t0 = base -> w *  base -> pos.num / base -> total;
 	t1 = base -> w * (base -> pos.num+base -> trigger) / base -> total;
@@ -1650,14 +1678,14 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 				if (tpos > (base -> total - base -> trigger)) tpos = base -> total - base -> trigger; 
 
 				base -> pos.num = tpos;
-
+/*
 				printf("mx  %d, mouse x  %d, x %d, dx %d, t0 %d tpos %d\n",
 						mx,
 						hw_mouse_x, 
 						x, 
 						dx,
 						t0, tpos );
-
+*/
 				base -> render( base );
 
 				Delay(1);
@@ -1679,8 +1707,6 @@ void hslider_mouse_event(struct zone_hslider *base, struct cmdcontext *context, 
 			return;
 		}
 	}
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 }
 
 void activelist_mouse_event(zone_activelist *base,struct cmdcontext *context, int mx, int my, int zid)
@@ -1847,7 +1873,8 @@ void _icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Edit;
 	context -> args = 8;
 	context -> expected = i_parm;
@@ -1856,7 +1883,7 @@ void icmd_Edit( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 {
 	char c = *(context -> at + 1);
-	printf("s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// push ivar from param to stack...
 
@@ -1864,13 +1891,11 @@ void icmd_param( struct cmdcontext *context, struct cmdinterface *self )
 
 	copy_ivar( context -> current_params + ( c-'1'), &context -> stack[context -> stackp ]  ); 
 	context -> stackp++;
-
-//	getchar();
 }
 
 void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=9)
 	{
@@ -1920,7 +1945,7 @@ void _icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self
 
 void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_VerticalSlider;
 	context -> args = 9;
 	context -> expected = i_parm;
@@ -1928,7 +1953,7 @@ void icmd_VerticalSlider( struct cmdcontext *context, struct cmdinterface *self 
 
 void _icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
@@ -1962,7 +1987,7 @@ void _icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_VerticalText;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -1970,7 +1995,7 @@ void icmd_VerticalText( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=9)
 	{
@@ -2021,7 +2046,7 @@ void _icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *se
 
 void icmd_HorizontalSlider( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_HorizontalSlider;
 	context -> args = 9;
 	context -> expected = i_parm;
@@ -2032,7 +2057,7 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=4)
 	{
@@ -2064,7 +2089,8 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 
 void icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_GraphicSquare;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -2072,7 +2098,7 @@ void icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=2)
 	{
@@ -2095,7 +2121,8 @@ void _icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Base;
 	context -> args = 2;
 	context -> expected = i_parm;
@@ -2103,19 +2130,19 @@ void icmd_Base( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_BaseX( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog[context -> selected_dialog].x );
 }
 
 void icmd_BaseY( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog[context -> selected_dialog].y );
 }
 
 void _icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = NULL;
 
 	if (context -> stackp>=1)
@@ -2139,7 +2166,7 @@ void _icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Jump;
 	context -> args = 1;
 	context -> expected = i_parm;
@@ -2149,7 +2176,7 @@ void icmd_Jump( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ScreenMove( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	struct retroScreen *screen = instance.screens[instance.current_screen];
 	int hw_screen_y;
 	int hw_delta;
@@ -2216,7 +2243,7 @@ struct izone *cmdcontext::setZone(int id, zone_base *base)
 
 void do_events_interface_script(  struct cmdcontext *context, int event, int delay )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	context -> exit_run = false;
 	context -> has_return_value = false;
@@ -2276,7 +2303,7 @@ void do_events_interface_script(  struct cmdcontext *context, int event, int del
 
 void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = NULL;
 
 	if (context -> stackp>=2)
@@ -2302,7 +2329,7 @@ void _icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Run( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Run;
 	context -> args = 2;
 	context -> expected = i_parm;
@@ -2337,7 +2364,7 @@ void _Jump_SubRoutine( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> cmd_done = _Jump_SubRoutine;
 	context -> args = 1;
@@ -2348,7 +2375,7 @@ void icmd_JumpSubRutine( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 {
 	bool inc = true;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if ( has_block_start_fn() ) inc= call_block_start_fn(context, self);
 
@@ -2360,7 +2387,7 @@ void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> selected_dialog = 0;
 
@@ -2390,7 +2417,7 @@ bool block_hypertext_action( struct cmdcontext *context, struct cmdinterface *se
 
 bool block_button_action( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	set_block_fn(NULL,NULL);
 
 	if (struct izone *iz = context -> findZone(context -> last_zone))
@@ -2410,7 +2437,7 @@ bool block_button_action( struct cmdcontext *context, struct cmdinterface *self 
 
 void block_button_render_end( struct cmdcontext *context )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	struct izone *iz = context -> findZone(context -> last_zone);
 	struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
@@ -2429,7 +2456,7 @@ void block_button_render_end( struct cmdcontext *context )
 
 bool block_button_render( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	struct izone *iz = context -> findZone(context -> last_zone);
 	struct zone_button *zb = (struct zone_button *) (iz ? iz -> custom : NULL);
@@ -2493,7 +2520,7 @@ void button_mouse_event( zone_button *base, struct cmdcontext *context, int mx, 
 
 void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=8)
 	{
@@ -2575,7 +2602,7 @@ void _icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> cmd_done = _icmd_Button;
 	context -> args = 8;
@@ -2585,7 +2612,7 @@ void icmd_Button( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> has_return_value = true;
 	context -> exit_run = true;
 	context -> at = &(context -> script) -> ptr + context -> script -> size;
@@ -2594,7 +2621,7 @@ void icmd_ButtonQuit( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -2607,7 +2634,7 @@ void _icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ButtonReturn( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> cmd_done = _icmd_ButtonReturn;
 	context -> args = 1;
@@ -2633,7 +2660,7 @@ void icmd_Return( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=3)
 	{
@@ -2645,7 +2672,7 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 		{
 			struct kittyBank *bank1;
 
-			printf("unpack %d,%d,%d + (%d )\n", arg1.num, arg2.num, arg3.num, context -> image_offset);
+//			printf("unpack %d,%d,%d + (%d )\n", arg1.num, arg2.num, arg3.num, context -> image_offset);
 
 			bank1 = findBankById(instance.current_resource_bank);
 	
@@ -2672,7 +2699,7 @@ void _icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Unpack( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_Unpack;
 	context -> args = 3;
 	context -> expected = i_parm;
@@ -2683,7 +2710,7 @@ void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 {
 	retroScreen *screen = instance.screens[instance.current_screen];
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -2709,7 +2736,8 @@ void _icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Save( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_Save;
 	context -> args = 1;
 	context -> expected = i_parm;
@@ -2747,7 +2775,7 @@ void copy_ivar( struct ivar *from, struct ivar *to )
 
 void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%s:%d - %s\n",__FILE__,__FUNCTION__,__LINE__, context -> ui_current -> name);
+	interface_printf("%s:%s:%d - %s\n",__FILE__,__FUNCTION__,__LINE__, context -> ui_current -> name);
 
 	if (context -> stackp>= context -> ui_current -> args )
 	{
@@ -2789,7 +2817,7 @@ void _icmd_ui_cmd( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>=1)
 	{
@@ -2808,7 +2836,8 @@ void _icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	context -> cmd_done = _icmd_PushImage;
 	context -> args = 1;
 	context -> expected = i_parm;
@@ -2818,12 +2847,12 @@ void icmd_PushImage( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ButtonNoWait( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 }
 
 void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>0)
 	{
@@ -2843,7 +2872,7 @@ void icmd_Var( struct cmdcontext *context, struct cmdinterface *self )
 
 void pop_context( struct cmdcontext *context, int pop )
 {
-	printf("pop(%d)\n",pop);
+	interface_printf("pop(%d)\n",pop);
 
 	while ((pop>0)&&(context->stackp>0))
 	{
@@ -2854,8 +2883,6 @@ void pop_context( struct cmdcontext *context, int pop )
 			case type_string:
 					if (p.str)
 					{
-						printf("--pop frees(%08x)\n",p.str);
-
 						sys_free (p.str);
 						p.str = NULL;
 					}
@@ -2865,14 +2892,12 @@ void pop_context( struct cmdcontext *context, int pop )
 		pop--;
 		context -> stackp--;
 	}
-
-	printf("stackp is %d\n",context -> stackp);
 }
 
 void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -2893,7 +2918,7 @@ void icmd_Equal( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_NotEqual( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -2914,7 +2939,7 @@ void icmd_NotEqual( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_More( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -2935,7 +2960,7 @@ void icmd_More( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Less( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -2957,7 +2982,7 @@ void icmd_Less( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -2978,7 +3003,7 @@ void icmd_Plus( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_strAdd( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct stringData *ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3024,7 +3049,7 @@ void icmd_strAdd( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_toStr( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct stringData *ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3057,7 +3082,7 @@ void icmd_toStr( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_ArraySize( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3084,7 +3109,7 @@ void icmd_ArraySize( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3105,7 +3130,7 @@ void icmd_Minus( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Mul( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3126,7 +3151,7 @@ void icmd_Mul( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Div( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3147,7 +3172,7 @@ void icmd_Div( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>1)
 	{
@@ -3167,7 +3192,7 @@ void icmd_Min( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_TextHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, 8 );
 }
@@ -3178,7 +3203,7 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 	char tmp[30];
 	struct stringData *str = (struct stringData *) tmp;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>0)
 	{
@@ -3208,7 +3233,7 @@ void icmd_TextWidth( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp>0)
 	{
@@ -3230,19 +3255,19 @@ void icmd_TextLength( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_SizeX( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog[context -> selected_dialog].width );
 }
 
 void icmd_SizeY( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	push_context_num( context, context -> dialog[context -> selected_dialog].height );
 }
 
 void icmd_Max( struct cmdcontext *context, struct cmdinterface *self )	// Max
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);	
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);	
 
 	if (context -> stackp>=2)
 	{
@@ -3264,7 +3289,7 @@ void icmd_Max( struct cmdcontext *context, struct cmdinterface *self )	// Max
 void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 {
 	int ret = 0;
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 
 	if (context -> stackp>0)
@@ -3291,7 +3316,7 @@ void icmd_cx( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> at = &(context -> script -> ptr) + context -> script -> size;
 	context -> cmd_done = NULL;
 	context -> args = 0;
@@ -3301,7 +3326,7 @@ void icmd_Exit( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (instance.screens[instance.current_screen])	// check if current screen is open.
 	{
@@ -3311,7 +3336,7 @@ void icmd_ScreenWidth( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ScreenHeight( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (instance.screens[instance.current_screen])	// check if current screen is open.
 	{
@@ -3321,7 +3346,7 @@ void icmd_ScreenHeight( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_NextCmd( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> cmd_done)
 	{
@@ -3337,7 +3362,6 @@ void isetvarstr( struct cmdcontext *context,int index, struct stringData *str)
 
 	if (var.type == type_string)
 	{
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 		if (var.str) sys_free(var.str);
 	}
 	else var.type = type_string;
@@ -3372,7 +3396,7 @@ int igetvarnum( struct cmdcontext *context,int index )
 
 void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned char *at = (unsigned char *) context -> at;
 	int ret;
 
@@ -3394,7 +3418,7 @@ void icmd_Bin( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Bin_pass( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned char *at = (unsigned char *) context -> at;
 
 	if (*at != 37) return;	// not binaray
@@ -3410,7 +3434,7 @@ void icmd_Bin_pass( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Hex( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned char *at = (unsigned char *) context -> at;
 	int ret;
 	char symb;
@@ -3439,7 +3463,7 @@ void icmd_Hex( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_Hex_pass( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	unsigned char *at = (unsigned char *) context -> at;
 	char symb;
 
@@ -3487,7 +3511,7 @@ void _icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	context -> cmd_done = _icmd_XY;
 	context -> args = 4;
 	context -> expected = i_parm;
@@ -3495,35 +3519,35 @@ void icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_XGCL( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, context -> xgcl );
 }
 
 void icmd_YGCL( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, context -> ygcl );
 }
 
 void icmd_XGC( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, context -> xgc );
 }
 
 void icmd_YGC( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, context -> ygc );
 }
 
 void icmd_ZoneValue( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	copy_ivar( &context -> defaultZoneValue, &context -> stack[context -> stackp] );
 	context -> stackp++;
@@ -3533,7 +3557,7 @@ void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct zone_base *zb = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (struct izone *iz = context -> findZone( context -> last_zone )) zb = iz -> custom;
 
@@ -3542,14 +3566,14 @@ void icmd_ZonePosition( struct cmdcontext *context, struct cmdinterface *self )
 
 void icmd_ZoneNumber( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	push_context_num( context, context -> last_zone );
 }
 
 void icmd_ButtonPosition( struct cmdcontext *context, struct cmdinterface *self )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	printf("context -> last_zone: %d\n", context -> last_zone);
 
@@ -3583,7 +3607,7 @@ void test_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 {
 	userDefined *ud;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	context -> at += 2;
 
@@ -3636,7 +3660,7 @@ void icmd_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 	const char *at;
 	int block = 0;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	// skip this command, should not be executed, its defined under test
 
@@ -3879,7 +3903,7 @@ struct cmdinterface *find_command( struct cmdinterface *commands, char *at, int 
 		{
 			c = *(at+l);
 
-			printf("%s, '%c'\n", cmd -> name,c);
+			interface_printf("%s, '%c'\n", cmd -> name,c);
 
 			if ((c == ' ')||(c=='\'')||(c == 0)) return cmd;
 			if ((c>='0')&&(c<='9')) return cmd;
@@ -3991,7 +4015,7 @@ void push_context_num(struct cmdcontext *context, int num)
 	self.num = num;
 	context -> stackp++;
 
-	printf("push %d\n",num);
+	interface_printf("push %d\n",num);
 }
 
 void push_context_string(struct cmdcontext *context, struct stringData *str)
@@ -4001,7 +4025,7 @@ void push_context_string(struct cmdcontext *context, struct stringData *str)
 	self.str = str;
 	context -> stackp++;
 
-	printf("push %s\n",&str -> ptr);
+	interface_printf("push %s\n",&str -> ptr);
 }
 
 void push_context_var(struct cmdcontext *context, int index)
@@ -4071,7 +4095,7 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	int n;
 	struct dialog &dialog = context -> dialog[0];
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	interface_remove_lower_case( &script->ptr );
 
@@ -4085,8 +4109,6 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	context -> saved_block = NULL;
 	context -> expected = i_normal;
 	context ->cmd_done = NULL;
-
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (context -> vars == NULL) 
 	{
@@ -4106,12 +4128,8 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 
 	for (n=0;n<20;n++) context -> iblocks[n].set( NULL,NULL );
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
 	dialog.x = x - (x % 16) ;
 	dialog.y = y;
-
-
 }
 
 cmdcontext::~cmdcontext()
@@ -4119,7 +4137,7 @@ cmdcontext::~cmdcontext()
 	int n = 0;
 	at = NULL;
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (saved_block)
 	{
@@ -4215,7 +4233,6 @@ void test_interface_script( struct cmdcontext *context)
 			struct cmdinterface *icmd = &symbols[sym];
 			if (icmd -> pass)
 			{
-				printf("found %s\n", icmd -> name);
 				icmd -> pass( context, icmd );
 			}
 		}
@@ -4257,7 +4274,6 @@ void test_interface_script( struct cmdcontext *context)
 
 				if (cmd -> pass)
 				{
-					printf("found %s\n", cmd -> name);
 					cmd -> pass( context, cmd );
 				}
 			}
@@ -4292,7 +4308,7 @@ void backup_param( struct cmdcontext *context )
 {
 	int n;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// we allocate backup when we need it, no need to free it, its going deleted when context is deleted.
 	// so we keep it in memory as long as we might need it.
@@ -4301,8 +4317,6 @@ void backup_param( struct cmdcontext *context )
 	{
 		context -> params_backup[ context -> ui_stackp ] = (struct ivar *) malloc( sizeof(struct ivar) * 9 );
 	}
-
-	printf("context -> current_params: %08x\n",context -> current_params);
 
 	memcpy( context -> params_backup[ context -> ui_stackp ], context -> current_params, sizeof(struct ivar) * 9 );
 
@@ -4480,7 +4494,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	int num;
 	struct stringData *str = NULL;
 
-	printf("--- %s:%s:%d ---\n",__FILE__,__FUNCTION__,__LINE__);
+	interface_printf("--- %s:%s:%d ---\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( context -> vars == NULL )
 	{
@@ -4531,6 +4545,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 		{
 			printf("EXECUTE SCRIPT {%s}\n",context -> at);
 			printf("<< breakpoint, press enter >>\n");
+			getchar();
 		}
 
 		sym = find_symbol( context -> at, context -> l );
@@ -4571,7 +4586,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 
 					if (context -> ui_current)
 					{
-						Printf("found this ud command - %s\n", context -> ui_current -> name);
+						interface_printf("found this ud command - %s\n", context -> ui_current -> name);
 						context -> l = strlen(context -> ui_current -> name);
 						context -> args = context -> ui_current -> args;
 						context -> expected = (context -> args) ? i_parm : i_normal;
@@ -4581,7 +4596,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 					}
 					else
 					{
-						printf("not a command, not string, not a number, not a user defined command\n");
+						interface_printf("not a command, not string, not a number, not a user defined command\n");
 
 						context -> error = true;
 						break;
@@ -4590,7 +4605,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 			}
 			else 	
 			{
-				printf("%s:%s\n",__FUNCTION__,cmd -> name);
+				interface_printf("%s:%s\n",__FUNCTION__,cmd -> name);
 
 				if (cmd -> type == i_normal)
 				{
@@ -4607,7 +4622,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 				if (cmd -> cmd)
 				{
 					cmd -> cmd( context, cmd );
-					printf("%s:context -> error %d\n", __FUNCTION__, context -> error );
+					interface_printf("%s:context -> error %d\n", __FUNCTION__, context -> error );
 				}
 				else
 				{
@@ -4626,8 +4641,6 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 			break;
 		}
 	}
-
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> error)
 	{

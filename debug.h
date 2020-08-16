@@ -15,7 +15,7 @@
 
 //--------- other options ------------
 
-#define enable_interface_debug_yes
+#define enable_interface_debug_no
 #define show_error_at_file_no
 #define show_debug_amal_no
 #define show_array_no
@@ -101,6 +101,12 @@ uint32_t mem_crc( char *mem, uint32_t size );
 #define proc_names_printf printf
 #else
 #define proc_names_printf(fmt,...)
+#endif
+
+#ifdef enable_interface_debug_yes
+#define interface_printf printf
+#else
+#define interface_printf(fmt,...)
 #endif
 
 #ifdef show_pass1_tokens_yes

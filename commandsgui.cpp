@@ -159,7 +159,7 @@ void 	erase_interface_context( struct cmdcontext *context )
 
 char *_guiDialogRun( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int guiChannel = 0;
 	int label = 0;
@@ -216,7 +216,7 @@ char *guiDialogRun(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialog( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int guiChannel = 0;
 	struct cmdcontext *context = NULL;
@@ -249,7 +249,7 @@ char *guiDialog(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialogStr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int guiChannel = 0;
 //	const char *ret = NULL;
@@ -277,7 +277,7 @@ char *guiDialogStr(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialogBox( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	struct stringData *script = NULL;
 	struct cmdcontext context ;
@@ -379,7 +379,7 @@ int current_dialog = -1;
 
 char *_guiDialogClose( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int id=-1;
 
@@ -464,17 +464,17 @@ struct stringData *dialog_open_arg_script(struct kittyData *arg)
 
 							if (offset_data)
 							{
-								printf("hunk is at offset: %08x\n",  hunk );
-								printf("Name should be at offset: %08x\n",  hunk + offset_data - 20 );
-								printf("Size should be at offset: %08x\n", hunk + offset_data );
-
 								pos = hunk + offset_data;
 								script_size = getWord( bank->start, pos );
+#ifdef enable_interface_debug_yes
 
 								printf("script name:\n[%.20s]\n", bank->start + hunk + offset_data - 20 );
 								printf("script:\n");
 								printf("%.*s\n", script_size, bank->start + pos );
+								printf("-- Press enter to continue --\n");
 								getchar();
+#endif
+
 								return toAmosString( (const char *) bank->start + pos , script_size );
 							}
 						}
@@ -496,14 +496,13 @@ struct stringData *dialog_open_arg_script(struct kittyData *arg)
 
 char *_guiDialogOpen( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	struct stringData *script;
 	int id = -1;
 	int ret = 0;
 	int varSize=17,bufferSize=0;
 
-	printf("args: %d\n",args);
 
 	switch (args)
 	{
@@ -590,7 +589,7 @@ char *_set_interface_command ( struct glueCommands *data, int nextToken )
 
 char *_set_interface_str_command ( struct glueCommands *data, int nextToken ) 
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (_set_interface_!=-1)
 	{
@@ -615,7 +614,7 @@ char *_set_interface_str_command ( struct glueCommands *data, int nextToken )
 
 char *_guiVdialog( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int ret = 0;
 	struct cmdcontext *item;
@@ -651,7 +650,7 @@ char *guiVdialog(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiVdialogStr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 
 	_set_interface_ = -1;
@@ -680,7 +679,7 @@ char *guiVdialogStr(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialogClr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int a;
 
@@ -709,7 +708,7 @@ extern void init_amos_kittens_screen_default_colors(struct retroScreen *screen);
 
 char *_guiResourceScreenOpen( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 
 	switch (args)
@@ -768,7 +767,7 @@ char *guiEDialog(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiRdialog( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int _channel_,_button_,_object_;
 
@@ -825,7 +824,7 @@ char *guiRdialog(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiRdialogStr( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int _channel_,_button_,_object_;
 	int ret = 0;
@@ -860,7 +859,7 @@ char *guiRdialogStr(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiDialogUpdate( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 	int _channel_, _zone_, _param1_,_param2_,_param3_;
 	struct cmdcontext *context = NULL;
@@ -930,7 +929,7 @@ char *guiDialogUpdate(nativeCommand *cmd, char *tokenBuffer)
 
 char *_guiResourceUnpack( struct glueCommands *data, int nextToken )
 {
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 	int args =__stack - data->stack +1 ;
 
 	NYI(__FUNCTION__);
