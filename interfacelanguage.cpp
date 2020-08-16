@@ -1024,7 +1024,12 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 			int oy = get_dialog_y(context);
 		
 			x0.num = x0.num - (x0.num % 16);
-			x1.num = x1.num - (x0.num % 16);
+			x1.num = x1.num - (x1.num % 16);
+
+			context -> xgcl = x0.num;
+			context -> ygcl= y0.num;
+			context -> xgc = x1.num;
+			context -> ygc = y1.num;
 
 			x0.num+=ox;
 			y0.num+=oy;
