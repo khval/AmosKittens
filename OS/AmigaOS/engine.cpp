@@ -630,20 +630,50 @@ bool menu_shortcut( ULONG Code ,  ULONG Qualifier)
 
 void open_fullscreen(ULONG ModeID)
 {
+	struct DimensionInfo dim;
+	struct Rectangle   *r;
+
+	GetDisplayInfoData( NULL, &dim, sizeof(dim), DTAG_DIMS, ModeID );
+
+	r = &dim.Nominal;
+
 	fullscreen_screen = OpenScreenTags ( NULL,
 			SA_DisplayID,  ModeID,
 			SA_Type, PUBLICSCREEN,
 			SA_PubName, "kittens Screen",
 			SA_Title, "Kittens Screen",
 			SA_ShowTitle, FALSE,
+			SA_Width, r-> MaxX - r-> MinX +1,
+			SA_Height, r -> MaxY - r -> MinY +1,
 			SA_Quiet, 	TRUE,
 			SA_LikeWorkbench, TRUE,
 		TAG_DONE);
 }
 
+/*
+double monitor_aspect(ULONG ModeID)
+{
+	struct DimensionInfo dim;
+	struct Rectangle   *r;
+	int width,height;
+
+	GetDisplayInfoData( NULL, &dim, sizeof(dim), DTAG_DIMS, ModeID );
+
+	r = &dim.Nominal;
+	width =  r-> MaxX - r-> MinX +1;
+	height =  r -> MaxY - r -> MinY +1;
+	return (double) width / (double) height;
+}
+*/
+
+double instance_aspect()
+{
+	return (double) instance.video -> width / (double) instance.video -> height ;
+}
+
 void enable_fullscreen()
 {
-	double window_aspect;
+	double aspect;
 	ULONG ModeID = 0x0;
 	int max_w,max_h;
 
@@ -660,14 +690,17 @@ void enable_fullscreen()
 
 	close_engine_window();
 
-	window_aspect = (double) window_save_state.window_width / (double) window_save_state.window_height;
+//	aspect = (double) window_save_state.window_width / (double) window_save_state.window_height;
 
 	struct Screen *screen = LockPubScreen(NULL);
 	if (screen)
 	{
 		if (ModeID == 0x0) ModeID = GetVPModeID(&screen->ViewPort);
+
+		aspect = instance_aspect();
+
 		window_save_state.window_height = screen -> Height;
-		window_save_state.window_width = window_aspect * (double) window_save_state.window_height;
+		window_save_state.window_width = aspect * (double) window_save_state.window_height;
 		UnlockPubScreen(NULL,screen);
 	}
 
