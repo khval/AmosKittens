@@ -1001,14 +1001,15 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &x1 = context -> stack[context -> stackp-2];
 		struct ivar &y1 = context -> stack[context -> stackp-1];
 
+
 		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( x1.type == type_int ) && ( y1.type == type_int ) )
 		{
 			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
-
-			x0.num = x0.num - (x0.num % 8);
-			x1.num = x1.num - (x0.num % 8);
+		
+			x0.num = x0.num - (x0.num % 16);
+			x1.num = x1.num - (x0.num % 16);
 
 			x0.num+=ox;
 			y0.num+=oy;
@@ -1031,11 +1032,11 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 					context -> error = true;
 				}
 
-				ew = (x1.num - x0.num) / w  ;
-				eh = (y1.num - y0.num) / h  ;
+				ew = ((x1.num - x0.num + 1) & 0xFFFFF8) / w  ;
+				eh = (y1.num - y0.num + 1) / h  ;
 
 
-				if (get_resource_block( bank1, _image +2, ew*w + x0.num, y0.num, &w,&h ) == false )
+				if (get_resource_block( bank1, _image +2, x0.num + (ew-1)*w , y0.num, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
@@ -1047,7 +1048,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 					context -> error = true;
 				}
 
-				if (get_resource_block( bank1, _image +8,  ew*w+ x0.num, y1.num - h, &w,&h ) == false )
+				if (get_resource_block( bank1, _image +8,  x0.num + (ew-1)*w , y1.num - h, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
@@ -1063,14 +1064,14 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 						context -> error = true;
 					}
 
-					if (get_resource_block( bank1, _image +5, ew *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
+					if (get_resource_block( bank1, _image +5, (ew-1) *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
 					{
 						setError( 22, context -> tokenBuffer );
 						context -> error = true;
 					}
 				}
 
-				for (x=1; x<ew;x++)
+				for (x=1; x<ew-1;x++)
 				{
 					if (get_resource_block( bank1, _image +1, x *w + x0.num, y0.num, &_w,&_h ) == false )
 					{
