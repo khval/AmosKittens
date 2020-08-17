@@ -220,7 +220,7 @@ bool block_skip( struct cmdcontext *context, struct cmdinterface *self )
 			block_count --;
 		}
 
-		if ((*at == ']') && (block_count == 0)) break;
+		if ((*at == ']') && (block_count == 0)) { at++;  break; }
 
 		at++;
 		size ++;
