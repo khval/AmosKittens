@@ -1528,6 +1528,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 
 	if (context -> stackp>=10)
 	{
+		int dx,dy;
 		int x1,y1;
 		struct zone_activelist *al = NULL;
 
@@ -1542,8 +1543,8 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 		int paper = context -> stack[context -> stackp-2].num;
 		int pen = context -> stack[context -> stackp-1].num;
 
-		x0+=get_dialog_x(context);
-		y0+=get_dialog_y(context);
+		dx=get_dialog_x(context);
+		dy=get_dialog_y(context);
 
 		x1 = x0+(w*8);
 		y1 = y0+(h*8);
@@ -1552,6 +1553,11 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 		context -> ygcl = y0;
 		context -> xgc = x1;
 		context -> ygc = y1;
+
+		x0+=dx;
+		y0+=dy;
+		x1+=dx;
+		y1+=dy;
 
 		if (struct izone *iz = context -> findZone(zone))
 		{
