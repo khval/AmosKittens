@@ -414,6 +414,9 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 	} 
 
 	ierror(1);	// if we have not retuned success before.
+
+	printf("looked for zone %d\n",zn ? zn -> num : -1);
+	context -> dumpZones();
 }
 
 void icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
@@ -2216,6 +2219,19 @@ void icmd_ScreenMove( struct cmdcontext *context, struct cmdinterface *self )
 	}
 }
 
+void cmdcontext::dumpZones()
+{
+	unsigned int i;
+
+	for ( i = 0; i < zones.size(); i++)
+	{
+		printf("zone: %d, type: %d, custom %08x\n",
+			zones[i].id,
+			zones[i].type,
+			zones[i].custom);
+	}
+}
+
 struct izone *cmdcontext::findZone(int id)
 {
 	unsigned int i;
@@ -3500,9 +3516,6 @@ void _icmd_XY( struct cmdcontext *context, struct cmdinterface *self )
 
 		if (( x1.type == type_int ) && ( y1.type == type_int ) && ( x2.type == type_int ) && ( y2.type == type_int ))
 		{
-			printf("XY: %d,%d,%d,%d\n",x1.num,y1.num,x2.num,y2.num);
-			getchar();
-
 			context -> xgcl = x1.num;
 			context -> ygcl = y1.num;
 			context -> xgc = x2.num;

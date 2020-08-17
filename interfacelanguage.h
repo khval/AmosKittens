@@ -146,6 +146,7 @@ class cmdcontext
 		struct userDefined *findUserDefined( const char *name );
 		void dumpUserDefined();
 		void resetZoneEvents();
+		void dumpZones();
 
 		cmdcontext();
 		~cmdcontext();
