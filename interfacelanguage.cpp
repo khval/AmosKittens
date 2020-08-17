@@ -387,16 +387,18 @@ void icmd_KeyShortCut( struct cmdcontext *context, struct cmdinterface *self )
 
 void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 {
+	struct ivar *zn = NULL;
+
 	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	if (context -> stackp >= 2)
 	{
-		struct ivar &zn = context -> stack[context -> stackp-2];
+		zn = &context -> stack[context -> stackp-2];
 		struct ivar &data = context -> stack[context -> stackp-1];
 
-		if ((zn.type == type_int) && ( data.type == type_int ))
+		if ((zn -> type == type_int) && ( data.type == type_int ))
 		{
-			struct izone *iz = context -> findZone( zn.num);
+			struct izone *iz = context -> findZone( zn -> num);
 
 			struct zone_base *zone =  iz ? iz ->custom : NULL;
 			if (zone) 
@@ -408,7 +410,12 @@ void _icmd_ZoneChange( struct cmdcontext *context, struct cmdinterface *self )
 
 				return;		// return success ;-)
 			}
+			else
+			{
+				printf("zone not found ???\n");
+			}
 		}
+		else printf(" not of correct type\n ");
 
 		pop_context( context, 2);
 	} 
