@@ -1502,10 +1502,7 @@ void activelist_render(struct zone_activelist *al)
 
 			if (n < al -> array -> size)
 			{				
-				printf("-n: %d\n",n);
-
 				str = *((&al -> array -> ptr) + n);
-
 				if (str) __print_one_line__(screen, al -> x0,al -> y0+i*8,str,al -> pen);
 			}
 		}
@@ -1516,6 +1513,7 @@ void activelist_render(struct zone_activelist *al)
 void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 {
 	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 
 #ifdef enable_interface_debug_yes
 	dump_context_stack( context );
@@ -2413,6 +2411,8 @@ void icmd_block_start( struct cmdcontext *context, struct cmdinterface *self )
 void icmd_block_end( struct cmdcontext *context, struct cmdinterface *self )
 {
 	interface_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	interface_printf("context -> block_level: %d\n", context -> block_level);
 
 	context -> selected_dialog = 0;
 
@@ -3615,7 +3615,6 @@ int get_num( struct cmdcontext *context )
 
 	while ((c>='0')&&(c<='9'))
 	{
-		printf("%c\n",c);
 		r = (r*10) + (c - '0');
 		c = *(++context -> at);
 	}
@@ -3644,8 +3643,6 @@ void test_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 
 		skip_spaces;
 
-		printf("%c\n",*context -> at);
-
 		if (is(','))
 		{
 			context -> at++;
@@ -3665,8 +3662,6 @@ void test_UserInstruction( struct cmdcontext *context, struct cmdinterface *self
 		{
 			context -> error = true;
 		}
-
-		printf("%s\n", ud -> name);
 	}
 
 	context -> at += 1;	// we skip the command name, this is a hack!!!
@@ -4311,7 +4306,7 @@ void test_interface_script( struct cmdcontext *context)
 	pop_context( context, context -> stackp );
 
 
-	if (*context -> at == 0) 		printf("test exited becouse its at \\0 char symbol\n");
+	if (*context -> at == 0) 		interface_printf("test exited becouse its at \\0 char symbol\n");
 	if (context -> error != false)	printf("test exited becouse of error\n");
 
 	context -> tested = true;
