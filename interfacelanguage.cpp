@@ -6,7 +6,13 @@
 #include <stdbool.h>
 #include <vector>
 
+#ifdef __amoskittens__
 #include "debug.h"
+#endif
+
+#ifdef __amoskittens_interface_test__
+#include "debug_interfacelanguage.h"
+#endif
 
 #if defined(__amigaos4__) || defined(__amigaos)
 #include <proto/dos.h>

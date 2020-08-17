@@ -40,10 +40,10 @@ all:	  show $(programs) $(objects_in_dir)
 show:
 	@echo $(objects_in_dir)
 
-${objects_dir}%.o:		%.cpp	debug.h 
+${objects_dir}%.o:		%.cpp	debug.h  debug_interfacelanguage.h
 	g++ $(warnings) -c -O2 $(inc) ${opt} -D__USE_INLINE__  $(@:${objects_dir}%.o=%.cpp) -o $@
 
-tests/interfaceTest.exe:  tests/interfaceTest.cpp ${objects_in_dir} AmalCompiler.h
+tests/interfaceTest.exe: debug_interfacelanguage.h  tests/interfaceTest.cpp ${objects_in_dir} AmalCompiler.h
 	g++ $(warnings) -O2 $(inc) -D__USE_INLINE__ $(@:.exe=.cpp) ${objects_in_dir} ${opt} -o $@
 
 clean:
