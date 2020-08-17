@@ -23,6 +23,7 @@
 #define enable_limit_mouse_no
 #define enable_engine_debug_output_no
 #define enable_audio_debug_output_no
+#define enable_end_of_program_debug_no
 
 // --------- debug options include ---------
 

@@ -1503,10 +1503,12 @@ int main(int args, char **arg)
 
 			 free_file(kittensFile);
 
-//			if (kittyError.newError == true)
-			{
-				dump_end_of_program();
-			}
+
+#ifdef enable_end_of_program_debug_yes
+			dump_end_of_program();
+#else
+			if (instance.kittyError.newError == true)	dump_end_of_program();
+#endif
 		}
 		else
 		{
@@ -1560,7 +1562,7 @@ int main(int args, char **arg)
 	{
 		SetExcept( oldSigExcept,oldSigExcept | SIGBREAKF_CTRL_C );
 		me -> tc_ExceptCode = oldException;
-		Printf("Old exception handler restored\n");
+		cleanup_printf("Old exception handler restored\n");
 	}
 #endif
 
