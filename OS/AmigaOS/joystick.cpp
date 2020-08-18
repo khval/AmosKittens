@@ -84,9 +84,11 @@ void init_usb_joystick(int usb_count, int port, struct joystick *joy, struct Tag
 	}
 }
 
+// this on is normaly run from engine... so needs to use Printf not newlib printf
+
 void dump_joysticks()
 {
-	printf("-- joysticks --\n");
+	Printf("-- joysticks --\n");
 
 	// show found joysticks
 	for (struct joystick *joy=joysticks;joy<joysticks+4;joy++)

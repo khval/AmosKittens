@@ -54,7 +54,6 @@ char *executeOnToken(char *ptr, unsigned short token)
 		case token_goto:
 		case token_gosub:	
 		case token_proc:
-					printf("PROC, GOSUB OR GOTO\n");
 					is_token_cmd = token;
 					return ptr;
 		case 0x0000:

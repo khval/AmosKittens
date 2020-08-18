@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "load_config.h"
+#include "debug.h"
 
 std::vector<std::string> groups;
 
@@ -51,7 +52,7 @@ std::string *getConfigValue( std::string key )
 {
 	unsigned int i;
 
-	printf("*%s*\n",key.c_str());
+	config_printf("config key '%s'\n",key.c_str());
 
 	for (i=0;i<cfgs.size();i++)
 	{

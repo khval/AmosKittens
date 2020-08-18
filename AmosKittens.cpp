@@ -713,8 +713,6 @@ char *do_var_index_alloc( glueCommands *cmd, int nextToken)
 
 	popStack(__stack - cmd -> stack);
 
-	printf("cmd stack loc %d, satck is %d\n",cmd -> stack, __stack);
-
 	return NULL;
 }
 
@@ -1269,7 +1267,7 @@ void cfg_joystick( int j, const char *type )
 	joy -> type = joy_usb;
 	joy -> device_id = 0;
 
-	printf("joysticks[%d].type = %d\n", j, joy -> type);
+//	printf("joysticks[%d].type = %d\n", j, joy -> type);
 
 	if (strcasecmp( type, "keyboard") == 0)
 	{
@@ -1430,9 +1428,6 @@ int main(int args, char **arg)
 			{
 				sprintf( tmp, "%s_%d", "joysticks", n );
 				value = getConfigValue( tmp );
-
-				printf (" %d\n", value );
-
 				cfg_joystick( n , value ? value -> c_str() : "usb" );
 			
 			}
@@ -1452,8 +1447,8 @@ int main(int args, char **arg)
 		{
 			if (kitty_extensions[n].lookup)
 			{
-				printf("make crc for extension %d - %08x\n",n,kitty_extensions[n].lookup );
-				 kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
+				extension_printf("make crc for extension %d - %08x\n",n,kitty_extensions[n].lookup );
+				kitty_extensions[n].crc = mem_crc( kitty_extensions[n].lookup, 0xFFFF ) ;
 			}
 		}
 

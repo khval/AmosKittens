@@ -24,6 +24,8 @@
 #define enable_engine_debug_output_no
 #define enable_audio_debug_output_no
 #define enable_end_of_program_debug_no
+#define enable_config_debug_no
+#define enable_extension_debug_no
 
 // --------- debug options include ---------
 
@@ -34,6 +36,7 @@
 #define show_pass1_tokens_no
 #define show_pass1_procedure_fixes_no
 #define show_pass1_end_of_file_no
+#define show_pass1_modified_code_no
 
 // ------------- CRC options ------------------ (keep this to no, unless you need to find a memory corruption bug)
 
@@ -115,6 +118,19 @@ uint32_t mem_crc( char *mem, uint32_t size );
 #else
 #define pass1_printf(fmt,...)
 #endif
+
+#ifdef enable_config_debug_yes
+#define config_printf printf
+#else
+#define config_printf(fmt,...)
+#endif
+
+#ifdef enable_extension_debug_yes
+#define extension_printf printf
+#else
+#define extension_printf(fmt,...)
+#endif
+
 
 #ifdef show_debug_amal_yes
 	#ifdef __amigaos4__

@@ -484,7 +484,10 @@ void pass1_sign( char * ptr )
 		case 0x0074:	// "("
 		case 0x005C:	// ","
 		case 0x0094:	// To
-				printf("moded to negative sign\n");
+
+#ifdef show_pass1_modified_code_yes
+				printf("Modified to negative signed\n");
+#endif
 				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
 				return;	// nothing more to do....
 
@@ -504,7 +507,9 @@ void pass1_sign( char * ptr )
 					default:
 							if (pass1_token_count <= 2)
 							{
-								printf("moded\n");
+#ifdef show_pass1_modified_code_yes
+								printf("Modified to negative signed\n");
+#endif
 								*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
 							}
 							return;
@@ -1185,11 +1190,7 @@ char *token_reader_pass1( char *start, char *ptr, unsigned short lastToken, unsi
 	}
 #endif 
 
-	if ( ptr  >= file_end ) 
-	{
-		printf(" ptr is over file end %08x\n", file_end);
-		return NULL;
-	}
+	if ( ptr  >= file_end ) 	return NULL;
 
 	return ptr;
 }
@@ -1279,11 +1280,9 @@ void pass1_reader( char *start, char *file_end )
 	{
 		if ( findRefAndFixProcCall(pass1CallProcedures[n])  )
 		{
-//ifdef show_pass1_procedure_fixes_yes
-
-			
+#ifdef show_pass1_procedure_fixes_yes
 			printf("fixed at: %08x ref is %d\n", pass1CallProcedures[n], pass1CallProcedures[n] -> ref - 1 );
-//endif
+#endif
 		}
 		else
 		{

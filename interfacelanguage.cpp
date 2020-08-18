@@ -4227,7 +4227,7 @@ userDefined *push_context_ui( struct cmdcontext *context )
 	{
 		ud.len = strlen( ud.name );	 // just nice to store the length, we know it should 2 chars, but way not also support 1 char commands.
 		ud.action = NULL;
-		printf("storing possible UI command %s\n", ud.name);
+		interface_printf("storing possible UI command %s\n", ud.name);
 		context -> userDefineds.push_back(ud);
 		return &(context -> userDefineds.back());
 	}
@@ -4503,6 +4503,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 	if (context -> error)
 	{
 		printf("error at: {%s}\n",context -> at);
+		context -> dumpUserDefined();
 		getchar();
 	}
 
@@ -4672,6 +4673,7 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	if (context -> error)
 	{
 		printf("error at: {%s}\n",context -> at);
+		context -> dumpUserDefined();
 		getchar();
 	}
 	else if (*context -> at != 0)

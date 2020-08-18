@@ -593,7 +593,7 @@ char *_set_interface_str_command ( struct glueCommands *data, int nextToken )
 	{
 		struct cmdcontext *item = find_interface_context(_set_interface_);
 
-		printf("set interface %d var %d\n",_set_interface_,_set_var_);
+		interface_printf("set interface %d var %d\n",_set_interface_,_set_var_);
 
 		if (item)
 		{

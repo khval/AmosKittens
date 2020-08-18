@@ -217,10 +217,7 @@ char *ocShow(struct nativeCommand *cmd, char *tokenBuffer)
 char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data->stack +1 ;
-	//proc_names_
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	printf("args: %d\n",args);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	switch (args)
 	{

@@ -147,7 +147,6 @@ void open_extension( const char *name, int id )
 
 	if (strlen(name)>8)
 	{
-		printf("%s\n",(name + strlen(name) - 8));
 		if (strcmp((name + strlen(name) - 8),".library")==0) new_format = true;
 	}
 
@@ -183,11 +182,11 @@ void open_extension( const char *name, int id )
 
 	if (newName == NULL) goto cleanup;
 
-	printf("%s\n",newName);
+	extension_printf("%s\n",newName);
 
 	if ( open_lib( newName, 53L , "main", 1, &extBase, (struct Interface **) &Iext  ) )
 	{
-		printf("lib open ok\n");
+		extension_printf("Extension is now open\n");
 
 		kitty_extensions[ id ].base = extBase;
 		kitty_extensions[ id ].interface = (struct Interface *) Iext;
@@ -195,13 +194,13 @@ void open_extension( const char *name, int id )
 
 		instance.extensions_context[ id ] = (char *) Iext -> makeContext();
 
-		printf("kitty_extensions[ %d ].lookup = %08x\n", id, kitty_extensions[ id ].lookup);
-		printf("instance.extensions_context[ %d ] = %08x\n", id, instance.extensions_context[ id ]);
+		extension_printf("kitty_extensions[ %d ].lookup = %08x\n", id, kitty_extensions[ id ].lookup);
+		extension_printf("instance.extensions_context[ %d ] = %08x\n", id, instance.extensions_context[ id ]);
 
 		return;
 	}
 
-	printf("iext %08x, extBase %08x\n",Iext,extBase);
+	extension_printf("iext %08x, extBase %08x\n",Iext,extBase);
 
 	if (Iext) DropInterface((struct Interface*) Iext); Iext = 0;
 	if (extBase) CloseLibrary(extBase); extBase = 0;
