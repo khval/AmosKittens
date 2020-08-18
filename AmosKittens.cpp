@@ -1431,7 +1431,7 @@ int main(int args, char **arg)
 				cfg_joystick( n , value ? value -> c_str() : "usb" );
 			
 			}
-			for (n=0;n<20;n++)
+			for (n=0;n<32;n++)
 			{
 				sprintf( tmp, "%s_%d", "extension", n );
 				value = getConfigValue( tmp );
