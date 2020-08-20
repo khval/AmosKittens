@@ -1264,9 +1264,7 @@ void pass1_reader( char *start, char *file_end )
 		}
 	}
 
-//ifdef show_pass1_procedure_fixes_yes
-	printf("number of procedure calls %d\n", pass1CallProcedures.size() );
-//endif
+	dprintf("number of procedure calls %d\n", pass1CallProcedures.size() );
 
 #ifdef enable_bank_crc_yes
 	if (bank_crc != mem_crc( _file_end_ , _file_bank_size ))

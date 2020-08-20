@@ -584,7 +584,6 @@ void init_banks( char *data , int size)
 
 		if (mread( &id, 4, 1, fd )==1)
 		{	
-//			printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 			if (strncmp(id,"AmBs",4)==0)
 			{
 				mread( &banks, 2, 1, fd);
@@ -627,7 +626,6 @@ void init_banks( char *data , int size)
 					printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 					getchar();
 				}
-				else printf("ID: %c%c%c%c\n",id[0],id[1],id[2],id[3]);
 			}
 			else 
 			{

@@ -23,7 +23,7 @@ extern void *set_reg (struct kittyChannel *self, struct amalCallBack *cb);
 
 kittyChannel::~kittyChannel()
 {
-	Printf("%s:%ld\n",__FUNCTION__,__LINE__);
+	dprintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (anim_script) freeString(anim_script);
 	anim_script = NULL;
@@ -99,7 +99,7 @@ ChannelTableClass::~ChannelTableClass()
 {
 	int n;
 
-	Printf("%s\n",__FUNCTION__);
+	dprintf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (tab)
 	{

@@ -1037,11 +1037,11 @@ void LoadIff( const char *org_name,  int sn )
 
 		depth = GetBitMapAttr(dt_bitmap,BMA_DEPTH);
 
-		printf("colors %d\n",colors);
-		printf("depth: %d\n",depth);
-		printf("mode id %08x\n",modeid);
-		printf("bformat %d\n",bformat);
-		printf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
+		dprintf("colors %d\n",colors);
+		dprintf("depth: %d\n",depth);
+		dprintf("mode id %08x\n",modeid);
+		dprintf("bformat %d\n",bformat);
+		dprintf("%d,%d\n",bm_header -> bmh_Width,bm_header -> bmh_Height);
 	
 		if (modeid != (ULONG) ~0)
 		{
@@ -1050,7 +1050,6 @@ void LoadIff( const char *org_name,  int sn )
 
 			float expected_aspect;
 			float image_aspect;
-
 
 			image_aspect = xAspect ?  ( 1.0f / (float) xAspect) / (1.0f / (float) yAspect) : 0.0f;
 
@@ -1089,15 +1088,11 @@ void LoadIff( const char *org_name,  int sn )
 
 		if (new_screen)
 		{
-			printf("its a new screen\n");
-
 			if (instance.screens[sn])
 			{
 				printf("we are closing the old screen\n");
 				 __kitten_screen_close( sn, &instance.screens[sn] );
 			}
-
-			printf("we are opening a new screen on %d\n",sn);
 
 			instance.screens[sn] = retroOpenScreen(bm_header -> bmh_Width,bm_header -> bmh_Height, mode);
 		}
@@ -1112,14 +1107,10 @@ void LoadIff( const char *org_name,  int sn )
 			int x,y;
 			InitRastPort(&rp);
 
-			printf("yes it looks like we can do whit, screen is open\n");
-
 			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
 
 			if (new_screen)
 			{
-				printf("this new screen so we need to more stuff\n");
-
 				init_amos_kittens_screen_default_text_window(instance.screens[sn], 256);
 				retroApplyScreen( instance.screens[sn], instance.video, 0, 0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight );
 				set_default_colors( instance.screens[sn] );
@@ -1140,9 +1131,7 @@ void LoadIff( const char *org_name,  int sn )
 				else
 				{
 					colors = 256;
-
 					grayScalePalette( instance.screens[sn], colors );
-
 					get_most_used_colors( &rp, instance.screens[sn]->realHeight,  instance.screens[sn]->realWidth, instance.screens[sn]);
 				}
 			}

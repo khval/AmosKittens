@@ -4147,7 +4147,6 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 		for (n=0;n<varSize;n++) free_ivar ( &context -> vars[n] );
 	}
 
-
 	if (context -> iblocks == NULL)
 	{
 		context -> iblocks = (struct iblock *) malloc( sizeof(struct iblock) * 20  );
@@ -4333,8 +4332,6 @@ void copy_params( struct ivar *src, struct ivar *dest )
 
 void backup_param( struct cmdcontext *context )
 {
-	int n;
-
 	interface_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	// we allocate backup when we need it, no need to free it, its going deleted when context is deleted.
@@ -4456,7 +4453,7 @@ void execute_interface_sub_script( struct cmdcontext *context, int zone, char *a
 
 					if (context -> ui_current)
 					{
-						Printf("found this ud command - %s\n", context -> ui_current -> name);
+						interface_printf("found this ud command - %s\n", context -> ui_current -> name);
 						context -> l = strlen(context -> ui_current -> name);
 						context -> args = context -> ui_current -> args;
 						context -> expected = (context -> args) ? i_parm : i_normal;
@@ -4540,8 +4537,11 @@ void execute_interface_script( struct cmdcontext *context, int32_t label)
 	if (context -> tested == false)
 	{
 	 	test_interface_script( context );
+
+#ifdef enable_interface_debug_yes
 		context -> dumpUserDefined();
-		getchar();
+#endif
+
 	}
 
 	context -> at = &(context -> script -> ptr);	// default

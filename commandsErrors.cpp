@@ -67,8 +67,6 @@ char *errOnError(nativeCommand *cmd, char *tokenBuffer)
 	{
 		case 0x02A8:	// Goto
 
-				printf("On Error ... Goto ...\n");
-
 				tokenBuffer += 2;				
 				name_from_ref(&tokenBuffer, &name);
 				if (name)
