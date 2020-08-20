@@ -200,6 +200,8 @@ char *_guiDialogRun( struct glueCommands *data, int nextToken )
 		context -> dialog[0].x = 0;
 		context -> dialog[0].y = 0;
 
+		context -> flushZones();
+
 		execute_interface_script( context, label );
 	}
 

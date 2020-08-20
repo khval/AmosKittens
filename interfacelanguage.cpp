@@ -4158,6 +4158,42 @@ void init_interface_context( struct cmdcontext *context, int id, struct stringDa
 	dialog.y = y;
 }
 
+
+void cmdcontext::flushZones()
+{
+	while (zones.size())
+	{
+		if (zones[zones.size()-1].custom) 
+		{
+			delete zones[zones.size()-1].custom;
+		}
+		zones.pop_back();
+	}
+}
+
+void cmdcontext::flushVars()
+{
+	int n;
+	if ( vars) 
+	{
+		// free the strings.
+		for (n=0;n<max_vars;n++)  free_ivar( vars + n );
+
+		// free the array buffer.
+		free( vars);
+		vars = NULL;
+	}
+}
+
+
+void cmdcontext::flushUserDefined()
+{
+	while (userDefineds.size())
+	{
+		userDefineds.erase(userDefineds.begin());
+	}
+}
+
 cmdcontext::~cmdcontext()
 {
 	int n = 0;
@@ -4171,14 +4207,8 @@ cmdcontext::~cmdcontext()
 		saved_block = NULL;
 	}
 
-	while (zones.size())
-	{
-		if (zones[zones.size()-1].custom) 
-		{
-			delete zones[zones.size()-1].custom;
-		}
-		zones.pop_back();
-	}
+	flushZones();
+	flushVars();
 
 	if (script)
 	{
@@ -4190,16 +4220,6 @@ cmdcontext::~cmdcontext()
 	{
 		free(	iblocks );
 		iblocks = NULL;
-	}
-
-	if ( vars) 
-	{
-		// free the strings.
-		for (n=0;n<max_vars;n++)  free_ivar( vars + n );
-
-		// free the array buffer.
-		free( vars);
-		vars = NULL;
 	}
 
 	for (n=0;n<9;n++) free_ivar ( &params[n] );

@@ -147,6 +147,10 @@ class cmdcontext
 		void dumpUserDefined();
 		void resetZoneEvents();
 		void dumpZones();
+		
+		void flushZones();
+		void flushVars();
+		void flushUserDefined();
 
 		cmdcontext();
 		~cmdcontext();
