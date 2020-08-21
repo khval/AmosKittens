@@ -113,7 +113,19 @@ see other docs like issue for more info.
 
 	Will load .png/.jpg any file supported by datatype system on AmigaOS, 
 	true color images are converted into 8bit grayscale images, or 8bit floyd dittered images.
-	(in the future this command can load in images as truecolor), loading option will be in global variabel.
+	
+	This works by setting public variable _cat_load_iff_opt$, the grate thing about this is change number of arguments,
+	and does not need new commands to change the behavior of the command for extra features.
+
+	// To set "floyd steinberg" rendering method.
+
+	_cat_load_iff_opt$="floyd"
+
+	// To set "grayscale" rendering method.
+
+	_cat_load_iff_opt$="grayscale"
+	
+	(in the future this command can load in images as truecolor). 	
 	IFF images with HAM6 format also supported.
 	HAM8 images also supported.
 	
