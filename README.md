@@ -60,16 +60,22 @@ Writing Amos Kittens compatible code, I suggest using “Amos Professional AGA�
 
 http://amos-professional-aga.frederic-cordier.fr
 
+However, Amos Professional AGA does come with a lots of new commands in AmosPro_Personal.lib and AmosPro_AgaSupport.lib, 
+this extension is not yet replicated for Amos kittens. Try to avoid this command, and stick to standard commands for Amos Kittens.
+
 There are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
 Amos Kittens was tested whit amos programs written in AMOS Professional 2.0, so no garanties.
 
-Later I might do a new editor replacing the Editor, with the aim of making editor without the bugs and problems, that is so hard to fix, and modernizing. But I can’t do everything at once, and so its pleasing that the old code is being updated.
+Later I might do a new editor replacing the Editor, with the aim of making editor without the bugs and problems, 
+that is so hard to fix, and modernizing. But I can’t do everything at once, and so its pleasing that the old code is being updated.
 
 Debuging Amos Kittens:
 ----------------------
-To enable debugging edit debug.h file here you find some switches , you can enable or disable, once the file is changed all files will be rebuilt automatic no need to type "make clean"
+To enable debugging edit debug.h file here you find some switches , you can enable or disable, 
+once the file is changed all files will be rebuilt automatic no need to type "make clean"
 
-Amos kittens might stop at any time.. it is possible that getchar(), command is halting the program. This most likely due to a command your using is not yet fully implemented, and program is being paused, so I can see what is going on.
+Amos kittens might stop at any time.. it is possible that getchar(), command is halting the program. 
+This most likely due to a command your using is not yet fully implemented, and program is being paused, so I can see what is going on.
 
 Current status:
 ---------------
