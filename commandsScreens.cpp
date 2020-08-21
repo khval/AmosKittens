@@ -14,6 +14,7 @@
 #include <proto/retroMode.h>
 #include <proto/datatypes.h>
 #include <datatypes/pictureclass.h>
+#include "var_helper.h"
 
 // undo stupid changes in the SDK.
 
@@ -998,6 +999,12 @@ void dmode( const char *name, uint64_t mode )
 
 extern char *get_name(char *path,char *name);		// found in include.cpp file
 
+enum
+{
+	opt_grayscale = 0,
+	opt_floyd
+};
+
 void LoadIff( const char *org_name,  int sn )
 {
 	struct DataType *dto = NULL;
@@ -1098,14 +1105,19 @@ void LoadIff( const char *org_name,  int sn )
 		}
 		else sn = instance.current_screen;
 
-		printf("screen id: %d\n", sn);
-
 		if (instance.screens[sn])
 		{
 			unsigned int c;
+			int load_opt = opt_grayscale;
+
 			struct RastPort rp;
 			int x,y;
 			InitRastPort(&rp);
+
+			struct kittyData *var = findPublicVarByName( "_cat_load_iff_opt$", type_string );
+
+			if (str_var_is(var, "floyd") == 0 ) load_opt = opt_floyd;
+			if (str_var_is(var, "grayscale") == 0 ) load_opt = opt_grayscale;
 
 			retroBAR( instance.screens[sn], 0, 0,0, instance.screens[sn] -> realWidth,instance.screens[sn]->realHeight, instance.screens[sn] -> paper );
 
@@ -1131,8 +1143,17 @@ void LoadIff( const char *org_name,  int sn )
 				else
 				{
 					colors = 256;
-					grayScalePalette( instance.screens[sn], colors );
-					get_most_used_colors( &rp, instance.screens[sn]->realHeight,  instance.screens[sn]->realWidth, instance.screens[sn]);
+
+					switch (load_opt)
+					{
+						case opt_grayscale:
+							grayScalePalette( instance.screens[sn], colors );
+							break;
+
+						case opt_floyd:
+							get_most_used_colors( &rp, instance.screens[sn]->realHeight,  instance.screens[sn]->realWidth, instance.screens[sn]);
+							break;
+					}
 				}
 			}
 
@@ -1146,13 +1167,20 @@ void LoadIff( const char *org_name,  int sn )
 					}
 				}
 			}
-			else
+			else	// true color image...
 			{
-//				floyd( &rp, instance.screens[sn]->realWidth,  instance.screens[sn]-> realHeight , instance.screens[sn] );
-
-				for (y=0;y<instance.screens[sn]->realHeight;y++)
+				switch (load_opt)
 				{
-					argbToGrayScale( &rp, y, instance.screens[sn] );
+					case opt_grayscale:
+						for (y=0;y<instance.screens[sn]->realHeight;y++)
+						{
+							argbToGrayScale( &rp, y, instance.screens[sn] );
+						}
+						break;
+
+					case opt_floyd:
+						floyd( &rp, instance.screens[sn]->realWidth,  instance.screens[sn]-> realHeight , instance.screens[sn] );
+						break;
 				}
 			}
 		}

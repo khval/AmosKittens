@@ -200,6 +200,9 @@ void ToFloyd(
 	double r,g,b;
 	int i;
 
+/*	printf("screen %08x, R %08x, G %08x, B %08x, w %d, h %d\n",
+			screen, R,G,B,w,h); */
+
 	for( y=0; y<h;y++)
 	{
 		for (x = 0; x<w;x++)
@@ -237,8 +240,6 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 
 	if ( (R) && (G) && (B) )
 	{
-		printf("RGB to buffer\n");
-
 		for (y=0;y<h;y++)
 		{
 			for (x=0;x<w;x++) 
@@ -251,11 +252,7 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 			}
 		}
 
-		printf("to floyd\n");
-
 		ToFloyd(screen, R,G,B,w,h );
-
-		printf("RGB to colors\n");
 
 		for (y=0;y<h;y++)
 		{
@@ -268,8 +265,8 @@ void floyd(struct RastPort *rp, int w, int h, struct retroScreen *screen)
 		}
 	}
 
-	if (R) free(R);
-	if (G) free(G);
-	if (B) free(B);
+	if (R) sys_free(R);
+	if (G) sys_free(G);
+	if (B) sys_free(B);
 }
 

@@ -14,9 +14,10 @@
 #include <proto/retroMode.h>
 #endif
 
-
 #include "amosKittens.h"
 #include "commands.h"
+#include "amosString.h"
+#include "var_helper.h"
 
 int findVar( char *name, int type, int _proc );
 extern int findVarPublic( char *name, int type );
@@ -242,9 +243,107 @@ struct kittyData *getVar(uint16_t ref)
 
 void get_procedures()
 {
-	unsigned int n;
+	int n;
 	for (n=0;n<var_count[0];n++)
 	{
 		if (globalVars[n].var.type == type_proc)	procedures.push_back( globalVars +n );
 	}
+}
+
+void add_str_var(const char *_name,const char *_value)
+{
+	char *name;
+	struct globalVar *var;
+	struct reference ref;
+
+	name = strdup(_name);
+	if (name)
+	{
+		var = add_var_from_ref( &ref, &name, type_string );
+		if (var)
+		{
+			if (var -> var.str) sys_free(var -> var.str);
+			var -> var.str = toAmosString(_value,strlen(_value));
+		}
+	}
+}
+
+struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type )
+{
+	struct globalVar *_new = NULL;
+
+	if ( var_count[0] < VAR_BUFFERS )
+	{
+		var_count[0] ++;
+
+		ref -> ref = var_count[procStackCount ? 1: 0];
+
+		if (type == type_proc)
+		{
+			ref -> flags = (ref->flags&3) | type;
+		}
+		else
+		{
+			ref -> flags = type;
+		}
+
+		_new = &globalVars[var_count[0]-1];
+		_new -> varName = *tmp;	// tmp is alloced and used here.
+		_new -> var.type = type;
+		_new -> localIndex = var_count[procStackCount];
+
+		if (type != type_proc) if (procStackCount) var_count[1]++;
+
+		if (_new -> var.type == type_string) _new -> var.str = toAmosString("",0);
+
+		*tmp = NULL;
+	}
+
+	return _new;
+}
+
+int findVarPublic( char *name, int type )
+{
+	int n;
+
+	for (n=0;n<var_count[0];n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+
+		if ((strcasecmp( globalVars[n].varName, name)==0)
+			&& (globalVars[n].var.type == type)
+			&& (globalVars[n].proc == 0)
+			&& (globalVars[n].isGlobal == FALSE))
+		{
+			return n+1;
+		}
+	}
+	return 0;
+}
+
+struct kittyData *findPublicVarByName( char *name, int type )
+{
+	int n;
+
+	for (n=0;n<var_count[0];n++)
+	{
+		if (globalVars[n].varName == NULL) return 0;
+
+		if ((strcasecmp( globalVars[n].varName, name)==0)
+			&& (globalVars[n].var.type == type)
+			&& (globalVars[n].proc == 0))
+		{
+			return &globalVars[n].var;
+		}
+	}
+	return NULL;
+}
+
+bool str_var_is( struct kittyData *var, const char *value )
+{
+	if (var == NULL) return false;
+	if (var->type != type_string) return false;
+
+	if (strcasecmp( &(var->str->ptr), value ) == 0)	return true;
+	return false;
 }
