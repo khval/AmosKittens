@@ -87,16 +87,23 @@ see other docs like issue for more info.
 
 **Screen Open**
 
-	Screen open <num>,<width>,<height>,<colors>,<mode>
+	Screen open [num],[width],[height],[colors],[mode]
 	
 	<num> is screen number 0 to 7
 	<width> screen width
 	<height> screen height
 	<colors> 
 		value 1-256 is 256 colors.
-		value 4096 is HAM
-		value 16777216 reserved for 24bit ARGB...		
-		(playing with idea of using -6 for HAM6 and -8 for HAM8)
+		
+		value 4096 or -6 for HAM6
+		 
+		value $40000 or -8 for HAM8 
+		(Technically 16777216 max number of colors for HAM8, but you need more then one pixel to get correct color.
+		So the maximum colors are actually restricted by the screen resolution.)
+		
+		Frédéric Cordier / Amos Profersonal AGA chose $40000, after I already decided to use -8.
+		
+		value $1000000, 16777216 colors reserved for 24bit ARGB...		
 
 	<mode> can be Lowres,hires,laced
 	(laced is always promoted to dbpal, dbntsc like modes.)
@@ -109,15 +116,16 @@ see other docs like issue for more info.
 	color restrictions, this sprites are 256 colors, and so you do not need to worry 
 	about sprites not being displayed.
 
-**Load Iff**
+**Load Iff [name$],[screen nr]**
 
-	Will load .png/.jpg any file supported by datatype system on AmigaOS, 
-	true color images are converted into 8bit grayscale images, or 8bit floyd dittered images.
+	[name$] is the filename, the filename can be Iff image or JPG/PNG/… image, keep in mind original 
+	AMOS Pro does not support JPG/PNG. Amos kittens uses the AmigaOS datatype system to load images. true colors are converted to 256 colors.
+
+	[screen nr] is optional, if not provided it load image into current screen, if provided it replace screen if exists. 
 	
-	This works by setting public variable _cat_load_iff_opt$, the grate thing about this is change number of arguments,
-	and does not need new commands to change the behavior of the command for extra features.
+	the public variable _cat_load_iff_opt$, is used to define how true color images are loaded.
 
-	// To set "floyd steinberg" rendering method.
+	// to set "floyd steinberg" rendering method.
 
 	_cat_load_iff_opt$="floyd"
 
@@ -125,7 +133,9 @@ see other docs like issue for more info.
 
 	_cat_load_iff_opt$="grayscale"
 	
-	(in the future this command can load in images as truecolor). 	
+	Amos kittens downgrades colors to be backwards compatible with palette based images/screens, old commands, 
+	in future true colors might be supported, but need to enabled when used. True color mode will be less compatible.
+	
 	IFF images with HAM6 format also supported.
 	HAM8 images also supported.
 	
