@@ -19,7 +19,6 @@
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
 #include <workbench/startup.h>
-#include <proto/asl.h>
 
 #include "common_screen.h"
 

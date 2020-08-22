@@ -29,8 +29,6 @@
 
 #include "common_screen.h"
 
-#include <proto/asl.h>
-
 extern int sig_main_vbl;
 extern bool running;			// 
 extern bool interpreter_running;	// interprenter is really running.
@@ -1356,33 +1354,5 @@ void engine_draw_bobs_and_do_vbl()
 }
 
 
-char *asl()
-{
-	struct FileRequester	 *filereq;
-	char *ret = NULL;
-	char c;
-	int l;
 
-	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
-	{
-		if (AslRequestTags( (void *) filereq, ASLFR_DrawersOnly, FALSE,	TAG_DONE ))
-		{
-			if ((filereq -> fr_File)&&(filereq -> fr_Drawer))
-			{
-				if (l = strlen(filereq -> fr_Drawer))
-				{
-					c = filereq -> fr_Drawer[l-1];
-					if (ret = (char *) malloc( strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
-					{
-						sprintf( ret, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
-					}
-				}
-				else ret = strdup(filereq -> fr_File);
-			}
-		}
-		 FreeAslRequest( filereq );
-	}
-
-	return ret;
-}
 

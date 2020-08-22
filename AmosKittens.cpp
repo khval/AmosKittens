@@ -19,7 +19,7 @@
 #include <workbench/startup.h>
 #include <amosKittens.h>
 
-extern char *asl();
+extern char *asl( const char *pattern );
 #endif
 
 #ifdef __linux__
@@ -1291,7 +1291,7 @@ char *wbargs(struct WBStartup *argmsg)
 	}
 	else
 	{
-		return asl();
+		return asl("#?.amos");
 	}
 
 	return NULL;
@@ -1314,10 +1314,7 @@ int main(int args, char **arg)
 
 	procStcakFrame[0].localVarData = stackFrameData;	// this just temp... need to manage size, lett it grow..
 	procStcakFrame[0].localVarDataNext = stackFrameData;
-
-
 	currentFrame = procStcakFrame;
-
 
 #ifdef __amigaos__
 	struct Task *me;
@@ -1360,7 +1357,7 @@ int main(int args, char **arg)
 			case 0:	filename = wbargs( (struct WBStartup *) arg );
 					break;
 
-			case 1:	filename = asl();
+//			case 1:	filename = asl("#?.amos");
 					break;	
 #endif
 		}
@@ -1381,9 +1378,7 @@ int main(int args, char **arg)
 #endif
 
 	onError = onErrorBreak;
-
 	memset(globalVars,0,sizeof(struct globalVar) * VAR_BUFFERS);
-
 
 #ifdef __amigaos4__
 	sig_main_vbl = AllocSignal(-1);

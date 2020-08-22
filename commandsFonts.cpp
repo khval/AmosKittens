@@ -12,7 +12,6 @@
 
 #ifdef __amigaos4__
 #include <proto/exec.h>
-#include <proto/asl.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/diskfont.h>

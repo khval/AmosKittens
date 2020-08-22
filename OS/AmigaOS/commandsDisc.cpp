@@ -52,6 +52,41 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 
 int have_drive( struct stringData *name);
 
+char *asl( const char *pattern )
+{
+	struct FileRequester	 *filereq;
+	char *ret = NULL;
+	char c;
+	int l;
+
+	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
+	{
+		if (AslRequestTags( (void *) filereq, 
+				ASLFR_DrawersOnly, FALSE,
+				ASLFR_InitialPattern, pattern ? pattern : "",
+				ASLFR_DoPatterns, TRUE,
+				TAG_DONE ))
+		{
+			if ((filereq -> fr_File)&&(filereq -> fr_Drawer))
+			{
+				if (l = strlen(filereq -> fr_Drawer))
+				{
+					c = filereq -> fr_Drawer[l-1];
+					if (ret = (char *) malloc( strlen(filereq -> fr_Drawer) + strlen(filereq -> fr_File) +2 ))
+					{
+						sprintf( ret, ((c == '/') || (c==':')) ? "%s%s" : "%s/%s",  filereq -> fr_Drawer, filereq -> fr_File ) ;
+					}
+				}
+				else ret = strdup(filereq -> fr_File);
+			}
+		}
+		 FreeAslRequest( filereq );
+	}
+
+	return ret;
+}
+
+
 char *_discSetDir( struct glueCommands *data, int nextToken )
 {
 	popStack(__stack - data -> stack  );

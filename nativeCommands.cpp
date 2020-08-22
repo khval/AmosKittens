@@ -7,8 +7,6 @@
 #include <proto/dos.h>
 #include <libraries/retroMode.h>
 #include <proto/retroMode.h>
-
-extern char *asl();
 #endif
 
 
