@@ -1283,13 +1283,15 @@ char *wbargs(struct WBStartup *argmsg)
 {
 	struct WBArg *arg;
 
-	printf("argmsg -> sm_NumArgs: %d\n", argmsg -> sm_NumArgs);
-
 	if (argmsg -> sm_NumArgs>1)	// check if we have args
 	{
 		arg = argmsg -> sm_ArgList +1;	// only read the first arg.
 		wbstartup_olddir = SetCurrentDir( arg -> wa_Lock );
 		return strdup(arg -> wa_Name);
+	}
+	else
+	{
+		return asl();
 	}
 
 	return NULL;
@@ -1440,6 +1442,9 @@ int main(int args, char **arg)
 					open_extension( value -> c_str(), n );
 				}
 			}
+
+			value = getConfigValue( "default_load_truecolors_as" );
+			if (value) add_str_var("_cat_load_iff_opt$",value -> c_str());			
 		}
 
 
