@@ -488,7 +488,7 @@ bool init_channel(int channel)
 	main_task = (struct Process *) FindTask(NULL);
 
 	SetSignal(0L,SIGF_CHILD);	 // clear SIGF_CHILD 
-	audioTask[channel] = spawn( audio_engine, "Amos audio engine",audio_debug_output);
+	audioTask[channel] = spawn( audio_engine, "kittens audio engine",audio_debug_output);
 	if (audioTask[channel])
 	{
 		Wait(SIGF_CHILD);
