@@ -187,7 +187,7 @@ void clean_up_vars()
 void clean_up_stack()
 {
 	popStack( instance_stack );
-	printf("after clean up stack is: %d\n", instance_stack);
+	cleanup_printf("after clean up stack is: %d\n", instance_stack);
 	setStackNone();
 }
 
