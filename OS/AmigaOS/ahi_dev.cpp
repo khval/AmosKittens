@@ -94,7 +94,7 @@ std::vector<struct audioChunk *> audioBuffer[4];
 #define AHI_CHUNKSIZE 1024
 #define AHI_DEFAULTUNIT 0
 
-static struct Process *main_task = NULL;
+extern struct Process *main_task;
 static struct Process *audioTask[4] = { NULL, NULL, NULL, NULL };
 
 #define audioTask_NAME       "Amos Kittens Audio Thread"
@@ -204,7 +204,6 @@ void setup_lowpass( double samplerate, double cutFreq,  struct audioChunk *chunk
 
 #define lowpass( value ) _new_value_ = lowpass_alpha * (value) + ( lowpass_n_alpha * last_amplitude ); last_amplitude = value; value = _new_value_;	
 	
-
 
 void audio_engine (void) 
 {
@@ -485,7 +484,6 @@ bool init_channel(int channel)
 #endif
 
 	current_audio_channel = channel;
-	main_task = (struct Process *) FindTask(NULL);
 
 	SetSignal(0L,SIGF_CHILD);	 // clear SIGF_CHILD 
 	audioTask[channel] = spawn( audio_engine, "kittens audio engine",audio_debug_output);

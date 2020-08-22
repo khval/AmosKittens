@@ -215,6 +215,8 @@ BOOL init()
 {
 	int i;
 
+	main_task = (struct Process *) FindTask(NULL);
+
 	for (i=0;i<32;i++)
 	{
 		kitty_extensions[i].base = NULL;
@@ -311,8 +313,6 @@ BOOL init()
 #endif
 
 	if ( ! EmptyPointer ) return FALSE;
-
-	audioStart();
 
 	return TRUE;
 }

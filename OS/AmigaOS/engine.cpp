@@ -322,7 +322,6 @@ bool start_engine()
 	BPTR engine_debug_output = NULL;
 #endif
 
-	main_task = (struct Process *) FindTask(NULL);
 	EngineTask = spawn( main_engine, "Amos kittens graphics engine",engine_debug_output);
 
 	Wait(SIGF_CHILD);

@@ -1360,7 +1360,7 @@ int main(int args, char **arg)
 			case 0:	filename = wbargs( (struct WBStartup *) arg );
 					break;
 
-//			case 1:	filename = asl("#?.amos");
+			case 1:	filename = asl("#?.amos");
 					break;	
 #endif
 		}
@@ -1394,6 +1394,8 @@ int main(int args, char **arg)
 	make_float_lookup();
 
 	channels = new ChannelTableClass();
+
+	audioStart();
 
 	if ( (startup) && (channels) )
 	{
