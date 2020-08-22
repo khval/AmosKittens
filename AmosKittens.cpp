@@ -1108,10 +1108,13 @@ char *executeToken( char *ptr, unsigned short token )
 
 	token_not_found = token;
 	setError(23, ptr);
+
+	getLineFromPointer( ptr);
+
 	printf("Addr %08x, token not found %04X at line %d\n", 
 				(unsigned int) ptr, 
 				(unsigned int) token_not_found, 
-				getLineFromPointer( ptr));
+				lineFromPtr.line	);
 
 	return NULL;
 }
