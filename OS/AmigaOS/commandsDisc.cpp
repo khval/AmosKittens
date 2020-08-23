@@ -33,6 +33,8 @@
 extern struct globalVar globalVars[];
 extern int tokenMode;
 
+extern char *progname;
+
 extern struct Screen *fullscreen_screen;
 
 std::vector<std::string> devList;
@@ -2168,7 +2170,7 @@ char *_discRun( struct glueCommands *data, int nextToken )
 
 				if (newCmd)
 				{
-					sprintf(newCmd,"%s/amosKittens.exe %c%s%c",progpath, 34,&filename -> ptr,34);
+					sprintf(newCmd,"%c%s/%s%c %c%s%c",34, progpath, progname, 34,34,&filename -> ptr,34);
 					printf("%s\n",newCmd);
 
 					SystemTags(newCmd, 

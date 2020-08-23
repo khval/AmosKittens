@@ -97,6 +97,8 @@ char *_file_pos_  = NULL;		// the problem of not knowing when stacked commands a
 char *_file_end_ = NULL;
 uint32_t _file_bank_size = 0;
 
+char *progname = NULL;
+
 int procStackCount = 0;
 uint32_t tokenFileLength;
 
@@ -1286,6 +1288,9 @@ char *wbargs(struct WBStartup *argmsg)
 {
 	struct WBArg *arg;
 
+	arg = argmsg -> sm_ArgList;
+	progname = arg -> wa_Name;
+
 	if (argmsg -> sm_NumArgs>1)	// check if we have args
 	{
 		arg = argmsg -> sm_ArgList +1;	// only read the first arg.
@@ -1352,7 +1357,8 @@ int main(int args, char **arg)
 
 		switch (args)
 		{
-			case 2:	filename = strdup(arg[1]);
+			case 2:	progname  = arg[0];
+					filename = strdup(arg[1]);
 					break;
 
 #if defined(__amigaos4__)
@@ -1360,7 +1366,8 @@ int main(int args, char **arg)
 			case 0:	filename = wbargs( (struct WBStartup *) arg );
 					break;
 
-			case 1:	filename = asl("#?.amos");
+			case 1:	progname  = arg[0];
+					filename = asl("#?.amos");
 					break;	
 #endif
 		}
