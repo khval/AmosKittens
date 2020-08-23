@@ -118,30 +118,6 @@ struct nested *find_nest_loop()
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
 
-// find Public variables not defined as global
-
-int findVarPublic( char *name, int type )
-{
-	unsigned int n;
-
-	pass1_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-
-	for (n=0;n<var_count[0];n++)
-	{
-		if (globalVars[n].varName == NULL) return 0;
-
-		if ((strcasecmp( globalVars[n].varName, name)==0)
-			&& (globalVars[n].var.type == type)
-			&& (globalVars[n].proc == 0)
-			&& (globalVars[n].isGlobal == FALSE))
-		{
-			return n+1;
-		}
-	}
-	return 0;
-}
-
-
 int findVar( char *name, bool is_first_token, int type, int _proc )
 {
 	unsigned int n;
@@ -199,39 +175,7 @@ int findVar( char *name, bool is_first_token, int type, int _proc )
 
 // this function does allocate memory, it uses static list.
 
-struct globalVar *add_var_from_ref( struct reference *ref, char **tmp, int type )
-{
-	struct globalVar *_new = NULL;
 
-	if ( var_count[0] < VAR_BUFFERS )
-	{
-		var_count[0] ++;
-
-		ref -> ref = var_count[procStackCount ? 1: 0];
-
-		if (type == type_proc)
-		{
-			ref -> flags = (ref->flags&3) | type;
-		}
-		else
-		{
-			ref -> flags = type;
-		}
-
-		_new = &globalVars[var_count[0]-1];
-		_new -> varName = *tmp;	// tmp is alloced and used here.
-		_new -> var.type = type;
-		_new -> localIndex = var_count[procStackCount];
-
-		if (type != type_proc) if (procStackCount) var_count[1]++;
-
-		if (_new -> var.type == type_string) _new -> var.str = toAmosString("",0);
-
-		*tmp = NULL;
-	}
-
-	return _new;
-}
 
 char *FinderTokenInBuffer( char *ptr, unsigned short token , unsigned short token_eof1, unsigned short token_eof2, char *_eof_ );
 
