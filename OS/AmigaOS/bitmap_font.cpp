@@ -359,8 +359,7 @@ void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, i
 
 	if ((screen -> Memory[1]) && (screen -> autoback ==0))
 	{
-		printf("has DB, is autoback 0\n");
-		 buffer = screen -> double_buffer_draw_frame ;
+		buffer = screen -> double_buffer_draw_frame ;
 	}
 
 	x *= 8;
@@ -368,8 +367,6 @@ void draw_char(struct retroScreen *screen, struct retroTextWindow *textWindow, i
 
 	if (shade)
 	{
-//		printf("shade w1: %d\n",w1);
-
 		switch (w1)
 		{
 			case 0:	draw_glyph_effect( screen, buffer, topaz8_font, x, y, c, pen, paper, w2, effect_byte_replace_shade  );	break;

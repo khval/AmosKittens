@@ -1071,7 +1071,7 @@ bool validate_fast_lookup()
 
 		if (*((uint16_t *) (fast_lookup + token + sizeof(void *))) != (uint16_t) cmd -> size)
 		{
-			printf("token %d is corrupt, size is wrong (is %d should be %d)\n", 
+			printf("token %04x is corrupt, size is wrong (is %d should be %d)\n", 
 					token,
 					*((uint16_t *) (fast_lookup + token + sizeof(void *))),
 					cmd -> size);
