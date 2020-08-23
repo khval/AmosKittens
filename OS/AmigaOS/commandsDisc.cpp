@@ -1181,7 +1181,6 @@ int flof( FILE *fd )
 
 void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	int idx = 0;
 	bool valid = false;
 	FILE *fd;
 
@@ -1199,9 +1198,10 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 
 	if (valid == false) return;
 
-	idx = last_var - 1;
-	if (idx>-1)
+	if (last_var)
 	{
+		struct kittyData *var = getVar( last_var );
+
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
 			fd = instance.files[ input_cmd_context.lastVar -1 ].fd ;
@@ -1212,13 +1212,14 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 			return;
 		}
 
-		if (fd)
+		if ((fd)&&(var))
 		{
+
 			int ret = 0;
 			int num = 0;
 			double decimal;
 
-			switch ( globalVars[idx].var.type & 7 )
+			switch ( var -> type & 7 )
 			{
 				case type_int:
 
@@ -1338,7 +1339,6 @@ int getline( char **line,size_t *len, FILE *fd )
 
 void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 {
-	int idx = 0;
 	bool valid = false;
 	FILE *fd;
 
@@ -1356,10 +1356,13 @@ void file_line_input( struct nativeCommand *cmd, char *tokenBuffer )
 		}
 	}
 
-	if (valid == false) return;
+	if (valid == false)
+	{
+		printf("not valid\n");
+		return;
+	}
 
-	idx = last_var - 1;
-	if (idx>-1)
+	if (last_var)
 	{
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
