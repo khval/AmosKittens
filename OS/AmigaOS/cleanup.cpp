@@ -331,5 +331,7 @@ void clean_up_special()
 		freeStruct(instance.zones);
 		instance.zones = NULL;
 	}
+
+	cleanup_printf("end of %s:%s()\n",__FILE__,__FUNCTION__);
 }
 

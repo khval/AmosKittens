@@ -734,7 +734,7 @@ struct nativeCommand nativeCommands[]=
 	{0x2B72,"Kill Editor",0,cmdKillEditor },
 	{0x2BAE,"Get Bob Palette",0,hsGetSpritePalette },
 
-	{0xFF4C-next_token_off,"<signed>",0,signedData },	// Amos Tokens Only, replace $FFCA, when its: "(-123) or command -123 or command 123,-234
+	{0xFF4C-next_token_off,"<signed>",0,signedData },	// Kittens tokens Only (not Amos Pro), replace $FFCA, when its: "(-123) or command -123 or command 123,-234
 
 	{0xFF4C,"or",0, orData },
 	{0xFF3E,"xor",0,xorData },

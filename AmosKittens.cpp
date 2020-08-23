@@ -1542,10 +1542,8 @@ int main(int args, char **arg)
 	clean_up_stack();
 	clean_up_files();
 	clean_up_special();	// we add other stuff to this one.
-
 	wbargclose();
 	closedown();
-
 
 	if (sig_main_vbl) 
 	{

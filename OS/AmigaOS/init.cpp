@@ -322,7 +322,7 @@ void closedown()
 {
 	int i;
 
-	cleanup_printf("%s:%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	cleanup_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	for (i=0;i<32;i++)
 	{
