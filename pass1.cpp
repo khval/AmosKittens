@@ -40,6 +40,11 @@ extern std::vector<struct lineAddr> linesAddress;
 extern std::vector<struct defFn> defFns;
 char *lastLineAddr;
 
+
+// size of prev pointer, + size of token length
+
+#define next_token_off (sizeof(void *)+sizeof(void *))
+
 // we need to keep count, to make sure code is valid.
 
 int ifCount = 0;
@@ -398,7 +403,7 @@ void pass1_restore( char *ptr )
 		case 0x0000:	// new line.
 		case 0x0054:	// next command 
 				printf("moded to restore command with no args\n");
-				*((unsigned short *) (ptr - 2)) = 0x0418+sizeof(void *);
+				*((unsigned short *) (ptr - 2)) = 0x0418+next_token_off;
 	}
 }
 
@@ -432,7 +437,7 @@ void pass1_sign( char * ptr )
 #ifdef show_pass1_modified_code_yes
 				printf("Modified to negative signed\n");
 #endif
-				*((unsigned short *) (ptr - 2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+				*((unsigned short *) (ptr - 2)) = 0xFF4C-next_token_off;		// mod the token, so signes token.
 				return;	// nothing more to do....
 
 		default:				// not sure if its signes or subtract
@@ -454,7 +459,7 @@ void pass1_sign( char * ptr )
 #ifdef show_pass1_modified_code_yes
 								printf("Modified to negative signed\n");
 #endif
-								*((unsigned short *) (ptr -2)) = 0xFFCA+sizeof(void *);		// mod the token, so signes token.
+								*((unsigned short *) (ptr -2)) = 0xFF4C-next_token_off;		// mod the token, so signes token.
 							}
 							return;
 				}

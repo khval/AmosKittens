@@ -47,7 +47,7 @@
 // ------------ optimizer ----------------------
 
 #define run_program_yes
-#define enable_fast_execution_no		// Some debug option do not work when this is enabled.
+#define enable_fast_execution_yes		// Some debug option do not work when this is enabled.
 
 //------------- end of options -----------------
 
