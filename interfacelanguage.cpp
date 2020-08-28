@@ -1238,6 +1238,12 @@ void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 	context -> expected = i_parm;
 }
 
+void delete_PacPicContext(PacPicContext *piccontext)
+{
+	sys_free( piccontext -> raw );	// context is only returned if raw exists so this is safe.
+	delete piccontext;
+}
+
 void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 {
 	struct retroScreen *screen = instance.screens[instance.current_screen];
