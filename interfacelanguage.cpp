@@ -259,13 +259,10 @@ bool resource_bank_has_pictures( struct kittyBank *bank1, int block_nr )
 	return true;
 }
 
-bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, int *out_width, int *out_height )
+struct PacPicContext *get_resource_block_PacPicContext( struct kittyBank *bank1, int block_nr, int *out_width, int *out_height )
 {
 	struct resourcebank_header *header = (resourcebank_header*) bank1->start;
 	int pos;
-	struct retroScreen *screen = instance.screens[instance.current_screen];
-
-	if (!screen) return false;
 
 	pos = 0;
 
@@ -303,22 +300,38 @@ bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, 
 
 	if (pos)
 	{
-		struct PacPicContext context;
-		context.raw = NULL;
+		struct PacPicContext *context = new PacPicContext;
+		context -> raw = NULL;
 		pos += header -> img_offset;
 
-		if (convertPacPicData( (unsigned char *) (bank1->start + pos), 0, &context ))
+		if (convertPacPicData( (unsigned char *) (bank1->start + pos), 0, context ))
 		{
-			*out_width = context.w * 8;
-			*out_height = context.h *context.ll;
+			*out_width = context -> w * 8;
+			*out_height = context -> h *context -> ll;
 
-			if (context.raw)
-			{
-				plotUnpackedContext( &context, screen , x0, y0 );
-				sys_free( context.raw);
-				return true;	
-			}
+			if (context -> raw)	return context;	
 		}
+
+		delete context;
+	}
+
+	return NULL;
+}
+
+bool get_resource_block( struct kittyBank *bank1, int block_nr, int x0, int y0, int *out_width, int *out_height )
+{
+	struct PacPicContext *context;
+	struct retroScreen *screen = instance.screens[instance.current_screen];
+
+	if (!screen) return false;
+
+	context = get_resource_block_PacPicContext( bank1, block_nr, out_width, out_height );
+	if (context)
+	{
+		plotUnpackedContext( context, screen , x0, y0 );
+		sys_free( context -> raw );
+		delete context;
+		return true;	
 	}
 
 	return false;
