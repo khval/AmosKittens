@@ -1621,7 +1621,7 @@ void _icmd_ActiveList( struct cmdcontext *context, struct cmdinterface *self )
 			al -> paper = paper;
 			al -> array = array;
 			al -> x0 = x0 ;
-			al -> y0 = y1 ;
+			al -> y0 = y0 ;
 			al -> w = w;
 			al -> h = h;
 			al -> x1 = al -> x0+(al->w*8);
