@@ -1252,36 +1252,43 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 	if ( (screen) && (context -> stackp>=4) )
 	{
-		struct ivar &x0 = context -> stack[context -> stackp-4];
-		struct ivar &y0 = context -> stack[context -> stackp-3];
-		struct ivar &image = context -> stack[context -> stackp-2];
-		struct ivar &y1 = context -> stack[context -> stackp-1];
+		int x0 = context -> stack[context -> stackp-4].num;
+		int y0 = context -> stack[context -> stackp-3].num;
+		int image = context -> stack[context -> stackp-2].num;
+		int y1 = context -> stack[context -> stackp-1].num;
 
-		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( y1.type == type_int ) )
 		{
 			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
 
-			x0.num+=ox;
-			y0.num+=oy;
-			y1.num+=ox;
+			x0+=ox;
+			y0+=oy;
+			y1+=oy;
 
-			context -> xgcl = x0.num;
-			context -> ygcl = y0.num;
+			x0 -= x0 % 16;
 
+			printf("VL %d,%d,%d\n",x0,y0,y1);
+
+			context -> xgcl = x0;
+			context -> ygcl = y0;
+			context -> ygc = y1;
 
 			bank1 = findBankById(instance.current_resource_bank);
 
 			if (bank1)
 			{
+				PacPicContext *piccontext_m;
+				PacPicContext *piccontext_e;
 				int yp;
 				int w=0,h=0;
-				int _image =  image.num -1 + context -> image_offset ;
+				int wm=0,hm=0;
+				int we=0,he=0;
+				int _image =  image -1 + context -> image_offset ;
 
-				yp = y0.num;
+				yp = y0;
 
-				if (get_resource_block( bank1, _image, x0.num, yp, &w,&h ) == false )
+				if (get_resource_block( bank1, _image, x0, yp, &w,&h ) == false )
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
@@ -1289,23 +1296,34 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 				yp +=h;
 
-				for (; yp<y1.num-h;yp+=h)
-				{
-					if (get_resource_block( bank1, _image+1, x0.num, yp, &w,&h ) == false )
-					{
-						setError( 22, context -> tokenBuffer );
-						context -> error = true;
-					}
-				}
+				piccontext_m = get_resource_block_PacPicContext( bank1, _image+1, &wm,&hm );
+				piccontext_e = get_resource_block_PacPicContext( bank1, _image+2 , &we,&he );
 
-				if (get_resource_block( bank1, _image+2 , x0.num, yp, &w,&h ) == false )
+				if (piccontext_m)
+				{
+					// plotUnpackedContext has a clipping bug, need to improve it.
+
+					for (; yp<=y1-he;yp+=hm) plotUnpackedContext( piccontext_m, screen , x0, yp );
+					delete_PacPicContext(piccontext_m);
+				}
+				else
 				{
 					setError( 22, context -> tokenBuffer );
 					context -> error = true;
 				}
 
-				context -> xgc = x0.num +w;
-				context -> ygc = yp + h;
+				if (piccontext_e)
+				{
+					plotUnpackedContext( piccontext_e, screen , x0, y1-he );
+					delete_PacPicContext(piccontext_e);
+				}
+				else
+				{
+					setError( 22, context -> tokenBuffer );
+					context -> error = true;
+				}
+
+				context -> xgc = x0 +w;
 			}
 		}
 	}
