@@ -1267,7 +1267,7 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 			y0+=oy;
 			y1+=oy;
 
-			x0 -= x0 % 16;
+			x0 -= x0 % 8;
 
 			printf("VL %d,%d,%d\n",x0,y0,y1);
 
@@ -1286,6 +1286,7 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 				int wm=0,hm=0;
 				int we=0,he=0;
 				int _image =  image -1 + context -> image_offset ;
+				 struct Rectangle clip;
 
 				yp = y0;
 
@@ -1302,9 +1303,12 @@ void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
 
 				if (piccontext_m)
 				{
-					// plotUnpackedContext has a clipping bug, need to improve it.
+					clip.MinX = 0;
+					clip.MinY = yp;
+					clip.MaxX = screen -> realWidth;
+					clip.MaxY = y1-he;
 
-					for (; yp<=y1-he;yp+=hm) plotUnpackedContext( piccontext_m, screen , x0, yp );
+					for (; yp<=y1-he;yp+=hm) plotUnpackedContextClip( piccontext_m, screen , x0, yp, &clip );
 					delete_PacPicContext(piccontext_m);
 				}
 				else
