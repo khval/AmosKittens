@@ -101,6 +101,13 @@ void restore_param_backup( struct cmdcontext *context );
 
 #define ierror(nr)  { context -> error = nr; printf("Error at %s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__); getchar(); }
 
+void delete_PacPicContext(PacPicContext *piccontext)
+{
+	sys_free( piccontext -> raw );	// context is only returned if raw exists so this is safe.
+	delete piccontext;
+}
+
+
 userDefined::userDefined()
 {
 	*((int *) &name ) =0;
@@ -1236,12 +1243,6 @@ void icmd_Imagehline( struct cmdcontext *context, struct cmdinterface *self )
 	context -> cmd_done = _icmd_Imagehline;
 	context -> args = 4;
 	context -> expected = i_parm;
-}
-
-void delete_PacPicContext(PacPicContext *piccontext)
-{
-	sys_free( piccontext -> raw );	// context is only returned if raw exists so this is safe.
-	delete piccontext;
 }
 
 void _icmd_imagevline( struct cmdcontext *context, struct cmdinterface *self )
