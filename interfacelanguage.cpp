@@ -1051,6 +1051,7 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 		struct ivar &image = context -> stack[context -> stackp-3];
 		struct ivar &x1 = context -> stack[context -> stackp-2];
 		struct ivar &y1 = context -> stack[context -> stackp-1];
+		int w;
 
 
 		if ( ( x0.type == type_int ) && ( y0.type == type_int )  && ( image.type == type_int )  && ( x1.type == type_int ) && ( y1.type == type_int ) )
@@ -1058,100 +1059,93 @@ void _icmd_ImageBox( struct cmdcontext *context, struct cmdinterface *self )
 			struct kittyBank *bank1;
 			int ox = get_dialog_x(context);
 			int oy = get_dialog_y(context);
-		
-			x0.num = x0.num - (x0.num % 16);
-			x1.num = x1.num - (x1.num % 16);
-
-			context -> xgcl = x0.num;
-			context -> ygcl= y0.num;
-			context -> xgc = x1.num;
-			context -> ygc = y1.num;
 
 			x0.num+=ox;
 			y0.num+=oy;
 			x1.num+=ox;
 			y1.num+=oy;
 
+			w = x1.num - x0.num;
+			w += w & 0x7 ?  8 - (w&0x07) : 0 ;
+			x0.num = x0.num - (x0.num % 8);
+			x1.num = x0.num + w;
+
+			context -> xgcl = x0.num -ox;
+			context -> ygcl= y0.num - oy;
+			context -> xgc = x1.num - ox;
+			context -> ygc = y1.num- oy;
+
 			bank1 = findBankById( instance.current_resource_bank );
 
 			if (bank1)
 			{
-				int x,y;
+				int x,y,i;
 				int w,h;
 				int ew, eh;
-				int _w,_h;	// temp, ignore.
 				int _image =  image.num - 1 + context -> image_offset ;
+				PacPicContext *piccontexts[9];
+				int _w[9],_h[9];
 
-				if (get_resource_block( bank1, _image , x0.num, y0.num, &w,&h ) == false )
+				for (i=0;i<9;i++)
 				{
-					setError( 22, context -> tokenBuffer );
-					context -> error = true;
-				}
+					piccontexts[i] = get_resource_block_PacPicContext( bank1, _image+i, &_w[i],&_h[i] );
 
-				ew = ((x1.num - x0.num + 1) & 0xFFFFF8) / w  ;
-				eh = (y1.num - y0.num + 1) / h  ;
-
-				if (get_resource_block( bank1, _image +2, x0.num + (ew-1)*w , y0.num, &w,&h ) == false )
-				{
-					setError( 22, context -> tokenBuffer );
-					context -> error = true;
-				}
-
-				if (get_resource_block( bank1, _image + 6 , x0.num, y1.num - h, &w,&h ) == false )
-				{
-					setError( 22, context -> tokenBuffer );
-					context -> error = true;
-				}
-
-				if (get_resource_block( bank1, _image +8,  x0.num + (ew-1)*w , y1.num - h, &w,&h ) == false )
-				{
-					setError( 22, context -> tokenBuffer );
-					context -> error = true;
-				}
-
-				for (y=1; y<eh;y++)
-				{
-
-					if (get_resource_block( bank1, _image +3, 0 *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
-					{
-						setError( 22, context -> tokenBuffer );
-						context -> error = true;
-					}
-
-					if (get_resource_block( bank1, _image +5, (ew-1) *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
+					if (piccontexts[i] == NULL)
 					{
 						setError( 22, context -> tokenBuffer );
 						context -> error = true;
 					}
 				}
 
-				for (x=1; x<ew-1;x++)
+				// 0,1,2
+				// 3,4,5
+				// 5,6,7
+
+				if ((piccontexts[0])&&(piccontexts[1])&&(piccontexts[2])&&(piccontexts[3])&&(piccontexts[4])&&(piccontexts[5])&&(piccontexts[6])&&(piccontexts[7]))
 				{
-					if (get_resource_block( bank1, _image +1, x *w + x0.num, y0.num, &_w,&_h ) == false )
+					plotUnpackedContext( piccontexts[0], screen, x0.num, y0.num);
+					struct Rectangle clip;
+					int xp,yp;
+
+					clip.MinX = x0.num;
+					clip.MinY = y0.num;
+					clip.MaxX = x1.num;
+					clip.MaxY = y0.num + _h[0];
+
+					for (xp=x0.num+_w[0];xp<clip.MaxX - _w[2];xp+=_w[1]) plotUnpackedContextClip( piccontexts[1], screen, xp, y0.num, &clip);
+
+					plotUnpackedContext( piccontexts[2], screen, x1.num - _w[2], y0.num);
+
+					clip.MinX = x0.num +_w[3];
+					clip.MinY = y0.num + _h[1];
+					clip.MaxX = x1.num ;
+					clip.MaxY = y1.num ;
+
+					for (yp=clip.MinY;yp<clip.MaxY;yp+=_h[4])
 					{
-						setError( 22, context -> tokenBuffer );
-						context -> error = true;
+						plotUnpackedContextClip( piccontexts[3], screen, x0.num, yp, &clip);
+
+						for (xp=clip.MinX;xp<clip.MaxX - _w[5];xp+=_w[4]) plotUnpackedContextClip( piccontexts[4], screen, xp, yp, &clip);
+
+						plotUnpackedContextClip( piccontexts[5], screen, x1.num - _w[5], yp, &clip);
 					}
 
-					for (y=1; y<eh;y++)
-					{
-						if (get_resource_block( bank1, _image +4, x *w + x0.num, y*h+y0.num,&_w,&_h ) == false )
-						{
-							setError( 22, context -> tokenBuffer );
-							context -> error = true;
-						}
-					}
+					plotUnpackedContext( piccontexts[6], screen, x0.num , y1.num - _h[6]);
 
-					if (get_resource_block( bank1, _image +7, x*w + x0.num, y1.num - h, &_w,&_h ) == false )
-					{
-						setError( 22, context -> tokenBuffer );
-						context -> error = true;
-					}
+					clip.MinX = x0.num;
+					clip.MinY = y1.num - _h[6];
+					clip.MaxX = x1.num;
+					clip.MaxY = y1.num;
+
+					for (xp=x0.num+_w[6];xp<clip.MaxX - _w[2];xp+=_w[7]) plotUnpackedContextClip( piccontexts[7], screen, xp, y1.num - _h[7], &clip);
+
+					plotUnpackedContext( piccontexts[8], screen, x1.num- _w[8], y1.num - _h[8]);
 				}
 
+				for (i=0;i<9;i++) delete_PacPicContext(piccontexts[i]);
 			}
 
-//			retroBox(screen, x0.num, y0.num, x1.num, y1.num, 2 );
+//			if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0.num, y0.num, x1.num, y1.num,4 );
 		}
 	}
 
