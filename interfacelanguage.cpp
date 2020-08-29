@@ -2141,7 +2141,7 @@ void _icmd_GraphicSquare( struct cmdcontext *context, struct cmdinterface *self 
 		x1+=ox;
 		y1+=oy;
 
-		if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0,y0,x1,y1,screen -> ink0 );
+		if (screen) retroBox( screen, screen -> double_buffer_draw_frame, x0,y0,x1+1,y1+1,screen -> ink0 );
 	}
 
 	pop_context( context, 4);
