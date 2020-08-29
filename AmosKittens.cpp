@@ -1407,7 +1407,9 @@ int main(int args, char **arg)
 	if ( (startup) && (channels) )
 	{
 		bool init_error = false;
+		std::string *value;
 
+		load_config("progdir:kittySystem/config.yml");
 		alloc_video();
 
 #ifdef __amigaos4__
@@ -1419,19 +1421,17 @@ int main(int args, char **arg)
 			KittyBaseInfo.rgb[n] = (DefaultPalette[n].r << 4 & 0xF00) | (DefaultPalette[n].g & 0xF0) | (DefaultPalette[n].b >> 4);
 		}
 
-		__load_bank__( (char *) "amospro_system:APSystem/AMOSPro_Default_Resource_org.Abk",-2);
-//		__load_bank__( (char *) "progdir:kittySystem/kittens_default_resource.Abk",-2);
-		__load_bank__( (char *) "progdir:kittySystem/mouse.abk",-3);
+		value = getConfigValue( "resource_8" );	// default resource
+		if (value)	__load_bank__( value -> c_str() ,-2);
 
+		value = getConfigValue( "assets_mouse" );	// get mouse abk
+		if (value)	__load_bank__( value -> c_str() ,-3);
 
 		// set default values.
 		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
 
-		load_config("progdir:kittySystem/config.yml");
-
 		{
 			char tmp[30];
-			std::string *value;
 
 			for (n = 0; n < 4; n++ )
 			{

@@ -38,7 +38,7 @@ extern char *bankBsend(nativeCommand *cmd, char *ptr);
 
 
 extern void __load_bank__(struct stringData *name, int bankNr );
-extern void __load_bank__(char *name, int bankNr );
+extern void __load_bank__(const char *name, int bankNr );
 
 extern struct stringData *getResourceStr(int id);
 extern void *getBankObject(int id);

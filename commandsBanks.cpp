@@ -782,7 +782,7 @@ void __load_bank__(struct stringData *name, int bankNr )
 	update_objects();
 }
 
-void __load_bank__(char *_name, int bankNr )
+void __load_bank__(const char *_name, int bankNr )
 {
 	struct stringData *name = toAmosString(_name,strlen(_name));
 	
