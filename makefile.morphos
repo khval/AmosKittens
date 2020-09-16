@@ -10,7 +10,11 @@ VERSION = 1
 #RM     = delete
 # RM     = rm
 
-warnings = -wall -Wuninitialized -Wsign-compare -Wunused-variable
+warnings = -Wall -Wuninitialized -Wsign-compare -Wunused-variable
+
+COPT = -noixemul
+
+inc = -Icore_includes
 
 objects_dir = objs_amoskittens/
 
@@ -25,39 +29,37 @@ main_objects = commands.cpp \
 			commandsScreens.cpp \
 			commandsText.cpp \
 			commandsKeyboard.cpp \
-			commandsSound.cpp \
-			commandsDisc.cpp \
+			os/amigaos/commandsDisc.cpp \
 			commandsObjectControl.cpp \
 			commandsHardwareSprite.cpp \
 			commandsBlitterObject.cpp \
 			commandsBackgroundGraphics.cpp \
 			commandsAmal.cpp \
-			commandsMenu.cpp \
+			os/amigaos/commandsMenu.cpp \
 			commandsFonts.cpp \
 			commandsRead.cpp \
 			commandsOn.cpp \
 			AmalCompiler.cpp \
 			AmalCommands.cpp \
 			ext_compact.cpp \
-			ext_turbo.cpp \
 			debug.cpp \
 			pass1.cpp \
-			errors.cpp \
+			kittyErrors.cpp \
 			stack.cpp \
-			readhunk.cpp \
-			var_helper.cpp \			
+			os/amigaos/readhunk.cpp \
+			var_helper.cpp \
 			channel.cpp \
 			amal_object_bob.cpp \
 			amal_object_sprite.cpp \
 			amal_object_screen_display.cpp \
 			amal_object_screen_offset.cpp \
 			screen_helper.cpp \
-			os/morphos/engine.cpp \
-			os/morphos/bitmap_font.cpp 
-			os/morphos/init.cpp \
-			os/morphos/cleanup.cpp \
-			os/morphos/joystick.cpp \
-			os/morphos/spawn.cpp \
+			os/amigaos/engine.cpp \
+			os/amigaos/bitmap_font.cpp \
+			os/amigaos/init.cpp \
+			os/amigaos/cleanup.cpp \
+			os/amigaos/joystick.cpp \
+			os/amigaos/spawn.cpp \
 			AmosString.cpp
 
 objects_in_dir = ${main_objects:%.cpp=${objects_dir}%.o}
@@ -69,13 +71,17 @@ programs= $(main_SRCS:.cpp=.exe)
 all:	 $(objects_in_dir) $(programs) 
 
 $(objects_dir)%.o:	%.cpp debug.h 
-	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(@:${objects_dir}%.o=%.cpp) -o $@
+	g++ $(warnings) -c -O2 -D__USE_INLINE__ $(COPT) $(inc) $(@:${objects_dir}%.o=%.cpp) -o $@
 
-ccmosKittens.exe:	AmosKittens.cpp	 $(objects_in_dir)
+ccmosKittens.exe:	config.h AmosKittens.cpp	 $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
 
 %.exe:		%.cpp $(objects_in_dir)
 	g++ $(warnings) -O2 -D__USE_INLINE__ $(@:.exe=.cpp) $(objects_in_dir) -o $@
+
+config.h: $(config_tools:.tool.cpp=.tool.exe)
+	echo > config.h
+	config_tools/check_cpu.tool.exe >> config.h
 
 clean:
 	@delete $(programs) $(objects_in_dir)
