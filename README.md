@@ -42,6 +42,8 @@ Kittens does not support the old extension format, but I have recreated some of 
 
 https://github.com/khval/kittyCraft.library
 
+https://github.com/khval/kittyMusiCraft.library
+
 https://github.com/khval/kittyMusic.library
 
 https://github.com/khval/kittyTurbo.library
