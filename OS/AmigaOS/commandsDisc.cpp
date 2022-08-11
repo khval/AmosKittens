@@ -275,6 +275,8 @@ char *_discRename( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+extern struct keyboard_buffer current_key;
+
 char *_discFselStr( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data -> stack +1;
@@ -296,6 +298,9 @@ char *_discFselStr( struct glueCommands *data, int nextToken )
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	engine_lock();
+
+	current_key.event = 0;	// Don't allow FSEL to make the keys sticky!!
+	current_key.Code = 0;
 
 	if (filereq = (struct FileRequester	 *) AllocAslRequest( ASL_FileRequest, TAG_DONE ))
 	{
