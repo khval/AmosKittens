@@ -184,7 +184,7 @@ void open_extension( const char *name, int id )
 
 	extension_printf("%s\n",newName);
 
-	if ( open_lib( newName, 53L , "main", 1, &extBase, (struct Interface **) &Iext  ) )
+	if ( open_lib( newName, 1L , "main", 1, &extBase, (struct Interface **) &Iext  ) )
 	{
 		extension_printf("Extension is now open\n");
 
