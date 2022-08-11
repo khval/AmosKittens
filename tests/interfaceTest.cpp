@@ -147,6 +147,10 @@ int main(int args, char **arg)
 	{
 		printf("%s\n",&context -> script ->ptr);
 		execute_interface_script( context, 0);
+
+		context->dumpZones();
+		context->dumpUserDefined();
+
 		delete context;
 	}
 

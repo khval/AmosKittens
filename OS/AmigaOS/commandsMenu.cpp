@@ -246,7 +246,7 @@ struct NewMenu *alloc_amiga_menu( int items )
 	ULONG levels[]={NM_TITLE,NM_ITEM,NM_SUB,NM_SUB,NM_SUB,NM_SUB,NM_SUB,NM_SUB,NM_SUB,NM_SUB};
 	int n;
 	ULONG flag;
-	struct NewMenu *_new_ = (struct NewMenu *) AllocVecTags( sizeof(struct NewMenu) * (items+1), TAG_END );
+	struct NewMenu *_new_ = (struct NewMenu *) AllocVecTags( sizeof(struct NewMenu) * (items), TAG_END );
 
 	if (_new_)
 	{

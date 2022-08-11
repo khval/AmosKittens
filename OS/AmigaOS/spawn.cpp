@@ -1,4 +1,6 @@
 
+// Copyright 2015, Kjetil Hvalstrand, MIT license.
+
 #include <proto/exec.h>
 #include <proto/dos.h>
 

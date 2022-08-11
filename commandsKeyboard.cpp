@@ -159,6 +159,7 @@ void atomic_get_char( struct stringData *str)
 		if ( ! keyboardBuffer.empty() )
 		{
 			current_key = keyboardBuffer[0];
+
 			if (current_key.event == kitty_key_down )
 			{
 				handel_key( &current_key, buf );
@@ -178,6 +179,12 @@ void atomic_get_char( struct stringData *str)
 	
 				if (delta_time_ms(key_press_time,ctime) > (keyboardLag+keyboardSpeed))
 				{
+#if 0
+					printf("delta_time_ms(key_press_time,ctime): %d > keyboardLag: %d + keyboardSpeed: %d\n", 
+							delta_time_ms(key_press_time,ctime),
+							keyboardLag,keyboardSpeed); 
+#endif
+
 					if (delta_time_ms(repeat_time,ctime) > keyboardSpeed  )
 					{
 						handel_key( &current_key, buf );

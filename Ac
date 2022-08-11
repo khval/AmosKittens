@@ -41,4 +41,10 @@
 
 ;amalcompiler.exe -bin "uwork:Amalmove.bin" -script  "Anim 0,(1,3)(2,3)(3,3)(4,3);Loop: Let X=Z(220)+160;Let Y=40PLay 1;Pause Jump Loop"
 
-amalcompiler.exe "Anim 0,(5,5)(6,5);Loop: Let X=XM-148;If K1 Jump Up;Jump Down;Up: Let Y=Y-1;If Y<75 Jump A; Pause Jump Loop;A: LetY=75;PJLDown: Let Y=Y+1;If Y>165 Jump B; Pause Jump Loop;B: LetY=165;PJL"
+;amalcompiler.exe "Anim 0,(5,5)(6,5);Loop: Let X=XM-148;If K1 Jump Up;Jump Down;Up: Let Y=Y-1;If Y<75 Jump A; Pause Jump Loop;A: LetY=75;PJLDown: Let Y=Y+1;If Y>165 Jump B; Pause Jump Loop;B: LetY=165;PJL"
+
+;amalcompiler.exe "Loop:Let X=280;Let Y=140;Let R0=Z(6)-3;Let R1=Z(6)-3;For R9=1 To 40;Let X=X+R0;LY=Y+R1;Next R9;Pause Jump Loop"
+
+;amalcompiler.exe "A: If RA<>1 Jump A; B: L X=RC; L Y=RE; Move RH,RG,RD; L X=-20; L Y=-50; P; Jump A; "
+
+amalcompiler.exe "AU( L RB=XS(0,XM-120)-3; L RC=XS(0,XM+120)-3; L RD=5; L RE=YS(0,YM-120)-3; L RF=YS(0,YM+120)-3; L RG=120; L RH=-120; X); C: L RA=0; If K1=-1 Jump C; P; A: If K1=0 Jump A; L RA=1; B: L X=RB; L Y=RE; Move RG,RG,RD; L X=-50; L Y=-50; P; Jump C; "

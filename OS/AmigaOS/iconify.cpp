@@ -41,7 +41,8 @@ extern  struct Screen *fullscreen_screen;
 static ULONG had_ModeID;
 static bool had_fullscreen = false;
 
-void enable_Iconify()
+
+void enable_Iconify( )
 {
 	int n;
 
@@ -73,7 +74,6 @@ void enable_Iconify()
 
 			if (appicon) 
 			{
-				window_save_state.win = My_Window;
 				save_window_attr(&window_save_state);
 				close_engine_window();
 

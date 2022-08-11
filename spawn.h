@@ -1,4 +1,6 @@
 
+// Copyright 2015, Kjetil Hvalstrand, MIT license.
+
 extern int spawn_count;
 
 #ifdef __amigaos4__
