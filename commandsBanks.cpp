@@ -281,49 +281,13 @@ char *__bankReserveAsWork( struct glueCommands *data, int nextToken )
 
 	if (args==2)
 	{
-		reserveAs( 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
-	}
+		int size = getStackNum(__stack);
 
-	popStack(__stack - data->stack );
-	return NULL;
-}
-
-char *__bankReserveAsChipWork( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = __stack - data->stack +1 ;
-
-	if (args==2)
-	{
-		reserveAs( 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
-	}
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
-
-char *__bankReserveAsData( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = __stack - data->stack +1 ;
-
-	if (args==2)
-	{
-		reserveAs( 8 | 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
-	}
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
-
-char *__bankReserveAsChipData( struct glueCommands *data, int nextToken )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
-	int args = __stack - data->stack +1 ;
-
-	if (args==2)
-	{
-		reserveAs( 8 | 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		if (size>0)
+		{
+			reserveAs( 1, getStackNum(__stack-1) , size , NULL, NULL );
+		}
+		else 	setError(23, data -> tokenBuffer );
 	}
 
 	popStack(__stack - data->stack );
@@ -336,16 +300,76 @@ char *bankReserveAsWork(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+char *__bankReserveAsChipWork( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int args = __stack - data->stack +1 ;
+
+	if (args==2)
+	{
+		int size = getStackNum(__stack);
+
+		if (size>0)
+		{
+			reserveAs( 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		}
+		else 	setError(23, data -> tokenBuffer );
+	}
+
+	popStack(__stack - data->stack );
+	return NULL;
+}
+
 char *bankReserveAsChipWork(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( __bankReserveAsChipWork, tokenBuffer );
 	return tokenBuffer;
 }
 
+char *__bankReserveAsData( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int args = __stack - data->stack +1 ;
+
+	if (args==2)
+	{
+		int size = getStackNum(__stack);
+
+		if (size>0)
+		{
+			reserveAs( 8 | 1, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		}
+		else 	setError(23, data -> tokenBuffer );
+	}
+
+	popStack(__stack - data->stack );
+	return NULL;
+}
+
 char *bankReserveAsData(nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( __bankReserveAsData, tokenBuffer );
 	return tokenBuffer;
+}
+
+char *__bankReserveAsChipData( struct glueCommands *data, int nextToken )
+{
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int args = __stack - data->stack +1 ;
+
+	if (args==2)
+	{	
+		int size = getStackNum(__stack);
+
+		if (size>0)
+		{
+			reserveAs( 8 | 0, getStackNum(__stack-1) , getStackNum(__stack), NULL, NULL );
+		}
+		else 	setError(23, data -> tokenBuffer );
+	}
+
+	popStack(__stack - data->stack );
+	return NULL;
 }
 
 char *bankReserveAsChipData(nativeCommand *cmd, char *tokenBuffer)
