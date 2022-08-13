@@ -229,11 +229,11 @@ char *_bankBload( struct glueCommands *data, int nextToken )
 				{
 					fread( bank -> start  ,size,1, fd);
 				}
-				else if (bankid_or_address != 0)
+				else if (bankid_or_address & 0xFFFFF000 )	// must be a real address, if value is >=4094 its bank number, but can't find the bank...
 				{
 					fread( (void *) bankid_or_address  ,size,1, fd);
 				}
-				else setError(22, data -> tokenBuffer );
+				else setError(E_BND, data -> tokenBuffer );
 			}
 
 			fclose(fd);
