@@ -534,7 +534,7 @@ char *dir_item_formated(struct ExamineData *dat, struct stringData *path, const 
 			ParsePattern( "#?", matchpattern, 100 );
 		}
 
-		_match = MatchPattern( matchpattern, dat->Name );
+		_match = MatchPatternNoCase( matchpattern, dat->Name );
 	}
 
 	if (_match == false) return NULL;
@@ -639,6 +639,27 @@ bool pattern_match( char *name , const char *pattern )
 	return (*p == 0);	// if we are at end of patten then it match.
 }
 
+
+bool is_file( const char *name )
+{
+	bool is_file = false;
+
+	BPTR l = Lock(name, SHARED_LOCK);
+
+	if (l)
+	{
+		BPTR fl = OpenFromLock(l);
+		if (fl)
+		{
+			is_file = true;
+
+			Close(fl);
+		}
+		else UnLock(l);
+	}
+	return is_file;
+}
+
 void split_path_pattern( struct stringData *str, struct stringData **path, struct stringData **pattern)
 {
 	bool has_pattern = false;
@@ -673,12 +694,31 @@ void split_path_pattern( struct stringData *str, struct stringData **path, struc
 						*pattern = toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
 						return;
 					}
-					else 
+
+				}
+			}
+
+			if (has_pattern == false)
+			{
+				if (is_file( &(str -> ptr) ))
+				{
+					for (i=_len-1; i>=0;i--)
 					{
-						*path = amos_strdup(str);
-						*pattern = toAmosString("",0);
-						return;
+						c = (&str->ptr) [i];
+		
+						if ((c == '/') || ( c == ':'))
+						{
+							*path = amos_strndup( str, i+1 );
+							*pattern = toAmosString( &str-> ptr + i +1, strlen(&str-> ptr + i +1) );
+							return;
+						}
 					}
+				}
+				else 
+				{
+					*path = amos_strdup(str);
+					*pattern = toAmosString("",0);
+					return;
 				}
 			}
 		}		
@@ -957,21 +997,21 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 
 	// delete old context
 
-		if (contextDir)	ReleaseDirContext(contextDir);
-		contextDir = NULL;
+	if (contextDir)	ReleaseDirContext(contextDir);
+	contextDir = NULL;
 
-		if (dir_first_path) free(dir_first_path);
-		dir_first_path = NULL;
+	if (dir_first_path) free(dir_first_path);
+	dir_first_path = NULL;
 
-		if (dir_first_pattern) free(dir_first_pattern);
-		dir_first_pattern = NULL;
+	if (dir_first_pattern) free(dir_first_pattern);
+	dir_first_pattern = NULL;
 
 	// create new context
 
-		split_path_pattern(str, &dir_first_path, &_pattern);
-		dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
+	split_path_pattern(str, &dir_first_path, &_pattern);
+	dir_first_pattern = amos_to_amiga_pattern( (char *) &_pattern-> ptr);
 
-		contextDir = ObtainDirContextTags(EX_StringNameInput, &dir_first_path -> ptr,
+	contextDir = ObtainDirContextTags(EX_StringNameInput, &(dir_first_path -> ptr),
 	                   EX_DoCurrentDir,TRUE, 
 	                   EX_DataFields,(EXF_NAME|EXF_LINK|EXF_TYPE), TAG_END);
 
@@ -997,7 +1037,7 @@ char *_discDirFirstStr( struct glueCommands *data, int nextToken )
 	
 	if (outStr)	
 	{ 
-		setStackStr(outStr);
+		setStackStr( outStr );
 	}
 	else
 	{
