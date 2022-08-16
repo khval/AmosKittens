@@ -244,6 +244,12 @@ void init_instent(struct KittyInstance *instance )
 
 }
 
+void cleanup_instent()
+{
+	if (instance.zones) freeStruct(instance.zones);
+	instance.zones = NULL;
+}
+
 struct retroSprite *patterns = NULL;
 
 int globalVarsSize = sizeof(globalVars)/sizeof(struct globalVar);
@@ -1543,6 +1549,8 @@ int main(int args, char **arg)
 		running = false;
 		wait_spawns();
 	}
+
+	cleanup_instent();
 
 	free_video();
 	clean_up_vars();
