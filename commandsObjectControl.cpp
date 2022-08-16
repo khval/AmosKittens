@@ -282,7 +282,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 
 		if (newzones)
 		{
-			if (instance.zones) free(instance.zones);
+			if (instance.zones) freeStruct(instance.zones);
 			instance.zones = allocStruct(zone,(newzones+1));
 			instance.zones_allocated = (newzones+1);
 			return NULL;
@@ -291,7 +291,7 @@ char *_ocReserveZone( struct glueCommands *data, int nextToken )
 	else setError(22,data->tokenBuffer);;
 	popStack(__stack - data->stack );
 
-	if (instance.zones) free(instance.zones);
+	if (instance.zones) freeStruct(instance.zones);
 	instance.zones = NULL;
 	instance.zones_allocated = 0;
 
