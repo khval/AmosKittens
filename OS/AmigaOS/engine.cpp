@@ -1016,12 +1016,16 @@ void limit_mouse()
 				engine -> limit_mouse_x1 - engine -> limit_mouse_x0,
 				engine -> limit_mouse_y1 - engine -> limit_mouse_y0 };
 
+#ifdef enable_limit_mouse_yes
 			ActivateWindow( engine -> window );
 			SetWindowAttrs( engine -> window, WA_MouseLimits, &mouseLimit, TAG_END);
+#endif 
 		}
 		else
 		{
+#ifdef enable_limit_mouse_yes
 			SetWindowAttrs( engine -> window, 	WA_GrabFocus, 0, TAG_END);
+#endif
 		}
 	}
 }

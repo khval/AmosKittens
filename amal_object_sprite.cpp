@@ -24,10 +24,6 @@
 #include "channel.h"
 #include "engine.h"
 
-int XSprite_formula(int x);
-int YSprite_formula(int y);
-int from_XSprite_formula(int x);
-int from_YSprite_formula(int y);
 
 static int getMax ( void )
 {
@@ -66,25 +62,6 @@ static void setY (unsigned int object,int y)
 
 //-----
 
-int XSprite_formula(int x)
-{
-	return (x - hardware_upper_left)*2 ;
-}
-
-int YSprite_formula(int y)
-{
-	return (y - hardware_upper_top)*2 ;
-}
-
-int from_XSprite_formula(int x)
-{
-	return (x/2) + hardware_upper_left ;
-}
-
-int from_YSprite_formula(int y)
-{
-	return (y/2) + hardware_upper_top ;
-}
 
 static struct retroScreen *getScreen(unsigned int object)
 {

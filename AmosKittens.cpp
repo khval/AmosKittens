@@ -156,6 +156,26 @@ void setCmdTo( int option )
 
 extern void __wait_vbl();
 
+// must be a function here..
+
+#undef XSprite_formula
+#undef YSprite_formula
+#undef from_XSprite_formula
+#undef from_YSprite_formula
+
+int XSprite_formula(int x) 
+{ return to_Engine_X(x); };
+
+int YSprite_formula(int y) 
+{ return to_Engine_Y(y); };
+
+int from_XSprite_formula(int x) 
+{ return to_Engine_X(x); };
+
+int from_YSprite_formula(int y) 
+{ return to_Engine_Y(y); };
+
+
 void init_instent(struct KittyInstance *instance )
 {
 	instance -> video = NULL;

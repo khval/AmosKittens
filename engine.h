@@ -22,8 +22,8 @@ extern uint32_t engine_update_flags ;
 
 extern bool synchro_on;
 
-#define hardware_upper_left 128
-#define hardware_upper_top 50
+#define hardware_left 128
+#define hardware_top 50
 
 #ifdef __amigaos4__
 extern Process *EngineTask;
@@ -81,6 +81,21 @@ struct kittyVblInterrupt
 	void *custom;
 };
 
-#define hw_mouse_x (instance.engine_mouse_x/2+hardware_upper_left)
-#define hw_mouse_y (instance.engine_mouse_y/2+hardware_upper_top)
+#define to_Engine_X(x) ((x - hardware_left) * 2)
+#define to_Engine_Y(y) ((y - hardware_top) * 2)
+
+#define from_Engine_X(x) ((x /2) + hardware_left)
+#define from_Engine_Y(y) ((y/2) + hardware_top)
+
+#define hw_mouse_x get_mouse_hw_x()
+#define hw_mouse_y  get_mouse_hw_y()
+
+#define XSprite_formula(x) to_Engine_X(x)
+#define YSprite_formula(y) to_Engine_Y(y)
+#define from_XSprite_formula(x) from_Engine_X(x)
+#define from_YSprite_formula(y) from_Engine_Y(y)
+
+extern int get_mouse_hw_x();
+extern int get_mouse_hw_y();
+
 

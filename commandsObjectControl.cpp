@@ -73,6 +73,34 @@ extern uint32 *ImagePointer ;
 extern Object *objectPointer ;
 #endif
 
+int get_mouse_hw_x()
+{
+	int x;
+	x = instance.engine_mouse_x;
+	if ( engine -> limit_mouse == false ) return from_Engine_X(x);
+
+	int ll = engine -> limit_mouse_x0;
+	int hl = engine -> limit_mouse_x1;
+
+	if (x<ll) x=ll;
+	if (x>hl) x=hl;
+	return from_Engine_X(x);
+}
+
+int get_mouse_hw_y()
+{
+	int y;
+	y = instance.engine_mouse_y;
+	if ( engine -> limit_mouse == false ) return from_Engine_Y(y);
+
+	int ll = engine -> limit_mouse_y0;
+	int hl = engine -> limit_mouse_y1;
+
+	if (y<ll) y=ll;
+	if (y>hl) y=hl;
+	return from_Engine_Y(y);
+}
+
 int find_zone_in_any_screen_hard( int hx, int hy)
 {
 	int z,x,y;
@@ -223,12 +251,11 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 	{
 		case 1:	if (kittyStack[__stack].type == type_none)
 				{
-#ifdef enable_limit_mouse_yes
+
 					engine_lock();	
 					engine -> limit_mouse = false;
 					engineCmdQue.push_back(kitty_limit_mouse);
 					engine_unlock();
-#endif
 				}
 				else
 				{
@@ -242,16 +269,15 @@ char *_ocMouseLimit( struct glueCommands *data, int nextToken )
 					int x1 = getStackNum(__stack-1 );
 					int y1 = getStackNum(__stack );
 
-					engine -> limit_mouse_x0 = (x0 - 128) * 2;
-					engine -> limit_mouse_y0 = (y0 - 50) * 2;
-					engine -> limit_mouse_x1 = (x1 - 128) * 2;
-					engine -> limit_mouse_y1 = (y1 - 50) * 2;
+					engine -> limit_mouse_x0 = to_Engine_X(x0);
+					engine -> limit_mouse_y0 = to_Engine_Y(y0);
+					engine -> limit_mouse_x1 = to_Engine_X(x1);
+					engine -> limit_mouse_y1 = to_Engine_Y(y1);
 					engine -> limit_mouse = true;
-#ifdef enable_limit_mouse_yes
+
 					engine_lock();
 					engineCmdQue.push_back(kitty_limit_mouse);
 					engine_unlock();
-#endif 
 				}
 				break;
 		default:
