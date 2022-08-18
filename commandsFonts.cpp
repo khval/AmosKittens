@@ -167,19 +167,22 @@ char *_fontsSetFont( struct glueCommands *data, int nextToken )
 
 	switch (args)
 	{
-		case 1: ret = getStackNum(__stack ) ;
+		case 1: ret = getStackNum(__stack ) -1;	// convert from 1...x index to C/C++ index.
 
-			if ((ret>=0)&&(ret<=(int) fonts.size()))
+			if ((ret>=0)&&(ret<(int) fonts.size()))
 			{
 				if (gfx_font) CloseFont(gfx_font);		
 				gfx_font = open_font( fonts[ret].name.c_str(),fonts[ret].size );
 
-				engine_lock();
-				if (engine_ready())
+				if (gfx_font)
 				{
-					SetFont( &font_render_rp, gfx_font );
+					engine_lock();
+					if (engine_ready())
+					{
+						SetFont( &font_render_rp, gfx_font );
+					}
+					engine_unlock();
 				}
-				engine_unlock();
 			}
 
 			break;
