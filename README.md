@@ -58,15 +58,15 @@ If window flashes on the screen, you might be runing a simple exsample, without 
 
 If AmosKittens return with a token number, It might be using a command this not supported, or not implemented, check the source code of Amos program your running. Then check “Not yet supported” as bottom of this page. And check "Issues" and "current Status:" on GitHub so see what Amos Kittens support and what not.
 
-Writing Amos Kittens compatible code, I suggest using “Amos Professional AGA” as this is the most advanced version of Amos Pro right now. Have a look here:
+Writing Amos Kittens compatible code, I like to suggest using “Amos Professional Unity” 
+as this is the most advanced version of Amos Pro right now, however lett me explain:
 
-http://amos-professional-aga.frederic-cordier.fr
+Amos Professional Unity does come with a lot of new commands in AmosPro_Personal.lib and AmosPro_AgaSupport.lib, 
+this extension is not yet replicated for Amos kittens. Try to avoid these commands, and stick to standard commands for Amos Kittens.
+And Unity breaks some extensions, some of extensions Amos Kittens support might not be supported by Unity. 
+Also “Spack” command a few other commands might not work the same or store data in same way for 256 colors.
 
-However, Amos Professional AGA does come with a lots of new commands in AmosPro_Personal.lib and AmosPro_AgaSupport.lib, 
-this extension is not yet replicated for Amos kittens. Try to avoid this command, and stick to standard commands for Amos Kittens.
-
-There are other versions of Open Source Amos Pro out there, I have not checked this out, don’t know what is fixed,
-Amos Kittens was tested whit amos programs written in AMOS Professional 2.0, so no garanties.
+Amos Kittens was tested whit Amos programs written in AMOS Professional 2.0, and will most likely work best with best the original.
 
 Later I might do a new editor replacing the Editor, with the aim of making editor without the bugs and problems, 
 that is so hard to fix, and modernizing. But I can’t do everything at once, and so its pleasing that the old code is being updated.
@@ -106,9 +106,6 @@ Partially (or mostly) implemented:
 * Chapter 14. Amal
 * Chapter 16. Menus
 * Chapter 17. Sound
-
-Not Implemented:
-
 * Chapter 17. music
 
 AmosPro support:
