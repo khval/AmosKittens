@@ -1,4 +1,6 @@
 
+set lastPath `cd`
+
 if exists ram:AmosKittens.lha
 	delete ram:AmosKittens.lha
 endif
@@ -19,17 +21,31 @@ if not exists ram:AmosKittens/docs
 	makedir ram:AmosKittens/docs
 endif
 
+if not exists ram:AmosKittens/KittySystem
+	makedir ram:AmosKittens/KittySystem
+endif
+
+gcc tools/utf8_to_ascii.c -o t:utf8_to_ascii
+t:utf8_to_ascii README.md >ram:AmosKittens/readme.txt
+
+cd $lastPath
+
+copy package/#? ram:AmosKittens all
+
 copy AmosKittens.exe ram:AmosKittens/AmosKittens
 copy AmosKittens.exe.info ram:AmosKittens/AmosKittens.info
+copy KittySystem ram:AmosKittens/KittySystem
+
 copy libs:retromode.library ram:AmosKittens/libs
+copy libs:kittycompact.library ram:AmosKittens/libs
+copy libs:kittymusic.library ram:AmosKittens/libs
+copy libs:kittyTurbo.library ram:AmosKittens/libs
+copy libs:kittyCraft.library ram:AmosKittens/libs
+copy libs:kittyMusiCraft.library ram:AmosKittens/libs
 copy #?(.txt) ram:AmosKittens/docs
-
-
-echo lha stuff
 
 cd ram:
 lha -er a AmosKittens.lha RAM:AmosKittens
 
-echo cd back
+cd $lastPath
 
-cd Work:pro_2017/amoskittens
