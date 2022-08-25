@@ -26,6 +26,7 @@
 #include "pass1.h"
 #include "label.h"
 #include "amosstring.h"
+#include "req.h"
 
 extern struct globalVar globalVars[1000];	// 0 is not used.
 unsigned int var_count[2] = {0,0};		// global and local count
@@ -832,6 +833,8 @@ void pass1_bracket_end( char *ptr )
 	pass1_bracket_for = pass1_bracket_none;	// reset.
 }
 
+
+
 void pass1_if_or_else( char *ptr )
 {
 	if (nested_count>0)
@@ -853,6 +856,8 @@ void pass1_if_or_else( char *ptr )
 		}
 	}
 }
+
+
 
 char *nextToken_pass1( char *ptr, unsigned short token )
 {
@@ -1111,16 +1116,20 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 				case 0xFFCA:	// negative sign... check if is used for signes.
 							pass1_sign( ptr );
 							break;
+
 			}
 
 			ret += cmd -> size;
 			pass1_token_count ++;
 			return ret;
 		}
+
 	}
 
-	printf("ERROR    %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
+	{
+		printf("ERROR    %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
 					__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[instance.stack].state, token);
+	}
 
 	setError(35,ptr);
 

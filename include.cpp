@@ -30,6 +30,7 @@
 #include "kittyerrors.h"
 #include "var_helper.h"
 #include "pass1.h"
+#include "req.h"
 
 extern unsigned short token_not_found;
 
@@ -107,6 +108,16 @@ void addLineAddress( struct fileContext &file, int sizeOfToken )
 }
 
 
+char *token_is_not_legal( ULONG token )
+{
+	switch (token)
+	{
+		case 0x01BA: return "Logbase(plane)";
+	}
+
+	return NULL;
+}
+
 unsigned char *nextToken_include( struct fileContext &file, unsigned short token )
 {
 	struct nativeCommand *cmd;
@@ -146,8 +157,25 @@ unsigned char *nextToken_include( struct fileContext &file, unsigned short token
 
 	if (file.ptr<file.end)
 	{
-		printf("token %04x not found, in file %s at line number %d)\n", token, file.name, file.lineNumber );
-		printf("the last found token was: %04x\n",lastToken);
+		char error_str[1000];
+		char *not_legal_str = token_is_not_legal( token );
+
+		if (not_legal_str)
+		{
+			snprintf(error_str, sizeof(error_str),"command: %s is baned\nthis command requires planar graphics", not_legal_str);
+			req_info(NULL, "hello",error_str,"quit",0);
+		}
+		else
+		{
+			snprintf(error_str, sizeof(error_str),
+				"token %04x not found, in file %s at line number %d)\n"
+				"the last found token was: %04x\n",
+				token, file.name, file.lineNumber,
+				lastToken);
+
+			req_info(NULL, "hello",error_str,"quit",0);
+		}
+
 		token_not_found = token;
 		return NULL;
 	}

@@ -67,6 +67,8 @@ extern void setError( int _code, char * _pos ) ;
 #include "var_helper.h"
 #include "bank_helper.h"
 
+#include "req.h"
+
 //include "ext_music.h"
 
 bool running = true;
@@ -1578,6 +1580,7 @@ int main(int args, char **arg)
 	clean_up_files();
 	clean_up_special();	// we add other stuff to this one.
 	wbargclose();
+
 	closedown();
 
 	if (sig_main_vbl) 

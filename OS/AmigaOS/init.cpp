@@ -83,6 +83,9 @@ struct LayersIFace		*ILayers = NULL;
 struct Library			*kittyCompactBase = NULL;
 struct kittyCompactIFace	*IkittyCompact = NULL;
 
+struct Library 			*RequesterBase = NULL;
+struct RequesterIFace	*IRequester= NULL;
+
 APTR engine_mx = 0;
 APTR channel_mx[4] = { 0,0,0,0 };
 
@@ -243,6 +246,7 @@ BOOL init()
 	if ( ! open_lib( "workbench.library", 53 , "main", 1, &WorkbenchBase, (struct Interface **) &IWorkbench ) ) return FALSE;
 	if ( ! open_lib( "icon.library", 53, "main", 1, &IconBase, (struct Interface **) &IIcon) ) return FALSE;
 	if ( ! open_lib( "kittycompact.library", 53, "main", 1, &kittyCompactBase, (struct Interface **) &IkittyCompact) ) return FALSE;
+	if ( ! open_lib( "requester.class", 53, "main", 1, &RequesterBase, (struct Interface **) &IRequester) ) return FALSE;
 
 	_locale = (struct Locale *) OpenLocale(NULL);
 
@@ -421,6 +425,9 @@ void closedown()
 
 	if (kittyCompactBase) CloseLibrary(kittyCompactBase); kittyCompactBase = 0;
 	if (IkittyCompact) DropInterface((struct Interface*) IkittyCompact); IkittyCompact = 0;
+
+	if (RequesterBase) CloseLibrary(RequesterBase); RequesterBase = 0;
+	if (IRequester) DropInterface((struct Interface*) IRequester); IRequester = 0;
 
 	cleanup_printf("%s:%d\n",__FUNCTION__,__LINE__);
 
