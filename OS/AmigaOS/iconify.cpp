@@ -74,6 +74,7 @@ void enable_Iconify( )
 
 			if (appicon) 
 			{
+				window_save_state.win = My_Window;
 				save_window_attr(&window_save_state);
 				close_engine_window();
 
@@ -114,6 +115,13 @@ void	disable_Iconify()
 	{
 		open_fullscreen(had_ModeID);
 	}
+
+	printf("Open window %d,%d,%d,%d\n",
+		window_save_state.window_left,
+		window_save_state.window_top,
+		window_save_state.window_width,
+		window_save_state.window_height);
+
 
 	open_engine_window(
 		window_save_state.window_left,
