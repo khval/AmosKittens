@@ -1123,12 +1123,12 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 
 	{
 		int n;
-		int _stack = data -> stack;
+		int stack_pos = __stack - args + 1;
 		int coordinates = args >> 1;
 
 		for (n=0;n<args;n++)
 		{
-			array[n] = getStackNum( _stack++ );
+			array[n] = getStackNum( stack_pos++ );
 		}
 		array[n] = array[0]; n++;
 		array[n] = array[1]; n++;
@@ -1137,18 +1137,21 @@ char *_gfxPolygon( struct glueCommands *data, int nextToken )
 
 		if (instance.paintMode)
 		{
+			int ink = screen -> ink0 ;
 			lx = array[ 0 ];
 			ly = array[ 1 ];
 			for (n=1;n<coordinates;n++)
 			{
 				xgr = array[ n*2 ];
 				ygr = array[ n*2+1];
-				retroLine( screen, screen -> double_buffer_draw_frame, lx,ly,xgr,ygr,screen -> ink2 );
+
+				retroLine( screen, screen -> double_buffer_draw_frame, lx,ly,xgr,ygr, ink );
+
 				lx = xgr;
 				ly=ygr;
 			}
 
-			retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,array[ 0 ],array[ 1 ],screen -> ink2 );
+			retroLine( screen, screen -> double_buffer_draw_frame,lx,ly,array[ 0 ],array[ 1 ],ink );
 		}
 	}
 
