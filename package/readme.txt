@@ -43,7 +43,7 @@ Stuff not supported:
 Planar / lowlevel peeking & poking into screens, sprites, bobs.
 
 
-07.09.2020 version 0.8
+07.09.2022 version 0.8
 
  * Remove the required version 53, for extensions.
  * Fixed sticky key problem, due to missed key up event.
