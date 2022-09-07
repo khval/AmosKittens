@@ -1769,10 +1769,6 @@ char *discLof(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-
-
-
 char *_discGet( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data -> stack +1;

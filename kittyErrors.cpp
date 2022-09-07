@@ -16,6 +16,9 @@
 #include "kittyErrors.h"
 #include "debug.h"
 #include "spawn.h"
+#include "req.h"
+
+extern struct RequesterIFace	*IRequester;
 
 extern struct error errorsTestTime[];
 
@@ -50,6 +53,7 @@ char *cmdERRN(struct nativeCommand *cmd, char *tokenBuffer)
 
 void printError( struct errorAt *thisError, struct error *tab )
 {
+	char buffer[1000];
 	struct error *e;
 	
 	for (e=tab; e-> errorText; e++ )
@@ -57,7 +61,19 @@ void printError( struct errorAt *thisError, struct error *tab )
 		if (thisError -> code == e->errorCode)
 		{
 			getLineFromPointer(thisError->pos);
-			printf("ERROR: %s\nAt line number: %d in file %d\n\n",e->errorText, lineFromPtr.line, lineFromPtr.file );
+
+			sprintf(buffer,"ERROR: %s\nAt line number: %d in file %d",e->errorText, lineFromPtr.line, lineFromPtr.file );
+
+			if (IRequester)
+			{
+				req_info( NULL, "Error", buffer, "Sorry!", 0 );
+			}
+			else
+			{
+				printf("%s\n\n",buffer);
+			}
+
+
 			break;
 		}
 	}
