@@ -2,10 +2,9 @@
 
 About
 -----
-Amos Kittens tries to be 100% compatible AMOS interpreter, so you can download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is the goal of this project. On the Amos command this project try’s to stay 99% compatible, a few command wont work as this project use a bit more modern chunky image format instead of the planar graphic format.
+Amos Kittens tries to be 100% compatible AMOS interpreter, so you can download Amos programs from Aminet or cover disks or run AMOS code from ADF disk images. This is the goal of this project. The Amos Kittens commands tries to stay 99% compatible, a few commands won’t work as this project use a bit more modern chunky image format instead of the planar graphic format used on Amiga 500 to 4000.
 
-**AmigaOS4.x**
-This platform this thing primary developed on, however code is some times tested on other operating systems.
+AmigaOS4.x is the platform this thing primary developed on, however code is sometimes tested on other operating systems.
 
 **MorphOS / AROS / AmigaOS3.x**
 The API's are whery similar to AmigaOS4.x there for it should be relatively easy to make the changes need to make it compile, however due to having to focus on adding new features, I have no time to keep thing up to date on many different operating systems.
@@ -50,8 +49,17 @@ https://github.com/khval/kittyTurbo.library
 
 https://github.com/khval/kittycompact.library
 
+# Using Amos Kittens
 
-To start a game or program you type:
+There are two ways you use Amos Kittens.
+
+* As workbench tool for project icon.
+
+Change the “Default tool:” on your Amos project icon to AmosKittens.
+set Execution Mode/Run as: Workbench, 
+
+* From shell
+
 AmosKittens [dir]/[filename.amos]
   
 If window flashes on the screen, you might be runing a simple exsample, without "Wait Key", unlike Amos Pro, Amos kittens don't wait for a key press if the program is done.
