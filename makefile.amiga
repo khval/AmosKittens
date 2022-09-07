@@ -12,7 +12,7 @@ VERSION = 1
 
 warnings = -Wuninitialized -Wsign-compare -Wunused-variable
 
-COPT = -D__USE_INLINE__ -D__amoskittens__
+COPT = -D__USE_INLINE__ -D__amoskittens__ -DDATE="`date LFORMAT "%d.%m.%Y"`"
 
 inc = -I./ -I../../ -Isdk:include/amoskittens
 

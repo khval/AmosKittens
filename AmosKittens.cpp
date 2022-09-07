@@ -18,6 +18,7 @@
 #include <proto/retroMode.h>
 #include <workbench/startup.h>
 #include <amosKittens.h>
+#include <amoskittens_rev.h>
 
 extern char *asl( const char *pattern );
 #endif
@@ -69,7 +70,7 @@ extern void setError( int _code, char * _pos ) ;
 
 #include "req.h"
 
-//include "ext_music.h"
+STATIC CONST UBYTE USED verstag[] = VERSTAG;
 
 bool running = true;
 bool interpreter_running = false;
@@ -1312,6 +1313,13 @@ void cfg_joystick( int j, const char *type )
 
 BPTR wbstartup_olddir = NULL;
 
+void printPathFromLock( BPTR lock )
+{
+	char buffer[1000];
+	int32 success = DevNameFromLock( lock, buffer, sizeof(buffer), DN_FULLPATH );
+	printf("%s\n",buffer);
+}
+
 char *wbargs(struct WBStartup *argmsg)
 {
 	struct WBArg *arg;
@@ -1323,6 +1331,11 @@ char *wbargs(struct WBStartup *argmsg)
 	{
 		arg = argmsg -> sm_ArgList +1;	// only read the first arg.
 		wbstartup_olddir = SetCurrentDir( arg -> wa_Lock );
+
+//		printPathFromLock( wbstartup_olddir );
+//		printPathFromLock( arg -> wa_Lock );
+//		printPathFromLock( GetCurrentDir() );
+
 		return strdup(arg -> wa_Name);
 	}
 	else
