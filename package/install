@@ -1,1 +1,227 @@
-copy libs/#? libs: all
+;*
+;* amoskittens for AmigaONE/Sam4x0/AmigaOS 4.x
+;*
+;* and other sources read LICENCE.md for more information
+;*
+;*	http://github.com/khval/amoskittens
+;*
+;*
+
+;********* MESSAGES ***************************************
+
+(set MStartup
+  (cat  "\nWelcome to the\n\n"
+        "AmosKittens installation\n\n\n"
+        "This project is open source and distributed as MIT.\n\n"
+        "https://github.com/khval/amoskittens"
+  )
+)
+
+(set POptions "What do you want to install?")
+(set HOptions
+  (cat  "Please choose the parts of the packet that should be installed.\n\n"
+	"Libraries: AmosKittens extentions\n"
+	"Players: ptreplay.library / ptplay.library \n"
+	"If you are not sure what to install, just use the default. "
+	"You can install the other parts any time later."
+  )
+)
+
+(set SLibs    "Libraries")
+(set SPlayers    "ptreplay.library / ptplay.library")
+(set SSDK "SDK for AmigaOS4")
+
+(set PLibDestDir "Where do you want to install the libraries?")
+(set HLibDestDir
+  (cat  "Choose the drawer for the system libraries. "
+        "Usually, this is \"libs/\"."
+  )
+)
+
+(set PToolDestDir "Where do you want to install the tools?")
+(set HToolDestDir
+  (cat  "Choose a drawer that is within the shell path. "
+        "Usually, this is \"C:\"."
+  )
+)
+
+(set PCopyExtensions     "Copying the extensions")
+(set PCopyPlayers     "Copying the ptreplay.library & ptplay.library")
+(set PCopyProgram    "Copying amoskittens")
+(set PCopyDir1    "Copying amoskittens")
+(set PCopyDir2    "Copying amoskittens")
+(set PCopyDir3    "Copying amoskittens")
+(set PCopyDir4    "Copying amoskittens")
+
+(set HCopyProgram
+  (cat  "What tools should be installed?\n\n"
+        "powerpack: a small tool to compress and decompress powerpacked files."
+  )
+)
+
+;********* FILES ******************************************
+
+(set ProgName "amoskittens")
+
+(set lib1 "libs/retromode.library")
+(set lib2 "libs/kittycompact.library")
+(set lib3 "libs/kittymusic.library")
+(set lib4 "libs/kittyTurbo.library")
+(set lib5 "libs/kittyCraft.library")
+(set lib6 "libs/kittyMusiCraft.library")
+
+(set player1 "libs/ptreplay.library")
+(set player2 "libs/ptplay.library")
+
+(set dir1 "KittySystem")
+(set dir2 "icons")
+(set dir3 "docs")
+(set readme "readme.txt")
+
+(set FSDK        "development_ppc/")
+
+
+;********* INSTALLER SCRIPT *******************************
+
+(set @default-dest "")          ; currently no specific dir
+
+;------ Greetings to the user -----------------------------
+(message MStartup)
+
+(set progdest
+  (askdir
+    (prompt "\nWhere do you want to copy AmosKittens to ?\n")
+    (help @askdir-help)
+    (default "work:progs/amoskittens")
+  )
+)
+
+(set @default-dest progdest)
+
+;------ What should be installed --------------------------
+(set InstOpts                   ; ask what to install
+  (askoptions
+    (prompt  POptions)
+    (help    HOptions)
+    (choices SLibs SPlayers)
+    (default -1)
+  )
+)
+
+;------ Ask for destinations ------------------------------
+(if (IN InstOpts 0)             ; Libs
+  (
+    (set LibDestDir "libs:")    ; Destination for the library
+    (if (= @user-level 2)
+      (
+        (set LibDestDir
+          (askdir
+            (prompt PLibDestDir)
+            (help   HLibDestDir)
+            (default LibDestDir)
+          )
+        )
+        (set FCopyIfyLib FIfyLib)
+      )
+    )
+  )
+)
+
+;------ FUNCTIONS -------------------------
+
+(procedure copy_lib 
+	(
+		(copylib
+			(prompt  PCopyLib)
+			(help    @copylib-help)
+			(confirm)
+			(source libFile)
+			(dest LibDestDir)
+		)
+	)
+)
+
+;------ Copy all files ------------------------------------
+(if (IN InstOpts 0)             ; Libraries
+  (
+    (set libFile lib1)
+    (copy_lib)
+
+    (set libFile lib2)
+    (copy_lib)
+
+    (set libFile lib3)
+    (copy_lib)
+
+    (set libFile lib4)
+    (copy_lib)
+
+    (set libFile lib5)
+    (copy_lib)
+
+    (set libFile lib6)
+    (copy_lib)
+  )
+)
+
+(if (IN InstOpts 1)             ; players
+  (
+    (set libFile player1)
+    (copy_lib)
+
+    (set libFile player2)
+    (copy_lib)
+  )
+)
+
+
+(copyfiles
+  (prompt PCopyProgram)
+  (help   HCopyProgram)
+  (confirm "expert")
+  (source "")
+  (dest   ProgDest)
+  (choices ProgName readme)
+  (infos)
+)
+
+(set tmpdest (tackon ProgDest dir1))
+
+(MAKEDIR tmpdest )
+
+(copyfiles
+  (prompt PCopyDir1)
+  (help   HCopyProgram)
+  (source dir1)
+  (dest tmpdest)
+  (infos)
+  (all)
+)
+
+(set tmpdest (tackon ProgDest dir2))
+
+(MAKEDIR tmpdest )
+
+(copyfiles
+  (prompt PCopyDir2)
+  (help   HCopyProgram)
+  (source dir2)
+  (dest tmpdest)
+  (infos)
+  (all)
+)
+
+(set tmpdest (tackon ProgDest dir3))
+
+(MAKEDIR tmpdest )
+
+(copyfiles
+  (prompt PCopyDir3)
+  (help   HCopyProgram)
+  (source dir3)
+  (dest tmpdest)
+  (infos)
+  (all)
+)
+
+(exit)
