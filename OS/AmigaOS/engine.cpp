@@ -624,6 +624,7 @@ bool menu_shortcut( ULONG Code ,  ULONG Qualifier)
 	return false;
 }
 
+struct Window *fullscreen_backdrop_window = NULL;
 
 void open_fullscreen(ULONG ModeID)
 {
@@ -645,7 +646,53 @@ void open_fullscreen(ULONG ModeID)
 			SA_Quiet, 	TRUE,
 			SA_LikeWorkbench, TRUE,
 		TAG_DONE);
+
+	fullscreen_backdrop_window = OpenWindowTags( NULL,
+				WA_PubScreen,       (ULONG) fullscreen_screen,
+				WA_Left,			0,
+				WA_Top,			0,
+				WA_Width,		fullscreen_screen -> Width,
+				WA_Height,		fullscreen_screen -> Height,
+
+				WA_MinWidth, 	0, 
+				WA_MinHeight,   0,
+				WA_MaxWidth,      ~0,
+				WA_MaxHeight,       ~0,  
+
+				WA_SimpleRefresh,	TRUE,
+				WA_CloseGadget,	FALSE,
+				WA_DepthGadget,	FALSE ,
+				WA_DragBar,		FALSE ,
+				WA_Borderless,	TRUE ,
+				WA_SizeGadget,	FALSE,
+				WA_SizeBBottom,	FALSE,
+				WA_NewLookMenus,	TRUE,
+				WA_Title,			NULL ,
+				WA_Activate,		FALSE,
+				WA_Flags,			WFLG_RMBTRAP| WFLG_REPORTMOUSE,
+				WA_IDCMP,		IDCMP_COMMON,
+
+				WA_OverrideOpaqueness, TRUE,
+				WA_Opaqueness, 255,
+
+			TAG_DONE);
+
+	if (fullscreen_backdrop_window)
+	{
+		RectFillColor(fullscreen_backdrop_window->RPort, 0, 0,  fullscreen_screen -> Width, fullscreen_screen -> Height, 0xFF000000);
+	}
+
 }
+
+void 	close_full_screen()
+{
+	if (fullscreen_backdrop_window) CloseWindow(fullscreen_backdrop_window );
+	fullscreen_backdrop_window  = NULL;
+
+	if (fullscreen_screen) CloseScreen(fullscreen_screen);
+	fullscreen_screen = NULL;
+}
+
 
 /*
 double monitor_aspect(ULONG ModeID)
@@ -718,8 +765,7 @@ void disable_fullscreen()
 	engine_lock();
 	close_engine_window();
 
-	CloseScreen( fullscreen_screen);
-	fullscreen_screen = NULL;
+	close_full_screen();
 
 	open_engine_window(
 		window_normal_saved.window_left,
@@ -1252,8 +1298,7 @@ void main_engine()
 
 	if (iconifyPort)  dispose_Iconify();
 
-	if (fullscreen_screen) CloseScreen(fullscreen_screen);
-	fullscreen_screen = NULL;
+	if (fullscreen_screen) close_full_screen();
 
 	instance.engine_stopped = true;
 }
