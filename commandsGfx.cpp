@@ -1012,8 +1012,6 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 			int coordinates = args >> 1;
 			int lx,ly,_stack,n;
 
-			printf("this\n");
-
 			_stack = data -> stack;
 
 			lx = getStackNum( _stack++ );
@@ -1052,9 +1050,6 @@ char *_gfxPolyline( struct glueCommands *data, int nextToken )
 			int x,y;
 			x = getStackNum(__stack-1 );
 			y = getStackNum(__stack );
-
-
-			printf("that..\n");
 
 			switch (screen -> autoback)
 			{
