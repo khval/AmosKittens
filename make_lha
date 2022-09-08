@@ -26,8 +26,8 @@ if not exists ram:AmosKittens/KittySystem
 endif
 
 gcc tools/utf8_to_ascii.c -o t:utf8_to_ascii
-t:utf8_to_ascii README.md >ram:AmosKittens/readme.txt
 
+t:utf8_to_ascii README.md >ram:AmosKittens/docs/github_readme.txt
 t:utf8_to_ascii commands.md >ram:AmosKittens/docs/commands.txt
 t:utf8_to_ascii commandsAmal.md >ram:AmosKittens/docs/commandsAmal.txt
 t:utf8_to_ascii CONTRIBUTING.md >ram:AmosKittens/docs/CONTRIBUTING.txt
