@@ -36,7 +36,12 @@ struct joystick
 	int device_id;
 	int port;
 	int res;
-	int connected;
+	ULONG connected;
+	ULONG axis_offset;
+	ULONG button_offset;
+	ULONG hat_offset;
+	int xpad;
+	int ypad;
 };
 
 extern int joy_keyboard_index;
@@ -47,5 +52,5 @@ extern struct joystick joysticks[4];
 
 void init_usb_joysticks();
 void close_joysticks();
-void joy_stick(int joy,void *controller);
+void joy_stick(int j,struct joystick *joy);
 

@@ -40,7 +40,8 @@ ports:
 
 joysticks:
 	0: "usb"
-	1: "keyboard"
+	1: "usb"
+#	1: "keyboard"
 
 default:
 	Flash: "(000,2)(440,2)(880,2)(bb0,2)(dd0,2)(ee0,2)(ff2,2)(ff8,2)(ffc,2)(fff,2)(aaf,2)(88c,2)(66a,2)(226,2)(004,2)(001,2)"

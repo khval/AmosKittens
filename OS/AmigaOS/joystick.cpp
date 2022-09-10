@@ -16,6 +16,8 @@ struct AIN_IFace	*IAIN = NULL;
 
 struct MsgPort *joystick_msgport = NULL;
 
+int axis_max_value = 0;
+
 int found_joysticks = 0;
 int used_joysticks = 0;
 struct joystick joysticks[4];
@@ -32,32 +34,29 @@ enumPacket userdata;
 
 static BOOL get_joy (AIN_Device *device, struct joystick *joy)
 {
+	ULONG connected = false;
 	BOOL ret = FALSE;
-	int connected = 0;
 
 	if (device->Type == AINDT_JOYSTICK) 
 	{
-		Printf("is a joystick\n");
+		AIN_Query(joy ->controller, device -> DeviceID,AINQ_CONNECTED,0,&(connected), sizeof(ULONG) );
 
-		AIN_Query(joy ->controller, device -> DeviceID,AINQ_CONNECTED,0,&connected,4 );
 		if (connected)
 		{
+//			printf("** connected **\n");
+
+			AIN_Query(joy ->controller, device -> DeviceID,AINQ_AXIS_OFFSET,0,&(joy -> axis_offset), sizeof(ULONG) );
+			AIN_Query(joy ->controller, device -> DeviceID,AINQ_BUTTON_OFFSET,0,&(joy ->button_offset), sizeof(ULONG) );
+			AIN_Query(joy ->controller, device -> DeviceID,AINQ_HAT_OFFSET,0,&(joy -> hat_offset), sizeof(ULONG) );
+
 			if (found_joysticks==joy->type_count)
 			{
-				Printf("Devce Type %ld \tID %lx \tdevce Name %s\n",
-					device -> Type, 
-					device -> DeviceID,
-					device -> DeviceName);
-
 				ret = TRUE;
 				joy -> device_id = device -> DeviceID;
+				joy -> connected = true;
 			}
 			found_joysticks ++;
 		}
-	}
-	else
-	{
-		Printf("Not a joystick, device type is %ld\n",device->Type);
 	}
 
 	return ret;
@@ -69,18 +68,19 @@ void init_usb_joystick(int usb_count, int port, struct joystick *joy, struct Tag
 	joy -> device_id = -1;
 	joy -> type_count = usb_count;
 	joy -> port = port;
-	joy->controller = AIN_CreateContext (1, AIN_Tags);
+	joy -> connected = false;
+	joy -> controller = AIN_CreateContext (1, AIN_Tags);
 
 	if (joy->controller)
 	{
-		Printf("looking for usb joystcik #%ld on port #%ld\n",usb_count, port);
+//		printf("looking for usb joystcik #%d on port #%d\n",usb_count, port);
 
 		found_joysticks = 0;
 		AIN_EnumDevices(joy->controller, (void *) get_joy, (void *) joy );
 	}
 	else
 	{
-		Printf("Amiga input can't create context\n");
+//		printf("Amiga input can't create context\n");
 	}
 }
 
@@ -88,15 +88,16 @@ void init_usb_joystick(int usb_count, int port, struct joystick *joy, struct Tag
 
 void dump_joysticks()
 {
-	Printf("-- joysticks --\n");
+	printf("-- joysticks --\n");
 
 	// show found joysticks
 	for (struct joystick *joy=joysticks;joy<joysticks+4;joy++)
 	{
-		Printf("joy[%08lx] port #%ld, type %ld, Using device ID %lx\n",
+		printf("joy[%08x] port #%d, type %d, conncted %d, Using device ID %x\n",
 			joy,
 			joy -> port,
 			joy -> type,
+			joy -> connected,
 			joy -> device_id);
 	}
 }
@@ -107,6 +108,9 @@ void init_usb_joysticks()
 	int usb_count = 0;
 	int port_number;
 	struct TagItem AIN_Tags[2];
+
+//	printf("init_usb_joysticks!!\n");
+
 
 	joystick_msgport = (struct MsgPort *) AllocSysObjectTags(ASOT_PORT, TAG_END );	
 	if (!joystick_msgport) return ;
@@ -126,6 +130,8 @@ void init_usb_joysticks()
 			case 1: port_number=0;	break;
 			default: port_number=index;	break;
 		}
+
+//		printf("joysticks[ %d ].type: %d\n", port_number, joysticks[ port_number ].type);
 
 		if ( joysticks[ port_number ].type == joy_usb )
 		{
@@ -198,55 +204,69 @@ void print_bin(unsigned int v)
 
 static int lot[]=
 	{
-		1<<0,		//0
-		1<<0,		//1
-		1<<0,		//2
-		1<<0,		//3
-		1<<0,		//4
-		1<<1,		//5	// fire2
-		1<<0,		//6	// fire1
-		1<<2,		//7
-		1<<3,		//8
-		1<<4,		//9
-		1<<5,		//10
-		1<<6,		//11
-		1<<7,		//12
-		1<<8,		//13
-		1<<9,		//14
-		1<<10,		//15
-		1<<11,		//16
-		1<<12,		//17
-		1<<13,		//18
-		1<<14,		//19
-		1<<15,		//20
-		1<<16,		//21
-		1<<17,		//22
+		1<<1,		//1	// fire2
+		1<<0,		//2	// fire1
+		1<<2,		//3
+		1<<3,		//4
+		1<<4,		//5
+		1<<5,		//6
+		1<<6,		//7
+		1<<7,		//8
+		1<<8,		//9
+		1<<9,		//10
+		1<<10,		//11
+		1<<11,		//12
+		1<<12,		//13
+		1<<13,		//14
+		1<<14,		//15
+		1<<15,		//16
+		1<<16,		//17
+		1<<17,		//18
+		1<<18,		//19
+		1<<19,		//20
+		1<<20,		//21
 	};
 
-void joy_stick(int joy,void *controller)
+int axis_to_joy(struct joystick *joy, int n, int value)
 {
-	int j,n;
+	if (value>axis_max_value) axis_max_value = value;
+	if (-value>axis_max_value) axis_max_value = -value;
+
+	if ((value>(-axis_max_value/2)) && (value<(axis_max_value/2)) ) value = 0;
+
+	switch (n&1)
+	{
+		case 0:	joy -> xpad = 0x00;
+				if (value<0) { joy -> xpad = joy_left; } else if (value>0) { joy -> xpad = joy_right; }
+				break;
+
+		case 1:	joy -> ypad = 0x00;
+				if (value<0) { joy -> ypad = joy_up; } else if (value>0) { joy -> ypad = joy_down; }
+				break;
+	}
+	return joy -> xpad | joy -> ypad;
+}
+
+void joy_stick(int j, struct joystick *joy)
+{
 	AIN_InputEvent *ain_mess;
 
-	while ( ain_mess = AIN_GetEvent(controller))
+	printf("joystick: %d\n",j);
+
+	if (joy -> connected == false) return;
+
+	printf("is connected!! try to get event\n");
+
+	while ( ain_mess = AIN_GetEvent(joy -> controller))
 	{
-		j = 0;
-
-		for (n=0;n<4;n++)	if ( (unsigned int) joysticks[n].device_id == ain_mess -> ID) j =n;
-
+		printf("type: %d\n",ain_mess -> Type );
 
 		switch (ain_mess -> Type)
 		{
-			case AINET_AXIS: // axes
-					break;
-
 			case AINET_BUTTON:
 					{
-						unsigned int bit = lot[ain_mess -> Index];
-
-
-//						Printf("value %ld index %ld\n",ain_mess -> Value, ain_mess -> Index);
-//						Delay(20);
+						int b = ain_mess -> Index -  joy -> button_offset;
+						unsigned int bit = lot[ b  ];
 
 						if (ain_mess -> Value)
 						{
@@ -259,20 +279,19 @@ void joy_stick(int joy,void *controller)
 					}
 					break;
 
+			case AINET_AXIS: // axes
+					{
+						int axis = ain_mess -> Index -  joy -> axis_offset;
+						amiga_joystick_dir[j] = axis_to_joy( joy, axis, ain_mess ->  Value);
+					}
+					break;
+
 			case AINET_HAT:
 					amiga_joystick_dir[j] = dir[ ain_mess -> Value ];
 					break;
 		}
-/*
-		printf("amiga_joystick_button[%d] = %",j);
-		print_bin(amiga_joystick_button[j]);
-		printf("\n");
 
-		printf("amiga_joystick_dir[%d] = %",j);
-		print_bin(amiga_joystick_dir[j]);
-		printf("\n");
-*/
-		AIN_FreeEvent(controller,ain_mess);
+		AIN_FreeEvent(joy -> controller,ain_mess);
 	}
 }
 

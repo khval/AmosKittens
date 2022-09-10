@@ -1148,7 +1148,7 @@ void main_engine()
 				{
 					if (joysticks[n].connected)
 					{
-						joy_stick(n,joysticks[n].controller);
+						joy_stick(n,joysticks + n);
 					}
 				}
 			}

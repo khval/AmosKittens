@@ -47,8 +47,14 @@ Stuff not supported:
 
 Planar / lowlevel peeking & poking into screens, sprites, bobs.
 
+Changes:
 
 07.09.2022 version 0.8
+
+17 commits to kittyMusiCraft.library (st load, st play, st stop, st pause, st resume)
+7 commits to ptreplay.library (PTGetSample, PTPatternData)
+4 commits to kittyMusic.library (track load, track play, track stop)
+1 commit to RetroMode.library (fixed polygon)
 
  * Remove the required version 53, for extensions.
  * Fixed sticky key problem, due to missed key up event.
@@ -64,6 +70,8 @@ Planar / lowlevel peeking & poking into screens, sprites, bobs.
  * Added version string to exe file.
  * Minor improvements to Polygon
  * Improvements to packaging.
+ * Fullscreen now has back border.
+ * Fixed joystick / joypad, offsets of buttons / axis 
 
 30.06.2020 version 0.7, initial release.
 
