@@ -1678,7 +1678,7 @@ char *gfxScreenMode(struct nativeCommand *cmd, char *tokenBuffer)
 	}
 	else if (instance.screens[instance.current_screen])	// check if current screen is open.
 	{
-		setStackNum(instance.screens[instance.current_screen] -> videomode);
+		setStackNum(retroModeToAmosMode(instance.screens[instance.current_screen] -> videomode));
 	}
 
 	return tokenBuffer;
