@@ -95,12 +95,16 @@ char *_discSetDir( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
+
 char *_discPrintOut( struct glueCommands *data, int nextToken )
 {
+	int args =__stack - data->stack +1 ;
 	int num,n;
 	FILE *fd;
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	int next_print_line_feed = true;
+
+	proc_names_printf("%s:%s:%d - args: %d\n",__FILE__,__FUNCTION__,__LINE__,args);
 
 	num = getStackNum( data -> stack ) -1;
 
@@ -108,29 +112,47 @@ char *_discPrintOut( struct glueCommands *data, int nextToken )
 	{
 		fd =  instance.files[ num ].fd;
 
-		for (n=data->stack+1;n<=__stack;n++)
+		if (fd)
 		{
-			switch (kittyStack[n].type)
+			for (n=data->stack+1;n<=__stack;n++)
 			{
-				case type_int:
-					fprintf(fd,"%d", kittyStack[n].integer.value);
-					break;
-				case type_float:
-					fprintf(fd,"%f", kittyStack[n].decimal.value);
-					break;
-				case type_string:
-					if (kittyStack[n].str) fprintf(fd,"%s", &(kittyStack[n].str -> ptr));
-					break;
+				switch (kittyStack[n].type)
+				{
+					case type_int:
+						fprintf(fd,"%d", kittyStack[n].integer.value);
+						break;
+					case type_float:
+						fprintf(fd,"%f", kittyStack[n].decimal.value);
+						break;
+					case type_string:
+						if (kittyStack[n].str) fprintf(fd,"%s", &(kittyStack[n].str -> ptr));
+						break;
+					case type_none:
+						if (n>data->stack+1) next_print_line_feed = false;
+				}
+
+				if (n<__stack) if (kittyStack[n+1].type != type_none) fprintf(fd,"    ");
 			}
 
-			if (n<=__stack) fprintf(fd,"    ");
+			if (next_print_line_feed) fprintf(fd, "\n");
 		}
-
-		fprintf(fd, "\n");
-
+		else setError(97,data->tokenBuffer);
 	}
+
 	popStack(__stack - data -> stack  );
+	do_breakdata = NULL;	// done doing that.
+
 	return NULL;
+}
+
+extern void _print_break( struct nativeCommand *cmd, char *tokenBuffer );
+
+char *discPrintOut(struct nativeCommand *cmd, char *tokenBuffer)
+{
+	do_breakdata = _print_break;
+
+	stackCmdNormal( _discPrintOut, tokenBuffer );
+	return tokenBuffer;
 }
 
 int _open_file_( struct glueCommands *data, const char *access )
@@ -1183,11 +1205,7 @@ char *discSetDir(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-char *discPrintOut(struct nativeCommand *cmd, char *tokenBuffer)
-{
-	stackCmdNormal( _discPrintOut, tokenBuffer );
-	return tokenBuffer;
-}
+
 
 char *discOpenIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
