@@ -9,17 +9,23 @@ project use a bit more modern chunky image format instead of the planar graphic 
 AmigaOS4.x is the platform this thing primary developed on, 
 however code is sometimes tested on other operating systems.
 
-There are two ways you use Amos Kittens.
+There are tree ways you use Amos Kittens.
 
-* As workbench tool for project icon.
+* By double click on Amos Kittens icon.
+
+You can also double click icon and select an Amos game or program.
+
+* As workbench tool for a workbench project icon.
 
 Change the "Default tool:" on your Amos project icon to AmosKittens.
 set Execution Mode/Run as: Workbench.
 
-* From shell
+* From the command line interface "CLI/AmigaDOS/Shell/KingCon"
 
 AmosKittens [dir]/[filename.amos]
 For more information see readme on github:
+
+(if you start Amos Kittens in bad, why Amos game or program might struggle to find assets.)
 
 https://github.com/khval/AmosKittens/edit/master/README.md
 
