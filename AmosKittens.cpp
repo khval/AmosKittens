@@ -627,12 +627,6 @@ char *_get_var_index( glueCommands *self , int nextToken )
 
 		if ((_last_var_index >= 0)  && (_last_var_index<var->count))
 		{
-			if ( correct_order( getLastProgStackToken(),  nextToken ) == false )
-			{
-				dprintf("---hidden ( symbol \n");
-				setStackHiddenCondition();
-			}
-
 			switch (var -> type & 7)		// array type is 8, so mask is 7 		(while its unlikley you have array of file of proc, none we do not wont confuse this)
 			{
 				case type_int: 
@@ -779,7 +773,6 @@ char *cmdLabelOnLine(nativeCommand *cmd, char *ptr)
 }
 
 
-
 char *cmdVar(nativeCommand *cmd, char *ptr)
 {
 	struct reference *ref = (struct reference *) ptr;
@@ -798,6 +791,8 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 	{
 		struct kittyData *var;
 
+//		printf(" correct_order( %04x,  %04x )\n", getLastProgStackToken(),  next_token );
+
 		if ( correct_order( getLastProgStackToken(),  next_token ) == false )
 		{
 			dprintf(" hidden ( condition.\n");
@@ -806,10 +801,6 @@ char *cmdVar(nativeCommand *cmd, char *ptr)
 
 		if (var = getVar( ref -> ref ))
 		{
-//			printf("ref %04x\n",ref -> ref);
-//			printf("got Var (%04x)\n",var);
-//			printf("type: %d\n",var -> type);
-
 			switch (var -> type & 7)
 			{
 				case type_int:

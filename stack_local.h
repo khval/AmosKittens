@@ -13,10 +13,11 @@ extern bool stackNotEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackMoreOrEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern bool stackLessOrEqualStr(struct kittyData *item0, struct kittyData *item1);
 extern void correct_for_hidden_sub_data();
-extern unsigned short getLastProgStackToken();
+//extern unsigned short getLastProgStackToken();
 
 #define getLastProgStackFn()	((cmdStack) ? cmdTmp[cmdStack-1].cmd : NULL)
 #define getLastProgStackToken() ((cmdStack) ? cmdTmp[cmdStack-1].token : 0 )
+#define getLastLastProgStackToken() (((cmdStack-1)>0) ? cmdTmp[cmdStack-2].token : 0 )
 
 #define setStackHiddenCondition()			\
 			kittyStack[__stack].str = NULL;		\

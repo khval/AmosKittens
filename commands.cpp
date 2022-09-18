@@ -574,9 +574,117 @@ char *nextArg(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+extern const char *TokenName( unsigned short token );
+extern struct nativeCommand nativeCommands[];
+extern int nativeCommandsSize;
+
+char *skip_next_cmd( char * ptr, unsigned short token)
+{
+	bool _exit = false;
+	struct nativeCommand *cmd;
+
+	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
+	{
+		if (token == cmd->id )
+		{
+/*
+			getLineFromPointer(ptr);
+			printf("Line %08d offset %08x token %04x - size %d - name %s\n",
+						lineFromPtr.line,
+						ptr-_file_start_,
+						token, 
+						cmd -> size,
+						TokenName(token));
+*/
+
+			switch (token)
+			{
+				case 0x0006:	ptr += ReferenceByteLength(ptr);		break;
+				case 0x000c:	ptr += ReferenceByteLength(ptr);		break;
+				case 0x0012:	ptr += ReferenceByteLength(ptr);		break;
+				case 0x0018:	ptr += ReferenceByteLength(ptr);		break;
+				case 0x0026:	ptr += QuoteByteLength(ptr);			break;
+				case 0x002E:	ptr += QuoteByteLength(ptr);			break;
+				case 0x064A:	ptr += QuoteByteLength(ptr);			break;
+				case 0x0652:	ptr += QuoteByteLength(ptr);			break;
+			}
+
+			return ptr + cmd -> size;
+		}
+	}
+
+	getLineFromPointer(ptr);
+	printf("TOKEN NOT FOUND: %04x AS LINE %d!!!\n",token,lineFromPtr.line);
+	return NULL;
+}
+
+unsigned short token_after_array( char * ptr)
+{
+	int count = 0;
+	unsigned short token;
+
+//	ptr += sizeof(struct reference)+ref->length;
+	token = *((short *) (ptr));
+
+	for(;;)
+	{
+		switch (token)
+		{
+				case 0x0054:   
+				case 0x0000:	printf("unexpected exit\n");
+							return 0;
+	
+				case 0x0074:	count ++; break;
+				case 0x007C:	count --;
+							if (count == 0) return *((unsigned short *) (ptr + 2));
+		}
+
+		ptr = skip_next_cmd( ptr +2 , token);
+
+		if (ptr==NULL)
+		{
+			printf("BAD EXIT value\n");
+			getchar();
+			return 0;
+		}		
+
+		token = *((short *) (ptr));
+	}
+
+	return 0;
+}
+
 char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 {
+	unsigned short last_token;
+	unsigned short next_token;
+
 	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[instance.stack].state);
+
+	last_token = getLastProgStackToken();
+	next_token = token_after_array( tokenBuffer-2 );
+
+	dprintf("correct_order( %04x, %04x)\n ", last_token ,  next_token );
+
+	if (last_token == 0x0074)	// index command..
+	{
+		last_token = getLastLastProgStackToken();
+
+		dprintf("**correct_order( %04x, %04x)\n ", last_token ,  next_token );
+
+		if ( correct_order( last_token,  next_token ) == false )
+		{
+			dprintf(" hidden ( condition. opt 1\n");
+			setStackHiddenCondition();
+			cmdTmp[__cmdStack-1].stack ++;	// fixing index start...
+		}
+	}
+	else	if ( correct_order( last_token,  next_token ) == false )
+	{
+		dprintf(" hidden ( condition. opt 2\n");
+		setStackHiddenCondition();
+		setStackNone();
+	}
 
 	parenthesis[instance.parenthesis_count] =instance.stack;
 	instance.parenthesis_count++;
@@ -618,12 +726,6 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 				instance.cmdStack --;
 			}
 		}
-	}
-
-
-	if ( correct_order( getLastProgStackToken() ,  nextToken ) == false )
-	{
-		setStackHiddenCondition();
 	}
 
 	ret = flushCmdParaStack(nextToken);

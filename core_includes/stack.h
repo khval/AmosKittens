@@ -12,6 +12,7 @@ extern void	setStackNone( this_instance_one );
 
 #define getLastProgStackFn()	((__cmdStack) ? cmdTmp[__cmdStack-1].cmd : NULL)
 #define getLastProgStackToken() ((__cmdStack) ? cmdTmp[__cmdStack-1].token : 0 )
+#define getLastLastProgStackToken() (((__cmdStack-1)>0) ? cmdTmp[__cmdStack-2].token : 0 )
 
 #define setStackHiddenCondition()			\
 			kittyStack[instance_stack].str = NULL;		\

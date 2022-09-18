@@ -27,7 +27,7 @@ bool correct_order( this_instance_first int last_token, int next_token );
 #define kittyStack instance->kittyStack
 #endif
 
-
+extern void dump_stack();
 
 void memcpy4(int32_t *d,int32_t *s,int l)
 {
@@ -269,6 +269,9 @@ void setStackNum( this_instance_first int num )
 	kittyStack[instance_stack].integer.value = num;
 	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_int;
+
+//	printf("set stack: %d\n",num);
+//	dump_stack();
 }
 
 void setStackDecimal( this_instance_first double decimal )
