@@ -1834,28 +1834,6 @@ char *_discGet( struct glueCommands *data, int nextToken )
 	return NULL;
 }
 
-bool write_file_start_end( int channel, char *start, char *end )
-{
-	printf("channel %d\n",channel);
-
-	if ((channel>0)&&(channel<11))
-	{
-		FILE *fd = instance.files[channel-1].fd ;
-		printf("channel\n");
-
-		if (fd)
-		{
-			printf("is open\n");
-
-			printf("fwrite( %0lx, (uint32_t) %0lx - (uint32_t) %0lx,  1,  fd );\n", start , end, start );
-			printf("fwrite( %0lx, %d, %d, %0lx)\n", start, (uint32_t) end - (uint32_t) start, 1, fd );
-
-			fwrite( start, (uint32_t) end - (uint32_t) start,  1,  fd );
-			return true;
-		}
-	}
-	return false;
-}
 
 char *_discPut( struct glueCommands *data, int nextToken )
 {
