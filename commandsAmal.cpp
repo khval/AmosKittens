@@ -747,8 +747,7 @@ char *amalAnim(struct nativeCommand *cmd, char *tokenBuffer)
 
 char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 {
-	int args =__stack - data->stack +1 ;
-	bool success = false;
+	int args = instance.stack - data -> stack + 1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
@@ -762,7 +761,6 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 					for (index = 0; index < channels -> _size(); index++)
 					{
 						(channels -> item(index)) -> amalStatus |= channel_status::frozen;
-						success = true;
 					}
 					engine_unlock();
 				}
@@ -775,7 +773,6 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 					if (item = channels -> getChannel(channel))
 					{
 						item -> amalStatus |= channel_status::frozen;
-						success = true;
 					}
 					engine_unlock();
 				}
@@ -785,11 +782,7 @@ char *_amalAmalFreeze( struct glueCommands *data, int nextToken )
 				setError(22,data->tokenBuffer);
 	}
 
-	if (success == false) setError(22,data->tokenBuffer);
-
 	popStack(__stack - data->stack );
-
-
 
 	return NULL;
 }
