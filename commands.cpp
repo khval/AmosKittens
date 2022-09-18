@@ -1055,8 +1055,8 @@ char *cmdGoto(struct nativeCommand *cmd, char *tokenBuffer)
 
 	switch (next_token)
 	{
+		case 0x003E:	// number.
 		case 0x0026:	// text
-
 					stackCmdNormal( _goto, tokenBuffer );
 					break;
 
