@@ -184,7 +184,7 @@ int _open_file_( struct glueCommands *data, const char *access )
 			_str = getStackString(__stack );
 			if (_str)
 			{
-				printf("name: '%s'\n",&_str->ptr);
+				printf("name: '%s' - access: '%s'\n",&_str->ptr,access);
 
 				instance.files[ num ].fd = fopen( &_str->ptr, access );
 			}
@@ -1573,7 +1573,6 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 	{
 		fd = instance.files[ channel -1 ].fd ;
 
-
 		if (fd)
 		{
 			newstr = alloc_amos_string( len );
@@ -1591,6 +1590,7 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 				sys_free(newstr);
 			}
 		}
+		else	setError(97,data->tokenBuffer); // file not open
 	}
 
 	// we ended up here something went wrong,
@@ -1850,31 +1850,35 @@ char *_discPut( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		channel = getStackNum(__stack -1 ) ;
+		channel = getStackNum(__stack -1 ) -1;
 		index = getStackNum(__stack ) ;
 
 		if ((channel>0)&&(channel<11) && (index>0))
 		{
-			fields = instance.files[channel-1].fields ;
-			fd = instance.files[channel-1].fd ;
+			fields = instance.files[channel].fields ;
+			fd = instance.files[channel].fd ;
 
-			printf("Seek to %d\n",(index -1) * instance.files[channel-1].fieldsSize);
-
-			fseek( fd, (index -1) * instance.files[channel-1].fieldsSize , SEEK_SET);
-
-			for (n=0; n<instance.files[channel-1].fieldsCount;n++)
+			if (fd)
 			{
-				printf(" [%d,%d] ", fields -> size, fields -> ref );
+				printf("Seek to %d\n",(index -1) * instance.files[channel-1].fieldsSize);
 
-				sprintf( fmt, "%%-%ds",fields -> size);
-				sprintf( tmp, fmt, globalVars[ fields -> ref -1 ].var.str );
-				tmp[ fields -> size ] = 0;
+				fseek( fd, (index -1) * instance.files[channel-1].fieldsSize , SEEK_SET);
 
-				fputs(tmp,fd);
+				for (n=0; n<instance.files[channel-1].fieldsCount;n++)
+				{
+					printf(" [%d,%d] ", fields -> size, fields -> ref );
 
-				fields ++;
+					sprintf( fmt, "%%-%ds",fields -> size);
+					sprintf( tmp, fmt, globalVars[ fields -> ref -1 ].var.str );
+					tmp[ fields -> size ] = 0;
+
+					fputs(tmp,fd);
+
+					fields ++;
+				}
+				printf("\n");
 			}
-			printf("\n");
+			else	setError(97,data->tokenBuffer); // file not open
 		}
 	}
 
