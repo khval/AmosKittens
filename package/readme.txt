@@ -55,6 +55,11 @@ Planar / lowlevel peeking & poking into screens, sprites, bobs.
 
 Changes:
 
+18.09.2022 version 0.8 (Bug fixes.)
+
+* A complicated math bug found and fixed.
+* fixed a bug in the "Screen Mode" command.
+
 07.09.2022 version 0.8
 
 17 commits to kittyMusiCraft.library (st load, st play, st stop, st pause, st resume)
