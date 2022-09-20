@@ -169,6 +169,8 @@ int _open_file_( struct glueCommands *data, const char *access )
 
 		if ((num>-1)&&(num<10))
 		{
+			// clean up from last open file.
+
 			if ( instance.files[ num ].fd )
 			{
 				fclose( instance.files[ num ].fd );
@@ -181,11 +183,12 @@ int _open_file_( struct glueCommands *data, const char *access )
 				instance.files[ num ].fields = NULL;
 			}
 
+			// try to open new file!
+
 			_str = getStackString(__stack );
 			if (_str)
 			{
 				printf("name: '%s' - access: '%s'\n",&_str->ptr,access);
-
 				instance.files[ num ].fd = fopen( &_str->ptr, access );
 			}
 
@@ -1205,8 +1208,6 @@ char *discSetDir(struct nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
-
-
 char *discOpenIn(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _discOpenIn, tokenBuffer );
@@ -1266,6 +1267,8 @@ void file_input( struct nativeCommand *cmd, char *tokenBuffer )
 	if (last_var)
 	{
 		struct kittyData *var = getVar( last_var );
+
+		// maybe this below is a bug?????
 
 		if ((input_cmd_context.lastVar>0)&&(input_cmd_context.lastVar<11))
 		{
@@ -1547,19 +1550,17 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 {
 	int args =__stack - data -> stack +1;
 	int channel = 0;
-	int len = 0;
+	int _len = 0;
 	struct stringData *newstr;
 	FILE *fd;
 
-	printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 	
-	if (args == 2)
-
 	switch (args)
 	{
 		case 2:
-				channel = getStackNum(__stack - 1 );
-				len = getStackNum(__stack );
+				channel = getStackNum(__stack - 1 ) -1;
+				_len = getStackNum(__stack );
 				break;
 		default:
 				popStack(__stack - data -> stack  );
@@ -1569,32 +1570,33 @@ char *_discInputStrFile( struct glueCommands *data, int nextToken )
 
 	popStack(__stack - data -> stack  );
 
-	if (( channel >0)&&( channel <11))
+	if (( channel >-1)&&( channel <11))
 	{
-		fd = instance.files[ channel -1 ].fd ;
+		fd = instance.files[ channel ].fd ;
 
 		if (fd)
 		{
-			newstr = alloc_amos_string( len );
+			newstr = alloc_amos_string( _len );
 
 			if (newstr)
 			{
-
-				if (fgets( &newstr -> ptr, len ,fd ))
+				if (fgets( &newstr -> ptr, _len+1 ,fd ) != NULL ) // +1 because fgets need know buffer size including \0
 				{
-					popStack(__stack - data -> stack  );
-
-					setStackStr(newstr);
+					setStackStr(newstr); // moved into stack, so we can't free it!
 					return NULL;
 				}
-				sys_free(newstr);
+				else
+				{
+					setError(94,data->tokenBuffer); // read error!
+					sys_free(newstr);
+					return NULL;
+				}
 			}
 		}
 		else	setError(97,data->tokenBuffer); // file not open
 	}
 
 	// we ended up here something went wrong,
-
 	setError(97,data->tokenBuffer); // file not open
 	return NULL;
 }
@@ -1619,11 +1621,11 @@ char *_discLof( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		channel = getStackNum(__stack);
+		channel = getStackNum(__stack) - 1;
 
-		if (( channel >0)&&( channel <11))
+		if (( channel >-1)&&( channel <11))
 		{
-			fd = instance.files[ channel -1 ].fd ;
+			fd = instance.files[ channel ].fd ;
 
 			if (fd)
 			{
@@ -1656,7 +1658,7 @@ char *_discPof( struct glueCommands *data, int nextToken )
 
 	if (args == 1)
 	{
-		channel = getStackNum(__stack);
+		channel = getStackNum(__stack) - 1;
 
 		if ( _do_set == _set_pof )
 		{
@@ -1664,9 +1666,9 @@ char *_discPof( struct glueCommands *data, int nextToken )
 		}
 		else
 		{
-			if (( channel >0)&&( channel <11))
+			if (( channel >-1)&&( channel <11))
 			{
-				FILE *fd = instance.files[ channel -1 ].fd ;
+				FILE *fd = instance.files[ channel ].fd ;
 
 				if (fd)
 				{
@@ -1687,9 +1689,9 @@ char *_set_pof( struct glueCommands *data, int nextToken )
 {
 	unsigned int pos = getStackNum( instance.stack );
 
-	if (( __set_channel__ >0)&&( __set_channel__ <11))
+	if (( __set_channel__ > - 1 )&&( __set_channel__ <11))
 	{
-		FILE *fd = instance.files[ __set_channel__ -1 ].fd ;
+		FILE *fd = instance.files[ __set_channel__ ].fd ;
 
 		fseek( fd, pos, SEEK_SET );
 	}
@@ -1726,7 +1728,7 @@ char *_discEof( struct glueCommands *data, int nextToken )
 				{
 					channel = getStackNum(__stack);
 	
-					if (( channel >0)&&( channel <11))
+					if (( channel > -1 )&&( channel <11))
 					{
 						fd = instance.files[ channel -1 ].fd ;
 
@@ -1800,13 +1802,13 @@ char *_discGet( struct glueCommands *data, int nextToken )
 
 	if (args == 2)
 	{
-		channel = getStackNum(__stack -1 ) ;
+		channel = getStackNum(__stack -1 ) -1;
 		index = getStackNum(__stack ) ;
 
-		if ((channel>0)&&(channel<11) && (index>0))
+		if ((channel> -1)&&(channel<11) && (index>0))
 		{
-			fields = instance.files[channel-1].fields ;
-			fd = instance.files[channel-1].fd ;
+			fields = instance.files[channel].fields ;
+			fd = instance.files[channel].fd ;
 
 			printf("Seek to %d\n",(index -1) * instance.files[channel-1].fieldsSize);
 
@@ -1853,7 +1855,7 @@ char *_discPut( struct glueCommands *data, int nextToken )
 		channel = getStackNum(__stack -1 ) -1;
 		index = getStackNum(__stack ) ;
 
-		if ((channel>0)&&(channel<11) && (index>0))
+		if ((channel>-1)&&(channel<11) && (index>0))
 		{
 			fields = instance.files[channel].fields ;
 			fd = instance.files[channel].fd ;
