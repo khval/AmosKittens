@@ -160,11 +160,65 @@ char *errResumeLabel(nativeCommand *cmd, char *tokenBuffer)
 	return tokenBuffer;
 }
 
+
+extern char *skip_next_cmd( char * ptr, unsigned short token);
+
+char *next_cmd( char * ptr )
+{
+	int count = 0;
+	unsigned short token;
+
+	token = *((short *) (ptr));
+	for(;;)
+	{
+		switch (token)
+		{
+				case 0x0054:	return ptr;
+				case 0x0000:	return ptr;
+		}
+
+		ptr = skip_next_cmd( ptr +2 , token);
+
+		if (ptr==NULL)
+		{
+			printf("BAD EXIT value\n");
+			getchar();
+			return 0;
+		}		
+		token = *((short *) (ptr));
+	}
+
+	return 0;
+}
+
+
 char *errResumeNext(nativeCommand *cmd, char *tokenBuffer)
 {
-//	struct reference *ref;
 	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	NYI(__FUNCTION__);
+
+	if (instance.kittyError.pos == 0) 
+	{
+		onError = onErrorBreak;
+		on_error_goto_location = NULL;
+		on_error_proc_location = NULL;
+		resume_location = NULL;
+
+		setError(7,tokenBuffer);
+		return NULL;
+	}
+
+	tokenBuffer = next_cmd( instance.kittyError.pos );
+
+	if (tokenBuffer == 0) 
+	{
+		onError = onErrorBreak;
+		on_error_goto_location = NULL;
+		on_error_proc_location = NULL;
+		resume_location = NULL;
+		setError(3,tokenBuffer);
+		return NULL;
+	}
+	
 	return tokenBuffer;
 }
 

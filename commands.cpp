@@ -583,6 +583,8 @@ char *skip_next_cmd( char * ptr, unsigned short token)
 	bool _exit = false;
 	struct nativeCommand *cmd;
 
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id )
