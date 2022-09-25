@@ -28,93 +28,9 @@ extern unsigned short last_token;
 extern int tokenMode;
 extern int tokenlength;
 
-bool correct_order( int last_token, int next_token )
-{
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
-	switch (last_token)
-	{
-		case token_semi:
-			if ((next_token == token_add)
-				|| (next_token == token_sub)
-				|| (next_token == token_mul)
-				|| (next_token == token_div)
-				|| (next_token == token_mod)
-				|| (next_token == token_power)
-				|| (next_token == token_more_or_equal )
-				|| (next_token == token_less_or_equal	)
-				|| (next_token == token_less_or_equal2 )
-				|| (next_token == token_more_or_equal2 )
-				|| (next_token == token_not_equal )
-				|| (next_token == token_equal )
-				|| (next_token == token_more )
-				|| (next_token == token_less ) 
-				|| (next_token == token_or)
-				|| (next_token == token_xor)		// don't know the token number yet.
-				|| (next_token == token_and)) return false;
-			break;
+//define dprintf printf
 
-		case token_or:
-		case token_xor:
-		case token_and:
-			if ((next_token == token_add)
-				|| (next_token == token_sub)
-				|| (next_token == token_mul)
-				|| (next_token == token_div)
-				|| (next_token == token_mod)
-				|| (next_token == token_power)
-				|| (next_token == token_more_or_equal )
-				|| (next_token == token_less_or_equal	)
-				|| (next_token == token_less_or_equal2 )
-				|| (next_token == token_more_or_equal2 )
-				|| (next_token == token_not_equal )
-				|| (next_token == token_equal )
-				|| (next_token == token_more )
-				|| (next_token == token_less )) return false;
-			break;
-
-		case token_more_or_equal:
-		case token_less_or_equal:
-		case token_less_or_equal2:
-		case token_more_or_equal2:
-		case token_not_equal:
-		case token_equal:
-		case token_more:
-		case token_less:
-
-			if ((next_token == token_add)
-				|| (next_token == token_sub)
-				|| (next_token == token_mul)
-				|| (next_token == token_div)
-				|| (next_token == token_mod)
-				|| (next_token == token_power)) return false;
-			break;
-
-		case token_add:
-			if ((next_token == token_mul)
-				|| (next_token == token_div)
-				|| (next_token == token_mod)
-				|| (next_token == token_power)) return false;
-			break;
-
-		case token_sub:
-			if ((next_token == token_mul)
-				|| (next_token == token_div)
-				|| (next_token == token_mod)
-				|| (next_token == token_power)) return false;
-			break;
-
-		case token_mul:
-			if (next_token == token_power) return false;
-			break;
-
-		case token_div	:
-			if (next_token == token_power) return false;
-			break;
-	}
-	
-	return true;
-}
 
 char *_equalData( struct glueCommands *data, int nextToken )
 {

@@ -51,6 +51,7 @@ main_objects = commands.cpp \
 			AmalCommands.cpp \
 			interfaceclasses.cpp \
 			interfacelanguage.cpp \
+			symbol.cpp \
 			debug.cpp \
 			pass1.cpp \
 			kittyErrors.cpp \

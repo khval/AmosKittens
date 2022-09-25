@@ -77,6 +77,9 @@ bool interpreter_running = false;
 int sig_main_vbl = 0;
 int proc_stack_frame = 0;
 
+extern bool init_symbol_order();
+extern bool correct_order( int last_token, int next_token );
+
 bool ext_crc();
 
 #ifdef enable_vars_crc_yes
@@ -1351,6 +1354,7 @@ int main(int args, char **arg)
 	int n;
 
 	init_instent( &instance );
+	init_symbol_order();
 
 	procStcakFrame[0].localVarData = stackFrameData;	// this just temp... need to manage size, lett it grow..
 	procStcakFrame[0].localVarDataNext = stackFrameData;
@@ -1368,6 +1372,9 @@ int main(int args, char **arg)
 	oldSigExcept = SetExcept(0,0 );
 	SetExcept( SIGBREAKF_CTRL_C, SIGBREAKF_CTRL_C );
 #endif
+
+
+	if (spawn_count) return -20 ; // no tasks should be started yet!! memory is corrupted...
 
 #ifdef  __linux__
 	struct sigaction sa;
@@ -1453,17 +1460,20 @@ int main(int args, char **arg)
 			KittyBaseInfo.rgb[n] = (DefaultPalette[n].r << 4 & 0xF00) | (DefaultPalette[n].g & 0xF0) | (DefaultPalette[n].b >> 4);
 		}
 
-		value = getConfigValue( "resource_8" );	// default resource
-		if (value)	__load_bank__( value -> c_str() ,-2);
-
-		value = getConfigValue( "assets_mouse" );	// get mouse abk
-		if (value)	__load_bank__( value -> c_str() ,-3);
-
-		// set default values.
-		memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
-
 		{
 			char tmp[30];
+			std::string *value;
+
+			value = getConfigValue( "resource_8" );	// default resource
+			if (value)	__load_bank__( value -> c_str() ,-2);
+
+			value = getConfigValue( "assets_mouse" );	// get mouse abk
+			if (value)	__load_bank__( value -> c_str() ,-3);
+
+			// set default values.
+			memset( kitty_extensions , 0, sizeof(struct extension_lib) *32 );
+
+	proc_names_printf("%s:%s:%d \n",__FILE__,__FUNCTION__,__LINE__);
 
 			for (n = 0; n < 4; n++ )
 			{
