@@ -1201,6 +1201,14 @@ void pass1_reader( char *start, char *file_end )
 
 		pass1_prev_token = token;
 		token = *((short *) ptr);
+
+		// remap tokens.
+
+		switch (token)
+		{
+			case 0x0064:  *((short *) ptr) = token_semi;
+		}
+
 		ptr += 2;	// next token.
 	}
 
