@@ -955,4 +955,52 @@ void __real_stack_trace()	// only call this from a new process.
 	}
 }
 
+const char *getTypeName( int type )
+{
+	switch ( type )
+	{
+		case type_int:
+			return "int";
+
+		case type_float:		// 1
+			return "float";
+
+		case type_string:		// 2
+			return "string";
+
+		case type_file:			// 3
+			return "file";
+
+		case type_proc:	
+			return "proc";
+
+		case type_array	 | type_int:
+			return "array of int";
+
+		case type_array	 | type_float:
+			return "array of float";
+
+		case type_array	 | type_string:
+			return "array of string";
+
+		case type_array	 | type_file:
+			return "array of file";
+
+		case type_array	 | type_proc:
+			return "array of proc";
+
+		case type_none:
+			return "none";
+
+		case type_blocked:			// used in the stack
+			return "blocked";
+
+		case type_hidden_blocked:
+			return "hidden_blocked";
+
+	}	
+
+	return "Unknown";
+}
+
 

@@ -157,6 +157,7 @@ void Printf_iso(const char *fmt,...);
 #endif
 
 void debug_draw_wave(struct wave *wave);
+const char *getTypeName( int type );
 
 #define NYI(name) printf("%s not yet implemented\n",name)
 

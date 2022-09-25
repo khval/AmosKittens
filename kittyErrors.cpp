@@ -21,8 +21,8 @@
 extern struct RequesterIFace	*IRequester;
 
 extern struct error errorsTestTime[];
-
 extern void __real_stack_trace();
+extern const char *TokenName( unsigned short token );
 
 void setError( int _code, char * _pos ) 
 {
@@ -55,14 +55,23 @@ void printError( struct errorAt *thisError, struct error *tab )
 {
 	char buffer[1000];
 	struct error *e;
+	unsigned short token = 0;
 	
 	for (e=tab; e-> errorText; e++ )
 	{
 		if (thisError -> code == e->errorCode)
 		{
-			getLineFromPointer(thisError->pos);
+			if (thisError->pos)
+			{
+				token  = *((unsigned short *) thisError->pos);
+				getLineFromPointer(thisError->pos);
+			}
 
-			sprintf(buffer,"ERROR: %s\nAt line number: %d in file %d",e->errorText, lineFromPtr.line, lineFromPtr.file );
+			sprintf(buffer,"ERROR: %s\nAt line number: %d in file %d\ntoken %04x (%s)",
+					e->errorText, 
+					lineFromPtr.line, 
+					lineFromPtr.file,
+					token, TokenName(token) );
 
 			if (IRequester)
 			{
@@ -343,4 +352,5 @@ struct error errorsRunTime[]= {
 	{ 1000,"Amos Kittens don't support this command" },
 	{ 1001,"Command needs AmigaOS (not supported on Linux/Windows/MacOSX)" },
 	{ 1002,"Amos Kittens don't support this yet." },
+	{ 1003,"Amos Kittens stack is corrupted"},
 	{ 0,NULL }};
