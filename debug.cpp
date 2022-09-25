@@ -516,25 +516,24 @@ void dump_stack()
 
 	for (n=0; n<=instance.stack;n++)
 	{
+		struct kittyData *var = &kittyStack[n];
+
 		printf("stack[%d]=",n);
 
-		if (kittyStack[n].state == state_hidden_subData)
+		switch( var -> type )
 		{
-			printf("[blocked hidden] ---- data: %08x\n", kittyStack[n].str);
-		}
-		else if (kittyStack[n].state == state_subData)
-		{
-			printf("[blocked]\n");
-		}
-		else
-		{
-			struct kittyData *var = &kittyStack[n];
+				case type_blocked:
+					printf("<Nothing>\n");
+					break;
 
-			switch( var -> type )
-			{	
+				case type_hidden_blocked:
+					printf("<Nothing>\n");
+					break;
+
 				case type_none:
 					printf("<Nothing>\n");
 					break;
+
 				case type_int:
 					v = var -> integer.value;
 					if (  ((v>='a')&&(v<='z'))  ||  ((v>='A')&&(v<='Z'))  )
@@ -543,9 +542,11 @@ void dump_stack()
 					}
 					else	printf("%d\n",v);
 					break;
+
 				case type_float:
 					printf("%f\n", var -> decimal.value);
 					break;
+
 				case type_string:
 					if (var -> str)
 					{
@@ -560,7 +561,6 @@ void dump_stack()
 						printf("<NULL>\n");
 					}
 					break;
-			}
 		}
 	}
 }

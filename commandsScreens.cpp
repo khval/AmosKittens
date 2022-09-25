@@ -565,7 +565,7 @@ char *gfxScreen(struct nativeCommand *cmd, char *tokenBuffer)
 	{
 		unsigned short next_token = *((short *) (tokenBuffer) );
 		setStackNum( instance.screens[instance.current_screen] ? instance.current_screen : -1 );		// returns -1 if no screen is open.	
-		kittyStack[__stack].state = state_none;
+
 		flushCmdParaStack( next_token );
 	}
 
@@ -807,6 +807,8 @@ char *_gfxScreenHide( struct glueCommands *data, int nextToken )
 	bool success = false;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	dump_stack();
 
 	if (args==1)
 	{

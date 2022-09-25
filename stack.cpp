@@ -74,33 +74,21 @@ bool dropProgStackAllFlag( this_instance_first int flag )
 	return false;
 }
 
-void _unLockPara( this_instance_one )
-{
-	if (instance_cmdStack)
-	{
-		struct glueCommands *cmd;
-		cmd = &cmdTmp[instance_cmdStack-1];
 
-		if (cmd -> flag == cmd_para)
-		{
-			remove_parenthesis( opt_instance_first cmd -> stack );
-		}
-	}
-}
+#ifdef __amoskittens__
 
 
-bool isArgsClean( this_instance_first struct glueCommands *cmd )
+
+bool is_not_blocked( this_instance_first struct glueCommands *cmd )
 {
 	int s;
 	for (s= cmd -> stack; s<instance_stack;s++)
 	{
-		if (kittyStack[s].state != state_none) return FALSE;
+		if (kittyStack[s].type & (type_blocked | type_hidden_blocked )) return FALSE;
 	}
 	return TRUE;
 }
 
-
-#ifdef __amoskittens__
 char *flushCmdParaStack( this_instance_first int nextToken )
 {
 	struct glueCommands *cmd;
@@ -112,7 +100,7 @@ char *flushCmdParaStack( this_instance_first int nextToken )
 		{
 			cmd = &cmdTmp[instance_cmdStack-1];
 
-			if ( isArgsClean( opt_instance_first cmd ) ) 
+			if ( is_not_blocked( this_instance_first cmd) ) 
 			{
 				ret = cmd -> cmd(cmd, nextToken );		// can only return value if foced, or last arg
 				instance_cmdStack--;
@@ -160,7 +148,7 @@ void popStack( this_instance_first int n)
 
 void remove_parenthesis( this_instance_first int black_at_stack )
 {
-	if ( kittyStack[black_at_stack].state == state_subData ) 
+	if ( kittyStack[black_at_stack].type == type_blocked ) 
 	{
 		struct kittyData *d = &kittyStack[black_at_stack];
 		struct kittyData *s = &kittyStack[black_at_stack+1];
@@ -185,7 +173,7 @@ void correct_for_hidden_sub_data( this_instance_one )
 		struct kittyData *d = &kittyStack[instance_stack-1];
 		struct kittyData *s = &kittyStack[instance_stack];
 
-		while (d -> state == state_hidden_subData)
+		while (d -> type == type_hidden_blocked)
 		{
 			memcpy4(d,s,sizeof(struct kittyData));
 			s -> str = NULL;
@@ -244,6 +232,17 @@ bool stack_is_number( this_instance_first int n )
 	return false;
 }
 
+void setStackHiddenCondition( this_instance_one )
+{
+	if (kittyStack[instance_stack].str) 
+	{
+		freeString(kittyStack[instance_stack].str);	// we should always set ptr to NULL, if not its not freed.
+		kittyStack[instance_stack].str = NULL;
+	}
+
+	kittyStack[instance_stack].type = type_hidden_blocked;
+	instance_stack++;
+}
 
 void setStackNone( this_instance_one )
 {
@@ -254,7 +253,6 @@ void setStackNone( this_instance_one )
 	}
 
 	kittyStack[instance_stack].integer.value = 0;
-	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_none;
 }
 
@@ -267,11 +265,7 @@ void setStackNum( this_instance_first int num )
 	}
 
 	kittyStack[instance_stack].integer.value = num;
-	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_int;
-
-//	printf("set stack: %d\n",num);
-//	dump_stack();
 }
 
 void setStackDecimal( this_instance_first double decimal )
@@ -283,7 +277,6 @@ void setStackDecimal( this_instance_first double decimal )
 	}
 
 	kittyStack[instance_stack].decimal.value = decimal;
-	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_float;
 }
 
@@ -291,7 +284,6 @@ void setStackStrDup( this_instance_first struct stringData *str)
 {
 	if (kittyStack[instance_stack].str)	freeString(kittyStack[instance_stack].str);
 	kittyStack[instance_stack].str = str ? amos_strdup( str ) : alloc_amos_string( 0);
-	kittyStack[instance_stack].state = state_none;
 	kittyStack[instance_stack].type = type_string;
 }
 
@@ -313,7 +305,6 @@ void setStackStr( this_instance_first struct stringData *str)
 		item -> str = alloc_amos_string( 0) ;
 	}
 
-	item -> state = state_none;
 	item -> type = type_string;
 }
 
@@ -327,8 +318,7 @@ void setStackParenthesis( this_instance_one )
 		item -> str = NULL ;
 	}
 
-	item -> state = state_subData;
-	item -> type = type_none;
+	item -> type = type_blocked;
 }
 
 

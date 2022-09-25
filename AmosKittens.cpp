@@ -848,7 +848,7 @@ char *cmdQuote(nativeCommand *cmd, char *ptr)
 	}
 
 	setStackStr( toAmosString( ptr + 2, length ) );
-	kittyStack[__stack].state = state_none;
+
 	flushCmdParaStack( (int) next_token );
 
 	return ptr + length2;
@@ -873,7 +873,7 @@ char *cmdNumber(nativeCommand *cmd, char *ptr)
 #endif
 
 	setStackNum( *((int *) ptr) );
-	kittyStack[__stack].state = state_none;
+
 	flushCmdParaStack( next_token );
 
 	return ptr;
@@ -974,8 +974,6 @@ char *cmdFloat(nativeCommand *cmd,char *ptr)
 	}
 
 	setStackDecimal( f );
-
-	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return ptr;

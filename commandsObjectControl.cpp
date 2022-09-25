@@ -208,7 +208,6 @@ char *ocMouseKey(struct nativeCommand *cmd, char *tokenBuffer)
 
 	setStackNum(instance.engine_mouse_key);
 
-	kittyStack[__stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return tokenBuffer;

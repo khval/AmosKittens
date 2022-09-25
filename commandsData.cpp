@@ -600,7 +600,7 @@ char *_addData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((instance.stack - data -> stack + 1)!=2)
+	if (instance.stack<1) // index 0,1 ok, index 0 bad
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
@@ -679,6 +679,8 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 	bool success = FALSE;
 	struct stringData *buffer = (struct stringData *) alloca( sizeof(struct stringData) + 100);
 
+//	dump_stack();
+
 	args = __stack - data -> stack + 1;
 
 	if (args<2)
@@ -707,6 +709,13 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 			buffer -> size = strlen(&(buffer->ptr));
 			setStackStrDup(buffer);
 			break;
+
+		case type_string: break;	// ready!!.
+
+		default:
+			setError(1003, data->tokenBuffer);
+			getchar();
+			return NULL;
 	}
 
 	switch (type1)
@@ -720,6 +729,11 @@ char *_addDataToText( struct glueCommands *data, int nextToken )
 
 		case type_none:	success = true; __stack++; break;	
 						// nothing to add, restores stack pointer and exit.
+
+		default:
+			setError(1003, data->tokenBuffer);
+			getchar();
+			return NULL;
 	}
 	
 	if (success )
@@ -782,7 +796,7 @@ char *_subData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((instance.stack - data -> stack + 1)!=2)
+	if (instance.stack<1) // at least 2 items on stack..
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
@@ -851,11 +865,13 @@ char *_subData( struct glueCommands *data, int nextToken )
 
 	if (success == FALSE)
 	{
-		dprintf("%d != %d\n",kittyStack[__stack].type,kittyStack[__stack+1].type);
+		printf("%s != %s\n",
+			getTypeName(kittyStack[__stack].type),
+			getTypeName(kittyStack[__stack+1].type));
 		setError(ERROR_Type_mismatch,data->tokenBuffer);
 		return NULL;
 	}
-
+	
 	return NULL;
 }
 
@@ -934,7 +950,7 @@ char *_mulData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	bool success = FALSE;
 
-	if ((instance.stack - data -> stack + 1)!=2)
+	if (instance.stack<1) // at least 2 items on stack..
 	{
 		setError(22,data->tokenBuffer);
 		return NULL;
@@ -1000,9 +1016,10 @@ char *_divData( struct glueCommands *data, int nextToken )
 	int type0, type1;
 	int error = 0;
 
-	if (instance.stack==0) 
+	if (instance.stack<1) // at least 2 items on stack..
 	{
 		proc_names_printf("%20s:%d,can't do this :-(\n",__FUNCTION__,__LINE__);
+		setError(22,data->tokenBuffer);
 		return NULL;
 	}
 

@@ -105,8 +105,8 @@ char *executeDataToken(char *ptr, unsigned short token)
 #ifdef show_token_numbers_yes
 
 			getLineFromPointer(ptr);
-			printf("DATA READ %08d   %08X %20s:%08d stack is %d cmd stack is %d flag %d token %04x -- name %s\n",
-					lineFromPtr.line , ptr +2,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[__stack].state, token , TokenName(token));	
+			printf("DATA READ %08d   %08X %20s:%08d stack is %d cmd stack is %d token %04x -- name %s\n",
+					lineFromPtr.line , ptr +2,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, token , TokenName(token));	
 #endif
 			ret = cmd -> fn( cmd, ptr ) ;
 			if (ret) ret += cmd -> size;

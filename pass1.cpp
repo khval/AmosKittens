@@ -1127,8 +1127,8 @@ char *nextToken_pass1( char *ptr, unsigned short token )
 	}
 
 	{
-		printf("ERROR    %20s:%08d stack is %d cmd stack is %d flag %d token %04x\n",
-					__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[instance.stack].state, token);
+		printf("ERROR    %20s:%08d stack is %d cmd stack is %d token %04x\n",
+					__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, token);
 	}
 
 	setError(35,ptr);

@@ -9,15 +9,11 @@ extern void	setStackDecimal( this_instance_first double decimal );
 extern void	setStackStr( this_instance_first struct stringData *str );
 extern void	setStackStrDup( this_instance_first struct stringData *str);
 extern void	setStackNone( this_instance_one );
+extern void	setStackHiddenCondition( this_instance_one );
 
 #define getLastProgStackFn()	((__cmdStack) ? cmdTmp[__cmdStack-1].cmd : NULL)
 #define getLastProgStackToken() ((__cmdStack) ? cmdTmp[__cmdStack-1].token : 0 )
 #define getLastLastProgStackToken() (((__cmdStack-1)>0) ? cmdTmp[__cmdStack-2].token : 0 )
-
-#define setStackHiddenCondition()			\
-			kittyStack[instance_stack].str = NULL;		\
-			kittyStack[instance_stack].state = state_hidden_subData;	\
-			instance_stack++;
 
 extern int		getStackNum( this_instance_first int n );
 extern double	getStackDecimal( this_instance_first int n );
@@ -50,5 +46,5 @@ extern char *flushCmdParaStack( this_instance_first int nextToken );
 
 extern void stack_get_if_int( this_instance_first int n, int *ret );
 
-#define incStack 	__stack++; kittyStack[__stack].state = state_none;	kittyStack[__stack].type = type_none; 
+#define incStack 	__stack++; kittyStack[__stack].type = type_none; 
 

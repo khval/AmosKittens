@@ -704,13 +704,14 @@ char *_textAt( struct glueCommands *data, int nextToken )
 	int args =__stack - data->stack +1 ;
 	int x =-1,y= -1;
 	int index = 0;
+	int type0,type1;
 
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if (args == 2)
 	{
-		int type0 = kittyStack[__stack-1].type;
-		int type1 = kittyStack[__stack].type;
+		type0 = kittyStack[__stack-1].type;
+		type1 = kittyStack[__stack].type;
 
 		if (( type0 == type_int ) || ( type0 == type_float) )
 		{
@@ -724,7 +725,16 @@ char *_textAt( struct glueCommands *data, int nextToken )
 			index |= 2;
 		}
 	}
-	else setError(22,data->tokenBuffer);
+	else 
+	{
+		proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+		printf("data->stack: %d\n",data->stack);
+
+		setError(22,data->tokenBuffer);
+	}
+
+	if ((type0 == type_string) || (type1 == type_string))	setError(22,data->tokenBuffer);
 
 	popStack(__stack - data->stack );
 

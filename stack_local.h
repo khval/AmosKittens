@@ -19,11 +19,6 @@ extern void correct_for_hidden_sub_data();
 #define getLastProgStackToken() ((cmdStack) ? cmdTmp[cmdStack-1].token : 0 )
 #define getLastLastProgStackToken() (((cmdStack-1)>0) ? cmdTmp[cmdStack-2].token : 0 )
 
-#define setStackHiddenCondition()			\
-			kittyStack[__stack].str = NULL;		\
-			kittyStack[__stack].state = state_hidden_subData;	\
-			stack++;
-
 extern char *flushCmdParaStack( int nextToken );
 extern bool dropProgStackToProc( char *(*fn) (struct glueCommands *data, int nextToken ) );
 extern bool dropProgStackToFlag( int flag );

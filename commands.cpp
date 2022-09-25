@@ -661,18 +661,14 @@ char *parenthesisStart(struct nativeCommand *cmd, char *tokenBuffer)
 	unsigned short last_token;
 	unsigned short next_token;
 
-	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d state %d\n",__FILE__,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack, kittyStack[instance.stack].state);
+	proc_names_printf("%s:%s:%d stack is %d cmd stack is %d \n",__FILE__,__FUNCTION__,__LINE__, instance.stack, instance.cmdStack);
 
 	last_token = getLastProgStackToken();
 	next_token = token_after_array( tokenBuffer-2 );
 
-	dprintf("correct_order( %04x, %04x)\n ", last_token ,  next_token );
-
 	if (last_token == 0x0074)	// index command..
 	{
 		last_token = getLastLastProgStackToken();
-
-		dprintf("**correct_order( %04x, %04x)\n ", last_token ,  next_token );
 
 		if ( correct_order( last_token,  next_token ) == false )
 		{
@@ -703,7 +699,7 @@ char *parenthesisEnd(struct nativeCommand *cmd, char *tokenBuffer)
 	char *ret;
 	int nextToken = *((unsigned short *) tokenBuffer);
 
-	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
+	proc_names_printf("%s:%s:%d----------------\n",__FILE__,__FUNCTION__,__LINE__);
 
 	_file_pos_ = tokenBuffer;		// needed by "Fn", need to return End Bracket after Fn call.
 
@@ -2577,7 +2573,6 @@ char *cmdTimer(struct nativeCommand *cmd, char *tokenBuffer )
 	timer_offset += timer_diff;
 
 	setStackNum( timer_offset );		// 1/50 sec = every 20 ms
-	kittyStack[instance.stack].state = state_none;
 	flushCmdParaStack( next_token );
 
 	return tokenBuffer;

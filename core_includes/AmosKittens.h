@@ -42,18 +42,19 @@ typedef void* APTR;
 
 #define token_newLine	0x0000
 #define token_index		0x0074
-#define token_semi		0x0064
 #define token_comma	0x005C
 #define token_nextCmd	0x0054
+
+#define token_semi		0xFF04
+#define token_xor		0xFF3E
+#define token_or		0xFF4C
+#define token_and		0xFF58
+#define token_mod		0xFFD4
 #define token_add		0xFFC0
 #define token_sub		0xFFCA
 #define token_mul		0xFFE2
 #define token_div		0xFFEC
 #define token_power	0xFFF6
-#define token_or		0xFF4C
-#define token_and		0xFF58
-#define token_xor		0xFF3E
-#define token_mod		0xFFD4
 
 #define token_parenthesis_start	0x0074
 #define token_parenthesis_end	0x007C
@@ -90,13 +91,6 @@ enum
 	mode_for				// 6
 };
 
-enum 
-{
-	state_none = 0,
-	state_subData,
-	state_hidden_subData 
-};
-
 #define cmd_normal			0x0001
 #define cmd_index			0x0002 
 #define cmd_para			0x0004
@@ -118,9 +112,11 @@ enum
 	type_float,		// 1
 	type_string,		// 2
 	type_file,			// 3
-	type_proc = 4,		// 4
+	type_proc = 4,	
 	type_array = 8	,	// I'm sure AMOS don't use this, but we do.
-	type_none =16,	// 16
+	type_none =16,
+	type_blocked = 32,			// used in the stack
+	type_hidden_blocked = 64		// used in the stack.
 };
 
 struct KittyInstance;
@@ -339,7 +335,6 @@ struct kittyData
 
 	struct valueData integer;
 	struct desimalData decimal;
-	int state;
 	int type;
 };
 
@@ -586,7 +581,7 @@ struct kittyLib
 	instance_cmdstack_opts ; \
 	cmdTmp[__cmdStack].cmd = fn;		\
 	cmdTmp[__cmdStack].tokenBuffer = buf;	\
-	cmdTmp[__cmdStack].flag = cmd_para | cmd_onComma | cmd_onNextCmd | cmd_onEol;	\
+	cmdTmp[__cmdStack].flag = cmd_para | cmd_onNextCmd | cmd_onEol;	\
 	cmdTmp[__cmdStack].lastVar = last_var;	\
 	cmdTmp[__cmdStack].stack = __stack; \
 	cmdTmp[__cmdStack].token = 0; \
