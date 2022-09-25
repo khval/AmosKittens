@@ -848,41 +848,11 @@ char *_discDir( struct glueCommands *data, int nextToken )
 char *discDir(struct nativeCommand *cmd, char *tokenBuffer)
 {
 	stackCmdNormal( _discDir, tokenBuffer );
-
 	return tokenBuffer;
 }
 
-char *_discDirStr( struct glueCommands *data, int nextToken )
-{
-	int args =__stack - data->stack +1 ;
-	BPTR lock;
-	BPTR oldLock;
-	struct stringData *_str;
 
-	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
-
-	if (args == 1)
-	{
-		_str = getStackString(__stack );
-
-		if (_str)
-		{
-			lock = Lock( &_str->ptr, SHARED_LOCK );
-			if (lock)
-			{
-				oldLock = SetCurrentDir( lock );
-				if (oldLock) UnLock (oldLock );
-			}
-		}
-	}
-	else setError(22,data -> tokenBuffer);
-
-	popStack(__stack - data->stack );
-	return NULL;
-}
-
-
-char *_set_dir_str( struct glueCommands *data, int nextToken )
+char *_store_dir_str( struct glueCommands *data, int nextToken )
 {
 	struct stringData *_new_path = getStackString(__stack );
 
@@ -893,31 +863,52 @@ char *_set_dir_str( struct glueCommands *data, int nextToken )
 }
 
 
+char *_discDirStr( struct glueCommands *data, int nextToken )
+{
+	int args =__stack - data->stack +1 ;
+	struct stringData *str;
+
+	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+	switch (args)
+	{
+		case 1:
+			{
+				char buffer[100];
+				BPTR lock = GetCurrentDir();
+				if ( NameFromLock(lock, buffer, sizeof( buffer)))
+				{
+					str = toAmosString( buffer,strlen(buffer) );
+				}
+				else setError(24,data -> tokenBuffer);
+
+			}
+			break;
+
+		default:
+
+			setError( 22, data -> tokenBuffer );
+	}
+
+	popStack(__stack - data->stack );
+
+	if (str) setStackStr( str );
+
+	return NULL;
+}
+
 char *discDirStr(struct nativeCommand *cmd, char *tokenBuffer)
 {
-
 	proc_names_printf("%s:%s:%d\n",__FILE__,__FUNCTION__,__LINE__);
 
 	if ( (instance.token_is_fresh) && (NEXT_TOKEN(tokenBuffer) == 0xFFA2 ))
 	{
 		tokenMode = mode_store;
-		_do_set = _set_dir_str;
-	}
-	else if ( (instance.token_is_fresh) && (NEXT_TOKEN( tokenBuffer ) == 0xFFA2)) 
-	{
-		printf("%s:%d\n",__FUNCTION__,__LINE__);
-		stackCmdNormal( _discDirStr, tokenBuffer );
+		_do_set = _store_dir_str;
 	}
 	else
 	{
-		char buffer[4000];
-		int32 success = NameFromLock(GetCurrentDir(), buffer, sizeof(buffer) );
-
-		if (success)
-		{
-			struct stringData *ret = toAmosString( buffer, strlen(buffer) );
-			setStackStr( ret );
-		}
+		stackCmdNormal( _discDirStr, tokenBuffer );
 	}
 
 	return tokenBuffer;
