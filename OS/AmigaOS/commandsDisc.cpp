@@ -1726,11 +1726,11 @@ char *_discEof( struct glueCommands *data, int nextToken )
 	{
 		case 1:
 				{
-					channel = getStackNum(__stack);
+					channel = getStackNum(__stack) - 1;
 	
 					if (( channel > -1 )&&( channel <11))
 					{
-						fd = instance.files[ channel -1 ].fd ;
+						fd = instance.files[ channel ].fd ;
 
 						if (fd)
 						{
