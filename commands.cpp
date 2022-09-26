@@ -578,17 +578,33 @@ extern const char *TokenName( unsigned short token );
 extern struct nativeCommand nativeCommands[];
 extern int nativeCommandsSize;
 
+#define __slow_safe__ 0
+
+extern char fast_lookup[0xFFFF];
+
 char *skip_next_cmd( char * ptr, unsigned short token)
 {
 	bool _exit = false;
-	struct nativeCommand *cmd;
 
 	proc_names_printf("%s:%d\n",__FUNCTION__,__LINE__);
+
+#if __slow_safe__
+
+	struct nativeCommand *cmd;
 
 	for (cmd = nativeCommands ; cmd < nativeCommands + nativeCommandsSize ; cmd++ )
 	{
 		if (token == cmd->id )
 		{
+
+#else
+
+	uint16_t size;
+	size = *((uint16_t *) (fast_lookup + token + sizeof(void *)));
+
+#endif
+
+
 /*
 			getLineFromPointer(ptr);
 			printf("Line %08d offset %08x token %04x - size %d - name %s\n",
@@ -611,13 +627,21 @@ char *skip_next_cmd( char * ptr, unsigned short token)
 				case 0x0652:	ptr += QuoteByteLength(ptr);			break;
 			}
 
+#if __slow_safe__
+
 			return ptr + cmd -> size;
 		}
 	}
-
 	getLineFromPointer(ptr);
 	printf("TOKEN NOT FOUND: %04x AS LINE %d!!!\n",token,lineFromPtr.line);
 	return NULL;
+
+#else
+
+	return ptr + size;	
+
+#endif
+
 }
 
 unsigned short token_after_array( char * ptr)
