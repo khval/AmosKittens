@@ -1441,12 +1441,13 @@ int main(int args, char **arg)
 
 	audioStart();
 
-	if ( (startup) && (channels) )
+	proc_names_printf("%s:%s:%d spawn_count: %d\n",__FILE__,__FUNCTION__,__LINE__, spawn_count);
+
+	if ( (startup) && (channels) && load_config("progdir:kittySystem/config.yml") )
 	{
 		bool init_error = false;
-		std::string *value;
 
-		load_config("progdir:kittySystem/config.yml");
+
 		alloc_video();
 
 #ifdef __amigaos4__
