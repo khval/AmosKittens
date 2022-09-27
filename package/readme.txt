@@ -55,10 +55,23 @@ Planar / lowlevel peeking & poking into screens, sprites, bobs.
 
 Changes:
 
+27.09.2022 version 0.9 (optimzing & bug fixes)
+
+ * Speed up “char *skip_next_cmd(…)”
+ * Some changes were not committed before.
+ * Optimized Amos Kittens stack by removing state from the stack.
+ * Improvement I debugging.
+ * Token relocation for operator optimization.
+ * Math order operator optimization.
+ * Command Dir$ fixes.
+ * Fixed bug in Eof command
+ * Command “Resume Next” implemented.
+ * Command Input$(fd,length) fixed. (And some minor fixes.)
+
 18.09.2022 version 0.8 (Bug fixes.)
 
-* A complicated math bug found and fixed.
-* fixed a bug in the "Screen Mode" command.
+ * A complicated math bug found and fixed.
+ * fixed a bug in the "Screen Mode" command.
 
 07.09.2022 version 0.8
 
